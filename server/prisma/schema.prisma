@@ -14,9 +14,180 @@ datasource db {
   provider = "postgresql"
 }
 
+// --- 1. QUẢN LÝ DOANH NGHIỆP & NHÂN VIÊN ---
+
+model Company {
+  company_id     String    @id @default(uuid())
+  name           String
+  tax_id         String?   @unique
+  address        String?
+  website        String?
+  industry       String?
+  rating         Decimal   @default(0) @db.Decimal(3, 2)
+  
+  // Phân loại & Trạng thái
+  is_supplier    Boolean   @default(true)
+  is_buyer       Boolean   @default(true)
+  status         String    @default("active") // active, suspended, pending_verify
+  
+  // Quan hệ
+  users          User[]
+  products       Product[]
+  orders_as_buyer  Order[]  @relation("BuyerOrders")
+  orders_as_seller Order[]  @relation("SellerOrders")
+  reviews_given    Review[] @relation("Reviewer")
+  reviews_received Review[] @relation("Reviewee")
+
+  // Audit & Soft Delete
+  deleted_at     DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+  user_id     String    @id @default(uuid())
+  email       String    @unique
+  password    String
+  full_name   String
+  role        String    @default("STAFF") // ADMIN, ACCOUNTANT, BUYER, SALES
+  
+  company_id  String
+  company     Company   @relation(fields: [company_id], references: [company_id])
+  
+  deleted_at  DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+}
+
+// --- 2. QUẢN LÝ DANH MỤC & SẢN PHẨM ---
+
+model Category {
+  category_id String    @id @default(uuid())
+  name        String
+  products    Product[]
+  
+  deleted_at  DateTime?
+  created_at  DateTime  @default(now())
+}
+
+model Product {
+  product_id     String    @id @default(uuid())
+  name           String
+  sku            String?   @unique // Mã kho định danh sản phẩm
+  description    String?   @db.Text
+  price          Decimal   @db.Decimal(15, 2)
+  stock_quantity Int       @default(0)
+  
+  company_id     String
+  company        Company   @relation(fields: [company_id], references: [company_id])
+  category_id    String
+  category       Category  @relation(fields: [category_id], references: [category_id])
+  
+  order_items    OrderItem[]
+  
+  deleted_at     DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+}
+
+// --- 3. NGHIỆP VỤ ĐƠN HÀNG, HỢP ĐỒNG & VẬN CHUYỂN ---
+
+model Order {
+  order_id     String    @id @default(uuid())
+  status       String    @default("pending") // pending, confirmed, shipping, completed, cancelled
+  total_amount Decimal   @db.Decimal(15, 2)
+  note         String?   @db.Text
+  
+  buyer_id     String
+  buyer        Company   @relation("BuyerOrders", fields: [buyer_id], references: [company_id])
+  seller_id    String
+  seller       Company   @relation("SellerOrders", fields: [seller_id], references: [company_id])
+  
+  order_items  OrderItem[]
+  contract     Contract?
+  payments     Payment[]
+  shipment     Shipment?
+
+  deleted_at   DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+}
+
+model OrderItem {
+  order_item_id String  @id @default(uuid())
+  order_id      String
+  order         Order   @relation(fields: [order_id], references: [order_id])
+  product_id    String
+  product       Product @relation(fields: [product_id], references: [product_id])
+  
+  quantity      Int
+  unit_price    Decimal @db.Decimal(15, 2) // Snapshot giá tại lúc đặt hàng
+}
+
+model Contract {
+  contract_id     String    @id @default(uuid())
+  contract_number String    @unique
+  content_url     String?   // Đường dẫn file PDF hợp đồng đã ký
+  terms           String?   @db.Text
+  status          String    @default("draft") // draft, signed, expired, terminated
+  signed_at       DateTime?
+  
+  order_id        String    @unique
+  order           Order     @relation(fields: [order_id], references: [order_id])
+  
+  deleted_at      DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+}
+
+// --- 4. THANH TOÁN, ĐÁNH GIÁ & TRUY VẾT ---
+
+model Payment {
+  payment_id   String    @id @default(uuid())
+  amount       Decimal   @db.Decimal(15, 2)
+  method       String    // BANK_TRANSFER, CREDIT_DEBT, E_WALLET
+  status       String    @default("pending") // pending, completed, failed
+  txn_ref      String?   // Mã tham chiếu từ ngân hàng/cổng thanh toán
+  
+  order_id     String
+  order        Order     @relation(fields: [order_id], references: [order_id])
+  
+  created_at   DateTime  @default(now())
+}
+
+model Shipment {
+  shipment_id String    @id @default(uuid())
+  order_id    String    @unique
+  order       Order     @relation(fields: [order_id], references: [order_id])
+  
+  carrier     String?   // Đơn vị vận chuyển
+  tracking_no String?   // Mã vận đơn
+  status      String    @default("preparing") // preparing, shipping, delivered, returned
+  shipped_at  DateTime?
+  estimated_at DateTime?
+}
+
+model Review {
+  review_id    String    @id @default(uuid())
+  rating       Int       @default(5) // 1-5 sao
+  comment      String?   @db.Text
+  
+  reviewer_id  String
+  reviewer     Company   @relation("Reviewer", fields: [reviewer_id], references: [company_id])
+  reviewee_id  String
+  reviewee     Company   @relation("Reviewee", fields: [reviewee_id], references: [company_id])
+  
+  created_at   DateTime  @default(now())
+}
+
+model AuditLog {
+  log_id      String    @id @default(uuid())
+  user_id     String
+  action      String    // CREATE, UPDATE, DELETE, LOGIN
+  table_name  String    // Ví dụ: "Order"
+  entity_id   String    // ID của bản ghi bị tác động
+  old_data    Json?
+  new_data    Json?
+  
+  created_at  DateTime  @default(now())
 }
