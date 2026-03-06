@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { UsersModule } from './users/users.module';
 import { AuthModuleModule } from './auth-module/auth-module.module';
 import { UserModuleModule } from './user-module/user-module.module';
 import { PrmoduleModule } from './prmodule/prmodule.module';
@@ -18,10 +17,39 @@ import { NotificationModuleModule } from './notification-module/notification-mod
 import { ApprovalModuleModule } from './approval-module/approval-module.module';
 import { AdminModuleModule } from './admin-module/admin-module.module';
 import { ReportModuleModule } from './report-module/report-module.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-ioredis-yet';
+import { HashPasswordService } from './hash-password/hash-password.service';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModuleModule, UserModuleModule, PrmoduleModule, RfqmoduleModule, PomoduleModule, GrnmoduleModule, InvoiceModuleModule, PaymentModuleModule, SupplierKpimoduleModule, ReviewModuleModule, DisputeModuleModule, NotificationModuleModule, ApprovalModuleModule, AdminModuleModule, ReportModuleModule],
+  imports: [
+    PrismaModule,
+    AuthModuleModule,
+    UserModuleModule,
+    PrmoduleModule,
+    RfqmoduleModule,
+    PomoduleModule,
+    GrnmoduleModule,
+    InvoiceModuleModule,
+    PaymentModuleModule,
+    SupplierKpimoduleModule,
+    ReviewModuleModule,
+    DisputeModuleModule,
+    NotificationModuleModule,
+    ApprovalModuleModule,
+    AdminModuleModule,
+    ReportModuleModule,
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: () => ({
+        store: redisStore,
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+        password: process.env.REDIS_PASSWORD || undefined,
+      }),
+    }),
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, HashPasswordService],
 })
 export class AppModule {}
