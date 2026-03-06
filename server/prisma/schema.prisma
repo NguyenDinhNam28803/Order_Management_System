@@ -5,9 +5,10 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
   moduleFormat    = "commonjs"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -722,6 +723,7 @@ model RfqItem {
   id              String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   rfqId           String   @map("rfq_id") @db.Uuid
   prItemId        String?  @map("pr_item_id") @db.Uuid
+  categoryId      String?  @map("category_id") @db.Uuid
   lineNumber      Int      @map("line_number") @db.SmallInt
   sku             String?  @db.VarChar(100)
   description     String   @db.VarChar(500)
@@ -733,6 +735,7 @@ model RfqItem {
 
   rfq              RfqRequest      @relation(fields: [rfqId], references: [id], onDelete: Cascade)
   prItem           PrItem?         @relation(fields: [prItemId], references: [id])
+  category         ProductCategory? @relation(fields: [categoryId], references: [id])
   quotationItems   RfqQuotationItem[]
 
   @@map("rfq_items")
