@@ -17,6 +17,7 @@ import { NotificationModuleModule } from './notification-module/notification-mod
 import { ApprovalModuleModule } from './approval-module/approval-module.module';
 import { AdminModuleModule } from './admin-module/admin-module.module';
 import { ReportModuleModule } from './report-module/report-module.module';
+import { ProductModuleModule } from './product-module/product-module.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import { HashPasswordService } from './hash-password/hash-password.service';
@@ -26,6 +27,7 @@ import { HashPasswordService } from './hash-password/hash-password.service';
     PrismaModule,
     AuthModuleModule,
     UserModuleModule,
+    ProductModuleModule,
     PrmoduleModule,
     RfqmoduleModule,
     PomoduleModule,

@@ -1,36 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { PomoduleService } from './pomodule.service';
-import { CreatePomoduleDto } from './dto/create-pomodule.dto';
-import { UpdatePomoduleDto } from './dto/update-pomodule.dto';
+import { CreatePoDto } from './dto/create-po.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
+@ApiTags('Purchase Order (PO)')
+@Controller('po')
+@ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
-@Controller('pomodule')
 export class PomoduleController {
-  constructor(private readonly pomoduleService: PomoduleService) {}
+  constructor(private readonly poService: PomoduleService) {}
 
   @Post()
-  create(@Body() createPomoduleDto: CreatePomoduleDto) {
-    return this.pomoduleService.create(createPomoduleDto);
+  @ApiOperation({ summary: 'Create a new PO from a Quotation' })
+  create(@Body() createPoDto: CreatePoDto, @Request() req: any) {
+    return this.poService.create(createPoDto, req.user);
   }
 
   @Get()
-  findAll() {
-    return this.pomoduleService.findAll();
+  @ApiOperation({ summary: 'Get all POs for organization' })
+  findAll(@Request() req: any) {
+    return this.poService.findAll(req.user);
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get PO detail' })
   findOne(@Param('id') id: string) {
-    return this.pomoduleService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePomoduleDto: UpdatePomoduleDto) {
-    return this.pomoduleService.update(+id, updatePomoduleDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pomoduleService.remove(+id);
+    return this.poService.findOne(id);
   }
 }

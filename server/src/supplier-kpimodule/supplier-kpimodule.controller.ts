@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SupplierKpimoduleService } from './supplier-kpimodule.service';
 import { CreateSupplierKpimoduleDto } from './dto/create-supplier-kpimodule.dto';
 import { UpdateSupplierKpimoduleDto } from './dto/update-supplier-kpimodule.dto';
 
 @Controller('supplier-kpimodule')
 export class SupplierKpimoduleController {
-  constructor(private readonly supplierKpimoduleService: SupplierKpimoduleService) {}
+  constructor(
+    private readonly supplierKpimoduleService: SupplierKpimoduleService,
+  ) {}
 
   @Post()
   create(@Body() createSupplierKpimoduleDto: CreateSupplierKpimoduleDto) {
@@ -23,8 +33,14 @@ export class SupplierKpimoduleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSupplierKpimoduleDto: UpdateSupplierKpimoduleDto) {
-    return this.supplierKpimoduleService.update(+id, updateSupplierKpimoduleDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateSupplierKpimoduleDto: UpdateSupplierKpimoduleDto,
+  ) {
+    return this.supplierKpimoduleService.update(
+      +id,
+      updateSupplierKpimoduleDto,
+    );
   }
 
   @Delete(':id')

@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { CreateRfqmoduleDto } from './dto/create-rfqmodule.dto';
-import { UpdateRfqmoduleDto } from './dto/update-rfqmodule.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateRfqDto } from './dto/create-rfq.dto';
+import { RfqRepository } from './rfq.repository';
 
 @Injectable()
 export class RfqmoduleService {
-  create(createRfqmoduleDto: CreateRfqmoduleDto) {
-    return 'This action adds a new rfqmodule';
+  constructor(private readonly repository: RfqRepository) {}
+
+  async create(createRfqDto: CreateRfqDto, user: any) {
+    const rfqNumber = `RFQ-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    return this.repository.create(
+      createRfqDto,
+      user.sub,
+      user.orgId,
+      rfqNumber,
+    );
   }
 
-  findAll() {
-    return `This action returns all rfqmodule`;
+  async findAll(user: any) {
+    return this.repository.findAll(user.orgId);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} rfqmodule`;
-  }
-
-  update(id: number, updateRfqmoduleDto: UpdateRfqmoduleDto) {
-    return `This action updates a #${id} rfqmodule`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} rfqmodule`;
+  async findOne(id: string) {
+    const rfq = await this.repository.findOne(id);
+    if (!rfq) {
+      throw new NotFoundException(`RFQ with ID ${id} not found`);
+    }
+    return rfq;
   }
 }

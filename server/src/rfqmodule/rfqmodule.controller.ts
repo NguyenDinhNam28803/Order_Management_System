@@ -1,34 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { RfqmoduleService } from './rfqmodule.service';
-import { CreateRfqmoduleDto } from './dto/create-rfqmodule.dto';
-import { UpdateRfqmoduleDto } from './dto/update-rfqmodule.dto';
+import { CreateRfqDto } from './dto/create-rfq.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
-@Controller('rfqmodule')
+@ApiTags('Request for Quotation (RFQ)')
+@Controller('rfq')
+@ApiBearerAuth('JWT-auth')
+@UseGuards(JwtAuthGuard)
 export class RfqmoduleController {
-  constructor(private readonly rfqmoduleService: RfqmoduleService) {}
+  constructor(private readonly rfqService: RfqmoduleService) {}
 
   @Post()
-  create(@Body() createRfqmoduleDto: CreateRfqmoduleDto) {
-    return this.rfqmoduleService.create(createRfqmoduleDto);
+  @ApiOperation({ summary: 'Create a new RFQ from a PR' })
+  async create(@Body() createRfqDto: CreateRfqDto, @Request() req: any) {
+    return this.rfqService.create(createRfqDto, req.user);
   }
 
   @Get()
-  findAll() {
-    return this.rfqmoduleService.findAll();
+  @ApiOperation({ summary: 'Get all RFQs for organization' })
+  async findAll(@Request() req: any) {
+    return this.rfqService.findAll(req.user);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rfqmoduleService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRfqmoduleDto: UpdateRfqmoduleDto) {
-    return this.rfqmoduleService.update(+id, updateRfqmoduleDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rfqmoduleService.remove(+id);
+  @ApiOperation({ summary: 'Get RFQ detail' })
+  async findOne(@Param('id') id: string) {
+    return this.rfqService.findOne(id);
   }
 }

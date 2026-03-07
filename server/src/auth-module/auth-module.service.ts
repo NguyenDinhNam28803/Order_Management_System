@@ -15,6 +15,14 @@ export class AuthModuleService {
     return this.authModuleRepository.register(registerDto);
   }
 
+  async refreshToken(refreshToken: string) {
+    return this.authModuleRepository.refreshToken(refreshToken);
+  }
+
+  async validateToken(token: string) {
+    return this.authModuleRepository.validateToken(token);
+  }
+
   logout() {
     return { message: 'Đã đăng xuất thành công' };
   }

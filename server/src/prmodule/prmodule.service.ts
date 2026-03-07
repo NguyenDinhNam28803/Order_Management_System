@@ -1,26 +1,75 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePrmoduleDto } from './dto/create-prmodule.dto';
-import { UpdatePrmoduleDto } from './dto/update-prmodule.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreatePrDto } from './dto/create-pr.dto';
+import { PrRepository } from './pr.repository';
+import { PrStatus, PurchaseRequisition } from '@prisma/client';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class PrmoduleService {
-  create(createPrmoduleDto: CreatePrmoduleDto) {
-    return 'This action adds a new prmodule';
+  constructor(
+    private readonly repository: PrRepository,
+    private readonly prisma: PrismaService,
+  ) {}
+
+  async create(
+    createPrDto: CreatePrDto,
+    user: JwtPayload,
+  ): Promise<PurchaseRequisition> {
+    const prNumber = `PR-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // Giả sử user object có orgId và deptId từ JWT payload
+    const orgId = user.orgId;
+    let deptId = user.deptId;
+
+    if (!deptId) {
+      const userFromDb = await this.prisma.user.findUnique({
+        where: { id: user.sub },
+        select: { deptId: true },
+      });
+      if (!userFromDb?.deptId) {
+        throw new Error('User does not belong to any department');
+      }
+      deptId = userFromDb.deptId;
+    }
+
+    return this.repository.create(
+      createPrDto,
+      user.sub,
+      orgId,
+      deptId,
+      prNumber,
+    );
   }
 
-  findAll() {
-    return `This action returns all prmodule`;
+  async findAll(user: JwtPayload): Promise<PurchaseRequisition[]> {
+    return this.repository.findAll(user.orgId);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} prmodule`;
+  async findOne(id: string): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const pr = await this.repository.findOne(id);
+    if (!pr) {
+      throw new NotFoundException(
+        `Purchase Requisition with ID ${id} not found`,
+      );
+    }
+    return pr;
   }
 
-  update(id: number, updatePrmoduleDto: UpdatePrmoduleDto) {
-    return `This action updates a #${id} prmodule`;
+  async submit(id: string): Promise<PurchaseRequisition> {
+    if (!id) {
+      throw new NotFoundException(`Purchase Requisition ID is required`);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const pr = await this.findOne(id);
+    if (pr.status !== PrStatus.DRAFT) {
+      throw new Error('Only draft PRs can be submitted');
+    }
+    return this.repository.updateStatus(id, PrStatus.PENDING_APPROVAL);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} prmodule`;
+  async findMyPrs(userId: string): Promise<PurchaseRequisition[]> {
+    return this.repository.findByRequester(userId);
   }
 }

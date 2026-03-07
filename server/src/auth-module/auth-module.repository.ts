@@ -9,6 +9,16 @@ import { HashPasswordService } from '../hash-password/hash-password.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { User, UserRole } from '@prisma/client';
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface AuthResponse extends AuthTokens {
+  user: Omit<User, 'passwordHash'>;
+}
 
 @Injectable()
 export class AuthModuleRepository {
@@ -25,7 +35,7 @@ export class AuthModuleRepository {
    * 3. Kiểm tra trạng thái tài khoản (isActive).
    * 4. Tạo bộ token xác thực (Access & Refresh Token).
    */
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<AuthResponse> {
     const { email, password } = loginDto;
 
     const user = await this.prisma.user.findUnique({
@@ -66,7 +76,7 @@ export class AuthModuleRepository {
    * 4. Xử lý lỗi trùng lặp dữ liệu từ Prisma (lỗi P2002).
    * 5. Tự động trả về token sau khi tạo tài khoản thành công.
    */
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: RegisterDto): Promise<AuthResponse> {
     const { password, ...userData } = registerDto;
 
     // Kiểm tra email tồn tại
@@ -98,8 +108,13 @@ export class AuthModuleRepository {
         user: userInfo,
         ...tokens,
       };
-    } catch (error) {
-      if (error.code === 'P2002') {
+    } catch (error: unknown) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        error.code === 'P2002'
+      ) {
         throw new ConflictException('Email hoặc mã nhân viên đã tồn tại');
       }
       throw new InternalServerErrorException(
@@ -118,9 +133,9 @@ export class AuthModuleRepository {
     id: string;
     email: string;
     fullName: string;
-    role: string;
+    role: UserRole;
     orgId: string;
-  }) {
+  }): Promise<AuthTokens> {
     const payload = {
       sub: user.id,
       email: user.email,
@@ -150,5 +165,62 @@ export class AuthModuleRepository {
       accessToken,
       refreshToken,
     };
+  }
+
+  // Hàm hỗ trợ xác thực token (nếu cần thiết)
+  async validateToken(token: string): Promise<any> {
+    try {
+      console.log('Validating token:', token);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const decoded = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      console.log('Decoded token:', decoded);
+      return decoded;
+    } catch (error: unknown) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'name' in error &&
+        error.name === 'TokenExpiredError'
+      ) {
+        throw new UnauthorizedException('Token đã hết hạn');
+      }
+      throw new UnauthorizedException('Token không hợp lệ hoặc đã hết hạn');
+    }
+  }
+
+  /**
+   * Chức năng tạo lại Access Token bằng Refresh Token (nếu cần thiết):
+   * 1. Xác thực Refresh Token.
+   * 2. Tạo lại Access Token mới dựa trên thông tin người dùng.
+   * 3. Trả về Access Token mới cho client.
+   */
+  async refreshToken(refreshToken: string): Promise<AuthTokens> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const decoded = await this.jwtService.verifyAsync(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+      const user = await this.prisma.user.findUnique({
+        where: { id: decoded.sub as string },
+      });
+      if (!user) {
+        throw new UnauthorizedException('Người dùng không tồn tại');
+      }
+      return this.generateToken(user);
+    } catch (error: unknown) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'name' in error &&
+        error.name === 'TokenExpiredError'
+      ) {
+        throw new UnauthorizedException('Refresh Token đã hết hạn');
+      }
+      throw new UnauthorizedException(
+        'Refresh Token không hợp lệ hoặc đã hết hạn',
+      );
+    }
   }
 }

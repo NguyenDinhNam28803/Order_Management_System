@@ -1,34 +1,44 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { NotificationModuleService } from './notification-module.service';
-import { CreateNotificationModuleDto } from './dto/create-notification-module.dto';
-import { UpdateNotificationModuleDto } from './dto/update-notification-module.dto';
+import { CreateNotificationTemplateDto } from './dto/create-notification-template.dto';
+import { SendNotificationDto } from './dto/send-notification.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
-@Controller('notification-module')
+@ApiTags('Notification Management')
+@Controller('notifications')
 export class NotificationModuleController {
-  constructor(private readonly notificationModuleService: NotificationModuleService) {}
+  constructor(private readonly service: NotificationModuleService) {}
 
-  @Post()
-  create(@Body() createNotificationModuleDto: CreateNotificationModuleDto) {
-    return this.notificationModuleService.create(createNotificationModuleDto);
+  @Post('templates')
+  @ApiOperation({ summary: 'Create a new notification template' })
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
+  async createTemplate(@Body() dto: CreateNotificationTemplateDto) {
+    return this.service.createTemplate(dto);
   }
 
-  @Get()
-  findAll() {
-    return this.notificationModuleService.findAll();
+  @Get('templates')
+  @ApiOperation({ summary: 'Get all notification templates' })
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
+  async findAllTemplates() {
+    return this.service.findAllTemplates();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notificationModuleService.findOne(+id);
+  @Post('send')
+  @ApiOperation({ summary: 'Send a notification to a user' })
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
+  async sendNotification(@Body() dto: SendNotificationDto) {
+    return this.service.sendNotification(dto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNotificationModuleDto: UpdateNotificationModuleDto) {
-    return this.notificationModuleService.update(+id, updateNotificationModuleDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.notificationModuleService.remove(+id);
+  @Get('recipient/:id')
+  @ApiOperation({ summary: 'Get all notifications for a specific recipient' })
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
+  async findAllByRecipient(@Param('id') id: string) {
+    return this.service.findAllByRecipient(id);
   }
 }

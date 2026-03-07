@@ -11,7 +11,9 @@ describe('SupplierKpimoduleController', () => {
       providers: [SupplierKpimoduleService],
     }).compile();
 
-    controller = module.get<SupplierKpimoduleController>(SupplierKpimoduleController);
+    controller = module.get<SupplierKpimoduleController>(
+      SupplierKpimoduleController,
+    );
   });
 
   it('should be defined', () => {

@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { GrnmoduleService } from './grnmodule.service';
 import { CreateGrnmoduleDto } from './dto/create-grnmodule.dto';
 import { UpdateGrnmoduleDto } from './dto/update-grnmodule.dto';
@@ -23,7 +31,10 @@ export class GrnmoduleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGrnmoduleDto: UpdateGrnmoduleDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateGrnmoduleDto: UpdateGrnmoduleDto,
+  ) {
     return this.grnmoduleService.update(+id, updateGrnmoduleDto);
   }
 
