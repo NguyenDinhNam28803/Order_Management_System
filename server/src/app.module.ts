@@ -21,6 +21,10 @@ import { ProductModuleModule } from './product-module/product-module.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import { HashPasswordService } from './hash-password/hash-password.service';
+import { ContractModuleModule } from './contract-module/contract-module.module';
+import { BudgetModuleModule } from './budget-module/budget-module.module';
+import { AuditModuleModule } from './audit-module/audit-module.module';
+import { SystemConfigModuleModule } from './system-config-module/system-config-module.module';
 
 @Module({
   imports: [
@@ -50,6 +54,10 @@ import { HashPasswordService } from './hash-password/hash-password.service';
         password: process.env.REDIS_PASSWORD || undefined,
       }),
     }),
+    ContractModuleModule,
+    BudgetModuleModule,
+    AuditModuleModule,
+    SystemConfigModuleModule,
   ],
   controllers: [AppController],
   providers: [AppService, HashPasswordService],

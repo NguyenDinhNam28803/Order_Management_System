@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateApprovalModuleDto } from './dto/create-approval-module.dto';
-import { UpdateApprovalModuleDto } from './dto/update-approval-module.dto';
 
 @Injectable()
 export class ApprovalModuleService {
-  create(createApprovalModuleDto: CreateApprovalModuleDto) {
+  create() {
     return 'This action adds a new approvalModule';
   }
 
@@ -16,7 +14,7 @@ export class ApprovalModuleService {
     return `This action returns a #${id} approvalModule`;
   }
 
-  update(id: number, updateApprovalModuleDto: UpdateApprovalModuleDto) {
+  update(id: number) {
     return `This action updates a #${id} approvalModule`;
   }
 

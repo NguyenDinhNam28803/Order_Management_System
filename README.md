@@ -1,123 +1,119 @@
-# 🏬 SupplyBridge — Nền tảng B2B Kết nối Doanh nghiệp & Nhà cung cấp
+# 📦 Enterprise Order Management System (OMS)
 
-> **Hackathon 2025** · Ý tưởng dự án của nhóm
-
----
-
-## 💡 Ý tưởng cốt lõi
-
-**SupplyBridge** là nền tảng trung gian (B2B Marketplace) kết nối **Doanh nghiệp mua hàng** và **Nhà cung cấp** trong cùng một hệ sinh thái. Thay vì hai bên tự tìm nhau qua email, điện thoại hoặc mối quan hệ cá nhân — mọi giao dịch đều được thực hiện, theo dõi và đánh giá **minh bạch qua nền tảng của chúng tôi**.
-
-Chúng tôi đóng vai trò là **bên thứ ba trung lập**, tương tự mô hình Alibaba hay Sendo nhưng tập trung cho giao dịch doanh nghiệp (B2B) tại thị trường Việt Nam.
+Hệ thống Quản lý Đơn hàng và Thu mua (Procurement) cấp doanh nghiệp, được tích hợp kiểm soát ngân sách thời gian thực, phê duyệt đa cấp và phân tích báo giá bằng AI.
 
 ---
 
-## 😣 Bài toán thực tế
+## 🏗️ Kiến trúc Hệ thống (Technical Architecture)
 
-Hiện nay, quy trình mua hàng giữa doanh nghiệp và nhà cung cấp còn rất thủ công:
-
-- Tìm nhà cung cấp qua "người quen giới thiệu", thiếu tính khách quan
-- Đặt hàng qua Zalo, email — không có lịch sử, dễ thất lạc
-- Không có cơ chế đánh giá nhà cung cấp sau giao dịch
-- Doanh nghiệp mua không biết nhà cung cấp nào uy tín
-- Nhà cung cấp tốt không có kênh để chứng minh chất lượng
+Dự án được xây dựng theo mô hình **Decoupled Architecture**:
+*   **Frontend:** Next.js (TypeScript) + Tailwind CSS (App Router).
+*   **Backend:** NestJS (Node.js Framework) - Modular Architecture.
+*   **Database:** PostgreSQL + Prisma ORM.
+*   **Infrastructure:** Tích hợp Redis (Caching), BullMQ (Queueing cho Notification), và Socket.io (Real-time updates).
 
 ---
 
-## 🎯 Giải pháp của chúng tôi
+## 🚀 Quy trình Thu mua Chuyên sâu (Procurement Lifecycle)
 
-Xây dựng một **nền tảng trung gian** nơi:
+Hệ thống mô phỏng quy trình ERP chuẩn quốc tế:
 
-- **Công ty A (Bên mua)** đăng ký, tìm kiếm và đặt hàng từ các nhà cung cấp
-- **Công ty B (Nhà cung cấp)** đăng ký, đăng sản phẩm/dịch vụ và nhận đơn hàng
-- **Nền tảng** quản lý toàn bộ giao dịch, thu phí dịch vụ và duy trì hệ thống đánh giá 2 chiều
+1.  **Purchase Requisition (PR):**
+    *   Người dùng tạo yêu cầu mua sắm kèm mô tả kỹ thuật.
+    *   Hệ thống tự động xác định phòng ban và trung tâm chi phí (Cost Center).
+2.  **Multi-level Approval:**
+    *   Dựa trên **Approval Matrix**, yêu cầu được gửi đến cấp quản lý tương ứng (Trưởng phòng -> Giám đốc -> CEO) tùy theo giá trị đơn hàng.
+3.  **Sourcing & RFQ:**
+    *   Chuyển PR thành Yêu cầu báo giá (RFQ).
+    *   Mời các nhà cung cấp tham gia đấu thầu hoặc báo giá cạnh tranh.
+4.  **AI Quotation Analysis:**
+    *   Tự động so sánh giá, thời gian giao hàng (Lead time) và điểm uy tín (Trust Score) của nhà cung cấp.
+    *   Đề xuất lựa chọn nhà cung cấp tối ưu.
+5.  **Purchase Order (PO) & Budget Lock:**
+    *   Khởi tạo PO chính thức. 
+    *   **Critical Logic:** Hệ thống thực hiện "Lock" ngân sách (chuyển sang trạng thái `Committed`) để đảm bảo tính an toàn tài chính.
+6.  **Goods Receipt (GRN):**
+    *   Bộ phận kho xác nhận số lượng và chất lượng hàng nhận được.
+    *   Hỗ trợ chụp ảnh hiện trường và ghi nhận lỗi (Dispute) nếu có.
+7.  **Invoicing & 3-Way Matching:**
+    *   Tự động đối soát: **Số lượng đặt (PO) == Số lượng nhận (GRN) == Số lượng tính tiền (Invoice)**.
+    *   Nếu sai lệch vượt quá dung sai cho phép, hệ thống sẽ chặn thanh toán.
+8.  **Payment & Finalization:**
+    *   Thực hiện lệnh chi qua cổng thanh toán hoặc ký quỹ (Escrow).
+    *   Giải phóng ngân sách cam kết và ghi nhận chi phí thực tế (`Spent`).
 
 ---
 
-## 🔄 Luồng hoạt động
+## 💰 Cơ chế Quản lý Ngân sách (Advanced Budgeting)
 
+Đây là "trái tim" của hệ thống tài chính:
+
+*   **Allocated (Ngân sách cấp):** Hạn mức được phê duyệt đầu năm cho từng Cost Center.
+*   **Committed (Tạm giữ):** Ngân sách bị "phong tỏa" ngay khi PO được duyệt. 
+    *   *Ví dụ:* Ngân sách còn 100tr, tạo PO 30tr -> Committed = 30tr, Available = 70tr.
+*   **Spent (Thực chi):** Chỉ ghi nhận khi tiền thực tế rời khỏi tài khoản công ty.
+*   **Release Logic:** Nếu PO bị hủy, số tiền `Committed` sẽ được hoàn trả lại `Available` ngay lập tức.
+
+---
+
+## 📂 Danh sách Module & Trách nhiệm
+
+| Module | Mô tả |
+| :--- | :--- |
+| `auth-module` | Quản lý định danh, JWT, MFA và phân quyền (Requester, Approver, Supplier, Admin). |
+| `prmodule` | Quản lý yêu cầu mua sắm và luồng phê duyệt nội bộ. |
+| `rfqmodule` | Quản lý đấu thầu, báo giá và so sánh nhà cung cấp bằng AI. |
+| `pomodule` | Quản lý đơn hàng, theo dõi giao hàng và kiểm soát ngân sách. |
+| `grnmodule` | Quản lý nhập kho, kiểm tra chất lượng (QC) và trả hàng (RTV). |
+| `invoice-module` | Đối soát hóa đơn 3 bước và quản lý thuế. |
+| `contract-module` | Quản lý hợp đồng khung, NDA và các mốc thanh toán theo giai đoạn. |
+| `budget-module` | Thiết lập hạn mức chi tiêu theo phòng ban và năm tài chính. |
+| `audit-module` | Lưu vết 100% các thao tác nhạy cảm (Ghi log old_value/new_value). |
+| `dispute-module` | Xử lý khiếu nại giữa Người mua và Nhà cung cấp. |
+| `notification-module` | Gửi thông báo tự động qua Email/SMS/Push khi có sự kiện cần phê duyệt. |
+
+---
+
+## 🛠️ Hướng dẫn Triển khai (Deployment Guide)
+
+### 1. Yêu cầu Hệ thống
+*   Node.js v20+
+*   PostgreSQL v15+
+*   Redis (tùy chọn cho Caching)
+
+### 2. Cấu hình Biến môi trường (`server/.env`)
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/oms_db?schema=public"
+JWT_SECRET="your_super_secret_key"
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_USER="your-email@gmail.com"
+EMAIL_PASS="your-app-password"
 ```
-Bên mua tìm kiếm NCC       →   Đặt hàng qua nền tảng
-         ↓                               ↓
-  So sánh, xem đánh giá        NCC xác nhận & xử lý đơn
-         ↓                               ↓
-  Theo dõi tiến độ đơn hàng   Cập nhật trạng thái giao hàng
-         ↓                               ↓
-       Nhận hàng              →    Đánh giá lẫn nhau
-                                         ↓
-                              Nền tảng thu phí giao dịch
+
+### 3. Cài đặt Backend
+```bash
+cd server
+npm install
+npx prisma generate
+npx prisma migrate dev
+npm run start:dev
+```
+
+### 4. Cài đặt Frontend
+```bash
+cd client
+npm install
+npm run dev
 ```
 
 ---
 
-## ✨ Tính năng dự kiến
-
-### Dành cho Bên mua
-- Tìm kiếm và lọc nhà cung cấp theo ngành hàng, khu vực, đánh giá
-- Tạo và theo dõi đơn đặt hàng
-- Lịch sử giao dịch và chi tiêu
-- Đánh giá nhà cung cấp sau mỗi đơn hàng
-
-### Dành cho Nhà cung cấp
-- Hồ sơ doanh nghiệp & danh mục sản phẩm
-- Nhận và xử lý đơn hàng
-- Xem đánh giá từ khách hàng & phản hồi
-- Thống kê doanh số, tỉ lệ hoàn thành đơn
-
-### Dành cho Nền tảng (Admin)
-- Quản lý toàn bộ người dùng hai phía
-- Kiểm duyệt hồ sơ nhà cung cấp
-- Theo dõi giao dịch & doanh thu phí dịch vụ
-- Xử lý khiếu nại, tranh chấp giữa hai bên
+## 🛡️ Bảo mật & Tuân thủ
+*   **RBAC (Role-Based Access Control):** Kiểm soát truy cập chặt chẽ đến từng Endpoint API.
+*   **Data Integrity:** Sử dụng Database Transaction cho tất cả các nghiệp vụ liên quan đến Tiền và Ngân sách.
+*   **Audit Trail:** Mọi hành động xóa hoặc sửa dữ liệu quan trọng đều được ghi lại trong `AuditLog`.
 
 ---
 
-## ⭐ Hệ thống Đánh giá 2 chiều
-
-Đây là điểm khác biệt quan trọng của nền tảng:
-
-**Bên mua đánh giá Nhà cung cấp** theo các tiêu chí:
-- Chất lượng sản phẩm/dịch vụ
-- Tốc độ xử lý và giao hàng
-- Thái độ & hỗ trợ khách hàng
-- Giá cả so với thị trường
-
-**Nhà cung cấp đánh giá Bên mua** theo các tiêu chí:
-- Thanh toán đúng hạn
-- Thông tin đơn hàng rõ ràng
-- Thái độ hợp tác
-
-→ Cả hai bên đều có **điểm uy tín (Trust Score)** hiển thị công khai, tạo động lực giao dịch minh bạch và có trách nhiệm.
-
----
-
-## 💰 Mô hình doanh thu
-
-| Hình thức | Mô tả |
-|-----------|-------|
-| **Phí giao dịch** | Thu % trên mỗi đơn hàng thành công |
-| **Gói đăng ký** | Nhà cung cấp trả phí hàng tháng để hiển thị ưu tiên |
-| **Phí quảng bá** | NCC trả thêm để xuất hiện đầu kết quả tìm kiếm |
-| **Phí xác minh** | Phí để được gắn badge "Đã xác minh" tăng độ tin cậy |
-
----
-
-## 🏆 Điểm khác biệt so với thị trường
-
-| | **SupplyBridge** | Email/Zalo thủ công | Alibaba |
-|---|---|---|---|
-| Quản lý đơn hàng tập trung | ✅ | ❌ | ✅ |
-| Đánh giá 2 chiều | ✅ | ❌ | ❌ |
-| Tập trung thị trường Việt Nam | ✅ | — | ❌ |
-| Phù hợp SME nội địa | ✅ | — | ❌ |
-| Xử lý tranh chấp có bên thứ 3 | ✅ | ❌ | Hạn chế |
-
----
-
-## 👥 Đội nhóm SẮP TỐT NGHIỆP:
-
-> *(Điền thông tin thành viên nhóm tại đây)*
-
----
-
-*"Mua bán doanh nghiệp — minh bạch, nhanh chóng, có trách nhiệm."*
+## 📧 Liên hệ & Hỗ trợ
+Nếu bạn gặp vấn đề trong quá trình cài đặt hoặc muốn tùy chỉnh logic nghiệp vụ, vui lòng liên hệ bộ phận kỹ thuật hoặc tạo Issue trên Git.
