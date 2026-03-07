@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { PrmoduleService } from './prmodule.service';
 import { CreatePrmoduleDto } from './dto/create-prmodule.dto';
 import { UpdatePrmoduleDto } from './dto/update-prmodule.dto';
+import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('prmodule')
 export class PrmoduleController {
   constructor(private readonly prmoduleService: PrmoduleService) {}
@@ -23,7 +34,10 @@ export class PrmoduleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePrmoduleDto: UpdatePrmoduleDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updatePrmoduleDto: UpdatePrmoduleDto,
+  ) {
     return this.prmoduleService.update(+id, updatePrmoduleDto);
   }
 

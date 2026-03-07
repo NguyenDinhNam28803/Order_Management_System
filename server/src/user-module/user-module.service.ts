@@ -21,6 +21,7 @@ export class UserModuleService {
 
   async findById(id: string) {
     const cacheKey = `user:${id}`;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const cachedData = await this.cacheManager.get<any>(cacheKey);
     if (cachedData) {
       console.log('--- Trả về dữ liệu từ REDIS ---');
@@ -28,7 +29,9 @@ export class UserModuleService {
     }
     console.log('--- Truy vấn dữ liệu từ database ---');
     const user = await this.userRepository.findById(id);
-    await this.cacheManager.set(cacheKey, user);
+    if (user) {
+      await this.cacheManager.set(cacheKey, user);
+    }
     return user;
   }
 

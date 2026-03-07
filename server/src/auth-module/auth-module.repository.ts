@@ -49,7 +49,13 @@ export class AuthModuleRepository {
       throw new UnauthorizedException('Tài khoản của bạn đã bị khóa');
     }
 
-    return this.generateToken(user);
+    const tokens = await this.generateToken(user);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash, ...userInfo } = user;
+    return {
+      user: userInfo,
+      ...tokens,
+    };
   }
 
   /**
@@ -85,7 +91,13 @@ export class AuthModuleRepository {
         },
       });
 
-      return this.generateToken(user);
+      const tokens = await this.generateToken(user);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { passwordHash: _, ...userInfo } = user;
+      return {
+        user: userInfo,
+        ...tokens,
+      };
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ConflictException('Email hoặc mã nhân viên đã tồn tại');

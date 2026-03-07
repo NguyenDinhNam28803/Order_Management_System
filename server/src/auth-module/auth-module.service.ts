@@ -14,4 +14,8 @@ export class AuthModuleService {
   async register(registerDto: RegisterDto) {
     return this.authModuleRepository.register(registerDto);
   }
+
+  logout() {
+    return { message: 'Đã đăng xuất thành công' };
+  }
 }

@@ -16,4 +16,9 @@ export class AuthModuleController {
   async register(@Body() registerDto: RegisterDto) {
     return await this.authModuleService.register(registerDto);
   }
+
+  @Post('logout')
+  logout() {
+    return this.authModuleService.logout();
+  }
 }
