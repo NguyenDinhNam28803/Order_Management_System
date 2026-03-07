@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { CreateUserModuleDto } from './dto/create-user-module.dto';
 import { UpdateUserModuleDto } from './dto/update-user-module.dto';
 import { UserRepository } from './user.repository';
-import { CACHE_MANAGER } from '@nestjs/cache-manager/dist/cache.constants';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 @Injectable()
 export class UserModuleService {
@@ -21,7 +21,7 @@ export class UserModuleService {
 
   async findById(id: string) {
     const cacheKey = `user:${id}`;
-    const cachedData = await this.cacheManager.get<any[]>(cacheKey);
+    const cachedData = await this.cacheManager.get<any>(cacheKey);
     if (cachedData) {
       console.log('--- Trả về dữ liệu từ REDIS ---');
       return cachedData;

@@ -8,7 +8,7 @@ import {
   IsUUID,
   MinLength,
 } from 'class-validator';
-import { UserRole } from '../../../generated/prisma';
+import { UserRole } from '@prisma/client';
 
 export class RegisterDto {
   @ApiProperty({
