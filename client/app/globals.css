@@ -3,24 +3,39 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #000e28;
+  --secondary: #ffb400;
+  --accent: #2b7de9;
+  --gray-light: #f4f4f4;
+  --text-muted: #666666;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-gray-light: var(--gray-light);
+  --color-text-muted: var(--text-muted);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif, system-ui;
+}
+
+.container-custom {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.btn-primary {
+  @apply bg-accent text-white px-6 py-2 rounded-full font-medium transition-all hover:bg-blue-700;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-primary px-6 py-2 rounded-md font-bold transition-all hover:bg-orange-500;
 }
