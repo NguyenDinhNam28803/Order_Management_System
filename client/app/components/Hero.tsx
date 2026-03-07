@@ -1,111 +1,159 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ChevronRight, Laptop, Tv, Headphones, Smartphone, Camera, Watch, Gamepad, Star, Tag, Zap } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const slides = [
+    {
+        title: "Top Headphone",
+        subtitle: "HAVIT HV-H2178D 3.5",
+        tag: "Top Monthly Seller",
+        description: "Experience the best sound quality with our new Havit headphones. Engineered for comfort and high-fidelity audio performance.",
+        image: "/hero.png",
+        bgColor: "bg-[#e0f2ff]",
+        accentColor: "decoration-secondary"
+    },
+    {
+        title: "Gaming Laptop",
+        subtitle: "ROG Zephyrus G14",
+        tag: "New Arrivals",
+        description: "Power through your favorite games and creative projects with the AMD Ryzen™ 9 CPU and NVIDIA® GeForce RTX™ 40-Series GPU.",
+        image: "/laptop.png",
+        bgColor: "bg-[#d0e8ff]",
+        accentColor: "decoration-accent"
+    },
+    {
+        title: "Smart Watch",
+        subtitle: "Apple Watch Ultra 2",
+        tag: "Special Discount",
+        description: "The most rugged and capable Apple Watch ever. Designed for athletes and outdoor adventurers of all kinds.",
+        image: "/watch.png",
+        bgColor: "bg-[#f0f9ff]",
+        accentColor: "decoration-primary"
+    }
+];
 
 export default function Hero() {
-    const categories = [
-        { name: "Computer & Laptop", icon: Laptop },
-        { name: "Television & Video", icon: Tv },
-        { name: "Headphones", icon: Headphones },
-        { name: "Smartphones", icon: Smartphone },
-        { name: "Camera & Photos", icon: Camera },
-        { name: "Smart Watch", icon: Watch },
-        { name: "Video Games", icon: Gamepad },
-        { name: "Best Seller", icon: Star },
-        { name: "Special Discount", icon: Tag },
-        { name: "New Arrivals", icon: Zap },
-    ];
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [touchStart, setTouchStart] = useState<number | null>(null);
+    const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+    const minSwipeDistance = 50;
+
+    const nextSlide = useCallback(() => {
+        setCurrentIndex((prev) => (prev + 1) % slides.length);
+    }, []);
+
+    const prevSlide = () => {
+        setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    };
+
+    useEffect(() => {
+        const interval = setInterval(nextSlide, 7000);
+        return () => clearInterval(interval);
+    }, [nextSlide]);
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
+
+    const handleTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        const distance = touchStart - touchEnd;
+        if (distance > minSwipeDistance) nextSlide();
+        if (distance < -minSwipeDistance) prevSlide();
+    };
 
     return (
-        <section className="bg-gray-50 py-10">
-            <div className="container-custom grid grid-cols-12 gap-6">
-                {/* Left Sidebar */}
-                <div className="col-span-3 bg-white border border-gray-100 rounded-lg overflow-hidden shadow-sm self-start">
-                    <ul className="flex flex-col">
-                        {categories.map((cat, idx) => (
-                            <li
-                                key={cat.name}
-                                className={`flex items-center justify-between px-6 py-3.5 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0`}
-                            >
-                                <div className="flex items-center gap-3 text-text-muted">
-                                    <cat.icon size={18} />
-                                    <span className="text-sm font-medium">{cat.name}</span>
+        <section className="bg-gradient-to-b from-[#e0f2ff] to-[#f0f9ff] py-10 overflow-hidden">
+            <div className="container-custom">
+                <div
+                    className="relative h-[600px] rounded-3xl overflow-hidden shadow-2xl group cursor-grab active:cursor-grabbing"
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
+                    {/* Slides */}
+                    {slides.map((slide, index) => (
+                        <div
+                            key={index}
+                            className={`absolute inset-0 transition-all duration-1000 ease-in-out transform ${index === currentIndex
+                                ? "opacity-100 translate-x-0"
+                                : index < currentIndex
+                                    ? "opacity-0 -translate-x-full"
+                                    : "opacity-0 translate-x-full"
+                                }`}
+                        >
+                            <div className={`w-full h-full ${slide.bgColor} flex items-center relative`}>
+                                {/* Background Decorations */}
+                                <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.4),transparent_70%)]"></div>
+                                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                                    style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
+
+                                {/* Content */}
+                                <div className={`relative z-10 pl-[320px] pr-20 max-w-5xl transition-all duration-700 delay-300 ${index === currentIndex ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
+                                    <h4 className="text-secondary font-bold text-xl mb-4 tracking-wider uppercase">{slide.tag}</h4>
+                                    <h1 className="text-8xl font-black text-primary leading-tight mb-8">
+                                        {slide.title.split(' ')[0]} <span className="block">{slide.title.split(' ').slice(1).join(' ')}</span>
+                                        <span className={`text-primary/70 text-4xl block mt-4 underline ${slide.accentColor} decoration-4 underline-offset-8`}>
+                                            {slide.subtitle}
+                                        </span>
+                                    </h1>
+                                    <p className="text-text-muted mb-10 text-lg max-w-lg leading-relaxed">
+                                        {slide.description}
+                                    </p>
+                                    <button className="bg-accent text-white px-12 py-5 rounded-full font-bold hover:bg-blue-700 transition-all shadow-xl hover:shadow-accent/40 text-xl transform hover:-translate-y-1">
+                                        Shop Now
+                                    </button>
                                 </div>
-                                {(idx < 2) && <ChevronRight size={14} className="text-gray-400" />}
-                            </li>
+
+                                {/* Image */}
+                                <div className={`absolute right-0 bottom-0 top-0 w-1/2 flex items-center justify-end pr-20 py-20 transition-all duration-1000 delay-100 ${index === currentIndex ? "translate-x-0 opacity-100" : "translate-x-20 opacity-0"}`}>
+                                    <div className="relative w-[85%] h-[85%] transition-transform duration-700 hover:scale-105">
+                                        <Image
+                                            src={slide.image}
+                                            alt={slide.subtitle}
+                                            fill
+                                            style={{ objectFit: 'contain' }}
+                                            priority={index === 0}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    {/* Navigation Arrows */}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); prevSlide(); }}
+                        className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-md p-4 rounded-full text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-auto"
+                    >
+                        <ChevronLeft size={30} />
+                    </button>
+                    <button
+                        onClick={(e) => { e.stopPropagation(); nextSlide(); }}
+                        className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-md p-4 rounded-full text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-auto"
+                    >
+                        <ChevronRight size={30} />
+                    </button>
+
+                    {/* Dots / Pagination */}
+                    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-4 z-20">
+                        {slides.map((_, index) => (
+                            <div
+                                key={index}
+                                onClick={(e) => { e.stopPropagation(); setCurrentIndex(index); }}
+                                className={`h-2 transition-all duration-300 rounded-full cursor-pointer ${index === currentIndex ? "w-12 bg-accent" : "w-4 bg-gray-400/50 hover:bg-gray-400"
+                                    }`}
+                            ></div>
                         ))}
-                    </ul>
-                </div>
-
-                {/* Main Hero Slider */}
-                <div className="col-span-6 relative bg-blue-50 rounded-lg overflow-hidden min-h-[500px] flex items-center group">
-                    <div className="absolute inset-0 z-0">
-                        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_50%,#cbdcfc,transparent_60%)]"></div>
-                        <Image src="/hero.png" alt="Headphone Model" fill style={{ objectFit: 'contain', objectPosition: 'right' }} className="mt-10" />
                     </div>
-
-                    <div className="relative z-10 px-12 max-w-md">
-                        <h4 className="text-primary font-bold text-lg mb-4">Top Monthly Seller</h4>
-                        <h1 className="text-5xl font-black text-primary leading-tight mb-6">
-                            Top Headphone <br />
-                            <span className="text-primary opacity-80">HAVIT HV-H2178D 3.5</span>
-                        </h1>
-                        <p className="text-text-muted mb-8 line-clamp-2">
-                            Lorem ipsum dolor sit amet consectetur. Ullamcorper enim sed morbi.
-                        </p>
-                        <button className="bg-accent text-white px-8 py-4 rounded-full font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-accent/40">
-                            Shop Now
-                        </button>
-                    </div>
-
-                    {/* Dots Indicator */}
-                    <div className="absolute bottom-8 left-12 flex gap-2">
-                        <div className="w-8 h-1 bg-accent rounded-full"></div>
-                        <div className="w-8 h-1 bg-gray-300 rounded-full"></div>
-                        <div className="w-8 h-1 bg-gray-300 rounded-full"></div>
-                    </div>
-                </div>
-
-                {/* Right Banners */}
-                <div className="col-span-3 flex flex-col gap-6">
-                    <BannerCard
-                        title="PS4 DualShock 4"
-                        price="From $999"
-                        tag="BIG SAVING"
-                        img="/hero.png" // Using hero image as placeholder for more
-                    />
-                    <BannerCard
-                        title="Homepod Mini"
-                        price="From $999"
-                        tag="NEW ARRIVAL"
-                        img="/logo.png"
-                    />
-                    <BannerCard
-                        title="Apple Ipad air 9"
-                        price="From $999"
-                        tag="15% OFF"
-                        img="/laptop.png"
-                    />
                 </div>
             </div>
         </section>
-    );
-}
-
-function BannerCard({ title, price, tag, img }: { title: string, price: string, tag: string, img: string }) {
-    return (
-        <div className="flex-1 bg-white border border-gray-100 rounded-lg p-5 flex justify-between items-center relative overflow-hidden group shadow-sm hover:shadow-md transition-shadow">
-            <div className="relative z-10 max-w-[50%]">
-                <span className="text-[10px] font-bold text-accent uppercase">{tag}</span>
-                <h3 className="text-base font-bold text-primary mt-1 mb-1">{title}</h3>
-                <p className="text-xs text-text-muted mb-4">{price}</p>
-                <button className="bg-accent text-white text-[10px] px-3 py-1.5 rounded-full font-bold">Shop Now</button>
-            </div>
-            <div className="absolute right-0 bottom-0 w-1/2 h-4/5">
-                <Image src={img} alt={title} fill style={{ objectFit: 'contain' }} className="group-hover:scale-110 transition-transform duration-500" />
-            </div>
-        </div>
     );
 }

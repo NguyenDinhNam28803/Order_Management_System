@@ -50,7 +50,7 @@ export default function Header() {
           </div>
 
           {/* Search Bar */}
-          <div className="flex-grow max-w-4xl">
+          <div className="flex-grow max-w-6xl">
             <div className="flex items-center bg-white rounded-full overflow-hidden h-[50px]">
               <div className="px-6 flex items-center gap-2 cursor-pointer bg-white text-primary whitespace-nowrap">
                 <span className="text-sm font-bold">Categories</span>
