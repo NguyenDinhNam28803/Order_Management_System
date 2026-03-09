@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { InvoiceModuleService } from './invoice-module.service';
 import { CreateInvoiceModuleDto } from './dto/create-invoice-module.dto';
@@ -24,13 +25,13 @@ export class InvoiceModuleController {
   }
 
   @Get()
-  findAll() {
-    return this.invoiceModuleService.findAll();
+  findAll(@Request() req: any) {
+    return this.invoiceModuleService.findAll(req.user.orgId);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.invoiceModuleService.findOne(+id);
+    return this.invoiceModuleService.findOne(id);
   }
 
   @Patch(':id')
@@ -38,11 +39,11 @@ export class InvoiceModuleController {
     @Param('id') id: string,
     @Body() updateInvoiceModuleDto: UpdateInvoiceModuleDto,
   ) {
-    return this.invoiceModuleService.update(+id, updateInvoiceModuleDto);
+    return this.invoiceModuleService.update(id, updateInvoiceModuleDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.invoiceModuleService.remove(+id);
+    return this.invoiceModuleService.remove(id);
   }
 }

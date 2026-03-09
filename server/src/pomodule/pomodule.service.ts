@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PoRepository } from './po.repository';
 import { CreatePoDto } from './dto/create-po.dto';
@@ -18,15 +22,16 @@ export class PomoduleService {
     if (deptId && costCenterId) {
       const budget = await this.prisma.budgetAllocation.findFirst({
         where: {
-          orgId,
-          deptId,
-          costCenterId,
+          orgId: orgId,
+          deptId: deptId,
+          costCenterId: costCenterId,
           currency: currency as CurrencyCode,
         },
       });
 
       if (budget) {
-        const availableAmount = Number(budget.allocatedAmount) - Number(budget.spentAmount);
+        const availableAmount =
+          Number(budget.allocatedAmount) - Number(budget.spentAmount);
         if (Number(totalAmount) > availableAmount) {
           throw new BadRequestException(
             `Vượt quá ngân sách! Còn lại: ${availableAmount} ${currency}. Yêu cầu: ${totalAmount}`,
@@ -48,7 +53,7 @@ export class PomoduleService {
     const po = await this.prisma.purchaseOrder.findUnique({ where: { id } });
     if (!po) throw new NotFoundException('PO not found');
 
-    return this.prisma.\$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx) => {
       // Nếu PO bị hủy, giải phóng ngân sách đã cam kết (Committed)
       if (status === PoStatus.CANCELLED && po.status !== PoStatus.CANCELLED) {
         if (po.deptId && po.costCenterId) {

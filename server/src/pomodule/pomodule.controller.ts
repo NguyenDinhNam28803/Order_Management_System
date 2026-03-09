@@ -22,13 +22,15 @@ export class PomoduleController {
   @Post()
   @ApiOperation({ summary: 'Create a new PO from a Quotation' })
   create(@Body() createPoDto: CreatePoDto, @Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.poService.create(createPoDto, req.user);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all POs for organization' })
   findAll(@Request() req: any) {
-    return this.poService.findAll(req.user);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.poService.findAll(req.user.orgId);
   }
 
   @Get(':id')

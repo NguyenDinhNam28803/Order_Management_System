@@ -1,13 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as pc from 'picocolors';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
   // --- Cấu hình Swagger chi tiết ---
   const config = new DocumentBuilder()
@@ -30,7 +29,7 @@ async function bootstrap() {
 
       ---
       *Hỗ trợ kỹ thuật: [admin@yourdomain.com](mailto:admin@yourdomain.com)*
-      *Môi trường: **${process.env.NODE_ENV ?? 'Development'}***
+      *Môi trường: **${configService.get<string>('NODE_ENV', 'development')}***
       `,
     )
     .setVersion('1.0')
@@ -64,24 +63,23 @@ async function bootstrap() {
     customSiteTitle: 'OMS API Documentation',
   });
 
-  const port = process.env.PORT ?? 3000;
+  const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
 
-  // --- Thông báo khởi động (Giữ nguyên phong cách cũ của bạn) ---
   console.log('\n' + pc.bold(pc.cyan('🚀 SERVER STARTING UP...')));
   console.log(pc.gray('------------------------------------------'));
   console.log(
-    `${pc.blue('🌍 Env        :')} ${pc.yellow(process.env.NODE_ENV ?? 'development')}`,
+    `${pc.blue('🌍 Env        :')} ${pc.yellow(configService.get<string>('NODE_ENV', 'development'))}`,
   );
   console.log(`${pc.magenta('📡 Port       :')} ${pc.green(port.toString())}`);
 
-  const dbStatus = process.env.DATABASE_URL
+  const dbStatus = configService.get<string>('DATABASE_URL')
     ? pc.green('✅ Connected')
     : pc.red('❌ Not Set');
   console.log(`${pc.cyan('🗄️  Database   :')} ${dbStatus}`);
 
-  const redisHost = process.env.REDIS_HOST ?? 'localhost';
-  const redisPass = process.env.REDIS_PASSWORD
+  const redisHost = configService.get<string>('REDIS_HOST', 'localhost');
+  const redisPass = configService.get<string>('REDIS_PASSWORD')
     ? pc.green('🔒 Set')
     : pc.yellow('🔓 Not Set');
   console.log(

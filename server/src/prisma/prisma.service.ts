@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
@@ -8,10 +9,10 @@ export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  constructor() {
+  constructor(private configService: ConfigService) {
     // 1. Khởi tạo Connection Pool từ thư viện 'pg'
     const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: configService.get<string>('DATABASE_URL'),
     });
 
     // 2. Khởi tạo Adapter cho Prisma 7.0

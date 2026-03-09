@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { InvoiceStatus } from '@prisma/client';
 
@@ -17,7 +21,9 @@ export class InvoiceModuleService {
       throw new BadRequestException('Hóa đơn này đã được thanh toán trước đó');
     }
 
-    return this.prisma.\$transaction(async (tx) => {
+    const { po, totalAmount } = invoice;
+
+    return this.prisma.$transaction(async (tx) => {
       // 1. Cập nhật trạng thái hóa đơn
       const updatedInvoice = await tx.supplierInvoice.update({
         where: { id },
@@ -28,13 +34,13 @@ export class InvoiceModuleService {
       });
 
       // 2. Chuyển ngân sách từ Committed sang Spent
-      if (invoice.po.deptId && invoice.po.costCenterId) {
+      if (po.deptId && po.costCenterId) {
         const budget = await tx.budgetAllocation.findFirst({
           where: {
-            orgId: invoice.po.orgId,
-            deptId: invoice.po.deptId,
-            costCenterId: invoice.po.costCenterId,
-            currency: invoice.po.currency,
+            orgId: po.orgId,
+            deptId: po.deptId,
+            costCenterId: po.costCenterId,
+            currency: po.currency,
           },
         });
 
@@ -42,14 +48,33 @@ export class InvoiceModuleService {
           await tx.budgetAllocation.update({
             where: { id: budget.id },
             data: {
-              committedAmount: { decrement: invoice.totalAmount },
-              spentAmount: { increment: invoice.totalAmount },
+              committedAmount: { decrement: totalAmount },
+              spentAmount: { increment: totalAmount },
             },
           });
         }
       }
 
       return updatedInvoice;
+    });
+  }
+
+  async create(createInvoiceDto: any) {
+    return this.prisma.supplierInvoice.create({
+      data: createInvoiceDto,
+    });
+  }
+
+  async update(id: string, updateInvoiceDto: any) {
+    return this.prisma.supplierInvoice.update({
+      where: { id },
+      data: updateInvoiceDto,
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.supplierInvoice.delete({
+      where: { id },
     });
   }
 

@@ -47,4 +47,28 @@ export class CreatePoDto {
   @IsString()
   @IsOptional()
   notes?: string;
+
+  @ApiProperty({ example: '325f187a-c1f6-4a4e-8692-234b6e50334e' })
+  @IsUUID('4')
+  @IsNotEmpty()
+  orgId: string;
+
+  @ApiPropertyOptional({ example: '325f187a-c1f6-4a4e-8692-234b6e50334f' })
+  @IsUUID('4')
+  @IsOptional()
+  deptId?: string;
+
+  @ApiPropertyOptional({ example: '325f187a-c1f6-4a4e-8692-234b6e503350' })
+  @IsUUID('4')
+  @IsOptional()
+  costCenterId?: string;
+
+  @ApiProperty({ example: 1000.5 })
+  @IsNotEmpty()
+  totalAmount: number;
+
+  @ApiProperty({ example: 'VND' })
+  @IsString()
+  @IsNotEmpty()
+  currency: string;
 }

@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { HashPasswordService } from '../hash-password/hash-password.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
@@ -26,6 +27,7 @@ export class AuthModuleRepository {
     private readonly prisma: PrismaService,
     private readonly hashPasswordService: HashPasswordService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -145,18 +147,22 @@ export class AuthModuleRepository {
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
-        secret: process.env.JWT_SECRET,
-        expiresIn: process.env.JWT_EXPIRES_IN
-          ? parseInt(process.env.JWT_EXPIRES_IN)
-          : '15m',
+        secret: this.configService.get<string>('JWT_SECRET'),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        expiresIn: this.configService.get<string>(
+          'JWT_EXPIRES_IN',
+          '1d',
+        ) as any,
       }),
       this.jwtService.signAsync(
         { sub: user.id },
         {
-          secret: process.env.JWT_REFRESH_SECRET,
-          expiresIn: process.env.JWT_REFRESH_EXPIRES_IN
-            ? parseInt(process.env.JWT_REFRESH_EXPIRES_IN)
-            : '7d',
+          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          expiresIn: this.configService.get<string>(
+            'JWT_REFRESH_EXPIRES_IN',
+            '7d',
+          ) as any,
         },
       ),
     ]);
@@ -173,7 +179,7 @@ export class AuthModuleRepository {
       console.log('Validating token:', token);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const decoded = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET,
+        secret: this.configService.get<string>('JWT_SECRET'),
       });
       console.log('Decoded token:', decoded);
       return decoded;
@@ -200,7 +206,7 @@ export class AuthModuleRepository {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const decoded = await this.jwtService.verifyAsync(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       });
       const user = await this.prisma.user.findUnique({
         where: { id: decoded.sub as string },

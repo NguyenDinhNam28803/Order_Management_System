@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -28,6 +30,31 @@ import { SystemConfigModuleModule } from './system-config-module/system-config-m
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET');
+        const expiresIn = configService.get<string>('JWT_EXPIRES_IN') || '15m'; // Lấy từ env hoặc mặc định 15m
+
+        if (!secret) {
+          throw new Error('JWT_SECRET is not defined in .env file');
+        }
+
+        return {
+          secret: secret,
+          signOptions: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            expiresIn: expiresIn as any, // Dùng 'as any' hoặc đảm bảo nó là string/number hợp lệ
+          },
+        };
+      },
+    }),
     PrismaModule,
     AuthModuleModule,
     UserModuleModule,
@@ -47,11 +74,13 @@ import { SystemConfigModuleModule } from './system-config-module/system-config-m
     ReportModuleModule,
     CacheModule.registerAsync({
       isGlobal: true,
-      useFactory: () => ({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
         store: redisStore,
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT || '6379', 10),
-        password: process.env.REDIS_PASSWORD || undefined,
+        host: configService.get<string>('REDIS_HOST', 'localhost'),
+        port: configService.get<number>('REDIS_PORT', 6379),
+        password: configService.get<string>('REDIS_PASSWORD'),
       }),
     }),
     ContractModuleModule,
