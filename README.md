@@ -1,105 +1,92 @@
-# 📦 Enterprise Order Management System (OMS)
+# 📦 Enterprise Hybrid Order Management System (OMS)
 
-Hệ thống Quản lý Đơn hàng và Thu mua (Procurement) cấp doanh nghiệp, được tích hợp kiểm soát ngân sách thời gian thực, phê duyệt đa cấp và phân tích báo giá bằng AI.
+Hệ thống Quản lý Đơn hàng, Thu mua (Procurement) và Thương mại điện tử (E-commerce) cấp doanh nghiệp. Tích hợp kiểm soát ngân sách thời gian thực, phê duyệt đa cấp và phân tích báo giá bằng AI.
 
 ---
 
 ## 🏗️ Kiến trúc Hệ thống (Technical Architecture)
 
-Dự án được xây dựng theo mô hình **Decoupled Architecture**:
-*   **Frontend:** Next.js (TypeScript) + Tailwind CSS (App Router).
-*   **Backend:** NestJS (Node.js Framework) - Modular Architecture.
-*   **Database:** PostgreSQL + Prisma ORM.
-*   **Infrastructure:** Tích hợp Redis (Caching), BullMQ (Queueing cho Notification), và Socket.io (Real-time updates).
+Dự án sử dụng các công nghệ tiên tiến nhất (2025/2026 stack):
+*   **Frontend:** [Next.js 16](https://nextjs.org/) (App Router, Server Components) + [Tailwind CSS v4](https://tailwindcss.com/) (High Performance Styling).
+*   **Backend:** [NestJS 11](https://nestjs.com/) (Modular Architecture, Microservices ready).
+*   **AI Service:** Tích hợp [Google Generative AI (Gemini)](https://ai.google.dev/) & [OpenAI](https://openai.com/) để phân tích báo giá và tối ưu hóa chuỗi cung ứng.
+*   **Database:** [PostgreSQL](https://www.postgresql.org/) + [Prisma ORM v7](https://www.prisma.io/) (Type-safe database access).
+*   **Caching & Queue:** [Redis](https://redis.io/) + [BullMQ](https://docs.bullmq.io/) cho xử lý nền và thông báo thời gian thực.
+*   **Real-time:** [Socket.io](https://socket.io/) cho cập nhật trạng thái đơn hàng tức thì.
 
 ---
 
-## 🚀 Quy trình Thu mua Chuyên sâu (Procurement Lifecycle)
+## 🌟 Tính năng Nổi bật (Core Features)
 
-Hệ thống mô phỏng quy trình ERP chuẩn quốc tế:
+### 1. Quy trình Thu mua Hybrid (B2B & B2C)
+*   **Storefront (e-Shopi):** Giao diện mua sắm hiện đại cho người dùng cuối với các mục Trending, Hot Arrivals và Special Products.
+*   **B2B Procurement:** Quy trình ERP chuyên sâu từ yêu cầu mua sắm (PR) đến thanh toán (Payment).
 
-1.  **Purchase Requisition (PR):**
-    *   Người dùng tạo yêu cầu mua sắm kèm mô tả kỹ thuật.
-    *   Hệ thống tự động xác định phòng ban và trung tâm chi phí (Cost Center).
-2.  **Multi-level Approval:**
-    *   Dựa trên **Approval Matrix**, yêu cầu được gửi đến cấp quản lý tương ứng (Trưởng phòng -> Giám đốc -> CEO) tùy theo giá trị đơn hàng.
-3.  **Sourcing & RFQ:**
-    *   Chuyển PR thành Yêu cầu báo giá (RFQ).
-    *   Mời các nhà cung cấp tham gia đấu thầu hoặc báo giá cạnh tranh.
-4.  **AI Quotation Analysis:**
-    *   Tự động so sánh giá, thời gian giao hàng (Lead time) và điểm uy tín (Trust Score) của nhà cung cấp.
-    *   Đề xuất lựa chọn nhà cung cấp tối ưu.
-5.  **Purchase Order (PO) & Budget Lock:**
-    *   Khởi tạo PO chính thức. 
-    *   **Critical Logic:** Hệ thống thực hiện "Lock" ngân sách (chuyển sang trạng thái `Committed`) để đảm bảo tính an toàn tài chính.
-6.  **Goods Receipt (GRN):**
-    *   Bộ phận kho xác nhận số lượng và chất lượng hàng nhận được.
-    *   Hỗ trợ chụp ảnh hiện trường và ghi nhận lỗi (Dispute) nếu có.
-7.  **Invoicing & 3-Way Matching:**
-    *   Tự động đối soát: **Số lượng đặt (PO) == Số lượng nhận (GRN) == Số lượng tính tiền (Invoice)**.
-    *   Nếu sai lệch vượt quá dung sai cho phép, hệ thống sẽ chặn thanh toán.
-8.  **Payment & Finalization:**
-    *   Thực hiện lệnh chi qua cổng thanh toán hoặc ký quỹ (Escrow).
-    *   Giải phóng ngân sách cam kết và ghi nhận chi phí thực tế (`Spent`).
+### 2. Trí tuệ Nhân tạo (AI Quotation Analysis)
+*   Tự động so sánh hàng loạt báo giá từ nhiều nhà cung cấp.
+*   Đánh giá dựa trên: Giá thành, Thời gian giao hàng (Lead time), và Điểm uy tín (Trust Score).
+*   Đề xuất nhà cung cấp tối ưu nhất bằng AI.
+
+### 3. Kiểm soát Tài chính Chặt chẽ
+*   **Budget Lock:** Tự động phong tỏa ngân sách (`Committed`) ngay khi Purchase Order được phê duyệt.
+*   **3-Way Matching:** Đối soát tự động giữa **PO (Đơn hàng) == GRN (Nhập kho) == Invoice (Hóa đơn)** để ngăn chặn thất thoát.
+*   **Audit Trail:** Lưu vết 100% các thay đổi nhạy cảm về giá và số lượng.
 
 ---
 
-## 💰 Cơ chế Quản lý Ngân sách (Advanced Budgeting)
+## 📂 Danh sách Module & Trách nhiệm (Backend Modules)
 
-Đây là "trái tim" của hệ thống tài chính:
-
-*   **Allocated (Ngân sách cấp):** Hạn mức được phê duyệt đầu năm cho từng Cost Center.
-*   **Committed (Tạm giữ):** Ngân sách bị "phong tỏa" ngay khi PO được duyệt. 
-    *   *Ví dụ:* Ngân sách còn 100tr, tạo PO 30tr -> Committed = 30tr, Available = 70tr.
-*   **Spent (Thực chi):** Chỉ ghi nhận khi tiền thực tế rời khỏi tài khoản công ty.
-*   **Release Logic:** Nếu PO bị hủy, số tiền `Committed` sẽ được hoàn trả lại `Available` ngay lập tức.
-
----
-
-## 📂 Danh sách Module & Trách nhiệm
-
-| Module | Mô tả |
+| Module | Trách nhiệm chính |
 | :--- | :--- |
-| `auth-module` | Quản lý định danh, JWT, MFA và phân quyền (Requester, Approver, Supplier, Admin). |
-| `prmodule` | Quản lý yêu cầu mua sắm và luồng phê duyệt nội bộ. |
-| `rfqmodule` | Quản lý đấu thầu, báo giá và so sánh nhà cung cấp bằng AI. |
-| `pomodule` | Quản lý đơn hàng, theo dõi giao hàng và kiểm soát ngân sách. |
-| `grnmodule` | Quản lý nhập kho, kiểm tra chất lượng (QC) và trả hàng (RTV). |
-| `invoice-module` | Đối soát hóa đơn 3 bước và quản lý thuế. |
-| `contract-module` | Quản lý hợp đồng khung, NDA và các mốc thanh toán theo giai đoạn. |
+| `auth-module` | Quản lý định danh (JWT), MFA và phân quyền (RBAC). |
+| `user-module` | Quản lý hồ sơ người dùng, thông tin tổ chức và Cost Center. |
+| `product-module` | Quản lý danh mục sản phẩm, tồn kho và thông tin kỹ thuật mặt hàng. |
+| `prmodule` | Quản lý Purchase Requisition và luồng phê duyệt nội bộ. |
+| `rfqmodule` | Quản lý Request for Quotation và đấu thầu nhà cung cấp. |
+| `ai-service` | Core AI xử lý logic phân tích báo giá và tối ưu hóa dữ liệu. |
+| `pomodule` | Quản lý Purchase Order, theo dõi lộ trình giao hàng và Budgeting logic. |
+| `grnmodule` | Quản lý Goods Receipt Note, kiểm tra chất lượng (QC) và nhập kho. |
+| `invoice-module` | Đối soát hóa đơn 3 bước (3-way match) và quản lý thuế. |
+| `payment-module` | Xử lý thanh toán, tích hợp cổng thanh toán và lịch sử giao dịch. |
 | `budget-module` | Thiết lập hạn mức chi tiêu theo phòng ban và năm tài chính. |
-| `audit-module` | Lưu vết 100% các thao tác nhạy cảm (Ghi log old_value/new_value). |
-| `dispute-module` | Xử lý khiếu nại giữa Người mua và Nhà cung cấp. |
-| `notification-module` | Gửi thông báo tự động qua Email/SMS/Push khi có sự kiện cần phê duyệt. |
+| `contract-module` | Quản lý hợp đồng khung, NDA và các điều khoản thanh toán. |
+| `supplier-kpimodule` | Theo dõi và đánh giá chỉ số hiệu suất (KPI) của nhà cung cấp. |
+| `approval-module` | Engine phê duyệt tập trung cho toàn bộ hệ thống (Workflow Engine). |
+| `audit-module` | Ghi log chi tiết các thao tác (Audit Logging). |
+| `notification-module` | Gửi thông báo đa kênh: Email, SMS (Twilio), và Socket.io. |
+| `admin-module` | Dashboard quản trị cao cấp và thiết lập hệ thống. |
+| `system-config-module` | Cấu hình tham số toàn cục (Thuế, Tiền tệ, SLA). |
 
 ---
 
-## 🛠️ Hướng dẫn Triển khai (Deployment Guide)
+## 🚀 Hướng dẫn Triển khai (Deployment Guide)
 
 ### 1. Yêu cầu Hệ thống
-*   Node.js v20+
-*   PostgreSQL v15+
-*   Redis (tùy chọn cho Caching)
+*   Node.js v22+
+*   Docker (để chạy PostgreSQL, Redis)
+*   Google Gemini API Key (cho tính năng AI)
 
-### 2. Cấu hình Biến môi trường (`server/.env`)
+### 2. Thiết lập Biến môi trường
+Tạo file `.env` trong thư mục `server/`:
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/oms_db?schema=public"
-JWT_SECRET="your_super_secret_key"
-EMAIL_HOST="smtp.gmail.com"
-EMAIL_USER="your-email@gmail.com"
-EMAIL_PASS="your-app-password"
+DATABASE_URL="postgresql://user:password@localhost:5432/oms_db"
+JWT_SECRET="your_secret"
+REDIS_HOST="localhost"
+REDIS_PORT=6379
+GEMINI_API_KEY="your_api_key"
 ```
 
-### 3. Cài đặt Backend
+### 3. Cài đặt & Chạy ứng dụng
+
+**Backend:**
 ```bash
 cd server
 npm install
-npx prisma generate
 npx prisma migrate dev
 npm run start:dev
 ```
 
-### 4. Cài đặt Frontend
+**Frontend:**
 ```bash
 cd client
 npm install
@@ -109,11 +96,11 @@ npm run dev
 ---
 
 ## 🛡️ Bảo mật & Tuân thủ
-*   **RBAC (Role-Based Access Control):** Kiểm soát truy cập chặt chẽ đến từng Endpoint API.
-*   **Data Integrity:** Sử dụng Database Transaction cho tất cả các nghiệp vụ liên quan đến Tiền và Ngân sách.
-*   **Audit Trail:** Mọi hành động xóa hoặc sửa dữ liệu quan trọng đều được ghi lại trong `AuditLog`.
+*   **Role-Based Access Control (RBAC):** Phân quyền chi tiết cho Requester, Approver, Buyer, Supplier, và Admin.
+*   **Data Integrity:** Sử dụng Database Transactions cho tất cả các nghiệp vụ tài chính.
+*   **Security:** Tích hợp Helmet, Rate Limiting, và CSRF Protection.
 
 ---
 
 ## 📧 Liên hệ & Hỗ trợ
-Nếu bạn gặp vấn đề trong quá trình cài đặt hoặc muốn tùy chỉnh logic nghiệp vụ, vui lòng liên hệ bộ phận kỹ thuật hoặc tạo Issue trên Git.
+Mọi thắc mắc vui lòng tạo Issue trên GitHub hoặc liên hệ qua email: `support@oms-enterprise.com`.

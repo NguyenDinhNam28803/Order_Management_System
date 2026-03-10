@@ -75,7 +75,7 @@ export class AiService implements OnModuleInit {
       const response = await this.client.models.generateContent({
         model: 'models/gemini-2.5-flash',
         contents:
-          'liệt kê 5 sản phẩm máy in văn phòng giá rẻ tốt nhất hiện nay, kèm theo mô tả ngắn gọn và giá tham khảo',
+          'tìm kiếm thông tin về các công ty sản xuất ô tô điện tại Việt Nam và xu hướng phát triển của họ trong 5 năm tới',
       });
       console.log('Response:', response.text);
       return response.text;
