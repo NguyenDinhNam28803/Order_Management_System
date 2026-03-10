@@ -78,6 +78,19 @@ export class ProductModuleController {
     return this.productService.findAllProducts();
   }
 
+  // // CÁC ROUTE CỐ ĐỊNH PHẢI ĐẶT TRƯỚC :id
+  // @Get('search/smart')
+  // @ApiOperation({ summary: 'Smart search products by text query' })
+  // async smartSearchProducts(@Query('query') query: string) {
+  //   return this.productService.smartSearchProducts(query);
+  // }
+
+  @Get('test-ai')
+  @ApiOperation({ summary: 'Test AI service connection' })
+  async testAI() {
+    return this.productService.responsetest();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a product by ID' })
   async findProductById(@Param('id') id: string) {
@@ -101,12 +114,5 @@ export class ProductModuleController {
   @UseGuards(JwtAuthGuard)
   async removeProduct(@Param('id') id: string) {
     return this.productService.removeProduct(id);
-  }
-
-  // --- Smart Search Endpoint ---
-  @Get('search/smart')
-  @ApiOperation({ summary: 'Smart search products by text query' })
-  async smartSearchProducts(@Body('query') query: string) {
-    return this.productService.smartSearchProducts(query);
   }
 }

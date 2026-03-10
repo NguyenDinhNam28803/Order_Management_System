@@ -74,8 +74,13 @@ export class ProductModuleService {
     return this.repository.removeProduct(id);
   }
 
-  // --- Smart Search Method ---
-  async smartSearchProducts(text: string) {
-    return this.repository.smartSearchProducts(text);
+  // // --- Smart Search Method ---
+  // async smartSearchProducts(text: string) {
+  //   return this.repository.smartSearchProducts(text);
+  // }
+
+  // --- AI Service Test Method ---
+  async responsetest() {
+    return this.repository.responsetest();
   }
 }
