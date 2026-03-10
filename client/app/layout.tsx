@@ -12,9 +12,8 @@ export const metadata: Metadata = {
   description: "Giải pháp ERP hiện đại cho quản lý mua sắm doanh nghiệp",
 };
 
-import Sidebar from "./components/Sidebar";
-
 import { ProcurementProvider } from "./context/ProcurementContext";
+import AppContent from "./components/AppContent";
 
 export default function RootLayout({
   children,
@@ -27,12 +26,9 @@ export default function RootLayout({
         className={`${inter.variable} antialiased bg-slate-50 text-slate-900 font-sans min-h-screen`}
       >
         <ProcurementProvider>
-          <div className="flex">
-            <Sidebar />
-            <div className="flex-1 ml-64 min-h-screen">
-              {children}
-            </div>
-          </div>
+          <AppContent>
+            {children}
+          </AppContent>
         </ProcurementProvider>
       </body>
     </html>

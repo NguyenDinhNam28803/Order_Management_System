@@ -163,28 +163,29 @@ export default function PRPage() {
 
                 <div className="space-y-8">
                     {/* --- Budget Guard --- */}
-                    <div className="erp-card bg-erp-navy !border-none text-white shadow-2xl shadow-erp-navy/20">
-                        <h4 className="text-[10px] font-black uppercase text-white/40 mb-6 tracking-widest">Kiểm soát Ngân sách</h4>
-                        <div className="space-y-4">
-                            <div className="flex justify-between text-xs font-bold">
-                                <span className="text-white/60">Khả dụng (CC-61000):</span>
-                                <span>{(budget.allocated - budget.committed - budget.spent).toLocaleString()} ₫</span>
+                    <div className="erp-card bg-white border-2 border-slate-100 shadow-2xl shadow-slate-200/50 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-erp-blue/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+                        <h4 className="text-[10px] font-black uppercase text-slate-400 mb-6 tracking-widest relative z-10">Kiểm soát Ngân sách</h4>
+                        <div className="space-y-4 relative z-10">
+                            <div className="flex justify-between text-xs font-bold text-slate-600">
+                                <span>Khả dụng (CC-61000):</span>
+                                <span className="font-mono text-erp-navy">{(budget.allocated - budget.committed - budget.spent).toLocaleString()} ₫</span>
                             </div>
-                            <div className="flex justify-between text-xs font-bold">
-                                <span className="text-white/60">Giá trị PR dự kiến:</span>
-                                <span className="text-erp-orange">- 210,000,000 ₫</span>
+                            <div className="flex justify-between text-xs font-bold text-slate-600">
+                                <span>Giá trị PR dự kiến:</span>
+                                <span className="font-mono text-erp-orange">- 210,000,000 ₫</span>
                             </div>
-                            <div className="pt-4 border-t border-white/10 flex justify-between items-end">
+                            <div className="pt-6 border-t border-slate-100 flex justify-between items-end">
                                 <div className="flex flex-col">
-                                    <span className="text-[9px] font-black uppercase text-emerald-400/50">Dự kiến còn lại</span>
-                                    <span className="text-lg font-black text-emerald-400 font-mono">{(budget.allocated - budget.committed - budget.spent - 210000000).toLocaleString()} ₫</span>
+                                    <span className="text-[9px] font-black uppercase text-slate-400 mb-1">Dự kiến còn lại</span>
+                                    <span className="text-2xl font-black text-erp-navy font-mono">{(budget.allocated - budget.committed - budget.spent - 210000000).toLocaleString()} ₫</span>
                                 </div>
-                                <div className="status-pill !bg-emerald-500/20 !text-emerald-400 !border-none !text-[9px]">An toàn</div>
+                                <div className="status-pill status-approved !bg-emerald-50 !text-emerald-600 !border-emerald-200">An toàn</div>
                             </div>
                         </div>
                         <button
                             onClick={handleSubmit}
-                            className="w-full mt-10 bg-white text-erp-navy py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-100 transition-all active:scale-95"
+                            className="w-full mt-10 btn-primary"
                         >
                             <Send size={16} /> Gửi phê duyệt
                         </button>

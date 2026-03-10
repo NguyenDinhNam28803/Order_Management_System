@@ -45,10 +45,14 @@ interface ProcurementContextType {
     };
     prs: PR[];
     pos: PO[];
+    currentUser: { name: string; role: string } | null;
     addPR: (pr: Omit<PR, "id" | "status" | "createdAt">) => void;
     approvePR: (id: string) => void;
     createPO: (prId: string, vendor: string, total: number) => void;
     payPO: (poId: string) => void;
+    login: (email: string) => void;
+    register: (name: string, email: string) => void;
+    logout: () => void;
 }
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
@@ -56,6 +60,7 @@ const ProcurementContext = createContext<ProcurementContextType | undefined>(und
 // --- Provider ---
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
+    const [currentUser, setCurrentUser] = useState<{ name: string; role: string } | null>(null);
     const [budget, setBudget] = useState({
         allocated: 1000000000,
         committed: 0,
@@ -77,6 +82,21 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     ]);
 
     const [pos, setPos] = useState<PO[]>([]);
+
+    const login = (email: string) => {
+        // Simulated login: any email works, just extracts the name
+        const name = email.split('@')[0];
+        setCurrentUser({ name: name.charAt(0).toUpperCase() + name.slice(1), role: "Admin" });
+    };
+
+    const register = (name: string, email: string) => {
+        // Simulated register
+        setCurrentUser({ name, role: "Admin" });
+    };
+
+    const logout = () => {
+        setCurrentUser(null);
+    };
 
     const addPR = (newPR: Omit<PR, "id" | "status" | "createdAt">) => {
         const id = `PR-2026-${(prs.length + 1).toString().padStart(3, "0")}`;
@@ -128,7 +148,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <ProcurementContext.Provider value={{ budget, prs, pos, addPR, approvePR, createPO, payPO }}>
+        <ProcurementContext.Provider value={{ budget, prs, pos, currentUser, addPR, approvePR, createPO, payPO, login, register, logout }}>
             {children}
         </ProcurementContext.Provider>
     );

@@ -2,11 +2,13 @@
 
 import React from "react";
 import {
-    Bell, Globe, Search, ChevronRight, Home,
-    HelpCircle, MoreVertical
+    Bell, Globe, Search, ChevronRight, Home, LogOut
 } from "lucide-react";
+import { useProcurement } from "../context/ProcurementContext";
 
 export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phải trả", "Đối soát 3 bên"] }) {
+    const { currentUser, logout } = useProcurement();
+
     return (
         <header className="fixed top-0 right-0 z-30 flex h-16 w-[calc(100%-16rem)] items-center justify-between border-b border-slate-200 bg-white/80 px-8 backdrop-blur-md">
             {/* Breadcrumbs */}
@@ -43,8 +45,12 @@ export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phả
                             3
                         </span>
                     </button>
-                    <button className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-erp-navy transition-colors">
-                        <HelpCircle size={18} />
+                    <button
+                        onClick={logout}
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-red-500 hover:bg-red-50 transition-all font-bold group"
+                        title="Đăng xuất"
+                    >
+                        <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                 </div>
 
@@ -52,13 +58,13 @@ export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phả
 
                 <div className="flex items-center gap-3">
                     <div className="text-right leading-none hidden sm:block">
-                        <div className="text-xs font-bold text-erp-navy">Nguyễn Tài Chính</div>
+                        <div className="text-xs font-bold text-erp-navy">{currentUser?.name || "Khách"}</div>
                         <div className="mt-1 flex justify-end">
-                            <span className="role-badge role-finance">Quản trị Tài chính</span>
+                            <span className="role-badge role-finance">{currentUser?.role || "Chưa định danh"}</span>
                         </div>
                     </div>
-                    <div className="h-9 w-9 rounded-lg bg-erp-navy text-white flex items-center justify-center font-bold text-xs ring-2 ring-erp-navy/10">
-                        NF
+                    <div className="h-9 w-9 rounded-lg bg-erp-navy text-white flex items-center justify-center font-bold text-xs ring-2 ring-erp-navy/10 uppercase">
+                        {currentUser?.name?.substring(0, 2) || "GU"}
                     </div>
                 </div>
             </div>
