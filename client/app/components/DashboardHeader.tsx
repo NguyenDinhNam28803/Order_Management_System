@@ -1,0 +1,67 @@
+"use client";
+
+import React from "react";
+import {
+    Bell, Globe, Search, ChevronRight, Home,
+    HelpCircle, MoreVertical
+} from "lucide-react";
+
+export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phải trả", "Đối soát 3 bên"] }) {
+    return (
+        <header className="fixed top-0 right-0 z-30 flex h-16 w-[calc(100%-16rem)] items-center justify-between border-b border-slate-200 bg-white/80 px-8 backdrop-blur-md">
+            {/* Breadcrumbs */}
+            <div className="flex items-center gap-2 text-xs font-medium">
+                <Home size={14} className="text-slate-400" />
+                {breadcrumbs.map((item, index) => (
+                    <React.Fragment key={item}>
+                        <ChevronRight size={14} className="text-slate-300" />
+                        <span className={index === breadcrumbs.length - 1 ? "text-erp-navy font-bold" : "text-slate-500"}>
+                            {item}
+                        </span>
+                    </React.Fragment>
+                ))}
+            </div>
+
+            {/* Tools & Profile */}
+            <div className="flex items-center gap-6">
+                <div className="relative hidden lg:block">
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm giao dịch..."
+                        className="h-9 w-64 rounded-lg border border-slate-200 bg-slate-50 pl-10 pr-4 text-xs font-medium outline-none focus:border-erp-blue focus:bg-white transition-all"
+                    />
+                </div>
+
+                <div className="flex items-center gap-1">
+                    <button className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-erp-navy transition-colors">
+                        <Globe size={18} />
+                    </button>
+                    <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-erp-navy transition-colors">
+                        <Bell size={18} />
+                        <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border-2 border-white text-[9px] font-bold text-white">
+                            3
+                        </span>
+                    </button>
+                    <button className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-erp-navy transition-colors">
+                        <HelpCircle size={18} />
+                    </button>
+                </div>
+
+                <div className="h-6 w-[1px] bg-slate-200"></div>
+
+                <div className="flex items-center gap-3">
+                    <div className="text-right leading-none hidden sm:block">
+                        <div className="text-xs font-bold text-erp-navy">Nguyễn Tài Chính</div>
+                        <div className="mt-1 flex justify-end">
+                            <span className="role-badge role-finance">Quản trị Tài chính</span>
+                        </div>
+                    </div>
+                    <div className="h-9 w-9 rounded-lg bg-erp-navy text-white flex items-center justify-center font-bold text-xs ring-2 ring-erp-navy/10">
+                        NF
+                    </div>
+                </div>
+            </div>
+        </header>
+    );
+}
