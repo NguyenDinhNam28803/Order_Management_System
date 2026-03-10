@@ -181,7 +181,6 @@ export class AuthModuleRepository {
       const decoded = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
-      console.log('Decoded token:', decoded);
       return decoded;
     } catch (error: unknown) {
       if (
