@@ -1,25 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { OpenAI } from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Dịch vụ AI để tương tác với OpenAI API, lấy embedding cho văn bản
 @Injectable()
-export class AiServiceService {
-  private openai: OpenAI;
+export class AiService {
+  private genAI: GoogleGenerativeAI;
+
   constructor(private configService: ConfigService) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    this.openai = new OpenAI({
-      apiKey: this.configService.get<string>('OPENAI_API_KEY'), // Đã lấy từ OpenAI
-    });
+    // Khởi tạo Gemini với API Key từ .env
+    const apiKey = this.configService.get<string>('GEMINI_API_KEY');
+    if (apiKey == undefined) {
+      throw new Error('GEMINI_API_KEY is not defined in environment variables');
+    }
+    this.genAI = new GoogleGenerativeAI(
+      this.configService.get<string>('GEMINI_API_KEY')!,
+    );
   }
 
-  // Hàm lấy embedding từ OpenAI
   async getEmbedding(text: string): Promise<number[]> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const response = await this.openai.embeddings.create({
-      model: 'text-embedding-3-small',
-      input: text,
+    const model = this.genAI.getGenerativeModel({
+      model: 'text-embedding-004',
     });
-    return response.data[0].embedding;
+
+    const result = await model.embedContent(text);
+    const embedding = result.embedding;
+
+    return embedding.values; // Trả về mảng number[] (thường là 768 chiều cho Gemini)
   }
 }

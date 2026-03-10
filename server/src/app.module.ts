@@ -27,7 +27,7 @@ import { ContractModuleModule } from './contract-module/contract-module.module';
 import { BudgetModuleModule } from './budget-module/budget-module.module';
 import { AuditModuleModule } from './audit-module/audit-module.module';
 import { SystemConfigModuleModule } from './system-config-module/system-config-module.module';
-import { AiServiceService } from './ai-service/ai-service.service';
+import { AiServiceModule } from './ai-service/ai-service.module';
 
 @Module({
   imports: [
@@ -88,8 +88,9 @@ import { AiServiceService } from './ai-service/ai-service.service';
     BudgetModuleModule,
     AuditModuleModule,
     SystemConfigModuleModule,
+    AiServiceModule,
   ],
   controllers: [AppController],
-  providers: [AppService, HashPasswordService, AiServiceService],
+  providers: [AppService, HashPasswordService],
 })
 export class AppModule {}

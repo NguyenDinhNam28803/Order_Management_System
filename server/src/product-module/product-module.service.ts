@@ -73,4 +73,9 @@ export class ProductModuleService {
     await this.findProductById(id);
     return this.repository.removeProduct(id);
   }
+
+  // --- Smart Search Method ---
+  async smartSearchProducts(text: string) {
+    return this.repository.smartSearchProducts(text);
+  }
 }

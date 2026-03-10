@@ -5,10 +5,14 @@ import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product, ProductCategory } from '@prisma/client';
+import { AiService } from '../ai-service/ai-service.service';
 
 @Injectable()
 export class ProductModuleRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly aiService: AiService,
+  ) {}
 
   // --- Product Category Methods ---
 
@@ -77,5 +81,20 @@ export class ProductModuleRepository {
     return this.prisma.product.delete({
       where: { id },
     });
+  }
+
+  async smartSearchProducts(text: string) {
+    const queryVector = await this.aiService.getEmbedding(text);
+
+    const results = await this.prisma.$queryRaw`
+    SELECT id, name, description,
+           (1 - (embedding <=> ${queryVector}::vector)) AS similarity
+    FROM "Product"
+    WHERE embedding IS NOT NULL
+    ORDER BY embedding <=> ${queryVector}::vector ASC
+    LIMIT 5;
+  `;
+
+    return results;
   }
 }

@@ -102,4 +102,11 @@ export class ProductModuleController {
   async removeProduct(@Param('id') id: string) {
     return this.productService.removeProduct(id);
   }
+
+  // --- Smart Search Endpoint ---
+  @Get('search/smart')
+  @ApiOperation({ summary: 'Smart search products by text query' })
+  async smartSearchProducts(@Body('query') query: string) {
+    return this.productService.smartSearchProducts(query);
+  }
 }
