@@ -28,6 +28,8 @@ import { BudgetModuleModule } from './budget-module/budget-module.module';
 import { AuditModuleModule } from './audit-module/audit-module.module';
 import { SystemConfigModuleModule } from './system-config-module/system-config-module.module';
 import { AiServiceModule } from './ai-service/ai-service.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -35,6 +37,12 @@ import { AiServiceModule } from './ai-service/ai-service.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // 1 phút
+        limit: 10, // Tối đa 10 request/phút cho mỗi IP (mặc định)
+      },
+    ]),
     JwtModule.registerAsync({
       global: true,
       imports: [ConfigModule],
@@ -91,6 +99,13 @@ import { AiServiceModule } from './ai-service/ai-service.module';
     AiServiceModule,
   ],
   controllers: [AppController],
-  providers: [AppService, HashPasswordService],
+  providers: [
+    AppService,
+    HashPasswordService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

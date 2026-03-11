@@ -3,10 +3,22 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as pc from 'picocolors';
+import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  // --- Global Security & Validation ---
+  app.use(helmet());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Loại bỏ các field không có trong DTO
+      transform: true, // Tự động chuyển đổi kiểu dữ liệu
+      forbidNonWhitelisted: true, // Báo lỗi nếu gửi field thừa
+    }),
+  );
 
   // --- Cấu hình Swagger chi tiết ---
   const config = new DocumentBuilder()

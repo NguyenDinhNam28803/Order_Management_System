@@ -7,6 +7,7 @@ import {
   IsString,
   IsUUID,
   MinLength,
+  Matches,
 } from 'class-validator';
 import { UserRole } from '@prisma/client';
 
@@ -45,10 +46,17 @@ export class RegisterDto {
   @IsOptional()
   phone?: string;
 
-  @ApiProperty({ example: 'password123', description: 'Mật khẩu' })
+  @ApiProperty({
+    example: 'Password@123',
+    description: 'Mật khẩu mạnh (Hoa, thường, số, ký tự đặc biệt)',
+  })
   @IsString()
   @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
-  @MinLength(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' })
+  @MinLength(8, { message: 'Mật khẩu phải có ít nhất 8 ký tự' })
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message:
+      'Mật khẩu quá yếu (cần có chữ hoa, chữ thường, số và ký tự đặc biệt)',
+  })
   password: string;
 
   @ApiProperty({

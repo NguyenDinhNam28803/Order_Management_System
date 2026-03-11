@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   ConflictException,
   InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -11,6 +12,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User, UserRole } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 export interface AuthTokens {
   accessToken: string;
@@ -18,7 +20,7 @@ export interface AuthTokens {
 }
 
 export interface AuthResponse extends AuthTokens {
-  user: Omit<User, 'passwordHash'>;
+  user: Omit<User, 'passwordHash' | 'hashedRefreshToken'>;
 }
 
 @Injectable()
@@ -36,6 +38,7 @@ export class AuthModuleRepository {
    * 2. Kiểm tra mật khẩu (so sánh mã băm).
    * 3. Kiểm tra trạng thái tài khoản (isActive).
    * 4. Tạo bộ token xác thực (Access & Refresh Token).
+   * 5. Lưu hash của Refresh Token vào database.
    */
   async login(loginDto: LoginDto): Promise<AuthResponse> {
     const { email, password } = loginDto;
@@ -62,8 +65,10 @@ export class AuthModuleRepository {
     }
 
     const tokens = await this.generateToken(user);
+    await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { passwordHash, ...userInfo } = user;
+    const { passwordHash, hashedRefreshToken, ...userInfo } = user;
     return {
       user: userInfo,
       ...tokens,
@@ -74,14 +79,12 @@ export class AuthModuleRepository {
    * CHỨC NĂNG ĐĂNG KÝ:
    * 1. Kiểm tra email đã tồn tại hay chưa.
    * 2. Mã hóa mật khẩu người dùng.
-   * 3. Lưu thông tin người dùng mới vào database (mặc định isActive=true).
-   * 4. Xử lý lỗi trùng lặp dữ liệu từ Prisma (lỗi P2002).
-   * 5. Tự động trả về token sau khi tạo tài khoản thành công.
+   * 3. Lưu thông tin người dùng mới vào database.
+   * 4. Tạo token và lưu hash refresh token.
    */
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
     const { password, ...userData } = registerDto;
 
-    // Kiểm tra email tồn tại
     const existingUser = await this.prisma.user.findUnique({
       where: { email: userData.email },
     });
@@ -104,8 +107,10 @@ export class AuthModuleRepository {
       });
 
       const tokens = await this.generateToken(user);
+      await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
+
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { passwordHash: _, ...userInfo } = user;
+      const { passwordHash: _, hashedRefreshToken: __, ...userInfo } = user;
       return {
         user: userInfo,
         ...tokens,
@@ -126,11 +131,99 @@ export class AuthModuleRepository {
   }
 
   /**
-   * HÀM HỖ TRỢ TẠO TOKEN:
-   * 1. Tạo JWT Payload chứa thông tin ID, Email, Vai trò, Tổ chức.
-   * 2. Ký Access Token (hạn ngắn) và Refresh Token (hạn dài).
-   * 3. Đóng gói bộ token trả về.
+   * ĐĂNG XUẤT:
+   * Xóa hashedRefreshToken trong database.
    */
+  async logout(userId: string) {
+    await this.prisma.user.updateMany({
+      where: {
+        id: userId,
+        hashedRefreshToken: {
+          not: null,
+        },
+      },
+      data: {
+        hashedRefreshToken: null,
+      },
+    });
+    return { message: 'Đăng xuất thành công' };
+  }
+
+  /**
+   * REFRESH TOKEN:
+   * 1. Xác thực token gửi lên.
+   * 2. Tìm user.
+   * 3. So sánh token gửi lên với hash trong DB.
+   * 4. Nếu khớp -> Cấp phát token mới và cập nhật hash mới.
+   */
+  async refreshToken(refreshToken: string): Promise<AuthTokens> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const decoded = await this.jwtService.verifyAsync(refreshToken, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      });
+
+      const user = await this.prisma.user.findUnique({
+        where: { id: decoded.sub as string },
+      });
+
+      if (!user || !user.hashedRefreshToken) {
+        throw new ForbiddenException('Access Denied');
+      }
+
+      const refreshTokenMatches = await bcrypt.compare(
+        refreshToken,
+        user.hashedRefreshToken,
+      );
+
+      if (!refreshTokenMatches) {
+        throw new ForbiddenException('Access Denied');
+      }
+
+      const tokens = await this.generateToken(user);
+      await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
+
+      return tokens;
+    } catch (error: unknown) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'name' in error &&
+        error.name === 'TokenExpiredError'
+      ) {
+        throw new UnauthorizedException(
+          'Refresh Token đã hết hạn, vui lòng đăng nhập lại',
+        );
+      }
+      throw new ForbiddenException('Refresh Token không hợp lệ');
+    }
+  }
+
+  /**
+   * Validate Access Token
+   */
+  async validateToken(token: string): Promise<any> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const decoded = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
+      return decoded;
+    } catch (error: unknown) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'name' in error &&
+        error.name === 'TokenExpiredError'
+      ) {
+        throw new UnauthorizedException('Token đã hết hạn');
+      }
+      throw new UnauthorizedException('Token không hợp lệ');
+    }
+  }
+
+  // --- HELPERS ---
+
   private async generateToken(user: {
     id: string;
     email: string;
@@ -151,7 +244,7 @@ export class AuthModuleRepository {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         expiresIn: this.configService.get<string>(
           'JWT_EXPIRES_IN',
-          '1d',
+          '15m',
         ) as any,
       }),
       this.jwtService.signAsync(
@@ -173,59 +266,13 @@ export class AuthModuleRepository {
     };
   }
 
-  // Hàm hỗ trợ xác thực token (nếu cần thiết)
-  async validateToken(token: string): Promise<any> {
-    try {
-      console.log('Validating token:', token);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const decoded = await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get<string>('JWT_SECRET'),
-      });
-      return decoded;
-    } catch (error: unknown) {
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'name' in error &&
-        error.name === 'TokenExpiredError'
-      ) {
-        throw new UnauthorizedException('Token đã hết hạn');
-      }
-      throw new UnauthorizedException('Token không hợp lệ hoặc đã hết hạn');
-    }
-  }
-
-  /**
-   * Chức năng tạo lại Access Token bằng Refresh Token (nếu cần thiết):
-   * 1. Xác thực Refresh Token.
-   * 2. Tạo lại Access Token mới dựa trên thông tin người dùng.
-   * 3. Trả về Access Token mới cho client.
-   */
-  async refreshToken(refreshToken: string): Promise<AuthTokens> {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const decoded = await this.jwtService.verifyAsync(refreshToken, {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      });
-      const user = await this.prisma.user.findUnique({
-        where: { id: decoded.sub as string },
-      });
-      if (!user) {
-        throw new UnauthorizedException('Người dùng không tồn tại');
-      }
-      return this.generateToken(user);
-    } catch (error: unknown) {
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'name' in error &&
-        error.name === 'TokenExpiredError'
-      ) {
-        throw new UnauthorizedException('Refresh Token đã hết hạn');
-      }
-      throw new UnauthorizedException(
-        'Refresh Token không hợp lệ hoặc đã hết hạn',
-      );
-    }
+  private async updateRefreshTokenHash(userId: string, refreshToken: string) {
+    const hash = await bcrypt.hash(refreshToken, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        hashedRefreshToken: hash,
+      },
+    });
   }
 }

@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
   moduleFormat    = "commonjs"
   previewFeatures = ["postgresqlExtensions"]
 }
@@ -409,6 +408,7 @@ model User {
   isVerified   Boolean   @default(false) @map("is_verified")
   lastLoginAt  DateTime? @map("last_login_at") @db.Timestamptz
   passwordHash String?   @map("password_hash") @db.VarChar(255)
+  hashedRefreshToken String? @map("hashed_refresh_token") @db.VarChar(255)
   mfaSecret    String?   @map("mfa_secret") @db.VarChar(100)
   mfaEnabled   Boolean   @default(false) @map("mfa_enabled")
   kycStatus    KycStatus @default(PENDING) @map("kyc_status")

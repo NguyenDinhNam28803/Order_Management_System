@@ -23,7 +23,7 @@ export class AuthModuleService {
     return this.authModuleRepository.validateToken(token);
   }
 
-  logout() {
-    return { message: 'Đã đăng xuất thành công' };
+  logout(userId: string) {
+    return this.authModuleRepository.logout(userId);
   }
 }
