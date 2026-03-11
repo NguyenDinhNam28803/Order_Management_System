@@ -1,9 +1,10 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { CreateUserModuleDto } from './dto/create-user-module.dto';
 import { UpdateUserModuleDto } from './dto/update-user-module.dto';
 import { UserRepository } from './user.repository';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+
 @Injectable()
 export class UserModuleService {
   constructor(
@@ -11,39 +12,83 @@ export class UserModuleService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  create(createUserModuleDto: CreateUserModuleDto) {
-    return `This action adds a new userModule: ${JSON.stringify(createUserModuleDto)}`;
+  async create(createUserModuleDto: CreateUserModuleDto) {
+    const user = await this.userRepository.create(createUserModuleDto);
+    await this.cacheManager.del('user:all');
+    return user;
   }
 
-  findAll() {
-    return `This action returns all userModule`;
+  async findAll() {
+    const cacheKey = 'user:all';
+    const cachedData = await this.cacheManager.get<any[]>(cacheKey);
+    if (cachedData) {
+      console.log('--- Trả về dữ liệu từ REDIS (All Users) ---');
+      return cachedData;
+    }
+
+    console.log('--- Truy vấn dữ liệu từ database (All Users) ---');
+    const users = await this.userRepository.findAll();
+    await this.cacheManager.set(cacheKey, users);
+    return users;
   }
 
-  async findById(id: string) {
+  async findOne(id: string) {
     const cacheKey = `user:${id}`;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const cachedData = await this.cacheManager.get<any>(cacheKey);
     if (cachedData) {
-      console.log('--- Trả về dữ liệu từ REDIS ---');
+      console.log(`--- Trả về dữ liệu từ REDIS (User ${id}) ---`);
       return cachedData;
     }
-    console.log('--- Truy vấn dữ liệu từ database ---');
+
+    console.log(`--- Truy vấn dữ liệu từ database (User ${id}) ---`);
     const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    await this.cacheManager.set(cacheKey, user);
+    return user;
+  }
+
+  async findByEmail(email: string) {
+    const cacheKey = `user:email:${email}`;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const cachedData = await this.cacheManager.get<any>(cacheKey);
+    if (cachedData) {
+      console.log(`--- Trả về dữ liệu từ REDIS (Email ${email}) ---`);
+      return cachedData;
+    }
+
+    console.log(`--- Truy vấn dữ liệu từ database (Email ${email}) ---`);
+    const user = await this.userRepository.findByEmail(email);
     if (user) {
       await this.cacheManager.set(cacheKey, user);
+    }
+
+    return user;
+  }
+
+  async update(id: string, updateUserModuleDto: UpdateUserModuleDto) {
+    const user = await this.userRepository.update(id, updateUserModuleDto);
+    await this.cacheManager.del('user:all');
+    await this.cacheManager.del(`user:${id}`);
+    if (user.email) {
+      await this.cacheManager.del(`user:email:${user.email}`);
     }
     return user;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userModule`;
-  }
+  async remove(id: string) {
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
 
-  update(id: number, updateUserModuleDto: UpdateUserModuleDto) {
-    return `This action updates a #${id} userModule: ${JSON.stringify(updateUserModuleDto)}`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} userModule`;
+    await this.userRepository.delete(id);
+    await this.cacheManager.del('user:all');
+    await this.cacheManager.del(`user:${id}`);
+    await this.cacheManager.del(`user:email:${user.email}`);
+    return { message: 'User deleted successfully' };
   }
 }

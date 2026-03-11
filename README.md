@@ -34,6 +34,50 @@ Dự án sử dụng các công nghệ tiên tiến nhất (2025/2026 stack):
 
 ---
 
+## 🔄 Quy trình Nghiệp vụ Chi tiết (End-to-End Procurement Workflow)
+
+Hệ thống vận hành theo một luồng dữ liệu khép kín, được kiểm soát bởi AI và các quy tắc tài chính nghiêm ngặt:
+
+### Bước 1: Khởi tạo Yêu cầu mua sắm (Create PR)
+*   **Requester:** Tạo Yêu cầu mua sắm (Purchase Requisition - PR). 
+*   **Hệ thống:** Tự động kiểm tra ngân sách (`budget-module`). Nếu đủ ngân sách, PR được gửi đi phê duyệt nội bộ (Trưởng phòng/Giám đốc) qua `approval-module`.
+
+### Bước 2: AI Tìm kiếm & Phân tích Báo giá (AI Sourcing & RFQ)
+*   **Sourcing:** PR sau khi duyệt được chuyển thành RFQ. `ai-service` tự động quét danh sách nhà cung cấp trong hệ thống dựa trên ngành hàng và lịch sử uy tín để mời thầu.
+*   **Quotation:** Nhà cung cấp gửi báo giá (Quotation).
+*   **AI Analysis:** AI thực hiện so sánh chéo các báo giá, chấm điểm (Scoring) và đưa ra khuyến nghị: "Nên chọn Nhà cung cấp A vì giá tốt nhất và lịch sử giao hàng đúng hạn 98%".
+
+### Bước 3: Tạo PO & Phê duyệt Đa cấp (PO Approval Workflow)
+*   **Buyer:** Chốt báo giá và tạo Đơn mua hàng (Purchase Order - PO).
+*   **Multi-level Approval:** PO được đẩy qua luồng phê duyệt đa cấp (ví dụ: Quản lý trực tiếp -> Kế toán trưởng -> Giám đốc tài chính). 
+*   **Budget Lock:** Khi PO ở trạng thái `APPROVED`, ngân sách tương ứng sẽ bị phong tỏa (`Committed`).
+
+### Bước 4: Xác nhận Hàng hóa từ Nhà cung cấp (Supplier Confirmation)
+*   **Notification:** Hệ thống gửi báo giá đã chốt và PO đến Portal của Nhà cung cấp.
+*   **Confirmation:** Nhà cung cấp kiểm tra kho và xác nhận: "Đủ hàng và cam kết giao đúng ngày X". Trạng thái PO chuyển sang `ACKNOWLEDGED`.
+
+### Bước 5: Thiết lập Hợp đồng (Contract Management)
+*   **Generation:** Dựa trên các điều khoản PO và báo giá, hệ thống tạo Hợp đồng kinh tế (`contract-module`).
+*   **Terms:** Xác định các cột mốc thanh toán (Milestones), NDA và các điều khoản phạt vi phạm. Hợp đồng được ký số bởi cả hai bên.
+
+### Bước 6: Giao hàng & Kiểm kê (Shipping & GRN/QC)
+*   **Delivery:** Nhà cung cấp giao hàng kèm theo vận đơn điện tử.
+*   **GRN & QC:** Bộ phận kho tiếp nhận, tạo Phiếu nhập kho (Goods Receipt Note - GRN). Hệ thống kích hoạt quy trình kiểm tra chất lượng (QC). Chỉ những hàng hóa đạt chuẩn (`QC PASS`) mới được ghi nhận vào kho.
+
+### Bước 7: Đối soát 3 bước & Thanh toán (3-Way Match & Payment)
+*   **Matching:** Hệ thống thực hiện đối soát tự động: **PO (Đặt hàng) ↔ GRN (Thực nhận) ↔ Invoice (Yêu cầu thanh toán)**.
+*   **Payment:** Sau khi khớp dữ liệu, bộ phận Tài chính phê duyệt lệnh chi. Tiền được giải ngân qua `payment-module` (hoặc giải ngân từ tài khoản Escrow). Ngân sách chuyển sang trạng thái `Spent`.
+
+### Bước 8: AI Đánh giá Hiệu suất (AI Post-Purchase Evaluation)
+*   **KPI Scoring:** Sau khi hoàn tất giao dịch, `ai-service` tự động đánh giá nhà cung cấp dựa trên: Tốc độ giao hàng, Chất lượng hàng hóa (tỷ lệ lỗi QC) và Tính chính xác của hóa đơn. 
+*   **Trust Score Update:** Điểm uy tín của nhà cung cấp được cập nhật lại để phục vụ cho các lần mời thầu sau.
+
+### Bước 9: Xử lý Tranh chấp (Dispute Resolution - Nếu có)
+*   **Opening Dispute:** Nếu phát hiện hàng lỗi, thiếu hoặc sai giá trong quá trình GRN/Invoice, một vụ tranh chấp (`Dispute`) sẽ được mở.
+*   **Resolution:** `dispute-module` quản lý luồng trao đổi giữa Buyer và Supplier. Tiền thanh toán có thể bị phong tỏa (Hold) cho đến khi tranh chấp được giải quyết (Hoàn tiền hoặc Đổi trả).
+
+---
+
 ## 📂 Danh sách Module & Trách nhiệm (Backend Modules)
 
 | Module | Trách nhiệm chính |
@@ -52,6 +96,7 @@ Dự án sử dụng các công nghệ tiên tiến nhất (2025/2026 stack):
 | `contract-module` | Quản lý hợp đồng khung, NDA và các điều khoản thanh toán. |
 | `supplier-kpimodule` | Theo dõi và đánh giá chỉ số hiệu suất (KPI) của nhà cung cấp. |
 | `approval-module` | Engine phê duyệt tập trung cho toàn bộ hệ thống (Workflow Engine). |
+| `dispute-module` | Quản lý tranh chấp hàng hóa và khiếu nại thanh toán. |
 | `audit-module` | Ghi log chi tiết các thao tác (Audit Logging). |
 | `notification-module` | Gửi thông báo đa kênh: Email, SMS (Twilio), và Socket.io. |
 | `admin-module` | Dashboard quản trị cao cấp và thiết lập hệ thống. |
