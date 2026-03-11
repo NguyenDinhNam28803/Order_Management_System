@@ -5,7 +5,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ApiBearerAuth } from '@nestjs/swagger/dist/decorators/api-bearer.decorator';
 import { ValidateTokenDto } from './dto/validate-token.dto';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 interface RequestWithUser extends Request {
   user: { sub: string };
@@ -34,8 +34,13 @@ export class AuthModuleController {
   @Post('validate-token')
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
-  async validateToken(@Body() token: ValidateTokenDto) {
-    return await this.authModuleService.validateToken(token.token);
+  async validateToken(@Req() req: Request) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return { valid: false, message: 'No authorization header' };
+    }
+    const token = authHeader.split(' ')[1];
+    return await this.authModuleService.validateToken(token);
   }
 
   @Post('logout')
