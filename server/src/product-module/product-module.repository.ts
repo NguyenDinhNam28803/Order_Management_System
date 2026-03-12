@@ -30,7 +30,7 @@ export class ProductModuleRepository {
 
   async findAllCategories(): Promise<ProductCategory[]> {
     return this.prisma.productCategory.findMany({
-      include: { children: true },
+      include: { children: true, products: true },
     });
   }
 

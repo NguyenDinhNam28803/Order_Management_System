@@ -5,6 +5,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as pc from 'picocolors';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +21,10 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // Báo lỗi nếu gửi field thừa
     }),
   );
+
+  // --- Global Interceptors & Filters ---
+  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   // --- Cấu hình Swagger chi tiết ---
   const config = new DocumentBuilder()
