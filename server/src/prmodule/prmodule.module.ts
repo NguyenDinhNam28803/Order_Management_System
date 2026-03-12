@@ -4,9 +4,10 @@ import { PrmoduleController } from './prmodule.controller';
 import { PrRepository } from './pr.repository';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PrismaService } from '../prisma/prisma.service';
+import { ApprovalModuleModule } from '../approval-module/approval-module.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, ApprovalModuleModule],
   controllers: [PrmoduleController],
   providers: [PrmoduleService, PrRepository, PrismaService],
   exports: [PrmoduleService],

@@ -89,7 +89,7 @@ async function main() {
   });
 
   // 3. Create Cost Centers
-  const ccIT = await prisma.costCenter.upsert({
+  await prisma.costCenter.upsert({
     where: { orgId_code: { orgId: buyerOrg.id, code: 'CC_IT_OPS' } },
     update: {},
     create: {
@@ -353,6 +353,92 @@ async function main() {
       },
     },
   });
+
+  // 7. SEED APPROVAL MATRIX RULES
+  console.log('⚖️ Seeding Approval Matrix Rules...');
+
+  const approvalRules = [
+    // --- RULES FOR PURCHASE REQUISITION (PR) ---
+    {
+      orgId: buyerOrg.id,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      documentType: 'PURCHASE_REQUISITION' as any,
+      level: 1,
+      approverRole: UserRole.DEPT_APPROVER,
+      minTotalAmount: 0,
+      slaHours: 24,
+      autoEscalateHours: 48,
+    },
+    {
+      orgId: buyerOrg.id,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      documentType: 'PURCHASE_REQUISITION' as any,
+      level: 2,
+      approverRole: UserRole.DIRECTOR,
+      minTotalAmount: 100000000, // > 100,000,000 VND
+      slaHours: 48,
+      autoEscalateHours: 72,
+    },
+    {
+      orgId: buyerOrg.id,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      documentType: 'PURCHASE_REQUISITION' as any,
+      level: 3,
+      approverRole: UserRole.CEO,
+      minTotalAmount: 500000000, // > 500,000,000 VND
+      slaHours: 48,
+      autoEscalateHours: 96,
+    },
+
+    // --- RULES FOR PURCHASE ORDER (PO) ---
+    {
+      orgId: buyerOrg.id,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      documentType: 'PURCHASE_ORDER' as any,
+      level: 1,
+      approverRole: UserRole.PROCUREMENT,
+      minTotalAmount: 0,
+      slaHours: 24,
+      autoEscalateHours: 48,
+    },
+    {
+      orgId: buyerOrg.id,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      documentType: 'PURCHASE_ORDER' as any,
+      level: 2,
+      approverRole: UserRole.FINANCE,
+      minTotalAmount: 200000000, // > 200,000,000 VND
+      slaHours: 24,
+      autoEscalateHours: 48,
+    },
+    {
+      orgId: buyerOrg.id,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      documentType: 'PURCHASE_ORDER' as any,
+      level: 3,
+      approverRole: UserRole.CEO,
+      minTotalAmount: 1000000000, // > 1,000,000,000 VND
+      slaHours: 48,
+      autoEscalateHours: 96,
+    },
+  ];
+
+  // Xóa cũ thêm mới để đảm bảo dữ liệu chuẩn
+  await prisma.approvalMatrixRule.deleteMany({ where: { orgId: buyerOrg.id } });
+
+  for (const rule of approvalRules) {
+    await prisma.approvalMatrixRule.create({
+      data: {
+        ...rule,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+        createdById: createdBuyerUsers[UserRole.PLATFORM_ADMIN].id,
+      },
+    });
+  }
+
+  console.log(
+    `✅ Successfully seeded ${approvalRules.length} approval matrix rules.`,
+  );
 
   console.log('✨ Seeding finished successfully!');
 }

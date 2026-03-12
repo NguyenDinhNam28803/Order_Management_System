@@ -1,15 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePrDto } from './dto/create-pr.dto';
 import { PrRepository } from './pr.repository';
-import { PrStatus, PurchaseRequisition } from '@prisma/client';
+import { PrStatus, PurchaseRequisition, DocumentType } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { PrismaService } from '../prisma/prisma.service';
+import { ApprovalModuleService } from '../approval-module/approval-module.service';
 
 @Injectable()
 export class PrmoduleService {
   constructor(
     private readonly repository: PrRepository,
     private readonly prisma: PrismaService,
+    private readonly approvalService: ApprovalModuleService,
   ) {}
 
   async create(
@@ -61,12 +63,29 @@ export class PrmoduleService {
     if (!id) {
       throw new NotFoundException(`Purchase Requisition ID is required`);
     }
+
+    // 1. Tìm PR
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const pr = await this.findOne(id);
     if (pr.status !== PrStatus.DRAFT) {
       throw new Error('Only draft PRs can be submitted');
     }
-    return this.repository.updateStatus(id, PrStatus.PENDING_APPROVAL);
+
+    // 2. Kích hoạt luồng duyệt (Multi-level Approval)
+    await this.approvalService.initiateWorkflow({
+      docType: DocumentType.PURCHASE_REQUISITION,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      docId: pr.id,
+      totalAmount: Number(pr.totalEstimate),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      orgId: pr.orgId,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      requesterId: pr.requesterId,
+    });
+
+    // 3. Trạng thái PENDING_APPROVAL đã được cập nhật bên trong initiateWorkflow
+    // nhưng ta vẫn trả về PR mới nhất để đồng bộ UI
+    return this.findOne(id);
   }
 
   async findMyPrs(userId: string): Promise<PurchaseRequisition[]> {
