@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
-  IsDateString,
+  IsDate,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -9,6 +9,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 import { ContractStatus, CurrencyCode } from '@prisma/client';
 
 export class CreateContractDto {
@@ -43,14 +44,18 @@ export class CreateContractDto {
   currency?: CurrencyCode;
 
   @ApiPropertyOptional({ example: '2026-01-01' })
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsOptional()
-  startDate?: string;
+  startDate?: Date;
 
   @ApiPropertyOptional({ example: '2026-12-31' })
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsOptional()
-  endDate?: string;
+  endDate?: Date;
 
   @ApiPropertyOptional({ example: false, default: false })
   @IsBoolean()
@@ -109,9 +114,11 @@ export class UpdateContractDto {
   value?: number;
 
   @ApiPropertyOptional({ example: '2027-12-31' })
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsOptional()
-  endDate?: string;
+  endDate?: Date;
 
   @ApiPropertyOptional({ example: true })
   @IsBoolean()

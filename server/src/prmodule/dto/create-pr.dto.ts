@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
-  IsDateString,
+  IsDate,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -10,7 +10,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { CurrencyCode } from '@prisma/client';
 
 export class CreatePrItemDto {
@@ -77,9 +77,11 @@ export class CreatePrDto {
   justification?: string;
 
   @ApiPropertyOptional({ example: '2026-04-01' })
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsOptional()
-  requiredDate?: string;
+  requiredDate?: Date;
 
   @ApiPropertyOptional({
     example: 2,

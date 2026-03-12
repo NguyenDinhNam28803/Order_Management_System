@@ -1,13 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
-  IsDateString,
+  IsDate,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
 } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 
 export class CreateRfqDto {
   @ApiProperty({ example: '325f187a-c1f6-4a4e-8692-234b6e50334a' })
@@ -26,9 +27,11 @@ export class CreateRfqDto {
   description?: string;
 
   @ApiProperty({ example: '2026-03-20T10:00:00Z' })
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsNotEmpty()
-  deadline: string;
+  deadline: Date;
 
   @ApiPropertyOptional({ example: 3 })
   @IsNumber()

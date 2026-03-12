@@ -1,11 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsDateString,
+  IsDate,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
 } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 
 export class CreatePoDto {
   @ApiPropertyOptional({ example: '325f187a-c1f6-4a4e-8692-234b6e50334a' })
@@ -39,9 +40,11 @@ export class CreatePoDto {
   deliveryAddress?: string;
 
   @ApiProperty({ example: '2026-04-15' })
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsNotEmpty()
-  deliveryDate: string;
+  deliveryDate: Date;
 
   @ApiPropertyOptional({ example: 'Urgent order' })
   @IsString()

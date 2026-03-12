@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
-  IsDateString,
+  IsDate,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -9,6 +9,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 import { CurrencyCode } from '@prisma/client';
 
 export class CreateBudgetPeriodDto {
@@ -28,14 +29,18 @@ export class CreateBudgetPeriodDto {
   periodNumber?: number;
 
   @ApiProperty({ example: '2026-01-01' })
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsNotEmpty()
-  startDate: string;
+  startDate: Date;
 
   @ApiProperty({ example: '2026-12-31' })
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsNotEmpty()
-  endDate: string;
+  endDate: Date;
 
   @ApiPropertyOptional({ example: true, default: true })
   @IsBoolean()

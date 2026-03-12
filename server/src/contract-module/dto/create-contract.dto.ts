@@ -5,12 +5,12 @@ import {
   IsEnum,
   IsNumber,
   IsBoolean,
-  IsDateString,
+  IsDate,
   IsUUID,
   IsArray,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { ContractStatus, CurrencyCode } from '@prisma/client';
 
 class CreateContractMilestoneDto {
@@ -22,9 +22,11 @@ class CreateContractMilestoneDto {
   @IsOptional()
   description?: string;
 
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsNotEmpty()
-  dueDate: string;
+  dueDate: Date;
 
   @IsBoolean()
   @IsOptional()
@@ -64,13 +66,17 @@ export class CreateContractDto {
   @IsOptional()
   currency?: CurrencyCode;
 
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsOptional()
-  startDate?: string;
+  startDate?: Date;
 
-  @IsDateString()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Type(() => Date)
+  @IsDate()
   @IsOptional()
-  endDate?: string;
+  endDate?: Date;
 
   @IsBoolean()
   @IsOptional()
