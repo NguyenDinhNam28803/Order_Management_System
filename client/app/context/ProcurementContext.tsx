@@ -4,6 +4,17 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // --- Types ---
 
+export interface User {
+    id: string;
+    name: string;
+    email: string;
+    role: "Requester" | "Approver" | "Buyer" | "Receiver" | "Finance" | "Admin";
+    department: string;
+    status: "ONLINE" | "AWAY" | "OFFLINE";
+    icon: string;
+}
+
+
 export type Status = "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "COMMITTED" | "RECEIVED" | "PAID";
 
 export interface LineItem {
@@ -45,27 +56,39 @@ interface ProcurementContextType {
     };
     prs: PR[];
     pos: PO[];
-    currentUser: { name: string; role: string } | null;
+    currentUser: User | null;
+    users: User[];
     addPR: (pr: Omit<PR, "id" | "status" | "createdAt">) => void;
     approvePR: (id: string) => void;
     createPO: (prId: string, vendor: string, total: number) => void;
     payPO: (poId: string) => void;
-    login: (email: string) => void;
+    login: (email: string) => boolean;
     register: (name: string, email: string) => void;
     logout: () => void;
 }
+
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
 
 // --- Provider ---
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
-    const [currentUser, setCurrentUser] = useState<{ name: string; role: string } | null>(null);
+    const [mockUsers, setMockUsers] = useState<User[]>([
+        { id: "1", name: "Nguyễn Nhân Viên", email: "requester@erp.com", role: "Requester", department: "Sản xuất", status: "ONLINE", icon: "NV" },
+        { id: "2", name: "Trần Trưởng Phòng", email: "approver@erp.com", role: "Approver", department: "Kế hoạch", status: "ONLINE", icon: "TP" },
+        { id: "3", name: "Lê Thu Mua", email: "buyer@erp.com", role: "Buyer", department: "Thu mua", status: "AWAY", icon: "TM" },
+        { id: "4", name: "Phạm Kho Vận", email: "receiver@erp.com", role: "Receiver", department: "Kho hàng", status: "OFFLINE", icon: "KV" },
+        { id: "5", name: "Hoàng Kế Toán", email: "finance@erp.com", role: "Finance", department: "Tài chính", status: "ONLINE", icon: "KT" },
+        { id: "6", name: "Admin Hệ Thống", email: "admin@erp.com", role: "Admin", department: "IT", status: "ONLINE", icon: "AD" },
+    ]);
+
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [budget, setBudget] = useState({
         allocated: 1000000000,
         committed: 0,
         spent: 0,
     });
+
 
     const [prs, setPrs] = useState<PR[]>([
         {
@@ -78,21 +101,49 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             status: "APPROVED",
             total: 150000000,
             createdAt: "2026-03-01",
+        },
+        {
+            id: "PR-2026-002",
+            department: "Phòng Sản xuất",
+            costCenter: "CC-61000",
+            priority: "Normal",
+            reason: "Mua sắm máy móc thiết bị mới cho xưởng 2.",
+            items: [
+                { id: "1", description: "Máy may công nghiệp Juki", qty: 10, unit: "Cái", estimatedPrice: 15000000 },
+                { id: "2", description: "Bàn ủi hơi nước chuyên dụng", qty: 5, unit: "Cái", estimatedPrice: 12000000 }
+            ],
+            status: "PENDING",
+            total: 210000000,
+            createdAt: "2026-03-13",
         }
     ]);
+
 
     const [pos, setPos] = useState<PO[]>([]);
 
     const login = (email: string) => {
-        // Simulated login: any email works, just extracts the name
-        const name = email.split('@')[0];
-        setCurrentUser({ name: name.charAt(0).toUpperCase() + name.slice(1), role: "Admin" });
+        const user = mockUsers.find(u => u.email === email);
+        if (user) {
+            setCurrentUser(user);
+            return true;
+        }
+        return false;
     };
 
     const register = (name: string, email: string) => {
-        // Simulated register
-        setCurrentUser({ name, role: "Admin" });
+        const newUser: User = {
+            id: (mockUsers.length + 1).toString(),
+            name,
+            email,
+            role: "Requester",
+            department: "Default",
+            status: "ONLINE",
+            icon: name.substring(0, 2).toUpperCase()
+        };
+        setMockUsers(prev => [...prev, newUser]);
+        setCurrentUser(newUser);
     };
+
 
     const logout = () => {
         setCurrentUser(null);
@@ -148,10 +199,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <ProcurementContext.Provider value={{ budget, prs, pos, currentUser, addPR, approvePR, createPO, payPO, login, register, logout }}>
+        <ProcurementContext.Provider value={{ budget, prs, pos, currentUser, users: mockUsers, addPR, approvePR, createPO, payPO, login, register, logout }}>
             {children}
         </ProcurementContext.Provider>
     );
+
 }
 
 // --- Hook ---

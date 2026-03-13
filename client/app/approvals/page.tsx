@@ -73,17 +73,39 @@ export default function ApprovalsPage() {
                             <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy mb-6 flex items-center gap-2">
                                 <ShieldCheck size={18} /> Chi tiết phê duyệt
                             </h3>
-                            <div className="space-y-4 mb-8">
+                            <div className="space-y-4 mb-6">
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-slate-400 font-bold">Người yêu cầu:</span>
-                                    <span className="font-black text-erp-navy">Jonathan Doe</span>
+                                    <span className="text-slate-400 font-bold">Bộ phận:</span>
+                                    <span className="font-black text-erp-navy">{selectedPR.department}</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
                                     <span className="text-slate-400 font-bold">Ngày tạo:</span>
                                     <span className="font-black text-erp-navy">{selectedPR.createdAt}</span>
                                 </div>
-                                <div className="pt-4 border-t border-slate-50">
-                                    <p className="text-xs text-slate-600 italic">"{selectedPR.reason || 'Không có ghi chú'}"</p>
+                                <div className="py-3 border-t border-b border-slate-50">
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Lý do mua hàng</div>
+                                    <p className="text-xs text-erp-navy font-bold leading-relaxed">{selectedPR.reason || 'Không có ghi chú'}</p>
+                                </div>
+
+                                <div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Danh sách hàng hóa</div>
+                                    <div className="space-y-2">
+                                        {selectedPR.items.map((item: any, idx: number) => (
+                                            <div key={idx} className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                                <div className="flex justify-between items-start mb-1">
+                                                    <span className="text-xs font-black text-erp-navy">{item.description}</span>
+                                                    <span className="text-[10px] font-bold text-erp-blue">{item.qty} {item.unit}</span>
+                                                </div>
+                                                <div className="text-[10px] text-slate-500 font-mono">
+                                                    Đơn giá ước tính: {item.estimatedPrice.toLocaleString()} ₫
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-4 flex justify-between items-center p-3 bg-erp-navy rounded-xl text-white">
+                                        <span className="text-[10px] font-bold uppercase opacity-60">Tổng cộng</span>
+                                        <span className="text-sm font-black font-mono">{selectedPR.total.toLocaleString()} ₫</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -93,7 +115,7 @@ export default function ApprovalsPage() {
                                         approvePR(selectedPR.id);
                                         setSelectedPR(null);
                                     }}
-                                    className="w-full btn-primary bg-emerald-500 shadow-emerald-100 flex items-center justify-center gap-2"
+                                    className="w-full btn-primary bg-erp-navy shadow-erp-navy/20 flex items-center justify-center gap-2"
                                 >
                                     <CheckCircle2 size={18} /> Phê duyệt ngay
                                 </button>
@@ -101,6 +123,7 @@ export default function ApprovalsPage() {
                                     <XCircle size={18} /> Từ chối
                                 </button>
                             </div>
+
 
                             <div className="mt-8 h-px bg-slate-50"></div>
                             <div className="mt-6">

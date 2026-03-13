@@ -60,13 +60,22 @@ export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phả
                     <div className="text-right leading-none hidden sm:block">
                         <div className="text-xs font-bold text-erp-navy">{currentUser?.name || "Khách"}</div>
                         <div className="mt-1 flex justify-end">
-                            <span className="role-badge role-finance">{currentUser?.role || "Chưa định danh"}</span>
+                            <span className={`role-badge ${currentUser ? (
+                                currentUser.role === "Requester" ? "role-requester" :
+                                currentUser.role === "Approver" ? "role-approver" :
+                                currentUser.role === "Buyer" ? "role-procurement" :
+                                currentUser.role === "Receiver" ? "role-warehouse" :
+                                currentUser.role === "Finance" ? "role-finance" : "role-admin"
+                            ) : "role-finance"}`}>
+                                {currentUser?.role || "Chưa định danh"}
+                            </span>
                         </div>
                     </div>
                     <div className="h-9 w-9 rounded-lg bg-erp-navy text-white flex items-center justify-center font-bold text-xs ring-2 ring-erp-navy/10 uppercase">
-                        {currentUser?.name?.substring(0, 2) || "GU"}
+                        {currentUser?.icon || "GU"}
                     </div>
                 </div>
+
             </div>
         </header>
     );
