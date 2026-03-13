@@ -3,13 +3,11 @@
 import React from "react";
 import DashboardHeader from "../components/DashboardHeader";
 import { Users, UserPlus, Shield, Mail, Edit2, Trash2 } from "lucide-react";
+import { useProcurement } from "../context/ProcurementContext";
 
 export default function UsersPage() {
-    const users = [
-        { name: "Jonathan Doe", role: "Finance Admin", email: "jonathan@procurepro.com", status: "ONLINE", icon: "JD" },
-        { name: "Nguyen Finance", role: "Finance", email: "nguyen.f@procurepro.com", status: "AWAY", icon: "NF" },
-        { name: "Warehouse User 01", role: "Warehouse", email: "wh01@procurepro.com", status: "OFFLINE", icon: "W1" },
-    ];
+    const { users } = useProcurement();
+
 
     return (
         <main className="pt-16 px-8 pb-12">
