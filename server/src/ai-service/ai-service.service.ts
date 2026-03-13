@@ -31,6 +31,7 @@ export class AiService implements OnModuleInit {
    */
   async askAiAboutDatabase(userPrompt: string) {
     try {
+      // Hướng dẫn chi tiết cho AI về cách sử dụng công cụ và cấu trúc database
       const systemInstruction = `
         Bạn là một trợ lý AI chuyên về quản lý chuỗi cung ứng trong hệ thống Order Management System.
         Bạn có quyền truy cập vào database của hệ thống thông qua công cụ 'query_database'.
@@ -57,6 +58,7 @@ export class AiService implements OnModuleInit {
         5. Nếu không tìm thấy dữ liệu, hãy thông báo rõ ràng.
       `;
 
+      // Định nghĩa công cụ cho Function Calling
       const tools: any = [
         {
           functionDeclarations: [
@@ -106,6 +108,10 @@ export class AiService implements OnModuleInit {
       ];
 
       // Vòng lặp xử lý Function Calling
+      /**
+       * Vòng lặp này sẽ tiếp tục cho đến khi AI không còn yêu cầu gọi hàm nào nữa. Mỗi lần AI yêu cầu gọi hàm, chúng ta sẽ thực thi hàm đó, thêm kết quả vào lịch sử trò chuyện, và gửi lại toàn bộ lịch sử để AI có thể đưa ra câu trả lời cuối cùng dựa trên dữ liệu mới nhất.
+       * Điều này cho phép AI có thể thực hiện nhiều truy vấn liên tiếp nếu cần thiết để trả lời câu hỏi của người dùng một cách chính xác và đầy đủ nhất.
+       */
       while (
         response.candidates?.[0]?.content?.parts?.some(
           (part) => part.functionCall,
