@@ -1,17 +1,22 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI } from '@google/genai';
+
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AiService implements OnModuleInit {
   private client: GoogleGenAI;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private prisma: PrismaService,
+  ) {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY');
     if (!apiKey) {
       throw new Error('GEMINI_API_KEY is not defined in environment variables');
     }
-    // Khởi tạo client theo SDK mới @google/genai
     this.client = new GoogleGenAI({
       apiKey: apiKey,
     });
@@ -21,49 +26,189 @@ export class AiService implements OnModuleInit {
     await this.listModels();
   }
 
-  // async getEmbedding(text: string): Promise<number[]> {
-  //   if (!text || text.trim().length === 0) {
-  //     throw new Error('Text for embedding cannot be empty');
-  //   }
+  /**
+   * Phương thức chính để AI tương tác với database qua Prisma
+   */
+  async askAiAboutDatabase(userPrompt: string) {
+    try {
+      const systemInstruction = `
+        Bạn là một trợ lý AI chuyên về quản lý chuỗi cung ứng trong hệ thống Order Management System.
+        Bạn có quyền truy cập vào database của hệ thống thông qua công cụ 'query_database'.
 
-  //   try {
-  //     // Sử dụng cú pháp mới của @google/genai
-  //     const response = await this.client.models.embedContent({
-  //       model: 'text-embedding-004',
-  //       content: text,
-  //     });
+        Cấu trúc database (Prisma models):
+        - organization: Thông tin công ty, nhà cung cấp, khách hàng.
+        - user: Người dùng trong hệ thống.
+        - purchaseRequisition: Yêu cầu mua hàng (PR).
+        - purchaseOrder: Đơn mua hàng (PO).
+        - rfqRequest: Yêu cầu báo giá (RFQ).
+        - rfqQuotation: Báo giá từ nhà cung cấp.
+        - goodsReceipt: Phiếu nhập kho (GRN).
+        - supplierInvoice: Hóa đơn.
+        - payment: Thông tin thanh toán.
+        - product: Danh mục sản phẩm.
+        - department: Phòng ban.
+        - costCenter: Trung tâm chi phí.
 
-  //     // Kết quả trả về trong response.embeddings (mảng) hoặc response.embedding
-  //     return response.embeddings[0].values;
-  //   } catch (error) {
-  //     console.error('Error getting embedding with @google/genai:', error);
+        Quy tắc tương tác:
+        1. LUÔN LUÔN sử dụng công cụ 'query_database' khi người dùng hỏi về dữ liệu thực tế trong hệ thống.
+        2. Tên model trong 'query_database' phải viết đúng camelCase (ví dụ: 'purchaseOrder', 'rfqRequest').
+        3. Đối với 'findMany', bạn nên sử dụng 'take: 5' hoặc 'take: 10' để tránh quá tải dữ liệu.
+        4. Sau khi nhận được dữ liệu từ công cụ, hãy tổng hợp và trả lời người dùng một cách tự nhiên bằng tiếng Việt.
+        5. Nếu không tìm thấy dữ liệu, hãy thông báo rõ ràng.
+      `;
 
-  //     // Fallback sang model cũ nếu text-embedding-004 lỗi
-  //     try {
-  //       const fallbackResponse = await this.client.models.embedContent({
-  //         model: 'embedding-001',
-  //         content: text,
-  //       });
-  //       return fallbackResponse.embeddings[0].values;
-  //     } catch (fallbackError) {
-  //       throw fallbackError;
-  //     }
-  //   }
-  // }
+      const tools: any = [
+        {
+          functionDeclarations: [
+            {
+              name: 'query_database',
+              description: 'Truy vấn dữ liệu từ database thông qua Prisma.',
+              parameters: {
+                type: 'OBJECT',
+                properties: {
+                  modelName: {
+                    type: 'STRING',
+                    description:
+                      'Tên của model (ví dụ: organization, user, purchaseOrder).',
+                  },
+                  action: {
+                    type: 'STRING',
+                    description:
+                      'Hành động: findMany, findUnique, findFirst, count.',
+                  },
+                  queryArgs: {
+                    type: 'OBJECT',
+                    description:
+                      'Đối số Prisma (where, include, take, skip, orderBy).',
+                  },
+                },
+                required: ['modelName', 'action'],
+              },
+            },
+          ],
+        },
+      ];
+
+      // Request đầu tiên
+      let response = await this.client.models.generateContent({
+        model: 'gemini-2.5-flash',
+        config: {
+          systemInstruction: {
+            parts: [{ text: systemInstruction }],
+          },
+          tools: tools,
+        },
+        contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      });
+
+      const chatHistory: any[] = [
+        { role: 'user', parts: [{ text: userPrompt }] },
+      ];
+
+      // Vòng lặp xử lý Function Calling
+      while (
+        response.candidates?.[0]?.content?.parts?.some(
+          (part) => part.functionCall,
+        )
+      ) {
+        const parts = response.candidates[0].content.parts;
+        chatHistory.push({ role: 'model', parts: parts });
+
+        const functionResponses: any[] = [];
+
+        for (const part of parts) {
+          if (part.functionCall) {
+            const { name, args } = part.functionCall;
+            if (name === 'query_database') {
+              const { modelName, action, queryArgs } = args as any;
+              const data = await this.executePrismaQuery(
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                modelName,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                action,
+                queryArgs,
+              );
+              functionResponses.push({
+                functionResponse: {
+                  name: 'query_database',
+                  response: { content: data },
+                },
+              });
+            }
+          }
+        }
+
+        chatHistory.push({ role: 'function', parts: functionResponses });
+
+        // Gửi lại lịch sử kèm kết quả hàm
+        response = await this.client.models.generateContent({
+          model: 'gemini-2.5-flash',
+          config: {
+            systemInstruction: {
+              parts: [{ text: systemInstruction }],
+            },
+            tools: tools,
+          },
+          contents: chatHistory,
+        });
+      }
+
+      return response.text;
+    } catch (error) {
+      console.error('Error in askAiAboutDatabase:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Thực thi truy vấn Prisma một cách an toàn
+   */
+  private async executePrismaQuery(
+    modelName: string,
+    action: string,
+    queryArgs: any,
+  ) {
+    try {
+      if (!(modelName in this.prisma)) {
+        return { error: `Model '${modelName}' không tồn tại.` };
+      }
+
+      const model = this.prisma[modelName];
+      if (typeof model[action] !== 'function') {
+        return {
+          error: `Hành động '${action}' không hợp lệ cho ${modelName}.`,
+        };
+      }
+
+      // Giới hạn dữ liệu trả về
+      const args = queryArgs || {};
+      if (
+        (action === 'findMany' || action === 'findFirst') &&
+        (!args.take || args.take > 10)
+      ) {
+        args.take = 10;
+      }
+
+      console.log(
+        `AI Query: prisma.${modelName}.${action}(${JSON.stringify(args)})`,
+      );
+      const result = await model[action](args);
+
+      return JSON.parse(
+        JSON.stringify(result, (_, value) =>
+          typeof value === 'bigint' ? value.toString() : value,
+        ),
+      );
+    } catch (error) {
+      console.error('Prisma AI Query Error:', error);
+      return { error: error.message };
+    }
+  }
 
   async listModels() {
     try {
-      // console.log('--- Đang liệt kê các model khả dụng (@google/genai) ---');
-      // const {  } = await this.client.models.list();
-
-      // for (const m of models) {
-      //   console.log(`- Model Name: ${m.name}`);
-      //   // Log thêm thông tin nếu cần
-      // }
-      // return models;
       const response = await this.client.models.list();
-      console.log('--- Available models from @google/genai ---');
-      console.log(response);
+      return response;
     } catch (error) {
       console.error('Không thể lấy danh sách model:', error);
       return [];
@@ -71,17 +216,6 @@ export class AiService implements OnModuleInit {
   }
 
   async responsetest() {
-    try {
-      const response = await this.client.models.generateContent({
-        model: 'models/gemini-2.5-flash',
-        contents:
-          'tìm kiếm thông tin về các công ty sản xuất ô tô điện tại Việt Nam và xu hướng phát triển của họ trong 5 năm tới',
-      });
-      console.log('Response:', response.text);
-      return response.text;
-    } catch (error) {
-      console.error('Error generating content with Gemini 2.0 Flash:', error);
-      throw error;
-    }
+    return this.askAiAboutDatabase('Liệt kê 3 tổ chức đầu tiên');
   }
 }
