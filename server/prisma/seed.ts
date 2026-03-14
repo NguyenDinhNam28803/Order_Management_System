@@ -129,6 +129,12 @@ async function main() {
       deptId: financeDept.id,
     },
     {
+      email: 'david.director@gts.com',
+      fullName: 'David Director',
+      role: UserRole.DIRECTOR,
+      deptId: itDept.id,
+    },
+    {
       email: 'admin@gts.com',
       fullName: 'GTS Admin',
       role: UserRole.PLATFORM_ADMIN,
@@ -375,19 +381,9 @@ async function main() {
       documentType: 'PURCHASE_REQUISITION' as any,
       level: 2,
       approverRole: UserRole.DIRECTOR,
-      minTotalAmount: 100000000, // > 100,000,000 VND
+      minTotalAmount: 0, 
       slaHours: 48,
       autoEscalateHours: 72,
-    },
-    {
-      orgId: buyerOrg.id,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      documentType: 'PURCHASE_REQUISITION' as any,
-      level: 3,
-      approverRole: UserRole.CEO,
-      minTotalAmount: 500000000, // > 500,000,000 VND
-      slaHours: 48,
-      autoEscalateHours: 96,
     },
 
     // --- RULES FOR PURCHASE ORDER (PO) ---
