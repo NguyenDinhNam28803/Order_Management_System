@@ -381,7 +381,7 @@ async function main() {
       documentType: 'PURCHASE_REQUISITION' as any,
       level: 2,
       approverRole: UserRole.DIRECTOR,
-      minTotalAmount: 0, 
+      minTotalAmount: 0,
       slaHours: 48,
       autoEscalateHours: 72,
     },
@@ -426,7 +426,7 @@ async function main() {
     await prisma.approvalMatrixRule.create({
       data: {
         ...rule,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         createdById: createdBuyerUsers[UserRole.PLATFORM_ADMIN].id,
       },
     });
