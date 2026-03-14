@@ -1,10 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 
 import { PrismaService } from '../prisma/prisma.service';
 
+export interface AiDatabaseResponse<T = unknown> {
+  success: boolean;
+  summary: string;
+  data: T[];
+  total: number;
+  message?: string;
+}
 @Injectable()
 export class AiService implements OnModuleInit {
   private client: GoogleGenAI;
@@ -24,6 +31,7 @@ export class AiService implements OnModuleInit {
 
   async onModuleInit() {
     await this.listModels();
+    // await this.responsetest();
   }
 
   /**
@@ -56,6 +64,26 @@ export class AiService implements OnModuleInit {
         3. Đối với 'findMany', bạn nên sử dụng 'take: 5' hoặc 'take: 10' để tránh quá tải dữ liệu.
         4. Sau khi nhận được dữ liệu từ công cụ, hãy tổng hợp và trả lời người dùng một cách tự nhiên bằng tiếng Việt.
         5. Nếu không tìm thấy dữ liệu, hãy thông báo rõ ràng.
+
+        ===== ĐỊNH DẠNG ĐẦU RA BẮT BUỘC =====
+        Sau khi thu thập đủ dữ liệu, bạn PHẢI trả về JSON hợp lệ theo cấu trúc sau:
+        {
+          "success": true,
+          "summary": "Mô tả ngắn gọn kết quả bằng tiếng Việt",
+          "data": <mảng hoặc object dữ liệu thực tế từ database>,
+          "total": <số lượng bản ghi>,
+          "message": "Thông báo bổ sung nếu cần"
+        }
+
+        Nếu không tìm thấy dữ liệu:
+        {
+          "success": false,
+          "summary": "Lý do không tìm thấy",
+          "data": [],
+          "total": 0
+        }
+
+        TUYỆT ĐỐI không thêm markdown, không có \`\`\`json, chỉ JSON thuần túy.
       `;
 
       // Định nghĩa công cụ cho Function Calling
@@ -76,7 +104,7 @@ export class AiService implements OnModuleInit {
                   action: {
                     type: 'STRING',
                     description:
-                      'Hành động: findMany, findUnique, findFirst, count.',
+                      'Hành động: findMany, findUnique, findFirst, count, create, update, delete.',
                   },
                   queryArgs: {
                     type: 'OBJECT',
@@ -93,10 +121,13 @@ export class AiService implements OnModuleInit {
 
       // Request đầu tiên
       let response = await this.client.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.1-flash-lite-preview',
         config: {
           systemInstruction: {
             parts: [{ text: systemInstruction }],
+          },
+          thinkingConfig: {
+            thinkingLevel: ThinkingLevel.HIGH,
           },
           tools: tools,
         },
@@ -148,7 +179,7 @@ export class AiService implements OnModuleInit {
 
         // Gửi lại lịch sử kèm kết quả hàm
         response = await this.client.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-3.1-flash-lite-preview',
           config: {
             systemInstruction: {
               parts: [{ text: systemInstruction }],
@@ -159,10 +190,38 @@ export class AiService implements OnModuleInit {
         });
       }
 
-      return response.text;
+      return this.parseJsonResponse(response.text ?? '');
     } catch (error) {
       console.error('Error in askAiAboutDatabase:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Parse JSON an toàn từ response text của AI
+   */
+  private parseJsonResponse(text: string): AiDatabaseResponse {
+    const cleaned = text
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/```$/, '')
+      .trim();
+
+    try {
+      return JSON.parse(cleaned) as AiDatabaseResponse;
+    } catch {
+      // AI không tuân thủ format JSON — wrap lại
+      console.warn(
+        'AI response is not valid JSON, wrapping as text:',
+        cleaned.slice(0, 100),
+      );
+      return {
+        success: true,
+        summary: cleaned,
+        data: [],
+        total: 0,
+        message: 'Response không phải JSON chuẩn, đây là text gốc.',
+      };
     }
   }
 

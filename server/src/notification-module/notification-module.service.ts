@@ -2,6 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { NotificationRepository } from './notification.repository';
 import { EmailService } from './email.service';
 import { SmsService } from './sms.service';
+import { EmailTemplatesService } from './email-template.service'; // 👈 thêm
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { CreateNotificationTemplateDto } from './dto/create-notification-template.dto';
 import { NotificationChannel, NotificationStatus } from '@prisma/client';
@@ -10,13 +11,19 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class NotificationModuleService {
   private readonly logger = new Logger(NotificationModuleService.name);
+  notificationService: any;
 
   constructor(
     private readonly repository: NotificationRepository,
     private readonly emailService: EmailService,
     private readonly smsService: SmsService,
     private readonly prisma: PrismaService,
+    private readonly emailTemplates: EmailTemplatesService, // 👈 inject
   ) {}
+
+  onModuleInit() {
+    this.logger.log('NotificationModuleService initialized');
+  }
 
   async createTemplate(dto: CreateNotificationTemplateDto) {
     return this.repository.createTemplate(dto);
@@ -29,7 +36,6 @@ export class NotificationModuleService {
   async sendNotification(dto: SendNotificationDto) {
     const { recipientId, eventType, data, referenceType, referenceId } = dto;
 
-    // 1. Lấy user thông tin để gửi (email/phone)
     const user = await this.prisma.user.findUnique({
       where: { id: recipientId },
     });
@@ -38,7 +44,6 @@ export class NotificationModuleService {
       throw new NotFoundException(`Recipient with ID ${recipientId} not found`);
     }
 
-    // 2. Tìm các template tương ứng với eventType
     const templates = await this.repository.findTemplateByEventType(eventType);
 
     if (templates.length === 0) {
@@ -48,14 +53,22 @@ export class NotificationModuleService {
 
     const results: any[] = [];
 
-    // 3. Xử lý từng channel dựa trên template tìm thấy
     for (const template of templates) {
-      const renderedBody = this.renderTemplate(template.bodyTemplate, data);
       const renderedSubject = template.subject
         ? this.renderTemplate(template.subject, data)
         : undefined;
 
-      // 4. Lưu thông báo vào database (status QUEUED)
+      // ✅ EMAIL → dùng HTML template theo eventType
+      // ✅ SMS / IN_APP → dùng bodyTemplate plain text như cũ
+      const renderedBody =
+        template.channel === NotificationChannel.EMAIL
+          ? this.emailTemplates.render(eventType, {
+              ...data,
+              name: user.fullName ?? user.email, // truyền thêm thông tin user
+              email: user.email,
+            })
+          : this.renderTemplate(template.bodyTemplate, data);
+
       const notification = await this.repository.createNotification({
         recipientId,
         orgId: user.orgId,
@@ -71,7 +84,7 @@ export class NotificationModuleService {
 
       try {
         let success = false;
-        // 5. Gửi thông báo qua channel tương ứng
+
         if (template.channel === NotificationChannel.EMAIL) {
           if (user.email) {
             success = await this.emailService.sendEmail(
@@ -89,8 +102,6 @@ export class NotificationModuleService {
             throw new Error('User does not have a phone number');
           }
         } else if (template.channel === NotificationChannel.IN_APP) {
-          // Logic for in-app notifications (e.g., via Socket.io)
-          // For now just mark as SENT as it is already saved in db
           success = true;
         }
 
@@ -109,11 +120,13 @@ export class NotificationModuleService {
         await this.repository.updateNotificationStatus(
           notification.id,
           NotificationStatus.FAILED,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           error.message,
         );
         results.push({
           channel: template.channel,
           status: 'FAILED',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           reason: error.message,
         });
       }

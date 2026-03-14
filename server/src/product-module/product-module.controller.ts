@@ -18,33 +18,45 @@ import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
 @ApiTags('Product Management')
 @Controller('products')
+@ApiBearerAuth('JWT-auth')
+@UseGuards(JwtAuthGuard)
 export class ProductModuleController {
   constructor(private readonly productService: ProductModuleService) {}
 
   // --- Category Endpoints ---
 
   @Post('categories')
-  @ApiOperation({ summary: 'Create a new product category' })
-  @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Tạo danh mục sản phẩm',
+    description: 'Tạo một danh mục sản phẩm mới',
+  })
   async createCategory(@Body() createCategoryDto: CreateProductCategoryDto) {
     return this.productService.createCategory(createCategoryDto);
   }
 
   @Get('categories')
-  @ApiOperation({ summary: 'Get all product categories' })
+  @ApiOperation({
+    summary: 'Lấy tất cả danh mục sản phẩm',
+    description: 'Trả về danh sách tất cả danh mục sản phẩm',
+  })
   async findAllCategories() {
     return this.productService.findAllCategories();
   }
 
   @Get('categories/:id')
-  @ApiOperation({ summary: 'Get a product category by ID' })
+  @ApiOperation({
+    summary: 'Lấy danh mục sản phẩm theo ID',
+    description: 'Trả về thông tin của một danh mục sản phẩm cụ thể',
+  })
   async findCategoryById(@Param('id') id: string) {
     return this.productService.findCategoryById(id);
   }
 
   @Patch('categories/:id')
-  @ApiOperation({ summary: 'Update a product category' })
+  @ApiOperation({
+    summary: 'Cập nhật danh mục sản phẩm',
+    description: 'Cập nhật thông tin của một danh mục sản phẩm cụ thể',
+  })
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   async updateCategory(
@@ -55,9 +67,10 @@ export class ProductModuleController {
   }
 
   @Delete('categories/:id')
-  @ApiOperation({ summary: 'Delete a product category' })
-  @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Xóa danh mục sản phẩm',
+    description: 'Xóa một danh mục sản phẩm cụ thể',
+  })
   async removeCategory(@Param('id') id: string) {
     return this.productService.removeCategory(id);
   }
@@ -65,15 +78,19 @@ export class ProductModuleController {
   // --- Product Endpoints ---
 
   @Post()
-  @ApiOperation({ summary: 'Create a new product' })
-  @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Tạo sản phẩm mới',
+    description: 'Tạo một sản phẩm mới trong hệ thống',
+  })
   async createProduct(@Body() createProductDto: CreateProductDto) {
     return this.productService.createProduct(createProductDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all products' })
+  @ApiOperation({
+    summary: 'Lấy tất cả sản phẩm',
+    description: 'Trả về danh sách tất cả sản phẩm',
+  })
   async findAllProducts() {
     return this.productService.findAllProducts();
   }
@@ -85,22 +102,20 @@ export class ProductModuleController {
   //   return this.productService.smartSearchProducts(query);
   // }
 
-  @Get('test-ai')
-  @ApiOperation({ summary: 'Test AI service connection' })
-  async testAI() {
-    return this.productService.responsetest();
-  }
-
   @Get(':id')
-  @ApiOperation({ summary: 'Get a product by ID' })
+  @ApiOperation({
+    summary: 'Lấy sản phẩm theo ID',
+    description: 'Trả về thông tin của một sản phẩm cụ thể',
+  })
   async findProductById(@Param('id') id: string) {
     return this.productService.findProductById(id);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a product' })
-  @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Cập nhật sản phẩm',
+    description: 'Cập nhật thông tin của một sản phẩm cụ thể',
+  })
   async updateProduct(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -109,9 +124,10 @@ export class ProductModuleController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a product' })
-  @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Xóa sản phẩm',
+    description: 'Xóa một sản phẩm cụ thể',
+  })
   async removeProduct(@Param('id') id: string) {
     return this.productService.removeProduct(id);
   }

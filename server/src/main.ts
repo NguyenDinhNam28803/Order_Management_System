@@ -28,41 +28,50 @@ async function bootstrap() {
 
   // --- Cấu hình Swagger chi tiết ---
   const config = new DocumentBuilder()
-    .setTitle('📦 Order Management System API')
+    .setTitle('📦 Hệ thống Quản lý Mua sắm & Đơn hàng (OMS)')
     .setDescription(
       `
-      ## 🚀 Hệ thống Quản lý Đơn hàng (OMS)
-      Chào mừng bạn đến với tài liệu API chính thức của hệ thống OMS. 
-      Tài liệu này cung cấp đầy đủ các điểm cuối (endpoints) để tương tác với hệ thống.
+      ## 🚀 Giới thiệu hệ thống
+      Chào mừng bạn đến với tài liệu API chính thức của hệ thống **Order Management System (OMS)**. 
+      Hệ thống được thiết kế để chuẩn hóa và tự động hóa toàn bộ quy trình từ yêu cầu mua sắm đến thanh toán (**Procure-to-Pay**).
+
+      ### 🛠️ Các module cốt lõi
+      - **PR & PO**: Quản lý Yêu cầu mua hàng (Purchase Requisition) và Đơn mua hàng (Purchase Order).
+      - **Sourcing & RFQ**: Quy trình tìm kiếm nhà cung cấp, gửi yêu cầu báo giá và so sánh giá.
+      - **GRN & Matching**: Nhập kho (Goods Receipt Note) và đối soát 3 chiều (PO - GRN - Invoice).
+      - **Approvals**: Hệ thống phê duyệt đa cấp linh hoạt cho mọi loại chứng từ.
+      - **Budget & Cost Center**: Kiểm soát ngân sách và quản lý trung tâm chi phí.
+      - **Invoicing & Payments**: Quản lý hóa đơn và quy trình thanh toán cho nhà cung cấp.
+      - **AI Service**: Tích hợp trí tuệ nhân tạo để tối ưu hóa tìm kiếm và gợi ý nhà cung cấp.
 
       ### 🔐 Xác thực & Bảo mật
-      - **JWT Authorization**: Hầu hết các API yêu cầu Access Token.
-      - Sử dụng nút **Authorize** bên dưới, nhập token theo định dạng: \`Bearer <your_token>\`.
-      
-      ### 🛠️ Các phân vùng chính
-      - **Auth**: Quản lý đăng ký, đăng nhập và phân quyền.
-      - **Users**: Quản lý thông tin người dùng và tổ chức.
-      - **Orders**: Quy trình tạo và xử lý đơn hàng.
-      - **Redis Cache**: Tối ưu hóa tốc độ truy xuất dữ liệu.
+      - **JWT Authorization**: Hệ thống sử dụng cơ chế JWT để bảo mật các điểm cuối.
+      - **RBAC**: Phân quyền dựa trên vai trò (Admin, Procurement, Requestor, Approver, Supplier).
+      - Nhấn nút **Authorize** bên dưới, nhập token theo định dạng: \`Bearer <your_token>\`.
+
+      ### 📄 Quy chuẩn API
+      - **Định dạng dữ liệu**: Luôn sử dụng \`application/json\`.
+      - **Cấu trúc phản hồi**: \`{ success, data, message, statusCode, timestamp }\`.
 
       ---
-      *Hỗ trợ kỹ thuật: [admin@yourdomain.com](mailto:admin@yourdomain.com)*
       *Môi trường: **${configService.get<string>('NODE_ENV', 'development')}***
+      *Hỗ trợ kỹ thuật: [admin@oms-system.com](mailto:admin@oms-system.com)*
       `,
     )
     .setVersion('1.0')
-    .setContact('OMS Support', 'https://yourwebsite.com', 'support@oms.com')
-    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
-    .addTag('Auth', 'Xác thực người dùng và phân quyền')
-    .addTag('Users', 'Quản lý thông tin tài khoản')
-    .addTag('Orders', 'Xử lý logic đơn hàng')
+    .setContact(
+      'OMS Development Team',
+      'https://oms-internal.com',
+      'dev@oms.com',
+    )
+    .setLicense('MIT License', 'https://opensource.org/licenses/MIT')
     .addBearerAuth(
       {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
         name: 'JWT',
-        description: 'Nhập token JWT của bạn',
+        description: 'Nhập Access Token của bạn để truy cập các API bảo mật',
         in: 'header',
       },
       'JWT-auth', // Tên key này sẽ dùng trong @ApiBearerAuth('JWT-auth') ở Controller

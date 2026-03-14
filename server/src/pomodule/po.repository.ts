@@ -7,6 +7,7 @@ import { PoStatus } from '@prisma/client';
 export class PoRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  // module PO sẽ tạo PO mới dựa trên Quotation đã được chấp nhận, đồng thời cập nhật trạng thái của Quotation, RFQ và PR liên quan
   async create(
     data: CreatePoDto,
     buyerId: string,
@@ -52,6 +53,7 @@ export class PoRepository {
       // Cập nhật trạng thái Quotation sang ACCEPTED
       await tx.rfqQuotation.update({
         where: { id: quotationId },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         data: { status: 'ACCEPTED' as any },
       });
 
@@ -60,6 +62,7 @@ export class PoRepository {
         await tx.rfqRequest.update({
           where: { id: data.rfqId },
           data: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             status: 'AWARDED' as any,
             awardedSupplierId: data.supplierId,
             awardedAt: new Date(),
@@ -71,6 +74,7 @@ export class PoRepository {
       if (data.prId) {
         await tx.purchaseRequisition.update({
           where: { id: data.prId },
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: { status: 'PO_CREATED' as any },
         });
       }
@@ -99,5 +103,16 @@ export class PoRepository {
         quotation: true,
       },
     });
+  }
+
+  async updateStatus(id: string, status: PoStatus) {
+    return this.prisma.purchaseOrder.update({
+      where: { id },
+      data: { status },
+    });
+  }
+
+  async delete(id: string) {
+    return this.prisma.purchaseOrder.delete({ where: { id } });
   }
 }

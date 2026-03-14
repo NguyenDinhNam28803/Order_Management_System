@@ -34,6 +34,7 @@ export class NotificationRepository {
   // --- Notification Methods ---
 
   async createNotification(data: any): Promise<Notification> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return this.prisma.notification.create({ data });
   }
 

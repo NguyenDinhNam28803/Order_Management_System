@@ -1,19 +1,22 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmailService {
   private transporter: nodemailer.Transporter;
   private readonly logger = new Logger(EmailService.name);
+  private readonly configService: ConfigService;
 
-  constructor() {
+  constructor(configService: ConfigService) {
+    this.configService = configService;
     this.transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT || '587'),
-      secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
+      host: this.configService.get('EMAIL_HOST'),
+      port: parseInt(this.configService.get('EMAIL_PORT') || '587'),
+      secure: this.configService.get('EMAIL_SECURE') === 'true', // true for 465, false for other ports
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: this.configService.get('EMAIL_USER'),
+        pass: this.configService.get('EMAIL_PASS'),
       },
     });
   }
@@ -22,7 +25,7 @@ export class EmailService {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const info = await this.transporter.sendMail({
-        from: `"${process.env.EMAIL_FROM_NAME || 'OMS System'}" <${process.env.EMAIL_FROM_EMAIL}>`,
+        from: `"${this.configService.get('EMAIL_FROM_NAME') || 'OMS System'}" <${this.configService.get('EMAIL_FROM_EMAIL')}>`,
         to,
         subject,
         html: body,

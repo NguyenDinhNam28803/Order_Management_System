@@ -1,12 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRfqDto } from './dto/create-rfq.dto';
-import { RfqStatus } from '@prisma/client';
+import {
+  CreateQuotationDto,
+  QuotationItemDto,
+} from './dto/create-quotation.dto';
+// import { CreateQaThreadDto } from './dto/create-qa-thread.dto';
+import { CreateCounterOfferDto } from './dto/create-counter-offer.dto';
+import { RfqStatus, QuotationStatus } from '@prisma/client';
 
 @Injectable()
 export class RfqRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Các phương thức liên quan đến RFQ Request
   async create(
     data: CreateRfqDto,
     createdById: string,
@@ -77,6 +84,364 @@ export class RfqRepository {
         pr: true,
         createdBy: true,
         quotations: true,
+      },
+    });
+  }
+
+  async updateStatus(id: string, status: RfqStatus) {
+    return this.prisma.rfqRequest.update({
+      where: { id },
+      data: { status },
+    });
+  }
+
+  async delete(id: string) {
+    return this.prisma.rfqRequest.delete({
+      where: { id },
+    });
+  }
+
+  async findByPrId(prId: string) {
+    return this.prisma.rfqRequest.findMany({
+      where: { prId },
+      include: { items: true, suppliers: true },
+    });
+  }
+
+  async findBySupplierId(supplierId: string) {
+    return this.prisma.rfqRequest.findMany({
+      where: { suppliers: { some: { supplierId } } },
+      include: { items: true, suppliers: true },
+    });
+  }
+
+  async findByStatus(status: RfqStatus) {
+    return this.prisma.rfqRequest.findMany({
+      where: { status },
+      include: { items: true, suppliers: true },
+    });
+  }
+
+  async findByOrgIdAndStatus(orgId: string, status: RfqStatus) {
+    return this.prisma.rfqRequest.findMany({
+      where: { orgId, status },
+      include: { items: true, suppliers: true },
+    });
+  }
+
+  // Các phương thức liên quan đến RFQ Quotation
+
+  async findAllQuotations() {
+    return this.prisma.rfqQuotation.findMany({
+      include: { items: true, rfq: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async createQuotation(
+    rfqId: string,
+    supplierId: string,
+    data: CreateQuotationDto,
+    quotationNumber: string,
+  ) {
+    return this.prisma.rfqQuotation.create({
+      data: {
+        quotationNumber,
+        rfqId,
+        supplierId,
+        totalPrice: data.totalPrice,
+        currency: data.currency || 'VND',
+        leadTimeDays: data.leadTimeDays,
+        paymentTerms: data.paymentTerms,
+        deliveryTerms: data.deliveryTerms,
+        validityDays: data.validityDays || 30,
+        notes: data.notes,
+        items: {
+          create: data.items.map((item: QuotationItemDto) => ({
+            rfqItemId: item.rfqItemId,
+            unitPrice: item.unitPrice,
+            qtyOffered: item.qtyOffered,
+            discountPct: item.discountPct || 0,
+            leadTimeDays: item.leadTimeDays,
+            notes: item.notes,
+          })),
+        },
+      },
+      include: { items: true, rfq: true },
+    });
+  }
+
+  async findQuotationsByRfqId(rfqId: string) {
+    return this.prisma.rfqQuotation.findMany({
+      where: { rfqId },
+      include: {
+        items: { include: { rfqItem: true } },
+        rfq: true,
+        counterOffers: true,
+      },
+    });
+  }
+
+  async findQuotationById(id: string) {
+    return this.prisma.rfqQuotation.findUnique({
+      where: { id },
+      include: {
+        items: { include: { rfqItem: true } },
+        rfq: { include: { items: true } },
+        counterOffers: true,
+      },
+    });
+  }
+
+  async updateQuotationStatus(id: string, status: QuotationStatus) {
+    return this.prisma.rfqQuotation.update({
+      where: { id },
+      data: { status },
+      include: { items: true },
+    });
+  }
+
+  async submitQuotation(id: string) {
+    return this.prisma.rfqQuotation.update({
+      where: { id },
+      data: { status: 'SUBMITTED', submittedAt: new Date() },
+      include: { items: true, rfq: true },
+    });
+  }
+
+  async reviewQuotation(id: string, reviewedById: string, reviewedAt: Date) {
+    return this.prisma.rfqQuotation.update({
+      where: { id },
+      data: { reviewedAt, reviewedBy: { connect: { id: reviewedById } } },
+      include: { items: true },
+    });
+  }
+
+  async updateQuotationAiScore(id: string, aiScore: number) {
+    return this.prisma.rfqQuotation.update({
+      where: { id },
+      data: { aiScore },
+      include: { items: true },
+    });
+  }
+
+  async deleteQuotation(id: string) {
+    return this.prisma.rfqQuotation.delete({
+      where: { id },
+    });
+  }
+
+  async findQuotationsBySupplierId(supplierId: string) {
+    return this.prisma.rfqQuotation.findMany({
+      where: { supplierId },
+      include: {
+        items: true,
+        rfq: true,
+      },
+    });
+  }
+
+  async findQuotationsByStatus(status: QuotationStatus) {
+    return this.prisma.rfqQuotation.findMany({
+      where: { status },
+      include: { items: true, rfq: true },
+    });
+  }
+
+  // Các phương thức liên quan đến RFQ Item
+
+  async findItemsByRfqId(rfqId: string) {
+    return this.prisma.rfqItem.findMany({
+      where: { rfqId },
+    });
+  }
+
+  async createItem(
+    rfqId: string,
+    description: string,
+    qty: number,
+    unit: string,
+    lineNumber: number,
+    categoryId?: string,
+    sku?: string,
+  ) {
+    return this.prisma.rfqItem.create({
+      data: {
+        rfqId,
+        description,
+        qty,
+        unit,
+        categoryId,
+        sku,
+        lineNumber,
+      },
+    });
+  }
+
+  async findItemsByQuotationId(quotationId: string) {
+    return this.prisma.rfqItem.findMany({
+      where: { quotationItems: { some: { quotationId } } },
+    });
+  }
+
+  async findItemsByProductId(productId: string) {
+    return this.prisma.rfqItem.findMany({
+      where: { quotationItems: { some: { rfqItemId: productId } } },
+    });
+  }
+
+  // Các phương thức liên quan đến RFQ Supplier
+
+  async findSuppliersByRfqId(rfqId: string) {
+    return this.prisma.rfqSupplier.findMany({
+      where: { rfqId },
+      include: { supplier: true },
+    });
+  }
+
+  async createRfqSupplier(rfqId: string, supplierId: string) {
+    return this.prisma.rfqSupplier.create({
+      data: {
+        rfqId,
+        supplierId,
+      },
+      include: { supplier: true },
+    });
+  }
+
+  async deleteRfqSupplier(id: string) {
+    return this.prisma.rfqSupplier.delete({
+      where: { id },
+    });
+  }
+
+  // Các phương thức liên quan đến RFQ Q and A thread
+
+  async findQandAThreadByRfqId(rfqId: string) {
+    return this.prisma.rfqQaThread.findMany({
+      where: { rfqId },
+      include: {
+        askedBy: true,
+        answeredBy: true,
+        rfq: true,
+      },
+    });
+  }
+
+  async findQandAThreadById(id: string) {
+    return this.prisma.rfqQaThread.findUnique({
+      where: { id },
+      include: {
+        askedBy: true,
+        answeredBy: true,
+        rfq: true,
+      },
+    });
+  }
+
+  async createQandAThread(
+    rfqId: string,
+    supplierId: string,
+    question: string,
+    askedById: string,
+    isPublic = false,
+  ) {
+    return this.prisma.rfqQaThread.create({
+      data: {
+        rfqId,
+        supplierId,
+        question,
+        askedById,
+        isPublic,
+      },
+      include: {
+        askedBy: true,
+        rfq: true,
+      },
+    });
+  }
+
+  async answerQandAThread(id: string, answer: string, answeredById: string) {
+    return this.prisma.rfqQaThread.update({
+      where: { id },
+      data: {
+        answer,
+        answeredBy: { connect: { id: answeredById } },
+        answeredAt: new Date(),
+      },
+      include: {
+        askedBy: true,
+        answeredBy: true,
+      },
+    });
+  }
+
+  async findQandAThreadBySupplierAndRfq(supplierId: string, rfqId: string) {
+    return this.prisma.rfqQaThread.findMany({
+      where: {
+        rfqId,
+        supplierId,
+      },
+      include: {
+        askedBy: true,
+        answeredBy: true,
+      },
+    });
+  }
+
+  // Các phương thức liên quan đến RFQ Counter Offer
+
+  async createCounterOffer(
+    quotationId: string,
+    offeredById: string,
+    data: CreateCounterOfferDto,
+  ) {
+    return this.prisma.rfqCounterOffer.create({
+      data: {
+        quotationId,
+        offeredById,
+        offerType: data.offerType,
+        proposedPrice: data.proposedPrice,
+        proposedTerms: data.proposedTerms,
+        aiSuggestion: data.aiSuggestion,
+      },
+      include: {
+        offeredBy: true,
+        quotation: true,
+      },
+    });
+  }
+
+  async findCounterOffersByQuotationId(quotationId: string) {
+    return this.prisma.rfqCounterOffer.findMany({
+      where: { quotationId },
+      include: {
+        offeredBy: true,
+        quotation: true,
+      },
+    });
+  }
+
+  async findCounterOfferById(id: string) {
+    return this.prisma.rfqCounterOffer.findUnique({
+      where: { id },
+      include: {
+        offeredBy: true,
+        quotation: true,
+      },
+    });
+  }
+
+  async respondCounterOffer(id: string, response: string) {
+    return this.prisma.rfqCounterOffer.update({
+      where: { id },
+      data: {
+        response,
+        respondedAt: new Date(),
+      },
+      include: {
+        offeredBy: true,
+        quotation: true,
       },
     });
   }
