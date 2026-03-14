@@ -7,7 +7,14 @@ import {
 import { useProcurement } from "../context/ProcurementContext";
 
 export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phải trả", "Đối soát 3 bên"] }) {
-    const { currentUser, logout } = useProcurement();
+    const { currentUser, logout, prs } = useProcurement();
+
+    const pendingCount = prs.filter(pr => {
+        if (!currentUser) return false;
+        if (currentUser.role === "Approver") return pr.status === "PENDING";
+        if (currentUser.role === "Director") return pr.status === "PENDING_DIRECTOR";
+        return pr.status === "PENDING";
+    }).length;
 
     return (
         <header className="fixed top-0 right-0 z-30 flex h-16 w-[calc(100%-16rem)] items-center justify-between border-b border-slate-200 bg-white/80 px-8 backdrop-blur-md">
@@ -41,9 +48,11 @@ export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phả
                     </button>
                     <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-erp-navy transition-colors">
                         <Bell size={18} />
-                        <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border-2 border-white text-[9px] font-bold text-white">
-                            3
-                        </span>
+                        {pendingCount > 0 && (
+                            <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border-2 border-white text-[9px] font-bold text-white">
+                                {pendingCount}
+                            </span>
+                        )}
                     </button>
                     <button
                         onClick={logout}
@@ -62,10 +71,11 @@ export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phả
                         <div className="mt-1 flex justify-end">
                             <span className={`role-badge ${currentUser ? (
                                 currentUser.role === "Requester" ? "role-requester" :
-                                currentUser.role === "Approver" ? "role-approver" :
-                                currentUser.role === "Buyer" ? "role-procurement" :
-                                currentUser.role === "Receiver" ? "role-warehouse" :
-                                currentUser.role === "Finance" ? "role-finance" : "role-admin"
+                                    currentUser.role === "Approver" ? "role-approver" :
+                                        currentUser.role === "Director" ? "role-approver" :
+                                            currentUser.role === "Buyer" ? "role-procurement" :
+                                                currentUser.role === "Receiver" ? "role-warehouse" :
+                                                    currentUser.role === "Finance" ? "role-finance" : "role-admin"
                             ) : "role-finance"}`}>
                                 {currentUser?.role || "Chưa định danh"}
                             </span>

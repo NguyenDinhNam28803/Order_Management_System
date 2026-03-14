@@ -7,17 +7,17 @@ import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 
 export default function MatchingPage() {
-    const { pos, payPO } = useProcurement();
+    const { pos } = useProcurement();
     const router = useRouter();
 
     // Find PO that is COMMITTED (simulating that it's been received but not paid)
-    const activePO = pos.find(p => p.status === "COMMITTED");
+    const activePO = pos.find(p => p.status === "RECEIVED");
 
     const [disputeResolved, setDisputeResolved] = useState(false);
 
     const handleApproveMatch = () => {
         if (!activePO) return;
-        payPO(activePO.id);
+        
         router.push("/payments");
     };
 

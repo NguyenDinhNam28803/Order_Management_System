@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
-import { Truck, Package, Camera, CheckCircle2, AlertTriangle, Search, ArrowRight } from "lucide-react";
+import { Truck, Package, Camera, CheckCircle2, AlertTriangle, Search, ArrowRight, TrendingUp, Clock, Star } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 
@@ -11,9 +11,18 @@ export default function GRNPage() {
     const router = useRouter();
 
     // Find a committed PO to receive
-    const activePO = pos.find(p => p.status === "COMMITTED");
+    const activePO = pos.find(p => p.status === "SHIPPED");
     const [receivedQty, setReceivedQty] = useState(42); // Simulating 42/50 logic for ink
     const [isSaving, setIsSaving] = useState(false);
+    const [deliveryStatus, setDeliveryStatus] = useState<"ON_TIME" | "LATE">("ON_TIME");
+
+    // KPI Calculation
+    const qtyCrr = 500; // Mock cotton
+    const qtyTotal = 500 + 50;
+    const receivedTotal = qtyCrr + receivedQty;
+    const qtyScore = (receivedTotal / qtyTotal) * 100;
+    const timeScore = deliveryStatus === "ON_TIME" ? 100 : 50; 
+    const finalKpiScore = Math.round((qtyScore * 0.7) + (timeScore * 0.3)); // 70% Qty, 30% Time
 
     const handleConfirm = () => {
         setIsSaving(true);
@@ -134,12 +143,72 @@ export default function GRNPage() {
                                 </div>
                             </div>
 
+                            <div className="mt-10 pt-8 border-t border-slate-100">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy mb-6 flex items-center gap-2">
+                                    <TrendingUp size={18} className="text-erp-blue" /> Đánh giá hiệu suất nhà cung cấp (KPI)
+                                </h3>
+
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <button 
+                                            onClick={() => setDeliveryStatus("ON_TIME")}
+                                            className={`py-4 border-2 rounded-2xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "ON_TIME" ? "border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200" : "border-slate-100 bg-white text-slate-400"}`}
+                                        >
+                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
+                                                <CheckCircle2 size={16} /> Giao đúng hạn
+                                            </div>
+                                        </button>
+                                        <button 
+                                            onClick={() => setDeliveryStatus("LATE")}
+                                            className={`py-4 border-2 rounded-2xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "LATE" ? "border-amber-500 bg-amber-50 text-amber-700 ring-2 ring-amber-200" : "border-slate-100 bg-white text-slate-400"}`}
+                                        >
+                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
+                                                <Clock size={16} /> Giao trễ
+                                            </div>
+                                        </button>
+                                    </div>
+
+                                    <div className="p-5 bg-erp-navy rounded-2xl text-white relative overflow-hidden">
+                                        <div className="absolute -right-6 -bottom-6 opacity-10">
+                                            <Star size={120} fill="currentColor" />
+                                        </div>
+                                        <div className="relative z-10">
+                                            <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
+                                                Điểm đánh giá hệ thống
+                                            </div>
+                                            <div className="flex items-end gap-3">
+                                                <span className="text-4xl font-black font-mono leading-none">{finalKpiScore}</span>
+                                                <span className="text-xs font-bold text-slate-400 mb-1">/ 100 pt</span>
+                                            </div>
+                                            
+                                            <div className="mt-4 space-y-2">
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="opacity-70">Khớp số lượng (70%)</span>
+                                                    <span className="font-bold">{qtyScore.toFixed(0)} đ</span>
+                                                </div>
+                                                <div className="w-full h-1.5 bg-white/10 rounded-full">
+                                                    <div className="h-full bg-emerald-400 rounded-full transition-all" style={{ width: `${qtyScore}%` }}></div>
+                                                </div>
+                                                
+                                                <div className="flex justify-between items-center text-xs mt-3">
+                                                    <span className="opacity-70">Thời gian giao hàng (30%)</span>
+                                                    <span className="font-bold">{timeScore} đ</span>
+                                                </div>
+                                                <div className="w-full h-1.5 bg-white/10 rounded-full">
+                                                    <div className={`h-full rounded-full transition-all ${timeScore === 100 ? "bg-emerald-400" : "bg-amber-400"}`} style={{ width: `${timeScore}%` }}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <button
                                 onClick={handleConfirm}
                                 disabled={isSaving}
-                                className="w-full mt-10 btn-primary flex items-center justify-center gap-2"
+                                className="w-full mt-10 btn-primary flex items-center justify-center gap-2 shadow-xl shadow-erp-blue/20"
                             >
-                                {isSaving ? "Đang xử lý..." : "Xác nhận Nhập kho & Ký tên"} <ArrowRight size={18} />
+                                {isSaving ? "Đang lưu và đánh giá..." : "Xác nhận & Cập nhật KPI NCC"} <ArrowRight size={18} />
                             </button>
                         </div>
                     </div>

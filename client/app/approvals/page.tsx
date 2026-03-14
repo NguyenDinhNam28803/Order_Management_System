@@ -2,158 +2,358 @@
 
 import React, { useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
-import { CheckSquare, XCircle, CheckCircle2, Eye, UserCheck, ShieldCheck } from "lucide-react";
+import { CheckSquare, XCircle, CheckCircle2, Eye, FileText, AlertTriangle, History, ArrowLeft, MessageSquareWarning, Paperclip, Check } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
+import { useRouter } from "next/navigation";
 
 export default function ApprovalsPage() {
-    const { prs, approvePR } = useProcurement();
-    const pendingPRs = prs.filter(pr => pr.status === "PENDING");
+    const { prs, approvePR, currentUser } = useProcurement();
+    const router = useRouter();
+    const pendingPRs = prs.filter(pr => {
+        if (!currentUser) return false;
+        if (currentUser.role === "Approver") return pr.status === "PENDING";
+        if (currentUser.role === "Director") return pr.status === "PENDING_DIRECTOR";
+        return pr.status === "PENDING";
+    });
 
     const [selectedPR, setSelectedPR] = useState<any>(null);
+
+    // Action State
+    const [actionType, setActionType] = useState<"APPROVE" | "REJECT" | "MORE_INFO" | null>(null);
+    const [memo, setMemo] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+
+    const handleAction = () => {
+        if (actionType === "REJECT" && !memo.trim()) {
+            alert("Vui lòng nhập lý do từ chối!");
+            return;
+        }
+
+        setIsSubmitting(true);
+        setTimeout(() => {
+            if (actionType === "APPROVE") {
+                approvePR(selectedPR.id);
+            }
+            // For REJECT and MORE_INFO, we just mock the success state
+            setIsSuccess(true);
+            setTimeout(() => {
+                router.push("/");
+            }, 2000);
+        }, 1000);
+    };
+
+    if (isSuccess) {
+        return (
+            <div className="h-screen flex items-center justify-center bg-slate-50">
+                <div className="text-center erp-card !p-12 animate-in fade-in zoom-in duration-500">
+                    <div className="h-20 w-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle2 size={40} />
+                    </div>
+                    <h2 className="text-2xl font-black text-erp-navy mb-2">Thao tác thành công!</h2>
+                    <p className="text-slate-500 mb-8">Phiếu đã được xử lý và ghi nhận vào hệ thống. Đang quay lại trang chủ...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <main className="pt-16 px-8 pb-12">
             <DashboardHeader breadcrumbs={["Hệ thống", "Phê duyệt"]} />
 
-            <div className="mt-8 mb-8">
-                <h1 className="text-3xl font-black text-erp-navy tracking-tight">Danh sách chờ phê duyệt</h1>
-                <p className="text-sm text-slate-500 mt-1">Bạn đang có {pendingPRs.length} yêu cầu cần xử lý.</p>
-            </div>
+            {!selectedPR ? (
+                <>
+                    <div className="mt-8 mb-8">
+                        <h1 className="text-3xl font-black text-erp-navy tracking-tight">Danh sách cần phê duyệt</h1>
+                        <p className="text-sm text-slate-500 mt-1">Bạn đang có {pendingPRs.length} yêu cầu cần xử lý theo đúng SLA.</p>
+                    </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="erp-card !p-0 overflow-hidden">
+                    <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-erp-navy/5">
                         <table className="erp-table">
                             <thead>
-                                <tr>
-                                    <th>Mã PR</th>
-                                    <th>Bộ phận</th>
-                                    <th>Giá trị</th>
-                                    <th>Độ ưu tiên</th>
-                                    <th className="text-right">Thao tác</th>
+                                <tr className="bg-slate-50 border-b border-slate-100">
+                                    <th className="font-black">Loại/Mã</th>
+                                    <th className="font-black">Người tạo</th>
+                                    <th className="font-black w-1/3">Tiêu đề (Lý do)</th>
+                                    <th className="font-black text-right">Tổng giá trị</th>
+                                    <th className="font-black text-center">Thời gian chờ</th>
+                                    <th className="font-black text-right">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {pendingPRs.length > 0 ? pendingPRs.map(pr => (
-                                    <tr key={pr.id} className={selectedPR?.id === pr.id ? 'bg-blue-50/50' : ''}>
-                                        <td className="font-bold text-erp-navy">{pr.id}</td>
-                                        <td>{pr.department}</td>
-                                        <td className="font-mono">{pr.total.toLocaleString()} ₫</td>
+                                {pendingPRs.length > 0 ? pendingPRs.map((pr, idx) => (
+                                    <tr key={pr.id} className="hover:bg-slate-50/50 group">
                                         <td>
-                                            <span className={`status-pill ${pr.priority === 'Critical' ? 'status-rejected' :
-                                                    pr.priority === 'Urgent' ? 'status-pending' : 'status-draft'
-                                                }`}>
-                                                {pr.priority}
-                                            </span>
+                                            <div className="font-bold text-erp-navy flex items-center gap-2">
+                                                <div className="p-1.5 bg-blue-50 text-erp-blue rounded-lg"><FileText size={14} /></div>
+                                                {pr.id}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="text-sm font-bold text-slate-700">{pr.department}</div>
+                                            <div className="text-[10px] text-slate-400">Request ID: EMP-0102</div>
+                                        </td>
+                                        <td className="max-w-[200px]">
+                                            <div className="font-bold text-erp-navy truncate" title={pr.reason}>{pr.reason || "Yêu cầu cung cấp vật tư"}</div>
+                                            <div className="text-xs text-slate-500 truncate" title={pr.reason}>{pr.reason}</div>
+                                        </td>
+                                        <td className="font-mono text-right font-black text-erp-blue text-lg">{pr.total.toLocaleString()} ₫</td>
+                                        <td className="text-center">
+                                            {idx === 0 ? (
+                                                <span className="text-[10px] font-black text-red-500 bg-red-50 px-2 py-1 rounded inline-flex items-center gap-1 border border-red-100"><AlertTriangle size={10} /> 26h (Quá SLA)</span>
+                                            ) : (
+                                                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">4h</span>
+                                            )}
                                         </td>
                                         <td className="text-right">
                                             <button
                                                 onClick={() => setSelectedPR(pr)}
-                                                className="p-2 text-erp-blue hover:bg-blue-100 rounded-lg transition-all"
+                                                className="px-4 py-2 bg-slate-100 text-erp-navy hover:bg-erp-blue hover:text-white rounded-lg text-xs font-black uppercase tracking-widest transition-all shadow-sm group-hover:shadow"
                                             >
-                                                <Eye size={18} />
+                                                Xem xét
                                             </button>
                                         </td>
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan={5} className="py-20 text-center text-slate-400 font-bold uppercase tracking-widest">
-                                            Không có yêu cầu nào chờ duyệt
+                                        <td colSpan={6} className="py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-sm">
+                                            <div className="flex flex-col items-center justify-center">
+                                                <CheckSquare size={48} className="opacity-20 mb-4" />
+                                                Không có yêu cầu nào chờ duyệt
+                                            </div>
                                         </td>
                                     </tr>
                                 )}
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </>
+            ) : (
+                <div className="animate-in fade-in slide-in-from-right-8 duration-300">
+                    <div className="mt-8 flex justify-between items-end mb-6 border-b border-slate-200 pb-4">
+                        <div className="flex items-center gap-4">
+                            <button onClick={() => setSelectedPR(null)} className="p-2 bg-white border border-slate-200 text-slate-500 hover:bg-slate-100 rounded-xl transition-all shadow-sm">
+                                <ArrowLeft size={20} />
+                            </button>
+                            <div>
+                                <h1 className="text-3xl font-black text-erp-navy tracking-tight flex items-center gap-2">Phê duyệt: {selectedPR.id}</h1>
+                                <p className="text-sm text-slate-500 mt-1">Kiểm tra thông tin chi tiết trước khi ra quyết định.</p>
+                            </div>
+                        </div>
+                    </div>
 
-                <div className="space-y-6">
-                    {selectedPR ? (
-                        <div className="erp-card animate-in slide-in-from-right duration-300">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy mb-6 flex items-center gap-2">
-                                <ShieldCheck size={18} /> Chi tiết phê duyệt
-                            </h3>
-                            <div className="space-y-4 mb-6">
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-slate-400 font-bold">Bộ phận:</span>
-                                    <span className="font-black text-erp-navy">{selectedPR.department}</span>
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                        <div className="xl:col-span-2 space-y-8">
+                            {/* Card Thông tin tổng hợp */}
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                                <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy">Thông tin tổng hợp</h3>
                                 </div>
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-slate-400 font-bold">Ngày tạo:</span>
-                                    <span className="font-black text-erp-navy">{selectedPR.createdAt}</span>
+                                <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+                                    <div className="md:col-span-2 flex items-center gap-4 border-b border-slate-100 pb-4 md:border-none md:pb-0">
+                                        <div className="w-12 h-12 rounded-full bg-blue-100 text-erp-blue flex items-center justify-center font-black text-xl">
+                                            {selectedPR.department.substring(0,2).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-0.5">Người tạo</div>
+                                            <div className="text-sm font-black text-erp-navy">{selectedPR.department}</div>
+                                            <div className="text-[10px] text-slate-500">Gửi lúc: {selectedPR.createdAt}</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Cost Center</div>
+                                        <div className="text-sm font-bold text-erp-navy bg-slate-50 inline-block px-2 py-1 rounded border border-slate-100">{selectedPR.costCenter || 'CC-61000'}</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Mức độ ưu tiên</div>
+                                        <div className={`text-sm font-black uppercase tracking-wider ${selectedPR.priority === 'Critical' ? 'text-red-600' : selectedPR.priority === 'Urgent' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                            {selectedPR.priority}
+                                        </div>
+                                    </div>
+                                    <div className="col-span-2 md:col-span-4 bg-slate-50 p-4 rounded-xl border border-slate-100/50 mt-2">
+                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Lý do mua hàng</div>
+                                        <div className="text-sm font-medium text-slate-700 italic leading-relaxed">"{selectedPR.reason}"</div>
+                                    </div>
                                 </div>
-                                <div className="py-3 border-t border-b border-slate-50">
-                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Lý do mua hàng</div>
-                                    <p className="text-xs text-erp-navy font-bold leading-relaxed">{selectedPR.reason || 'Không có ghi chú'}</p>
-                                </div>
+                            </div>
 
-                                <div>
-                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Danh sách hàng hóa</div>
-                                    <div className="space-y-2">
-                                        {selectedPR.items.map((item: any, idx: number) => (
-                                            <div key={idx} className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                                <div className="flex justify-between items-start mb-1">
-                                                    <span className="text-xs font-black text-erp-navy">{item.description}</span>
-                                                    <span className="text-[10px] font-bold text-erp-blue">{item.qty} {item.unit}</span>
+                            {/* Danh sách hàng */}
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                                <div className="bg-slate-50 px-6 py-4 border-b border-slate-100">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy">Danh sách mặt hàng chuẩn bị mua</h3>
+                                </div>
+                                <table className="erp-table !shadow-none !border-none m-0">
+                                    <thead>
+                                        <tr className="bg-white border-b border-slate-200">
+                                            <th className="w-12 text-center text-[10px]">STT</th>
+                                            <th className="text-[10px]">Mô tả hàng hóa</th>
+                                            <th className="text-[10px] text-center w-20">SL</th>
+                                            <th className="text-[10px] text-center w-20">ĐVT</th>
+                                            <th className="text-[10px] text-right w-32">Đơn giá</th>
+                                            <th className="text-[10px] text-right w-32">Thành tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {selectedPR.items?.map((item: any, idx: number) => {
+                                            const rowTotal = item.qty * item.estimatedPrice;
+                                            const isSuperHigh = rowTotal >= 100000000;
+                                            const isHigh = rowTotal >= 30000000 && !isSuperHigh;
+                                            
+                                            // Theo mockup 4.2:
+                                            // Item >= 30tr tô cam
+                                            // Item >= 100tr tô đỏ nhạt + badge 'Cần TGĐ duyệt'
+                                            return (
+                                                <tr key={idx} className={`border-b border-slate-100 ${isSuperHigh ? 'bg-red-50/70 border-l-4 border-red-500' : isHigh ? 'bg-orange-50/50 border-l-4 border-orange-400' : ''}`}>
+                                                    <td className="text-center font-bold text-slate-400">{idx + 1}</td>
+                                                    <td className="font-bold text-erp-navy">
+                                                        {item.description}
+                                                        {isSuperHigh && <span className="ml-2 inline-flex items-center gap-1 text-[9px] font-black uppercase text-red-600 bg-red-100 px-1.5 py-0.5 rounded tracking-tighter"><AlertTriangle size={10} /> Cần TGĐ Duyệt</span>}
+                                                    </td>
+                                                    <td className="text-center font-black text-erp-blue">{item.qty}</td>
+                                                    <td className="text-center font-bold text-slate-500">{item.unit || 'Cái'}</td>
+                                                    <td className="text-right font-mono text-slate-500">{item.estimatedPrice.toLocaleString()}</td>
+                                                    <td className={`text-right font-mono font-black ${isSuperHigh ? 'text-red-600' : isHigh ? 'text-orange-600' : 'text-erp-navy'}`}>
+                                                        {rowTotal.toLocaleString()}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr className="bg-slate-50">
+                                            <td colSpan={5} className="text-right py-4 cursor-default">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tổng cộng giá trị PR</div>
+                                                <div className="text-[9px] uppercase font-bold text-amber-600 flex justify-end gap-1 mt-1">
+                                                    Approval Chain: Trưởng phòng → Giám đốc {selectedPR.total >= 100000000 ? '→ Tổng Giám Đốc' : ''}
                                                 </div>
-                                                <div className="text-[10px] text-slate-500 font-mono">
-                                                    Đơn giá ước tính: {item.estimatedPrice.toLocaleString()} ₫
-                                                </div>
+                                            </td>
+                                            <td className="text-right font-mono font-black text-2xl text-erp-navy py-4 pr-3">
+                                                {selectedPR.total.toLocaleString()} ₫
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* Cột phải: Lịch sử & Đính kèm */}
+                        <div className="space-y-8">
+                            {/* Tài liệu đính kèm */}
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 flex items-center gap-2">
+                                    <Paperclip size={16} /> Tài liệu đính kèm
+                                </h3>
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between p-3 border border-slate-100 rounded-lg hover:border-erp-blue/30 transition-colors group cursor-pointer">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 bg-blue-50 text-erp-blue rounded flex items-center justify-center shrink-0">
+                                                <FileText size={14} />
                                             </div>
-                                        ))}
+                                            <div>
+                                                <div className="text-xs font-bold text-erp-navy group-hover:text-erp-blue transition-colors">Bao_gia_ncc_A.pdf</div>
+                                                <div className="text-[10px] text-slate-400">1.2 MB</div>
+                                            </div>
+                                        </div>
+                                        <Eye size={16} className="text-slate-300 group-hover:text-erp-blue" />
                                     </div>
-                                    <div className="mt-4 flex justify-between items-center p-3 bg-erp-navy rounded-xl text-white">
-                                        <span className="text-[10px] font-bold uppercase opacity-60">Tổng cộng</span>
-                                        <span className="text-sm font-black font-mono">{selectedPR.total.toLocaleString()} ₫</span>
+                                    <div className="flex items-center justify-between p-3 border border-slate-100 rounded-lg hover:border-erp-blue/30 transition-colors group cursor-pointer">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 bg-blue-50 text-erp-blue rounded flex items-center justify-center shrink-0">
+                                                <FileText size={14} />
+                                            </div>
+                                            <div>
+                                                <div className="text-xs font-bold text-erp-navy group-hover:text-erp-blue transition-colors">De_xuat_mua.docx</div>
+                                                <div className="text-[10px] text-slate-400">450 KB</div>
+                                            </div>
+                                        </div>
+                                        <Eye size={16} className="text-slate-300 group-hover:text-erp-blue" />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-3">
-                                <button
-                                    onClick={() => {
-                                        approvePR(selectedPR.id);
-                                        setSelectedPR(null);
-                                    }}
-                                    className="w-full btn-primary bg-erp-navy shadow-erp-navy/20 flex items-center justify-center gap-2"
-                                >
-                                    <CheckCircle2 size={18} /> Phê duyệt ngay
-                                </button>
-                                <button className="w-full btn-secondary text-red-600 border-red-50 hover:bg-red-50 flex items-center justify-center gap-2">
-                                    <XCircle size={18} /> Từ chối
-                                </button>
-                            </div>
-
-
-                            <div className="mt-8 h-px bg-slate-50"></div>
-                            <div className="mt-6">
-                                <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-4">Lịch sử phê duyệt</h4>
-                                <div className="space-y-4">
-                                    <div className="flex gap-3">
-                                        <div className="w-1 bg-emerald-400 rounded-full"></div>
-                                        <div>
-                                            <div className="text-[10px] font-black text-erp-navy uppercase">Quản đốc xưởng (Auto)</div>
-                                            <div className="text-[9px] text-emerald-600 font-bold">ĐÃ XÁC NHẬN NHU CẦU</div>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-3">
-                                        <div className="w-1 bg-slate-200 rounded-full"></div>
-                                        <div>
-                                            <div className="text-[10px] font-black text-slate-400 uppercase">Tài chính ( Jonathan Doe )</div>
-                                            <div className="text-[9px] text-amber-600 font-bold animate-pulse">ĐANG CHỜ BẠN...</div>
+                            {/* Lịch sử duyệt */}
+                            <div className="bg-slate-50 rounded-xl shadow-sm border border-slate-200 p-6 relative">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+                                    <History size={14} /> Lịch sử duyệt trước đó
+                                </h3>
+                                <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 md:before:left-2 md:-left-2 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-emerald-400 before:via-slate-200 before:to-transparent">
+                                    
+                                    <div className="relative flex items-center group">
+                                        <div className="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-sm shrink-0 z-10 mr-4"></div>
+                                        <div className="bg-white p-3 rounded-xl border border-emerald-100 shadow-sm w-full">
+                                            <div className="flex justify-between items-start mb-1">
+                                                <div className="text-[10px] font-black uppercase text-emerald-600">Phó Quản đốc</div>
+                                                <div className="text-[9px] text-slate-400 font-bold">14/03 09:30 AM</div>
+                                            </div>
+                                            <div className="text-xs font-bold text-erp-navy mb-1">Tran Van B (Đã duyệt)</div>
+                                            <div className="text-[10px] italic text-slate-600 bg-emerald-50/50 p-2 rounded">"Đồng ý đề xuất, cần hàng gấp cho dự án."</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    ) : (
-                        <div className="erp-card bg-slate-50/50 border-dashed border-2 flex flex-col items-center justify-center py-20 text-slate-400">
-                            <CheckSquare size={40} className="mb-4 opacity-20" />
-                            <p className="text-xs font-bold uppercase tracking-widest">Chọn một PR để xem chi tiết</p>
+                    </div>
+
+                    {/* Khu vực Action (Floating Bottom or Static Bottom) */}
+                    <div className="mt-8 bg-white border border-slate-200 rounded-2xl shadow-xl shadow-erp-navy/5 p-6 md:flex gap-8">
+                        <div className="flex-1 space-y-3 mb-6 md:mb-0">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ghi chú phê duyệt (Tùy chọn cho Approve, Bắt buộc cho Reject)</label>
+                            <textarea 
+                                className="erp-input w-full h-24 resize-none leading-relaxed text-sm bg-slate-50 focus:bg-white"
+                                placeholder="Nhập lý do, ý kiến bảo lưu hoặc ghi chú bổ sung..."
+                                value={memo}
+                                onChange={e => setMemo(e.target.value)}
+                            />
                         </div>
-                    )}
+                        
+                        <div className="flex-1 flex flex-col justify-end gap-3 md:max-w-xs">
+                            {actionType && actionType !== "APPROVE" ? (
+                                <div className="animate-in fade-in slide-in-from-right-4">
+                                    <div className="mb-3 text-xs font-bold text-slate-600 text-center">
+                                        Bạn đang chọn: <span className={actionType === 'REJECT' ? 'text-red-600 font-black' : 'text-amber-600 font-black'}>{actionType === 'REJECT' ? 'TỪ CHỐI' : 'YÊU CẦU BỔ SUNG'}</span>
+                                    </div>
+                                    <button 
+                                        onClick={handleAction} 
+                                        disabled={isSubmitting}
+                                        className={`w-full py-3.5 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 text-white shadow-lg transition-all ${
+                                            actionType === 'REJECT' 
+                                            ? 'bg-red-600 hover:bg-red-700 shadow-red-600/30' 
+                                            : 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/30'
+                                        }`}
+                                    >
+                                        {isSubmitting ? 'Đang xử lý...' : 'Xác nhận Thao tác'}
+                                    </button>
+                                    <button onClick={() => setActionType(null)} className="w-full mt-2 py-2 text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 underline">Hủy thay đổi</button>
+                                </div>
+                            ) : (
+                                <>
+                                    <button 
+                                        onClick={() => { setActionType("APPROVE"); handleAction(); }}
+                                        disabled={isSubmitting}
+                                        className="w-full py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 text-white bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/30 transition-all"
+                                    >
+                                        <Check size={18} /> Phê Duyệt Ngay
+                                    </button>
+                                    <div className="flex gap-3">
+                                        <button 
+                                            onClick={() => setActionType("MORE_INFO")}
+                                            className="flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-1.5 text-amber-600 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-all"
+                                        >
+                                            <MessageSquareWarning size={14} /> Bổ sung
+                                        </button>
+                                        <button 
+                                            onClick={() => setActionType("REJECT")}
+                                            className="flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-1.5 text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 transition-all"
+                                        >
+                                            <XCircle size={14} /> Từ chối
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
         </main>
     );
 }

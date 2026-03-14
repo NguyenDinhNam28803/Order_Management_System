@@ -3,8 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
+// imports
 import { Grid, List, ChevronDown, Star, ShoppingCart, Eye, Heart, LayoutGrid } from "lucide-react";
 
 const categories = [
@@ -143,9 +142,6 @@ export default function ShopPage() {
 
     return (
         <main className="min-h-screen bg-white">
-            <Header />
-            <Navbar />
-
             {/* Breadcrumbs */}
             <div className="bg-gray-50 py-10">
                 <div className="container-custom">
