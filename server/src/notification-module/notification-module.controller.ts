@@ -4,11 +4,23 @@ import { CreateNotificationTemplateDto } from './dto/create-notification-templat
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { EmailService } from './email.service';
+import { EmailTemplatesService } from './email-template.service';
+
+export interface EmailRequest {
+  to: string;
+  subject: string;
+  data: Record<string, any>;
+}
 
 @ApiTags('Notification Management')
 @Controller('notifications')
 export class NotificationModuleController {
-  constructor(private readonly service: NotificationModuleService) {}
+  constructor(
+    private readonly service: NotificationModuleService,
+    private readonly emailService: EmailService,
+    private readonly emailTemplatesService: EmailTemplatesService,
+  ) {}
 
   /**
    * Tạo một mẫu thông báo (template) mới
@@ -59,5 +71,25 @@ export class NotificationModuleController {
   @UseGuards(JwtAuthGuard)
   async findAllByRecipient(@Param('id') id: string) {
     return this.service.findAllByRecipient(id);
+  }
+
+  /**
+   *  Gửi email thông báo với nội dung được tạo từ mẫu
+   * @param to Địa chỉ email người nhận
+   * @param subject Chủ đề email
+   * @param data Dữ liệu để điền vào mẫu email
+   * @return Kết quả gửi email
+   * @description Phương thức này sẽ sử dụng EmailTemplatesService để tạo nội dung email dựa trên mẫu và dữ liệu đầu vào, sau đó sử dụng EmailService để gửi email đến người nhận.
+   */
+  @Post('send-email')
+  @ApiOperation({
+    summary: 'test gửi email',
+    description: 'Gửi email thông báo với nội dung được tạo từ mẫu',
+  })
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
+  async sendEmailNotification(@Body() data: EmailRequest) {
+    const html = this.emailTemplatesService.render(data.subject, data.data);
+    await this.emailService.sendEmail(data.to, data.subject, html);
   }
 }
