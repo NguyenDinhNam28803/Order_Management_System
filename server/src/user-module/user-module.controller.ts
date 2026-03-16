@@ -31,7 +31,7 @@ export class UserModuleController {
    * @param req Yêu cầu chứa thông tin người dùng đã xác thực từ JWT
    * @returns Thông tin chi tiết của người dùng hiện tại
    */
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiOperation({

@@ -80,6 +80,22 @@ export class PomoduleController {
   }
 
   /**
+   * Gửi đơn hàng đi phê duyệt (chuyển sang PENDING_APPROVAL)
+   * @param id ID của đơn hàng
+   * @param req Thông tin người dùng thực hiện yêu cầu
+   * @returns Đơn hàng sau khi gửi duyệt
+   */
+  @Post(':id/submit')
+  @ApiOperation({
+    summary: 'Gửi đơn hàng phê duyệt',
+    description: 'Kích hoạt luồng duyệt cho đơn hàng',
+  })
+  submit(@Param('id') id: string, @Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.poService.submit(id, req.user);
+  }
+
+  /**
    * Lấy danh sách tất cả các đơn đặt hàng của tổ chức hiện tại
    * @param req Thông tin người dùng để xác định tổ chức
    * @returns Danh sách các đơn đặt hàng

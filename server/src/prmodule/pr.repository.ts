@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrDto } from './dto/create-pr.dto';
 import { PrStatus, PurchaseRequisition } from '@prisma/client';
+import { Decimal } from 'generated/prisma/internal/prismaNamespaceBrowser';
 
 @Injectable()
 export class PrRepository {
@@ -21,6 +22,21 @@ export class PrRepository {
       (sum, item) => sum + item.qty * item.estimatedPrice,
       0,
     );
+
+    // kiểm tra ngân sách trước khi tạo PR
+    const isWithinBudget = await this.prisma.costCenter.findFirst({
+      where: {
+        orgId,
+        deptId,
+      },
+    });
+    if (!isWithinBudget) {
+      throw new Error('Total estimate exceeds department budget');
+    }
+
+    if (Decimal(totalEstimate).greaterThan(isWithinBudget.budgetAnnual)) {
+      throw new Error('Total estimate exceeds department budget');
+    }
 
     return this.prisma.$transaction(async (tx) => {
       const pr = await tx.purchaseRequisition.create({

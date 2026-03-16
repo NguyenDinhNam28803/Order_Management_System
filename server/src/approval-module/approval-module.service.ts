@@ -228,9 +228,34 @@ export class ApprovalModuleService {
         });
         break;
       case DocumentType.PURCHASE_ORDER:
-        await this.prisma.purchaseOrder.update({
-          where: { id },
-          data: { status: status as PoStatus },
+        await this.prisma.$transaction(async (tx) => {
+          const po = await tx.purchaseOrder.findUnique({ where: { id } });
+          if (!po) return;
+
+          // Nếu bị từ chối, giải phóng ngân sách đã cam kết
+          if (status === 'REJECTED' && po.status !== PoStatus.REJECTED) {
+            if (po.deptId && po.costCenterId) {
+              const budget = await tx.budgetAllocation.findFirst({
+                where: {
+                  orgId: po.orgId,
+                  deptId: po.deptId,
+                  costCenterId: po.costCenterId,
+                  currency: po.currency,
+                },
+              });
+              if (budget) {
+                await tx.budgetAllocation.update({
+                  where: { id: budget.id },
+                  data: { committedAmount: { decrement: po.totalAmount } },
+                });
+              }
+            }
+          }
+
+          await tx.purchaseOrder.update({
+            where: { id },
+            data: { status: status as PoStatus },
+          });
         });
         break;
       // Thêm các loại khác (GRN, INVOICE, PAYMENT) khi hệ thống mở rộng
