@@ -25,6 +25,11 @@ export class ProductModuleController {
 
   // --- Category Endpoints ---
 
+  /**
+   * Tạo một danh mục sản phẩm mới
+   * @param createCategoryDto Dữ liệu tạo danh mục
+   * @returns Danh mục vừa tạo
+   */
   @Post('categories')
   @ApiOperation({
     summary: 'Tạo danh mục sản phẩm',
@@ -34,6 +39,10 @@ export class ProductModuleController {
     return this.productService.createCategory(createCategoryDto);
   }
 
+  /**
+   * Lấy danh sách tất cả các danh mục sản phẩm hiện có
+   * @returns Danh sách các danh mục
+   */
   @Get('categories')
   @ApiOperation({
     summary: 'Lấy tất cả danh mục sản phẩm',
@@ -43,6 +52,11 @@ export class ProductModuleController {
     return this.productService.findAllCategories();
   }
 
+  /**
+   * Lấy thông tin chi tiết của một danh mục sản phẩm theo ID
+   * @param id ID của danh mục
+   * @returns Chi tiết danh mục
+   */
   @Get('categories/:id')
   @ApiOperation({
     summary: 'Lấy danh mục sản phẩm theo ID',
@@ -52,6 +66,12 @@ export class ProductModuleController {
     return this.productService.findCategoryById(id);
   }
 
+  /**
+   * Cập nhật thông tin của một danh mục sản phẩm theo ID
+   * @param id ID của danh mục
+   * @param updateCategoryDto Dữ liệu cập nhật
+   * @returns Danh mục sau khi cập nhật
+   */
   @Patch('categories/:id')
   @ApiOperation({
     summary: 'Cập nhật danh mục sản phẩm',
@@ -66,6 +86,11 @@ export class ProductModuleController {
     return this.productService.updateCategory(id, updateCategoryDto);
   }
 
+  /**
+   * Xóa một danh mục sản phẩm khỏi hệ thống theo ID
+   * @param id ID của danh mục cần xóa
+   * @returns Kết quả xóa
+   */
   @Delete('categories/:id')
   @ApiOperation({
     summary: 'Xóa danh mục sản phẩm',
@@ -77,6 +102,11 @@ export class ProductModuleController {
 
   // --- Product Endpoints ---
 
+  /**
+   * Tạo một sản phẩm mới trong hệ thống
+   * @param createProductDto Dữ liệu tạo sản phẩm
+   * @returns Sản phẩm vừa tạo
+   */
   @Post()
   @ApiOperation({
     summary: 'Tạo sản phẩm mới',
@@ -86,6 +116,10 @@ export class ProductModuleController {
     return this.productService.createProduct(createProductDto);
   }
 
+  /**
+   * Lấy danh sách tất cả các sản phẩm hiện có
+   * @returns Danh sách sản phẩm
+   */
   @Get()
   @ApiOperation({
     summary: 'Lấy tất cả sản phẩm',
@@ -102,6 +136,11 @@ export class ProductModuleController {
   //   return this.productService.smartSearchProducts(query);
   // }
 
+  /**
+   * Lấy thông tin chi tiết của một sản phẩm cụ thể theo ID
+   * @param id ID của sản phẩm
+   * @returns Chi tiết sản phẩm
+   */
   @Get(':id')
   @ApiOperation({
     summary: 'Lấy sản phẩm theo ID',
@@ -111,6 +150,12 @@ export class ProductModuleController {
     return this.productService.findProductById(id);
   }
 
+  /**
+   * Cập nhật thông tin của một sản phẩm theo ID
+   * @param id ID của sản phẩm
+   * @param updateProductDto Dữ liệu cập nhật
+   * @returns Sản phẩm sau khi cập nhật
+   */
   @Patch(':id')
   @ApiOperation({
     summary: 'Cập nhật sản phẩm',
@@ -123,6 +168,11 @@ export class ProductModuleController {
     return this.productService.updateProduct(id, updateProductDto);
   }
 
+  /**
+   * Xóa một sản phẩm khỏi hệ thống theo ID
+   * @param id ID của sản phẩm cần xóa
+   * @returns Kết quả xóa
+   */
   @Delete(':id')
   @ApiOperation({
     summary: 'Xóa sản phẩm',

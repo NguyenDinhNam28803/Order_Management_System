@@ -49,6 +49,26 @@ export class PomoduleService {
     return this.repository.create(createPoDto, user.sub, orgId, poNumber);
   }
 
+  async resetPoStatus(poId: string) {
+    return this.repository.resetPoStatus(poId);
+  }
+
+  async confirmPo(poId: string) {
+    const po = await this.prisma.purchaseOrder.findUnique({
+      where: { id: poId },
+    });
+    if (!po) throw new NotFoundException('PO not found');
+    return this.repository.confirmPoFromSupplier(poId);
+  }
+
+  async rejectPo(poId: string) {
+    const po = await this.prisma.purchaseOrder.findUnique({
+      where: { id: poId },
+    });
+    if (!po) throw new NotFoundException('PO not found');
+    return this.repository.rejectPoFromSupplier(poId);
+  }
+
   async updateStatus(id: string, status: PoStatus) {
     const po = await this.prisma.purchaseOrder.findUnique({ where: { id } });
     if (!po) throw new NotFoundException('PO not found');

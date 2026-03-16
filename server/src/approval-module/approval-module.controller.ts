@@ -19,8 +19,9 @@ export class ApprovalModuleController {
   constructor(private readonly approvalService: ApprovalModuleService) {}
 
   /**
-   * Lấy danh sách các yêu cầu đang chờ tôi duyệt
-   * GET /approval-module/pending
+   * Lấy danh sách các yêu cầu đang chờ người dùng hiện tại phê duyệt
+   * @param req Yêu cầu chứa thông tin người dùng từ JWT
+   * @returns Danh sách các yêu cầu đang chờ duyệt
    */
   @Get('pending')
   @ApiOperation({
@@ -34,8 +35,11 @@ export class ApprovalModuleController {
   }
 
   /**
-   * Thực hiện hành động Duyệt hoặc Từ chối
-   * POST /approval-module/:id/action
+   * Thực hiện hành động Duyệt (APPROVE) hoặc Từ chối (REJECT) cho một yêu cầu
+   * @param workflowId ID của quy trình phê duyệt
+   * @param body Dữ liệu hành động (action) và nhận xét (comment)
+   * @param req Thông tin người thực hiện hành động
+   * @returns Kết quả xử lý phê duyệt
    */
   @Post(':id/action')
   @ApiOperation({

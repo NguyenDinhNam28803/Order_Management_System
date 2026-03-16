@@ -20,6 +20,12 @@ import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 export class PrmoduleController {
   constructor(private readonly prService: PrmoduleService) {}
 
+  /**
+   * Tạo một yêu cầu mua sắm (Purchase Requisition - PR) mới
+   * @param createPrDto Dữ liệu yêu cầu mua sắm
+   * @param req Thông tin người dùng từ JWT
+   * @returns Yêu cầu mua sắm vừa tạo
+   */
   @Post()
   @ApiOperation({
     summary: 'Tạo yêu cầu mua hàng mới',
@@ -32,6 +38,11 @@ export class PrmoduleController {
     return this.prService.create(createPrDto, req.user);
   }
 
+  /**
+   * Lấy danh sách tất cả các yêu cầu mua sắm của tổ chức hiện tại
+   * @param req Thông tin người dùng để lọc theo tổ chức
+   * @returns Danh sách các yêu cầu mua sắm
+   */
   @Get()
   @ApiOperation({
     summary: 'Lấy tất cả yêu cầu mua hàng',
@@ -42,6 +53,11 @@ export class PrmoduleController {
     return this.prService.findAll(req.user);
   }
 
+  /**
+   * Lấy danh sách các yêu cầu mua sắm do chính người dùng hiện tại tạo ra
+   * @param req Thông tin người dùng hiện tại
+   * @returns Danh sách PR cá nhân
+   */
   @Get('my')
   @ApiOperation({
     summary: 'Lấy yêu cầu mua hàng của tôi',
@@ -51,6 +67,11 @@ export class PrmoduleController {
     return this.prService.findMyPrs(req.user.sub);
   }
 
+  /**
+   * Lấy thông tin chi tiết của một yêu cầu mua sắm theo ID
+   * @param id ID của yêu cầu mua sắm
+   * @returns Chi tiết PR
+   */
   @Get(':id')
   @ApiOperation({
     summary: 'Lấy chi tiết yêu cầu mua hàng theo ID',
@@ -60,6 +81,11 @@ export class PrmoduleController {
     return this.prService.findOne(id);
   }
 
+  /**
+   * Gửi yêu cầu mua sắm để bắt đầu quy trình phê duyệt
+   * @param id ID của yêu cầu mua sắm cần gửi duyệt
+   * @returns Trạng thái PR sau khi gửi duyệt
+   */
   @Post(':id/submit')
   @ApiOperation({
     summary: 'Gửi yêu cầu mua hàng để phê duyệt',

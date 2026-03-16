@@ -7,6 +7,11 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class AiController {
   constructor(private readonly aiService: AiService) {}
 
+  /**
+   * Gửi câu hỏi cho AI để truy vấn thông tin từ cơ sở dữ liệu
+   * @param prompt Câu hỏi từ người dùng
+   * @returns Câu trả lời từ AI dựa trên dữ liệu hệ thống
+   */
   @Get('ask')
   @ApiOperation({ summary: 'Hỏi AI về dữ liệu trong hệ thống' })
   @ApiQuery({
@@ -18,12 +23,14 @@ export class AiController {
     if (!prompt) {
       return { message: 'Vui lòng cung cấp prompt' };
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const answer = await this.aiService.askAiAboutDatabase(prompt);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { answer };
   }
 
+  /**
+   * Kiểm tra khả năng kết nối và phản hồi của dịch vụ AI
+   * @returns Kết quả test AI query
+   */
   @Get('test')
   @ApiOperation({ summary: 'Test AI query' })
   async testAi() {

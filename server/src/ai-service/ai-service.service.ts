@@ -92,7 +92,8 @@ export class AiService implements OnModuleInit {
           functionDeclarations: [
             {
               name: 'query_database',
-              description: 'Truy vấn dữ liệu từ database thông qua Prisma.',
+              description:
+                'Truy vấn và quản lý dữ liệu từ database thông qua Prisma.',
               parameters: {
                 type: 'OBJECT',
                 properties: {

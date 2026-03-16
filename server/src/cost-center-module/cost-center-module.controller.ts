@@ -29,6 +29,11 @@ import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 export class CostCenterModuleController {
   constructor(private readonly costCenterService: CostCenterModuleService) {}
 
+  /**
+   * Tạo trung tâm chi phí mới cho tổ chức hiện tại
+   * @param createCostCenterDto Dữ liệu tạo trung tâm chi phí
+   * @returns Trung tâm chi phí vừa tạo
+   */
   @Post()
   @ApiOperation({
     summary: 'Tạo trung tâm chi phí mới',
@@ -38,6 +43,11 @@ export class CostCenterModuleController {
     return this.costCenterService.create(createCostCenterDto);
   }
 
+  /**
+   * Lấy danh sách tất cả trung tâm chi phí của một tổ chức
+   * @param orgId ID của tổ chức
+   * @returns Danh sách trung tâm chi phí
+   */
   @Get()
   @ApiOperation({
     summary: 'Lấy tất cả trung tâm chi phí cho một tổ chức',
@@ -49,6 +59,11 @@ export class CostCenterModuleController {
     return this.costCenterService.findAll(orgId);
   }
 
+  /**
+   * Lấy thông tin chi tiết của một trung tâm chi phí theo ID
+   * @param id ID của trung tâm chi phí
+   * @returns Chi tiết trung tâm chi phí
+   */
   @Get(':id')
   @ApiOperation({
     summary: 'Lấy chi tiết trung tâm chi phí theo ID',
@@ -58,6 +73,12 @@ export class CostCenterModuleController {
     return this.costCenterService.findOne(id);
   }
 
+  /**
+   * Cập nhật thông tin của một trung tâm chi phí theo ID
+   * @param id ID của trung tâm chi phí
+   * @param updateCostCenterDto Dữ liệu cập nhật
+   * @returns Trung tâm chi phí sau khi cập nhật
+   */
   @Patch(':id')
   @ApiOperation({
     summary: 'Cập nhật trung tâm chi phí',
@@ -70,6 +91,11 @@ export class CostCenterModuleController {
     return this.costCenterService.update(id, updateCostCenterDto);
   }
 
+  /**
+   * Xóa một trung tâm chi phí theo ID
+   * @param id ID của trung tâm chi phí cần xóa
+   * @returns Kết quả xóa
+   */
   @Delete(':id')
   @ApiOperation({
     summary: 'Xóa trung tâm chi phí',

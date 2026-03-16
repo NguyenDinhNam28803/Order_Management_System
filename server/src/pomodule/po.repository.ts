@@ -83,6 +83,39 @@ export class PoRepository {
     });
   }
 
+  async confirmPoFromSupplier(poId: string) {
+    const po = await this.prisma.purchaseOrder.findUnique({
+      where: { id: poId },
+    });
+    if (!po) throw new Error('PO not found');
+    return this.prisma.purchaseOrder.update({
+      where: { id: poId },
+      data: { status: PoStatus.CONFIRMED },
+    });
+  }
+
+  async rejectPoFromSupplier(poId: string) {
+    const po = await this.prisma.purchaseOrder.findUnique({
+      where: { id: poId },
+    });
+    if (!po) throw new Error('PO not found');
+    return this.prisma.purchaseOrder.update({
+      where: { id: poId },
+      data: { status: PoStatus.REJECTED },
+    });
+  }
+
+  async resetPoStatus(poId: string) {
+    const po = await this.prisma.purchaseOrder.findUnique({
+      where: { id: poId },
+    });
+    if (!po) throw new Error('PO not found');
+    return this.prisma.purchaseOrder.update({
+      where: { id: poId },
+      data: { status: PoStatus.DRAFT },
+    });
+  }
+
   async findAll(orgId: string) {
     return this.prisma.purchaseOrder.findMany({
       where: { orgId },
