@@ -8,7 +8,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
-    role: "Requester" | "Approver" | "Director" | "Buyer" | "Receiver" | "Finance" | "Admin" | "Supplier";
+    role: "REQUESTER" | "DEPT_APPROVER" | "DIRECTOR" | "CEO" | "PROCUREMENT" | "WAREHOUSE" | "QA" | "FINANCE" | "SUPPLIER" | "PLATFORM_ADMIN" | "SYSTEM";
     department: string;
     status: "ONLINE" | "AWAY" | "OFFLINE";
     icon: string;
@@ -121,8 +121,8 @@ interface ProcurementContextType {
     matchInvoice: (invId: string, status: InvoiceStatus) => void;
     payInvoice: (invId: string) => void;
 
-    login: (email: string) => boolean;
-    register: (name: string, email: string) => void;
+    login: (email: string, password?: string) => Promise<boolean>;
+    register: (name: string, email: string, password?: string) => Promise<boolean>;
     logout: () => void;
 }
 
@@ -133,14 +133,17 @@ const ProcurementContext = createContext<ProcurementContextType | undefined>(und
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
     const [mockUsers, setMockUsers] = useState<User[]>([
-        { id: "1", name: "Nguyễn Nhân Viên", email: "requester@erp.com", role: "Requester", department: "Sản xuất", status: "ONLINE", icon: "NV" },
-        { id: "2", name: "Trần Trưởng Phòng", email: "approver@erp.com", role: "Approver", department: "Kế hoạch", status: "ONLINE", icon: "TP" },
-        { id: "3", name: "Lý Giám Đốc", email: "director@erp.com", role: "Director", department: "Ban Giám Đốc", status: "ONLINE", icon: "GĐ" },
-        { id: "4", name: "Lê Thu Mua", email: "buyer@erp.com", role: "Buyer", department: "Thu mua", status: "AWAY", icon: "TM" },
-        { id: "5", name: "Phạm Kho Vận", email: "receiver@erp.com", role: "Receiver", department: "Kho hàng", status: "OFFLINE", icon: "KV" },
-        { id: "6", name: "Hoàng Kế Toán", email: "finance@erp.com", role: "Finance", department: "Tài chính", status: "ONLINE", icon: "KT" },
-        { id: "7", name: "Admin Hệ Thống", email: "admin@erp.com", role: "Admin", department: "IT", status: "ONLINE", icon: "AD" },
-        { id: "8", name: "Formosa Corp (NCC)", email: "supplier@vendor.com", role: "Supplier", department: "Đối tác B2B", status: "ONLINE", icon: "B2B" },
+        { id: "1", name: "John Requester", email: "john.requester@gts.com", role: "REQUESTER", department: "Sản xuất", status: "ONLINE", icon: "JR" },
+        { id: "2", name: "Sarah IT Manager", email: "sarah.approver@gts.com", role: "DEPT_APPROVER", department: "IT Infrastructure", status: "ONLINE", icon: "SA" },
+        { id: "3", name: "David Director", email: "david.director@gts.com", role: "DIRECTOR", department: "Ban Giám Đốc", status: "ONLINE", icon: "DD" },
+        { id: "4", name: "Mike Procurement", email: "mike.procurement@gts.com", role: "PROCUREMENT", department: "Thu mua", status: "AWAY", icon: "MP" },
+        { id: "5", name: "Warehouse Team", email: "warehouse@gts.com", role: "WAREHOUSE", department: "Kho hàng", status: "OFFLINE", icon: "WH" },
+        { id: "6", name: "Alice Finance", email: "alice.finance@gts.com", role: "FINANCE", department: "Tài chính", status: "ONLINE", icon: "AF" },
+        { id: "7", name: "GTS Admin", email: "admin@gts.com", role: "PLATFORM_ADMIN", department: "IT", status: "ONLINE", icon: "AD" },
+        { id: "8", name: "Sales Manager (NCC)", email: "sales@hanoihardware.vn", role: "SUPPLIER", department: "Đối tác B2B", status: "ONLINE", icon: "SM" },
+        { id: "9", name: "Board CEO", email: "ceo@gts.com", role: "CEO", department: "Executive Office", status: "ONLINE", icon: "CE" },
+        { id: "10", name: "QA Center", email: "qa@gts.com", role: "QA", department: "Quality Assurance", status: "ONLINE", icon: "QA" },
+        { id: "11", name: "System Daemon", email: "system@gts.com", role: "SYSTEM", department: "Infrastructure", status: "ONLINE", icon: "SY" },
     ]);
 
     const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -203,31 +206,121 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         }
     }, [])
 
-    const login = (email: string) => {
-        const user = mockUsers.find(u => u.email === email);
-        if (user) {
-            setCurrentUser(user);
+    const login = async (email: string, password?: string): Promise<boolean> => {
+        try {
+            const res = await fetch('http://localhost:3000/auth-module/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: password || "password123" }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                
+                // Store token
+                if (data.accessToken) {
+                    localStorage.setItem('accessToken', data.accessToken);
+                }
+                
+                // Set the current user based on token/data if available, otherwise fallback
+                const userObj = mockUsers.find(u => u.email === email);
+                if (userObj) {
+                    setCurrentUser(userObj);
+                } else {
+                    const fullName = data.user?.fullName || email.split('@')[0];
+                    setCurrentUser({
+                        id: data.user?.id || Date.now().toString(),
+                        name: fullName,
+                        email: email,
+                        role: data.user?.role || "Requester",
+                        department: data.user?.department || "N/A",
+                        status: "ONLINE",
+                        icon: fullName.substring(0, 2).toUpperCase()
+                    });
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error("Login Error:", error);
+            // Fallback to mock login if backend is unreachable for demo
+            const user = mockUsers.find(u => u.email === email);
+            if (user) {
+                setCurrentUser(user);
+                return true;
+            }
+            return false;
+        }
+    };
+
+    const register = async (name: string, email: string, password?: string): Promise<boolean> => {
+        try {
+            // Using a dummy orgId per RegisterDto requirements
+            const orgId = "325f187a-c1f6-4a4e-8692-234b6e50334a"; 
+            const res = await fetch('http://localhost:3000/auth-module/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    orgId,
+                    email, 
+                    fullName: name,
+                    password: password || "Password@123",
+                    role: "REQUESTER" 
+                }),
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                const newUser: User = {
+                    id: data.id || (mockUsers.length + 1).toString(),
+                    name,
+                    email,
+                    role: data.role || "Requester",
+                    department: "Default",
+                    status: "ONLINE",
+                    icon: name.substring(0, 2).toUpperCase()
+                };
+                setMockUsers(prev => [...prev, newUser]);
+                setCurrentUser(newUser);
+                return true;
+            } else {
+                const err = await res.json();
+                console.error("Registration failed:", err);
+                // Return descriptive error or false
+                return false;
+            }
+        } catch (error) {
+            console.error("Register Error:", error);
+            // Fallback to mock register
+            const newUser: User = {
+                id: (mockUsers.length + 1).toString(),
+                name,
+                email,
+                role: "REQUESTER",
+                department: "Default",
+                status: "ONLINE",
+                icon: name.substring(0, 2).toUpperCase()
+            };
+            setMockUsers(prev => [...prev, newUser]);
+            setCurrentUser(newUser);
             return true;
         }
-        return false;
-    };
-
-    const register = (name: string, email: string) => {
-        const newUser: User = {
-            id: (mockUsers.length + 1).toString(),
-            name,
-            email,
-            role: "Requester",
-            department: "Default",
-            status: "ONLINE",
-            icon: name.substring(0, 2).toUpperCase()
-        };
-        setMockUsers(prev => [...prev, newUser]);
-        setCurrentUser(newUser);
     };
 
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                await fetch('http://localhost:3000/auth-module/logout', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                localStorage.removeItem('accessToken');
+            }
+        } catch (e) {
+            console.error("Logout error", e);
+        }
         setCurrentUser(null);
     };
 
@@ -236,7 +329,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         const fullPR: PR = {
             ...newPR,
             id,
-            status: currentUser?.role === "Approver" ? "PENDING_DIRECTOR" : "PENDING",
+            status: currentUser?.role === "DEPT_APPROVER" ? "PENDING_DIRECTOR" : "PENDING",
             createdAt: new Date().toISOString().split("T")[0],
         };
         setPrs((prev) => [fullPR, ...prev]);
@@ -246,7 +339,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         setPrs((prev) =>
             prev.map((pr) => {
                 if (pr.id === id) {
-                    if (currentUser?.role === "Approver") {
+                    if (currentUser?.role === "DEPT_APPROVER") {
                         return { ...pr, status: "PENDING_DIRECTOR" };
                     }
                     return { ...pr, status: "APPROVED" };

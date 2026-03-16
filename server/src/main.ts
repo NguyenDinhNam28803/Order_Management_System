@@ -90,8 +90,16 @@ async function bootstrap() {
     customSiteTitle: 'OMS API Documentation',
   });
 
+  // Enable CORS
+  app.enableCors({
+    origin: '*',
+    credentials: true,
+  });
+
   const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
+  console.log('Main DB URL:', configService.get<string>('DATABASE_URL')?.replace(/:[^:@]+@/, ':****@'));
+
 
   console.log('\n' + pc.bold(pc.cyan('🚀 SERVER STARTING UP...')));
   console.log(pc.gray('------------------------------------------'));

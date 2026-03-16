@@ -11,68 +11,71 @@ import { usePathname } from "next/navigation";
 import { useProcurement } from "../context/ProcurementContext";
 
 const roleMapping: Record<string, { label: string, class: string }> = {
-    "Requester": { label: "Người yêu cầu", class: "role-requester" },
-    "Approver": { label: "Trưởng phòng", class: "role-approver" },
-    "Director": { label: "Giám đốc", class: "role-approver" },
-    "Buyer": { label: "Thu mua", class: "role-procurement" },
-    "Receiver": { label: "Kho vận", class: "role-warehouse" },
-    "Finance": { label: "Tài chính", class: "role-finance" },
-    "Admin": { label: "Quản trị viên", class: "role-admin" },
-    "Supplier": { label: "Nhà cung cấp", class: "role-supplier" },
+    "REQUESTER": { label: "Người yêu cầu", class: "role-requester" },
+    "DEPT_APPROVER": { label: "Trưởng phòng", class: "role-approver" },
+    "DIRECTOR": { label: "Giám đốc", class: "role-approver" },
+    "CEO": { label: "CEO / Board", class: "role-admin" },
+    "PROCUREMENT": { label: "Thu mua", class: "role-procurement" },
+    "WAREHOUSE": { label: "Kho vận", class: "role-warehouse" },
+    "QA": { label: "Kiểm soát CL", class: "role-warehouse" },
+    "FINANCE": { label: "Tài chính", class: "role-finance" },
+    "PLATFORM_ADMIN": { label: "Quản trị viên", class: "role-admin" },
+    "SUPPLIER": { label: "Nhà cung cấp", class: "role-supplier" },
+    "SYSTEM": { label: "Hệ thống AI", class: "role-admin" },
 };
 
 const navigation = [
     {
         group: "Menu chính", 
-        roles: ["Requester", "Approver", "Director", "Buyer", "Admin"],
+        roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "CEO"],
         items: [
-            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["Requester", "Approver", "Director", "Buyer", "Admin", "Receiver", "Finance"] },
-            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["Requester", "Approver", "Director", "Buyer", "Admin"] },
-            { name: "Phê duyệt", icon: CheckSquare, path: "/approvals", roles: ["Approver", "Director", "Admin"] },
-            { name: "Nguồn hàng & Báo giá", icon: Search, path: "/sourcing", roles: ["Buyer", "Admin"] },
+            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
+            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Phê duyệt", icon: CheckSquare, path: "/approvals", roles: ["DEPT_APPROVER", "DIRECTOR", "PLATFORM_ADMIN", "CEO"] },
+            { name: "Nguồn hàng & Báo giá", icon: Search, path: "/sourcing", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
         ]
     },
     {
         group: "Nghiệp vụ Mua hàng & Kho", 
-        roles: ["Buyer", "Receiver", "Admin"],
+        roles: ["PROCUREMENT", "WAREHOUSE", "PLATFORM_ADMIN"],
         items: [
-            { name: "Đơn mua hàng (PO)", icon: ShoppingCart, path: "/po", roles: ["Buyer", "Admin"] },
-            { name: "Nhập kho (GRN)", icon: Truck, path: "/grn", roles: ["Receiver", "Admin"] },
+            { name: "Đơn mua hàng (PO)", icon: ShoppingCart, path: "/po", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Nhập kho (GRN)", icon: Truck, path: "/grn", roles: ["WAREHOUSE", "PLATFORM_ADMIN"] },
         ]
     },
     {
         group: "Kế toán (Finance)", 
-        roles: ["Finance"],
+        roles: ["FINANCE", "PLATFORM_ADMIN"],
         items: [
-            { name: "Bàn làm việc Kế toán", icon: LayoutDashboard, path: "/finance/dashboard", roles: ["Finance"] },
-            { name: "Xử lý Invoice & Matching", icon: ShieldAlert, path: "/finance/matching", roles: ["Finance"] },
-            { name: "Lệnh thanh toán", icon: FileCheck, path: "/payments", roles: ["Finance"] },
+            { name: "Bàn làm việc Kế toán", icon: LayoutDashboard, path: "/finance/dashboard", roles: ["FINANCE"] },
+            { name: "Xử lý Invoice & Matching", icon: ShieldAlert, path: "/finance/matching", roles: ["FINANCE"] },
+            { name: "Lệnh thanh toán", icon: FileCheck, path: "/payments", roles: ["FINANCE"] },
         ]
     },
     {
         group: "Hệ thống", 
-        roles: ["Admin"],
+        roles: ["PLATFORM_ADMIN"],
         items: [
-            { name: "Quản lý người dùng", icon: Users, path: "/users", roles: ["Admin"] },
-            { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["Admin"] },
+            { name: "Quản lý người dùng", icon: Users, path: "/users", roles: ["PLATFORM_ADMIN"] },
+            { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["PLATFORM_ADMIN"] },
         ]
     },
     {
         group: "Nhà cung cấp (B2B)", 
-        roles: ["Supplier"],
+        roles: ["SUPPLIER"],
         items: [
-            { name: "Bàn làm việc B2B", icon: LayoutDashboard, path: "/supplier/dashboard", roles: ["Supplier"] },
-            { name: "Yêu cầu báo giá (RFQ)", icon: FolderTree, path: "/supplier/rfq", roles: ["Supplier"] },
-            { name: "Đơn đặt hàng (PO)", icon: ShoppingCart, path: "/supplier/po", roles: ["Supplier"] },
-            { name: "Gửi hóa đơn (Invoice)", icon: FileCheck, path: "/supplier/invoice", roles: ["Supplier"] },
+            { name: "Bàn làm việc B2B", icon: LayoutDashboard, path: "/supplier/dashboard", roles: ["SUPPLIER"] },
+            { name: "Yêu cầu báo giá (RFQ)", icon: FolderTree, path: "/supplier/rfq", roles: ["SUPPLIER"] },
+            { name: "Đơn đặt hàng (PO)", icon: ShoppingCart, path: "/supplier/po", roles: ["SUPPLIER"] },
+            { name: "Gửi hóa đơn (Invoice)", icon: FileCheck, path: "/supplier/invoice", roles: ["SUPPLIER"] },
         ]
     },
     {
         group: "Kho vận (Warehouse)", 
-        roles: ["Receiver"],
+        roles: ["WAREHOUSE"],
         items: [
-            { name: "Bàn làm việc Kho", icon: LayoutDashboard, path: "/warehouse/dashboard", roles: ["Receiver"] },
-            { name: "Kiểm định & Tạo GRN", icon: FileCheck, path: "/warehouse/grn/new", roles: ["Receiver"] },
+            { name: "Bàn làm việc Kho", icon: LayoutDashboard, path: "/warehouse/dashboard", roles: ["WAREHOUSE"] },
+            { name: "Kiểm định & Tạo GRN", icon: FileCheck, path: "/warehouse/grn/new", roles: ["WAREHOUSE"] },
         ]
     },
 ];
@@ -100,7 +103,7 @@ export default function Sidebar() {
             <nav className="p-4 space-y-6">
                 {navigation.map((group) => {
                     const groupVisible = !currentUser || group.roles.includes(currentUser.role);
-                    if (!groupVisible && currentUser?.role !== "Admin") return null;
+                    if (!groupVisible && currentUser?.role !== "PLATFORM_ADMIN") return null;
 
                     const visibleItems = group.items.filter(item => !currentUser || item.roles.includes(currentUser.role));
                     if (visibleItems.length === 0) return null;

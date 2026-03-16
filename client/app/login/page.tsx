@@ -15,20 +15,18 @@ export default function LoginPage() {
     const [error, setError] = useState("");
 
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
         
-        setTimeout(() => {
-            const success = login(email);
-            if (success) {
-                router.push("/");
-            } else {
-                setError("Email không tồn tại trong hệ thống.");
-                setIsLoading(false);
-            }
-        }, 800);
+        const success = await login(email, password);
+        if (success) {
+            router.push("/");
+        } else {
+            setError("Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.");
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -45,16 +43,22 @@ export default function LoginPage() {
                     <p className="text-slate-400 text-lg font-medium mb-8">Hệ thống Quản trị Mua sắm & Chuỗi cung ứng tập trung dành cho doanh nghiệp Enterprise.</p>
                     
                     <div className="space-y-4">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Tài khoản Demo theo Vai trò:</div>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Tài khoản Demo (Enterprise Roles):</div>
+                            <div className="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">{users.length} Roles</div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                             {users.map(u => (
                                 <button 
                                     key={u.id}
                                     onClick={() => { setEmail(u.email); setPassword("password123"); }}
-                                    className="bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/30 p-3 rounded-2xl text-left transition-all group"
+                                    className="bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/30 p-2.5 rounded-xl text-left transition-all group relative overflow-hidden"
                                 >
-                                    <div className="text-[10px] font-black text-blue-400 uppercase mb-1">{u.role}</div>
-                                    <div className="text-xs font-bold text-white group-hover:text-blue-200">{u.name}</div>
+                                    <div className="absolute top-0 right-0 p-1 opacity-20 group-hover:opacity-100 transition-opacity">
+                                        <Zap size={10} className="text-blue-400" />
+                                    </div>
+                                    <div className="text-[9px] font-black text-blue-400 uppercase mb-0.5 truncate">{u.role.replace('_', ' ')}</div>
+                                    <div className="text-xs font-bold text-white group-hover:text-blue-200 truncate">{u.name}</div>
                                 </button>
                             ))}
                         </div>

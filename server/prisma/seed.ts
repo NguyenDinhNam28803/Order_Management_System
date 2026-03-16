@@ -6,17 +6,14 @@ import {
   PrStatus,
   CurrencyCode,
   SupplierTier,
-} from '../generated/prisma';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+} from '@prisma/client';
 import * as dotenv from 'dotenv';
 import * as bcrypt from 'bcrypt';
 
 dotenv.config();
+console.log('Database URL:', process.env.DATABASE_URL ? 'FOUND' : 'NOT FOUND');
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient();
 
 async function main() {
   console.log('🚀 Start seeding rich test data (including 100+ products)...');
@@ -135,9 +132,33 @@ async function main() {
       deptId: itDept.id,
     },
     {
+      email: 'ceo@gts.com',
+      fullName: 'Board CEO',
+      role: UserRole.CEO,
+      deptId: itDept.id,
+    },
+    {
+      email: 'qa@gts.com',
+      fullName: 'QA Center',
+      role: UserRole.QA,
+      deptId: itDept.id,
+    },
+    {
+      email: 'warehouse@gts.com',
+      fullName: 'Warehouse Team',
+      role: UserRole.WAREHOUSE,
+      deptId: itDept.id,
+    },
+    {
       email: 'admin@gts.com',
       fullName: 'GTS Admin',
       role: UserRole.PLATFORM_ADMIN,
+      deptId: itDept.id,
+    },
+    {
+      email: 'system@gts.com',
+      fullName: 'System Daemon',
+      role: UserRole.SYSTEM,
       deptId: itDept.id,
     },
   ];
@@ -446,5 +467,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-    await pool.end();
   });

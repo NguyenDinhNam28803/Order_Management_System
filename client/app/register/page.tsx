@@ -13,14 +13,20 @@ export default function RegisterPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleRegister = (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        setTimeout(() => {
-            register(name, email);
-            router.push("/");
-        }, 1000);
+        setError("");
+        
+        const success = await register(name, email, password);
+        if (success) {
+            router.push("/login"); // Recommend going to login or home 
+        } else {
+            setError("Đăng ký thất bại. Vui lòng thử lại.");
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -40,6 +46,11 @@ export default function RegisterPage() {
 
                 <div className="bg-[#0f1525] border border-white/5 rounded-3xl p-8 shadow-2xl shadow-black/50 backdrop-blur-xl">
                     <form onSubmit={handleRegister} className="space-y-6">
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold py-3 px-4 rounded-xl text-center uppercase tracking-wider">
+                                {error}
+                            </div>
+                        )}
                         <div>
                             <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Họ và Tên</label>
                             <div className="relative group">
