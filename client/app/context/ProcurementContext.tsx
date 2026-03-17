@@ -205,25 +205,23 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 body: JSON.stringify({ email, password: password || "password123" }),
             });
             if (res.ok) {
-                const data = await res.json();
+                const responseData = await res.json();
+                const data = responseData.data; // TransformInterceptor wraps data
                 
                 // Store token
                 if (data.accessToken) {
                     localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('refreshToken', data.refreshToken);
                 }
                 
-                // Set the current user based on token/data if available, otherwise fallback
-                const userObj = mockUsers.find(u => u.email === email);
-                if (userObj) {
-                    setCurrentUser(userObj);
-                } else {
-                    const fullName = data.user?.fullName || email.split('@')[0];
+                if (data.user) {
+                    const fullName = data.user.fullName || data.user.email.split('@')[0];
                     setCurrentUser({
-                        id: data.user?.id || Date.now().toString(),
+                        id: data.user.id,
                         name: fullName,
-                        email: email,
-                        role: data.user?.role || "Requester",
-                        department: data.user?.department || "N/A",
+                        email: data.user.email,
+                        role: data.user.role,
+                        department: data.user.deptId || "N/A",
                         status: "ONLINE",
                         icon: fullName.substring(0, 2).toUpperCase()
                     });
@@ -244,11 +242,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         }
     };
 
+
     const register = async (name: string, email: string, password?: string): Promise<boolean> => {
         try {
             // Using a dummy orgId per RegisterDto requirements
             const orgId = "325f187a-c1f6-4a4e-8692-234b6e50334a"; 
-            const res = await fetch('http://localhost:3000/auth-module/register', {
+            const res = await fetch('http://localhost:5000/auth-module/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -261,7 +260,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             });
             
             if (res.ok) {
-                const data = await res.json();
+                const responseData = await res.json();
+                const data = responseData.data.user;
+
                 const newUser: User = {
                     id: data.id || (mockUsers.length + 1).toString(),
                     name,
@@ -303,17 +304,19 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         try {
             const token = localStorage.getItem('accessToken');
             if (token) {
-                await fetch('http://localhost:3000/auth-module/logout', {
+                await fetch('http://localhost:5000/auth-module/logout', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
             }
         } catch (e) {
             console.error("Logout error", e);
         }
         setCurrentUser(null);
     };
+
 
     const addPR = (newPR: Omit<PR, "id" | "status" | "createdAt">) => {
         const id = `PR-2026-${(prs.length + 1).toString().padStart(3, "0")}`;
