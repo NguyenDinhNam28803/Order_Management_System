@@ -11,8 +11,8 @@ export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phả
 
     const pendingCount = prs.filter(pr => {
         if (!currentUser) return false;
-        if (currentUser.role === "Approver") return pr.status === "PENDING";
-        if (currentUser.role === "Director") return pr.status === "PENDING_DIRECTOR";
+        if (currentUser.role === "REQUESTER") return pr.status === "PENDING";
+        if (currentUser.role === "DIRECTOR") return pr.status === "PENDING_DIRECTOR";
         return pr.status === "PENDING";
     }).length;
 
@@ -63,19 +63,19 @@ export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phả
                     </button>
                 </div>
 
-                <div className="h-6 w-[1px] bg-slate-200"></div>
+                <div className="h-6 w-px bg-slate-200"></div>
 
                 <div className="flex items-center gap-3">
                     <div className="text-right leading-none hidden sm:block">
                         <div className="text-xs font-bold text-erp-navy">{currentUser?.name || "Khách"}</div>
                         <div className="mt-1 flex justify-end">
                             <span className={`role-badge ${currentUser ? (
-                                currentUser.role === "Requester" ? "role-requester" :
-                                    currentUser.role === "Approver" ? "role-approver" :
-                                        currentUser.role === "Director" ? "role-approver" :
-                                            currentUser.role === "Buyer" ? "role-procurement" :
-                                                currentUser.role === "Receiver" ? "role-warehouse" :
-                                                    currentUser.role === "Finance" ? "role-finance" : "role-admin"
+                                currentUser.role === "REQUESTER" ? "role-requester" :
+                                    currentUser.role === "DEPT_APPROVER" ? "role-approver" :
+                                        currentUser.role === "DIRECTOR" ? "role-approver" :
+                                            currentUser.role === "PROCUREMENT" ? "role-procurement" :
+                                                currentUser.role === "WAREHOUSE" ? "role-warehouse" :
+                                                    currentUser.role === "FINANCE" ? "role-finance" : "role-admin"
                             ) : "role-finance"}`}>
                                 {currentUser?.role || "Chưa định danh"}
                             </span>

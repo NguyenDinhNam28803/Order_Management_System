@@ -142,8 +142,8 @@ export default function Sidebar() {
                     </div>
                     <div className="flex flex-col">
                         <span className="text-xs font-bold truncate max-w-[120px]">{currentUser?.name || "Jonathan Doe"}</span>
-                        <span className={`role-badge ${roleInfo.class}`}>
-                            {roleInfo.label}
+                        <span className={`role-badge ${roleInfo?.class ?? "role-unknown"}`}>
+                            {roleInfo?.label ?? "Unknown Role"}
                         </span>
                     </div>
                 </div>

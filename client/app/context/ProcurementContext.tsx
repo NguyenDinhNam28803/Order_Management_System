@@ -182,33 +182,24 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         }
     ]);
 
-    const [pos, setPos] = useState<PO[]>([]);
+    const [pos, setPos] = useState<PO[]>([{
+        id: "PO-2026-088",
+        prId: "PR-2026-001",
+        vendor: "Formosa Corp (NCC)",
+        items: [{ id: "1", description: "Vải Cotton", qty: 500, unit: "Cuộn", estimatedPrice: 300000 }],
+        status: "SHIPPED",
+        total: 150000000,
+        createdAt: "2026-03-10"
+    }]);
 
 
     const [rfqs, setRfqs] = useState<RFQ[]>([]);
     const [grns, setGrns] = useState<GRN[]>([]);
     const [invoices, setInvoices] = useState<Invoice[]>([]);
 
-    useEffect(() => {
-        // Hydrate initial POs
-        if (pos.length === 0) {
-            setPos([
-                {
-                    id: "PO-2026-088",
-                    prId: "PR-2026-001",
-                    vendor: "Formosa Corp (NCC)",
-                    items: [{ id: "1", description: "Vải Cotton", qty: 500, unit: "Cuộn", estimatedPrice: 300000 }],
-                    status: "SHIPPED",
-                    total: 150000000,
-                    createdAt: "2026-03-10"
-                }
-            ]);
-        }
-    }, [])
-
     const login = async (email: string, password?: string): Promise<boolean> => {
         try {
-            const res = await fetch('http://localhost:3000/auth-module/login', {
+            const res = await fetch('http://localhost:5000/auth-module/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password: password || "password123" }),
