@@ -7,13 +7,19 @@ import {
   CurrencyCode,
   SupplierTier,
 } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 import * as bcrypt from 'bcrypt';
 
 dotenv.config();
 console.log('Database URL:', process.env.DATABASE_URL ? 'FOUND' : 'NOT FOUND');
 
-const prisma = new PrismaClient();
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('🚀 Start seeding rich test data (including 100+ products)...');
@@ -23,13 +29,13 @@ async function main() {
   // 1. Create Organizations
   const buyerOrg = await prisma.organization.upsert({
     where: { code: 'BUYER_CORP' },
-    update: {},
+    update: { companyType: CompanyType.BOTH },
     create: {
       code: 'BUYER_CORP',
       name: 'Global Tech Solutions (Vietnam)',
       legalName: 'GTS Vietnam Co., Ltd',
       taxCode: '0102030405',
-      companyType: CompanyType.BUYER,
+      companyType: CompanyType.BOTH,
       industry: 'Software Development',
       countryCode: 'VN',
       isActive: true,
@@ -191,6 +197,53 @@ async function main() {
       isVerified: true,
     },
   });
+
+  // 4.1. Add specific requested users to the same Organization (buyerOrg)
+  console.log('👤 Seeding specific test accounts...');
+  const specificUsers = [
+    {
+      email: 'DEPTAPPROVER@gmail.com',
+      password: 'DEPT_APPROVER@12345*',
+      role: UserRole.DEPT_APPROVER,
+      fullName: 'Dept Approver Test',
+    },
+    {
+      email: 'DIRECTOR@gmail.com',
+      password: 'DIRECTOR@12345*',
+      role: UserRole.DIRECTOR,
+      fullName: 'Director Test',
+    },
+    {
+      email: 'CEO@gmail.com',
+      password: 'CEO@12345*',
+      role: UserRole.CEO,
+      fullName: 'CEO Test',
+    },
+    {
+      email: 'SUPPLIER@gmail.com',
+      password: 'SUPPLIER@1234*',
+      role: UserRole.SUPPLIER,
+      fullName: 'Supplier Test',
+    },
+  ];
+
+  for (const u of specificUsers) {
+    const hash = await bcrypt.hash(u.password, 10);
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: { passwordHash: hash },
+      create: {
+        email: u.email,
+        fullName: u.fullName,
+        role: u.role,
+        orgId: buyerOrg.id,
+        deptId: u.role !== UserRole.SUPPLIER ? itDept.id : null,
+        passwordHash: hash,
+        isActive: true,
+        isVerified: true,
+      },
+    });
+  }
 
   // 5. SEED 100 PRODUCTS ACROSS CATEGORIES
   console.log('📦 Seeding 100 business products...');

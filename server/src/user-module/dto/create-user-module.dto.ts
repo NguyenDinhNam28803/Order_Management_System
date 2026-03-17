@@ -66,5 +66,5 @@ export class CreateUserModuleDto {
   @IsString()
   @IsOptional()
   @MaxLength(255)
-  passwordHash?: string;
+  passwordHash: string;
 }

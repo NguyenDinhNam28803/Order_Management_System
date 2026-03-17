@@ -6,7 +6,7 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -45,18 +45,20 @@ export class CostCenterModuleController {
 
   /**
    * Lấy danh sách tất cả trung tâm chi phí của một tổ chức
-   * @param orgId ID của tổ chức
+   * @request Yêu cầu chứa thông tin người dùng đã xác thực từ JWT
+   * @query orgId ID của tổ chức để lọc trung tâm chi phí
    * @returns Danh sách trung tâm chi phí
    */
   @Get()
   @ApiOperation({
     summary: 'Lấy tất cả trung tâm chi phí cho một tổ chức',
     description:
-      'Trả về danh sách tất cả trung tâm chi phí cho tổ chức hiện tại',
+      'Trả về danh sách tất cả trung tâm chi phí cho tổ chức hiện tại theo tổ chức người dùng đã xác thực',
   })
   @ApiQuery({ name: 'orgId', required: true })
-  findAll(@Query('orgId') orgId: string) {
-    return this.costCenterService.findAll(orgId);
+  findAll(@Request() req) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.costCenterService.findAll(req.user.orgId);
   }
 
   /**
