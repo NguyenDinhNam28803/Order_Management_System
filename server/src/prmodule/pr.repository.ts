@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrDto } from './dto/create-pr.dto';
-import { PrStatus, PurchaseRequisition } from '@prisma/client';
-import { Decimal } from 'generated/prisma/internal/prismaNamespaceBrowser';
+import { PrStatus, PurchaseRequisition, Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrRepository {
@@ -34,9 +33,10 @@ export class PrRepository {
       throw new Error('Total estimate exceeds department budget');
     }
 
-    if (Decimal(totalEstimate).greaterThan(isWithinBudget.budgetAnnual)) {
+    if (new Prisma.Decimal(totalEstimate).greaterThan(isWithinBudget.budgetAnnual)) {
       throw new Error('Total estimate exceeds department budget');
     }
+
 
     return this.prisma.$transaction(async (tx) => {
       const pr = await tx.purchaseRequisition.create({
