@@ -90,9 +90,8 @@ export class PomoduleController {
     summary: 'Gửi đơn hàng phê duyệt',
     description: 'Kích hoạt luồng duyệt cho đơn hàng',
   })
-  submit(@Param('id') id: string, @Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return this.poService.submit(id, req.user);
+  submit(@Param('id') id: string) {
+    return this.poService.submit(id);
   }
 
   /**
