@@ -5,6 +5,7 @@ import { PrStatus, PurchaseRequisition, DocumentType } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
+import { AiService } from '../ai-service/ai-service.service';
 
 @Injectable()
 export class PrmoduleService {
@@ -12,6 +13,7 @@ export class PrmoduleService {
     private readonly repository: PrRepository,
     private readonly prisma: PrismaService,
     private readonly approvalService: ApprovalModuleService,
+    private readonly aiService: AiService,
   ) {}
 
   async create(
@@ -34,6 +36,12 @@ export class PrmoduleService {
       }
       deptId = userFromDb.deptId;
     }
+
+    // AI gợi ý công ty phù hợp dựa trên mô tả sản phẩm
+    const aiSuggestion = await this.aiService.getCompanySuggestion(
+      createPrDto.items,
+    );
+    console.log('AI Suggestion:', aiSuggestion);
 
     return this.repository.create(
       createPrDto,

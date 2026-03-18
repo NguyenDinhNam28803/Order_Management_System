@@ -33,10 +33,11 @@ export class PrRepository {
       throw new Error('Total estimate exceeds department budget');
     }
 
-    if (new Prisma.Decimal(totalEstimate).greaterThan(isWithinBudget.budgetAnnual)) {
+    if (
+      new Prisma.Decimal(totalEstimate).greaterThan(isWithinBudget.budgetAnnual)
+    ) {
       throw new Error('Total estimate exceeds department budget');
     }
-
 
     return this.prisma.$transaction(async (tx) => {
       const pr = await tx.purchaseRequisition.create({

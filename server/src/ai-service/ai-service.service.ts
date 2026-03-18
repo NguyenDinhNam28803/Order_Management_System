@@ -284,4 +284,23 @@ export class AiService implements OnModuleInit {
   async responsetest() {
     return this.askAiAboutDatabase('Liệt kê 3 tổ chức đầu tiên');
   }
+
+  async getCompanySuggestion(items: any[]) {
+    const itemDescriptions = items
+      .map((item) => `${item.productName} (số lượng: ${item.qty})`)
+      .join(', ');
+
+    const prompt = `Dựa trên mô tả sản phẩm: ${itemDescriptions}, hãy gợi ý 3 công ty cung cấp phù hợp nhất trong hệ thống. Trả về tên công ty và lý do ngắn gọn theo định dạng JSON.`;
+
+    const response = await this.client.models.generateContent({
+      model: 'gemini-3.1-flash-lite-preview',
+      config: {
+        thinkingConfig: {
+          thinkingLevel: ThinkingLevel.HIGH,
+        },
+      },
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+    return this.parseJsonResponse(response.text ?? '');
+  }
 }
