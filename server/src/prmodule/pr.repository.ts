@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrDto } from './dto/create-pr.dto';
 import { PrStatus, PurchaseRequisition, Prisma } from '@prisma/client';
+import { AiService } from 'src/ai-service/ai-service.service';
 
 @Injectable()
 export class PrRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly aiservice: AiService,
+  ) {}
 
   async create(
     data: CreatePrDto,

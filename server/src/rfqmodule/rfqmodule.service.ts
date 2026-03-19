@@ -8,10 +8,40 @@ import { CreateQuotationDto } from './dto/create-quotation.dto';
 import { CreateCounterOfferDto } from './dto/create-counter-offer.dto';
 import { RfqRepository } from './rfq.repository';
 import { RfqStatus, QuotationStatus } from '@prisma/client';
+import { AiService } from '../ai-service/ai-service.service';
 
 @Injectable()
 export class RfqmoduleService {
-  constructor(private readonly repository: RfqRepository) {}
+  constructor(
+    private readonly repository: RfqRepository,
+    private readonly aiService: AiService,
+  ) {}
+
+  // ============ AI Integration Methods ============
+
+  /**
+   * Sử dụng AI để phân tích nội dung RFQ và gợi ý các nhà cung cấp phù hợp từ database.
+   * AI sẽ dựa vào mô tả mặt hàng, ngành nghề kinh doanh và điểm tin cậy (trustScore) của nhà cung cấp.
+   * @param rfqId ID của RFQ cần gợi ý nhà cung cấp
+   * @returns Danh sách gợi ý từ AI kèm theo lý do
+   */
+  async suggestSuppliersWithAi(rfqId: string) {
+    const rfq = await this.repository.findOne(rfqId);
+    if (!rfq) {
+      throw new NotFoundException(`RFQ with ID ${rfqId} not found`);
+    }
+
+    // Chuẩn bị dữ liệu mặt hàng để AI phân tích
+    const items = rfq.items.map((item) => ({
+      productDesc: item.description,
+      qty: item.qty,
+    }));
+
+    // Gọi AI Service để tìm kiếm nhà cung cấp phù hợp trong DB
+    const aiSuggestion = await this.aiService.getCompanySuggestion(items);
+
+    return aiSuggestion;
+  }
 
   // ============ RFQ Request Methods ============
 
@@ -97,6 +127,11 @@ export class RfqmoduleService {
     return quotation;
   }
 
+  /**
+   * Xác nhận nộp báo giá, chuyển trạng thái sang "Submitted" và ghi nhận thời gian nộp báo giá
+   * @param id ID của báo giá cần nộp | RFQ ID để nộp báo giá mới
+   * @returns Báo giá đã được nộp với trạng thái cập nhật
+   */
   async submitQuotation(id: string) {
     const quotation = await this.repository.findQuotationById(id);
     if (!quotation) {
@@ -105,6 +140,12 @@ export class RfqmoduleService {
     return this.repository.submitQuotation(id);
   }
 
+  /**
+   * Xác nhận đã xem xét báo giá, ghi nhận người xem xét và thời gian xem xét
+   * @param id ID của báo giá cần xem xét
+   * @param reviewedById ID của người xem xét báo giá
+   * @returns Báo giá đã được cập nhật thông tin xem xét
+   */
   async reviewQuotation(id: string, reviewedById: string) {
     const quotation = await this.repository.findQuotationById(id);
     if (!quotation) {
@@ -113,6 +154,12 @@ export class RfqmoduleService {
     return this.repository.reviewQuotation(id, reviewedById, new Date());
   }
 
+  /**
+   * Chấp nhận báo giá, cập nhật trạng thái sang "Accepted" và ghi nhận người xem xét cùng thời gian xem xét
+   * @param id ID của báo giá cần chấp nhận
+   * @param reviewedById ID của người chấp nhận báo giá | Role: Buyer hoặc người có quyền duyệt báo giá
+   * @returns Báo giá đã được cập nhật trạng thái "Accepted"
+   */
   async acceptQuotation(id: string, reviewedById: string) {
     const quotation = await this.repository.findQuotationById(id);
     if (!quotation) {
@@ -122,6 +169,12 @@ export class RfqmoduleService {
     return this.repository.updateQuotationStatus(id, QuotationStatus.ACCEPTED);
   }
 
+  /**
+   * Từ chối báo giá, cập nhật trạng thái sang "Rejected" và ghi nhận người xem xét cùng thời gian xem xét
+   * @param id ID của báo giá cần từ chối
+   * @param reviewedByI ID của người từ chối báo giá | Role: Buyer hoặc người có quyền duyệt báo giá
+   * @returns Báo giá đã được cập nhật trạng thái "Rejected"
+   */
   async rejectQuotation(id: string, reviewedById: string) {
     const quotation = await this.repository.findQuotationById(id);
     if (!quotation) {
@@ -141,6 +194,19 @@ export class RfqmoduleService {
 
   // ============ QA Thread Methods ============
 
+  /**
+   * Tạo luồng hỏi đáp (Q&A Thread) cho một RFQ cụ thể giữa người mua và nhà cung cấp.
+   * Luồng hỏi đáp này cho phép nhà cung cấp đặt câu hỏi về RFQ và người mua trả lời, hoặc ngược lại.
+   * Mỗi luồng hỏi đáp sẽ liên kết với một nhà cung cấp cụ thể trong RFQ đó, đảm bảo tính riêng tư nếu cần thiết.
+   * @param rfqId ID của RFQ mà luồng hỏi đáp này liên quan đến
+   * @param supplierId ID của nhà cung cấp tham gia vào luồng hỏi đáp này
+   * @param question Nội dung câu hỏi được đặt ra bởi nhà cung cấp hoặc người mua
+   * @param askedById ID của người đặt câu hỏi (có thể là nhà cung cấp hoặc người mua)
+   * @param isPublic Xác định xem câu hỏi này có được hiển thị công khai cho tất cả nhà cung cấp trong RFQ hay chỉ riêng nhà cung cấp được hỏi và người mua mới thấy (mặc định là false - chỉ riêng tư)
+   * @returns Thông tin về luồng hỏi đáp mới được tạo ra, bao gồm ID, nội dung câu hỏi, người đặt câu hỏi, thời gian tạo và trạng thái trả lời (nếu đã có câu trả lời)
+   * @throws NotFoundException nếu RFQ không tồn tại hoặc nhà cung cấp không được mời tham gia RFQ đó
+   * @throws BadRequestException nếu nhà cung cấp không được mời tham gia RFQ đó
+   */
   async createQaThread(
     rfqId: string,
     supplierId: string,
@@ -169,6 +235,13 @@ export class RfqmoduleService {
     );
   }
 
+  /**
+   * Lấy tất cả luồng hỏi đáp (Q&A Threads) liên quan đến một RFQ cụ thể, bao gồm cả câu hỏi và câu trả lời.
+   * Kết quả trả về sẽ bao gồm thông tin về từng luồng hỏi đáp, như ID, nội dung câu hỏi, người đặt câu hỏi, thời gian tạo, trạng thái trả lời và nếu đã có câu trả lời thì cũng bao gồm nội dung câu trả lời cùng người trả lời và thời gian trả lời.
+   * Chỉ những luồng hỏi đáp liên quan đến RFQ đó mới được trả về, đảm bảo tính riêng tư nếu có những luồng hỏi đáp chỉ dành riêng cho một nhà cung cấp cụ thể.
+   * @param rfqId ID của RFQ mà bạn muốn lấy các luồng hỏi đáp liên quan đến nó
+   * @returns Danh sách các luồng hỏi đáp liên quan đến RFQ, bao gồm cả câu hỏi và câu trả lời (nếu có)
+   */
   async getQaThreadsByRfq(rfqId: string) {
     const rfq = await this.repository.findOne(rfqId);
     if (!rfq) {
@@ -185,6 +258,16 @@ export class RfqmoduleService {
     return thread;
   }
 
+  /**
+   * Trả lời một câu hỏi trong luồng hỏi đáp (Q&A Thread) cụ thể, cập nhật trạng thái trả lời và ghi nhận người trả lời cùng thời gian trả lời.
+   * Chỉ người mua hoặc nhà cung cấp liên quan đến câu hỏi đó mới có quyền trả lời.
+   * @param id ID của luồng hỏi đáp mà bạn muốn trả lời câu hỏi trong đó
+   * @param answer Nội dung câu trả lời mà bạn muốn cung cấp cho câu hỏi đó
+   * @param answeredById ID của người trả lời câu hỏi (có thể là nhà cung cấp hoặc người mua)
+   * @returns Thông tin về luồng hỏi đáp sau khi đã được cập nhật với câu trả lời mới, bao gồm nội dung câu hỏi, người đặt câu hỏi, thời gian tạo, nội dung câu trả lời, người trả lời và thời gian trả lời
+   * @throws NotFoundException nếu luồng hỏi đáp không tồn tại
+   * @throws BadRequestException nếu người trả lời không có quyền trả lời câu hỏi đó (không phải là nhà cung cấp hoặc người mua liên quan)
+   */
   async answerQaThread(id: string, answer: string, answeredById: string) {
     const thread = await this.repository.findQandAThreadById(id);
     if (!thread) {
@@ -201,8 +284,47 @@ export class RfqmoduleService {
     return this.repository.findQandAThreadBySupplierAndRfq(supplierId, rfqId);
   }
 
+  // ============ RFQ Supplier Management Methods ============
+
+  /**
+   * Mời thêm nhà cung cấp tham gia vào RFQ.
+   * @param rfqId ID của RFQ
+   * @param supplierIds Danh sách ID của các nhà cung cấp được mời
+   * @returns Kết quả mời nhà cung cấp
+   */
+  async inviteSuppliers(rfqId: string, supplierIds: string[]) {
+    const rfq = await this.repository.findOne(rfqId);
+    if (!rfq) {
+      throw new NotFoundException(`RFQ with ID ${rfqId} not found`);
+    }
+    return this.repository.inviteSuppliers(rfqId, supplierIds);
+  }
+
+  /**
+   * Loại bỏ một nhà cung cấp khỏi RFQ.
+   * @param rfqId ID của RFQ
+   * @param supplierId ID của nhà cung cấp cần loại bỏ
+   * @returns Kết quả loại bỏ
+   */
+  async removeSupplier(rfqId: string, supplierId: string) {
+    const rfq = await this.repository.findOne(rfqId);
+    if (!rfq) {
+      throw new NotFoundException(`RFQ with ID ${rfqId} not found`);
+    }
+    return this.repository.removeSupplier(rfqId, supplierId);
+  }
+
   // ============ Counter Offer Methods ============
 
+  /**
+   *  Tạo một counter offer mới dựa trên một báo giá đã tồn tại, cho phép nhà cung cấp hoặc người mua đề xuất một mức giá hoặc điều khoản khác so với báo giá ban đầu.
+   *  Counter offer này sẽ liên kết với báo giá gốc và có thể được chấp nhận hoặc từ chối bởi bên còn lại.
+   *  Việc tạo counter offer sẽ không thay đổi trạng thái của báo giá gốc cho đến khi counter offer được chấp nhận, lúc đó báo giá gốc sẽ được cập nhật trạng thái tương ứng (ví dụ: "Accepted" nếu counter offer được chấp nhận).
+   * @param quotationId ID của báo giá mà bạn muốn tạo counter offer dựa trên đó
+   * @param offeredById ID của người tạo counter offer (có thể là nhà cung cấp hoặc người mua)
+   * @param data Thông tin chi tiết về counter offer, bao gồm mức giá mới, điều khoản mới hoặc bất kỳ thông tin nào khác cần thiết để mô tả counter offer đó
+   * @returns Thông tin về counter offer mới được tạo ra, bao gồm ID, nội dung counter offer, người tạo, thời gian tạo và trạng thái hiện tại của counter offer
+   */
   async createCounterOffer(
     quotationId: string,
     offeredById: string,
@@ -231,11 +353,60 @@ export class RfqmoduleService {
     return offer;
   }
 
-  async respondCounterOffer(id: string, response: string) {
+  /**
+   * Xác nhận phản hồi đối với một counter offer cụ thể, cho phép bên còn lại chấp nhận hoặc từ chối counter offer đó.
+   * Nếu counter offer được chấp nhận, trạng thái của counter offer sẽ được cập nhật thành "Accepted" và báo giá gốc sẽ được cập nhật tương ứng (ví dụ: cập nhật mức giá mới nếu counter offer đề xuất một mức giá khác).
+   * Nếu counter offer bị từ chối, trạng thái của counter offer sẽ được cập nhật thành "Rejected" và báo giá gốc sẽ giữ nguyên trạng thái ban đầu.
+   * @param id ID counter offer
+   * @param response Thông tin trả về
+   * @param status Trạng thái phản hồi (ACCEPTED hoặc REJECTED)
+   * @returns Thông tin counter offer sau khi phản hồi
+   */
+  async respondCounterOffer(
+    id: string,
+    response: string,
+    status: 'ACCEPTED' | 'REJECTED',
+  ) {
     const offer = await this.repository.findCounterOfferById(id);
     if (!offer) {
       throw new NotFoundException(`Counter Offer with ID ${id} not found`);
     }
-    return this.repository.respondCounterOffer(id, response);
+    return this.repository.respondCounterOffer(id, response, status);
+  }
+
+  // ============ Awarding Methods ============
+
+  /**
+   * Trao thầu cho một nhà cung cấp dựa trên báo giá của họ.
+   * Quá trình này sẽ:
+   * 1. Cập nhật RFQ sang trạng thái AWARDED.
+   * 2. Gán nhà cung cấp thắng thầu cho RFQ.
+   * 3. Chấp nhận báo giá được chọn.
+   * 4. Từ chối tất cả các báo giá còn lại của RFQ này.
+   * @param rfqId ID của RFQ
+   * @param quotationId ID của báo giá thắng thầu
+   * @param awardedById ID của người thực hiện trao thầu
+   * @returns Thông tin RFQ sau khi trao thầu
+   */
+  async awardQuotation(
+    rfqId: string,
+    quotationId: string,
+    awardedById: string,
+  ) {
+    const rfq = await this.repository.findOne(rfqId);
+    if (!rfq) {
+      throw new NotFoundException(`RFQ with ID ${rfqId} not found`);
+    }
+
+    const quotation = await this.repository.findQuotationById(quotationId);
+    if (!quotation) {
+      throw new NotFoundException(`Quotation with ID ${quotationId} not found`);
+    }
+
+    if (quotation.rfqId !== rfqId) {
+      throw new BadRequestException('Quotation does not belong to this RFQ');
+    }
+
+    return this.repository.awardQuotation(rfqId, quotationId, awardedById);
   }
 }

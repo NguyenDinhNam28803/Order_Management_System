@@ -287,20 +287,18 @@ export class AiService implements OnModuleInit {
 
   async getCompanySuggestion(items: any[]) {
     const itemDescriptions = items
-      .map((item) => `${item.productName} (số lượng: ${item.qty})`)
+      .map(
+        (item) =>
+          `${item.productName || item.productDesc || 'Sản phẩm'} (số lượng: ${item.qty})`,
+      )
       .join(', ');
 
-    const prompt = `Dựa trên mô tả sản phẩm: ${itemDescriptions}, hãy gợi ý 3 công ty cung cấp phù hợp nhất trong hệ thống. Trả về tên công ty và lý do ngắn gọn theo định dạng JSON.`;
+    const userPrompt = `Dựa trên danh sách các mặt hàng cần mua: [${itemDescriptions}]. 
+    Hãy thực hiện các bước sau:
+    1. Tìm trong database các nhà cung cấp (Organization với companyType là SUPPLIER) có ngành nghề (industry) hoặc tên liên quan đến các mặt hàng trên.
+    2. Ưu tiên những nhà cung cấp có trustScore cao nhất.
+    3. Trả về danh sách tối đa 5 nhà cung cấp phù hợp nhất kèm theo lý do tại sao họ được chọn (ví dụ: thế mạnh về ngành hàng, điểm tin cậy cao).`;
 
-    const response = await this.client.models.generateContent({
-      model: 'gemini-3.1-flash-lite-preview',
-      config: {
-        thinkingConfig: {
-          thinkingLevel: ThinkingLevel.HIGH,
-        },
-      },
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    });
-    return this.parseJsonResponse(response.text ?? '');
+    return this.askAiAboutDatabase(userPrompt);
   }
 }

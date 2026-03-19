@@ -34,7 +34,7 @@ export class BudgetModuleController {
    * @returns Chu kỳ ngân sách vừa tạo
    */
   @Post('periods')
-  @ApiOperation({ summary: 'Create a new budget period' })
+  @ApiOperation({ summary: 'Tạo mới chu kỳ ngân sách' })
   async createPeriod(
     @Body() dto: CreateBudgetPeriodDto,
     @Request() req: { user: JwtPayload },

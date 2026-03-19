@@ -290,8 +290,7 @@ export class RfqRepository {
     });
   }
 
-  // Các phương thức liên quan đến RFQ Supplier
-
+  // Các phương thức liên quan đến RFQ Supplier Management
   async findSuppliersByRfqId(rfqId: string) {
     return this.prisma.rfqSupplier.findMany({
       where: { rfqId },
@@ -299,13 +298,26 @@ export class RfqRepository {
     });
   }
 
-  async createRfqSupplier(rfqId: string, supplierId: string) {
-    return this.prisma.rfqSupplier.create({
-      data: {
-        rfqId,
-        supplierId,
+  async inviteSuppliers(rfqId: string, supplierIds: string[]) {
+    const rfqSuppliers = supplierIds.map((supplierId) => ({
+      rfqId,
+      supplierId,
+    }));
+
+    return this.prisma.rfqSupplier.createMany({
+      data: rfqSuppliers,
+      skipDuplicates: true,
+    });
+  }
+
+  async removeSupplier(rfqId: string, supplierId: string) {
+    return this.prisma.rfqSupplier.delete({
+      where: {
+        rfqId_supplierId: {
+          rfqId,
+          supplierId,
+        },
       },
-      include: { supplier: true },
     });
   }
 
@@ -427,21 +439,110 @@ export class RfqRepository {
       where: { id },
       include: {
         offeredBy: true,
-        quotation: true,
+        quotation: {
+          include: { items: true },
+        },
       },
     });
   }
 
-  async respondCounterOffer(id: string, response: string) {
-    return this.prisma.rfqCounterOffer.update({
-      where: { id },
-      data: {
-        response,
-        respondedAt: new Date(),
-      },
+  async respondCounterOffer(
+    id: string,
+    response: string,
+    status: 'ACCEPTED' | 'REJECTED',
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      const offer = await tx.rfqCounterOffer.update({
+        where: { id },
+        data: {
+          response,
+          respondedAt: new Date(),
+        },
+        include: { quotation: true },
+      });
+
+      // Nếu chấp nhận counter offer, cập nhật báo giá gốc
+      if (status === 'ACCEPTED' && offer.proposedPrice) {
+        await tx.rfqQuotation.update({
+          where: { id: offer.quotationId },
+          data: {
+            totalPrice: offer.proposedPrice,
+            notes: offer.proposedTerms
+              ? `${offer.quotation.notes || ''}\n[Negotiated]: ${offer.proposedTerms}`
+              : offer.quotation.notes,
+          },
+        });
+      }
+
+      return offer;
+    });
+  }
+
+  // Các phương thức liên quan đến Awarding (Trao thầu)
+
+  async awardQuotation(
+    rfqId: string,
+    quotationId: string,
+    awardedById: string,
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Cập nhật RFQ sang trạng thái AWARDED và gán nhà cung cấp thắng thầu
+      const quotation = await tx.rfqQuotation.findUnique({
+        where: { id: quotationId },
+        select: { supplierId: true },
+      });
+
+      if (!quotation) throw new Error('Quotation not found');
+
+      const rfq = await tx.rfqRequest.update({
+        where: { id: rfqId },
+        data: {
+          status: RfqStatus.AWARDED,
+          awardedSupplierId: quotation.supplierId,
+          awardedAt: new Date(),
+        },
+      });
+
+      // 2. Cập nhật báo giá được chọn sang ACCEPTED
+      await tx.rfqQuotation.update({
+        where: { id: quotationId },
+        data: {
+          status: QuotationStatus.ACCEPTED,
+          reviewedById: awardedById,
+          reviewedAt: new Date(),
+        },
+      });
+
+      // 3. Cập nhật các báo giá khác của RFQ này sang REJECTED
+      await tx.rfqQuotation.updateMany({
+        where: {
+          rfqId,
+          id: { not: quotationId },
+          status: { not: QuotationStatus.REJECTED },
+        },
+        data: {
+          status: QuotationStatus.REJECTED,
+          reviewedById: awardedById,
+          reviewedAt: new Date(),
+        },
+      });
+
+      // 4. Cập nhật trạng thái PR sang PO_CREATED (Giả định sau khi award sẽ tạo PO)
+      await tx.purchaseRequisition.update({
+        where: { id: rfq.prId },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        data: { status: 'PO_CREATED' as any },
+      });
+
+      return rfq;
+    });
+  }
+
+  async getallRfqSupplier() {
+    return this.prisma.rfqSupplier.findMany({
       include: {
-        offeredBy: true,
-        quotation: true,
+        rfq: true,
+        supplier: true,
       },
     });
   }

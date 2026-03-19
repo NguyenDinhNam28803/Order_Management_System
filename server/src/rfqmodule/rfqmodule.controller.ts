@@ -26,6 +26,16 @@ export class RfqmoduleController {
 
   // ============ RFQ Endpoints ============
 
+  // Tạo Ai phân tích nhà cung cấp
+  @Post('/ai-suggest')
+  @ApiOperation({
+    summary: 'Tạo yêu cầu gợi ý',
+    description: 'Tạo một yêu cầu gợi ý mới từ một đơn hàng mua sắm',
+  })
+  async getAiSuggest(@Body() rfqId: string) {
+    return this.rfqService.suggestSuppliersWithAi(rfqId);
+  }
+
   /**
    * Tạo một yêu cầu báo giá (Request for Quotation - RFQ) mới
    * @param createRfqDto Dữ liệu tạo yêu cầu báo giá
@@ -321,6 +331,62 @@ export class RfqmoduleController {
     return this.rfqService.getQaThreadsBySupplier(supplierId, rfqId);
   }
 
+  /**
+   * Lấy danh sách các nhà cung cấp tham gia vào một RFQ
+   * @param rfqId ID của RFQ
+   * @returns Danh sách các nhà cung cấp
+   */
+  @Get(':rfqId/suppliers')
+  @ApiOperation({ summary: 'Lấy danh sách nhà cung cấp của RFQ' })
+  async getSuppliersByRfq(@Param('rfqId') rfqId: string) {
+    return this.rfqService.findOne(rfqId).then((rfq) => rfq.suppliers);
+  }
+
+  /**
+   * Mời thêm nhà cung cấp tham gia RFQ
+   * @param rfqId ID của RFQ
+   * @param body Danh sách ID nhà cung cấp
+   * @returns Kết quả mời
+   */
+  @Post(':rfqId/suppliers/invite')
+  @ApiOperation({ summary: 'Mời nhà cung cấp tham gia RFQ' })
+  async inviteSuppliers(@Param('rfqId') rfqId: string, @Body() body: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.rfqService.inviteSuppliers(rfqId, body.supplierIds);
+  }
+
+  /**
+   * Loại bỏ nhà cung cấp khỏi RFQ
+   * @param rfqId ID của RFQ
+   * @param supplierId ID của nhà cung cấp
+   * @returns Kết quả loại bỏ
+   */
+  @Delete(':rfqId/suppliers/:supplierId')
+  @ApiOperation({ summary: 'Loại bỏ nhà cung cấp khỏi RFQ' })
+  async removeSupplier(
+    @Param('rfqId') rfqId: string,
+    @Param('supplierId') supplierId: string,
+  ) {
+    return this.rfqService.removeSupplier(rfqId, supplierId);
+  }
+
+  // ============ AI Integration Endpoints ============
+
+  /**
+   * Yêu cầu AI gợi ý các nhà cung cấp phù hợp cho RFQ hiện tại.
+   * AI sẽ quét database để tìm các nhà cung cấp có ngành nghề và uy tín phù hợp nhất.
+   * @param id ID của RFQ
+   * @returns Danh sách gợi ý từ AI
+   */
+  @Get(':id/ai-suggest-suppliers')
+  @ApiOperation({
+    summary: 'AI gợi ý nhà cung cấp cho RFQ',
+    description: 'Sử dụng AI để tìm các nhà cung cấp phù hợp nhất từ database',
+  })
+  async aiSuggestSuppliers(@Param('id') id: string) {
+    return this.rfqService.suggestSuppliersWithAi(id);
+  }
+
   // ============ Counter Offer Endpoints ============
 
   /**
@@ -380,7 +446,7 @@ export class RfqmoduleController {
   /**
    * Phản hồi lại một đề xuất phản hồi (Chấp nhận hoặc Từ chối đề xuất đàm phán)
    * @param id ID của đề xuất phản hồi
-   * @param body Nội dung phản hồi (accept/reject)
+   * @param body Nội dung phản hồi (accept/reject) và status (ACCEPTED/REJECTED)
    * @returns Đề xuất phản hồi sau khi được xử lý
    */
   @Put('counter-offers/:id/respond')
@@ -389,7 +455,40 @@ export class RfqmoduleController {
     description: 'Phản hồi một đề xuất phản hồi cụ thể',
   })
   async respondCounterOffer(@Param('id') id: string, @Body() body: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return this.rfqService.respondCounterOffer(id, body.response);
+    return this.rfqService.respondCounterOffer(
+      id,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      body.response,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      body.status || 'ACCEPTED',
+    );
+  }
+
+  // ============ Awarding Endpoints ============
+
+  /**
+   * Trao thầu cho nhà cung cấp dựa trên báo giá
+   * @param rfqId ID của RFQ
+   * @param body Chứa quotationId của nhà cung cấp thắng thầu
+   * @param req Thông tin người thực hiện
+   * @returns RFQ sau khi trao thầu
+   */
+  @Put(':rfqId/award')
+  @ApiOperation({
+    summary: 'Trao thầu cho nhà cung cấp',
+    description: 'Chọn nhà cung cấp thắng thầu cho một yêu cầu báo giá cụ thể',
+  })
+  async awardQuotation(
+    @Param('rfqId') rfqId: string,
+    @Body() body: any,
+    @Request() req: any,
+  ) {
+    return this.rfqService.awardQuotation(
+      rfqId,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      body.quotationId,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      req.user.sub,
+    );
   }
 }
