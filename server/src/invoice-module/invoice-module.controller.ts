@@ -13,7 +13,10 @@ import { InvoiceModuleService } from './invoice-module.service';
 import { CreateInvoiceModuleDto } from './dto/create-invoice-module.dto';
 import { UpdateInvoiceModuleDto } from './dto/update-invoice-module.dto';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Invoice Management')
+@ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 @Controller('invoice-module')
 export class InvoiceModuleController {
@@ -25,6 +28,7 @@ export class InvoiceModuleController {
    * @returns Hóa đơn vừa tạo
    */
   @Post()
+  @ApiOperation({ summary: 'Tạo hóa đơn mới' })
   create(@Body() createInvoiceModuleDto: CreateInvoiceModuleDto) {
     return this.invoiceModuleService.create(createInvoiceModuleDto);
   }
@@ -35,6 +39,7 @@ export class InvoiceModuleController {
    * @returns Danh sách hóa đơn
    */
   @Get()
+  @ApiOperation({ summary: 'Lấy tất cả hóa đơn' })
   findAll(@Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.invoiceModuleService.findAll(req.user.orgId);
@@ -46,6 +51,7 @@ export class InvoiceModuleController {
    * @returns Chi tiết hóa đơn
    */
   @Get(':id')
+  @ApiOperation({ summary: 'Lấy chi tiết hóa đơn theo ID' })
   findOne(@Param('id') id: string) {
     return this.invoiceModuleService.findOne(id);
   }
@@ -57,6 +63,7 @@ export class InvoiceModuleController {
    * @returns Hóa đơn sau khi cập nhật
    */
   @Patch(':id')
+  @ApiOperation({ summary: 'Cập nhật hóa đơn theo ID' })
   update(
     @Param('id') id: string,
     @Body() updateInvoiceModuleDto: UpdateInvoiceModuleDto,
@@ -70,6 +77,7 @@ export class InvoiceModuleController {
    * @returns Kết quả xóa
    */
   @Delete(':id')
+  @ApiOperation({ summary: 'Xóa hóa đơn theo ID' })
   remove(@Param('id') id: string) {
     return this.invoiceModuleService.remove(id);
   }

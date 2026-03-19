@@ -28,7 +28,7 @@ export class AuditModuleController {
    * @returns Bản ghi nhật ký vừa tạo
    */
   @Post()
-  @ApiOperation({ summary: 'Create a new audit log (usually internal)' })
+  @ApiOperation({ summary: 'Tạo bản ghi nhật ký kiểm tra mới' })
   async create(
     @Body() dto: CreateAuditLogDto,
     @Request() req: { user: JwtPayload },
@@ -42,7 +42,7 @@ export class AuditModuleController {
    * @returns Danh sách nhật ký kiểm tra
    */
   @Get()
-  @ApiOperation({ summary: 'Get all audit logs for the current organization' })
+  @ApiOperation({ summary: 'Lấy tất cả nhật ký kiểm tra của tổ chức' })
   async findAll(@Request() req: { user: JwtPayload }) {
     return this.auditService.findAll(req.user);
   }
@@ -54,7 +54,7 @@ export class AuditModuleController {
    * @returns Danh sách nhật ký kiểm tra liên quan
    */
   @Get('entity')
-  @ApiOperation({ summary: 'Get audit logs by entity type and ID' })
+  @ApiOperation({ summary: 'Lấy nhật ký kiểm tra theo loại và ID thực thể' })
   async findByEntity(@Query('type') type: string, @Query('id') id: string) {
     return this.auditService.findByEntity(type, id);
   }
@@ -65,7 +65,7 @@ export class AuditModuleController {
    * @returns Chi tiết bản ghi nhật ký
    */
   @Get(':id')
-  @ApiOperation({ summary: 'Get audit log detail by ID' })
+  @ApiOperation({ summary: 'Lấy chi tiết nhật ký kiểm tra theo ID' })
   async findOne(@Param('id') id: string) {
     // Controller handles ID as string from URL, service handles it as number|bigint
     return this.auditService.findOne(BigInt(id));

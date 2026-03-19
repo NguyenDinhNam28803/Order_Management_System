@@ -10,7 +10,9 @@ import {
 import { ReviewModuleService } from './review-module.service';
 import { CreateReviewModuleDto } from './dto/create-review-module.dto';
 import { UpdateReviewModuleDto } from './dto/update-review-module.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Review Management')
 @Controller('review-module')
 export class ReviewModuleController {
   constructor(private readonly reviewModuleService: ReviewModuleService) {}
@@ -21,6 +23,7 @@ export class ReviewModuleController {
    * @returns Đánh giá vừa tạo
    */
   @Post()
+  @ApiOperation({ summary: 'Tạo đánh giá mới' })
   create(@Body() createReviewModuleDto: CreateReviewModuleDto) {
     return this.reviewModuleService.create(createReviewModuleDto);
   }
@@ -30,6 +33,7 @@ export class ReviewModuleController {
    * @returns Danh sách đánh giá
    */
   @Get()
+  @ApiOperation({ summary: 'Lấy tất cả đánh giá' })
   findAll() {
     return this.reviewModuleService.findAll();
   }
@@ -40,6 +44,7 @@ export class ReviewModuleController {
    * @returns Chi tiết đánh giá
    */
   @Get(':id')
+  @ApiOperation({ summary: 'Lấy chi tiết đánh giá theo ID' })
   findOne(@Param('id') id: string) {
     return this.reviewModuleService.findOne(+id);
   }
@@ -51,6 +56,7 @@ export class ReviewModuleController {
    * @returns Đánh giá sau khi cập nhật
    */
   @Patch(':id')
+  @ApiOperation({ summary: 'Cập nhật đánh giá theo ID' })
   update(
     @Param('id') id: string,
     @Body() updateReviewModuleDto: UpdateReviewModuleDto,
@@ -64,6 +70,7 @@ export class ReviewModuleController {
    * @returns Kết quả xóa
    */
   @Delete(':id')
+  @ApiOperation({ summary: 'Xóa đánh giá theo ID' })
   remove(@Param('id') id: string) {
     return this.reviewModuleService.remove(+id);
   }

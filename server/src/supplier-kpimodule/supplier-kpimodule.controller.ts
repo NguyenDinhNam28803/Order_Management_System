@@ -10,7 +10,9 @@ import {
 import { SupplierKpimoduleService } from './supplier-kpimodule.service';
 import { CreateSupplierKpimoduleDto } from './dto/create-supplier-kpimodule.dto';
 import { UpdateSupplierKpimoduleDto } from './dto/update-supplier-kpimodule.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Supplier KPI Management')
 @Controller('supplier-kpimodule')
 export class SupplierKpimoduleController {
   constructor(
@@ -23,6 +25,7 @@ export class SupplierKpimoduleController {
    * @returns Bản ghi KPI vừa tạo
    */
   @Post()
+  @ApiOperation({ summary: 'Tạo đánh giá KPI cho nhà cung cấp' })
   create(@Body() createSupplierKpimoduleDto: CreateSupplierKpimoduleDto) {
     return this.supplierKpimoduleService.create(createSupplierKpimoduleDto);
   }
@@ -32,6 +35,7 @@ export class SupplierKpimoduleController {
    * @returns Danh sách các bản ghi KPI
    */
   @Get()
+  @ApiOperation({ summary: 'Lấy tất cả đánh giá KPI' })
   findAll() {
     return this.supplierKpimoduleService.findAll();
   }
@@ -42,6 +46,7 @@ export class SupplierKpimoduleController {
    * @returns Chi tiết bản ghi KPI
    */
   @Get(':id')
+  @ApiOperation({ summary: 'Lấy chi tiết đánh giá KPI theo ID' })
   findOne(@Param('id') id: string) {
     return this.supplierKpimoduleService.findOne(+id);
   }
@@ -53,6 +58,7 @@ export class SupplierKpimoduleController {
    * @returns Bản ghi KPI sau khi cập nhật
    */
   @Patch(':id')
+  @ApiOperation({ summary: 'Cập nhật đánh giá KPI theo ID' })
   update(
     @Param('id') id: string,
     @Body() updateSupplierKpimoduleDto: UpdateSupplierKpimoduleDto,
@@ -69,6 +75,7 @@ export class SupplierKpimoduleController {
    * @returns Kết quả xóa
    */
   @Delete(':id')
+  @ApiOperation({ summary: 'Xóa đánh giá KPI theo ID' })
   remove(@Param('id') id: string) {
     return this.supplierKpimoduleService.remove(+id);
   }

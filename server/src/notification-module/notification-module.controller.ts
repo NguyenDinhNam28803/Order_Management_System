@@ -28,7 +28,7 @@ export class NotificationModuleController {
    * @returns Mẫu thông báo vừa tạo
    */
   @Post('templates')
-  @ApiOperation({ summary: 'Create a new notification template' })
+  @ApiOperation({ summary: 'Tạo mẫu thông báo mới' })
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   async createTemplate(@Body() dto: CreateNotificationTemplateDto) {
@@ -40,7 +40,7 @@ export class NotificationModuleController {
    * @returns Danh sách các mẫu thông báo
    */
   @Get('templates')
-  @ApiOperation({ summary: 'Get all notification templates' })
+  @ApiOperation({ summary: 'Lấy tất cả mẫu thông báo' })
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   async findAllTemplates() {
@@ -53,7 +53,7 @@ export class NotificationModuleController {
    * @returns Kết quả gửi thông báo
    */
   @Post('send')
-  @ApiOperation({ summary: 'Send a notification to a user' })
+  @ApiOperation({ summary: 'Gửi thông báo cho người dùng' })
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   async sendNotification(@Body() dto: SendNotificationDto) {
@@ -66,7 +66,7 @@ export class NotificationModuleController {
    * @returns Danh sách các thông báo của người nhận đó
    */
   @Get('recipient/:id')
-  @ApiOperation({ summary: 'Get all notifications for a specific recipient' })
+  @ApiOperation({ summary: 'Lấy tất cả thông báo của một người nhận' })
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   async findAllByRecipient(@Param('id') id: string) {

@@ -32,7 +32,7 @@ export class AiController {
    * @returns Kết quả test AI query
    */
   @Get('test')
-  @ApiOperation({ summary: 'Test AI query' })
+  @ApiOperation({ summary: 'Kiểm tra truy vấn AI' })
   async testAi() {
     return this.aiService.responsetest();
   }

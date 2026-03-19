@@ -10,7 +10,9 @@ import {
 import { GrnmoduleService } from './grnmodule.service';
 import { CreateGrnmoduleDto } from './dto/create-grnmodule.dto';
 import { UpdateGrnmoduleDto } from './dto/update-grnmodule.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Goods Receipt Note (GRN)')
 @Controller('grnmodule')
 export class GrnmoduleController {
   constructor(private readonly grnmoduleService: GrnmoduleService) {}
@@ -21,6 +23,7 @@ export class GrnmoduleController {
    * @returns Phiếu nhập kho vừa tạo
    */
   @Post()
+  @ApiOperation({ summary: 'Tạo phiếu nhập kho (GRN) mới' })
   create(@Body() createGrnmoduleDto: CreateGrnmoduleDto) {
     return this.grnmoduleService.create(createGrnmoduleDto);
   }
@@ -30,6 +33,7 @@ export class GrnmoduleController {
    * @returns Danh sách phiếu nhập kho
    */
   @Get()
+  @ApiOperation({ summary: 'Lấy tất cả phiếu nhập kho (GRN)' })
   findAll() {
     return this.grnmoduleService.findAll();
   }
@@ -40,6 +44,7 @@ export class GrnmoduleController {
    * @returns Chi tiết phiếu nhập kho
    */
   @Get(':id')
+  @ApiOperation({ summary: 'Lấy chi tiết phiếu nhập kho (GRN) theo ID' })
   findOne(@Param('id') id: string) {
     return this.grnmoduleService.findOne(+id);
   }
@@ -51,6 +56,7 @@ export class GrnmoduleController {
    * @returns Phiếu nhập kho sau khi cập nhật
    */
   @Patch(':id')
+  @ApiOperation({ summary: 'Cập nhật phiếu nhập kho (GRN) theo ID' })
   update(
     @Param('id') id: string,
     @Body() updateGrnmoduleDto: UpdateGrnmoduleDto,
@@ -64,6 +70,7 @@ export class GrnmoduleController {
    * @returns Kết quả xóa
    */
   @Delete(':id')
+  @ApiOperation({ summary: 'Xóa phiếu nhập kho (GRN) theo ID' })
   remove(@Param('id') id: string) {
     return this.grnmoduleService.remove(+id);
   }

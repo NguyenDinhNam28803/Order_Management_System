@@ -12,7 +12,10 @@ import { PaymentModuleService } from './payment-module.service';
 import { CreatePaymentModuleDto } from './dto/create-payment-module.dto';
 import { UpdatePaymentModuleDto } from './dto/update-payment-module.dto';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Payment Management')
+@ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 @Controller('payment-module')
 export class PaymentModuleController {
@@ -24,6 +27,7 @@ export class PaymentModuleController {
    * @returns Bản ghi thanh toán vừa tạo
    */
   @Post()
+  @ApiOperation({ summary: 'Tạo thanh toán mới' })
   create(@Body() createPaymentModuleDto: CreatePaymentModuleDto) {
     return this.paymentModuleService.create(createPaymentModuleDto);
   }
@@ -33,6 +37,7 @@ export class PaymentModuleController {
    * @returns Danh sách thanh toán
    */
   @Get()
+  @ApiOperation({ summary: 'Lấy tất cả bản ghi thanh toán' })
   findAll() {
     return this.paymentModuleService.findAll();
   }
@@ -43,6 +48,7 @@ export class PaymentModuleController {
    * @returns Chi tiết bản ghi thanh toán
    */
   @Get(':id')
+  @ApiOperation({ summary: 'Lấy chi tiết thanh toán theo ID' })
   findOne(@Param('id') id: string) {
     return this.paymentModuleService.findOne(+id);
   }
@@ -54,6 +60,7 @@ export class PaymentModuleController {
    * @returns Bản ghi sau khi cập nhật
    */
   @Patch(':id')
+  @ApiOperation({ summary: 'Cập nhật thanh toán theo ID' })
   update(
     @Param('id') id: string,
     @Body() updatePaymentModuleDto: UpdatePaymentModuleDto,
@@ -67,6 +74,7 @@ export class PaymentModuleController {
    * @returns Kết quả xóa
    */
   @Delete(':id')
+  @ApiOperation({ summary: 'Xóa thanh toán theo ID' })
   remove(@Param('id') id: string) {
     return this.paymentModuleService.remove(+id);
   }

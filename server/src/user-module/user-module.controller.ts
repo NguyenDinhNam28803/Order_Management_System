@@ -67,7 +67,7 @@ export class UserModuleController {
    * @returns Danh sách người dùng
    */
   @Get()
-  @ApiOperation({ summary: 'Get all users' })
+  @ApiOperation({ summary: 'Lấy danh sách tất cả người dùng' })
   @ApiResponse({ status: 200, type: [UserModule] })
   findAll() {
     return this.userModuleService.findAll();
@@ -79,7 +79,7 @@ export class UserModuleController {
    * @returns Thông tin chi tiết người dùng
    */
   @Get(':id')
-  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiOperation({ summary: 'Lấy thông tin người dùng theo ID' })
   @ApiResponse({ status: 200, type: UserModule })
   findOne(@Param('id') id: string) {
     return this.userModuleService.findOne(id);
@@ -92,7 +92,7 @@ export class UserModuleController {
    * @returns Người dùng sau khi cập nhật
    */
   @Patch(':id')
-  @ApiOperation({ summary: 'Update user by ID' })
+  @ApiOperation({ summary: 'Cập nhật thông tin người dùng theo ID' })
   @ApiResponse({ status: 200, type: UserModule })
   update(
     @Param('id') id: string,
@@ -107,7 +107,7 @@ export class UserModuleController {
    * @returns Kết quả xóa
    */
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete user by ID' })
+  @ApiOperation({ summary: 'Xóa người dùng theo ID' })
   @ApiResponse({ status: 200 })
   remove(@Param('id') id: string) {
     return this.userModuleService.remove(id);

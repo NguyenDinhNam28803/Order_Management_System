@@ -48,7 +48,7 @@ export class BudgetModuleController {
    * @returns Danh sách các chu kỳ ngân sách
    */
   @Get('periods')
-  @ApiOperation({ summary: 'Get all budget periods' })
+  @ApiOperation({ summary: 'Lấy tất cả các chu kỳ ngân sách' })
   async findAllPeriods(@Request() req: { user: JwtPayload }) {
     return this.budgetService.findAllPeriods(req.user);
   }
@@ -61,7 +61,7 @@ export class BudgetModuleController {
    * @returns Khoản phân bổ vừa tạo
    */
   @Post('allocations')
-  @ApiOperation({ summary: 'Create a new budget allocation' })
+  @ApiOperation({ summary: 'Tạo một phân bổ ngân sách mới' })
   async createAllocation(
     @Body() dto: CreateBudgetAllocationDto,
     @Request() req: { user: JwtPayload },
@@ -75,7 +75,7 @@ export class BudgetModuleController {
    * @returns Danh sách các khoản phân bổ ngân sách
    */
   @Get('allocations')
-  @ApiOperation({ summary: 'Get all budget allocations' })
+  @ApiOperation({ summary: 'Lấy tất cả phân bổ ngân sách' })
   async findAllAllocations(@Request() req: { user: JwtPayload }) {
     return this.budgetService.findAllAllocations(req.user);
   }
@@ -86,7 +86,7 @@ export class BudgetModuleController {
    * @returns Thông tin chi tiết phân bổ ngân sách
    */
   @Get('allocations/:id')
-  @ApiOperation({ summary: 'Get budget allocation detail by ID' })
+  @ApiOperation({ summary: 'Lấy chi tiết phân bổ ngân sách theo ID' })
   async findAllocationOne(@Param('id') id: string) {
     return this.budgetService.findAllocationOne(id);
   }
@@ -98,7 +98,7 @@ export class BudgetModuleController {
    * @returns Khoản phân bổ sau khi cập nhật
    */
   @Patch('allocations/:id')
-  @ApiOperation({ summary: 'Update budget allocation' })
+  @ApiOperation({ summary: 'Cập nhật phân bổ ngân sách' })
   async updateAllocation(
     @Param('id') id: string,
     @Body() dto: UpdateBudgetAllocationDto,
@@ -112,7 +112,7 @@ export class BudgetModuleController {
    * @returns Kết quả xóa
    */
   @Delete('allocations/:id')
-  @ApiOperation({ summary: 'Delete a budget allocation' })
+  @ApiOperation({ summary: 'Xóa một phân bổ ngân sách' })
   async removeAllocation(@Param('id') id: string) {
     return this.budgetService.removeAllocation(id);
   }

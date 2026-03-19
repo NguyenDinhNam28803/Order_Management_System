@@ -10,7 +10,9 @@ import {
 import { DisputeModuleService } from './dispute-module.service';
 import { CreateDisputeModuleDto } from './dto/create-dispute-module.dto';
 import { UpdateDisputeModuleDto } from './dto/update-dispute-module.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Dispute Management')
 @Controller('dispute-module')
 export class DisputeModuleController {
   constructor(private readonly disputeModuleService: DisputeModuleService) {}
@@ -21,6 +23,7 @@ export class DisputeModuleController {
    * @returns Tranh chấp vừa tạo
    */
   @Post()
+  @ApiOperation({ summary: 'Tạo khiếu nại/tranh chấp mới' })
   create(@Body() createDisputeModuleDto: CreateDisputeModuleDto) {
     return this.disputeModuleService.create(createDisputeModuleDto);
   }
@@ -30,6 +33,7 @@ export class DisputeModuleController {
    * @returns Danh sách tranh chấp
    */
   @Get()
+  @ApiOperation({ summary: 'Lấy tất cả khiếu nại/tranh chấp' })
   findAll() {
     return this.disputeModuleService.findAll();
   }
@@ -40,6 +44,7 @@ export class DisputeModuleController {
    * @returns Chi tiết tranh chấp
    */
   @Get(':id')
+  @ApiOperation({ summary: 'Lấy chi tiết khiếu nại/tranh chấp theo ID' })
   findOne(@Param('id') id: string) {
     return this.disputeModuleService.findOne(+id);
   }
@@ -51,6 +56,7 @@ export class DisputeModuleController {
    * @returns Tranh chấp sau khi cập nhật
    */
   @Patch(':id')
+  @ApiOperation({ summary: 'Cập nhật khiếu nại/tranh chấp theo ID' })
   update(
     @Param('id') id: string,
     @Body() updateDisputeModuleDto: UpdateDisputeModuleDto,
@@ -64,6 +70,7 @@ export class DisputeModuleController {
    * @returns Kết quả xóa
    */
   @Delete(':id')
+  @ApiOperation({ summary: 'Xóa khiếu nại/tranh chấp theo ID' })
   remove(@Param('id') id: string) {
     return this.disputeModuleService.remove(+id);
   }

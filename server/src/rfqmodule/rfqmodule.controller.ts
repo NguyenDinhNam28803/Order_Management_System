@@ -71,7 +71,7 @@ export class RfqmoduleController {
    * @returns Chi tiết RFQ
    */
   @Get(':id')
-  @ApiOperation({ summary: 'Get RFQ detail' })
+  @ApiOperation({ summary: 'Lấy thông tin chi tiết của yêu cầu báo giá' })
   async findOne(@Param('id') id: string) {
     return this.rfqService.findOne(id);
   }
