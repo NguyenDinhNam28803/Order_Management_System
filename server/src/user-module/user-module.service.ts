@@ -4,17 +4,30 @@ import { UpdateUserModuleDto } from './dto/update-user-module.dto';
 import { UserRepository } from './user.repository';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 
 @Injectable()
 export class UserModuleService {
   constructor(
     private readonly userRepository: UserRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   async create(createUserModuleDto: CreateUserModuleDto) {
     const user = await this.userRepository.create(createUserModuleDto);
     await this.cacheManager.del('user:all');
+
+    // Gửi email thông báo tài khoản mới
+    await this.notificationService.sendNotification({
+      recipientId: user.id,
+      eventType: 'NEW_USER_ACCOUNT',
+      data: {
+        username: user.email,
+        password: createUserModuleDto.passwordHash, // Mật khẩu gốc từ DTO
+      },
+    });
+
     return user;
   }
 

@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { BullModule } from '@nestjs/bull';
+import { CacheModule } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-ioredis-yet';
 import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -20,8 +23,6 @@ import { ApprovalModuleModule } from './approval-module/approval-module.module';
 import { AdminModuleModule } from './admin-module/admin-module.module';
 import { ReportModuleModule } from './report-module/report-module.module';
 import { ProductModuleModule } from './product-module/product-module.module';
-import { CacheModule } from '@nestjs/cache-manager';
-import { redisStore } from 'cache-manager-ioredis-yet';
 import { HashPasswordService } from './hash-password/hash-password.service';
 import { ContractModuleModule } from './contract-module/contract-module.module';
 import { BudgetModuleModule } from './budget-module/budget-module.module';
@@ -38,10 +39,32 @@ import { CostCenterModuleModule } from './cost-center-module/cost-center-module.
       isGlobal: true,
       envFilePath: '.env',
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        redis: {
+          host: configService.get<string>('REDIS_HOST', 'localhost'),
+          port: configService.get<number>('REDIS_PORT', 6379),
+          password: configService.get<string>('REDIS_PASSWORD'),
+        },
+      }),
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        store: redisStore,
+        host: configService.get<string>('REDIS_HOST', 'localhost'),
+        port: configService.get<number>('REDIS_PORT', 6379),
+        password: configService.get<string>('REDIS_PASSWORD'),
+      }),
+    }),
     ThrottlerModule.forRoot([
       {
-        ttl: 60000, // 1 phút
-        limit: 10, // Tối đa 10 request/phút cho mỗi IP (mặc định)
+        ttl: 60000,
+        limit: 10,
       },
     ]),
     JwtModule.registerAsync({
@@ -50,18 +73,12 @@ import { CostCenterModuleModule } from './cost-center-module/cost-center-module.
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const secret = configService.get<string>('JWT_SECRET');
-        const expiresIn = configService.get<string>('JWT_EXPIRES_IN') || '15m'; // Lấy từ env hoặc mặc định 15m
-
-        if (!secret) {
-          throw new Error('JWT_SECRET is not defined in .env file');
-        }
-
+        const expiresIn = configService.get<string>('JWT_EXPIRES_IN') || '15m';
+        if (!secret) throw new Error('JWT_SECRET is not defined');
         return {
           secret: secret,
-          signOptions: {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            expiresIn: expiresIn as any, // Dùng 'as any' hoặc đảm bảo nó là string/number hợp lệ
-          },
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          signOptions: { expiresIn: expiresIn as any },
         };
       },
     }),
@@ -82,17 +99,6 @@ import { CostCenterModuleModule } from './cost-center-module/cost-center-module.
     ApprovalModuleModule,
     AdminModuleModule,
     ReportModuleModule,
-    CacheModule.registerAsync({
-      isGlobal: true,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        store: redisStore,
-        host: configService.get<string>('REDIS_HOST', 'localhost'),
-        port: configService.get<number>('REDIS_PORT', 6379),
-        password: configService.get<string>('REDIS_PASSWORD'),
-      }),
-    }),
     ContractModuleModule,
     BudgetModuleModule,
     AuditModuleModule,

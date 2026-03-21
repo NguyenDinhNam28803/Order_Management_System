@@ -510,6 +510,36 @@ async function main() {
     `✅ Successfully seeded ${approvalRules.length} approval matrix rules.`,
   );
 
+  // 8. SEED NOTIFICATION TEMPLATES
+  console.log('🔔 Seeding Notification Templates...');
+  await prisma.notificationTemplate.deleteMany({});
+  const notificationTemplates = [
+    {
+      eventType: 'NEW_USER_ACCOUNT',
+      channel: 'EMAIL',
+      priority: 1,
+      subject: 'Chào mừng bạn gia nhập hệ thống OMS',
+      bodyTemplate:
+        'Chào {{name}},<br>Tài khoản của bạn đã được tạo thành công.<br><br>Username: {{username}}<br>Password: {{password}}<br><br>Vui lòng đăng nhập và đổi mật khẩu ngay.',
+    },
+    {
+      eventType: 'PR_APPROVED',
+      channel: 'EMAIL',
+      priority: 2,
+      subject: 'Yêu cầu mua hàng của bạn đã được duyệt',
+      bodyTemplate:
+        'Chào {{name}},<br>Yêu cầu mua hàng {{prNumber}} đã được duyệt bởi {{approverName}}.',
+    },
+  ];
+
+  for (const template of notificationTemplates) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    await prisma.notificationTemplate.create({ data: template as any });
+  }
+  console.log(
+    `✅ Successfully seeded ${notificationTemplates.length} notification templates.`,
+  );
+
   console.log('✨ Seeding finished successfully!');
 }
 

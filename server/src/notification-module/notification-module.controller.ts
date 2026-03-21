@@ -2,14 +2,34 @@ import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { NotificationModuleService } from './notification-module.service';
 import { CreateNotificationTemplateDto } from './dto/create-notification-template.dto';
 import { SendNotificationDto } from './dto/send-notification.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { EmailService } from './email.service';
 import { EmailTemplatesService } from './email-template.service';
+import { IsEmail, IsNotEmpty, IsObject, IsString } from 'class-validator';
 
-export interface EmailRequest {
+export class EmailRequest {
+  @ApiProperty({ example: 'user@gmail.com', description: 'Email người nhận' })
+  @IsEmail()
+  @IsNotEmpty()
   to: string;
+
+  @ApiProperty({ example: 'Thông báo đơn hàng', description: 'Tiêu đề email' })
+  @IsString()
+  @IsNotEmpty()
   subject: string;
+
+  @ApiProperty({
+    example: { orderId: '123', status: 'Approved' },
+    description: 'Dữ liệu để render template',
+  })
+  @IsObject()
+  @IsNotEmpty()
   data: Record<string, any>;
 }
 
@@ -71,6 +91,17 @@ export class NotificationModuleController {
   @UseGuards(JwtAuthGuard)
   async findAllByRecipient(@Param('id') id: string) {
     return this.service.findAllByRecipient(id);
+  }
+
+  /**
+   * Check connection email
+   */
+  @Post('/check-connection')
+  @ApiOperation({
+    summary: 'Check kết nối',
+  })
+  async Check() {
+    return await this.emailService.verifyConnection();
   }
 
   /**

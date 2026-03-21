@@ -21,6 +21,18 @@ export class EmailService {
     });
   }
 
+  // Xác minh connection email
+  async verifyConnection() {
+    try {
+      await this.transporter.verify();
+      this.logger.log('✅ Mail server connected successfully');
+      return '✅ Check thành công';
+    } catch (error) {
+      this.logger.error('❌ Mail server connection failed:', error.message);
+      return '❌ Kết nối thất bại';
+    }
+  }
+
   async sendEmail(to: string, subject: string, body: string) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

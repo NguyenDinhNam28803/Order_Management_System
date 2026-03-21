@@ -1,8 +1,10 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import bull from 'bull';
 import { NotificationRepository } from './notification.repository';
 import { EmailService } from './email.service';
 import { SmsService } from './sms.service';
-import { EmailTemplatesService } from './email-template.service'; // 👈 thêm
+import { EmailTemplatesService } from './email-template.service';
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { CreateNotificationTemplateDto } from './dto/create-notification-template.dto';
 import { NotificationChannel, NotificationStatus } from '@prisma/client';
@@ -11,14 +13,14 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class NotificationModuleService {
   private readonly logger = new Logger(NotificationModuleService.name);
-  notificationService: any;
 
   constructor(
     private readonly repository: NotificationRepository,
     private readonly emailService: EmailService,
     private readonly smsService: SmsService,
     private readonly prisma: PrismaService,
-    private readonly emailTemplates: EmailTemplatesService, // 👈 inject
+    private readonly emailTemplates: EmailTemplatesService,
+    @InjectQueue('email-queue') private readonly emailQueue: bull.Queue, // Thêm queue
   ) {}
 
   onModuleInit() {
@@ -58,13 +60,11 @@ export class NotificationModuleService {
         ? this.renderTemplate(template.subject, data)
         : undefined;
 
-      // ✅ EMAIL → dùng HTML template theo eventType
-      // ✅ SMS / IN_APP → dùng bodyTemplate plain text như cũ
       const renderedBody =
         template.channel === NotificationChannel.EMAIL
           ? this.emailTemplates.render(eventType, {
               ...data,
-              name: user.fullName ?? user.email, // truyền thêm thông tin user
+              name: user.fullName ?? user.email,
               email: user.email,
             })
           : this.renderTemplate(template.bodyTemplate, data);
@@ -83,51 +83,69 @@ export class NotificationModuleService {
       });
 
       try {
-        let success = false;
-
         if (template.channel === NotificationChannel.EMAIL) {
           if (user.email) {
-            success = await this.emailService.sendEmail(
-              user.email,
-              renderedSubject || 'OMS Notification',
-              renderedBody,
-            );
+            try {
+              // Thử đẩy vào hàng đợi trước
+              await this.emailQueue.add('send-email', {
+                to: user.email,
+                subject: renderedSubject || 'OMS Notification',
+                body: renderedBody,
+                notificationId: notification.id,
+              });
+              results.push({ channel: template.channel, status: 'QUEUED' });
+            } catch (queueError) {
+              this.logger.warn(
+                `Queue failed, fallback to direct email: ${queueError.message}`,
+              );
+              // Fallback: Gửi trực tiếp nếu Queue lỗi
+              await this.emailService.sendEmail(
+                user.email,
+                renderedSubject || 'OMS Notification',
+                renderedBody,
+              );
+              await this.repository.updateNotificationStatus(
+                notification.id,
+                NotificationStatus.SENT,
+              );
+              results.push({ channel: template.channel, status: 'SENT' });
+            }
           } else {
             throw new Error('User does not have an email address');
           }
         } else if (template.channel === NotificationChannel.SMS) {
           if (user.phone) {
-            success = await this.smsService.sendSms(user.phone, renderedBody);
+            const success = await this.smsService.sendSms(
+              user.phone,
+              renderedBody,
+            );
+            if (success) {
+              await this.repository.updateNotificationStatus(
+                notification.id,
+                NotificationStatus.SENT,
+              );
+              results.push({ channel: template.channel, status: 'SENT' });
+            }
           } else {
             throw new Error('User does not have a phone number');
           }
         } else if (template.channel === NotificationChannel.IN_APP) {
-          success = true;
-        }
-
-        if (success) {
-          await this.repository.updateNotificationStatus(
-            notification.id,
-            NotificationStatus.SENT,
-          );
           results.push({ channel: template.channel, status: 'SENT' });
         }
       } catch (error) {
         this.logger.error(
-          `Failed to send notification ${notification.id} via ${template.channel}:`,
+          `Failed to queue notification ${notification.id}:`,
           error,
         );
         await this.repository.updateNotificationStatus(
           notification.id,
           NotificationStatus.FAILED,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          error.message,
+          (error as Error).message,
         );
         results.push({
           channel: template.channel,
           status: 'FAILED',
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          reason: error.message,
+          reason: (error as Error).message,
         });
       }
     }
