@@ -6,6 +6,8 @@ import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { PrismaService } from '../prisma/prisma.service';
 
 export interface AiDatabaseResponse<T = unknown> {
+  cons: any;
+  score: number;
   success: boolean;
   summary: string;
   data: T[];
@@ -32,6 +34,51 @@ export class AiService implements OnModuleInit {
   async onModuleInit() {
     await this.listModels();
     // await this.responsetest();
+  }
+
+  /**
+   * Phân tích và chấm điểm báo giá dựa trên yêu cầu của RFQ
+   */
+  async analyzeQuotation(rfqData: any, quotationData: any, supplierData: any) {
+    const prompt = `
+      Đóng vai một chuyên gia mua sắm (Procurement Expert). Hãy phân tích báo giá sau:
+
+      1. YÊU CẦU (RFQ):
+      - Mặt hàng: ${JSON.stringify(rfqData.items)}
+      - Tổng ngân sách dự kiến: ${rfqData.totalEstimate || 'Không rõ'}
+      - Hạn chót cần hàng: ${rfqData.deadline}
+
+      2. BÁO GIÁ CỦA NHÀ CUNG CẤP (Quotation):
+      - Tổng tiền: ${quotationData.totalPrice}
+      - Thời gian giao hàng: ${quotationData.leadTimeDays} ngày
+      - Điều khoản thanh toán: ${quotationData.paymentTerms}
+
+      3. THÔNG TIN NHÀ CUNG CẤP:
+      - Tên: ${supplierData.name}
+      - Điểm tin cậy (Trust Score): ${supplierData.trustScore}/100
+      - Xếp hạng: ${supplierData.tier}
+
+      NHIỆM VỤ:
+      Hãy đánh giá báo giá này trên thang điểm 100 dựa trên các tiêu chí: Giá cả (40%), Thời gian (30%), Uy tín (30%).
+      
+      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT (Không markdown):
+      {
+        "score": number, // Điểm số 0-100
+        "assessment": "Nhận xét tổng quan ngắn gọn",
+        "pros": ["Điểm mạnh 1", "Điểm mạnh 2"],
+        "cons": ["Rủi ro/Điểm yếu 1"],
+        "recommendation": "RECOMMEND" | "CONSIDER" | "REJECT"
+      }
+    `;
+
+    // Gọi Gemini (không dùng function calling, chỉ text generation thuần túy để nhanh hơn)
+    const result = await this.client.models.generateContent({
+      model: 'gemini-2.0-flash', // Model nhanh và rẻ cho task phân tích text
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+
+    const responseText = result.text;
+    return this.parseJsonResponse(responseText ?? ''); // Tận dụng hàm parse có sẵn
   }
 
   /**
@@ -222,6 +269,8 @@ export class AiService implements OnModuleInit {
         data: [],
         total: 0,
         message: 'Response không phải JSON chuẩn, đây là text gốc.',
+        cons: undefined,
+        score: 0,
       };
     }
   }

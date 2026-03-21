@@ -9,15 +9,87 @@ import { CreateCounterOfferDto } from './dto/create-counter-offer.dto';
 import { RfqRepository } from './rfq.repository';
 import { RfqStatus, QuotationStatus } from '@prisma/client';
 import { AiService } from '../ai-service/ai-service.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class RfqmoduleService {
   constructor(
     private readonly repository: RfqRepository,
     private readonly aiService: AiService,
+    private readonly prisma: PrismaService,
   ) {}
 
   // ============ AI Integration Methods ============
+
+  /**
+   * Sử dụng AI để phân tích và chấm điểm báo giá chi tiết.
+   * Kết quả phân tích sẽ được lưu vào database.
+   * @param quotationId ID của báo giá cần phân tích
+   */
+  async analyzeQuotationWithAi(quotationId: string) {
+    // 1. Lấy dữ liệu đầy đủ
+    const quotation = await this.repository.findQuotationById(quotationId);
+    if (!quotation) throw new NotFoundException('Báo giá không tồn tại');
+
+    const rfq = await this.repository.findOne(quotation.rfqId);
+
+    if (!rfq) {
+      return;
+    }
+    // 2. Chuẩn bị dữ liệu cho AI
+    const rfqData = {
+      items: rfq.items.map((i: any) => ({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        name: i.description,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        qty: i.qty,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        targetPrice: i.targetPrice,
+      })),
+      totalEstimate: rfq.pr?.totalEstimate || 'Không rõ',
+      deadline: rfq.deadline,
+    };
+
+    const quotationData = {
+      totalPrice: quotation.totalPrice,
+      leadTimeDays: quotation.leadTimeDays,
+      paymentTerms: quotation.paymentTerms,
+    };
+
+    // Tìm thông tin nhà cung cấp từ danh sách mời thầu
+    const supplierInfo = rfq.suppliers.find(
+      (s: any) => s.supplierId === quotation.supplierId,
+    );
+
+    const supplierData = {
+      name: supplierInfo?.supplier?.name || 'Nhà cung cấp',
+      trustScore: supplierInfo?.supplier?.trustScore || 50,
+      tier: 'STANDARD',
+    };
+
+    // 3. Gọi AI Service
+    const aiResult = await this.aiService.analyzeQuotation(
+      rfqData,
+      quotationData,
+      supplierData,
+    );
+
+    // 4. Lưu kết quả vào DB (Update Quotation)
+    if (aiResult.success !== false) {
+      await this.prisma.rfqQuotation.update({
+        where: { id: quotationId },
+        data: {
+          aiScore: aiResult.score,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          aiBreakdown: aiResult as any, // Lưu full JSON kết quả
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          aiFlags: aiResult.cons, // Lưu rủi ro vào flags
+        },
+      });
+    }
+
+    return aiResult;
+  }
 
   /**
    * Sử dụng AI để phân tích nội dung RFQ và gợi ý các nhà cung cấp phù hợp từ database.

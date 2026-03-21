@@ -109,6 +109,19 @@ export class RfqmoduleController {
   // ============ Quotation Endpoints ============
 
   /**
+   * Sử dụng AI để phân tích và chấm điểm báo giá chi tiết.
+   * @param id ID của báo giá cần phân tích
+   */
+  @Post('quotations/:id/analyze')
+  @ApiOperation({ 
+    summary: 'Dùng AI phân tích và chấm điểm báo giá',
+    description: 'Phân tích báo giá dựa trên giá cả, thời gian giao hàng và độ tin cậy của nhà cung cấp.'
+  })
+  analyzeQuotation(@Param('id') id: string) {
+    return this.rfqService.analyzeQuotationWithAi(id);
+  }
+
+  /**
    * Nhà cung cấp gửi báo giá cho một RFQ cụ thể
    * @param rfqId ID của RFQ
    * @param createQuotationDto Dữ liệu báo giá của nhà cung cấp
