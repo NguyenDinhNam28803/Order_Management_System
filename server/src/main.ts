@@ -112,9 +112,11 @@ async function bootstrap() {
   console.log(`${pc.cyan('🗄️  Database   :')} ${dbStatus}`);
 
   const redisHost = configService.get<string>('REDIS_HOST', 'localhost');
-  const redisPass = configService.get<string>('REDIS_PASSWORD')
-    ? pc.green('🔒 Set')
-    : pc.yellow('🔓 Not Set');
+  const redisPass =
+    configService.get<string>('REDIS_PORT') &&
+    configService.get<string>('REDIS_HOST')
+      ? pc.green('🔒 Set')
+      : pc.yellow('🔓 Not Set');
   console.log(
     `${pc.red('🔥 Redis      :')} ${pc.white(redisHost)} (${redisPass})`,
   );
