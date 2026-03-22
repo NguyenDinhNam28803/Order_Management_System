@@ -32,6 +32,7 @@ import { AiServiceModule } from './ai-service/ai-service.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CostCenterModuleModule } from './cost-center-module/cost-center-module.module';
+import { OrganizationModuleModule } from './organization-module/organization-module.module';
 
 @Module({
   imports: [
@@ -105,6 +106,7 @@ import { CostCenterModuleModule } from './cost-center-module/cost-center-module.
     SystemConfigModuleModule,
     AiServiceModule,
     CostCenterModuleModule,
+    OrganizationModuleModule,
   ],
   controllers: [AppController],
   providers: [

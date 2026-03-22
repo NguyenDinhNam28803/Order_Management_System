@@ -60,6 +60,7 @@ model Organization {
   invoicesAsSupplier       SupplierInvoice[]        @relation("InvoiceSupplierOrg")
   kpiScoresAsBuyer         SupplierKpiScore[]       @relation("KpiBuyerOrg")
   kpiScoresAsSupplier      SupplierKpiScore[]       @relation("KpiSupplier")
+  orgBudgets               OrgBudget[]
   systemConfigs            SystemConfig[]
   users                    User[]
   webhookConfigs           WebhookConfig[]
@@ -1289,6 +1290,23 @@ model SpendAnalyticsSnapshot {
   @@map("spend_analytics_snapshots")
 }
 
+
+model OrgBudget {
+  id              String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  orgId           String       @map("org_id") @db.Uuid
+  fiscalYear      Int          @map("fiscal_year") @db.SmallInt
+  totalAmount     Decimal      @map("total_amount") @db.Decimal(18, 2)
+  currency        CurrencyCode @default(VND)
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  organization    Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([orgId, fiscalYear])
+  @@map("org_budgets")
+}
+
+
 enum UserRole {
   REQUESTER
   DEPT_APPROVER
@@ -1527,3 +1545,4 @@ enum Incoterm {
   DPU
   DDP
 }
+
