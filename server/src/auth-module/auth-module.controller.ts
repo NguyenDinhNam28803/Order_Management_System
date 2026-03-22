@@ -12,7 +12,7 @@ interface RequestWithUser extends Request {
   user: { sub: string };
 }
 
-@Controller('auth-module')
+@Controller('auth')
 export class AuthModuleController {
   constructor(private readonly authModuleService: AuthModuleService) {}
 

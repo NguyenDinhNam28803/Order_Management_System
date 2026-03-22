@@ -23,7 +23,7 @@ import {
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
 @ApiTags('Cost-center-module')
-@Controller('cost-center')
+@Controller('cost-centers')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 export class CostCenterModuleController {

@@ -14,7 +14,7 @@ import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('Purchase Requisition (PR)')
-@Controller('pr')
+@Controller('procurement-requests')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 export class PrmoduleController {

@@ -15,7 +15,7 @@ import { AuditModuleService } from './audit-module.service';
 import { CreateAuditLogDto } from './dto/audit.dto';
 
 @ApiTags('Audit Logs')
-@Controller('audit')
+@Controller('audit-logs')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 export class AuditModuleController {

@@ -10,9 +10,10 @@ import {
 import { ApprovalModuleService } from './approval-module.service';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ActionApprovalDto } from './dto/action-approval.dto';
 
 @ApiTags('Approval Workflow')
-@Controller('approval-module')
+@Controller('approvals')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 export class ApprovalModuleController {
@@ -49,7 +50,7 @@ export class ApprovalModuleController {
   })
   async action(
     @Param('id') workflowId: string,
-    @Body() body: { action: 'APPROVE' | 'REJECT'; comment?: string },
+    @Body() body: ActionApprovalDto,
     @Req() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

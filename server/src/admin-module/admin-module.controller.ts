@@ -10,7 +10,7 @@ import { AdminModuleService } from './admin-module.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Admin Module')
-@Controller('admin-module')
+@Controller('admin')
 export class AdminModuleController {
   constructor(private readonly adminModuleService: AdminModuleService) {}
 

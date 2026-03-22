@@ -13,7 +13,7 @@ import { UpdateSupplierKpimoduleDto } from './dto/update-supplier-kpimodule.dto'
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Supplier KPI Management')
-@Controller('supplier-kpimodule')
+@Controller('supplier-kpis')
 export class SupplierKpimoduleController {
   constructor(
     private readonly supplierKpimoduleService: SupplierKpimoduleService,

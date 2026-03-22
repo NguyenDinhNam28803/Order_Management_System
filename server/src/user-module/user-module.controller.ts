@@ -22,7 +22,7 @@ import {
 import { UserModule } from './entities/user-module.entity';
 
 @ApiTags('User Module')
-@Controller('user-module')
+@Controller('users')
 export class UserModuleController {
   constructor(private readonly userModuleService: UserModuleService) {}
 

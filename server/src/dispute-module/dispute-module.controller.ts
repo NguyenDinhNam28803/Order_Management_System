@@ -13,7 +13,7 @@ import { UpdateDisputeModuleDto } from './dto/update-dispute-module.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Dispute Management')
-@Controller('dispute-module')
+@Controller('disputes')
 export class DisputeModuleController {
   constructor(private readonly disputeModuleService: DisputeModuleService) {}
 

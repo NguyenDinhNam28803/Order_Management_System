@@ -20,7 +20,7 @@ import { UpdateGrnItemQcResultDto } from './dto/update-grn-item-qc.dto';
 @ApiTags('Goods Receipt Note (GRN) - Quản lý Nhập kho')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('grn')
+@Controller('goods-received-notes')
 export class GrnmoduleController {
   constructor(private readonly grnService: GrnmoduleService) {}
 

@@ -13,7 +13,7 @@ import { UpdateReportModuleDto } from './dto/update-report-module.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Report Management')
-@Controller('report-module')
+@Controller('reports')
 export class ReportModuleController {
   constructor(private readonly reportModuleService: ReportModuleService) {}
 

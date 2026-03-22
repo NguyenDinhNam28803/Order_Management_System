@@ -13,7 +13,7 @@ import { UpdateReviewModuleDto } from './dto/update-review-module.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Review Management')
-@Controller('review-module')
+@Controller('reviews')
 export class ReviewModuleController {
   constructor(private readonly reviewModuleService: ReviewModuleService) {}
 

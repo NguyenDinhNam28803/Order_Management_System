@@ -18,7 +18,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
 @ApiTags('Request for Quotation (RFQ)')
-@Controller('rfq')
+@Controller('request-for-quotations')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 export class RfqmoduleController {

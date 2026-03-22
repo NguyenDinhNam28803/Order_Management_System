@@ -18,7 +18,7 @@ import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 @ApiTags('Invoice Management')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
-@Controller('invoice-module')
+@Controller('invoices')
 export class InvoiceModuleController {
   constructor(private readonly invoiceModuleService: InvoiceModuleService) {}
 

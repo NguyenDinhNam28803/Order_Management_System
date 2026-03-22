@@ -14,7 +14,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
 @ApiTags('Purchase Order (PO)')
-@Controller('po')
+@Controller('purchase-orders')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 export class PomoduleController {
