@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePrDto } from './dto/create-pr.dto';
+import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
 import { PrRepository } from './pr.repository';
 import { PrStatus, PurchaseRequisition, DocumentType } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
@@ -16,13 +16,67 @@ export class PrmoduleService {
     private readonly aiService: AiService,
   ) {}
 
+  private async checkAndReserveBudget(
+    costCenterId: string,
+    orgId: string,
+    amount: number,
+  ) {
+    const now = new Date();
+    const fiscalYear = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const quarter = Math.ceil(month / 3);
+
+    // 1. Tìm kỳ ngân sách
+    const period = await this.prisma.budgetPeriod.findFirst({
+      where: {
+        orgId,
+        fiscalYear,
+        periodType: 'QUARTERLY',
+        periodNumber: quarter,
+      },
+    });
+
+    if (!period) {
+      throw new Error(
+        `Không tìm thấy kỳ ngân sách Quý ${quarter}/${fiscalYear} cho tổ chức này.`,
+      );
+    }
+
+    // 2. Tìm phân bổ ngân sách cho Cost Center trong kỳ đó
+    const allocation = await this.prisma.budgetAllocation.findUnique({
+      where: {
+        budgetPeriodId_costCenterId: {
+          budgetPeriodId: period.id,
+          costCenterId,
+        },
+      },
+    });
+
+    if (!allocation) {
+      throw new Error(
+        `Cost center chưa được cấp ngân sách cho Quý ${quarter}/${fiscalYear}.`,
+      );
+    }
+
+    // 3. Kiểm tra hạn mức
+    const available =
+      Number(allocation.allocatedAmount) -
+      Number(allocation.committedAmount) -
+      Number(allocation.spentAmount);
+
+    if (available < amount) {
+      throw new Error(
+        `Ngân sách không đủ. Hạn mức còn lại: ${available.toLocaleString()} VND, cần: ${amount.toLocaleString()} VND.`,
+      );
+    }
+  }
+
   async create(
     createPrDto: CreatePrDto,
     user: JwtPayload,
   ): Promise<PurchaseRequisition> {
     const prNumber = `PR-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    // Giả sử user object có orgId và deptId từ JWT payload
     const orgId = user.orgId;
     let deptId = user.deptId;
 
@@ -37,10 +91,21 @@ export class PrmoduleService {
       deptId = userFromDb.deptId;
     }
 
+    // Kiểm tra ngân sách nếu có Cost Center
+    if (createPrDto.costCenterId) {
+      const totalAmount = createPrDto.items.reduce(
+        (sum, item) => sum + item.estimatedPrice * item.qty,
+        0,
+      );
+      await this.checkAndReserveBudget(
+        createPrDto.costCenterId,
+        orgId,
+        totalAmount,
+      );
+    }
+
     // AI gợi ý công ty phù hợp dựa trên mô tả sản phẩm
-    const aiSuggestion = await this.aiService.getCompanySuggestion(
-      createPrDto.items,
-    );
+    const aiSuggestion = await this.AiSuggest(createPrDto.items);
     console.log('AI Suggestion:', aiSuggestion);
 
     return this.repository.create(
@@ -50,6 +115,12 @@ export class PrmoduleService {
       deptId,
       prNumber,
     );
+  }
+
+  async AiSuggest(items: CreatePrItemDto[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const aiSuggestion = await this.aiService.getCompanySuggestion(items);
+    return aiSuggestion;
   }
 
   async findAll(user: JwtPayload): Promise<PurchaseRequisition[]> {
