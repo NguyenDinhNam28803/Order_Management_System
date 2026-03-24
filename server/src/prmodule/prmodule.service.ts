@@ -71,13 +71,11 @@ export class PrmoduleService {
     }
   }
 
-
   async create(
     createPrDto: CreatePrDto,
     user: JwtPayload,
   ): Promise<PurchaseRequisition> {
     const prNumber = `PR-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-
 
     // Giả sử user object có orgId và deptId từ JWT payload
 
@@ -125,7 +123,6 @@ export class PrmoduleService {
     const aiSuggestion = await this.aiService.getCompanySuggestion(items);
     return aiSuggestion;
   }
-
 
   async findAll(user: JwtPayload): Promise<PurchaseRequisition[]> {
     return this.repository.findAll(user.orgId);
