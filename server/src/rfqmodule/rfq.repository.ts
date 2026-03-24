@@ -8,6 +8,7 @@ import {
 // import { CreateQaThreadDto } from './dto/create-qa-thread.dto';
 import { CreateCounterOfferDto } from './dto/create-counter-offer.dto';
 import { RfqStatus, QuotationStatus } from '@prisma/client';
+import { PrStatus } from '@prisma/client';
 
 @Injectable()
 export class RfqRepository {
@@ -59,8 +60,7 @@ export class RfqRepository {
       // Cập nhật trạng thái PR sang IN_SOURCING
       await tx.purchaseRequisition.update({
         where: { id: prId },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        data: { status: 'IN_SOURCING' as any },
+        data: { status: PrStatus.IN_SOURCING },
       });
 
       return rfq;

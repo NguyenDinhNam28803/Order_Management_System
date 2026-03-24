@@ -530,6 +530,30 @@ async function main() {
       bodyTemplate:
         'Chào {{name}},<br>Yêu cầu mua hàng {{prNumber}} đã được duyệt bởi {{approverName}}.',
     },
+    {
+      eventType: 'RFQ_INVITATION',
+      channel: 'EMAIL',
+      priority: 2,
+      subject: 'Yêu cầu báo giá mới: {{rfqNumber}} - {{rfqTitle}}',
+      bodyTemplate:
+        '<h3>Kính gửi {{name}},</h3><p>Công ty chúng tôi trân trọng kính mời Quý đối tác gửi báo giá cho yêu cầu: <b>{{rfqTitle}}</b> (Mã: {{rfqNumber}}).</p><p><b>Thông tin yêu cầu:</b></p><ul><li>Hạn cuối nộp báo giá: {{deadline}}</li><li>Danh sách hàng hóa: {{itemsSummary}}</li></ul><p>Vui lòng truy cập hệ thống để xem chi tiết và nộp báo giá.</p><p>Trân trọng!</p>',
+    },
+    {
+      eventType: 'PO_APPROVAL_REQUEST',
+      channel: 'EMAIL',
+      priority: 1,
+      subject: '[Cần phê duyệt] Đơn hàng mua sắm: {{poNumber}}',
+      bodyTemplate:
+        '<h3>Chào {{name}},</h3><p>Bạn có một đơn hàng mới cần phê duyệt gấp.</p><p><b>Thông tin đơn hàng:</b></p><ul><li>Số PO: {{poNumber}}</li><li>Nhà cung cấp: {{supplierName}}</li><li>Giá trị: {{totalAmount}} {{currency}}</li></ul><p>Vui lòng truy cập hệ thống để xem và phê duyệt.</p><p>Trân trọng!</p>',
+    },
+    {
+      eventType: 'PO_APPROVED',
+      channel: 'EMAIL',
+      priority: 2,
+      subject: 'Thông báo: Đơn hàng {{poNumber}} đã được phê duyệt',
+      bodyTemplate:
+        '<h3>Chúc mừng {{name}},</h3><p>Đơn hàng <b>{{poNumber}}</b> đã được phê duyệt thành công bởi bộ phận quản lý.</p><p>Hệ thống sẽ tiến hành gửi PO này tới nhà cung cấp ngay lập tức.</p><p>Trân trọng!</p>',
+    },
   ];
 
   for (const template of notificationTemplates) {

@@ -1,9 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-<<<<<<< HEAD
-import { CreatePrDto } from './dto/create-pr.dto';
-=======
 import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 import { PrRepository } from './pr.repository';
 import { PrStatus, PurchaseRequisition, DocumentType } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
@@ -20,8 +16,6 @@ export class PrmoduleService {
     private readonly aiService: AiService,
   ) {}
 
-<<<<<<< HEAD
-=======
   private async checkAndReserveBudget(
     costCenterId: string,
     orgId: string,
@@ -77,17 +71,13 @@ export class PrmoduleService {
     }
   }
 
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
   async create(
     createPrDto: CreatePrDto,
     user: JwtPayload,
   ): Promise<PurchaseRequisition> {
     const prNumber = `PR-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-<<<<<<< HEAD
     // Giả sử user object có orgId và deptId từ JWT payload
-=======
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
     const orgId = user.orgId;
     let deptId = user.deptId;
 
@@ -102,12 +92,6 @@ export class PrmoduleService {
       deptId = userFromDb.deptId;
     }
 
-<<<<<<< HEAD
-    // AI gợi ý công ty phù hợp dựa trên mô tả sản phẩm
-    const aiSuggestion = await this.aiService.getCompanySuggestion(
-      createPrDto.items,
-    );
-=======
     // Kiểm tra ngân sách nếu có Cost Center
     if (createPrDto.costCenterId) {
       const totalAmount = createPrDto.items.reduce(
@@ -123,7 +107,6 @@ export class PrmoduleService {
 
     // AI gợi ý công ty phù hợp dựa trên mô tả sản phẩm
     const aiSuggestion = await this.AiSuggest(createPrDto.items);
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
     console.log('AI Suggestion:', aiSuggestion);
 
     return this.repository.create(
@@ -135,15 +118,11 @@ export class PrmoduleService {
     );
   }
 
-<<<<<<< HEAD
-=======
   async AiSuggest(items: CreatePrItemDto[]) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const aiSuggestion = await this.aiService.getCompanySuggestion(items);
     return aiSuggestion;
   }
 
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
   async findAll(user: JwtPayload): Promise<PurchaseRequisition[]> {
     return this.repository.findAll(user.orgId);
   }

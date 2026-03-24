@@ -1,13 +1,23 @@
 import { Injectable } from '@nestjs/common';
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-export type EmailEventType = 'USER_LOGIN' | 'USER_REGISTERED' | string;
+export type EmailEventType =
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  | 'USER_LOGIN'
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  | 'USER_REGISTERED'
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  | 'RFQ_INVITATION'
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  | 'PO_APPROVAL_REQUEST'
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  | 'PO_APPROVED'
+  | string;
 
 @Injectable()
 export class EmailTemplatesService {
   /**
    * Trả về HTML email dựa trên eventType.
-   * Nếu không match → fallback về template generic.
    */
   render(eventType: EmailEventType, data: Record<string, any>): string {
     switch (eventType) {
@@ -15,9 +25,101 @@ export class EmailTemplatesService {
         return this.templateWelcomeBack(data);
       case 'USER_REGISTERED':
         return this.templateNewMember(data);
+      case 'RFQ_INVITATION':
+        return this.templateRfqInvitation(data);
+      case 'PO_APPROVAL_REQUEST':
+        return this.templatePoApprovalRequest(data);
+      case 'PO_APPROVED':
+        return this.templatePoApproved(data);
       default:
         return this.templateGeneric(data);
     }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // RFQ Invitation
+  // ─────────────────────────────────────────────────────────────
+  private templateRfqInvitation(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const rfqNumber = data.rfqNumber ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const rfqTitle = data.rfqTitle ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const deadline = data.deadline ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const itemsSummary = data.itemsSummary ?? '';
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Lời mời báo giá</div>
+        <h1>Yêu cầu báo giá mới</h1>
+      </div>
+      <div class="body">
+        <p>Kính gửi Quý đối tác,</p>
+        <p>Công ty chúng tôi trân trọng kính mời Quý đối tác gửi báo giá cho yêu cầu: <b>${rfqTitle}</b> (Mã: <b>${rfqNumber}</b>).</p>
+        <table class="info-table">
+          <tr><td>Hạn cuối</td><td>${deadline}</td></tr>
+        </table>
+        <p><b>Danh sách hàng hóa:</b></p>
+        <p style="font-size: 14px; color: #666;">${itemsSummary}</p>
+        <div class="btn-wrap">
+          <a href="#" class="btn">Xem chi tiết & Gửi báo giá</a>
+        </div>
+      </div>
+    `;
+    return this.base('#0d9488', content);
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // PO Approval Request
+  // ─────────────────────────────────────────────────────────────
+  private templatePoApprovalRequest(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poNumber = data.poNumber ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = data.supplierName ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const totalAmount = data.totalAmount ?? '0';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const currency = data.currency ?? 'VND';
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Phê duyệt đơn hàng</div>
+        <h1>Cần phê duyệt PO: ${poNumber}</h1>
+      </div>
+      <div class="body">
+        <p>Chào bạn, bạn có một đơn hàng mới cần phê duyệt gấp.</p>
+        <table class="info-table">
+          <tr><td>Số PO</td><td>${poNumber}</td></tr>
+          <tr><td>Nhà cung cấp</td><td>${supplierName}</td></tr>
+          <tr><td>Giá trị</td><td>${totalAmount} ${currency}</td></tr>
+        </table>
+        <div class="btn-wrap">
+          <a href="#" class="btn">Phê duyệt ngay</a>
+        </div>
+      </div>
+    `;
+    return this.base('#f59e0b', content);
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // PO Approved
+  // ─────────────────────────────────────────────────────────────
+  private templatePoApproved(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poNumber = data.poNumber ?? '';
+    const content = `
+      <div class="header">
+        <div class="header-label">Phê duyệt thành công</div>
+        <h1>PO ${poNumber} đã được phê duyệt</h1>
+      </div>
+      <div class="body">
+        <p>Chúc mừng, đơn hàng <b>${poNumber}</b> đã được phê duyệt thành công bởi bộ phận quản lý.</p>
+        <p>Hệ thống sẽ tiến hành gửi PO này tới nhà cung cấp ngay lập tức.</p>
+      </div>
+    `;
+    return this.base('#0d7c4e', content);
   }
 
   // ─────────────────────────────────────────────────────────────
