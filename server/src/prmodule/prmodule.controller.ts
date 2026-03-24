@@ -8,7 +8,11 @@ import {
   Request,
 } from '@nestjs/common';
 import { PrmoduleService } from './prmodule.service';
+<<<<<<< HEAD
 import { CreatePrDto } from './dto/create-pr.dto';
+=======
+import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
+>>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
@@ -38,6 +42,18 @@ export class PrmoduleController {
     return this.prService.create(createPrDto, req.user);
   }
 
+<<<<<<< HEAD
+=======
+  @Post('/ai-suggest')
+  @ApiOperation({
+    summary: 'AI gợi ý công ty theo sản phẩm',
+    description: 'AI hệ thống chạy để tìm kiếm công ty và gợi ý',
+  })
+  async suggest(@Body() items: CreatePrItemDto[]) {
+    return this.prService.AiSuggest(items);
+  }
+
+>>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
   /**
    * Lấy danh sách tất cả các yêu cầu mua sắm của tổ chức hiện tại
    * @param req Thông tin người dùng để lọc theo tổ chức

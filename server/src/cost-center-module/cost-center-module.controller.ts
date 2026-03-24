@@ -9,12 +9,16 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+<<<<<<< HEAD
 import {
   ApiTags,
   ApiOperation,
   ApiQuery,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+=======
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+>>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 import { CostCenterModuleService } from './cost-center-module.service';
 import {
   CreateCostCenterDto,
@@ -55,12 +59,31 @@ export class CostCenterModuleController {
     description:
       'Trả về danh sách tất cả trung tâm chi phí cho tổ chức hiện tại theo tổ chức người dùng đã xác thực',
   })
+<<<<<<< HEAD
   @ApiQuery({ name: 'orgId', required: true })
+=======
+>>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
   findAll(@Request() req) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.costCenterService.findAll(req.user.orgId);
   }
 
+<<<<<<< HEAD
+=======
+  @Get('/department')
+  @ApiOperation({
+    summary: 'Lấy tất cả trung tâm chi phí cho một tổ chức, phòng ban cụ thể',
+    description:
+      'Trả về danh sách tất cả trung tâm chi phí cho tổ chức và phòng ban hiện tại theo tổ chức người dùng đã xác thực',
+  })
+  async findWithDeptId(@Request() req) {
+    return this.costCenterService.findWithDeptId(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      req.user.deptId,
+    );
+  }
+
+>>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
   /**
    * Lấy thông tin chi tiết của một trung tâm chi phí theo ID
    * @param id ID của trung tâm chi phí
