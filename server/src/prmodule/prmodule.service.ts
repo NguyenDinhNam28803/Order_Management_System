@@ -70,12 +70,16 @@ export class PrmoduleService {
       );
     }
   }
+
+
   async create(
     createPrDto: CreatePrDto,
     user: JwtPayload,
   ): Promise<PurchaseRequisition> {
     const prNumber = `PR-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
+
+    // Giả sử user object có orgId và deptId từ JWT payload
 
     const orgId = user.orgId;
     let deptId = user.deptId;
@@ -118,10 +122,11 @@ export class PrmoduleService {
   }
 
   async AiSuggest(items: CreatePrItemDto[]) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const aiSuggestion = await this.aiService.getCompanySuggestion(items);
     return aiSuggestion;
   }
+
+
   async findAll(user: JwtPayload): Promise<PurchaseRequisition[]> {
     return this.repository.findAll(user.orgId);
   }

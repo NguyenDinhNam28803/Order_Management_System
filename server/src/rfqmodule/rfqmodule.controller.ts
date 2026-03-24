@@ -113,9 +113,10 @@ export class RfqmoduleController {
    * @param id ID của báo giá cần phân tích
    */
   @Post('quotations/:id/analyze')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Dùng AI phân tích và chấm điểm báo giá',
-    description: 'Phân tích báo giá dựa trên giá cả, thời gian giao hàng và độ tin cậy của nhà cung cấp.'
+    description:
+      'Phân tích báo giá dựa trên giá cả, thời gian giao hàng và độ tin cậy của nhà cung cấp.',
   })
   analyzeQuotation(@Param('id') id: string) {
     return this.rfqService.analyzeQuotationWithAi(id);

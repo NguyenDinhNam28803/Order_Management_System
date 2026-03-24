@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
+import { PrStatus } from '@prisma/client';
 import { CreateRfqDto } from './dto/create-rfq.dto';
 import { CreateQuotationDto } from './dto/create-quotation.dto';
 import { CreateCounterOfferDto } from './dto/create-counter-offer.dto';
@@ -10,6 +11,7 @@ import { RfqRepository } from './rfq.repository';
 import { RfqStatus, QuotationStatus } from '@prisma/client';
 import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationModuleService } from 'src/notification-module/notification-module.service';
 
 @Injectable()
 export class RfqmoduleService {
@@ -17,6 +19,7 @@ export class RfqmoduleService {
     private readonly repository: RfqRepository,
     private readonly aiService: AiService,
     private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   // ============ AI Integration Methods ============
@@ -118,8 +121,25 @@ export class RfqmoduleService {
   // ============ RFQ Request Methods ============
 
   async create(createRfqDto: CreateRfqDto, user: any) {
+    // Validation tạo khi tìm thấy PR và khi đã được duyệt
+    const purchase_requestion = await this.prisma.purchaseRequisition.findFirst(
+      {
+        where: {
+          id: createRfqDto.prId,
+        },
+      },
+    );
+
+    if (!purchase_requestion) {
+      throw new NotFoundException('Không tìm thấy yêu cầu mua hàng !');
+    }
+
+    if (purchase_requestion.status !== PrStatus.APPROVED) {
+      throw new NotFoundException('Yêu cầu mua hàng chưa được duyệt !');
+    }
+
     const rfqNumber = `RFQ-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-    return this.repository.create(
+    const rfq = await this.repository.create(
       createRfqDto,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       user.sub,
@@ -127,6 +147,48 @@ export class RfqmoduleService {
       user.orgId,
       rfqNumber,
     );
+
+    // Gửi email cho các nhà cung cấp
+    if (createRfqDto.supplierIds?.length > 0) {
+      await this.sendInvitationEmails(rfq, createRfqDto.supplierIds);
+    }
+
+    return rfq;
+  }
+
+  private async sendInvitationEmails(rfq: any, supplierIds: string[]) {
+    // Tìm các user có role SUPPLIER thuộc các org này
+    const suppliers = await this.prisma.user.findMany({
+      where: {
+        orgId: { in: supplierIds },
+        role: 'SUPPLIER',
+      },
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const itemsSummary = rfq.items
+      .map((i: any) => `${i.description} (${i.qty} ${i.unit})`)
+      .join(', ');
+
+    for (const supplier of suppliers) {
+      await this.notificationService.sendNotification({
+        recipientId: supplier.id,
+        eventType: 'RFQ_INVITATION', // Phải khớp với eventType trong db
+        referenceType: 'RFQ',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        referenceId: rfq.id,
+        data: {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          rfqNumber: rfq.rfqNumber,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          rfqTitle: rfq.title,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          deadline: rfq.deadline.toLocaleDateString(),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          itemsSummary: itemsSummary,
+        },
+      });
+    }
   }
 
   async findAll(user: any) {
