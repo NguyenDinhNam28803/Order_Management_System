@@ -1,0 +1,4 @@
+﻿app/shop/page.tsx(6,20): error TS2307: Cannot find module '../components/Header' or its corresponding type declarations.
+app/shop/page.tsx(7,20): error TS2307: Cannot find module '../components/Navbar' or its corresponding type declarations.
+app/sourcing/page.tsx(223,117): error TS2322: Type '{ size: number; className: string; title: string; }' is not assignable to type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+  Property 'title' does not exist on type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.

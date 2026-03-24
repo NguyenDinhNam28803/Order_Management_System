@@ -1,0 +1,92 @@
+"use client";
+
+import React from "react";
+import {
+    Bell, Globe, Search, ChevronRight, Home, LogOut
+} from "lucide-react";
+import { useProcurement } from "../context/ProcurementContext";
+
+export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phải trả", "Đối soát 3 bên"] }) {
+    const { currentUser, logout, prs } = useProcurement();
+
+    const pendingCount = prs.filter(pr => {
+        if (!currentUser) return false;
+        if (currentUser.role === "REQUESTER") return pr.status === "PENDING";
+        if (currentUser.role === "DIRECTOR") return pr.status === "PENDING_DIRECTOR";
+        return pr.status === "PENDING";
+    }).length;
+
+    return (
+        <header className="fixed top-0 right-0 z-30 flex h-16 w-[calc(100%-16rem)] items-center justify-between border-b border-slate-200 bg-white/80 px-8 backdrop-blur-md">
+            {/* Breadcrumbs */}
+            <div className="flex items-center gap-2 text-xs font-medium">
+                <Home size={14} className="text-slate-400" />
+                {breadcrumbs.map((item, index) => (
+                    <React.Fragment key={item}>
+                        <ChevronRight size={14} className="text-slate-300" />
+                        <span className={index === breadcrumbs.length - 1 ? "text-erp-navy font-bold" : "text-slate-500"}>
+                            {item}
+                        </span>
+                    </React.Fragment>
+                ))}
+            </div>
+
+            {/* Tools & Profile */}
+            <div className="flex items-center gap-6">
+                <div className="relative hidden lg:block">
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm giao dịch..."
+                        className="h-9 w-64 rounded-lg border border-slate-200 bg-slate-50 pl-10 pr-4 text-xs font-medium outline-none focus:border-erp-blue focus:bg-white transition-all"
+                    />
+                </div>
+
+                <div className="flex items-center gap-1">
+                    <button className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-erp-navy transition-colors">
+                        <Globe size={18} />
+                    </button>
+                    <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-erp-navy transition-colors">
+                        <Bell size={18} />
+                        {pendingCount > 0 && (
+                            <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border-2 border-white text-[9px] font-bold text-white">
+                                {pendingCount}
+                            </span>
+                        )}
+                    </button>
+                    <button
+                        onClick={logout}
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-red-500 hover:bg-red-50 transition-all font-bold group"
+                        title="Đăng xuất"
+                    >
+                        <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
+                    </button>
+                </div>
+
+                <div className="h-6 w-px bg-slate-200"></div>
+
+                <div className="flex items-center gap-3">
+                    <div className="text-right leading-none hidden sm:block">
+                        <div className="text-xs font-bold text-erp-navy">{currentUser?.name || "Khách"}</div>
+                        <div className="mt-1 flex justify-end">
+                            <span className={`role-badge ${currentUser ? (
+                                currentUser.role === "REQUESTER" ? "role-requester" :
+                                    currentUser.role === "DEPT_APPROVER" ? "role-approver" :
+                                        currentUser.role === "DIRECTOR" ? "role-approver" :
+                                            currentUser.role === "PROCUREMENT" ? "role-procurement" :
+                                                currentUser.role === "WAREHOUSE" ? "role-warehouse" :
+                                                    currentUser.role === "FINANCE" ? "role-finance" : "role-admin"
+                            ) : "role-finance"}`}>
+                                {currentUser?.role || "Chưa định danh"}
+                            </span>
+                        </div>
+                    </div>
+                    <div className="h-9 w-9 rounded-lg bg-erp-navy text-white flex items-center justify-center font-bold text-xs ring-2 ring-erp-navy/10 uppercase">
+                        {currentUser?.icon || "GU"}
+                    </div>
+                </div>
+
+            </div>
+        </header>
+    );
+}

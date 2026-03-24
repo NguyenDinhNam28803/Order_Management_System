@@ -1,0 +1,141 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+  Put,
+} from '@nestjs/common';
+import { PomoduleService } from './pomodule.service';
+import { CreatePoDto } from './dto/create-po.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+
+@ApiTags('Purchase Order (PO)')
+@Controller('purchase-orders')
+@ApiBearerAuth('JWT-auth')
+@UseGuards(JwtAuthGuard)
+export class PomoduleController {
+  constructor(private readonly poService: PomoduleService) {}
+
+  /**
+   * Tạo một đơn đặt hàng (Purchase Order - PO) mới từ báo giá đã được chấp nhận
+   * @param createPoDto Dữ liệu tạo đơn đặt hàng
+   * @param req Thông tin người dùng thực hiện yêu cầu
+   * @returns Đơn đặt hàng vừa tạo
+   */
+  @Post()
+  @ApiOperation({
+    summary: 'Tạo đơn hàng mới từ báo giá đã được chấp nhận',
+    description: 'Tạo một đơn hàng mới từ một báo giá đã được chấp nhận',
+  })
+  create(@Body() createPoDto: CreatePoDto, @Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.poService.create(createPoDto, req.user);
+  }
+
+  /**
+   * Đặt lại trạng thái của đơn hàng về DRAFT để có thể chỉnh sửa lại
+   * @param id ID của đơn hàng cần đặt lại trạng thái
+   * @returns Đơn hàng sau khi đã được đặt lại trạng thái
+   */
+  @Post(':id/reset')
+  @ApiOperation({
+    summary: 'Reset trạng thái đơn hàng về DRAFT',
+    description:
+      'Đặt lại trạng thái của đơn hàng về DRAFT để có thể chỉnh sửa lại',
+  })
+  resetPoStatus(@Param('id') id: string) {
+    return this.poService.resetPoStatus(id);
+  }
+
+  /**
+   * Xác nhận đơn hàng, chuyển trạng thái sang CONFIRMED
+   * @param id ID của đơn hàng cần xác nhận
+   * @returns Đơn hàng sau khi đã được xác nhận
+   */
+  @Post(':id/confirm')
+  @ApiOperation({
+    summary: 'Xác nhận đơn hàng',
+    description: 'Xác nhận đơn hàng, chuyển trạng thái sang CONFIRMED',
+  })
+  confirmPo(@Param('id') id: string) {
+    return this.poService.confirmPo(id);
+  }
+
+  /**
+   * Từ chối đơn hàng, chuyển trạng thái sang REJECTED
+   * @param id ID của đơn hàng cần từ chối
+   * @returns Đơn hàng sau khi đã được cập nhật trạng thái
+   */
+  @Post(':id/reject')
+  @ApiOperation({
+    summary: 'Từ chối đơn hàng',
+    description: 'Từ chối đơn hàng, chuyển trạng thái sang REJECTED',
+  })
+  rejectPo(@Param('id') id: string) {
+    return this.poService.rejectPo(id);
+  }
+
+  /**
+   * Gửi đơn hàng đi phê duyệt (chuyển sang PENDING_APPROVAL)
+   * @param id ID của đơn hàng
+   * @param req Thông tin người dùng thực hiện yêu cầu
+   * @returns Đơn hàng sau khi gửi duyệt
+   */
+  @Post(':id/submit')
+  @ApiOperation({
+    summary: 'Gửi đơn hàng phê duyệt',
+    description: 'Kích hoạt luồng duyệt cho đơn hàng',
+  })
+  submit(@Param('id') id: string) {
+    return this.poService.submit(id);
+  }
+
+  /**
+   * Lấy danh sách tất cả các đơn đặt hàng của tổ chức hiện tại
+   * @param req Thông tin người dùng để xác định tổ chức
+   * @returns Danh sách các đơn đặt hàng
+   */
+  @Get()
+  @ApiOperation({
+    summary: 'Lấy tất cả đơn hàng cho tổ chức',
+    description: 'Trả về danh sách tất cả đơn hàng cho tổ chức hiện tại',
+  })
+  findAll(@Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.poService.findAll(req.user.orgId);
+  }
+
+  /**
+   * Lấy thông tin chi tiết của một đơn đặt hàng cụ thể theo ID
+   * @param id ID của đơn đặt hàng
+   * @returns Chi tiết đơn đặt hàng
+   */
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Lấy chi tiết đơn hàng',
+    description: 'Trả về thông tin chi tiết của một đơn hàng cụ thể',
+  })
+  findOne(@Param('id') id: string) {
+    return this.poService.findOne(id);
+  }
+
+  /**
+   * Cập nhật trạng thái của một đơn đặt hàng (ví dụ: Chờ xử lý, Đã hoàn thành, Hủy)
+   * @param id ID của đơn đặt hàng
+   * @param body Chứa trạng thái mới cần cập nhật
+   * @returns Đơn đặt hàng sau khi cập nhật trạng thái
+   */
+  @Put(':id/status')
+  @ApiOperation({
+    summary: 'Cập nhật trạng thái đơn hàng',
+    description: 'Cập nhật trạng thái của một đơn hàng cụ thể',
+  })
+  updateStatus(@Param('id') id: string, @Body() body: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.poService.updateStatus(id, body.status);
+  }
+}
