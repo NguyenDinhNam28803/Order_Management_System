@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-erp-navy: #001f3f;
-  --color-erp-blue: #2563eb;
+  --color-erp-navy: #1e293b;
+  --color-erp-blue: #4f46e5;
   --color-erp-green: #10b981;
   --color-erp-red: #ef4444;
   --color-erp-orange: #f59e0b;
   --color-erp-gray: #64748b;
+  --color-erp-border: #e2e8f0;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui;
 }
@@ -23,183 +24,56 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar Styles */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
-}
-
 /* ERP Table Styles */
 .erp-table {
   @apply w-full border-collapse bg-white text-sm;
 }
 
 .erp-table thead {
-  @apply sticky top-0 z-10 bg-slate-50 text-slate-500;
+  @apply bg-slate-50 text-slate-500 border-b border-slate-200;
 }
 
 .erp-table th {
-  @apply px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest border-b border-slate-100;
+  @apply px-6 py-4 text-left text-[10px] font-bold uppercase tracking-wider border-b border-slate-200;
 }
 
 .erp-table td {
-  @apply px-6 py-4 border-b border-slate-50 transition-colors;
+  @apply px-6 py-4 border-b border-slate-100 transition-colors;
 }
 
 .erp-table tr:hover {
-  @apply bg-blue-50/30;
+  @apply bg-slate-50;
 }
 
-/* Status Badges - Pill Shape */
+/* Status Badges */
 .status-pill {
-  @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider;
+  @apply inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide;
 }
 
-.status-draft {
-  @apply bg-slate-100 text-slate-500;
-}
-
-.status-approved {
-  @apply bg-emerald-50 text-emerald-600 border border-emerald-100;
-}
-
-.status-rejected {
-  @apply bg-red-50 text-red-600 border border-red-100;
-}
-
-.status-pending {
-  @apply bg-amber-50 text-amber-600 border border-amber-100;
-}
-
-/* Role Badges */
-.role-badge {
-  @apply px-2 py-1 rounded-md text-[9px] font-black uppercase text-white shadow-sm;
-}
-
-.role-requester {
-  @apply bg-blue-500;
-}
-
-.role-approver {
-  @apply bg-emerald-500;
-}
-
-.role-finance {
-  @apply bg-erp-navy;
-}
-
-.role-procurement {
-  @apply bg-indigo-500;
-}
-
-.role-supplier {
-  @apply bg-orange-500;
-}
-
-.role-warehouse {
-  @apply bg-amber-500;
-}
-
-.role-admin {
-  @apply bg-slate-800;
-}
+.status-draft { @apply bg-slate-100 text-slate-600; }
+.status-approved { @apply bg-emerald-100 text-emerald-700; }
+.status-rejected { @apply bg-red-100 text-red-700; }
+.status-pending { @apply bg-amber-100 text-amber-700; }
 
 /* Sidebar Component */
 .sidebar-item {
-  @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 text-slate-500 hover:bg-slate-50 hover:text-erp-navy;
+  @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-900;
 }
 
 .sidebar-item.active {
-  @apply bg-erp-navy text-white shadow-lg shadow-erp-navy/20;
-}
-
-.sidebar-item.active .lucide {
-  @apply text-white;
-}
-
-/* Budget Visualization */
-.budget-card {
-  @apply rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md transition-shadow;
-}
-
-.budget-meter {
-  @apply h-1.5 w-full bg-slate-100 rounded-full overflow-hidden flex;
-}
-
-.meter-spent {
-  @apply bg-erp-navy h-full;
-}
-
-.meter-committed {
-  @apply bg-erp-blue h-full;
-}
-
-.meter-available {
-  @apply bg-emerald-400 h-full;
-}
-
-/* AI Analysis Styles */
-.ai-badge {
-  @apply inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-white shadow-lg shadow-indigo-200;
-}
-
-.score-circle {
-  @apply flex h-14 w-14 items-center justify-center rounded-full border-4 font-black text-lg;
-}
-
-/* ERP Form Elements */
-.erp-input {
-  @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 outline-none transition-all duration-200;
-  @apply focus:ring-4 focus:ring-erp-blue/10 focus:border-erp-blue;
-}
-
-.erp-input:disabled {
-  @apply bg-slate-50 text-slate-400 border-slate-100 cursor-not-allowed;
-}
-
-.erp-label {
-  @apply mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400;
+  @apply bg-slate-900 text-white shadow-md;
 }
 
 /* Card Style */
 .erp-card {
-  @apply bg-white rounded-3xl border border-slate-100 p-8 shadow-sm;
+  @apply bg-white rounded-xl border border-slate-200 p-6 shadow-sm;
 }
 
 /* Buttons */
 .btn-primary {
-  @apply flex items-center justify-center gap-2 bg-erp-navy text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest transition-all duration-200 shadow-xl shadow-erp-navy/20 hover:scale-[1.02] active:scale-[0.98];
+  @apply flex items-center justify-center gap-2 bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wide transition-all hover:bg-indigo-700 active:scale-[0.98];
 }
 
 .btn-secondary {
-  @apply flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-bold transition-all hover:bg-slate-50;
-}
-
-/* Step Indicator */
-.step-dot {
-  @apply h-10 w-10 rounded-full flex items-center justify-center text-sm font-black border-2 transition-all duration-300 shadow-sm;
-}
-
-.step-dot-active {
-  @apply bg-erp-navy border-erp-navy text-white shadow-xl shadow-erp-navy/20 ring-8 ring-erp-navy/5 scale-110;
-}
-
-.step-dot-done {
-  @apply bg-emerald-500 border-emerald-500 text-white;
-}
-
-.step-dot-todo {
-  @apply bg-white border-slate-100 text-slate-300;
+  @apply flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-lg font-semibold text-xs transition-all hover:bg-slate-50 hover:border-slate-300;
 }

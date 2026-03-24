@@ -92,8 +92,9 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: '*',
-    credentials: true,
+    origin: 'http://localhost:3000', // Đảm bảo khớp với URL của client
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true, // Quan trọng: Cho phép gửi/nhận cookie
   });
 
   const port = configService.get<number>('PORT', 3000);

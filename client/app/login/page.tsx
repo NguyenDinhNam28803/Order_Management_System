@@ -5,6 +5,7 @@ import { Lock, Mail, ArrowRight, ShieldCheck, Zap } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Cookies from 'js-cookie';
 
 export default function LoginPage() {
     const { login, users } = useProcurement();
@@ -13,6 +14,11 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+
+    const token = Cookies.get('accessToken');
+    if(token) {
+        console.log("Bạn đã đăng nhập")
+    }
 
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -45,11 +51,11 @@ export default function LoginPage() {
                     <div className="space-y-4">
                         <div className="flex items-center justify-between mb-2">
                             <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Tài khoản Demo (Enterprise Roles):</div>
-                            <div className="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">{users.length} Roles</div>
+                            <div className="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">{users?.length} Roles</div>
                         </div>
                         <div className="grid grid-cols-2 gap-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                            {users.map(u => (
-                                <button 
+                            {users?.map(u => (
+                                <button
                                     key={u.id}
                                     onClick={() => { setEmail(u.email); setPassword("password123"); }}
                                     className="bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/30 p-2.5 rounded-xl text-left transition-all group relative overflow-hidden"

@@ -37,11 +37,24 @@ export class CostCenterModuleService {
     });
   }
 
+  async findWithDeptId(dept_Id: string) {
+    return this.prisma.costCenter.findFirst({
+      where: {
+        deptId: dept_Id,
+      },
+      include: {
+        department: true,
+        budgetAllocations: true,
+      },
+    });
+  }
+
   async findAll(orgId: string) {
     return this.prisma.costCenter.findMany({
       where: { orgId },
       include: {
         department: true,
+        budgetAllocations: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -52,6 +65,7 @@ export class CostCenterModuleService {
       where: { id },
       include: {
         department: true,
+        budgetAllocations: true,
       },
     });
 

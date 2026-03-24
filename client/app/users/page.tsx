@@ -34,7 +34,7 @@ export default function UsersPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user, i) => (
+                        {users?.map((user, i) => (
                             <tr key={i}>
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">

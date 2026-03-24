@@ -9,12 +9,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiQuery,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CostCenterModuleService } from './cost-center-module.service';
 import {
   CreateCostCenterDto,
@@ -55,10 +50,22 @@ export class CostCenterModuleController {
     description:
       'Trả về danh sách tất cả trung tâm chi phí cho tổ chức hiện tại theo tổ chức người dùng đã xác thực',
   })
-  @ApiQuery({ name: 'orgId', required: true })
   findAll(@Request() req) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.costCenterService.findAll(req.user.orgId);
+  }
+
+  @Get('/department')
+  @ApiOperation({
+    summary: 'Lấy tất cả trung tâm chi phí cho một tổ chức, phòng ban cụ thể',
+    description:
+      'Trả về danh sách tất cả trung tâm chi phí cho tổ chức và phòng ban hiện tại theo tổ chức người dùng đã xác thực',
+  })
+  async findWithDeptId(@Request() req) {
+    return this.costCenterService.findWithDeptId(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      req.user.deptId,
+    );
   }
 
   /**

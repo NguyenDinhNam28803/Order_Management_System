@@ -45,6 +45,10 @@ export class AuthModuleRepository {
 
     const user = await this.prisma.user.findUnique({
       where: { email },
+      include: {
+        department: true,
+        organization: true,
+      },
     });
 
     if (!user || !user.passwordHash) {

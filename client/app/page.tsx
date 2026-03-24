@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from "react";
@@ -11,18 +12,19 @@ import {
 import { useProcurement } from "./context/ProcurementContext";
 
 export default function Dashboard() {
-  const { budget, prs, pos, currentUser } = useProcurement();
-  const availableBudget = budget.allocated - budget.committed - budget.spent;
+  const { budgets, prs, pos, currentUser } = useProcurement();
+  const availableBudget = budgets?.allocated - budgets?.committed - budgets?.spent;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedPRDetails, setSelectedPRDetails] = React.useState<any>(null);
 
-  const isRequester = currentUser?.role === "Requester";
-  const isApproverGroup = currentUser?.role === "Approver" || currentUser?.role === "Director";
+  const isRequester = currentUser?.role === "REQUESTER";
+  const isApproverGroup = currentUser?.role === "DEPT_APPROVER" || currentUser?.role === "DIRECTOR";
 
   // --- REQUESTER DASHBOARD ---
   if (isRequester) {
       const myPRs = prs; // In real app, filter by creator/department
       const pendingPRs = myPRs.filter(pr => pr.status === "PENDING" || pr.status === "PENDING_DIRECTOR").length;
-      const approvedPRs = myPRs.filter(pr => pr.status === "APPROVED").length;
+      const approvedPRs = myPRs.filter((pr: { status: string; }) => pr.status === "APPROVED").length;
 
       return (
         <main className="pt-16 px-8 pb-12">
@@ -141,9 +143,9 @@ export default function Dashboard() {
                             {myPRs.slice(0, 5).map(pr => (
                                 <tr key={pr.id}>
                                     <td className="font-bold text-erp-navy">{pr.id}</td>
-                                    <td className="max-w-[150px] truncate" title={pr.reason}>{pr.reason}</td>
+                                    <td className="max-w-37.5 truncate" title={pr.reason}>{pr.reason}</td>
                                     <td>{pr.createdAt}</td>
-                                    <td className="font-mono text-right font-black">{pr.total.toLocaleString()} ₫</td>
+                                    <td className="font-mono text-right font-black">{pr.total} ₫</td>
                                     <td className="text-center">
                                         <span className={`status-pill ${pr.status === 'APPROVED' ? 'status-approved' :
                                         (pr.status === 'PENDING' || pr.status === 'PENDING_DIRECTOR') ? 'status-pending' :
@@ -281,7 +283,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="col-span-full">
                                     <div className="text-[9px] font-black uppercase text-slate-400 mb-1">Lý do</div>
-                                    <div className="text-xs font-medium text-slate-600 italic bg-white p-3 rounded border border-slate-200">"{selectedPRDetails.reason}"</div>
+                                    <div className="text-xs font-medium text-slate-600 italic bg-white p-3 rounded border border-slate-200">&quot;{selectedPRDetails.reason}&quot;</div>
                                 </div>
                             </div>
 
@@ -335,7 +337,7 @@ export default function Dashboard() {
                                         <div className="text-[9px] font-black uppercase text-emerald-600 mb-1">Duyệt cấp 1</div>
                                         <div className="text-xs font-bold text-erp-navy mb-1">Trưởng phòng đã phê duyệt</div>
                                         <div className="text-[9px] text-slate-400">14/03/2026 10:15 AM</div>
-                                        <div className="mt-2 text-[10px] italic text-slate-500 bg-slate-50 p-2 rounded">"Đồng ý bổ sung thiết bị mảng A."</div>
+                                        <div className="mt-2 text-[10px] italic text-slate-500 bg-slate-50 p-2 rounded">&quot;Đồng ý bổ sung thiết bị mảng A.&quot;</div>
                                     </div>
                                 </div>
 
@@ -366,12 +368,12 @@ export default function Dashboard() {
   // --- APPROVER DASHBOARD ---
   if (isApproverGroup) {
       const myPendingPRs = prs.filter(pr => {
-          if (currentUser.role === "Approver") return pr.status === "PENDING";
-          if (currentUser.role === "Director") return pr.status === "PENDING_DIRECTOR";
+          if (currentUser.role === "DEPT_APPROVER") return pr.status === "PENDING";
+          if (currentUser.role === "DIRECTOR") return pr.status === "PENDING_DIRECTOR";
           return false;
       });
       const pendingPRCount = myPendingPRs.length;
-      const pendingPRValue = myPendingPRs.reduce((sum, pr) => sum + pr.total, 0);
+    const pendingPRValue: number = myPendingPRs.reduce((sum: number, pr: { total: number }) => sum + pr.total, 0);
 
       const approvedToday = 12; // Static mock
       const rejectedThisMonth = 2; // Static mock
@@ -436,7 +438,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                   {/* Queue cần duyệt */}
                   <div className="xl:col-span-2 space-y-8">
-                      <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-erp-navy/5">
+                      <div className="erp-card p-0! overflow-hidden shadow-xl shadow-erp-navy/5">
                           <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
                               <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy flex items-center gap-2">
                                   <FileText size={16} className="text-erp-blue" /> Queue Cần Duyệt Mới Nhất
@@ -463,7 +465,7 @@ export default function Dashboard() {
                                           <tr key={pr.id} className="hover:bg-slate-50/50 group border-b border-slate-100">
                                               <td className="font-bold text-erp-navy">{pr.id}</td>
                                               <td className="font-bold text-slate-500">{pr.department} <span className="block text-[9px] font-normal italic text-slate-400">Jonathan D.</span></td>
-                                              <td className="max-w-[150px] truncate" title={pr.reason}>{pr.reason}</td>
+                                              <td className="max-w-37.5 truncate" title={pr.reason}>{pr.reason}</td>
                                               <td className="font-mono text-right font-black text-erp-blue">{pr.total.toLocaleString()} ₫</td>
                                               <td className="text-center">
                                                   {isLate ? (
@@ -610,7 +612,7 @@ export default function Dashboard() {
             <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-2 py-1 rounded">Allocated</span>
           </div>
           <div className="text-2xl font-black text-erp-navy font-mono">
-            {budget.allocated.toLocaleString()} ₫
+            {budgets.allocated.toLocaleString()} ₫
           </div>
           <div className="mt-2 text-[10px] text-slate-400 font-bold flex items-center gap-1">
             <ArrowUpRight size={12} className="text-emerald-500" /> +0% so với tháng trước
@@ -623,7 +625,7 @@ export default function Dashboard() {
             <span className="text-[10px] font-black uppercase text-erp-blue bg-blue-50 px-2 py-1 rounded">Committed</span>
           </div>
           <div className="text-2xl font-black text-erp-blue font-mono">
-            {budget.committed.toLocaleString()} ₫
+            {budgets.committed.toLocaleString()} ₫
           </div>
           <div className="mt-2 text-[10px] text-slate-400 font-bold flex items-center gap-1">
             Đang khóa cho các PO
@@ -636,7 +638,7 @@ export default function Dashboard() {
             <span className="text-[10px] font-black uppercase text-erp-navy bg-slate-100 px-2 py-1 rounded">Spent</span>
           </div>
           <div className="text-2xl font-black text-erp-navy font-mono">
-            {budget.spent.toLocaleString()} ₫
+            {budgets.spent.toLocaleString()} ₫
           </div>
           <div className="mt-2 text-[10px] text-slate-400 font-bold flex items-center gap-1">
             <ArrowDownRight size={12} className="text-erp-navy" /> Đã giải ngân thực tế
@@ -656,12 +658,12 @@ export default function Dashboard() {
             </div>
             <div className="mt-6">
               <div className="budget-meter !h-2.5">
-                <div className="meter-spent" style={{ width: `${(budget.spent / budget.allocated) * 100}%` }}></div>
-                <div className="meter-committed" style={{ width: `${(budget.committed / budget.allocated) * 100}%` }}></div>
-                <div className="meter-available" style={{ width: `${(availableBudget / budget.allocated) * 100}%` }}></div>
+                <div className="meter-spent" style={{ width: `${(budgets.spent / budgets.allocated) * 100}%` }}></div>
+                <div className="meter-committed" style={{ width: `${(budgets.committed / budgets.allocated) * 100}%` }}></div>
+                <div className="meter-available" style={{ width: `${(availableBudget / budgets.allocated) * 100}%` }}></div>
               </div>
               <div className="flex justify-between mt-2 text-[9px] font-black uppercase text-white/30 tracking-tighter">
-                <span>Usage: {(((budget.spent + budget.committed) / budget.allocated) * 100).toFixed(1)}%</span>
+                <span>Usage: {(((budgets.spent + budgets.committed) / budgets.allocated) * 100).toFixed(1)}%</span>
                 <span>Safety Margin: 20%</span>
               </div>
             </div>
