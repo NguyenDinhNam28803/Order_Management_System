@@ -1,21 +1,13 @@
 @import "tailwindcss";
 
 @theme inline {
-<<<<<<< HEAD
   --color-erp-navy: #001f3f;
   --color-erp-blue: #2563eb;
-=======
-  --color-erp-navy: #1e293b;
-  --color-erp-blue: #4f46e5;
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
   --color-erp-green: #10b981;
   --color-erp-red: #ef4444;
   --color-erp-orange: #f59e0b;
   --color-erp-gray: #64748b;
-<<<<<<< HEAD
-=======
   --color-erp-border: #e2e8f0;
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui;
 }
@@ -32,7 +24,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-<<<<<<< HEAD
 /* Scrollbar Styles */
 ::-webkit-scrollbar {
   width: 6px;
@@ -51,16 +42,13 @@ body {
   background: #cbd5e1;
 }
 
-=======
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 /* ERP Table Styles */
 .erp-table {
   @apply w-full border-collapse bg-white text-sm;
 }
 
 .erp-table thead {
-<<<<<<< HEAD
-  @apply sticky top-0 z-10 bg-slate-50 text-slate-500;
+  @apply sticky top-0 z-10 bg-slate-50 text-slate-500 border-b border-slate-200;
 }
 
 .erp-table th {
@@ -182,56 +170,22 @@ body {
   @apply bg-slate-50 text-slate-400 border-slate-100 cursor-not-allowed;
 }
 
+.erp-input-sm {
+  @apply px-2 py-1.5 rounded-lg text-xs font-bold border-slate-200 outline-none transition-all;
+  @apply focus:ring-2 focus:ring-erp-blue/10 focus:border-erp-blue;
+}
+
 .erp-label {
   @apply mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400;
-=======
-  @apply bg-slate-50 text-slate-500 border-b border-slate-200;
-}
-
-.erp-table th {
-  @apply px-6 py-4 text-left text-[10px] font-bold uppercase tracking-wider border-b border-slate-200;
-}
-
-.erp-table td {
-  @apply px-6 py-4 border-b border-slate-100 transition-colors;
-}
-
-.erp-table tr:hover {
-  @apply bg-slate-50;
-}
-
-/* Status Badges */
-.status-pill {
-  @apply inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide;
-}
-
-.status-draft { @apply bg-slate-100 text-slate-600; }
-.status-approved { @apply bg-emerald-100 text-emerald-700; }
-.status-rejected { @apply bg-red-100 text-red-700; }
-.status-pending { @apply bg-amber-100 text-amber-700; }
-
-/* Sidebar Component */
-.sidebar-item {
-  @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-900;
-}
-
-.sidebar-item.active {
-  @apply bg-slate-900 text-white shadow-md;
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 }
 
 /* Card Style */
 .erp-card {
-<<<<<<< HEAD
   @apply bg-white rounded-3xl border border-slate-100 p-8 shadow-sm;
-=======
-  @apply bg-white rounded-xl border border-slate-200 p-6 shadow-sm;
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 }
 
 /* Buttons */
 .btn-primary {
-<<<<<<< HEAD
   @apply flex items-center justify-center gap-2 bg-erp-navy text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest transition-all duration-200 shadow-xl shadow-erp-navy/20 hover:scale-[1.02] active:scale-[0.98];
 }
 
@@ -254,11 +208,4 @@ body {
 
 .step-dot-todo {
   @apply bg-white border-slate-100 text-slate-300;
-=======
-  @apply flex items-center justify-center gap-2 bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wide transition-all hover:bg-indigo-700 active:scale-[0.98];
-}
-
-.btn-secondary {
-  @apply flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-lg font-semibold text-xs transition-all hover:bg-slate-50 hover:border-slate-300;
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 }

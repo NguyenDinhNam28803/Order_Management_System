@@ -11,7 +11,7 @@ export default function GRNPage() {
     const router = useRouter();
 
     // Find a committed PO to receive
-    const activePO = pos.find(p => p.status === "SHIPPED");
+    const activePO = pos.find((p: any) => p.status === "SHIPPED");
     const [receivedQty, setReceivedQty] = useState(42); // Simulating 42/50 logic for ink
     const [isSaving, setIsSaving] = useState(false);
     const [deliveryStatus, setDeliveryStatus] = useState<"ON_TIME" | "LATE">("ON_TIME");

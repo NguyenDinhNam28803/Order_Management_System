@@ -12,8 +12,8 @@ export default function FinanceDashboard() {
     const { invoices } = useProcurement();
     const [activeTab, setActiveTab] = useState<"ALL" | "EXCEPTION">("ALL");
 
-    const activeInvoices = invoices.filter(i => i.status === "PENDING" || i.status === "EXCEPTION");
-    const displayedInvoices = activeTab === "ALL" ? activeInvoices : activeInvoices.filter(i => i.status === "EXCEPTION");
+    const activeInvoices = invoices.filter((i: any) => i.status === "PENDING" || i.status === "EXCEPTION");
+    const displayedInvoices = activeTab === "ALL" ? activeInvoices : activeInvoices.filter((i: any) => i.status === "EXCEPTION");
 
     return (
         <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300 min-h-screen bg-slate-50">
@@ -41,7 +41,7 @@ export default function FinanceDashboard() {
                             Action Req
                         </span>
                     </div>
-                    <div className="text-3xl font-black text-red-950">{activeInvoices.filter(i => i.status === 'EXCEPTION').length}<span className="text-sm font-bold text-red-700/60 uppercase ml-1">Lỗi</span></div>
+                    <div className="text-3xl font-black text-red-950">{activeInvoices.filter((i: any) => i.status === 'EXCEPTION').length}<span className="text-sm font-bold text-red-700/60 uppercase ml-1">Lỗi</span></div>
                     <div className="text-xs font-bold text-red-700/60 uppercase tracking-widest mt-1">Matching Exception cần xử lý</div>
                 </div>
 
@@ -76,7 +76,7 @@ export default function FinanceDashboard() {
                         className={`text-xs font-black uppercase tracking-widest px-6 py-3 rounded-lg transition-colors flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-red-500 text-white shadow' : 'text-slate-500 hover:bg-slate-200'}`}
                         onClick={() => setActiveTab("EXCEPTION")}
                     >
-                        Exception Queue <span className={`${activeTab === "EXCEPTION" ? 'bg-red-700 text-red-100' : 'bg-red-100 text-red-600'} px-2 py-0.5 rounded text-[10px]`}>{activeInvoices.filter(i => i.status === 'EXCEPTION').length}</span>
+                        Exception Queue <span className={`${activeTab === "EXCEPTION" ? 'bg-red-700 text-red-100' : 'bg-red-100 text-red-600'} px-2 py-0.5 rounded text-[10px]`}>{activeInvoices.filter((i: any) => i.status === 'EXCEPTION').length}</span>
                     </button>
                     <div className="ml-auto relative">
                         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -98,7 +98,7 @@ export default function FinanceDashboard() {
                         </tr>
                     </thead>
                     <tbody>
-                        {displayedInvoices.map(inv => (
+                        {displayedInvoices.map((inv: any) => (
                             <tr key={inv.id} className="cursor-pointer hover:bg-slate-50 border-b border-slate-100 group" onClick={() => router.push(`/finance/matching?id=${inv.id}`)}>
                                 <td className="font-bold text-erp-navy text-sm">{inv.id}</td>
                                 <td className="font-bold text-slate-700">{inv.vendor}</td>

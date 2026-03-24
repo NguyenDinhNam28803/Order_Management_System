@@ -11,8 +11,8 @@ export default function SupplierRFQ() {
     const [viewState, setViewState] = useState<"LIST" | "DETAIL">("LIST");
     const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
     
-    const openRfqs = rfqs.filter(r => r.status === "OPEN");
-    const activeRFQ = selectedRfqId ? rfqs.find(r => r.id === selectedRfqId) : openRfqs[0];
+    const openRfqs = rfqs.filter((r: any) => r.status === "OPEN");
+    const activeRFQ = selectedRfqId ? rfqs.find((r: any) => r.id === selectedRfqId) : openRfqs[0];
 
     const [prices, setPrices] = useState<Record<string, string>>({});
     const [leadTime, setLeadTime] = useState("");
@@ -23,7 +23,7 @@ export default function SupplierRFQ() {
         
         let total = 0;
         const pricesObj: Record<string, number> = {};
-        activeRFQ.items.forEach(item => {
+        activeRFQ.items.forEach((item: any) => {
             const val = Number(prices[item.id]) || 0;
             pricesObj[item.id] = val;
             total += val * item.qty;
@@ -118,7 +118,7 @@ export default function SupplierRFQ() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {activeRFQ.items.map(item => (
+                                    {activeRFQ.items.map((item: any) => (
                                         <tr key={item.id} className="border-b border-slate-100 hover:bg-slate-50 group">
                                             <td className="font-bold text-slate-700">{item.description}</td>
                                             <td className="text-center font-mono font-black">{item.qty} {item.unit}</td>
@@ -140,7 +140,7 @@ export default function SupplierRFQ() {
                                         <td colSpan={2} className="text-right font-black text-slate-500 uppercase tracking-widest py-4">Tổng tiền nháp:</td>
                                         <td className="text-right font-black font-mono text-erp-navy text-lg py-4">
                                             {(() => {
-                                                const total = activeRFQ.items.reduce((sum, item) => {
+                                                const total = activeRFQ.items.reduce((sum: number, item: any) => {
                                                     const priceVal = Number(prices[item.id]) || 0;
                                                     return sum + (priceVal * item.qty);
                                                 }, 0);
@@ -212,7 +212,7 @@ export default function SupplierRFQ() {
                         </tr>
                     </thead>
                     <tbody>
-                        {openRfqs.map(r => (
+                        {openRfqs.map((r: any) => (
                             <tr key={r.id} className="hover:bg-slate-50 border-b border-slate-100 cursor-pointer" onClick={() => { setSelectedRfqId(r.id); setViewState("DETAIL"); }}>
                                 <td className="font-bold text-erp-navy">{r.id}</td>
                                 <td className="font-bold text-slate-700">ProcurePro (Buyer)</td>

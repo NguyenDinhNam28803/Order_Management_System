@@ -14,9 +14,9 @@ export default function FinanceMatching() {
     
     const { invoices, pos, grns, payInvoice, matchInvoice } = useProcurement();
 
-    const invoice = invoices.find(i => i.id === invId);
-    const po = pos.find(p => p.id === invoice?.poId);
-    const grn = grns.find(g => g.poId === po?.id);
+    const invoice = invoices.find((i: any) => i.id === invId);
+    const po = pos.find((p: any) => p.id === invoice?.poId);
+    const grn = grns.find((g: any) => g.poId === po?.id);
 
     // Mock Dynamic Data: Let's assume exception if invoice total doesn't match PO total
     const isException = false;
@@ -103,7 +103,7 @@ export default function FinanceMatching() {
                             </tr>
                         </thead>
                         <tbody>
-                            {items.map(item => (
+                            {items.map((item: any) => (
                                 <tr key={item.id} className={`border-b ${item.matched ? 'border-slate-50 hover:bg-slate-50' : 'bg-red-50/30'}`}>
                                     <td className="font-bold text-slate-700 p-4 border-r border-slate-100">{item.desc}</td>
                                     <td className="p-4 text-center border-r border-slate-100 bg-blue-50/10">

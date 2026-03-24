@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrDto } from './dto/create-pr.dto';
-<<<<<<< HEAD
-import { PrStatus, PurchaseRequisition, Prisma } from '@prisma/client';
-=======
 import { PrStatus, PurchaseRequisition } from '@prisma/client';
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 import { AiService } from 'src/ai-service/ai-service.service';
 
 @Injectable()
@@ -31,23 +27,6 @@ export class PrRepository {
     );
 
     // kiểm tra ngân sách trước khi tạo PR
-<<<<<<< HEAD
-    const isWithinBudget = await this.prisma.costCenter.findFirst({
-      where: {
-        orgId,
-        deptId,
-      },
-    });
-    if (!isWithinBudget) {
-      throw new Error('Total estimate exceeds department budget');
-    }
-
-    if (
-      new Prisma.Decimal(totalEstimate).greaterThan(isWithinBudget.budgetAnnual)
-    ) {
-      throw new Error('Total estimate exceeds department budget');
-    }
-=======
     // const isWithinBudget = await this.prisma.costCenter.findFirst({
     //   where: {
     //     orgId,
@@ -63,7 +42,6 @@ export class PrRepository {
     // ) {
     //   throw new Error('Total estimate exceeds department budget');
     // }
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 
     return this.prisma.$transaction(async (tx) => {
       const pr = await tx.purchaseRequisition.create({

@@ -1478,6 +1478,7 @@ enum DisputeType {
 
 enum ApprovalStatus {
   PENDING
+  WAITING
   APPROVED
   REJECTED
   ESCALATED

@@ -11,7 +11,7 @@ export default function MatchingPage() {
     const router = useRouter();
 
     // Find PO that is COMMITTED (simulating that it's been received but not paid)
-    const activePO = pos.find(p => p.status === "RECEIVED");
+    const activePO = pos.find((p: any) => p.status === "RECEIVED");
 
     const [disputeResolved, setDisputeResolved] = useState(false);
 

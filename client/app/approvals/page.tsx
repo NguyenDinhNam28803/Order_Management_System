@@ -7,14 +7,14 @@ import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 
 export default function ApprovalsPage() {
-    const { prs, approvePR, currentUser } = useProcurement();
+    const { prs, approvals, actionApproval, currentUser } = useProcurement();
     const router = useRouter();
-    const pendingPRs = prs.filter(pr => {
-        if (!currentUser) return false;
-        if (currentUser.role === "Approver") return pr.status === "PENDING";
-        if (currentUser.role === "Director") return pr.status === "PENDING_DIRECTOR";
-        return pr.status === "PENDING";
-    });
+
+    const pendingPRs = (approvals || []).map((app: any) => {
+        const pr = prs.find((p: any) => p.id === app.documentId);
+        if (!pr) return null;
+        return { ...pr, workflowId: app.id };
+    }).filter(Boolean);
 
     const [selectedPR, setSelectedPR] = useState<any>(null);
 
@@ -24,23 +24,34 @@ export default function ApprovalsPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const handleAction = () => {
+    const handleAction = async () => {
         if (actionType === "REJECT" && !memo.trim()) {
             alert("Vui lòng nhập lý do từ chối!");
             return;
         }
 
         setIsSubmitting(true);
-        setTimeout(() => {
-            if (actionType === "APPROVE") {
-                approvePR(selectedPR.id);
+        try {
+            const success = await actionApproval(
+                selectedPR.workflowId, 
+                actionType === "APPROVE" ? "APPROVE" : "REJECT", 
+                memo
+            );
+            
+            if (success) {
+                setIsSuccess(true);
+                setTimeout(() => {
+                    router.push("/");
+                }, 2000);
+            } else {
+                alert("Không thể thực hiện phê duyệt. Vui lòng kiểm tra lại quyền hạn.");
             }
-            // For REJECT and MORE_INFO, we just mock the success state
-            setIsSuccess(true);
-            setTimeout(() => {
-                router.push("/");
-            }, 2000);
-        }, 1000);
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối khi phê duyệt.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     if (isSuccess) {
@@ -81,23 +92,23 @@ export default function ApprovalsPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {pendingPRs.length > 0 ? pendingPRs.map((pr, idx) => (
+                                {pendingPRs.length > 0 ? pendingPRs.map((pr: any, idx: number) => (
                                     <tr key={pr.id} className="hover:bg-slate-50/50 group">
                                         <td>
                                             <div className="font-bold text-erp-navy flex items-center gap-2">
                                                 <div className="p-1.5 bg-blue-50 text-erp-blue rounded-lg"><FileText size={14} /></div>
-                                                {pr.id}
+                                                {pr.prNumber || pr.id.substring(0,8)}
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="text-sm font-bold text-slate-700">{pr.department}</div>
-                                            <div className="text-[10px] text-slate-400">Request ID: EMP-0102</div>
+                                            <div className="text-sm font-bold text-slate-700">{pr.department?.name || pr.department}</div>
+                                            <div className="text-[10px] text-slate-400">ID: {pr.requester?.fullName || pr.requesterId?.substring(0,8)}</div>
                                         </td>
                                         <td className="max-w-[200px]">
-                                            <div className="font-bold text-erp-navy truncate" title={pr.reason}>{pr.reason || "Yêu cầu cung cấp vật tư"}</div>
-                                            <div className="text-xs text-slate-500 truncate" title={pr.reason}>{pr.reason}</div>
+                                            <div className="font-bold text-erp-navy truncate" title={pr.title}>{pr.title}</div>
+                                            <div className="text-xs text-slate-500 truncate" title={pr.justification}>{pr.justification}</div>
                                         </td>
-                                        <td className="font-mono text-right font-black text-erp-blue text-lg">{pr.total.toLocaleString()} ₫</td>
+                                        <td className="font-mono text-right font-black text-erp-blue text-lg">{(Number(pr.totalEstimate) || 0).toLocaleString()} ₫</td>
                                         <td className="text-center">
                                             {idx === 0 ? (
                                                 <span className="text-[10px] font-black text-red-500 bg-red-50 px-2 py-1 rounded inline-flex items-center gap-1 border border-red-100"><AlertTriangle size={10} /> 26h (Quá SLA)</span>
@@ -152,27 +163,28 @@ export default function ApprovalsPage() {
                                 <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
                                     <div className="md:col-span-2 flex items-center gap-4 border-b border-slate-100 pb-4 md:border-none md:pb-0">
                                         <div className="w-12 h-12 rounded-full bg-blue-100 text-erp-blue flex items-center justify-center font-black text-xl">
-                                            {selectedPR.department.substring(0,2).toUpperCase()}
+                                            {(selectedPR.department?.name || selectedPR.department || "PR").substring(0,2).toUpperCase()}
                                         </div>
                                         <div>
                                             <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-0.5">Người tạo</div>
-                                            <div className="text-sm font-black text-erp-navy">{selectedPR.department}</div>
-                                            <div className="text-[10px] text-slate-500">Gửi lúc: {selectedPR.createdAt}</div>
+                                            <div className="text-sm font-black text-erp-navy">{selectedPR.department?.name || selectedPR.department}</div>
+                                            <div className="text-[10px] text-slate-500">Gửi lúc: {new Date(selectedPR.createdAt).toLocaleString('vi-VN')}</div>
                                         </div>
                                     </div>
                                     <div>
                                         <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Cost Center</div>
-                                        <div className="text-sm font-bold text-erp-navy bg-slate-50 inline-block px-2 py-1 rounded border border-slate-100">{selectedPR.costCenter || 'CC-61000'}</div>
+                                        <div className="text-sm font-bold text-erp-navy bg-slate-50 inline-block px-2 py-1 rounded border border-slate-100">{selectedPR.costCenter?.name || selectedPR.costCenter || 'N/A'}</div>
                                     </div>
                                     <div>
                                         <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Mức độ ưu tiên</div>
-                                        <div className={`text-sm font-black uppercase tracking-wider ${selectedPR.priority === 'Critical' ? 'text-red-600' : selectedPR.priority === 'Urgent' ? 'text-amber-500' : 'text-emerald-500'}`}>
-                                            {selectedPR.priority}
+                                        <div className={`text-sm font-black uppercase tracking-wider ${selectedPR.priority === 'High' ? 'text-red-600' : selectedPR.priority === 'Urgent' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                            {selectedPR.priority || 'Normal'}
                                         </div>
                                     </div>
                                     <div className="col-span-2 md:col-span-4 bg-slate-50 p-4 rounded-xl border border-slate-100/50 mt-2">
-                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Lý do mua hàng</div>
-                                        <div className="text-sm font-medium text-slate-700 italic leading-relaxed">"{selectedPR.reason}"</div>
+                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Mô tả / Lý do mua hàng</div>
+                                        <div className="text-sm font-black text-erp-navy mb-1">{selectedPR.title}</div>
+                                        <div className="text-sm font-medium text-slate-700 italic leading-relaxed">"{selectedPR.justification}"</div>
                                     </div>
                                 </div>
                             </div>
@@ -224,11 +236,11 @@ export default function ApprovalsPage() {
                                             <td colSpan={5} className="text-right py-4 cursor-default">
                                                 <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tổng cộng giá trị PR</div>
                                                 <div className="text-[9px] uppercase font-bold text-amber-600 flex justify-end gap-1 mt-1">
-                                                    Approval Chain: Trưởng phòng → Giám đốc {selectedPR.total >= 100000000 ? '→ Tổng Giám Đốc' : ''}
+                                                    Approval Chain: Trưởng phòng → Giám đốc {Number(selectedPR.totalEstimate) >= 100000000 ? '→ Tổng Giám Đốc' : ''}
                                                 </div>
                                             </td>
                                             <td className="text-right font-mono font-black text-2xl text-erp-navy py-4 pr-3">
-                                                {selectedPR.total.toLocaleString()} ₫
+                                                {(Number(selectedPR.totalEstimate) || 0).toLocaleString()} ₫
                                             </td>
                                         </tr>
                                     </tfoot>

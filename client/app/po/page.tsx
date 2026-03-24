@@ -18,7 +18,7 @@ export default function POPage() {
 
     // Form State for new PO
     const isCreateMode = action === "create" && prId;
-    const relatedPR = prs.find(p => p.id === prId) || prs[0];
+    const relatedPR = prs.find((p: any) => p.id === prId) || prs[0];
     
     const [poForm, setPoForm] = useState({
         incoterms: "DDP",
@@ -399,7 +399,7 @@ export default function POPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {pos.length > 0 ? pos.map(po => (
+                        {pos.length > 0 ? pos.map((po: any) => (
                             <tr key={po.id} className="hover:bg-slate-50">
                                 <td className="font-bold text-erp-navy flex items-center gap-2"><FileText size={14} className="text-erp-blue"/> {po.id}</td>
                                 <td className="font-bold text-slate-700">{po.vendor}</td>

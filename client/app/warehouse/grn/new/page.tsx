@@ -15,13 +15,13 @@ export default function CreateGRN() {
     const [activePO, setActivePO] = useState<any>(null);
 
     const handleSearch = () => {
-        const found = pos.find(p => (p.id.includes(poLookup.trim())) && p.status === "SHIPPED");
+        const found = pos.find((p: any) => (p.id.includes(poLookup.trim())) && p.status === "SHIPPED");
         if (found) {
             setActivePO(found);
             // Initialize forms
             const initialRecv:any = {};
             const initialQC:any = {};
-            found.items.forEach(i => {
+            found.items.forEach((i: any) => {
                 initialRecv[i.id] = { pList: i.qty, actual: i.qty, note: "" };
                 initialQC[i.id] = { status: "PASS", failQty: 0, reason: "", action: "", proof: false };
             });
@@ -133,7 +133,7 @@ export default function CreateGRN() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {activePO.items.map((item:any) => {
+                                                {activePO.items.map((item: any) => {
                                     const rData = recvData[item.id];
                                     if (!rData) return null;
                                     const { diff, pct, isHigh } = calculateVariance(item.qty, rData.actual);
@@ -177,7 +177,7 @@ export default function CreateGRN() {
                         </div>
                         
                         <div className="divide-y divide-slate-100">
-                            {activePO.items.map((item:any) => {
+                            {activePO.items.map((item: any) => {
                                 const qData = qcData[item.id];
                                 if (!qData) return null;
                                 
@@ -292,21 +292,21 @@ export default function CreateGRN() {
                                     <div className="flex justify-between border-b border-white/10 pb-2">
                                         <span>Tổng SL Nhận:</span>
                                         <span className="font-mono text-white text-base">
-                                            {activePO.items.reduce((sum:number, i:any) => sum + (recvData[i.id]?.actual||0), 0)}
+                                            {activePO.items.reduce((sum: number, i: any) => sum + (recvData[i.id]?.actual||0), 0)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between border-b border-red-500/30 pb-2 text-red-200">
                                         <span>Tổng SL Lỗi/Từ chối:</span>
                                         <span className="font-mono text-red-400 text-base">
-                                            {activePO.items.reduce((sum:number, i:any) => sum + (qcData[i.id]?.failQty||0), 0)}
+                                            {activePO.items.reduce((sum: number, i: any) => sum + (qcData[i.id]?.failQty||0), 0)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between border-b border-white/10 pb-2 col-span-2 mt-2">
                                         <span className="uppercase tracking-widest text-[10px] text-slate-400">Tỷ lệ Pass (Kho):</span>
                                         <span className="font-mono text-emerald-400 text-xl flex items-center gap-1">
                                             {(() => {
-                                                const total = activePO.items.reduce((sum:number, i:any) => sum + (recvData[i.id]?.actual||0), 0);
-                                                const fail = activePO.items.reduce((sum:number, i:any) => sum + (qcData[i.id]?.failQty||0), 0);
+                                                const total = activePO.items.reduce((sum: number, i: any) => sum + (recvData[i.id]?.actual||0), 0);
+                                                const fail = activePO.items.reduce((sum: number, i: any) => sum + (qcData[i.id]?.failQty||0), 0);
                                                 if (total===0) return "0%";
                                                 return `${((total - fail)/total * 100).toFixed(0)}%`;
                                             })()}

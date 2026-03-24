@@ -345,14 +345,9 @@ export class AiService implements OnModuleInit {
     const userPrompt = `Dựa trên danh sách các mặt hàng cần mua: [${itemDescriptions}]. 
     Hãy thực hiện các bước sau:
     1. Tìm trong database các nhà cung cấp (Organization với companyType là SUPPLIER) có ngành nghề (industry) hoặc tên liên quan đến các mặt hàng trên.
-<<<<<<< HEAD
-    2. Ưu tiên những nhà cung cấp có trustScore cao nhất.
-    3. Trả về danh sách tối đa 5 nhà cung cấp phù hợp nhất kèm theo lý do tại sao họ được chọn (ví dụ: thế mạnh về ngành hàng, điểm tin cậy cao).`;
-=======
     2. Tìm tiếp theo từ Internet nếu không có nhà cung cấp nào trong database phù hợp ( Đương nhiên khi trả về sẽ trả về mảng danh sách các nahf cung cấp bao gồm cả trong database và trên internet ).
     3. Ưu tiên những nhà cung cấp có trustScore cao nhất.
     4. Trả về danh sách tối đa 5 nhà cung cấp phù hợp nhất kèm theo lý do tại sao họ được chọn (ví dụ: thế mạnh về ngành hàng, điểm tin cậy cao).`;
->>>>>>> 2a33e5440bf544c21f0e020a6d254b6bc39af67e
 
     return this.askAiAboutDatabase(userPrompt);
   }

@@ -14,16 +14,16 @@ export default function SupplierInvoice() {
     const [selectedPO, setSelectedPO] = useState("");
     
     // Create data based on pos and grns for POs in RECEIVED status
-    const deliverablePOs = pos.map(p => {
-        const matchingGrn = grns.find(g => g.poId === p.id);
+    const deliverablePOs = pos.map((p: any) => {
+        const matchingGrn = grns.find((g: any) => g.poId === p.id);
         if (matchingGrn && p.status === "RECEIVED") {
-            const receivedItems = p.items.map(item => ({
+            const receivedItems = p.items.map((item: any) => ({
                 id: item.id,
                 desc: item.description,
                 expected: item.qty,
                 received: matchingGrn.receivedItems[item.id] || 0,
                 price: item.estimatedPrice || 0
-            })).filter(i => i.received > 0);
+            })).filter((i: any) => i.received > 0);
             
             return {
                 id: p.id,
@@ -35,7 +35,7 @@ export default function SupplierInvoice() {
         return null;
     }).filter(Boolean) as any[];
 
-    const currentPO = deliverablePOs.find(p => p.id === selectedPO);
+    const currentPO = deliverablePOs.find((p: any) => p.id === selectedPO);
     
     const [invoiceItems, setInvoiceItems] = useState<{ [key: string]: number }>({});
     const [vat, setVat] = useState(10);
@@ -87,7 +87,7 @@ export default function SupplierInvoice() {
                             onChange={(e) => setSelectedPO(e.target.value)}
                         >
                             <option value="">-- Chọn đơn đã hoàn tất nhập kho --</option>
-                            {deliverablePOs.map(po => <option key={po.id} value={po.id}>{po.id} (Kho xác nhận đủ)</option>)}
+                            {deliverablePOs.map((po: any) => <option key={po.id} value={po.id}>{po.id} (Kho xác nhận đủ)</option>)}
                         </select>
                         {selectedPO && <div className="text-[10px] font-black uppercase text-emerald-600 tracking-widest bg-emerald-100 px-3 py-1.5 rounded-lg ml-auto border border-emerald-200">Kho Locked: {currentPO?.grn}</div>}
                     </div>

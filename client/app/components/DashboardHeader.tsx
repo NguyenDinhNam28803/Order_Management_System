@@ -9,7 +9,7 @@ import { useProcurement } from "../context/ProcurementContext";
 export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phải trả", "Đối soát 3 bên"] }) {
     const { currentUser, logout, prs } = useProcurement();
 
-    const pendingCount = prs.filter(pr => {
+    const pendingCount = prs.filter((pr: any) => {
         if (!currentUser) return false;
         if (currentUser.role === "REQUESTER") return pr.status === "PENDING";
         if (currentUser.role === "DIRECTOR") return pr.status === "PENDING_DIRECTOR";

@@ -10,9 +10,9 @@ export default function SupplierPO() {
     const [viewState, setViewState] = useState<"LIST" | "DETAIL">("LIST");
     
     const { pos, ackPO, shipPO } = useProcurement();
-    const supplierPOs = pos.filter(p => !["SHIPPED", "RECEIVED", "INVOICED", "PAID"].includes(p.status));
+    const supplierPOs = pos.filter((p: any) => !["SHIPPED", "RECEIVED", "INVOICED", "PAID"].includes(p.status));
     const [selectedPoId, setSelectedPoId] = useState<string | null>(null);
-    const po = selectedPoId ? supplierPOs.find(p => p.id === selectedPoId) : supplierPOs[0];
+    const po = selectedPoId ? supplierPOs.find((p: any) => p.id === selectedPoId) : supplierPOs[0];
 
     const isConfirmed = po?.status === "ACKNOWLEDGED";
     const [progressStatus, setProgressStatus] = useState("Sản xuất loạt 1...");
@@ -87,7 +87,7 @@ export default function SupplierPO() {
                                     <table className="w-full text-xs font-sans mb-8">
                                         <thead><tr className="bg-slate-100"><th className="p-2 text-left">Item</th><th className="p-2 text-center">Qty</th><th className="p-2 text-right">Price</th></tr></thead>
                                         <tbody>
-                                            {po.items.map(i => (
+                                            {po.items.map((i: any) => (
                                                 <tr key={i.id} className="border-b"><td className="p-2">{i.description}</td><td className="p-2 text-center">{i.qty}</td><td className="p-2 text-right">{(i.estimatedPrice || 0).toLocaleString()} ₫</td></tr>
                                             ))}
                                             <tr><td colSpan={2} className="p-2 text-right font-bold uppercase">Total</td><td className="p-2 text-right font-bold text-lg">{po.total.toLocaleString()} ₫</td></tr>
@@ -183,7 +183,7 @@ export default function SupplierPO() {
                         </tr>
                     </thead>
                     <tbody>
-                        {supplierPOs.map(p => (
+                        {supplierPOs.map((p: any) => (
                             <tr key={p.id} className="hover:bg-slate-50 border-b border-slate-100 cursor-pointer" onClick={() => { setSelectedPoId(p.id); setViewState("DETAIL"); }}>
                                 <td className="font-bold text-erp-navy">{p.id}</td>
                                 <td className="font-bold text-slate-700">ProcurePro</td>

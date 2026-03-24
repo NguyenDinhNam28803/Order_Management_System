@@ -228,17 +228,16 @@ async function main() {
   ];
 
   for (const u of specificUsers) {
-    const hash = await bcrypt.hash(u.password, 10);
     await prisma.user.upsert({
       where: { email: u.email },
-      update: { passwordHash: hash },
+      update: { passwordHash },
       create: {
         email: u.email,
         fullName: u.fullName,
         role: u.role,
         orgId: buyerOrg.id,
         deptId: u.role !== UserRole.SUPPLIER ? itDept.id : null,
-        passwordHash: hash,
+        passwordHash,
         isActive: true,
         isVerified: true,
       },
@@ -455,6 +454,16 @@ async function main() {
       documentType: 'PURCHASE_REQUISITION' as any,
       level: 2,
       approverRole: UserRole.DIRECTOR,
+      minTotalAmount: 0,
+       slaHours: 48,
+       autoEscalateHours: 72,
+    },
+    {
+      orgId: buyerOrg.id,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      documentType: 'PURCHASE_REQUISITION' as any,
+      level: 3,
+      approverRole: UserRole.CEO,
       minTotalAmount: 0,
       slaHours: 48,
       autoEscalateHours: 72,
