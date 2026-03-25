@@ -48,9 +48,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const DEMO_USERS = [
         { id: "1", name: "GTS Admin", email: "admin@gts.com", role: "PLATFORM_ADMIN", icon: "AD" },
-        { id: "2", name: "John Requester", email: "john.requester@gts.com", role: "REQUESTER", icon: "RQ" },
-        { id: "3", name: "Sarah IT Manager", email: "sarah.approver@gts.com", role: "DEPT_APPROVER", icon: "DA" },
-        { id: "4", name: "David Director", email: "david.director@gts.com", role: "DIRECTOR", icon: "DR" },
+        { id: "2", name: "Requester", email: "john.requester@gts.com", role: "REQUESTER", icon: "RQ" },
+        { id: "3", name: "Manager", email: "sarah.approver@gts.com", role: "DEPT_APPROVER", icon: "MN" },
+        { id: "4", name: "Director", email: "david.director@gts.com", role: "DIRECTOR", icon: "DR" },
         { id: "5", name: "Mike Procurement", email: "mike.procurement@gts.com", role: "PROCUREMENT", icon: "PR" },
         { id: "6", name: "Alice Finance", email: "alice.finance@gts.com", role: "FINANCE", icon: "FM" },
     ];
@@ -85,7 +85,24 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
             setState(prev => ({
                 ...prev,
-                prs: prData.data || [],
+                prs: prData.data && prData.data.length > 0 ? prData.data : [
+                    // Requester PRs
+                    { id: "pr-1", prNumber: "PR-2026-4977", title: "Furniture", totalEstimate: 3500000, status: "PENDING_MANAGER_APPROVAL", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
+                    { id: "pr-2", prNumber: "PR-2026-6788", title: "Laptop update", totalEstimate: 4900000, status: "IN_SOURCING", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
+                    { id: "pr-3", prNumber: "PR-2026-7066", title: "Bàn làm việc", totalEstimate: 2900000, status: "PENDING_MANAGER_APPROVAL", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
+                    { id: "pr-4", prNumber: "PR-2026-8609", title: "Training material", totalEstimate: 1500000, status: "DRAFT", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
+                    { id: "pr-5", prNumber: "PR-2026-3133", title: "Office supplies", totalEstimate: 500000, status: "IN_SOURCING", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
+                    // Manager PRs
+                    { id: "pr-mgr-1", prNumber: "PR-MGR-001", title: "New monitors", totalEstimate: 7500000, status: "APPROVED", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
+                    { id: "pr-mgr-2", prNumber: "PR-MGR-002", title: "IT team training", totalEstimate: 25000000, status: "PENDING_DIRECTOR_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
+                    { id: "pr-mgr-3", prNumber: "PR-MGR-003", title: "Software licenses", totalEstimate: 9800000, status: "APPROVED", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
+                    { id: "pr-mgr-4", prNumber: "PR-MGR-004", title: "New Projector", totalEstimate: 12000000, status: "DRAFT", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
+                    // Director PRs
+                    { id: "pr-dir-1", prNumber: "PR-DIR-001", title: "Office furniture upgrade", totalEstimate: 75000000, status: "PENDING_CEO_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
+                    { id: "pr-dir-2", prNumber: "PR-DIR-002", title: "Software licenses renewal", totalEstimate: 150000000, status: "PENDING_CEO_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
+                    { id: "pr-dir-3", prNumber: "PR-DIR-003", title: "Marketing campaign assets", totalEstimate: 195000000, status: "PENDING_CEO_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
+                    { id: "pr-dir-4", prNumber: "PR-DIR-004", title: "Server Hardware Expansion", totalEstimate: 180000000, status: "DRAFT", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
+                ],
                 pos: poData.data || [],
                 rfqs: rfqData.data || [],
                 grns: grnData.data || [],

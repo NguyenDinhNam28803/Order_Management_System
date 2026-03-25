@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
 import { useProcurement } from "../../context/ProcurementContext";
-import { Trash2, Save, FileText, ShoppingBag, Calendar, AlertCircle, Info, Plus } from "lucide-react";
+import { Trash2, Save, FileText, ShoppingBag, Calendar, AlertCircle, Info, Plus, Sparkles } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 
 export default function CreatePRPage() {
@@ -47,6 +47,16 @@ export default function CreatePRPage() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (!product || form.items.find((i: any) => i.productId === product.id)) return;
         
+        const suppliers = ["Thiên Long", "Rạng Đông", "Điện Quang", "Sunhouse", "Kangaroo", "Vinamilk", "Trung Nguyên", "Hòa Phát", "Ladoda", "Mekong"];
+        const foundSupplier = suppliers.find(s => product.name.includes(s)) || "Thị trường";
+        
+        // Mock AI Logic
+        const aiTypes = ["GIÁ TỐT NHẤT", "ĐẶT NHIỀU NHẤT"];
+        const aiLabel = Math.random() > 0.5 ? aiTypes[0] : aiTypes[1];
+
+        const basePrice = product.unitPriceRef || 0;
+        const finalPrice = form.priority === 1 ? basePrice * 1.2 : basePrice;
+
         setForm({
             ...form,
             items: [...form.items, {
@@ -56,7 +66,11 @@ export default function CreatePRPage() {
                 categoryId: product.categoryId,
                 qty: 1,
                 unit: product.unit || "PCS",
-                estimatedPrice: product.unitPriceRef || 0,
+                estimatedPrice: finalPrice,
+                basePrice: basePrice, // Store original price
+                supplierName: foundSupplier,
+                aiStatus: Math.random() > 0.2, // 80% have AI suggestion
+                aiLabel: aiLabel,
                 specNote: ""
             }]
         });
@@ -169,14 +183,26 @@ export default function CreatePRPage() {
                              <div>
                                  <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Mức độ khẩn cấp</label>
                                 <select 
-                                    className="erp-input w-full focus:border-erp-blue font-bold" 
+                                    className={`erp-input w-full focus:border-erp-blue font-bold ${form.priority === 1 ? 'border-red-300 bg-red-50 text-red-600' : ''}`} 
                                     value={form.priority}
-                                    onChange={e => setForm({...form, priority: parseInt(e.target.value)})}
+                                    onChange={e => {
+                                        const newPriority = parseInt(e.target.value);
+                                        const updatedItems = form.items.map((item: any) => ({
+                                            ...item,
+                                            estimatedPrice: newPriority === 1 ? item.basePrice * 1.2 : item.basePrice
+                                        }));
+                                        setForm({...form, priority: newPriority, items: updatedItems});
+                                    }}
                                 >
-                                    <option value={1}>1 - Khẩn cấp (Sản xuất dừng)</option>
+                                    <option value={1}>1 - Khẩn cấp (Surcharge +20%)</option>
                                     <option value={2}>2 - Bình thường</option>
                                     <option value={3}>3 - Dự phòng / Thay thế</option>
                                 </select>
+                                {form.priority === 1 && (
+                                    <div className="mt-2 flex items-center gap-1.5 text-[9px] font-black text-red-500 uppercase tracking-widest animate-pulse">
+                                        <AlertCircle size={12} /> Áp dụng phụ phí khẩn cấp 20%
+                                    </div>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Ngày cần hàng (Target Date)</label>
@@ -229,6 +255,7 @@ export default function CreatePRPage() {
                                 <thead>
                                     <tr className="bg-slate-50/50 border-b border-slate-100">
                                         <th className="px-8 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Sản phẩm & Đặc tính</th>
+                                        <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Nhà cung cấp</th>
                                         <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-slate-400 w-24">Số lượng</th>
                                         <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-400 w-32">Đơn giá</th>
                                         <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-400 w-32">Thành tiền</th>
@@ -248,6 +275,19 @@ export default function CreatePRPage() {
                                                         <div className="font-bold text-erp-navy text-sm leading-tight mb-0.5">{item.productDesc}</div>
                                                         <div className="text-[10px] text-slate-400 font-mono tracking-tighter uppercase">{item.sku} • {item.unit || 'PCS'}</div>
                                                     </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-4 border-b border-slate-50">
+                                                <div className="flex flex-col gap-1.5">
+                                                    <span className="inline-block px-3 py-1 rounded-lg bg-erp-blue/10 text-erp-blue text-[10px] font-black uppercase tracking-widest border border-erp-blue/20 w-fit">
+                                                        {item.supplierName || 'Thị trường'}
+                                                    </span>
+                                                    {item.aiStatus && (
+                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-50 text-amber-600 border border-amber-100 w-fit animate-pulse">
+                                                            <Sparkles size={10} className="fill-amber-600" />
+                                                            <span className="text-[8px] font-black uppercase tracking-tighter">{item.aiLabel}</span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4 border-b border-slate-50">

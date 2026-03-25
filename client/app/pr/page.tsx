@@ -3,11 +3,53 @@
 import React from "react";
 import { useProcurement } from "../context/ProcurementContext";
 import ERPTable from "../components/shared/ERPTable";
-import { Plus, FileText, Send, CheckCircle2 } from "lucide-react";
+import { Plus, FileText, Send, CheckCircle2, Check, X } from "lucide-react";
 import Link from "next/link";
 
 export default function PRPage() {
-    const { prs, approvePR } = useProcurement();
+    const { prs, approvePR, currentUser, actionApproval } = useProcurement();
+    const [activeTab, setActiveTab] = React.useState("Tất cả");
+
+    const isManager = currentUser?.role === "DEPT_APPROVER";
+    const isDirector = currentUser?.role === "DIRECTOR";
+    
+    let budgetSubtitle = "Yêu cầu < 5,000,000 VNĐ";
+    if (isManager) budgetSubtitle = "Yêu cầu 5,000,000 - < 50,000,000 VNĐ";
+    if (isDirector) budgetSubtitle = "Yêu cầu 50,000,000 - 200,000,000 VNĐ";
+
+    const tabs = ["Tất cả", "Nháp", "Chờ duyệt", "Đã duyệt"];
+    if (isManager || isDirector) tabs.push("PHÊ DUYỆT PR");
+
+    const displayData = React.useMemo(() => {
+        if (!prs) return [];
+        
+        if (activeTab === "PHÊ DUYỆT PR") {
+            if (isManager) {
+                return prs.filter((p: any) => p.creatorRole === "REQUESTER" && p.status === "PENDING_MANAGER_APPROVAL");
+            }
+            if (isDirector) {
+                return prs.filter((p: any) => p.creatorRole === "DEPT_APPROVER" && p.status === "PENDING_DIRECTOR_APPROVAL");
+            }
+            return [];
+        }
+        
+        // Filter based on other tabs
+        let filtered = prs;
+        
+        if (isManager) {
+            filtered = prs.filter((p: any) => p.creatorRole === "DEPT_APPROVER");
+        } else if (isDirector) {
+            filtered = prs.filter((p: any) => p.creatorRole === "DIRECTOR");
+        } else if (currentUser?.role === "REQUESTER") {
+            filtered = prs.filter((p: any) => p.creatorRole === "REQUESTER");
+        }
+
+        if (activeTab === "Nháp") return filtered.filter((p: any) => p.status === "DRAFT");
+        if (activeTab === "Chờ duyệt") return filtered.filter((p: any) => p.status.includes("PENDING"));
+        if (activeTab === "Đã duyệt") return filtered.filter((p: any) => p.status === "APPROVED");
+        
+        return filtered;
+    }, [prs, activeTab, isManager, isDirector, currentUser]);
 
     const columns = [
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,7 +61,7 @@ export default function PRPage() {
                     <div className="h-8 w-8 rounded bg-slate-100 flex items-center justify-center text-slate-500">
                         <FileText size={16} />
                     </div>
-                    <span className="font-black text-erp-navy tracking-tight">{row.prNumber || row.id}</span>
+                    <span className="font-black text-erp-navy tracking-tight">{row.prNumber || row.id.substring(0,8)}</span>
                 </div>
             ) 
         },
@@ -69,23 +111,42 @@ export default function PRPage() {
             key: "actions", 
             render: (row: any) => (
                 <div className="flex gap-2">
-                    {row.status === 'DRAFT' && (
-                        <button 
-                            onClick={() => approvePR(row.id)} 
-                            className="btn-primary !py-1.5 !px-4 !text-[10px]"
-                        >
-                            <Send size={12} /> Gửi duyệt
-                        </button>
-                    )}
-                    {row.status === 'PENDING' && (
-                        <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
-                            Đang chờ xử lý
-                        </span>
-                    )}
-                    {row.status === 'APPROVED' && (
-                        <div className="flex items-center gap-1 text-emerald-500 font-black text-[10px] uppercase tracking-widest">
-                            <CheckCircle2 size={14} /> Đã phê duyệt
+                    {activeTab === "PHÊ DUYỆT PR" ? (
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={() => alert("Đã phê duyệt PR " + row.prNumber)}
+                                className="h-8 w-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
+                            >
+                                <Check size={16} strokeWidth={3} />
+                            </button>
+                            <button 
+                                onClick={() => alert("Đã từ chối PR " + row.prNumber)}
+                                className="h-8 w-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                            >
+                                <X size={16} strokeWidth={3} />
+                            </button>
                         </div>
+                    ) : (
+                        <>
+                            {row.status === 'DRAFT' && (
+                                <button 
+                                    onClick={() => approvePR(row.id)} 
+                                    className="btn-primary !py-1.5 !px-4 !text-[10px]"
+                                >
+                                    <Send size={12} /> Gửi duyệt
+                                </button>
+                            )}
+                            {row.status.includes('PENDING') && (
+                                <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
+                                    Đang chờ xử lý
+                                </span>
+                            )}
+                            {row.status === 'APPROVED' && (
+                                <div className="flex items-center gap-1 text-emerald-500 font-black text-[10px] uppercase tracking-widest">
+                                    <CheckCircle2 size={14} /> Đã phê duyệt
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             )
@@ -99,9 +160,12 @@ export default function PRPage() {
                     <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Yêu cầu mua sắm (PR)</h1>
                     <p className="text-sm text-slate-400 font-bold mt-1 tracking-tight">HỆ THỐNG QUẢN LÝ VÀ CHUẨN HÓA QUY TRÌNH MUA HÀNG</p>
                 </div>
-                <Link href="/pr/create" className="btn-primary">
-                    <Plus size={20} />
-                    Tạo PR mới
+                <Link href="/pr/create" className="btn-primary flex flex-col items-center !py-2">
+                    <div className="flex items-center gap-2">
+                        <Plus size={20} />
+                        <span className="text-sm font-black uppercase">Tạo PR mới</span>
+                    </div>
+                    <span className="text-[10px] opacity-70 font-bold">{budgetSubtitle}</span>
                 </Link>
             </header>
 
@@ -110,30 +174,36 @@ export default function PRPage() {
                     <div className="flex items-center gap-4">
                         <div className="text-xs font-black text-slate-500 uppercase tracking-widest border-r border-slate-200 pr-4">Bộ lọc danh sách</div>
                         <div className="flex gap-2">
-                            {["Tất cả", "Nháp", "Chờ duyệt", "Đã duyệt"].map(filter => (
-                                <button key={filter} className="px-4 py-1.5 bg-white border border-slate-200 rounded-full text-[10px] font-black uppercase text-slate-400 hover:border-erp-blue hover:text-erp-blue transition-colors">
+                            {tabs.map(filter => (
+                                <button 
+                                    key={filter} 
+                                    onClick={() => setActiveTab(filter)}
+                                    className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase transition-all ${
+                                        activeTab === filter 
+                                        ? "bg-erp-navy text-white shadow-lg shadow-erp-navy/20" 
+                                        : "bg-white border border-slate-200 text-slate-400 hover:border-erp-blue hover:text-erp-blue"
+                                    }`}
+                                >
                                     {filter}
                                 </button>
                             ))}
                         </div>
                     </div>
                 </div>
-                <ERPTable columns={columns} data={prs} />
-                {(!prs || prs.length === 0) && (
+                <ERPTable columns={columns} data={displayData} />
+                {(!displayData || displayData.length === 0) && (
                     <div className="p-20 text-center flex flex-col items-center justify-center space-y-4">
                         <div className="h-20 w-20 rounded-3xl bg-slate-50 flex items-center justify-center text-slate-200">
                             <FileText size={40} />
                         </div>
                         <div>
-                            <h3 className="text-lg font-black text-erp-navy">Không có dữ liệu PR nào</h3>
-                            <p className="text-slate-400 text-sm">Hãy tạo yêu cầu mua hàng đầu tiên để bắt đầu quy trình.</p>
+                            <h3 className="text-lg font-black text-erp-navy">Không có yêu cầu nào cần xử lý</h3>
+                            <p className="text-slate-400 text-sm">Tất cả các yêu cầu đã được xử lý hoặc chưa có dữ liệu mới.</p>
                         </div>
-                        <Link href="/pr/create" className="btn-secondary">
-                             Tạo ngay
-                        </Link>
                     </div>
                 )}
             </div>
         </div>
     );
 }
+

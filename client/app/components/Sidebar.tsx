@@ -4,7 +4,7 @@ import React from "react";
 import {
     LayoutDashboard, ShoppingCart, CheckSquare, Truck,
     FileCheck, ShieldAlert, Users, Settings, LogOut,
-    FolderTree, Search, ChevronRight
+    FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -31,6 +31,7 @@ const navigation = [
         items: [
             { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
             { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Kiểm soát PR", icon: ClipboardCheck, path: "/procurement/prs", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
             { name: "Phê duyệt", icon: CheckSquare, path: "/approvals", roles: ["DEPT_APPROVER", "DIRECTOR", "PLATFORM_ADMIN", "CEO"] },
             { name: "Nguồn hàng & Báo giá", icon: Search, path: "/sourcing", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
         ]
@@ -57,6 +58,7 @@ const navigation = [
         roles: ["PLATFORM_ADMIN"],
         items: [
             { name: "Quản lý người dùng", icon: Users, path: "/users", roles: ["PLATFORM_ADMIN"] },
+            { name: "Danh mục sản phẩm", icon: ShoppingBag, path: "/admin/products", roles: ["PLATFORM_ADMIN"] },
             { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["PLATFORM_ADMIN"] },
         ]
     },
@@ -147,7 +149,7 @@ export default function Sidebar() {
                         <span className="text-xs font-black truncate text-slate-700">{currentUser?.name || currentUser?.fullName || "Jonathan Doe"}</span>
                         <div className="flex">
                             <span className={`inline-block px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider text-white ${roleInfo?.class ?? "bg-slate-400"}`}>
-                                {roleInfo?.label ?? "Guest"}
+                                ROLE: {currentUser?.role === "DEPT_APPROVER" ? "MANAGER" : (currentUser?.role === "DIRECTOR" ? "DIRECTOR" : (currentUser?.role || "GUEST"))}
                             </span>
                         </div>
                     </div>
