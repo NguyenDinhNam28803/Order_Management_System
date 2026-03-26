@@ -13,6 +13,18 @@ import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationModuleService } from 'src/notification-module/notification-module.service';
 
+export class RfqSupplierCreateManyInput {
+  rfqId: string;
+  supplierId: string;
+  isRecommended: boolean;
+}
+
+export class RFQItem {
+  name: string;
+  description: string;
+  qty: number;
+}
+
 @Injectable()
 export class RfqmoduleService {
   constructor(
@@ -21,6 +33,55 @@ export class RfqmoduleService {
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationModuleService,
   ) {}
+
+  /**
+   * Sử dụng AI để tìm kiếm nhà cung cấp và tự động thêm vào RFQ.
+   * @param rfqId ID của RFQ
+   * @returns Danh sách các RfqSupplier vừa được tạo
+   */
+  async searchAndAddSuppliers(rfqId: string) {
+    const rfq = await this.repository.findOne(rfqId);
+    if (!rfq) {
+      throw new NotFoundException(`RFQ with ID ${rfqId} not found`);
+    }
+
+    // Chuẩn bị dữ liệu mặt hàng
+    const items = rfq.items.map((item: any) => ({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      name: item.name,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      productDesc: item.description,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      qty: item.qty,
+    }));
+
+    // Gọi AI gợi ý nhà cung cấp
+    const suggestedSupplierIds =
+      await this.aiService.getCompanySuggestion(items);
+
+    console.log(suggestedSupplierIds);
+    if (!suggestedSupplierIds || suggestedSupplierIds.length === 0) {
+      return [];
+    }
+
+    // Extract supplier IDs from the AI response
+    const supplierIds = Array.isArray(suggestedSupplierIds.data)
+      ? suggestedSupplierIds.data
+      : [suggestedSupplierIds.data];
+
+    const supplierData: RfqSupplierCreateManyInput[] = supplierIds.map(
+      (sId: string) => ({
+        rfqId: rfq.id,
+        supplierId: sId,
+        isRecommended: true,
+      }),
+    );
+
+    return await this.prisma.rfqSupplier.createMany({
+      data: supplierData,
+      skipDuplicates: true,
+    });
+  }
 
   // ============ AI Integration Methods ============
 
@@ -100,23 +161,23 @@ export class RfqmoduleService {
    * @param rfqId ID của RFQ cần gợi ý nhà cung cấp
    * @returns Danh sách gợi ý từ AI kèm theo lý do
    */
-  async suggestSuppliersWithAi(rfqId: string) {
-    const rfq = await this.repository.findOne(rfqId);
-    if (!rfq) {
-      throw new NotFoundException(`RFQ with ID ${rfqId} not found`);
-    }
+  // async suggestSuppliersWithAi(rfqId: string) {
+  //   const rfq = await this.repository.findOne(rfqId);
+  //   if (!rfq) {
+  //     throw new NotFoundException(`RFQ with ID ${rfqId} not found`);
+  //   }
 
-    // Chuẩn bị dữ liệu mặt hàng để AI phân tích
-    const items = rfq.items.map((item) => ({
-      productDesc: item.description,
-      qty: item.qty,
-    }));
+  //   // Chuẩn bị dữ liệu mặt hàng để AI phân tích
+  //   const items = rfq.items.map((item) => ({
+  //     productDesc: item.description,
+  //     qty: item.qty,
+  //   }));
 
-    // Gọi AI Service để tìm kiếm nhà cung cấp phù hợp trong DB
-    const aiSuggestion = await this.aiService.getCompanySuggestion(items);
+  //   // Gọi AI Service để tìm kiếm nhà cung cấp phù hợp trong DB
+  //   const aiSuggestion = await this.aiService.getCompanySuggestion(items);
 
-    return aiSuggestion;
-  }
+  //   return aiSuggestion;
+  // }
 
   // ============ RFQ Request Methods ============
 

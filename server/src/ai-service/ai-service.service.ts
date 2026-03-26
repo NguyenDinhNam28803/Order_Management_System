@@ -6,6 +6,7 @@ import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { PrismaService } from '../prisma/prisma.service';
 
 export interface AiDatabaseResponse<T = unknown> {
+  length: number;
   cons: any;
   score: number;
   success: boolean;
@@ -14,6 +15,13 @@ export interface AiDatabaseResponse<T = unknown> {
   total: number;
   message?: string;
 }
+
+export interface AiResponseSupplier {
+  rfqId: string;
+  supplierId: string;
+  isRecommended: boolean;
+}
+
 @Injectable()
 export class AiService implements OnModuleInit {
   private client: GoogleGenAI;
@@ -265,6 +273,7 @@ export class AiService implements OnModuleInit {
         message: 'Response không phải JSON chuẩn, đây là text gốc.',
         cons: undefined,
         score: 0,
+        length: 0,
       };
     }
   }
@@ -348,7 +357,10 @@ export class AiService implements OnModuleInit {
          - Nếu dữ liệu nội bộ không đủ hoặc muốn mở rộng lựa chọn, hãy tìm kiếm các nhà cung cấp uy tín hàng đầu trong ngành hàng tương ứng tại Việt Nam.
 
       3. TỔNG HỢP & GỢI Ý (Ranking):
-         - Trả về danh sách TỐI ĐA 5 nhà cung cấp tốt nhất.
+         - Trả về danh sách TỐI ĐA 5 nhà cung cấp tốt nhất theo dạng Array
+            [
+                ( Danh sách ID của các nhà cung cấp )
+            ] và Mảng Json các thông tin của nhà cung cấp.
          - Sắp xếp dựa trên điểm tổng hợp (kết hợp TrustScore, độ phù hợp ngành hàng, và khả năng cung ứng).
          - Với mỗi nhà cung cấp, hãy cung cấp "Bản tóm tắt CPO":
             - Lý do lựa chọn (Thế mạnh).
