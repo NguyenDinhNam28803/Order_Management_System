@@ -6,16 +6,103 @@ import Cookies from 'js-cookie';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ProcurementContext = createContext<any>(undefined);
 
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    fullName?: string;
+    icon?: string;
+}
+
+interface PRItem {
+    id: string;
+    description: string;
+    qty: number;
+    estimatedPrice: number;
+}
+
+interface PR {
+    id: string;
+    prNumber?: string;
+    title?: string;
+    status: string;
+    createdAt: string;
+    requester?: { fullName?: string; name?: string };
+    department?: { name: string } | string;
+    costCenter?: { code: string };
+    procurementId?: string;
+    totalEstimate?: number;
+    items?: PRItem[];
+    creatorRole?: string;
+}
+
+interface POItem {
+    id: string;
+    description: string;
+    qty: number;
+    estimatedPrice: number;
+}
+
+interface PO {
+    id: string;
+    vendor: string;
+    items: POItem[];
+    status: string;
+    total: number;
+    createdAt?: string;
+}
+
+interface RFQ {
+    id: string;
+    prId: string;
+    vendor: string;
+    status: string;
+}
+
+interface GRN {
+    id: string;
+    poId: string;
+    receivedItems: Record<string, number>;
+    createdAt: string;
+}
+
+interface Invoice {
+    id: string;
+    vendor: string;
+    poId: string;
+    amount: number;
+    status: "PENDING" | "EXCEPTION" | "APPROVED";
+    createdAt: string;
+}
+
 interface ProcurementState {
+    currentUser: User | null;
+    prs: PR[];
+    myPrs: PR[];
+    pos: PO[];
+    rfqs: RFQ[];
+    grns: GRN[];
+    invoices: Invoice[];
+    budgets: Record<string, unknown> | null;
+    users: User[];
+    organization: Record<string, unknown> | null;
+    costCenters: Record<string, unknown>[];
+    approvals: Record<string, unknown>[];
+}
+
+interface ProcurementState {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     currentUser: any;
-    prs: any[];
-    myPrs: any[];
-    pos: any[];
-    rfqs: any[];
-    grns: any[];
-    invoices: any[];
+    prs: PR[];
+    myPrs: PR[];
+    pos: PO[];
+    rfqs: RFQ[];
+    grns: GRN[];
+    invoices: Invoice[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     budgets: any;
-    users: any[];
+    users: User[];
     organization: any;
     costCenters: any[];
     approvals: any[];
@@ -74,7 +161,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 apiFetch('/approvals/pending')
             ]);
 
-            const [prData, myPrData, poData, rfqData, grnData, invData, budgetData, usersData, orgData, ccData, approvalData] = await Promise.all([
+            const [prData, myPrData, poData, rfqData, grnData, invData, budgetData,, orgData, ccData, approvalData] = await Promise.all([
                 pr.ok ? pr.json() : { data: [] },
                 myPrRes.ok ? myPrRes.json() : { data: [] },
                 po.ok ? po.json() : { data: [] },
@@ -128,11 +215,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             console.error("Fetch error:", err);
             setState(prev => ({ ...prev, users: DEMO_USERS }));
         }
-    }, [apiFetch]);
+    }, [DEMO_USERS, apiFetch]);
 
     React.useEffect(() => {
         refreshData();
-    }, [refreshData]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const login = React.useCallback(async (email: string, password?: string) => {
         const res = await apiFetch('/auth/login', { 
@@ -175,6 +263,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [refreshData]);
 
     // Action creators
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const addPR = React.useCallback((data: any) => execAction(() => apiFetch('/procurement-requests', { method: 'POST', body: JSON.stringify(data) })), [apiFetch, execAction]);
     const approvePR = React.useCallback((id: string) => execAction(() => apiFetch(`/procurement-requests/${id}/submit`, { method: 'POST' })), [apiFetch, execAction]);
     const createRFQ = React.useCallback((prId: string, vendor: string) => execAction(() => apiFetch('/request-for-quotations', { method: 'POST', body: JSON.stringify({ prId, vendor }) })), [apiFetch, execAction]);

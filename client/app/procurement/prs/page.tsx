@@ -13,6 +13,13 @@ import {
     UserPlus, Settings} from "lucide-react";
 import Link from "next/link";
 
+interface PRItem {
+    id: string;
+    description: string;
+    qty: number;
+    estimatedPrice: number;
+}
+
 interface PR {
     id: string;
     prNumber?: string;
@@ -21,8 +28,10 @@ interface PR {
     createdAt: string;
     requester?: { fullName?: string; name?: string };
     department?: { name: string } | string;
-    items?: any[];
-    [key: string]: any;
+    costCenter?: { code: string };
+    procurementId?: string;
+    totalEstimate?: number;
+    items?: PRItem[];
 }
 
 export default function ProcurementControlPage() {
@@ -184,18 +193,18 @@ export default function ProcurementControlPage() {
             <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
                 <div>
                     <h1 className="text-4xl font-black text-erp-navy tracking-tighter uppercase mb-2">BÀN LÀM VIỆC KIỂM SOÁT THU MUA</h1>
-                    <p className="text-slate-400 font-bold text-sm tracking-tight flex items-center gap-2 uppercase tracking-widest">
+                    <p className="text-slate-400 font-bold text-sm tracking-tight flex items-center gap-2 uppercase">
                         <ShieldAlert size={14} className="text-erp-blue" /> 
                         QUẢN TRỊ VÀ ĐIỀU PHỐI TOÀN BỘ YÊU CẦU MUA SẮM TRONG TỔ CHỨC
                     </p>
                 </div>
                 <div className="flex gap-4 w-full md:w-auto">
-                    <div className="relative flex-grow md:w-80">
+                    <div className="relative grow md:w-80">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                         <input 
                             type="text"
                             placeholder="Tìm kiếm PR, người yêu cầu..."
-                            className="erp-input w-full pl-12 h-14 !rounded-2xl"
+                            className="erp-input w-full pl-12 h-14 rounded-2xl!"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -209,7 +218,7 @@ export default function ProcurementControlPage() {
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 {stats.map((stat) => (
-                    <div key={stat.label} className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-xl shadow-slate-200/20 flex items-center gap-4 group hover:border-erp-blue transition-all">
+                    <div key={stat.label} className="bg-white p-6 rounded-4xl border border-slate-100 shadow-xl shadow-slate-200/20 flex items-center gap-4 group hover:border-erp-blue transition-all">
                         <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                             <stat.icon size={24} />
                         </div>
@@ -284,7 +293,7 @@ export default function ProcurementControlPage() {
                         <h2 className="text-3xl font-black mb-4">Tối ưu hóa phân bổ PR cho PO</h2>
                         <p className="text-white/60 text-sm font-medium leading-relaxed">Hệ thống AI đề xuất điều phối các PR đang tồn đọng cho các nhân viên thu mua dựa trên chuyên môn và khối lượng công việc hiện tại.</p>
                     </div>
-                    <button className="bg-white text-erp-navy px-10 py-5 rounded-[24px] font-black text-xs uppercase tracking-widest hover:bg-emerald-400 hover:text-white transition-all shadow-2xl active:scale-95 shrink-0">
+                    <button className="bg-white text-erp-navy px-10 py-5 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-emerald-400 hover:text-white transition-all shadow-2xl active:scale-95 shrink-0">
                         Chạy phân bổ ngay
                     </button>
                  </div>

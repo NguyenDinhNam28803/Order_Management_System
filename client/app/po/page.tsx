@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
-import { ShoppingCart, FileText, Lock, MoreVertical, Search, Filter, ArrowRight, ShieldCheck, FileCheck, RefreshCcw, Send, Calculator, DownloadCloud, UploadCloud, Eye, CheckCircle } from "lucide-react";
+import { FileText, Lock, Search, Filter, ArrowRight, ShieldCheck, FileCheck, Send, DownloadCloud, UploadCloud, Eye, CheckCircle } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function POPage() {
-    const { pos, prs, currentUser } = useProcurement();
+    const { pos, prs } = useProcurement();
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -167,7 +167,7 @@ export default function POPage() {
                     <div className="xl:col-span-3 space-y-8">
                         
                         {/* Summary Header */}
-                        <div className="bg-gradient-to-r from-slate-50 to-blue-50/50 p-6 rounded-2xl border border-blue-100 flex flex-wrap gap-8 items-center shadow-sm">
+                        <div className="bg-linear-to-r from-slate-50 to-blue-50/50 p-6 rounded-2xl border border-blue-100 flex flex-wrap gap-8 items-center shadow-sm">
                             <div>
                                 <div className="text-[10px] font-black uppercase text-slate-400 mb-1">Tham chiếu PR</div>
                                 <div className="font-bold text-erp-blue flex items-center gap-1"><FileText size={14}/> {prId}</div>
@@ -279,13 +279,13 @@ export default function POPage() {
                         </div>
 
                         {/* Line Items (Locked) */}
-                        <div className="erp-card !p-0 shadow-sm border border-slate-200 overflow-hidden">
+                        <div className="erp-card p-0! shadow-sm border border-slate-200 overflow-hidden">
                             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
                                     <Lock size={14} /> Chi tiết Items (Khóa giá từ Báo giá)
                                 </h3>
                             </div>
-                            <table className="erp-table text-xs m-0 !border-none">
+                            <table className="erp-table text-xs m-0 border-none!">
                                 <thead>
                                     <tr>
                                         <th>Mô tả</th>
@@ -302,7 +302,7 @@ export default function POPage() {
                                             <td className="text-center font-black">{item.qty}</td>
                                             <td className="text-right font-mono text-slate-500">{item.estimatedPrice.toLocaleString()}</td>
                                             <td className="text-right font-mono font-black text-erp-blue">{(item.qty * item.estimatedPrice).toLocaleString()} ₫</td>
-                                            <td><input type="text" className="erp-input !py-1 !text-[10px] w-full bg-slate-50 font-medium" placeholder="Ghi chú item..." /></td>
+                                            <td><input type="text" className="erp-input py-1! text-[10px]! w-full bg-slate-50 font-medium" placeholder="Ghi chú item..." /></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -385,7 +385,7 @@ export default function POPage() {
                 </div>
             </div>
 
-            <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-erp-navy/5">
+            <div className="erp-card p-0! overflow-hidden shadow-xl shadow-erp-navy/5">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr className="bg-slate-50">

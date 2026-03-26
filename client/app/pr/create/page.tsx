@@ -73,6 +73,7 @@ export default function CreatePRPage() {
     useEffect(() => {
         apiFetch('/products')
             .then((res: Response) => res.ok ? res.json() : { data: [] })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .then((data: any) => {
                 const productList = Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []);
                 setProducts(productList);
@@ -402,7 +403,7 @@ export default function CreatePRPage() {
                                                     </div>
                                                     <div className="flex flex-col items-center">
                                                         <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-1">Giỏ hàng trống</span>
-                                                        <p className="text-[10px] text-slate-300 font-medium max-w-[200px]">Hãy chọn sản phẩm từ khung tìm kiếm phía trên để bắt đầu yêu cầu.</p>
+                                                        <p className="text-[10px] text-slate-300 font-medium max-w-50">Hãy chọn sản phẩm từ khung tìm kiếm phía trên để bắt đầu yêu cầu.</p>
                                                     </div>
                                                 </div>
                                             </td>
