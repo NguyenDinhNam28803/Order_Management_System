@@ -26,23 +26,6 @@ export class PrRepository {
       0,
     );
 
-    // kiểm tra ngân sách trước khi tạo PR
-    // const isWithinBudget = await this.prisma.costCenter.findFirst({
-    //   where: {
-    //     orgId,
-    //     deptId,
-    //   },
-    // });
-    // if (!isWithinBudget) {
-    //   throw new Error('Total estimate exceeds department budget');
-    // }
-
-    // if (
-    //   new Prisma.Decimal(totalEstimate).greaterThan(isWithinBudget.budgetAnnual)
-    // ) {
-    //   throw new Error('Total estimate exceeds department budget');
-    // }
-
     return this.prisma.$transaction(async (tx) => {
       const pr = await tx.purchaseRequisition.create({
         data: {
@@ -69,7 +52,7 @@ export class PrRepository {
   async findAll(orgId: string): Promise<PurchaseRequisition[]> {
     return this.prisma.purchaseRequisition.findMany({
       where: { orgId },
-      include: { requester: true, department: true },
+      include: { requester: true, department: true, items: true },
       orderBy: { createdAt: 'desc' },
     });
   }

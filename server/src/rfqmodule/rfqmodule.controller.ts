@@ -27,14 +27,14 @@ export class RfqmoduleController {
   // ============ RFQ Endpoints ============
 
   // Tạo Ai phân tích nhà cung cấp
-  @Post('/ai-suggest')
-  @ApiOperation({
-    summary: 'Tạo yêu cầu gợi ý',
-    description: 'Tạo một yêu cầu gợi ý mới từ một đơn hàng mua sắm',
-  })
-  async getAiSuggest(@Body() rfqId: string) {
-    return this.rfqService.suggestSuppliersWithAi(rfqId);
-  }
+  // @Post('/ai-suggest')
+  // @ApiOperation({
+  //   summary: 'Tạo yêu cầu gợi ý',
+  //   description: 'Tạo một yêu cầu gợi ý mới từ một đơn hàng mua sắm',
+  // })
+  // async getAiSuggest(@Body() rfqId: string) {
+  //   return this.rfqService.suggestSuppliersWithAi(rfqId);
+  // }
 
   /**
    * Tạo một yêu cầu báo giá (Request for Quotation - RFQ) mới
@@ -387,19 +387,33 @@ export class RfqmoduleController {
   // ============ AI Integration Endpoints ============
 
   /**
+   * AI tìm kiếm và thêm nhà cung cấp vào RFQ.
+   * @param id ID của RFQ
+   * @returns Danh sách nhà cung cấp đã thêm
+   */
+  @Post(':id/search-and-add-suppliers')
+  @ApiOperation({
+    summary: 'AI tìm kiếm và thêm nhà cung cấp',
+    description: 'Sử dụng AI để tìm nhà cung cấp và tự động thêm vào RFQ',
+  })
+  async searchAndAddSuppliers(@Param('id') id: string) {
+    return await this.rfqService.searchAndAddSuppliers(id);
+  }
+
+  /**
    * Yêu cầu AI gợi ý các nhà cung cấp phù hợp cho RFQ hiện tại.
    * AI sẽ quét database để tìm các nhà cung cấp có ngành nghề và uy tín phù hợp nhất.
    * @param id ID của RFQ
    * @returns Danh sách gợi ý từ AI
    */
-  @Get(':id/ai-suggest-suppliers')
-  @ApiOperation({
-    summary: 'AI gợi ý nhà cung cấp cho RFQ',
-    description: 'Sử dụng AI để tìm các nhà cung cấp phù hợp nhất từ database',
-  })
-  async aiSuggestSuppliers(@Param('id') id: string) {
-    return this.rfqService.suggestSuppliersWithAi(id);
-  }
+  // @Get(':id/ai-suggest-suppliers')
+  // @ApiOperation({
+  //   summary: 'AI gợi ý nhà cung cấp cho RFQ',
+  //   description: 'Sử dụng AI để tìm các nhà cung cấp phù hợp nhất từ database',
+  // })
+  // async aiSuggestSuppliers(@Param('id') id: string) {
+  //   return this.rfqService.suggestSuppliersWithAi(id);
+  // }
 
   // ============ Counter Offer Endpoints ============
 
