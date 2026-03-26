@@ -231,7 +231,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         refreshData();
-    }, [refreshData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const login = useCallback(async (email: string, password?: string) => {
         const res = await apiFetch('/auth/login', {

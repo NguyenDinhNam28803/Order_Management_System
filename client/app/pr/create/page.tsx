@@ -6,6 +6,7 @@ import Select from "react-select";
 import { useProcurement } from "../../context/ProcurementContext";
 import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
+import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
 
 interface Product {
     id: string;
@@ -443,6 +444,8 @@ export default function CreatePRPage() {
                             </div>
                         )}
                     </div>
+
+                    <SupplierSuggestionWidget items={form.items} />
                 </div>
 
                 {/* Side info & Help */}

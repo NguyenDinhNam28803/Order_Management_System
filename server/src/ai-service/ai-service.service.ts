@@ -81,7 +81,7 @@ export class AiService implements OnModuleInit {
 
     // Gọi Gemini (không dùng function calling, chỉ text generation thuần túy để nhanh hơn)
     const result = await this.client.models.generateContent({
-      model: 'gemini-2.0-flash', // Model nhanh và rẻ cho task phân tích text
+      model: 'gemini-3-flash-preview', // Model nhanh và rẻ cho task phân tích text
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
@@ -103,19 +103,17 @@ export class AiService implements OnModuleInit {
         Bạn có quyền truy cập vào database của hệ thống thông qua công cụ 'query_database'.
         Cấu trúc database (Prisma models):
         - organization: Thông tin công ty, nhà cung cấp, khách hàng.
-        - user: Người dùng.
         - purchaseRequisition (PR): Yêu cầu mua hàng.
         - purchaseOrder (PO): Đơn mua hàng.
         - rfqRequest (RFQ): Yêu cầu báo giá.
-        - rfqQuotation: Báo giá.
-        - goodsReceipt (GRN): Phiếu nhập kho.
-        - supplierInvoice: Hóa đơn.
-        - supplierKpiScore: Chỉ số KPI nhà cung cấp.
+        - supplierKpiScore (KPI): Chỉ số KPI nhà cung cấp (KHÔNG CÓ trường 'overallScore').
+        - supplierManualReview (ManualReview): Đánh giá thủ công (CÓ trường 'overallScore').
 
         # OPERATING PRINCIPLES
         1. Dữ liệu là ưu tiên: Mọi đánh giá phải dựa trên chỉ số (TrustScore, LeadTime, Giá, Chất lượng).
         2. Tối ưu chi phí: Luôn tìm phương án cân bằng giữa giá thành và thời gian giao hàng.
-        3. Dự đoán rủi ro: Nếu nhà cung cấp có xu hướng trễ hàng hoặc chất lượng giảm sút, hãy cảnh báo.
+        3. Kiểm tra Schema: TRƯỚC KHI truy vấn 'orderBy' hoặc 'select', hãy kiểm tra xem trường đó có tồn tại trong model không.
+           - Ví dụ: Không dùng 'overallScore' để sắp xếp model 'SupplierKpiScore'. Nếu cần sắp xếp theo điểm, hãy chọn các trường hợp lệ như 'otdScore' hoặc 'priceScore'.
         4. Minh bạch: Mọi gợi ý phải tuân thủ ma trận phê duyệt.
 
         # QUY TẮC TƯƠNG TÁC
@@ -171,7 +169,7 @@ export class AiService implements OnModuleInit {
 
       // Request đầu tiên
       let response = await this.client.models.generateContent({
-        model: 'gemini-3.1-flash-lite-preview',
+        model: 'gemini-3-flash-preview',
         config: {
           systemInstruction: {
             parts: [{ text: systemInstruction }],
@@ -229,7 +227,7 @@ export class AiService implements OnModuleInit {
 
         // Gửi lại lịch sử kèm kết quả hàm
         response = await this.client.models.generateContent({
-          model: 'gemini-3.1-flash-lite-preview',
+          model: 'gemini-3-flash-preview',
           config: {
             systemInstruction: {
               parts: [{ text: systemInstruction }],
