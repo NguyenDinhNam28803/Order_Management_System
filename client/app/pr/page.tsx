@@ -7,7 +7,7 @@ import { Plus, FileText, Send, CheckCircle2, Check, X } from "lucide-react";
 import Link from "next/link";
 
 export default function PRPage() {
-    const { prs, approvePR, currentUser, actionApproval } = useProcurement();
+    const { prs, myPrs, approvePR, currentUser, actionApproval } = useProcurement();
     const [activeTab, setActiveTab] = React.useState("Tất cả");
 
     const isManager = currentUser?.role === "DEPT_APPROVER";
@@ -21,7 +21,7 @@ export default function PRPage() {
     if (isManager || isDirector) tabs.push("PHÊ DUYỆT PR");
 
     const displayData = React.useMemo(() => {
-        if (!prs) return [];
+        if (!prs || !myPrs) return [];
         
         if (activeTab === "PHÊ DUYỆT PR") {
             if (isManager) {
@@ -33,23 +33,15 @@ export default function PRPage() {
             return [];
         }
         
-        // Filter based on other tabs
-        let filtered = prs;
+        // Use myPrs for all other tabs as requested (nối api /my)
+        let filtered = myPrs;
         
-        if (isManager) {
-            filtered = prs.filter((p: any) => p.creatorRole === "DEPT_APPROVER");
-        } else if (isDirector) {
-            filtered = prs.filter((p: any) => p.creatorRole === "DIRECTOR");
-        } else if (currentUser?.role === "REQUESTER") {
-            filtered = prs.filter((p: any) => p.creatorRole === "REQUESTER");
-        }
-
         if (activeTab === "Nháp") return filtered.filter((p: any) => p.status === "DRAFT");
         if (activeTab === "Chờ duyệt") return filtered.filter((p: any) => p.status.includes("PENDING"));
         if (activeTab === "Đã duyệt") return filtered.filter((p: any) => p.status === "APPROVED");
         
         return filtered;
-    }, [prs, activeTab, isManager, isDirector, currentUser]);
+    }, [prs, myPrs, activeTab, isManager, isDirector, currentUser]);
 
     const columns = [
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -72,8 +72,12 @@ export default function CreatePRPage() {
 
     useEffect(() => {
         apiFetch('/products')
-            .then((res: Response) => res.json())
-            .then((data: { data: Product[] }) => setProducts(data.data || []));
+            .then((res: Response) => res.ok ? res.json() : { data: [] })
+            .then((data: any) => {
+                const productList = Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []);
+                setProducts(productList);
+            })
+            .catch(() => setProducts([]));
     }, [apiFetch]);
 
     const filteredCostCenters = costCenters.filter((cc: CostCenter) => {

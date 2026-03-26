@@ -108,63 +108,63 @@ async function main() {
   // 4. Create Users
   const buyerUsers = [
     {
-      email: 'john.requester@gts.com',
-      fullName: 'John Requester',
-      role: UserRole.REQUESTER,
-      deptId: itDept.id,
-    },
-    {
-      email: 'sarah.approver@gts.com',
-      fullName: 'Sarah IT Manager',
+      email: 'it.manager@innhub.com',
+      fullName: 'IT Manager',
       role: UserRole.DEPT_APPROVER,
       deptId: itDept.id,
     },
     {
-      email: 'mike.procurement@gts.com',
-      fullName: 'Mike Procurement',
-      role: UserRole.PROCUREMENT,
-      deptId: procDept.id,
-    },
-    {
-      email: 'alice.finance@gts.com',
-      fullName: 'Alice Finance',
-      role: UserRole.FINANCE,
-      deptId: financeDept.id,
-    },
-    {
-      email: 'david.director@gts.com',
-      fullName: 'David Director',
-      role: UserRole.DIRECTOR,
-      deptId: itDept.id,
-    },
-    {
-      email: 'ceo@gts.com',
-      fullName: 'Board CEO',
-      role: UserRole.CEO,
-      deptId: itDept.id,
-    },
-    {
-      email: 'qa@gts.com',
-      fullName: 'QA Center',
-      role: UserRole.QA,
-      deptId: itDept.id,
-    },
-    {
-      email: 'warehouse@gts.com',
-      fullName: 'Warehouse Team',
-      role: UserRole.WAREHOUSE,
-      deptId: itDept.id,
-    },
-    {
-      email: 'admin@gts.com',
-      fullName: 'GTS Admin',
+      email: 'admin@innhub.com',
+      fullName: 'System Admin',
       role: UserRole.PLATFORM_ADMIN,
       deptId: itDept.id,
     },
     {
-      email: 'system@gts.com',
-      fullName: 'System Daemon',
-      role: UserRole.SYSTEM,
+      email: 'wh.keeper@innhub.com',
+      fullName: 'Warehouse Keeper',
+      role: UserRole.WAREHOUSE,
+      deptId: itDept.id,
+    },
+    {
+      email: 'ceo@innhub.com',
+      fullName: 'CEO',
+      role: UserRole.CEO,
+      deptId: itDept.id,
+    },
+    {
+      email: 'cfo@innhub.com',
+      fullName: 'CFO',
+      role: UserRole.FINANCE,
+      deptId: financeDept.id,
+    },
+    {
+      email: 'proc.officer@innhub.com',
+      fullName: 'Procurement Officer',
+      role: UserRole.PROCUREMENT,
+      deptId: procDept.id,
+    },
+    {
+      email: 'director@innhub.com',
+      fullName: 'Director',
+      role: UserRole.DIRECTOR,
+      deptId: itDept.id,
+    },
+    {
+      email: 'qa.inspector@innhub.com',
+      fullName: 'QA Inspector',
+      role: UserRole.QA,
+      deptId: itDept.id,
+    },
+    {
+      email: 'finance.staff@innhub.com',
+      fullName: 'Finance Staff',
+      role: UserRole.FINANCE,
+      deptId: financeDept.id,
+    },
+    {
+      email: 'it.requester@innhub.com',
+      fullName: 'IT Requester',
+      role: UserRole.REQUESTER,
       deptId: itDept.id,
     },
   ];
@@ -198,51 +198,7 @@ async function main() {
     },
   });
 
-  // 4.1. Add specific requested users to the same Organization (buyerOrg)
-  console.log('👤 Seeding specific test accounts...');
-  const specificUsers = [
-    {
-      email: 'DEPTAPPROVER@gmail.com',
-      password: 'DEPT_APPROVER@12345*',
-      role: UserRole.DEPT_APPROVER,
-      fullName: 'Dept Approver Test',
-    },
-    {
-      email: 'DIRECTOR@gmail.com',
-      password: 'DIRECTOR@12345*',
-      role: UserRole.DIRECTOR,
-      fullName: 'Director Test',
-    },
-    {
-      email: 'CEO@gmail.com',
-      password: 'CEO@12345*',
-      role: UserRole.CEO,
-      fullName: 'CEO Test',
-    },
-    {
-      email: 'SUPPLIER@gmail.com',
-      password: 'SUPPLIER@1234*',
-      role: UserRole.SUPPLIER,
-      fullName: 'Supplier Test',
-    },
-  ];
-
-  for (const u of specificUsers) {
-    await prisma.user.upsert({
-      where: { email: u.email },
-      update: { passwordHash },
-      create: {
-        email: u.email,
-        fullName: u.fullName,
-        role: u.role,
-        orgId: buyerOrg.id,
-        deptId: u.role !== UserRole.SUPPLIER ? itDept.id : null,
-        passwordHash,
-        isActive: true,
-        isVerified: true,
-      },
-    });
-  }
+  // Specific users section removed as they are now integrated into buyerUsers
 
   // 5. SEED 100 PRODUCTS ACROSS CATEGORIES
   console.log('📦 Seeding 100 business products...');

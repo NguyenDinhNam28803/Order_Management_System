@@ -437,7 +437,11 @@ export default function Dashboard() {
       const myPendingPRs = (prs || []).filter((pr: any) => {
           if (!currentUser) return false;
           const status = pr.status;
-          if (currentUser.role === "DEPT_APPROVER") return status === "PENDING_APPROVAL" || status === "PENDING";
+          // Manager (DEPT_APPROVER) sees all Requester PRs and their own PRs
+          if (currentUser.role === "DEPT_APPROVER") {
+              const creatorRole = pr.creatorRole || pr.requester?.role;
+              return creatorRole === "REQUESTER" || pr.requesterId === currentUser.id;
+          }
           if (currentUser.role === "DIRECTOR") return status === "PENDING_DIRECTOR" || status === "PENDING_APPROVAL";
           return status === "PENDING_APPROVAL" || status === "PENDING";
       });

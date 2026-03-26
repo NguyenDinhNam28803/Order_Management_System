@@ -9,6 +9,7 @@ const ProcurementContext = createContext<any>(undefined);
 interface ProcurementState {
     currentUser: any;
     prs: any[];
+    myPrs: any[];
     pos: any[];
     rfqs: any[];
     grns: any[];
@@ -21,15 +22,29 @@ interface ProcurementState {
 }
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
+    const DEMO_USERS = [
+        { id: "1", name: "IT Manager", email: "it.manager@innhub.com", role: "DEPT_APPROVER", icon: "IT" },
+        { id: "2", name: "System Admin", email: "admin@innhub.com", role: "PLATFORM_ADMIN", icon: "AD" },
+        { id: "3", name: "Warehouse Keeper", email: "wh.keeper@innhub.com", role: "WAREHOUSE", icon: "WH" },
+        { id: "4", name: "CEO", email: "ceo@innhub.com", role: "CEO", icon: "CE" },
+        { id: "5", name: "CFO", email: "cfo@innhub.com", role: "FINANCE", icon: "CF" },
+        { id: "6", name: "Procurement Officer", email: "proc.officer@innhub.com", role: "PROCUREMENT", icon: "PO" },
+        { id: "7", name: "Director", email: "director@innhub.com", role: "DIRECTOR", icon: "DR" },
+        { id: "8", name: "QA Inspector", email: "qa.inspector@innhub.com", role: "QA", icon: "QA" },
+        { id: "9", name: "Finance Staff", email: "finance.staff@innhub.com", role: "FINANCE", icon: "FS" },
+        { id: "10", name: "IT Requester", email: "it.requester@innhub.com", role: "REQUESTER", icon: "IR" },
+    ];
+
     const [state, setState] = useState<ProcurementState>({
         currentUser: null,
         prs: [], 
+        myPrs: [],
         pos: [], 
         rfqs: [], 
         grns: [], 
         invoices: [], 
         budgets: null,
-        users: [],
+        users: DEMO_USERS,
         organization: null,
         costCenters: [],
         approvals: []
@@ -46,19 +61,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return await fetch(`http://localhost:5000${url}`, { ...options, credentials: 'include', headers });
     };
 
-    const DEMO_USERS = [
-        { id: "1", name: "GTS Admin", email: "admin@gts.com", role: "PLATFORM_ADMIN", icon: "AD" },
-        { id: "2", name: "Requester", email: "john.requester@gts.com", role: "REQUESTER", icon: "RQ" },
-        { id: "3", name: "Manager", email: "sarah.approver@gts.com", role: "DEPT_APPROVER", icon: "MN" },
-        { id: "4", name: "Director", email: "david.director@gts.com", role: "DIRECTOR", icon: "DR" },
-        { id: "5", name: "Mike Procurement", email: "mike.procurement@gts.com", role: "PROCUREMENT", icon: "PR" },
-        { id: "6", name: "Alice Finance", email: "alice.finance@gts.com", role: "FINANCE", icon: "FM" },
-    ];
-
     const refreshData = useCallback(async () => {
         try {
-            const [pr, po, rfq, grn, inv, budget, usersRes, orgRes, ccRes, approvalsRes] = await Promise.all([
+            const [pr, myPrRes, po, rfq, grn, inv, budget, usersRes, orgRes, ccRes, approvalsRes] = await Promise.all([
                 apiFetch('/procurement-requests'),
+                apiFetch('/procurement-requests/my'),
                 apiFetch('/purchase-orders'),
                 apiFetch('/request-for-quotations'),
                 apiFetch('/goods-received-notes'),
@@ -70,8 +77,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 apiFetch('/approvals/pending')
             ]);
 
-            const [prData, poData, rfqData, grnData, invData, budgetData, usersData, orgData, ccData, approvalData] = await Promise.all([
+            const [prData, myPrData, poData, rfqData, grnData, invData, budgetData, usersData, orgData, ccData, approvalData] = await Promise.all([
                 pr.ok ? pr.json() : { data: [] },
+                myPrRes.ok ? myPrRes.json() : { data: [] },
                 po.ok ? po.json() : { data: [] },
                 rfq.ok ? rfq.json() : { data: [] },
                 grn.ok ? grn.json() : { data: [] },
@@ -85,7 +93,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
             setState(prev => ({
                 ...prev,
-                prs: prData.data && prData.data.length > 0 ? prData.data : [
+                prs: Array.isArray(prData.data) && prData.data.length > 0 ? prData.data : [
                     // Requester PRs
                     { id: "pr-1", prNumber: "PR-2026-4977", title: "Furniture", totalEstimate: 3500000, status: "PENDING_MANAGER_APPROVAL", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
                     { id: "pr-2", prNumber: "PR-2026-6788", title: "Laptop update", totalEstimate: 4900000, status: "IN_SOURCING", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
@@ -103,15 +111,16 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                     { id: "pr-dir-3", prNumber: "PR-DIR-003", title: "Marketing campaign assets", totalEstimate: 195000000, status: "PENDING_CEO_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
                     { id: "pr-dir-4", prNumber: "PR-DIR-004", title: "Server Hardware Expansion", totalEstimate: 180000000, status: "DRAFT", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
                 ],
-                pos: poData.data || [],
-                rfqs: rfqData.data || [],
-                grns: grnData.data || [],
-                invoices: invData.data || [],
-                budgets: budgetData.data || null,
-                users: usersData.data || usersData || DEMO_USERS,
-                organization: orgData.data || null,
-                costCenters: ccData.data || [],
-                approvals: approvalData.data || []
+                myPrs: Array.isArray(myPrData.data) ? myPrData.data : (Array.isArray(myPrData) ? myPrData : []),
+                pos: Array.isArray(poData.data) ? poData.data : [],
+                rfqs: Array.isArray(rfqData.data) ? rfqData.data : [],
+                grns: Array.isArray(grnData.data) ? grnData.data : [],
+                invoices: Array.isArray(invData.data) ? invData.data : [],
+                budgets: budgetData?.data || null,
+                users: (Array.isArray(usersData?.data) && usersData.data.length > 0) ? usersData.data : (Array.isArray(usersData) && usersData.length > 0) ? usersData : DEMO_USERS,
+                organization: orgData?.data || orgData || null,
+                costCenters: Array.isArray(ccData.data) ? ccData.data : [],
+                approvals: Array.isArray(approvalData.data) ? approvalData.data : []
             }));
 
         } catch (err) {
@@ -120,8 +129,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         }
     }, [apiFetch, DEMO_USERS]);
 
+    React.useEffect(() => {
+        refreshData();
+    }, [refreshData]);
+
     const login = async (email: string, password?: string) => {
-        // Correct path likely /auth-module/login based on server files
         const res = await apiFetch('/auth/login', { 
             method: 'POST', 
             body: JSON.stringify({ email, password: password || "password123" }) 
@@ -151,7 +163,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
         setState({ 
-            currentUser: null, prs: [], pos: [], rfqs: [], grns: [], invoices: [], budgets: null, users: [], 
+            currentUser: null, prs: [], myPrs: [], pos: [], rfqs: [], grns: [], invoices: [], budgets: null, users: [], 
             organization: null, costCenters: [], approvals: []
         });
     };
