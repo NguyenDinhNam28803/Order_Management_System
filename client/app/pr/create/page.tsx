@@ -4,21 +4,66 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
 import { useProcurement } from "../../context/ProcurementContext";
-import { Trash2, Save, FileText, ShoppingBag, Calendar, AlertCircle, Info, Plus, Sparkles } from "lucide-react";
+import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 
+interface Product {
+    id: string;
+    name: string;
+    sku: string;
+    categoryId: string;
+    unitPriceRef: number;
+    unit: string;
+}
+
+interface CostCenter {
+    id: string;
+    name: string;
+    code: string;
+    deptId?: string;
+    budgetAnnual: number;
+    budgetUsed: number;
+    currency: string;
+}
+
+interface PRItem {
+    productId?: string;
+    productDesc: string;
+    sku?: string;
+    categoryId?: string;
+    qty: number;
+    unit: string;
+    estimatedPrice: number;
+    basePrice: number;
+    supplierName: string;
+    aiStatus: boolean;
+    aiLabel: string;
+    specNote: string;
+    currency?: string;
+}
+
+interface PRForm {
+    title: string;
+    description: string;
+    justification: string;
+    requiredDate: string;
+    priority: number;
+    currency: string;
+    costCenterId: string;
+    items: PRItem[];
+}
+
 export default function CreatePRPage() {
-    const { addPR, apiFetch, costCenters, organization, currentUser } = useProcurement();
+    const { apiFetch, costCenters, currentUser } = useProcurement();
     const router = useRouter();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [products, setProducts] = useState<any[]>([]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [form, setForm] = useState<any>({
+    const [products, setProducts] = useState<Product[]>([]);
+    const [form, setForm] = useState<PRForm>({
         title: "",
         description: "",
         justification: "",
         requiredDate: "",
         priority: 2,
+        currency: "VND",
         costCenterId: "",
         items: []
     });
@@ -26,31 +71,28 @@ export default function CreatePRPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        // Fetch product list
-        apiFetch('/products').then((res: any) => res.json()).then((data: any) => setProducts(data.data || []));
+        apiFetch('/products')
+            .then((res: Response) => res.json())
+            .then((data: { data: Product[] }) => setProducts(data.data || []));
     }, [apiFetch]);
 
-    const filteredCostCenters = costCenters.filter((cc: any) => {
+    const filteredCostCenters = costCenters.filter((cc: CostCenter) => {
         if (!currentUser) return false;
         if (currentUser.role === "ADMIN") return true;
-        // If user has a department, only show their department's cost centers
         return !currentUser.deptId || cc.deptId === currentUser.deptId;
     });
 
-    const activeCC = filteredCostCenters.find((cc: any) => cc.id === form.costCenterId);
-    const totalEstimate = form.items.reduce((sum: number, item: any) => sum + (item.qty * item.estimatedPrice), 0);
+    const activeCC = filteredCostCenters.find((cc: CostCenter) => cc.id === form.costCenterId);
+    const totalEstimate = form.items.reduce((sum: number, item: PRItem) => sum + (item.qty * item.estimatedPrice), 0);
     const isOverBudget = activeCC && (Number(activeCC.budgetAnnual) - Number(activeCC.budgetUsed) < totalEstimate);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const addItem = (option: any) => {
-        const product = products.find((p: any) => p.id === option.value);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if (!product || form.items.find((i: any) => i.productId === product.id)) return;
+    const addItem = (option: { value: string; label: string }) => {
+        const product = products.find((p: Product) => p.id === option.value);
+        if (!product || form.items.find((i: PRItem) => i.productId === product.id)) return;
         
         const suppliers = ["Thiên Long", "Rạng Đông", "Điện Quang", "Sunhouse", "Kangaroo", "Vinamilk", "Trung Nguyên", "Hòa Phát", "Ladoda", "Mekong"];
         const foundSupplier = suppliers.find(s => product.name.includes(s)) || "Thị trường";
         
-        // Mock AI Logic
         const aiTypes = ["GIÁ TỐT NHẤT", "ĐẶT NHIỀU NHẤT"];
         const aiLabel = Math.random() > 0.5 ? aiTypes[0] : aiTypes[1];
 
@@ -67,9 +109,9 @@ export default function CreatePRPage() {
                 qty: 1,
                 unit: product.unit || "PCS",
                 estimatedPrice: finalPrice,
-                basePrice: basePrice, // Store original price
+                basePrice: basePrice,
                 supplierName: foundSupplier,
-                aiStatus: Math.random() > 0.2, // 80% have AI suggestion
+                aiStatus: Math.random() > 0.2,
                 aiLabel: aiLabel,
                 specNote: ""
             }]
@@ -82,18 +124,28 @@ export default function CreatePRPage() {
             return;
         }
         const payload = {
-            ...form,
+            title: form.title,
+            description: form.description || undefined,
+            justification: form.justification || undefined,
             requiredDate: form.requiredDate || undefined,
-            items: form.items.map((i: any) => ({
-                ...i,
+            priority: Number(form.priority),
+            currency: form.currency || "VND",
+            costCenterId: form.costCenterId,
+            items: form.items.map((i: PRItem) => ({
+                productId: i.productId || undefined,
+                productDesc: i.productDesc,
+                sku: i.sku || undefined,
+                categoryId: i.categoryId || undefined,
                 qty: Number(i.qty),
-                estimatedPrice: Number(i.estimatedPrice)
+                unit: i.unit || "PCS",
+                estimatedPrice: Number(i.estimatedPrice),
+                currency: i.currency || "VND",
+                specNote: i.specNote || undefined
             }))
         };
 
         setIsSubmitting(true);
         try {
-            // 1. Create PR
             const createRes = await apiFetch('/procurement-requests', { 
                 method: 'POST', 
                 body: JSON.stringify(payload) 
@@ -102,7 +154,6 @@ export default function CreatePRPage() {
             
             if (createRes.ok && createData.data?.id) {
                 const prId = createData.data.id;
-                // 2. Submit for approval
                 const submitRes = await apiFetch(`/procurement-requests/${prId}/submit`, { 
                     method: 'POST' 
                 });
@@ -168,7 +219,7 @@ export default function CreatePRPage() {
                                      onChange={e => setForm({...form, costCenterId: e.target.value})}
                                  >
                                      <option value="">-- Chọn trung tâm chi phí --</option>
-                                     {filteredCostCenters.map((cc: any) => (
+                                     {filteredCostCenters.map((cc: CostCenter) => (
                                          <option key={cc.id} value={cc.id}>
                                              {cc.name} ({cc.code}) - Còn lại: {(Number(cc.budgetAnnual) - Number(cc.budgetUsed)).toLocaleString()} {cc.currency}
                                          </option>
@@ -187,7 +238,7 @@ export default function CreatePRPage() {
                                     value={form.priority}
                                     onChange={e => {
                                         const newPriority = parseInt(e.target.value);
-                                        const updatedItems = form.items.map((item: any) => ({
+                                        const updatedItems = form.items.map((item: PRItem) => ({
                                             ...item,
                                             estimatedPrice: newPriority === 1 ? item.basePrice * 1.2 : item.basePrice
                                         }));
@@ -232,13 +283,13 @@ export default function CreatePRPage() {
                         
                         <div className="mb-6">
                             <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Tìm & Thêm sản phẩm</label>
-                            <Select 
-                                options={products.map((p: any) => ({ label: `${p.name} - SKU: ${p.sku} [${(Number(p.unitPriceRef) || 0).toLocaleString()} ₫]`, value: p.id }))}
-                                onChange={addItem}
+                            <Select<{ value: string; label: string }>
+                                options={products.map((p: Product) => ({ label: `${p.name} - SKU: ${p.sku} [${(Number(p.unitPriceRef) || 0).toLocaleString()} ₫]`, value: p.id }))}
+                                onChange={(option) => option && addItem(option)}
                                 className="text-sm font-medium"
                                 placeholder="Nhập tên sản phẩm hoặc mã SKU để tìm..."
                                 styles={{
-                                    control: (base) => ({
+                                    control: (base: Record<string, unknown>) => ({
                                         ...base,
                                         borderRadius: '0.75rem',
                                         padding: '4px',
@@ -264,7 +315,7 @@ export default function CreatePRPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {form.items.map((item: any, i: number) => (
+                                    {form.items.map((item: PRItem, i: number) => (
                                         <tr key={i} className="group hover:bg-erp-blue/5 transition-colors duration-150">
                                             <td className="px-8 py-4 border-b border-slate-50">
                                                 <div className="flex items-center gap-3">
@@ -330,7 +381,7 @@ export default function CreatePRPage() {
                                                     className="text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg p-2 transition-all" 
                                                     title="Xóa dòng này"
                                                     onClick={() => {
-                                                        setForm({...form, items: form.items.filter((_: any, idx: number) => idx !== i)});
+                                                        setForm({...form, items: form.items.filter((_: PRItem, idx: number) => idx !== i)});
                                                     }}
                                                 >
                                                     <Trash2 size={16}/>
@@ -371,7 +422,7 @@ export default function CreatePRPage() {
                                                 <span className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-1">Tổng cộng dự kiến</span>
                                                 <div className="flex items-baseline gap-2">
                                                     <span className="text-3xl font-black">
-                                                        {form.items.reduce((sum: number, item: any) => sum + (item.qty * item.estimatedPrice), 0).toLocaleString()}
+                                                        {form.items.reduce((sum: number, item: PRItem) => sum + (item.qty * item.estimatedPrice), 0).toLocaleString()}
                                                     </span>
                                                     <span className="text-xs font-bold text-white/70 uppercase">VND</span>
                                                 </div>
@@ -422,7 +473,7 @@ export default function CreatePRPage() {
                         <Info size={20} className="text-orange-500 shrink-0 mt-0.5" />
                         <div>
                             <h4 className="text-xs font-black text-orange-900 uppercase mb-1">Lưu ý ngân sách</h4>
-                            <p className="text-[10px] text-orange-800 leading-relaxed font-medium">Hệ thống sẽ tự động kiểm tra Budget Cap của Center <span className="font-bold underline">ID-325F</span>. Nếu vượt hạn mức, PR sẽ tự động chuyển sang luồng phê duyệt ngoại lệ (Presidency Approval).</p>
+                            <p className="text-[10px] text-orange-800 leading-relaxed font-medium">Hệ thống sẽ tự động kiểm tra Budget Cap của Center ID-325F. Nếu vượt hạn mức, PR sẽ tự động chuyển sang luồng phê duyệt ngoại lệ (Presidency Approval).</p>
                         </div>
                     </div>
 
@@ -431,7 +482,7 @@ export default function CreatePRPage() {
                             <AlertCircle size={16} className="text-erp-blue" />
                             <h4 className="text-xs font-black text-erp-navy uppercase">Hỗ trợ</h4>
                         </div>
-                        <p className="text-[10px] text-slate-600 leading-relaxed font-medium italic">"Mọi thắc mắc về Spec kỹ thuật hoặc mã hàng, vui lòng liên hệ bộ phận ProcurePro qua Extension 101."</p>
+                        <p className="text-[10px] text-slate-600 leading-relaxed font-medium italic">&quot;Mọi thắc mắc về Spec kỹ thuật hoặc mã hàng, vui lòng liên hệ bộ phận ProcurePro qua Extension 101.&quot;</p>
                     </div>
                 </div>
             </div>
