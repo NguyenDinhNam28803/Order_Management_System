@@ -6,13 +6,19 @@ import { Truck, Package, Camera, CheckCircle2, AlertTriangle, Search, ArrowRight
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 
+interface PO {
+    id: string;
+    vendor: string;
+    status: string;
+}
+
 export default function GRNPage() {
     const { pos } = useProcurement();
     const router = useRouter();
 
     // Find a committed PO to receive
-    const activePO = pos.find((p: any) => p.status === "SHIPPED");
-    const [receivedQty, setReceivedQty] = useState(42); // Simulating 42/50 logic for ink
+    const activePO = pos.find((p: PO) => p.status === "SHIPPED");
+    const [receivedQty, setReceivedQty] = useState(42); 
     const [isSaving, setIsSaving] = useState(false);
     const [deliveryStatus, setDeliveryStatus] = useState<"ON_TIME" | "LATE">("ON_TIME");
 

@@ -6,16 +6,34 @@ import { Package, Truck, AlertTriangle, CheckCircle2, Search, RotateCcw, Info, B
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+interface PO {
+    id: string;
+    vendor: string;
+    items: string;
+    qty: number;
+    deliveryDate: string;
+    status: "PENDING" | "DELAYED";
+}
+
+interface GRNDraft {
+    id: string;
+    poId: string;
+    vendor: string;
+    date: string;
+    inspector: string;
+    missing: string;
+}
+
 export default function WarehouseDashboard() {
     const router = useRouter();
 
-    const incomingPOs = [
+    const incomingPOs: PO[] = [
         { id: "PO-2026-088", vendor: "Formosa Corp", items: "Vải Cotton 100%", qty: 500, deliveryDate: "15/03/2026", status: "PENDING" },
         { id: "PO-2026-089", vendor: "Nhựa Tiền Phong", items: "Ống nước PVC", qty: 200, deliveryDate: "16/03/2026", status: "PENDING" },
         { id: "PO-2026-092", vendor: "Tech Corp", items: "Máy chấm công", qty: 5, deliveryDate: "18/03/2026", status: "DELAYED" },
     ];
 
-    const draftGRNs = [
+    const draftGRNs: GRNDraft[] = [
         { id: "GRN-0326-01", poId: "PO-2026-075", vendor: "Mực In Laser", date: "14/03/2026", inspector: "Phạm Kho Vận", missing: "Chờ QC" },
         { id: "GRN-0326-02", poId: "PO-2026-081", vendor: "Giấy Bãi Bằng", date: "14/03/2026", inspector: "Trần Giám Sát", missing: "Thiếu 10 Ram" },
     ];

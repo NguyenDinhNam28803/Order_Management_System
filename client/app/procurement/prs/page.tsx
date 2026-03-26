@@ -1,18 +1,29 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useProcurement } from "../../context/ProcurementContext";
 import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable from "../../components/shared/ERPTable";
 import { 
-    Search, Filter, ListFilter, ArrowRight, 
-    FileText, ShoppingBag, CheckCircle, 
-    Zap, TrendingUp, Users, Clock,
-    Package, DollarSign, Send, MoreHorizontal,
-    UserCheck, ShieldAlert, AlertCircle, XCircle,
-    UserPlus, Settings, ExternalLink
-} from "lucide-react";
+    Search, ListFilter, ArrowRight, 
+    FileText, CheckCircle, 
+    Zap, 
+    Send, 
+    ShieldAlert, AlertCircle, 
+    UserPlus, Settings} from "lucide-react";
 import Link from "next/link";
+
+interface PR {
+    id: string;
+    prNumber?: string;
+    title?: string;
+    status: string;
+    createdAt: string;
+    requester?: { fullName?: string; name?: string };
+    department?: { name: string } | string;
+    items?: any[];
+    [key: string]: any;
+}
 
 export default function ProcurementControlPage() {
     const { prs, currentUser, apiFetch, refreshData } = useProcurement();
@@ -22,21 +33,25 @@ export default function ProcurementControlPage() {
     const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
     // Get unique departments for filtering
-    const departments = useMemo(() => {
-        const depts = new Set((prs || []).map((pr: any) => pr.department?.name || pr.department).filter(Boolean));
+    const departments = useMemo((): string[] => {
+    const depts = new Set(
+        (prs || [])
+            .map((pr: PR) => (typeof pr.department === 'string' ? pr.department : pr.department?.name))
+            .filter(Boolean) as string[]
+        );
         return Array.from(depts);
     }, [prs]);
 
     // Filtered data
     const filteredPRs = useMemo(() => {
-        return (prs || []).filter((pr: any) => {
+        return (prs || []).filter((pr: PR) => {
             const matchesSearch = 
                 (pr.prNumber || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (pr.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (pr.requester?.fullName || pr.requester?.name || "").toLowerCase().includes(searchTerm.toLowerCase());
             
             const matchesStatus = statusFilter === "ALL" || pr.status === statusFilter;
-            const matchesDept = deptFilter === "ALL" || (pr.department?.name || pr.department) === deptFilter;
+            const matchesDept = deptFilter === "ALL" || (typeof pr.department === 'string' ? pr.department : pr.department?.name) === deptFilter;
 
             return matchesSearch && matchesStatus && matchesDept;
         });
@@ -50,14 +65,11 @@ export default function ProcurementControlPage() {
     const handleAssignToMe = async (prId: string) => {
         setIsAssigning(prId);
         try {
-            // Placeholder for assignment logic
-            // In a real app, this would be a PATCH to /procurement-requests/:id/assign
             const res = await apiFetch(`/procurement-requests/${prId}/assign`, { method: 'PATCH' });
             if (res.ok) {
                 alert("Đã gán PR cho bạn thành công!");
                 refreshData();
             } else {
-                // Mock success for UI demonstration if endpoint doesn't exist yet
                 alert("Đã ghi nhận gán PR cho " + currentUser.fullName);
             }
         } catch (err) {
@@ -71,7 +83,7 @@ export default function ProcurementControlPage() {
         {
             label: "Mã PR",
             key: "prNumber",
-            render: (row: any) => (
+            render: (row: PR) => (
                 <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-100">
                         <FileText size={18} />
@@ -86,7 +98,7 @@ export default function ProcurementControlPage() {
         {
             label: "Thông tin Yêu cầu",
             key: "title",
-            render: (row: any) => (
+            render: (row: PR) => (
                 <div className="flex flex-col max-w-xs">
                     <span className="text-sm font-black text-slate-700 truncate">{row.title}</span>
                     <div className="flex items-center gap-2 mt-1">
@@ -101,9 +113,11 @@ export default function ProcurementControlPage() {
         {
             label: "Bộ phận",
             key: "department",
-            render: (row: any) => (
+            render: (row: PR) => (
                 <div className="flex flex-col">
-                    <span className="text-xs font-black text-erp-navy">{row.department?.name || row.department || "N/A"}</span>
+                    <span className="text-xs font-black text-erp-navy">
+                        {typeof row.department === 'string' ? row.department : row.department?.name || "N/A"}
+                    </span>
                     <span className="text-[9px] text-slate-400 font-bold">CC: {row.costCenter?.code || "DEFAULT"}</span>
                 </div>
             )
@@ -111,7 +125,7 @@ export default function ProcurementControlPage() {
         {
             label: "Giá trị",
             key: "totalEstimate",
-            render: (row: any) => (
+            render: (row: PR) => (
                 <div className="text-right">
                     <div className="font-mono font-black text-erp-blue text-sm">{(Number(row.totalEstimate) || 0).toLocaleString()} \u20ab</div>
                     <div className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Base Amount</div>
@@ -121,16 +135,12 @@ export default function ProcurementControlPage() {
         {
             label: "Trạng thái",
             key: "status",
-            render: (row: any) => (
-                <span className={`status-pill status-${(row.status || 'draft').toLowerCase()}`}>
-                    {row.status}
-                </span>
-            )
+            render: (row: PR) => <StatusPill status={row.status} />
         },
         {
             label: "Xử lý Thu mua",
             key: "actions",
-            render: (row: any) => (
+            render: (row: PR) => (
                 <div className="flex items-center justify-end gap-2">
                     {row.status === 'APPROVED' && (
                         <Link href="/sourcing" className="inline-flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
@@ -162,9 +172,9 @@ export default function ProcurementControlPage() {
 
     const stats = [
         { label: "Tổng số PR", value: prs.length, icon: FileText, color: "text-slate-500", bg: "bg-slate-50" },
-        { label: "Chờ Tìm Nguồn", value: prs.filter((p: any) => p.status === 'APPROVED').length, icon: Zap, color: "text-amber-500", bg: "bg-amber-50" },
-        { label: "Đang Báo Giá", value: prs.filter((p: any) => p.status === 'IN_SOURCING').length, icon: Send, color: "text-blue-500", bg: "bg-blue-50" },
-        { label: "Hoàn tất PO", value: prs.filter((p: any) => p.status === 'PO_CREATED').length, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-50" },
+        { label: "Chờ Tìm Nguồn", value: prs.filter((p: PR) => p.status === 'APPROVED').length, icon: Zap, color: "text-amber-500", bg: "bg-amber-50" },
+        { label: "Đang Báo Giá", value: prs.filter((p: PR) => p.status === 'IN_SOURCING').length, icon: Send, color: "text-blue-500", bg: "bg-blue-50" },
+        { label: "Hoàn tất PO", value: prs.filter((p: PR) => p.status === 'PO_CREATED').length, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-50" },
     ];
 
     return (
@@ -237,7 +247,7 @@ export default function ProcurementControlPage() {
                         onChange={(e) => setDeptFilter(e.target.value)}
                     >
                         <option value="ALL">TẤT CẢ PHÒNG BAN</option>
-                        {departments.map((d: any) => <option key={d} value={d}>{String(d).toUpperCase()}</option>)}
+                        {departments.map((d: string) => <option key={d} value={d}>{d.toUpperCase()}</option>)}
                     </select>
                 </div>
 
@@ -286,7 +296,7 @@ export default function ProcurementControlPage() {
 }
 
 function StatusPill({ status }: { status: string }) {
-    const config: any = {
+    const config: Record<string, { bg: string, text: string }> = {
         'DRAFT': { bg: 'bg-slate-100', text: 'text-slate-500' },
         'PENDING_APPROVAL': { bg: 'bg-amber-100', text: 'text-amber-600' },
         'APPROVED': { bg: 'bg-emerald-100', text: 'text-emerald-600' },

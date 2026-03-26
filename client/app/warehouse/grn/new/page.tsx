@@ -7,21 +7,48 @@ import { Search, Package, AlertTriangle, FileCheck, CheckCircle2, RotateCcw, Upl
 import { useProcurement } from "../../../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 
+interface POItem {
+    id: string;
+    description: string;
+    qty: number;
+}
+
+interface PO {
+    id: string;
+    vendor: string;
+    items: POItem[];
+    createdAt?: string;
+}
+
+interface RecvDataItem {
+    pList: number;
+    actual: number;
+    note: string;
+}
+
+interface QcDataItem {
+    status: 'PASS' | 'PARTIAL_PASS' | 'FAIL';
+    failQty: number;
+    reason: string;
+    action: string;
+    proof: boolean;
+}
+
 export default function CreateGRN() {
     const { pos, createGRN } = useProcurement();
     const router = useRouter();
 
     const [poLookup, setPoLookup] = useState("");
-    const [activePO, setActivePO] = useState<any>(null);
+    const [activePO, setActivePO] = useState<PO | null>(null);
 
     const handleSearch = () => {
         const found = pos.find((p: any) => (p.id.includes(poLookup.trim())) && p.status === "SHIPPED");
         if (found) {
             setActivePO(found);
             // Initialize forms
-            const initialRecv:any = {};
-            const initialQC:any = {};
-            found.items.forEach((i: any) => {
+            const initialRecv: Record<string, RecvDataItem> = {};
+            const initialQC: Record<string, QcDataItem> = {};
+            found.items.forEach((i: POItem) => {
                 initialRecv[i.id] = { pList: i.qty, actual: i.qty, note: "" };
                 initialQC[i.id] = { status: "PASS", failQty: 0, reason: "", action: "", proof: false };
             });
@@ -33,15 +60,15 @@ export default function CreateGRN() {
     };
 
     // Form states
-    const [recvData, setRecvData] = useState<any>({});
-    const [qcData, setQcData] = useState<any>({});
+    const [recvData, setRecvData] = useState<Record<string, RecvDataItem>>({});
+    const [qcData, setQcData] = useState<Record<string, QcDataItem>>({});
 
-    const handleRecvChange = (id: string, field: string, val: any) => {
-        setRecvData((prev:any) => ({ ...prev, [id]: { ...prev[id], [field]: val }}));
+    const handleRecvChange = (id: string, field: keyof RecvDataItem, val: number | string) => {
+        setRecvData((prev) => ({ ...prev, [id]: { ...prev[id], [field]: val }}));
     };
 
-    const handleQcChange = (id: string, field: string, val: any) => {
-        setQcData((prev:any) => ({ ...prev, [id]: { ...prev[id], [field]: val }}));
+    const handleQcChange = (id: string, field: keyof QcDataItem, val: string | number | boolean) => {
+        setQcData((prev) => ({ ...prev, [id]: { ...prev[id], [field]: val }}));
     };
 
     const calculateVariance = (ordered: number, actual: number) => {

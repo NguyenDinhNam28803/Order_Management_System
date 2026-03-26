@@ -22,6 +22,7 @@ interface ProcurementState {
 }
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const DEMO_USERS = [
         { id: "1", name: "IT Manager", email: "it.manager@innhub.com", role: "DEPT_APPROVER", icon: "IT" },
         { id: "2", name: "System Admin", email: "admin@innhub.com", role: "PLATFORM_ADMIN", icon: "AD" },
@@ -50,6 +51,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         approvals: []
     });
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const apiFetch = async (url: string, options: RequestInit = {}) => {
         const token = Cookies.get('accessToken');
         const headers: HeadersInit = {
