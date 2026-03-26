@@ -1,11 +1,18 @@
 "use client";
 
-import React from "react";
 import DashboardHeader from "../components/DashboardHeader";
-import { CreditCard, ArrowRight, ShieldCheck, History, Clock } from "lucide-react";
+import { ArrowRight, ShieldCheck, History } from "lucide-react";
+
+interface Transaction {
+    id: string;
+    vendor: string;
+    amount: string;
+    status: "SUCCESS" | "PENDING";
+    date: string;
+}
 
 export default function PaymentsPage() {
-    const transactions = [
+    const transactions: Transaction[] = [
         { id: "PAY-9921", vendor: "Thai Binh Cotton", amount: "45,000,000 ₫", status: "SUCCESS", date: "Hôm nay 10:30" },
         { id: "PAY-9840", vendor: "Formosa Corp", amount: "205,000,000 ₫", status: "PENDING", date: "Đang chờ duyệt" },
     ];

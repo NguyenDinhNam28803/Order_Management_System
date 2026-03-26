@@ -7,6 +7,32 @@ import { useSearchParams, useRouter } from "next/navigation";
 
 import { useProcurement } from "../../context/ProcurementContext";
 
+interface POItem {
+    id: string;
+    description: string;
+    qty: number;
+    estimatedPrice: number;
+}
+
+interface PO {
+    id: string;
+    items: POItem[];
+}
+
+interface GRN {
+    poId: string;
+    receivedItems: Record<string, number>;
+}
+
+interface Invoice {
+    id: string;
+    vendor: string;
+    poId: string;
+    amount: number;
+    status: "PENDING" | "EXCEPTION" | "APPROVED";
+    createdAt: string;
+}
+
 export default function FinanceMatching() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -14,21 +40,20 @@ export default function FinanceMatching() {
     
     const { invoices, pos, grns, payInvoice, matchInvoice } = useProcurement();
 
-    const invoice = invoices.find((i: any) => i.id === invId);
-    const po = pos.find((p: any) => p.id === invoice?.poId);
-    const grn = grns.find((g: any) => g.poId === po?.id);
+    const invoice = invoices.find((i: Invoice) => i.id === invId);
+    const po = pos.find((p: PO) => p.id === invoice?.poId);
+    const grn = grns.find((g: GRN) => g.poId === po?.id);
 
     // Mock Dynamic Data: Let's assume exception if invoice total doesn't match PO total
     const isException = false;
 
-    const items = po?.items.map((item: any) => {
+    const items = po?.items.map((item: POItem) => {
         const grnQty = grn?.receivedItems[item.id] || 0;
         return {
             id: item.id,
             desc: item.description,
             po: { qty: item.qty, price: item.estimatedPrice || 0 },
             grn: { qty: grnQty },
-            // Since we don't save invoice items line-by-line in context, we assume supplier invoiced what was received.
             inv: { qty: grnQty, price: item.estimatedPrice || 0 }, 
             matched: item.qty === grnQty,
             diffPct: item.qty === 0 ? 0 : ((grnQty - item.qty) / item.qty) * 100
