@@ -159,7 +159,7 @@ export default function PRPage() {
         <div className="space-y-8 animate-in fade-in duration-500">
             <header className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Yêu cầu mua sắm (PR)</h1>
+                    <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Yêu cầu mua sắm của tôi (PR)</h1>
                     <p className="text-sm text-slate-400 font-bold mt-1 tracking-tight">HỆ THỐNG QUẢN LÝ VÀ CHUẨN HÓA QUY TRÌNH MUA HÀNG</p>
                 </div>
                 <Link href="/pr/create" className="btn-primary flex flex-col items-center py-2!">

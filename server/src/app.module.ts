@@ -112,10 +112,10 @@ import { OrganizationModuleModule } from './organization-module/organization-mod
   providers: [
     AppService,
     HashPasswordService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
 })
 export class AppModule {}

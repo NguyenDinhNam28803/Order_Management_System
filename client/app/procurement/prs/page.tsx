@@ -148,9 +148,12 @@ export default function ProcurementControlPage() {
                         </Link>
                     )}
                     {row.status === 'IN_SOURCING' && (
-                        <button className="inline-flex items-center gap-2 bg-amber-50 text-amber-600 border border-amber-200 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-amber-100 transition-all">
+                        <Link 
+                            href={`/procurement/rfq/create?prId=${row.id}`}
+                            className="inline-flex items-center gap-2 bg-amber-50 text-amber-600 border border-amber-200 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-amber-100 transition-all shadow-sm active:scale-95"
+                        >
                             Quản lý RFQ
-                        </button>
+                        </Link>
                     )}
                     {!row.procurementId && row.status !== 'DRAFT' && row.status !== 'REJECTED' && (
                         <button 

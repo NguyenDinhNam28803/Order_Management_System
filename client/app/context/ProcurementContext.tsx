@@ -54,8 +54,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             ...options.headers,
         };
-        // Using VPS API URL
-        return await fetch(`http://157.66.46.59:5000${url}`, { ...options, credentials: 'include', headers });
+        // Using Localhost API URL for better stability in development
+        return await fetch(`http://localhost:5000${url}`, { ...options, credentials: 'include', headers });
     }, []);
 
     const refreshData = useCallback(async () => {
@@ -90,29 +90,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
             setState(prev => ({
                 ...prev,
-                prs: Array.isArray(prData?.data) && prData.data.length > 0 ? prData.data : [
-                    // Requester PRs
-                    { id: "pr-1", prNumber: "PR-2026-4977", title: "Furniture", totalEstimate: 3500000, status: "PENDING_MANAGER_APPROVAL", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
-                    { id: "pr-2", prNumber: "PR-2026-6788", title: "Laptop update", totalEstimate: 4900000, status: "IN_SOURCING", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
-                    { id: "pr-3", prNumber: "PR-2026-7066", title: "Bàn làm việc", totalEstimate: 2900000, status: "PENDING_MANAGER_APPROVAL", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
-                    { id: "pr-4", prNumber: "PR-2026-8609", title: "Training material", totalEstimate: 1500000, status: "DRAFT", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
-                    { id: "pr-5", prNumber: "PR-2026-3133", title: "Office supplies", totalEstimate: 500000, status: "IN_SOURCING", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
-                    // Manager PRs
-                    { id: "pr-mgr-1", prNumber: "PR-MGR-001", title: "New monitors", totalEstimate: 7500000, status: "APPROVED", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
-                    { id: "pr-mgr-2", prNumber: "PR-MGR-002", title: "IT team training", totalEstimate: 25000000, status: "PENDING_DIRECTOR_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
-                    { id: "pr-mgr-3", prNumber: "PR-MGR-003", title: "Software licenses", totalEstimate: 9800000, status: "APPROVED", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
-                    { id: "pr-mgr-4", prNumber: "PR-MGR-004", title: "New Projector", totalEstimate: 12000000, status: "DRAFT", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
-                    // Director PRs
-                    { id: "pr-dir-1", prNumber: "PR-DIR-001", title: "Office furniture upgrade", totalEstimate: 75000000, status: "PENDING_CEO_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
-                    { id: "pr-dir-2", prNumber: "PR-DIR-002", title: "Software licenses renewal", totalEstimate: 150000000, status: "PENDING_CEO_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
-                    { id: "pr-dir-3", prNumber: "PR-DIR-003", title: "Marketing campaign assets", totalEstimate: 195000000, status: "PENDING_CEO_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
-                    { id: "pr-dir-4", prNumber: "PR-DIR-004", title: "Server Hardware Expansion", totalEstimate: 180000000, status: "DRAFT", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
-                ],
-                myPrs: (Array.isArray(myPrData?.data) && myPrData.data.length > 0) ? myPrData.data : (Array.isArray(myPrData) && myPrData.length > 0) ? myPrData : [
-                    { id: "my-pr-1", prNumber: "PR-2026-M001", title: "Cấu hình Server VPS mới", totalEstimate: 5000000, status: "APPROVED", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
-                    { id: "my-pr-2", prNumber: "PR-2026-M002", title: "Mua sắm thiết bị ngoại vi IT", totalEstimate: 2500000, status: "PENDING_DIRECTOR_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
-                    { id: "my-pr-3", prNumber: "PR-2026-M003", title: "Gia hạn bản quyền phần mềm", totalEstimate: 12000000, status: "DRAFT", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
-                ],
+                prs: Array.isArray(prData?.data) ? prData.data : (Array.isArray(prData) ? prData : []),
+                myPrs: Array.isArray(myPrData?.data) ? myPrData.data : (Array.isArray(myPrData) ? myPrData : []),
                 pos: Array.isArray(poData?.data) ? poData.data : [],
                 rfqs: Array.isArray(rfqData?.data) ? rfqData.data : [],
                 grns: Array.isArray(grnData?.data) ? grnData.data : [],
@@ -163,10 +142,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
         setState({ 
-            currentUser: null, prs: [], myPrs: [], pos: [], rfqs: [], grns: [], invoices: [], budgets: null, users: [], 
+            currentUser: null, prs: [], myPrs: [], pos: [], rfqs: [], grns: [], invoices: [], budgets: null, users: DEMO_USERS, 
             organization: null, costCenters: [], approvals: []
         });
-    }, [apiFetch]);
+    }, [apiFetch, DEMO_USERS]);
 
     const execAction = React.useCallback(async (fn: () => Promise<Response>) => {
         const res = await fn();
