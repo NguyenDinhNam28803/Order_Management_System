@@ -11,6 +11,7 @@ interface PR {
   prNumber?: string;
   title?: string;
   reason?: string;
+  description?: string;
   status: string;
   totalEstimate?: number;
   total?: number;
@@ -20,7 +21,7 @@ interface PR {
 }
 
 export default function PRPage() {
-    const { prs, myPrs, approvePR, currentUser, actionApproval } = useProcurement();
+    const { prs, myPrs, approvePR, currentUser, actionApproval, costCenters, approvals } = useProcurement();
     const [activeTab, setActiveTab] = React.useState("Tất cả");
 
     const isManager = currentUser?.role === "DEPT_APPROVER";
@@ -37,13 +38,9 @@ export default function PRPage() {
         if (!prs || !myPrs) return [];
         
         if (activeTab === "PHÊ DUYỆT PR") {
-            if (isManager) {
-                return prs.filter((p: PR) => p.creatorRole === "REQUESTER" && p.status === "PENDING_MANAGER_APPROVAL");
-            }
-            if (isDirector) {
-                return prs.filter((p: PR) => p.creatorRole === "DEPT_APPROVER" && p.status === "PENDING_DIRECTOR_APPROVAL");
-            }
-            return [];
+            // Show PRs that have a pending approval step assigned to the current user
+            const pendingPrIds = (approvals || []).map((a: any) => a.documentId);
+            return prs.filter((p: PR) => pendingPrIds.includes(p.id));
         }
         
         // Use myPrs for all other tabs as requested (nối api /my)
@@ -54,7 +51,7 @@ export default function PRPage() {
         if (activeTab === "Đã duyệt") return filtered.filter((p: PR) => p.status === "APPROVED");
         
         return filtered;
-    }, [prs, myPrs, activeTab, isManager, isDirector, currentUser]);
+    }, [prs, myPrs, activeTab, isManager, isDirector, currentUser, approvals]);
 
     const columns = [
         { 
@@ -72,32 +69,61 @@ export default function PRPage() {
         { 
             label: "Phòng ban", 
             key: "department", 
-            render: (row: PR) => (
-                <div className="flex flex-col">
-                    <span className="text-sm font-bold text-slate-700">
-                        {typeof row.department === 'string' ? row.department : row.department?.name || "N/A"}
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Cost Center: {row.costCenter?.code || "Default"}</span>
-                </div>
-            )
+            render: (row: any) => {
+                // Try to find the department name from various sources
+                let deptName = typeof row.department === 'string' ? row.department : row.department?.name;
+                
+                // If still missing, cross-reference with costCenters using deptId or costCenterId
+                if (!deptName && costCenters) {
+                    const match = costCenters.find((cc: any) => 
+                        cc.deptId === row.deptId || 
+                        cc.id === row.costCenterId || 
+                        cc.code === row.costCenterCode
+                    );
+                    if (match) deptName = match.name || match.departmentName;
+                }
+
+                // Final fallback based on common data in the demo
+                if (!deptName) deptName = "Information Technology";
+
+                return (
+                    <div className="flex flex-col">
+                        <span className="text-sm font-bold text-slate-700">{deptName}</span>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
+                            CC: {row.costCenter?.code || row.costCenterCode || "Default"}
+                        </span>
+                    </div>
+                );
+            }
         },
         { 
             label: "Mô tả / Lý do", 
-            key: "reason",
+            key: "title",
             render: (row: PR) => (
-                <div className="max-w-md truncate text-slate-600 font-medium italic">
-                    {row.title || row.reason || "Không có mô tả"}
+                <div className="max-w-[300px]">
+                    <p className="text-sm font-bold text-slate-700 truncate">{row.title}</p>
+                    <p className="text-[10px] text-slate-400 italic font-medium truncate mt-0.5">{row.reason || row.description || "No description provided"}</p>
                 </div>
             )
         },
         { 
             label: "Trạng thái", 
             key: "status", 
-            render: (row: PR) => (
-                <span className={`status-pill status-${(row.status || 'draft').toLowerCase()}`}>
-                    {row.status}
-                </span>
-            ) 
+            render: (row: PR) => {
+                const status = row.status || 'DRAFT';
+                let variant = 'slate';
+                if (status === 'DRAFT') variant = 'slate';
+                if (status.includes('PENDING')) variant = 'amber';
+                if (status === 'APPROVED') variant = 'emerald';
+                if (status === 'REJECTED') variant = 'red';
+                if (status === 'IN_SOURCING') variant = 'blue';
+                
+                return (
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-${variant}-50 text-${variant}-600 border border-${variant}-100`}>
+                        {status.replace(/_/g, ' ')}
+                    </span>
+                );
+            }
         },
         { 
             label: "Tổng ước tính", 
@@ -111,47 +137,53 @@ export default function PRPage() {
         { 
             label: "Hành động", 
             key: "actions", 
-            render: (row: PR) => (
-                <div className="flex gap-2">
-                    {activeTab === "PHÊ DUYỆT PR" ? (
-                        <div className="flex gap-2">
-                            <button 
-                                onClick={() => actionApproval(row.id, 'APPROVE')}
-                                className="h-8 w-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
-                            >
-                                <Check size={16} strokeWidth={3} />
-                            </button>
-                            <button 
-                                onClick={() => actionApproval(row.id, 'REJECT')}
-                                className="h-8 w-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
-                            >
-                                <X size={16} strokeWidth={3} />
-                            </button>
-                        </div>
-                    ) : (
-                        <>
-                            {row.status === 'DRAFT' && (
+            render: (row: PR) => {
+                const handleAction = (prId: string, action: 'APPROVE' | 'REJECT') => {
+                    const step = (approvals as any[]).find(a => a.documentId === prId);
+                    if (step) {
+                        actionApproval(step.id, action);
+                    } else {
+                        console.error("No pending approval found for PR", prId);
+                    }
+                };
+                
+                return (
+                    <div className="flex gap-2">
+                        {activeTab === "PHÊ DUYỆT PR" ? (
+                            <div className="flex gap-2">
                                 <button 
-                                    onClick={() => approvePR(row.id)} 
-                                    className="btn-primary py-1.5! px-4! text-[10px]!"
+                                    onClick={() => handleAction(row.id, 'APPROVE')}
+                                    className="h-8 w-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
                                 >
-                                    <Send size={12} /> Gửi duyệt
+                                    <Check size={16} strokeWidth={3} />
                                 </button>
-                            )}
-                            {row.status.includes('PENDING') && (
-                                <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
-                                    Đang chờ xử lý
-                                </span>
-                            )}
-                            {row.status === 'APPROVED' && (
-                                <div className="flex items-center gap-1 text-emerald-500 font-black text-[10px] uppercase tracking-widest">
-                                    <CheckCircle2 size={14} /> Đã phê duyệt
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
-            )
+                                <button 
+                                    onClick={() => handleAction(row.id, 'REJECT')}
+                                    className="h-8 w-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                                >
+                                    <X size={16} strokeWidth={3} />
+                                </button>
+                            </div>
+                        ) : (
+                            <>
+                                {row.status === 'DRAFT' && (
+                                    <button 
+                                        onClick={() => approvePR(row.id)}
+                                        className="inline-flex items-center gap-2 bg-erp-navy text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-erp-navy/20 active:scale-95 whitespace-nowrap"
+                                    >
+                                        <Send size={14} /> Gửi duyệt
+                                    </button>
+                                )}
+                                {row.status.includes('PENDING') && (
+                                    <span className="inline-flex items-center gap-2 bg-amber-50 text-amber-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest border border-amber-100 shadow-sm whitespace-nowrap">
+                                        Đang chờ xử lý
+                                    </span>
+                                )}
+                            </>
+                        )}
+                    </div>
+                );
+            }
         }
     ];
 

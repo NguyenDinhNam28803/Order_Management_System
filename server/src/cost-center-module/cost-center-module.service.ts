@@ -38,7 +38,7 @@ export class CostCenterModuleService {
   }
 
   async findWithDeptId(dept_Id: string) {
-    return this.prisma.costCenter.findFirst({
+    return this.prisma.costCenter.findMany({
       where: {
         deptId: dept_Id,
       },

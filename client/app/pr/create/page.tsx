@@ -83,8 +83,10 @@ export default function CreatePRPage() {
 
     const filteredCostCenters = costCenters.filter((cc: CostCenter) => {
         if (!currentUser) return false;
-        if (currentUser.role === "ADMIN") return true;
-        return !currentUser.deptId || cc.deptId === currentUser.deptId;
+        // Admins and Procurement officers can see all cost centers
+        if (currentUser.role === "PLATFORM_ADMIN" || currentUser.role === "PROCUREMENT") return true;
+        // Requesters and Managers only see their own department's cost centers
+        return !currentUser.deptId || !cc.deptId || cc.deptId === currentUser.deptId;
     });
 
     const activeCC = filteredCostCenters.find((cc: CostCenter) => cc.id === form.costCenterId);

@@ -30,42 +30,38 @@ export default function CreateRFQPage() {
     const params = useParams();
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { prs, apiFetch, refreshData, currentUser } = useProcurement();
+    const { prs, apiFetch, refreshData, currentUser, organizations } = useProcurement();
     
     // Get prId from query or params
     const prId = params.id as string || searchParams.get("prId");
     const targetPR = prs.find((p: any) => p.id === prId);
 
-    const [selectedVendors, setSelectedVendors] = useState<{name: string, email: string}[]>([]);
+    const [selectedVendors, setSelectedVendors] = useState<any[]>([]);
     const [vendorSearch, setVendorSearch] = useState("");
     const [deadline, setDeadline] = useState("");
     const [note, setNote] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
-    // Mock search results for vendors
-    const mockVendors = [
-        { name: "Công ty TNHH Thiết bị Công nghệ Toàn Cầu", email: "sales@techglobal.vn" },
-        { name: "Giải pháp Văn phòng Hiện đại", email: "contact@modernoffice.com" },
-        { name: "Tổng kho Nội thất Miền Bắc", email: "info@noithatbac.vn" },
-        { name: "Samsung Vina Electronics", email: "b2b@samsung.com" },
-        { name: "Dell Vietnam Partner", email: "support@dellpartner.vn" }
-    ];
+    // Filter organizations to exclude current user's org
+    const realVendors = React.useMemo(() => 
+        (organizations || []).filter((o: any) => o.id !== currentUser?.orgId),
+    [organizations, currentUser?.orgId]);
 
-    const filteredVendors = mockVendors.filter(v => 
+    const filteredVendors = realVendors.filter((v: any) => 
         v.name.toLowerCase().includes(vendorSearch.toLowerCase()) || 
-        v.email.toLowerCase().includes(vendorSearch.toLowerCase())
+        (v.email && v.email.toLowerCase().includes(vendorSearch.toLowerCase()))
     );
 
-    const addVendor = (v: {name: string, email: string}) => {
-        if (!selectedVendors.find(sv => sv.email === v.email)) {
+    const addVendor = (v: any) => {
+        if (!selectedVendors.find(sv => sv.id === v.id)) {
             setSelectedVendors([...selectedVendors, v]);
         }
         setVendorSearch("");
     };
 
-    const removeVendor = (email: string) => {
-        setSelectedVendors(selectedVendors.filter(v => v.email !== email));
+    const removeVendor = (id: string) => {
+        setSelectedVendors(selectedVendors.filter(v => v.id !== id));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -77,29 +73,34 @@ export default function CreateRFQPage() {
 
         setIsSubmitting(true);
         try {
-            // Create RFQ for each vendor as per context design or list if backend supports
-            const promises = selectedVendors.map(vendor => 
-                apiFetch('/request-for-quotations', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        prId: prId,
-                        vendor: vendor.name,
-                        vendorEmail: vendor.email,
-                        deadline: deadline,
-                        note: note
-                    })
-                })
-            );
+            // Updated to match backend CreateRfqDto
+            const payload = {
+                prId: prId,
+                title: `RFQ for ${targetPR.prNumber || targetPR.id}`,
+                description: note,
+                deadline: new Date(deadline).toISOString(),
+                supplierIds: selectedVendors.map(v => v.id),
+                minSuppliers: selectedVendors.length
+            };
 
-            await Promise.all(promises);
+            const res = await apiFetch('/request-for-quotations', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.message || "Failed to create RFQ");
+            }
+
             setIsSuccess(true);
             refreshData();
             setTimeout(() => {
                 router.push("/procurement/prs");
             }, 2000);
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            alert("Có lỗi xảy ra khi tạo RFQ");
+            alert(`Có lỗi xảy ra khi tạo RFQ: ${err.message}`);
         } finally {
             setIsSubmitting(false);
         }
@@ -275,7 +276,7 @@ export default function CreateRFQPage() {
                                         </div>
                                         <button 
                                             type="button" 
-                                            onClick={() => removeVendor(v.email)}
+                                            onClick={() => removeVendor(v.id)}
                                             className="h-8 w-8 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all flex items-center justify-center"
                                         >
                                             <Trash2 size={16} />

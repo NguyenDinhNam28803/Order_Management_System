@@ -100,7 +100,7 @@ export class PrRepository {
   async findByRequester(requesterId: string): Promise<PurchaseRequisition[]> {
     return this.prisma.purchaseRequisition.findMany({
       where: { requesterId },
-      include: { items: true },
+      include: { items: true, requester: true, department: true },
       orderBy: { createdAt: 'desc' },
     });
   }

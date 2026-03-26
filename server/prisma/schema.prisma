@@ -46,6 +46,7 @@ model Organization {
   disputesOpened           Dispute[]                @relation("DisputeOpenedOrg")
   escrowAccounts           EscrowAccount[]
   goodsReceiptsOrg         GoodsReceipt[]
+  orgBudgets               OrgBudget[]
   documents                OrganizationDocument[]
   kycVerifier              User?                    @relation("OrgKycVerifier", fields: [kycVerifiedById], references: [id])
   prItems                  PrItem[]                 @relation("PreferredSupplier")
@@ -60,7 +61,6 @@ model Organization {
   invoicesAsSupplier       SupplierInvoice[]        @relation("InvoiceSupplierOrg")
   kpiScoresAsBuyer         SupplierKpiScore[]       @relation("KpiBuyerOrg")
   kpiScoresAsSupplier      SupplierKpiScore[]       @relation("KpiSupplier")
-  orgBudgets               OrgBudget[]
   systemConfigs            SystemConfig[]
   users                    User[]
   webhookConfigs           WebhookConfig[]
@@ -153,7 +153,6 @@ model User {
   isVerified               Boolean                @default(false) @map("is_verified")
   lastLoginAt              DateTime?              @map("last_login_at") @db.Timestamptz(6)
   passwordHash             String?                @map("password_hash") @db.VarChar(255)
-  hashedRefreshToken       String?                @map("hashed_refresh_token") @db.VarChar(255)
   mfaSecret                String?                @map("mfa_secret") @db.VarChar(100)
   mfaEnabled               Boolean                @default(false) @map("mfa_enabled")
   kycStatus                KycStatus              @default(PENDING) @map("kyc_status")
@@ -161,6 +160,7 @@ model User {
   preferences              Json                   @default("{}")
   createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  hashedRefreshToken       String?                @map("hashed_refresh_token") @db.VarChar(255)
   approvalMatrixRules      ApprovalMatrixRule[]
   approvalWorkflows        ApprovalWorkflow[]     @relation("ApprovalApprover")
   approvalDelegations      ApprovalWorkflow[]     @relation("ApprovalDelegatedFrom")
@@ -1290,22 +1290,19 @@ model SpendAnalyticsSnapshot {
   @@map("spend_analytics_snapshots")
 }
 
-
 model OrgBudget {
-  id              String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  orgId           String       @map("org_id") @db.Uuid
-  fiscalYear      Int          @map("fiscal_year") @db.SmallInt
-  totalAmount     Decimal      @map("total_amount") @db.Decimal(18, 2)
-  currency        CurrencyCode @default(VND)
-  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
-  
-  organization    Organization @relation(fields: [orgId], references: [id])
+  id           String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  orgId        String       @map("org_id") @db.Uuid
+  fiscalYear   Int          @map("fiscal_year") @db.SmallInt
+  totalAmount  Decimal      @map("total_amount") @db.Decimal(18, 2)
+  currency     CurrencyCode @default(VND)
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  organization Organization @relation(fields: [orgId], references: [id])
 
   @@unique([orgId, fiscalYear])
   @@map("org_budgets")
 }
-
 
 enum UserRole {
   REQUESTER
@@ -1388,8 +1385,6 @@ enum PoStatus {
   DRAFT
   PENDING_APPROVAL
   APPROVED
-  CONFIRMED
-  REJECTED
   ISSUED
   ACKNOWLEDGED
   IN_PROGRESS
@@ -1400,6 +1395,8 @@ enum PoStatus {
   CANCELLED
   DISPUTED
   ON_HOLD
+  CONFIRMED
+  REJECTED
 }
 
 enum GrnStatus {
@@ -1478,7 +1475,6 @@ enum DisputeType {
 
 enum ApprovalStatus {
   PENDING
-  WAITING
   APPROVED
   REJECTED
   ESCALATED
@@ -1546,4 +1542,3 @@ enum Incoterm {
   DPU
   DDP
 }
-
