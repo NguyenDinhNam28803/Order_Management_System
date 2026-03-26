@@ -26,14 +26,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const DEMO_USERS = [
         { id: "1", name: "IT Manager", email: "it.manager@innhub.com", role: "DEPT_APPROVER", icon: "IT" },
         { id: "2", name: "System Admin", email: "admin@innhub.com", role: "PLATFORM_ADMIN", icon: "AD" },
-        { id: "3", name: "Warehouse Keeper", email: "wh.keeper@innhub.com", role: "WAREHOUSE", icon: "WH" },
-        { id: "4", name: "CEO", email: "ceo@innhub.com", role: "CEO", icon: "CE" },
-        { id: "5", name: "CFO", email: "cfo@innhub.com", role: "FINANCE", icon: "CF" },
+        { id: "4", name: "Board CEO", email: "ceo@innhub.com", role: "CEO", icon: "CE" },
         { id: "6", name: "Procurement Officer", email: "proc.officer@innhub.com", role: "PROCUREMENT", icon: "PO" },
         { id: "7", name: "Director", email: "director@innhub.com", role: "DIRECTOR", icon: "DR" },
-        { id: "8", name: "QA Inspector", email: "qa.inspector@innhub.com", role: "QA", icon: "QA" },
-        { id: "9", name: "Finance Staff", email: "finance.staff@innhub.com", role: "FINANCE", icon: "FS" },
-        { id: "10", name: "IT Requester", email: "it.requester@innhub.com", role: "REQUESTER", icon: "IR" },
+        { id: "10", name: "John Requester", email: "it.requester@innhub.com", role: "REQUESTER", icon: "IR" },
     ];
     const [state, setState] = useState<ProcurementState>({
         currentUser: null,
@@ -122,7 +118,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 grns: Array.isArray(grnData?.data) ? grnData.data : [],
                 invoices: Array.isArray(invData?.data) ? invData.data : [],
                 budgets: budgetData?.data || null,
-                users: (Array.isArray(usersData?.data) && usersData.data.length > 0) ? usersData.data : (Array.isArray(usersData) && usersData.length > 0) ? usersData : DEMO_USERS,
+                users: DEMO_USERS,
                 organization: orgData?.data || null,
                 costCenters: Array.isArray(ccData?.data) ? ccData.data : (Array.isArray(ccData) ? ccData : []),
                 approvals: Array.isArray(approvalData?.data) ? approvalData.data : []
