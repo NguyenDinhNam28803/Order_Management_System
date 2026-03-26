@@ -8,11 +8,12 @@ const ProcurementContext = createContext<any>(undefined);
 
 interface User {
     id: string;
-    name: string;
+    name?: string;
     email: string;
     role: string;
     fullName?: string;
     icon?: string;
+    avatarUrl?: string;
 }
 
 interface PRItem {
@@ -26,15 +27,25 @@ interface PR {
     id: string;
     prNumber?: string;
     title?: string;
+    description?: string;
+    justification?: string;
     status: string;
     createdAt: string;
-    requester?: { fullName?: string; name?: string };
+    requester?: { 
+        id: string;
+        fullName?: string; 
+        name?: string; 
+        role?: string;
+        email?: string;
+    };
     department?: { name: string } | string;
-    costCenter?: { code: string };
+    deptId?: string;
+    costCenterId?: string;
+    costCenter?: { code: string; name?: string };
     procurementId?: string;
-    totalEstimate?: number;
+    totalEstimate?: number | string;
     items?: PRItem[];
-    creatorRole?: string;
+    creatorRole?: string; // Fallback helper
 }
 
 interface POItem {
@@ -84,23 +95,6 @@ interface ProcurementState {
     rfqs: RFQ[];
     grns: GRN[];
     invoices: Invoice[];
-    budgets: Record<string, unknown> | null;
-    users: User[];
-    organization: Record<string, unknown> | null;
-    costCenters: Record<string, unknown>[];
-    approvals: Record<string, unknown>[];
-}
-
-interface ProcurementState {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    currentUser: any;
-    prs: PR[];
-    myPrs: PR[];
-    pos: PO[];
-    rfqs: RFQ[];
-    grns: GRN[];
-    invoices: Invoice[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     budgets: any;
     users: User[];
     organization: any;
@@ -120,12 +114,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     ];
     const [state, setState] = useState<ProcurementState>({
         currentUser: null,
-        prs: [], 
+        prs: [],
         myPrs: [],
-        pos: [], 
-        rfqs: [], 
-        grns: [], 
-        invoices: [], 
+        pos: [],
+        rfqs: [],
+        grns: [],
+        invoices: [],
         budgets: null,
         users: DEMO_USERS,
         organization: null,
@@ -161,7 +155,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 apiFetch('/approvals/pending')
             ]);
 
-            const [prData, myPrData, poData, rfqData, grnData, invData, budgetData,, orgData, ccData, approvalData] = await Promise.all([
+            const [prData, myPrData, poData, rfqData, grnData, invData, budgetData, usersData, orgData, ccData, approvalData] = await Promise.all([
                 pr.ok ? pr.json() : { data: [] },
                 myPrRes.ok ? myPrRes.json() : { data: [] },
                 po.ok ? po.json() : { data: [] },
@@ -169,22 +163,29 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 grn.ok ? grn.json() : { data: [] },
                 inv.ok ? inv.json() : { data: [] },
                 budget.ok ? budget.json() : { data: null },
-                usersRes.ok ? usersRes.json() : { data: DEMO_USERS },
+                usersRes.ok ? usersRes.json() : { data: [] },
                 orgRes.ok ? orgRes.json() : { data: null },
                 ccRes.ok ? ccRes.json() : { data: [] },
                 approvalsRes.ok ? approvalsRes.json() : { data: [] }
             ]);
 
+            // Helper to normalize PR data to include creatorRole for legacy logic if needed
+            const normalizePR = (p: PR) => ({
+                ...p,
+                creatorRole: p.creatorRole || p.requester?.role || 'REQUESTER',
+                totalEstimate: Number(p.totalEstimate) || 0
+            });
+
             setState(prev => ({
                 ...prev,
-                prs: Array.isArray(prData?.data) ? prData.data : (Array.isArray(prData) ? prData : []),
-                myPrs: Array.isArray(myPrData?.data) ? myPrData.data : (Array.isArray(myPrData) ? myPrData : []),
+                prs: (Array.isArray(prData?.data) ? prData.data : (Array.isArray(prData) ? prData : [])).map(normalizePR),
+                myPrs: (Array.isArray(myPrData?.data) ? myPrData.data : (Array.isArray(myPrData) ? myPrData : [])).map(normalizePR),
                 pos: Array.isArray(poData?.data) ? poData.data : [],
                 rfqs: Array.isArray(rfqData?.data) ? rfqData.data : [],
                 grns: Array.isArray(grnData?.data) ? grnData.data : [],
                 invoices: Array.isArray(invData?.data) ? invData.data : [],
                 budgets: budgetData?.data || null,
-                users: DEMO_USERS,
+                users: DEMO_USERS, // Keep demo users for quick login
                 organization: orgData?.data || null,
                 costCenters: Array.isArray(ccData?.data) ? ccData.data : (Array.isArray(ccData) ? ccData : []),
                 approvals: Array.isArray(approvalData?.data) ? approvalData.data : []
@@ -202,22 +203,22 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const login = React.useCallback(async (email: string, password?: string) => {
-        const res = await apiFetch('/auth/login', { 
-            method: 'POST', 
-            body: JSON.stringify({ email, password: password || "password123" }) 
+        const res = await apiFetch('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password: password || "password123" })
         });
-        
+
         if (res.ok) {
             const responseData = await res.json();
             const data = responseData.data;
-            
+
             if (data.accessToken) {
                 Cookies.set('accessToken', data.accessToken, { expires: 7, sameSite: 'Strict' });
                 if (data.refreshToken) {
                     Cookies.set('refreshToken', data.refreshToken, { expires: 7, sameSite: 'Strict' });
                 }
             }
-            
+
             setState(prev => ({ ...prev, currentUser: data.user }));
             await refreshData();
             return true;
@@ -229,8 +230,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         await apiFetch('/auth/logout', { method: 'POST' });
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
-        setState({ 
-            currentUser: null, prs: [], myPrs: [], pos: [], rfqs: [], grns: [], invoices: [], budgets: null, users: DEMO_USERS, 
+        setState({
+            currentUser: null, prs: [], myPrs: [], pos: [], rfqs: [], grns: [], invoices: [], budgets: null, users: DEMO_USERS,
             organization: null, costCenters: [], approvals: []
         });
     }, [apiFetch, DEMO_USERS]);
@@ -252,25 +253,25 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const createInvoice = React.useCallback((poId: string, vendor: string, amount: number) => execAction(() => apiFetch('/invoices', { method: 'POST', body: JSON.stringify({ poId, vendor, amount }) })), [apiFetch, execAction]);
     const payInvoice = React.useCallback((invId: string) => execAction(() => apiFetch(`/invoices/${invId}/pay`, { method: 'POST' })), [apiFetch, execAction]);
 
-    const actionApproval = React.useCallback((workflowId: string, action: 'APPROVE' | 'REJECT', comment?: string) => 
-        execAction(() => apiFetch(`/approvals/${workflowId}/action`, { 
-            method: 'POST', 
-            body: JSON.stringify({ action, comment }) 
+    const actionApproval = React.useCallback((workflowId: string, action: 'APPROVE' | 'REJECT', comment?: string) =>
+        execAction(() => apiFetch(`/approvals/${workflowId}/action`, {
+            method: 'POST',
+            body: JSON.stringify({ action, comment })
         })), [apiFetch, execAction]);
 
     const contextValue = React.useMemo(() => ({
-        ...state, 
-        login, 
-        logout, 
-        refreshData, 
-        apiFetch, 
-        addPR, 
-        approvePR, 
-        createRFQ, 
-        createPO, 
-        createGRN, 
-        createInvoice, 
-        payInvoice, 
+        ...state,
+        login,
+        logout,
+        refreshData,
+        apiFetch,
+        addPR,
+        approvePR,
+        createRFQ,
+        createPO,
+        createGRN,
+        createInvoice,
+        payInvoice,
         actionApproval
     }), [state, login, logout, refreshData, apiFetch, addPR, approvePR, createRFQ, createPO, createGRN, createInvoice, payInvoice, actionApproval]);
 

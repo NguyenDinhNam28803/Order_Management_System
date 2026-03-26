@@ -75,7 +75,7 @@ export default function PRPage() {
             render: (row: PR) => (
                 <div className="flex flex-col">
                     <span className="text-sm font-bold text-slate-700">
-                        {row.department ? "Name" : "N/A"}
+                        {typeof row.department === 'string' ? row.department : row.department?.name || "N/A"}
                     </span>
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Cost Center: {row.costCenter?.code || "Default"}</span>
                 </div>
