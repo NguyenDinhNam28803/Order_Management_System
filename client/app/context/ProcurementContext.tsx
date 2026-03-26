@@ -21,20 +21,20 @@ interface ProcurementState {
     approvals: any[];
 }
 
-export function ProcurementProvider({ children }: { children: ReactNode }) {
-    const DEMO_USERS = [
-        { id: "1", name: "IT Manager", email: "it.manager@innhub.com", role: "DEPT_APPROVER", icon: "IT" },
-        { id: "2", name: "System Admin", email: "admin@innhub.com", role: "PLATFORM_ADMIN", icon: "AD" },
-        { id: "3", name: "Warehouse Keeper", email: "wh.keeper@innhub.com", role: "WAREHOUSE", icon: "WH" },
-        { id: "4", name: "CEO", email: "ceo@innhub.com", role: "CEO", icon: "CE" },
-        { id: "5", name: "CFO", email: "cfo@innhub.com", role: "FINANCE", icon: "CF" },
-        { id: "6", name: "Procurement Officer", email: "proc.officer@innhub.com", role: "PROCUREMENT", icon: "PO" },
-        { id: "7", name: "Director", email: "director@innhub.com", role: "DIRECTOR", icon: "DR" },
-        { id: "8", name: "QA Inspector", email: "qa.inspector@innhub.com", role: "QA", icon: "QA" },
-        { id: "9", name: "Finance Staff", email: "finance.staff@innhub.com", role: "FINANCE", icon: "FS" },
-        { id: "10", name: "IT Requester", email: "it.requester@innhub.com", role: "REQUESTER", icon: "IR" },
-    ];
+const DEMO_USERS = [
+    { id: "1", name: "IT Manager", email: "it.manager@innhub.com", role: "DEPT_APPROVER", icon: "IT" },
+    { id: "2", name: "System Admin", email: "admin@innhub.com", role: "PLATFORM_ADMIN", icon: "AD" },
+    { id: "3", name: "Warehouse Keeper", email: "wh.keeper@innhub.com", role: "WAREHOUSE", icon: "WH" },
+    { id: "4", name: "CEO", email: "ceo@innhub.com", role: "CEO", icon: "CE" },
+    { id: "5", name: "CFO", email: "cfo@innhub.com", role: "FINANCE", icon: "CF" },
+    { id: "6", name: "Procurement Officer", email: "proc.officer@innhub.com", role: "PROCUREMENT", icon: "PO" },
+    { id: "7", name: "Director", email: "director@innhub.com", role: "DIRECTOR", icon: "DR" },
+    { id: "8", name: "QA Inspector", email: "qa.inspector@innhub.com", role: "QA", icon: "QA" },
+    { id: "9", name: "Finance Staff", email: "finance.staff@innhub.com", role: "FINANCE", icon: "FS" },
+    { id: "10", name: "IT Requester", email: "it.requester@innhub.com", role: "REQUESTER", icon: "IR" },
+];
 
+export function ProcurementProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<ProcurementState>({
         currentUser: null,
         prs: [], 
@@ -50,16 +50,16 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         approvals: []
     });
 
-    const apiFetch = async (url: string, options: RequestInit = {}) => {
+    const apiFetch = useCallback(async (url: string, options: RequestInit = {}) => {
         const token = Cookies.get('accessToken');
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
             ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             ...options.headers,
         };
-        // Using localhost:5000 as defined in both versions
-        return await fetch(`http://localhost:5000${url}`, { ...options, credentials: 'include', headers });
-    };
+        // Using VPS API URL
+        return await fetch(`http://157.66.46.59:5000${url}`, { ...options, credentials: 'include', headers });
+    }, []);
 
     const refreshData = useCallback(async () => {
         try {
@@ -93,7 +93,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
             setState(prev => ({
                 ...prev,
-                prs: Array.isArray(prData.data) && prData.data.length > 0 ? prData.data : [
+                prs: Array.isArray(prData?.data) && prData.data.length > 0 ? prData.data : [
                     // Requester PRs
                     { id: "pr-1", prNumber: "PR-2026-4977", title: "Furniture", totalEstimate: 3500000, status: "PENDING_MANAGER_APPROVAL", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
                     { id: "pr-2", prNumber: "PR-2026-6788", title: "Laptop update", totalEstimate: 4900000, status: "IN_SOURCING", department: { name: "Information Technology" }, creatorRole: "REQUESTER", createdAt: new Date().toISOString() },
@@ -111,29 +111,33 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                     { id: "pr-dir-3", prNumber: "PR-DIR-003", title: "Marketing campaign assets", totalEstimate: 195000000, status: "PENDING_CEO_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
                     { id: "pr-dir-4", prNumber: "PR-DIR-004", title: "Server Hardware Expansion", totalEstimate: 180000000, status: "DRAFT", department: { name: "Information Technology" }, creatorRole: "DIRECTOR", createdAt: new Date().toISOString() },
                 ],
-                myPrs: Array.isArray(myPrData.data) ? myPrData.data : (Array.isArray(myPrData) ? myPrData : []),
-                pos: Array.isArray(poData.data) ? poData.data : [],
-                rfqs: Array.isArray(rfqData.data) ? rfqData.data : [],
-                grns: Array.isArray(grnData.data) ? grnData.data : [],
-                invoices: Array.isArray(invData.data) ? invData.data : [],
+                myPrs: (Array.isArray(myPrData?.data) && myPrData.data.length > 0) ? myPrData.data : (Array.isArray(myPrData) && myPrData.length > 0) ? myPrData : [
+                    { id: "my-pr-1", prNumber: "PR-2026-M001", title: "Cấu hình Server VPS mới", totalEstimate: 5000000, status: "APPROVED", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
+                    { id: "my-pr-2", prNumber: "PR-2026-M002", title: "Mua sắm thiết bị ngoại vi IT", totalEstimate: 2500000, status: "PENDING_DIRECTOR_APPROVAL", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
+                    { id: "my-pr-3", prNumber: "PR-2026-M003", title: "Gia hạn bản quyền phần mềm", totalEstimate: 12000000, status: "DRAFT", department: { name: "Information Technology" }, creatorRole: "DEPT_APPROVER", createdAt: new Date().toISOString() },
+                ],
+                pos: Array.isArray(poData?.data) ? poData.data : [],
+                rfqs: Array.isArray(rfqData?.data) ? rfqData.data : [],
+                grns: Array.isArray(grnData?.data) ? grnData.data : [],
+                invoices: Array.isArray(invData?.data) ? invData.data : [],
                 budgets: budgetData?.data || null,
                 users: (Array.isArray(usersData?.data) && usersData.data.length > 0) ? usersData.data : (Array.isArray(usersData) && usersData.length > 0) ? usersData : DEMO_USERS,
-                organization: orgData?.data || orgData || null,
-                costCenters: Array.isArray(ccData.data) ? ccData.data : [],
-                approvals: Array.isArray(approvalData.data) ? approvalData.data : []
+                organization: orgData?.data || null,
+                costCenters: Array.isArray(ccData?.data) ? ccData.data : (Array.isArray(ccData) ? ccData : []),
+                approvals: Array.isArray(approvalData?.data) ? approvalData.data : []
             }));
 
         } catch (err) {
             console.error("Fetch error:", err);
             setState(prev => ({ ...prev, users: DEMO_USERS }));
         }
-    }, [apiFetch, DEMO_USERS]);
+    }, [apiFetch]);
 
     React.useEffect(() => {
         refreshData();
     }, [refreshData]);
 
-    const login = async (email: string, password?: string) => {
+    const login = React.useCallback(async (email: string, password?: string) => {
         const res = await apiFetch('/auth/login', { 
             method: 'POST', 
             body: JSON.stringify({ email, password: password || "password123" }) 
@@ -145,7 +149,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             
             if (data.accessToken) {
                 Cookies.set('accessToken', data.accessToken, { expires: 7, sameSite: 'Strict' });
-                // If there's a refresh token, we might want to store it too, but follow the incoming logic
                 if (data.refreshToken) {
                     Cookies.set('refreshToken', data.refreshToken, { expires: 7, sameSite: 'Strict' });
                 }
@@ -156,9 +159,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             return true;
         }
         return false;
-    };
+    }, [apiFetch, refreshData]);
 
-    const logout = async () => {
+    const logout = React.useCallback(async () => {
         await apiFetch('/auth/logout', { method: 'POST' });
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
@@ -166,33 +169,48 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             currentUser: null, prs: [], myPrs: [], pos: [], rfqs: [], grns: [], invoices: [], budgets: null, users: [], 
             organization: null, costCenters: [], approvals: []
         });
-    };
+    }, [apiFetch]);
 
-    const execAction = async (fn: () => Promise<Response>) => {
+    const execAction = React.useCallback(async (fn: () => Promise<Response>) => {
         const res = await fn();
         if (res.ok) await refreshData();
         return res.ok;
-    };
+    }, [refreshData]);
 
+    // Action creators
+    const addPR = React.useCallback((data: any) => execAction(() => apiFetch('/procurement-requests', { method: 'POST', body: JSON.stringify(data) })), [apiFetch, execAction]);
+    const approvePR = React.useCallback((id: string) => execAction(() => apiFetch(`/procurement-requests/${id}/submit`, { method: 'POST' })), [apiFetch, execAction]);
+    const createRFQ = React.useCallback((prId: string, vendor: string) => execAction(() => apiFetch('/request-for-quotations', { method: 'POST', body: JSON.stringify({ prId, vendor }) })), [apiFetch, execAction]);
+    const createPO = React.useCallback((prId: string, vendor: string, total: number, rfqId?: string) => execAction(() => apiFetch('/purchase-orders', { method: 'POST', body: JSON.stringify({ prId, vendor, total, rfqId }) })), [apiFetch, execAction]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const addPR = (data: any) => execAction(() => apiFetch('/procurement-requests', { method: 'POST', body: JSON.stringify(data) }));
-    const approvePR = (id: string) => execAction(() => apiFetch(`/procurement-requests/${id}/submit`, { method: 'POST' }));
-    const createRFQ = (prId: string, vendor: string) => execAction(() => apiFetch('/request-for-quotations', { method: 'POST', body: JSON.stringify({ prId, vendor }) }));
-    const createPO = (prId: string, vendor: string, total: number, rfqId?: string) => execAction(() => apiFetch('/purchase-orders', { method: 'POST', body: JSON.stringify({ prId, vendor, total, rfqId }) }));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const createGRN = (poId: string, receivedItems: any) => execAction(() => apiFetch('/goods-received-notes', { method: 'POST', body: JSON.stringify({ poId, receivedItems }) }));
-    const createInvoice = (poId: string, vendor: string, amount: number) => execAction(() => apiFetch('/invoices', { method: 'POST', body: JSON.stringify({ poId, vendor, amount }) }));
-    const payInvoice = (invId: string) => execAction(() => apiFetch(`/invoices/${invId}/pay`, { method: 'POST' }));
+    const createGRN = React.useCallback((poId: string, receivedItems: any) => execAction(() => apiFetch('/goods-received-notes', { method: 'POST', body: JSON.stringify({ poId, receivedItems }) })), [apiFetch, execAction]);
+    const createInvoice = React.useCallback((poId: string, vendor: string, amount: number) => execAction(() => apiFetch('/invoices', { method: 'POST', body: JSON.stringify({ poId, vendor, amount }) })), [apiFetch, execAction]);
+    const payInvoice = React.useCallback((invId: string) => execAction(() => apiFetch(`/invoices/${invId}/pay`, { method: 'POST' })), [apiFetch, execAction]);
 
-    // Approval Workflow Action
-    const actionApproval = (workflowId: string, action: 'APPROVE' | 'REJECT', comment?: string) => 
+    const actionApproval = React.useCallback((workflowId: string, action: 'APPROVE' | 'REJECT', comment?: string) => 
         execAction(() => apiFetch(`/approvals/${workflowId}/action`, { 
             method: 'POST', 
             body: JSON.stringify({ action, comment }) 
-        }));
+        })), [apiFetch, execAction]);
+
+    const contextValue = React.useMemo(() => ({
+        ...state, 
+        login, 
+        logout, 
+        refreshData, 
+        apiFetch, 
+        addPR, 
+        approvePR, 
+        createRFQ, 
+        createPO, 
+        createGRN, 
+        createInvoice, 
+        payInvoice, 
+        actionApproval
+    }), [state, login, logout, refreshData, apiFetch, addPR, approvePR, createRFQ, createPO, createGRN, createInvoice, payInvoice, actionApproval]);
 
     return (
-        <ProcurementContext.Provider value={{ ...state, login, logout, refreshData, apiFetch, addPR, approvePR, createRFQ, createPO, createGRN, createInvoice, payInvoice, actionApproval }}>
+        <ProcurementContext.Provider value={contextValue}>
             {children}
         </ProcurementContext.Provider>
     );

@@ -65,7 +65,7 @@ import { OrganizationModuleModule } from './organization-module/organization-mod
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 10,
+        limit: 100,
       },
     ]),
     JwtModule.registerAsync({
