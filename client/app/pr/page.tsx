@@ -6,6 +6,19 @@ import ERPTable from "../components/shared/ERPTable";
 import { Plus, FileText, Send, CheckCircle2, Check, X } from "lucide-react";
 import Link from "next/link";
 
+interface PR {
+  id: string;
+  prNumber?: string;
+  title?: string;
+  reason?: string;
+  status: string;
+  totalEstimate?: number;
+  total?: number;
+  department?: { name: string } | string;
+  costCenter?: { code: string };
+  creatorRole: string;
+}
+
 export default function PRPage() {
     const { prs, myPrs, approvePR, currentUser, actionApproval } = useProcurement();
     const [activeTab, setActiveTab] = React.useState("Tất cả");
@@ -20,35 +33,34 @@ export default function PRPage() {
     const tabs = ["Tất cả", "Nháp", "Chờ duyệt", "Đã duyệt"];
     if (isManager || isDirector) tabs.push("PHÊ DUYỆT PR");
 
-    const displayData = React.useMemo(() => {
+    const displayData: PR[] = React.useMemo(() => {
         if (!prs || !myPrs) return [];
         
         if (activeTab === "PHÊ DUYỆT PR") {
             if (isManager) {
-                return prs.filter((p: any) => p.creatorRole === "REQUESTER" && p.status === "PENDING_MANAGER_APPROVAL");
+                return prs.filter((p: PR) => p.creatorRole === "REQUESTER" && p.status === "PENDING_MANAGER_APPROVAL");
             }
             if (isDirector) {
-                return prs.filter((p: any) => p.creatorRole === "DEPT_APPROVER" && p.status === "PENDING_DIRECTOR_APPROVAL");
+                return prs.filter((p: PR) => p.creatorRole === "DEPT_APPROVER" && p.status === "PENDING_DIRECTOR_APPROVAL");
             }
             return [];
         }
         
         // Use myPrs for all other tabs as requested (nối api /my)
-        let filtered = myPrs;
+        const filtered = myPrs;
         
-        if (activeTab === "Nháp") return filtered.filter((p: any) => p.status === "DRAFT");
-        if (activeTab === "Chờ duyệt") return filtered.filter((p: any) => p.status.includes("PENDING"));
-        if (activeTab === "Đã duyệt") return filtered.filter((p: any) => p.status === "APPROVED");
+        if (activeTab === "Nháp") return filtered.filter((p: PR) => p.status === "DRAFT");
+        if (activeTab === "Chờ duyệt") return filtered.filter((p: PR) => p.status.includes("PENDING"));
+        if (activeTab === "Đã duyệt") return filtered.filter((p: PR) => p.status === "APPROVED");
         
         return filtered;
     }, [prs, myPrs, activeTab, isManager, isDirector, currentUser]);
 
     const columns = [
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         { 
             label: "Mã PR", 
             key: "id", 
-            render: (row: any) => (
+            render: (row: PR) => (
                 <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded bg-slate-100 flex items-center justify-center text-slate-500">
                         <FileText size={16} />
@@ -57,13 +69,14 @@ export default function PRPage() {
                 </div>
             ) 
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         { 
             label: "Phòng ban", 
             key: "department", 
-            render: (row: any) => (
+            render: (row: PR) => (
                 <div className="flex flex-col">
-                    <span className="text-sm font-bold text-slate-700">{row.department?.name || row.department || "N/A"}</span>
+                    <span className="text-sm font-bold text-slate-700">
+                        {typeof row.department === 'string' ? row.department : row.department?.name || "N/A"}
+                    </span>
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Cost Center: {row.costCenter?.code || "Default"}</span>
                 </div>
             )
@@ -71,48 +84,45 @@ export default function PRPage() {
         { 
             label: "Mô tả / Lý do", 
             key: "reason",
-            render: (row: any) => (
+            render: (row: PR) => (
                 <div className="max-w-md truncate text-slate-600 font-medium italic">
                     {row.title || row.reason || "Không có mô tả"}
                 </div>
             )
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         { 
             label: "Trạng thái", 
             key: "status", 
-            render: (row: any) => (
+            render: (row: PR) => (
                 <span className={`status-pill status-${(row.status || 'draft').toLowerCase()}`}>
                     {row.status}
                 </span>
             ) 
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         { 
             label: "Tổng ước tính", 
             key: "total", 
-            render: (row: any) => (
+            render: (row: PR) => (
                 <span className="font-black text-erp-navy font-mono">
                     {Number(row.totalEstimate || row.total || 0).toLocaleString()} ₫
                 </span>
             ) 
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         { 
             label: "Hành động", 
             key: "actions", 
-            render: (row: any) => (
+            render: (row: PR) => (
                 <div className="flex gap-2">
                     {activeTab === "PHÊ DUYỆT PR" ? (
                         <div className="flex gap-2">
                             <button 
-                                onClick={() => alert("Đã phê duyệt PR " + row.prNumber)}
+                                onClick={() => actionApproval(row.id, 'APPROVE')}
                                 className="h-8 w-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
                             >
                                 <Check size={16} strokeWidth={3} />
                             </button>
                             <button 
-                                onClick={() => alert("Đã từ chối PR " + row.prNumber)}
+                                onClick={() => actionApproval(row.id, 'REJECT')}
                                 className="h-8 w-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
                             >
                                 <X size={16} strokeWidth={3} />
@@ -123,7 +133,7 @@ export default function PRPage() {
                             {row.status === 'DRAFT' && (
                                 <button 
                                     onClick={() => approvePR(row.id)} 
-                                    className="btn-primary !py-1.5 !px-4 !text-[10px]"
+                                    className="btn-primary py-1.5! px-4! text-[10px]!"
                                 >
                                     <Send size={12} /> Gửi duyệt
                                 </button>
@@ -152,7 +162,7 @@ export default function PRPage() {
                     <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Yêu cầu mua sắm (PR)</h1>
                     <p className="text-sm text-slate-400 font-bold mt-1 tracking-tight">HỆ THỐNG QUẢN LÝ VÀ CHUẨN HÓA QUY TRÌNH MUA HÀNG</p>
                 </div>
-                <Link href="/pr/create" className="btn-primary flex flex-col items-center !py-2">
+                <Link href="/pr/create" className="btn-primary flex flex-col items-center py-2!">
                     <div className="flex items-center gap-2">
                         <Plus size={20} />
                         <span className="text-sm font-black uppercase">Tạo PR mới</span>
@@ -198,4 +208,3 @@ export default function PRPage() {
         </div>
     );
 }
-
