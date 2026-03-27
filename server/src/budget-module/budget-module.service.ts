@@ -4,6 +4,7 @@ import {
   CreateBudgetAllocationDto,
   CreateBudgetPeriodDto,
   UpdateBudgetAllocationDto,
+  UpdateBudgetPeriodDto,
 } from './dto/budget.dto';
 import { BudgetAllocation, BudgetPeriod } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
@@ -29,6 +30,22 @@ export class BudgetModuleService {
     return this.prisma.budgetPeriod.findMany({
       where: { orgId: user.orgId },
       orderBy: { fiscalYear: 'desc' },
+    });
+  }
+
+  async updatePeriod(
+    id: string,
+    dto: UpdateBudgetPeriodDto,
+  ): Promise<BudgetPeriod> {
+    return this.prisma.budgetPeriod.update({
+      where: { id },
+      data: dto,
+    });
+  }
+
+  async removePeriod(id: string): Promise<BudgetPeriod> {
+    return this.prisma.budgetPeriod.delete({
+      where: { id },
     });
   }
 

@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsDate,
@@ -48,6 +48,8 @@ export class CreateBudgetPeriodDto {
   isActive?: boolean;
 }
 
+export class UpdateBudgetPeriodDto extends PartialType(CreateBudgetPeriodDto) {}
+
 export class CreateBudgetAllocationDto {
   @ApiProperty({ example: '325f187a-c1f6-4a4e-8692-234b6e50334a' })
   @IsUUID('4')
@@ -85,14 +87,4 @@ export class CreateBudgetAllocationDto {
   notes?: string;
 }
 
-export class UpdateBudgetAllocationDto {
-  @ApiPropertyOptional({ example: 1200000.0 })
-  @IsNumber()
-  @IsOptional()
-  allocatedAmount?: number;
-
-  @ApiPropertyOptional({ example: 'Updated notes' })
-  @IsString()
-  @IsOptional()
-  notes?: string;
-}
+export class UpdateBudgetAllocationDto extends PartialType(CreateBudgetAllocationDto) {}

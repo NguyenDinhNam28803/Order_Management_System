@@ -4,7 +4,7 @@ import React from "react";
 import {
     LayoutDashboard, ShoppingCart, CheckSquare, Truck,
     FileCheck, ShieldAlert, Users, Settings, LogOut,
-    FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag
+    FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -55,9 +55,11 @@ const navigation = [
     },
     {
         group: "Hệ thống", 
-        roles: ["PLATFORM_ADMIN"],
+        roles: ["PLATFORM_ADMIN", "FINANCE"],
         items: [
-            { name: "Quản lý người dùng", icon: Users, path: "/users", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý nhân sự", icon: Users, path: "/users", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Phòng ban", icon: Building, path: "/admin/departments", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Ngân sách", icon: DollarSign, path: "/finance/budgets", roles: ["PLATFORM_ADMIN", "FINANCE"] },
             { name: "Danh mục sản phẩm", icon: ShoppingBag, path: "/admin/products", roles: ["PLATFORM_ADMIN"] },
             { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["PLATFORM_ADMIN"] },
         ]

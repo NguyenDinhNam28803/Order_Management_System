@@ -11,29 +11,30 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { BudgetModuleService } from './budget-module.service';
 import {
   CreateBudgetAllocationDto,
   CreateBudgetPeriodDto,
   UpdateBudgetAllocationDto,
+  UpdateBudgetPeriodDto,
 } from './dto/budget.dto';
 
 @ApiTags('Budget Management')
 @Controller('budgets')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class BudgetModuleController {
   constructor(private readonly budgetService: BudgetModuleService) {}
 
   // Budget Periods
   /**
    * Tạo một chu kỳ ngân sách mới
-   * @param dto Dữ liệu chu kỳ ngân sách
-   * @param req Thông tin người dùng từ JWT
-   * @returns Chu kỳ ngân sách vừa tạo
    */
   @Post('periods')
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Tạo mới chu kỳ ngân sách' })
   async createPeriod(
     @Body() dto: CreateBudgetPeriodDto,
@@ -44,8 +45,6 @@ export class BudgetModuleController {
 
   /**
    * Lấy danh sách tất cả các chu kỳ ngân sách
-   * @param req Thông tin người dùng từ JWT
-   * @returns Danh sách các chu kỳ ngân sách
    */
   @Get('periods')
   @ApiOperation({ summary: 'Lấy tất cả các chu kỳ ngân sách' })
@@ -53,14 +52,32 @@ export class BudgetModuleController {
     return this.budgetService.findAllPeriods(req.user);
   }
 
+  /**
+   * Cập nhật chu kỳ ngân sách
+   */
+  @Patch('periods/:id')
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Cập nhật chu kỳ ngân sách' })
+  async updatePeriod(@Param('id') id: string, @Body() dto: UpdateBudgetPeriodDto) {
+    return this.budgetService.updatePeriod(id, dto);
+  }
+
+  /**
+   * Xóa chu kỳ ngân sách
+   */
+  @Delete('periods/:id')
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Xóa chu kỳ ngân sách' })
+  async removePeriod(@Param('id') id: string) {
+    return this.budgetService.removePeriod(id);
+  }
+
   // Budget Allocations
   /**
    * Tạo một khoản phân bổ ngân sách mới
-   * @param dto Dữ liệu phân bổ ngân sách
-   * @param req Thông tin người dùng từ JWT
-   * @returns Khoản phân bổ vừa tạo
    */
   @Post('allocations')
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Tạo một phân bổ ngân sách mới' })
   async createAllocation(
     @Body() dto: CreateBudgetAllocationDto,
@@ -71,8 +88,6 @@ export class BudgetModuleController {
 
   /**
    * Lấy danh sách tất cả các khoản phân bổ ngân sách
-   * @param req Thông tin người dùng từ JWT
-   * @returns Danh sách các khoản phân bổ ngân sách
    */
   @Get('allocations')
   @ApiOperation({ summary: 'Lấy tất cả phân bổ ngân sách' })
@@ -82,8 +97,6 @@ export class BudgetModuleController {
 
   /**
    * Lấy thông tin chi tiết một khoản phân bổ ngân sách theo ID
-   * @param id ID của khoản phân bổ
-   * @returns Thông tin chi tiết phân bổ ngân sách
    */
   @Get('allocations/:id')
   @ApiOperation({ summary: 'Lấy chi tiết phân bổ ngân sách theo ID' })
@@ -93,11 +106,9 @@ export class BudgetModuleController {
 
   /**
    * Cập nhật thông tin một khoản phân bổ ngân sách theo ID
-   * @param id ID của khoản phân bổ
-   * @param dto Dữ liệu cập nhật
-   * @returns Khoản phân bổ sau khi cập nhật
    */
   @Patch('allocations/:id')
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Cập nhật phân bổ ngân sách' })
   async updateAllocation(
     @Param('id') id: string,
@@ -108,10 +119,9 @@ export class BudgetModuleController {
 
   /**
    * Xóa một khoản phân bổ ngân sách theo ID
-   * @param id ID của khoản phân bổ
-   * @returns Kết quả xóa
    */
   @Delete('allocations/:id')
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Xóa một phân bổ ngân sách' })
   async removeAllocation(@Param('id') id: string) {
     return this.budgetService.removeAllocation(id);

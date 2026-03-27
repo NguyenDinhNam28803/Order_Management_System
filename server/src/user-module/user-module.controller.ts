@@ -13,6 +13,8 @@ import { UserModuleService } from './user-module.service';
 import { CreateUserModuleDto } from './dto/create-user-module.dto';
 import { UpdateUserModuleDto } from './dto/update-user-module.dto';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import {
   ApiTags,
   ApiOperation,
@@ -23,15 +25,13 @@ import { UserModule } from './entities/user-module.entity';
 
 @ApiTags('User Module')
 @Controller('users')
+@ApiBearerAuth('JWT-auth')
 export class UserModuleController {
   constructor(private readonly userModuleService: UserModuleService) {}
 
   /**
    * Lấy thông tin hồ sơ của người dùng hiện tại đang đăng nhập
-   * @param req Yêu cầu chứa thông tin người dùng đã xác thực từ JWT
-   * @returns Thông tin chi tiết của người dùng hiện tại
    */
-  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiOperation({
@@ -41,16 +41,15 @@ export class UserModuleController {
   })
   @ApiResponse({ status: 200, type: UserModule })
   getProfile(@Request() req) {
-    // req.user contains the decoded JWT payload from JwtAuthGuard
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.userModuleService.findOne(req.user.sub);
   }
 
   /**
    * Tạo một người dùng mới trong hệ thống
-   * @param createUserModuleDto Dữ liệu tạo người dùng
-   * @returns Người dùng vừa được tạo
    */
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @Post()
   @ApiOperation({
     summary: 'Tạo người dùng mới',
@@ -64,8 +63,9 @@ export class UserModuleController {
 
   /**
    * Lấy danh sách tất cả người dùng trong hệ thống
-   * @returns Danh sách người dùng
    */
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @Get()
   @ApiOperation({ summary: 'Lấy danh sách tất cả người dùng' })
   @ApiResponse({ status: 200, type: [UserModule] })
@@ -75,9 +75,9 @@ export class UserModuleController {
 
   /**
    * Lấy thông tin chi tiết của một người dùng cụ thể theo ID
-   * @param id ID của người dùng
-   * @returns Thông tin chi tiết người dùng
    */
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @Get(':id')
   @ApiOperation({ summary: 'Lấy thông tin người dùng theo ID' })
   @ApiResponse({ status: 200, type: UserModule })
@@ -87,10 +87,9 @@ export class UserModuleController {
 
   /**
    * Cập nhật thông tin của một người dùng theo ID
-   * @param id ID của người dùng cần cập nhật
-   * @param updateUserModuleDto Dữ liệu cập nhật
-   * @returns Người dùng sau khi cập nhật
    */
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @Patch(':id')
   @ApiOperation({ summary: 'Cập nhật thông tin người dùng theo ID' })
   @ApiResponse({ status: 200, type: UserModule })
@@ -103,9 +102,9 @@ export class UserModuleController {
 
   /**
    * Xóa một người dùng khỏi hệ thống theo ID
-   * @param id ID của người dùng cần xóa
-   * @returns Kết quả xóa
    */
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @Delete(':id')
   @ApiOperation({ summary: 'Xóa người dùng theo ID' })
   @ApiResponse({ status: 200 })

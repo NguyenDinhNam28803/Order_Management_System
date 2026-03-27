@@ -95,22 +95,18 @@ interface ProcurementState {
     rfqs: RFQ[];
     grns: GRN[];
     invoices: Invoice[];
-    budgets: any;
+    budgets: any; // Keep for legacy if needed
     users: User[];
+    departments: any[];
     organization: any;
     costCenters: any[];
     approvals: any[];
     organizations: any[];
+    budgetPeriods: any[]; // New
+    budgetAllocations: any[]; // New
 }
 
 const DEMO_USERS = [
-    {
-        id: "053b45d6-63f9-4735-a9c8-65304623fb50",
-        email: "it.manager@innhub.com",
-        fullName: "IT Manager",
-        role: "DEPT_APPROVER",
-        icon: "MG"
-    },
     {
         id: "cad22cfb-eb16-4a5f-a964-664ba63e5f7e",
         email: "admin@innhub.com",
@@ -119,7 +115,14 @@ const DEMO_USERS = [
         icon: "AD"
     },
     {
-        id: "732d8c3b-9a7c-4e8a-8b2c-1d9e2f3a4b5c", // Placeholder/Found in DB
+        id: "053b45d6-63f9-4735-a9c8-65304623fb50",
+        email: "it.manager@innhub.com",
+        fullName: "IT Manager",
+        role: "DEPT_APPROVER",
+        icon: "MG"
+    },
+    {
+        id: "732d8c3b-9a7c-4e8a-8b2c-1d9e2f3a4b5c",
         email: "proc.officer@innhub.com",
         fullName: "Procurement Officer",
         role: "PROCUREMENT",
@@ -133,7 +136,7 @@ const DEMO_USERS = [
         icon: "DR"
     },
     {
-        id: "b4c2d3e4-f5a6-4b7c-8d9e-0f1a2b3c4d5e", // Placeholder/Found in DB
+        id: "b4c2d3e4-f5a6-4b7c-8d9e-0f1a2b3c4d5e",
         email: "ceo@innhub.com",
         fullName: "Board CEO",
         role: "CEO",
@@ -145,6 +148,13 @@ const DEMO_USERS = [
         fullName: "IT Staff 01",
         role: "REQUESTER",
         icon: "RQ"
+    },
+    {
+        id: "f3a2b1c0-d4e5-4f6a-8b9c-0d1e2f3a4b5c",
+        email: "finance@innhub.com",
+        fullName: "Finance Manager",
+        role: "FINANCE",
+        icon: "FN"
     }
 ];
 
@@ -158,10 +168,13 @@ const INITIAL_STATE: ProcurementState = {
     invoices: [],
     budgets: null,
     users: DEMO_USERS,
+    departments: [],
     organization: null,
     costCenters: [],
     approvals: [],
-    organizations: []
+    organizations: [],
+    budgetPeriods: [],
+    budgetAllocations: []
 };
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
@@ -174,13 +187,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             ...options.headers,
         };
-        // Using Localhost API URL for better stability in development
         return await fetch(`http://localhost:5000${url}`, { ...options, credentials: 'include', headers });
     }, []);
 
     const refreshData = useCallback(async () => {
         try {
-            const [prData, myPrData, poData, rfqData, ccData, approvalData, orgData, budgetData, invData, grnData, allOrgsData] = await Promise.all([
+            const [prData, myPrData, poData, rfqData, ccData, approvalData, orgData, budgetData, invData, grnData, allOrgsData, userData, deptData, bPeriods, bAllocations] = await Promise.all([
                 apiFetch('/procurement-requests').then(r => r.json()),
                 apiFetch('/procurement-requests/my').then(r => r.json()),
                 apiFetch('/purchase-orders').then(r => r.json()),
@@ -191,10 +203,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 apiFetch('/budgets/allocations').then(r => r.json()),
                 apiFetch('/invoices').then(r => r.json()),
                 apiFetch('/goods-received-notes').then(r => r.json()),
-                apiFetch('/organizations').then(r => r.json())
+                apiFetch('/organizations').then(r => r.json()),
+                apiFetch('/users').then(r => r.json()).catch(() => ({ data: [] })),
+                apiFetch('/departments').then(r => r.json()).catch(() => ({ data: [] })),
+                apiFetch('/budgets/periods').then(r => r.json()).catch(() => ({ data: [] })),
+                apiFetch('/budgets/allocations').then(r => r.json()).catch(() => ({ data: [] }))
             ]);
 
-            // Helper to normalize PR data and handle missing/unhydrated objects
             const normalizePR = (p: PR) => {
                 const deptName = typeof p.department === 'string' ? p.department : 
                                (p.department?.name || (p as any).dept?.name || (p as any).requester?.department?.name || "N/A");
@@ -207,6 +222,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 };
             };
 
+            const fetchedUsers = Array.isArray(userData) ? userData : (Array.isArray(userData?.data) ? userData.data : []);
+            const fetchedDepts = Array.isArray(deptData) ? deptData : (Array.isArray(deptData?.data) ? deptData.data : []);
+
             setState(prev => ({
                 ...prev,
                 prs: (Array.isArray(prData?.data) ? prData.data : (Array.isArray(prData) ? prData : [])).map(normalizePR),
@@ -216,11 +234,14 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 grns: Array.isArray(grnData?.data) ? grnData.data : [],
                 invoices: Array.isArray(invData?.data) ? invData.data : [],
                 budgets: Array.isArray(budgetData?.data) ? budgetData.data : (Array.isArray(budgetData) ? budgetData : []),
-                users: DEMO_USERS,
+                users: fetchedUsers.length > 0 ? fetchedUsers : DEMO_USERS,
+                departments: fetchedDepts,
                 organization: orgData?.data || null,
                 costCenters: Array.isArray(ccData?.data) ? ccData.data : (Array.isArray(ccData) ? ccData : []),
                 approvals: Array.isArray(approvalData?.data) ? approvalData.data : [],
-                organizations: Array.isArray(allOrgsData?.data) ? allOrgsData.data : (Array.isArray(allOrgsData) ? allOrgsData : [])
+                organizations: Array.isArray(allOrgsData?.data) ? allOrgsData.data : (Array.isArray(allOrgsData) ? allOrgsData : []),
+                budgetPeriods: Array.isArray(bPeriods) ? bPeriods : (Array.isArray(bPeriods?.data) ? bPeriods.data : []),
+                budgetAllocations: Array.isArray(bAllocations) ? bAllocations : (Array.isArray(bAllocations?.data) ? bAllocations.data : [])
             }));
 
         } catch (err) {
@@ -231,8 +252,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         refreshData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [refreshData]);
 
     const login = useCallback(async (email: string, password?: string) => {
         const res = await apiFetch('/auth/login', {
@@ -282,6 +302,18 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const createGRN = useCallback((data: any) => execAction(() => apiFetch('/goods-received-notes', { method: 'POST', body: JSON.stringify(data) })), [apiFetch, execAction]);
     const createInvoice = useCallback((data: any) => execAction(() => apiFetch('/invoices', { method: 'POST', body: JSON.stringify(data) })), [apiFetch, execAction]);
     const payInvoice = useCallback((invId: string) => execAction(() => apiFetch(`/invoices/${invId}/pay`, { method: 'POST' })), [apiFetch, execAction]);
+    const addDept = useCallback((data: any) => execAction(() => apiFetch('/departments', { method: 'POST', body: JSON.stringify(data) })), [apiFetch, execAction]);
+    const updateDept = useCallback((id: string, data: any) => execAction(() => apiFetch(`/departments/${id}`, { method: 'PATCH', body: JSON.stringify(data) })), [apiFetch, execAction]);
+    const addUser = useCallback((data: any) => execAction(() => apiFetch('/users', { method: 'POST', body: JSON.stringify(data) })), [apiFetch, execAction]);
+    const updateUser = useCallback((id: string, data: any) => execAction(() => apiFetch(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(data) })), [apiFetch, execAction]);
+    
+    // Budget actions
+    const addBudgetPeriod = useCallback((data: any) => execAction(() => apiFetch('/budgets/periods', { method: 'POST', body: JSON.stringify(data) })), [apiFetch, execAction]);
+    const updateBudgetPeriod = useCallback((id: string, data: any) => execAction(() => apiFetch(`/budgets/periods/${id}`, { method: 'PATCH', body: JSON.stringify(data) })), [apiFetch, execAction]);
+    const removeBudgetPeriod = useCallback((id: string) => execAction(() => apiFetch(`/budgets/periods/${id}`, { method: 'DELETE' })), [apiFetch, execAction]);
+    const addBudgetAllocation = useCallback((data: any) => execAction(() => apiFetch('/budgets/allocations', { method: 'POST', body: JSON.stringify(data) })), [apiFetch, execAction]);
+    const updateBudgetAllocation = useCallback((id: string, data: any) => execAction(() => apiFetch(`/budgets/allocations/${id}`, { method: 'PATCH', body: JSON.stringify(data) })), [apiFetch, execAction]);
+    const removeBudgetAllocation = useCallback((id: string) => execAction(() => apiFetch(`/budgets/allocations/${id}`, { method: 'DELETE' })), [apiFetch, execAction]);
 
     const actionApproval = useCallback((workflowId: string, action: 'APPROVE' | 'REJECT', comment?: string) =>
         execAction(() => apiFetch(`/approvals/${workflowId}/action`, {
@@ -302,8 +334,18 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         createGRN,
         createInvoice,
         payInvoice,
-        actionApproval
-    }), [state, login, logout, refreshData, apiFetch, addPR, approvePR, createRFQ, createPO, createGRN, createInvoice, payInvoice, actionApproval]);
+        actionApproval,
+        addDept,
+        updateDept,
+        addUser,
+        updateUser,
+        addBudgetPeriod,
+        updateBudgetPeriod,
+        removeBudgetPeriod,
+        addBudgetAllocation,
+        updateBudgetAllocation,
+        removeBudgetAllocation
+    }), [state, login, logout, refreshData, apiFetch, addPR, approvePR, createRFQ, createPO, createGRN, createInvoice, payInvoice, actionApproval, addDept, updateDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation]);
 
     return (
         <ProcurementContext.Provider value={contextValue}>
