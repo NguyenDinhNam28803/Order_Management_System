@@ -151,7 +151,7 @@ const DEMO_USERS = [
     },
     {
         id: "f3a2b1c0-d4e5-4f6a-8b9c-0d1e2f3a4b5c",
-        email: "finance@innhub.com",
+        email: "finance.staff@innhub.com",
         fullName: "Finance Manager",
         role: "FINANCE",
         icon: "FN"
