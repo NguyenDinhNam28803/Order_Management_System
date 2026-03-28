@@ -50,6 +50,7 @@ interface PR {
     procurementId?: string;
     totalEstimate?: number | string;
     items?: PRItem[];
+    attachments?: { name: string, url: string }[];
     creatorRole?: string; // Fallback helper
     targetApproverRole?: string;
 }
@@ -79,6 +80,8 @@ interface RFQ {
     dueDate?: string;
     createdAt?: string;
     items?: any[];
+    attachments?: { name: string, url: string }[];
+    messages?: { sender: string, senderRole: string, text: string, timestamp: string }[];
 }
 
 interface GRN {
@@ -228,6 +231,10 @@ const INITIAL_STATE: ProcurementState = {
                 { id: "i6", productId: "p8", item_name: "Chuột Logitech MX Master 3S - Màu Graphite", item_code: "MX3S-GRA", quantity: 5, unit: "PCS", estimatedPrice: 3500000 },
                 { id: "i7", productId: "p9", item_name: "Lót chuột cơ Razer Goliathus Extended Chroma - Black", item_code: "RC21-01", quantity: 10, unit: "UNIT", estimatedPrice: 1200000 },
                 { id: "i8", productId: "p10", item_name: "Bộ sạc pin dự phòng Anker PowerCore Essential 20000", item_code: "A1268", quantity: 3, unit: "UNIT", estimatedPrice: 1800000 }
+            ],
+            attachments: [
+                { name: "Technical_Specs_MX3S.pdf", url: "#" },
+                { name: "Compliance_Certificate.pdf", url: "#" }
             ]
         }
     ],
@@ -363,11 +370,16 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [state.prs, state.currentUser]);
 
     const createRFQ = useCallback((prId: string, vendor: string) => {
+        const pr = state.prs.find(p => p.id === prId);
         const newRFQ: RFQ = {
             id: `rfq-${state.rfqs.length + 1}`,
             prId,
             vendor,
-            status: "SENT"
+            status: "SENT",
+            title: pr?.title ? `RFQ cho ${pr.title}` : "Yêu cầu báo giá mới",
+            createdAt: new Date().toISOString(),
+            dueDate: new Date(Date.now() + 86400000 * 7).toISOString(),
+            items: pr?.items || []
         };
         setState(prev => {
             const updatedPrs = prev.prs.map(p => p.id === prId ? { ...p, status: "IN_SOURCING" } : p);
@@ -375,6 +387,36 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         });
         notify("Có một yêu cầu báo giá mới cần được xử lí!", "info", "SUPPLIER");
         return Promise.resolve(true);
+    }, [notify, state.prs, state.rfqs.length]);
+
+    const createRFQConsolidated = useCallback((data: { title: string, vendor: string, items: any[], prIds: string[], dueDate: string, attachments?: any[] }) => {
+        const newRFQ: RFQ = {
+            id: `rfq-${state.rfqs.length + 1}`,
+            prId: data.prIds.join(","), // Legacy support
+            vendor: data.vendor,
+            status: "SENT",
+            title: data.title || "Gói báo giá tổng hợp",
+            createdAt: new Date().toISOString(),
+            dueDate: data.dueDate || new Date(Date.now() + 86400000 * 7).toISOString(),
+            items: data.items.map(i => ({
+                id: i.id,
+                productId: i.productId,
+                item_name: i.item_name || i.productDesc || i.description,
+                item_code: i.item_code || i.sku,
+                quantity: i.quantity || i.qty,
+                unit: i.unit,
+                estimatedPrice: i.estimatedPrice
+            })),
+            attachments: data.attachments || [],
+            messages: []
+        };
+        setState(prev => {
+            const updatedPrs = prev.prs.map(p => data.prIds.includes(p.id) ? { ...p, status: "IN_SOURCING" } : p);
+            return { ...prev, prs: updatedPrs, rfqs: [...prev.rfqs, newRFQ] };
+        });
+        notify(`Đã gửi RFQ ${newRFQ.id} tới nhà cung cấp ${data.vendor}`, "success");
+        notify("Có một yêu cầu báo giá mới cần được xử lí!", "info", "SUPPLIER");
+        return Promise.resolve(newRFQ.id);
     }, [notify, state.rfqs.length]);
 
     const createQuote = useCallback(async (rfqId: string, quoteData: any) => {
@@ -625,6 +667,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         addPR,
         approvePR,
         createRFQ,
+        createRFQConsolidated,
         actionApproval,
         addDept,
         updateDept,

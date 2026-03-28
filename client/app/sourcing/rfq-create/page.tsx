@@ -13,7 +13,7 @@ import {
 import Select from "react-select";
 
 export default function RFQCreatePage() {
-    const { prs, apiFetch, refreshData, notify, currentUser, createRFQ } = useProcurement();
+    const { prs, apiFetch, refreshData, notify, currentUser, createRFQ, createRFQConsolidated } = useProcurement();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -93,11 +93,16 @@ export default function RFQCreatePage() {
             });
 
             if (res.ok) {
-                // Update local state for each PR included in this RFQ
-                const uniquePrIds: any[] = Array.from(new Set(form.items.map(i => i.prId)));
-                for (const prId of uniquePrIds) {
-                    await createRFQ(prId, form.vendor);
-                }
+                // Consolidated logic: create ONE RFQ with multiple items
+                const uniquePrIds: string[] = Array.from(new Set(form.items.map(i => i.prId)));
+                
+                await createRFQConsolidated({
+                    title: form.title,
+                    vendor: form.vendor,
+                    items: form.items,
+                    prIds: uniquePrIds,
+                    dueDate: form.deadline
+                });
                 
                 notify("Đã tạo RFQ và gửi yêu cầu báo giá thành công!", "success");
                 refreshData();

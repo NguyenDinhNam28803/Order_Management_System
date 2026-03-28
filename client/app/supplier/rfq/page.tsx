@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
-import { Inbox, FileText, UploadCloud, Send, MessageSquare, ChevronDown, CheckCircle } from "lucide-react";
+import { Inbox, FileText, UploadCloud, Send, MessageSquare, ChevronDown, CheckCircle, Info } from "lucide-react";
 
 import { useProcurement } from "../../context/ProcurementContext";
 
@@ -83,7 +83,7 @@ export default function SupplierRFQ() {
                             <div className="space-y-3">
                                 <div className="flex justify-between">
                                     <span className="text-[10px] font-bold text-slate-400 uppercase">Mã PR</span>
-                                    <span className="text-xs font-black text-erp-navy">{relatedPR?.prNumber || relatedPR?.id}</span>
+                                    <span className="text-xs font-black text-erp-navy">{relatedPR?.prNumber || "N/A"}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-[10px] font-bold text-slate-400 uppercase">Người yêu cầu</span>
@@ -94,12 +94,12 @@ export default function SupplierRFQ() {
                                 <div className="flex justify-between">
                                     <span className="text-[10px] font-bold text-slate-400 uppercase">Phòng ban</span>
                                     <span className="text-xs font-bold text-slate-700">
-                                        {relatedPR ? (typeof relatedPR.department === 'string' ? relatedPR.department : relatedPR.department?.name) : "N/A"}
+                                        {relatedPR ? (typeof relatedPR.department === 'string' ? relatedPR.department : relatedPR.department?.name) || "Bộ phận hạ tầng" : "N/A"}
                                     </span>
                                 </div>
                                 <div className="pt-2 mt-2 border-t border-slate-50">
                                     <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Mục đích mua sắm</div>
-                                    <p className="text-xs font-medium text-slate-600 italic">"{relatedPR?.title || "Mua sắm trang thiết bị định kỳ"}"</p>
+                                    <p className="text-xs font-medium text-slate-600 italic">"{activeRFQ?.title || relatedPR?.title || "Mua sắm trang thiết bị định kỳ"}"</p>
                                 </div>
                             </div>
                         </div>
@@ -109,31 +109,57 @@ export default function SupplierRFQ() {
                                 Yêu cầu kỹ thuật & File đính kèm
                             </h3>
                             <p className="text-sm text-slate-600 mb-6 leading-relaxed font-medium">
-                                Xin vui lòng báo giá cho các mã sản phẩm yêu cầu bên dưới.
+                                {activeRFQ?.attachments && activeRFQ.attachments.length > 0 
+                                    ? "Vui lòng xem các tài liệu đính kèm bên dưới để biết chi tiết yêu cầu kỹ thuật."
+                                    : "Xin vui lòng báo giá cho các mã sản phẩm yêu cầu bên dưới."}
                             </p>
-                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center cursor-pointer hover:bg-slate-100">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white text-erp-navy rounded shadow-sm"><FileText size={16}/></div>
-                                    <div className="text-xs font-bold text-slate-700">Spec_Requirement.pdf</div>
-                                </div>
-                                <div className="text-[10px] font-black uppercase text-erp-blue">Tải xuống</div>
+                            
+                            <div className="space-y-3">
+                                {activeRFQ?.attachments?.map((file: any, index: number) => (
+                                    <div key={index} className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center cursor-pointer hover:bg-slate-100 group transition-all">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-white text-erp-navy rounded shadow-sm group-hover:bg-erp-blue group-hover:text-white transition-colors duration-500"><FileText size={16}/></div>
+                                            <div className="text-xs font-bold text-slate-700">{file.name}</div>
+                                        </div>
+                                        <div className="text-[10px] font-black uppercase text-erp-blue">Tải xuống</div>
+                                    </div>
+                                ))}
+                                
+                                {(!activeRFQ?.attachments || activeRFQ.attachments.length === 0) && (
+                                    <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 text-center">
+                                        <div className="text-[10px] font-black uppercase text-slate-300">Không có file đính kèm</div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         <div className="erp-card shadow-sm border border-slate-200 flex flex-col h-[300px]">
                             <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 border-b border-slate-100 pb-2 flex items-center justify-between">
                                 Q&A Thread 
-                                <span className="bg-slate-100 px-2 py-0.5 rounded text-[10px] text-slate-400">NCC</span>
+                                <span className="bg-slate-100 px-2 py-0.5 rounded text-[10px] text-slate-400">Trực tuyến</span>
                             </h3>
                             <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                                <div className="bg-slate-50 p-3 rounded-tr-none rounded-xl border border-slate-200 ml-8 text-xs text-slate-600 font-medium">
-                                    <div className="font-bold text-slate-400 text-[9px] uppercase mb-1">NCC Khác</div>
-                                    Xin hỏi yêu cầu thông số kỹ thuật là gì?
-                                </div>
-                                <div className="bg-blue-50 p-3 rounded-tl-none rounded-xl border border-blue-200 mr-8 text-xs text-erp-navy font-medium">
-                                    <div className="font-bold text-erp-blue text-[9px] uppercase mb-1">Buyer (ProcurePro)</div>
-                                    Vui lòng báo loại tiêu chuẩn mới nhất.
-                                </div>
+                                {activeRFQ?.messages?.map((msg: any, index: number) => (
+                                    <div key={index} className={`p-3 rounded-xl border text-xs font-medium ${
+                                        msg.senderRole === 'SUPPLIER' 
+                                            ? 'bg-slate-50 rounded-tr-none border-slate-200 ml-8 text-slate-600' 
+                                            : 'bg-blue-50 rounded-tl-none border-blue-200 mr-8 text-erp-navy'
+                                    }`}>
+                                        <div className={`font-bold text-[9px] uppercase mb-1 ${
+                                            msg.senderRole === 'SUPPLIER' ? 'text-slate-400' : 'text-erp-blue'
+                                        }`}>{msg.sender}</div>
+                                        {msg.text}
+                                    </div>
+                                ))}
+                                
+                                {(!activeRFQ?.messages || activeRFQ.messages.length === 0) && (
+                                    <div className="flex flex-col items-center justify-center h-full opacity-20">
+                                        <div className="w-12 h-12 rounded-full border-2 border-dashed border-slate-400 flex items-center justify-center mb-2">
+                                            <Info size={20} />
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Chưa có thảo luận</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
