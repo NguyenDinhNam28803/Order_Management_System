@@ -29,10 +29,10 @@ import { BudgetModuleModule } from './budget-module/budget-module.module';
 import { AuditModuleModule } from './audit-module/audit-module.module';
 import { SystemConfigModuleModule } from './system-config-module/system-config-module.module';
 import { AiServiceModule } from './ai-service/ai-service.module';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { CostCenterModuleModule } from './cost-center-module/cost-center-module.module';
 import { OrganizationModuleModule } from './organization-module/organization-module.module';
+import { AutomationModule } from './common/automation/automation.module';
 
 @Module({
   imports: [
@@ -107,6 +107,7 @@ import { OrganizationModuleModule } from './organization-module/organization-mod
     AiServiceModule,
     CostCenterModuleModule,
     OrganizationModuleModule,
+    AutomationModule,
   ],
   controllers: [AppController],
   providers: [

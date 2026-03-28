@@ -213,7 +213,7 @@ export class RfqRepository {
     return this.prisma.rfqQuotation.update({
       where: { id },
       data: { reviewedAt, reviewedBy: { connect: { id: reviewedById } } },
-      include: { items: true },
+      include: { items: true, rfq: true },
     });
   }
 
@@ -500,6 +500,9 @@ export class RfqRepository {
           status: RfqStatus.AWARDED,
           awardedSupplierId: quotation.supplierId,
           awardedAt: new Date(),
+        },
+        include: {
+          items: true,
         },
       });
 

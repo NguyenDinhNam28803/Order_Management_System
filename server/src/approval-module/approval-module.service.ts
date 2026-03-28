@@ -4,6 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AutomationService } from '../common/automation/automation.service';
 import {
   DocumentType,
   ApprovalStatus,
@@ -14,7 +15,10 @@ import {
 
 @Injectable()
 export class ApprovalModuleService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly automationService: AutomationService,
+  ) {}
 
   /**
    * 1. Khởi tạo luồng duyệt (Initiate Workflow)
@@ -217,6 +221,8 @@ export class ApprovalModuleService {
     // Tùy vào trạng thái cuối cùng, ta có thể cập nhật thêm ngày duyệt
     if (status === 'APPROVED') {
       data.approvedAt = new Date();
+      // Kích hoạt tự động hóa
+      void this.automationService.handleDocumentApproved(type, id);
     }
 
     switch (type) {

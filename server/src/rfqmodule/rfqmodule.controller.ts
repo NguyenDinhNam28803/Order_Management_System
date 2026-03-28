@@ -16,6 +16,7 @@ import { CreateQaThreadDto } from './dto/create-qa-thread.dto';
 import { CreateCounterOfferDto } from './dto/create-counter-offer.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { AwardRfqDto } from './dto/award-rfq.dto';
 
 @ApiTags('Request for Quotation (RFQ)')
 @Controller('request-for-quotations')
@@ -508,12 +509,11 @@ export class RfqmoduleController {
   })
   async awardQuotation(
     @Param('rfqId') rfqId: string,
-    @Body() body: any,
+    @Body() body: AwardRfqDto,
     @Request() req: any,
   ) {
     return this.rfqService.awardQuotation(
       rfqId,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       body.quotationId,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       req.user.sub,

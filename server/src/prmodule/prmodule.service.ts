@@ -107,8 +107,8 @@ export class PrmoduleService {
     }
 
     // AI gợi ý công ty phù hợp dựa trên mô tả sản phẩm
-    const aiSuggestion = await this.AiSuggest(createPrDto.items);
-    console.log('AI Suggestion:', aiSuggestion);
+    // const aiSuggestion = await this.AiSuggest(createPrDto.items);
+    // console.log('AI Suggestion:', aiSuggestion);
 
     return this.repository.create(
       createPrDto,

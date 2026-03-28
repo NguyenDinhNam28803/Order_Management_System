@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { PrStatus } from '@prisma/client';
 import { CreateRfqDto } from './dto/create-rfq.dto';
@@ -12,6 +14,7 @@ import { RfqStatus, QuotationStatus } from '@prisma/client';
 import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationModuleService } from 'src/notification-module/notification-module.service';
+import { AutomationService } from 'src/common/automation/automation.service';
 
 export class RfqSupplierCreateManyInput {
   rfqId: string;
@@ -32,6 +35,8 @@ export class RfqmoduleService {
     private readonly aiService: AiService,
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationModuleService,
+    @Inject(forwardRef(() => AutomationService))
+    private readonly automationService: AutomationService,
   ) {}
 
   /**
@@ -602,6 +607,15 @@ export class RfqmoduleService {
       throw new BadRequestException('Quotation does not belong to this RFQ');
     }
 
-    return this.repository.awardQuotation(rfqId, quotationId, awardedById);
+    const result = await this.repository.awardQuotation(
+      rfqId,
+      quotationId,
+      awardedById,
+    );
+
+    // Kích hoạt tự động hóa tạo PO
+    void this.automationService.handleRfqAwarded(rfqId, quotationId);
+
+    return result;
   }
 }
