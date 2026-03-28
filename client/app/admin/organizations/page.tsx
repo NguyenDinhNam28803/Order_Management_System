@@ -1,36 +1,36 @@
 "use client";
 
 import React, { useState } from "react";
-import { Building2, Plus, Edit2, Trash2, Users, Search } from "lucide-react";
+import { LayoutDashboard, Plus, Edit2, Trash2, Search, MapPin, Hash, Building2 } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
 
-export default function DepartmentsPage() {
-    const { departments, users, addDept, updateDept, removeDept, organizations, costCenters } = useProcurement();
+export default function OrganizationsPage() {
+    const { organizations, addOrganization, updateOrganization, removeOrganization } = useProcurement();
     const [showModal, setShowModal] = useState(false);
-    const [editingDept, setEditingDept] = useState<any>(null);
+    const [editingOrg, setEditingOrg] = useState<any>(null);
     const [formData, setFormData] = useState({
-        orgId: "",
         code: "",
         name: "",
-        headUserId: "",
+        address: "",
+        taxId: ""
     });
 
-    const handleOpenModal = (dept?: any) => {
-        if (dept) {
-            setEditingDept(dept);
+    const handleOpenModal = (org?: any) => {
+        if (org) {
+            setEditingOrg(org);
             setFormData({
-                orgId: dept.orgId,
-                code: dept.code,
-                name: dept.name,
-                headUserId: dept.headUserId || "",
+                code: org.code,
+                name: org.name,
+                address: org.address || "",
+                taxId: org.taxId || ""
             });
         } else {
-            setEditingDept(null);
+            setEditingOrg(null);
             setFormData({
-                orgId: organizations?.[0]?.id || "",
                 code: "",
                 name: "",
-                headUserId: "",
+                address: "",
+                taxId: ""
             });
         }
         setShowModal(true);
@@ -38,15 +38,11 @@ export default function DepartmentsPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const data = {
-            ...formData,
-        };
-
         let success = false;
-        if (editingDept) {
-            success = await updateDept(editingDept.id, data);
+        if (editingOrg) {
+            success = await updateOrganization(editingOrg.id, formData);
         } else {
-            success = await addDept(data);
+            success = await addOrganization(formData);
         }
 
         if (success) {
@@ -58,84 +54,81 @@ export default function DepartmentsPage() {
         <main className="animate-in fade-in duration-500">
             <div className="flex justify-between items-end mb-10">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Quản lý Phòng ban</h1>
-                    <p className="text-sm text-slate-500 mt-1 font-medium italic">THIẾT LẬP CƠ CẤU TỔ CHỨC VÀ NGÂN SÁCH PHÒNG BAN</p>
+                    <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Quản lý Tổ chức</h1>
+                    <p className="text-sm text-slate-500 mt-1 font-medium italic">THIẾT LẬP THỰC THỂ PHÁP NHÂN VÀ THÔNG TIN CÔNG TY</p>
                 </div>
-                <button
+                <button 
                     onClick={() => handleOpenModal()}
                     className="flex items-center gap-2 bg-erp-navy text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-erp-navy/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
-                    <Plus size={18} /> Thêm phòng ban
+                    <Plus size={18} /> Thêm Tổ chức
                 </button>
             </div>
 
             <div className="bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-erp-navy/5 overflow-hidden">
                 <div className="p-8 bg-slate-50/20 border-b border-slate-50 flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-200 pr-4">Cơ cấu Tổ chức (Structure)</div>
-                        <div className="text-[10px] font-black text-erp-blue bg-blue-50 px-3 py-1 rounded-full">{departments?.length || 0} Phòng ban</div>
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-200 pr-4">Entity Directory</div>
+                        <div className="text-[10px] font-black text-erp-blue bg-blue-50 px-3 py-1 rounded-full">{organizations?.length || 0} Entities</div>
                     </div>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm phòng ban..."
+                        <input 
+                            type="text" 
+                            placeholder="Tìm kiếm mã hoặc tên..." 
                             className="pl-10 pr-4 py-2 bg-slate-100/50 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-erp-blue/20 w-64"
                         />
                     </div>
                 </div>
+                
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
                         <thead>
                             <tr className="bg-slate-50/30">
-                                <th>Mã & Tên Phòng ban</th>
-                                <th>Trưởng bộ phận</th>
-                                <th className="text-center text-slate-400">Trạng thái</th>
-                                <th className="text-center">Nhân sự</th>
+                                <th>Mã & Tên Tổ chức</th>
+                                <th>Địa chỉ trụ sở</th>
+                                <th>Mã số thuế</th>
                                 <th className="text-center">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {departments?.map((dept: any) => (
-                                <tr key={dept.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
+                            {organizations?.map((org: any) => (
+                                <tr key={org.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
                                             <div className="h-12 w-12 rounded-2xl bg-slate-100 flex items-center justify-center font-black text-erp-navy shadow-sm transition-transform hover:rotate-12">
                                                 <Building2 size={20} />
                                             </div>
                                             <div>
-                                                <div className="text-sm font-black text-erp-navy leading-tight">{dept.name}</div>
-                                                <div className="text-[10px] text-slate-400 font-bold flex items-center gap-1.5 mt-1 tracking-tight">
-                                                    ID: {dept.code} • {dept.organization?.name}
+                                                <div className="text-sm font-black text-erp-navy leading-tight">{org.name}</div>
+                                                <div className="text-[10px] text-erp-blue font-black mt-1 bg-blue-50 px-2 py-0.5 rounded w-fit uppercase">
+                                                    CODE: {org.code}
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-6 w-6 rounded-full bg-erp-navy/10 flex items-center justify-center text-[8px] font-black text-erp-navy">
-                                                {dept.head?.fullName?.substring(0, 2).toUpperCase() || "NA"}
-                                            </div>
-                                            <span className="font-bold text-slate-600">{dept.head?.fullName || "Chưa chỉ định"}</span>
+                                        <div className="flex items-center gap-2 max-w-xs">
+                                            <MapPin size={14} className="text-slate-400 shrink-0" />
+                                            <span className="font-bold text-slate-600 truncate">{org.address || "N/A"}</span>
                                         </div>
                                     </td>
-                                    <td className="text-center font-bold text-green-500 uppercase tracking-widest text-[10px]">Đang hoạt động</td>
-                                    <td className="text-center">
-                                        <div className="flex items-center justify-center gap-1 text-erp-blue font-black">
-                                            <Users size={12} />
-                                            <span>{dept._count?.users || 0} nhân viên</span>
+                                    <td>
+                                        <div className="flex items-center gap-2 font-black text-erp-navy">
+                                            <Hash size={14} className="text-erp-blue" />
+                                            {org.taxId || "N/A"}
                                         </div>
                                     </td>
                                     <td className="text-center">
                                         <div className="flex justify-center gap-3">
-                                            <button
-                                                onClick={() => handleOpenModal(dept)}
+                                            <button 
+                                                onClick={() => handleOpenModal(org)}
                                                 className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-erp-blue hover:border-erp-blue/30 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Edit2 size={14} />
                                             </button>
-                                            <button
-                                                onClick={() => removeDept(dept.id)}
+                                            <button 
+                                                onClick={() => removeOrganization(org.id)}
                                                 className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Trash2 size={14} />
@@ -155,77 +148,70 @@ export default function DepartmentsPage() {
                     <div className="bg-white rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-white/20">
                         <div className="p-10">
                             <h2 className="text-2xl font-black text-erp-navy uppercase mb-2 tracking-tight">
-                                {editingDept ? "Cập nhật Phòng ban" : "Thêm Phòng ban mới"}
+                                {editingOrg ? "Cập nhật Tổ chức" : "Thêm Tổ chức mới"}
                             </h2>
-                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-10">CẤU CƠ TỔ CHỨC HỆ THỐNG</p>
+                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-10">ENTITY MANAGEMENT SYSTEM</p>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã phòng ban</label>
-                                        <input
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã Tổ chức (Tự động nếu để trống)</label>
+                                        <input 
                                             value={formData.code}
-                                            onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                                            type="text"
-                                            placeholder="VD: IT-DEPT"
+                                            onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
+                                            type="text" 
+                                            placeholder="VD: PP-GLOBAL"
                                             className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all placeholder:text-slate-300"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tên phòng ban</label>
-                                        <input
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tên Tổ chức</label>
+                                        <input 
                                             required
                                             value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            type="text"
-                                            placeholder="VD: Phòng Công nghệ Thông tin"
+                                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                            type="text" 
+                                            placeholder="VD: Công ty TNHH ProcurePro"
                                             className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all placeholder:text-slate-300"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Thuộc Tổ chức/Công ty</label>
-                                    <select
-                                        required
-                                        value={formData.orgId}
-                                        onChange={(e) => setFormData({ ...formData, orgId: e.target.value })}
-                                        className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
-                                    >
-                                        <option value="">Chọn tổ chức</option>
-                                        {organizations?.map((org: any) => (
-                                            <option key={org.id} value={org.id}>{org.name}</option>
-                                        ))}
-                                    </select>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Địa chỉ trụ sở</label>
+                                    <input 
+                                        value={formData.address}
+                                        onChange={(e) => setFormData({...formData, address: e.target.value})}
+                                        type="text" 
+                                        placeholder="Số nhà, Tên đường, Quận/Huyện, Tỉnh/Thành phố"
+                                        className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all placeholder:text-slate-300"
+                                    />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Trưởng bộ phận</label>
-                                    <select
-                                        value={formData.headUserId}
-                                        onChange={(e) => setFormData({ ...formData, headUserId: e.target.value })}
-                                        className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
-                                    >
-                                        <option value="">Chưa chỉ định</option>
-                                        {users?.map((u: any) => (
-                                            <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>
-                                        ))}
-                                    </select>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã số thuế</label>
+                                    <input 
+                                        value={formData.taxId}
+                                        onChange={(e) => setFormData({...formData, taxId: e.target.value})}
+                                        type="text" 
+                                        placeholder="VD: 0101234567"
+                                        className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all placeholder:text-slate-300"
+                                    />
                                 </div>
 
                                 <div className="flex gap-4 pt-6">
-                                    <button
+                                    <button 
                                         type="button"
                                         onClick={() => setShowModal(false)}
                                         className="flex-1 px-8 py-4 bg-slate-100 rounded-3xl font-black text-slate-400 uppercase tracking-widest hover:bg-slate-200 transition-colors"
                                     >
                                         Hủy
                                     </button>
-                                    <button
+                                    <button 
                                         type="submit"
                                         className="flex-1 px-8 py-4 bg-erp-navy text-white rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-erp-navy/20 hover:scale-[1.02] transition-all"
                                     >
-                                        {editingDept ? "Lưu thay đổi" : "Tạo phòng ban"}
+                                        {editingOrg ? "Lưu thay đổi" : "Tạo Tổ chức"}
                                     </button>
                                 </div>
                             </form>

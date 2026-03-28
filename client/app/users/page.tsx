@@ -55,7 +55,19 @@ export default function UsersPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const data = { ...formData };
+        
+        // Ensure deptId is null/undefined if empty string, to pass UUID validation
+        const cleanedDeptId = formData.deptId === "" ? undefined : formData.deptId;
+        
+        // Ensure orgId is not empty (fallback to first org if needed)
+        const cleanedOrgId = formData.orgId === "" ? (organizations?.[0]?.id || "") : formData.orgId;
+
+        const data = { 
+            ...formData, 
+            deptId: cleanedDeptId,
+            orgId: cleanedOrgId
+        };
+
         if (editingUser) {
             delete (data as any).passwordHash; // Don't send dummy password on update
             const success = await updateUser(editingUser.id, data);
@@ -215,7 +227,8 @@ export default function UsersPage() {
                                             onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                                             type="text" 
                                             placeholder="VD: Nguyễn Văn A"
-                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
+                                            disabled={!!editingUser}
+                                            className={`w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -226,7 +239,8 @@ export default function UsersPage() {
                                             onChange={(e) => setFormData({...formData, email: e.target.value})}
                                             type="email" 
                                             placeholder="email@company.com"
-                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
+                                            disabled={!!editingUser}
+                                            className={`w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
@@ -273,17 +287,19 @@ export default function UsersPage() {
                                             onChange={(e) => setFormData({...formData, jobTitle: e.target.value})}
                                             type="text" 
                                             placeholder="VD: Senior Developer"
-                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
+                                            disabled={!!editingUser}
+                                            className={`w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã nhân viên</label>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã nhân viên (Tự động nếu để trống)</label>
                                         <input 
                                             value={formData.employeeCode}
                                             onChange={(e) => setFormData({...formData, employeeCode: e.target.value})}
                                             type="text" 
                                             placeholder="VD: EMP001"
-                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
+                                            disabled={!!editingUser}
+                                            className={`w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
@@ -294,8 +310,8 @@ export default function UsersPage() {
                                         <div className="text-[10px] text-slate-400 font-bold uppercase mt-1">Khóa hoặc kích hoạt quyền truy nhập hệ thống</div>
                                     </div>
                                     <div 
-                                        onClick={() => setFormData({...formData, isActive: !formData.isActive})}
-                                        className={`w-14 h-8 rounded-full cursor-pointer transition-all p-1 flex items-center ${formData.isActive ? 'bg-emerald-500 justify-end' : 'bg-slate-300 justify-start'}`}
+                                        onClick={() => !editingUser && setFormData({...formData, isActive: !formData.isActive})}
+                                        className={`w-14 h-8 rounded-full transition-all p-1 flex items-center ${formData.isActive ? 'bg-emerald-500 justify-end' : 'bg-slate-300 justify-start'} ${editingUser ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
                                     >
                                         <div className="w-6 h-6 bg-white rounded-full shadow-md"></div>
                                     </div>

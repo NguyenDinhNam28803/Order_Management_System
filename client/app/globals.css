@@ -162,12 +162,16 @@ body {
 
 /* ERP Form Elements */
 .erp-input {
-  @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 outline-none transition-all duration-200;
-  @apply focus:ring-4 focus:ring-erp-blue/10 focus:border-erp-blue;
+  @apply w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-erp-navy outline-none transition-all duration-300 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)];
+  @apply focus:ring-8 focus:ring-erp-blue/5 focus:border-erp-blue focus:bg-white focus:shadow-sm;
+}
+
+.erp-input::placeholder {
+  @apply text-slate-300 font-medium italic;
 }
 
 .erp-input:disabled {
-  @apply bg-slate-50 text-slate-400 border-slate-100 cursor-not-allowed;
+  @apply bg-slate-100/50 text-slate-300 border-slate-50 cursor-not-allowed shadow-none;
 }
 
 .erp-input-sm {

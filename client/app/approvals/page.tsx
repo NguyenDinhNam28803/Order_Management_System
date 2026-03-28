@@ -7,7 +7,7 @@ import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 
 export default function ApprovalsPage() {
-    const { prs, approvals, actionApproval, currentUser } = useProcurement();
+    const { prs, approvals, actionApproval, currentUser, notify } = useProcurement();
     const router = useRouter();
 
     const pendingPRs = (approvals || []).map((app: any) => {
@@ -24,9 +24,11 @@ export default function ApprovalsPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const handleAction = async () => {
-        if (actionType === "REJECT" && !memo.trim()) {
-            alert("Vui lòng nhập lý do từ chối!");
+    const handleAction = async (overrideAction?: "APPROVE" | "REJECT" | "MORE_INFO") => {
+        const currentAction = overrideAction || actionType;
+        
+        if (currentAction === "REJECT" && !memo.trim()) {
+            notify("Vui lòng nhập lý do từ chối!", "warning");
             return;
         }
 
@@ -34,21 +36,22 @@ export default function ApprovalsPage() {
         try {
             const success = await actionApproval(
                 selectedPR.workflowId, 
-                actionType === "APPROVE" ? "APPROVE" : "REJECT", 
+                currentAction === "APPROVE" ? "APPROVE" : "REJECT", 
                 memo
             );
             
             if (success) {
                 setIsSuccess(true);
+                notify("Thao tác thành công!", "success");
                 setTimeout(() => {
                     router.push("/");
                 }, 2000);
             } else {
-                alert("Không thể thực hiện phê duyệt. Vui lòng kiểm tra lại quyền hạn.");
+                notify("Không thể thực hiện phê duyệt. Vui lòng kiểm tra lại quyền hạn.", "error");
             }
         } catch (err) {
             console.error(err);
-            alert("Lỗi kết nối khi phê duyệt.");
+            notify("Lỗi kết nối khi phê duyệt.", "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -325,7 +328,7 @@ export default function ApprovalsPage() {
                                         Bạn đang chọn: <span className={actionType === 'REJECT' ? 'text-red-600 font-black' : 'text-amber-600 font-black'}>{actionType === 'REJECT' ? 'TỪ CHỐI' : 'YÊU CẦU BỔ SUNG'}</span>
                                     </div>
                                     <button 
-                                        onClick={handleAction} 
+                                        onClick={() => handleAction()} 
                                         disabled={isSubmitting}
                                         className={`w-full py-3.5 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 text-white shadow-lg transition-all ${
                                             actionType === 'REJECT' 
@@ -340,7 +343,7 @@ export default function ApprovalsPage() {
                             ) : (
                                 <>
                                     <button 
-                                        onClick={() => { setActionType("APPROVE"); handleAction(); }}
+                                        onClick={() => handleAction("APPROVE")}
                                         disabled={isSubmitting}
                                         className="w-full py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 text-white bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/30 transition-all"
                                     >

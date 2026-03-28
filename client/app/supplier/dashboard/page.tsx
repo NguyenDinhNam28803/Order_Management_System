@@ -8,39 +8,51 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function SupplierDashboard() {
-    const { currentUser } = useProcurement();
+    const { currentUser, rfqs, createQuote, notify } = useProcurement();
     const router = useRouter();
 
-    const rfqs = [
-        { id: "RFQ-1102", buyer: "ProcurePro X", dueDate: "20/03/2026", status: "WAITING", urgent: true },
-        { id: "RFQ-1105", buyer: "Việt Á Corp", dueDate: "25/03/2026", status: "WAITING", urgent: false },
-        { id: "RFQ-1090", buyer: "ProcurePro X", dueDate: "10/03/2026", status: "QUOTED", urgent: false },
-    ];
+    // Filter RFQs for this supplier (simulation: matches name or show all for demo if not specific)
+    const myRfqs = rfqs.filter((r: any) => 
+        r.vendor?.toLowerCase().includes(currentUser?.name?.toLowerCase() || "") || 
+        r.vendor?.toLowerCase().includes(currentUser?.fullName?.toLowerCase() || "") ||
+        currentUser?.role === "PLATFORM_ADMIN" // Admin sees all
+    );
 
     const pos = [
         { id: "PO-2026-001", item: "Vải Cotton 100%", qty: 500, dateReq: "15/04/2026", progress: 60, status: "IN_PRODUCTION" },
         { id: "PO-2026-003", item: "Máy may Juki", qty: 10, dateReq: "20/04/2026", progress: 10, status: "PREPARING" },
     ];
 
+    const handleQuote = (rfqId: string) => {
+        createQuote(rfqId, {
+            price: 5000000,
+            deliveryDate: "2026-04-10",
+            notes: "Chúng tôi cam kết giao hàng chất lượng cao nhất."
+        });
+        notify(`Đã gửi báo giá cho ${rfqId} thành công!`, "success");
+    };
+
     return (
         <main className="pt-16 px-8 pb-12">
             <DashboardHeader breadcrumbs={["Nhà cung cấp", "Bàn làm việc B2B"]} />
 
             <div className="mt-8 mb-8 pb-6 border-b border-slate-200">
-                <h1 className="text-3xl font-black text-erp-navy tracking-tight">Xin chào, {currentUser?.name || 'Nhà cung cấp'}!</h1>
+                <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Xin chào, {currentUser?.name || currentUser?.fullName || 'Nhà cung cấp'}!</h1>
                 <p className="text-sm text-slate-500 mt-1">Quản lý toàn bộ vòng đời giao dịch B2B từ Báo giá tới Thanh toán.</p>
             </div>
 
             {/* KPI Cards (6.1) */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div className="erp-card bg-orange-50 border-orange-200">
+                <div className="erp-card bg-orange-50 border-orange-200 group">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-orange-100 text-orange-600 rounded-xl"><Inbox size={24} /></div>
-                        <span className="flex items-center gap-1 text-[10px] font-black uppercase text-white bg-red-500 px-2 py-1 rounded shadow-sm shadow-red-500/20">
-                            <AlertTriangle size={10}/> 1 Khẩn cấp
-                        </span>
+                        <div className="p-3 bg-orange-100 text-orange-600 rounded-xl group-hover:scale-110 transition-transform"><Inbox size={24} /></div>
+                        {myRfqs.filter((r: any) => r.status === 'SENT').length > 0 && (
+                            <span className="flex items-center gap-1 text-[10px] font-black uppercase text-white bg-red-500 px-2 py-1 rounded shadow-sm shadow-red-500/20">
+                                <AlertTriangle size={10}/> Mới
+                            </span>
+                        )}
                     </div>
-                    <div className="text-3xl font-black text-orange-950">2</div>
+                    <div className="text-3xl font-black text-orange-950">{myRfqs.filter((r: any) => r.status === 'SENT').length}</div>
                     <div className="text-xs font-bold text-orange-700/60 uppercase tracking-widest mt-1">RFQ Chờ báo giá</div>
                 </div>
                 
@@ -50,7 +62,6 @@ export default function SupplierDashboard() {
                     </div>
                     <div className="text-3xl font-black text-blue-950">5</div>
                     <div className="text-xs font-bold text-blue-700/60 uppercase tracking-widest mt-1">PO Đang thực hiện</div>
-                    <div className="text-[10px] text-blue-600/80 mt-2 font-medium">1 PO giao trong 7 ngày tới</div>
                 </div>
 
                 <div className="erp-card bg-purple-50 border-purple-200">
@@ -64,7 +75,6 @@ export default function SupplierDashboard() {
                 <div className="erp-card bg-emerald-50 border-emerald-200">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl"><TrendingUp size={24} /></div>
-                        <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-200/50 px-2 py-1 rounded">Wallet</span>
                     </div>
                     <div className="text-2xl font-black text-emerald-950 font-mono">1.25B ₫</div>
                     <div className="text-xs font-bold text-emerald-700/60 uppercase tracking-widest mt-1">Số dư đối soát T3</div>
@@ -83,35 +93,51 @@ export default function SupplierDashboard() {
                     <div className="flex-1 overflow-auto bg-white">
                         <table className="erp-table text-xs m-0 !border-none">
                             <thead className="sticky top-0 bg-slate-50 shadow-sm z-10">
-                                <tr>
-                                    <th>Số RFQ</th>
-                                    <th>Công ty Mua</th>
-                                    <th>Hạn nộp</th>
-                                    <th className="text-center">Tình trạng</th>
+                                <tr className="text-[10px] uppercase tracking-widest font-black text-slate-400">
+                                    <th className="px-6">Số RFQ</th>
+                                    <th>Cửa hàng / Đơn vị</th>
+                                    <th>Trạng thái</th>
+                                    <th className="text-right px-6">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {rfqs.map((rfq) => (
-                                    <tr key={rfq.id} className="cursor-pointer hover:bg-slate-50 border-b border-slate-50" onClick={() => router.push(`/supplier/rfq`)}>
-                                        <td className="font-bold text-erp-navy">
-                                            {rfq.id}
-                                            {rfq.urgent && <span className="ml-2 w-2 h-2 rounded-full bg-red-500 inline-block animate-pulse"></span>}
+                                {myRfqs.map((rfq: any) => (
+                                    <tr key={rfq.id} className="hover:bg-slate-50 transition-all border-b border-slate-50 group">
+                                        <td className="font-black text-erp-navy px-6 py-5">
+                                            {rfq.id.toUpperCase()}
+                                            {rfq.status === 'SENT' && <span className="ml-2 w-2 h-2 rounded-full bg-erp-blue inline-block animate-pulse"></span>}
                                         </td>
-                                        <td className="font-bold text-slate-600">{rfq.buyer}</td>
-                                        <td className="font-mono text-slate-500">{rfq.dueDate}</td>
-                                        <td className="text-center">
-                                            {rfq.status === "WAITING" ? (
-                                                <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded ${rfq.urgent ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-orange-50 text-orange-600 border border-orange-200'}`}>
-                                                    {rfq.urgent ? '< 24 Giờ' : 'Chờ báo giá'}
-                                                </span>
+                                        <td className="font-bold text-slate-600">ProcurePro Network</td>
+                                        <td className="">
+                                            <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full border ${
+                                                rfq.status === "SENT" ? 'bg-orange-50 border-orange-100 text-orange-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600'
+                                            }`}>
+                                                {rfq.status === "SENT" ? 'Đang chờ' : 'Đã báo giá'}
+                                            </span>
+                                        </td>
+                                        <td className="text-right px-6">
+                                            {rfq.status === "SENT" ? (
+                                                <button 
+                                                    onClick={() => handleQuote(rfq.id)}
+                                                    className="px-4 py-2 bg-erp-navy text-white rounded-xl font-black text-[9px] uppercase tracking-[0.1em] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-erp-navy/20"
+                                                >
+                                                    Gửi báo giá
+                                                </button>
                                             ) : (
-                                                <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded bg-slate-100 text-slate-500 flex items-center justify-center gap-1 w-fit mx-auto">
-                                                    <CheckCircle2 size={10}/> Đã nộp hẹn
-                                                </span>
+                                                <div className="text-emerald-500 flex items-center justify-end gap-1 font-black text-[10px] uppercase">
+                                                    <CheckCircle2 size={12} /> Hoàn tất
+                                                </div>
                                             )}
                                         </td>
                                     </tr>
                                 ))}
+                                {myRfqs.length === 0 && (
+                                    <tr>
+                                        <td colSpan={4} className="py-20 text-center text-slate-300 font-black uppercase tracking-widest text-xs opacity-50">
+                                            Chưa có yêu cầu báo giá nào
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>

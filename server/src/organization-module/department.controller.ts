@@ -29,7 +29,7 @@ export class DepartmentController {
   @ApiOperation({ summary: 'Create a new department' })
   async create(@Body() createDto: CreateDepartmentDto) {
     const { orgId, parentDeptId, headUserId, ...rest } = createDto;
-    return this.prisma.department.create({
+    const dept = await this.prisma.department.create({
       data: {
         ...rest,
         organization: { connect: { id: orgId } },
@@ -37,6 +37,14 @@ export class DepartmentController {
         ...(headUserId && { head: { connect: { id: headUserId } } }),
       },
     });
+
+    if (rest.costCenterCode) {
+      await this.prisma.costCenter.updateMany({
+        where: { code: rest.costCenterCode, orgId: dept.orgId },
+        data: { deptId: dept.id },
+      });
+    }
+    return dept;
   }
 
   @Get()
@@ -75,7 +83,7 @@ export class DepartmentController {
     @Body() updateDto: UpdateDepartmentDto,
   ) {
     const { orgId, parentDeptId, headUserId, ...rest } = updateDto;
-    return this.prisma.department.update({
+    const dept = await this.prisma.department.update({
       where: { id },
       data: {
         ...rest,
@@ -84,6 +92,14 @@ export class DepartmentController {
         ...(headUserId && { head: { connect: { id: headUserId } } }),
       },
     });
+
+    if (rest.costCenterCode) {
+      await this.prisma.costCenter.updateMany({
+        where: { code: rest.costCenterCode, orgId: dept.orgId },
+        data: { deptId: dept.id },
+      });
+    }
+    return dept;
   }
 
   @Delete(':id')

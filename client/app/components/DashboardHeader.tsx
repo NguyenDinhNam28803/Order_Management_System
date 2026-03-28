@@ -54,37 +54,9 @@ export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phả
                             </span>
                         )}
                     </button>
-                    <button
-                        onClick={logout}
-                        className="flex h-9 w-9 items-center justify-center rounded-lg text-red-500 hover:bg-red-50 transition-all font-bold group"
-                        title="Đăng xuất"
-                    >
-                        <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
                 </div>
 
                 <div className="h-6 w-px bg-slate-200"></div>
-
-                <div className="flex items-center gap-3">
-                    <div className="text-right leading-none hidden sm:block">
-                        <div className="text-xs font-bold text-erp-navy">{currentUser?.name || "Khách"}</div>
-                        <div className="mt-1 flex justify-end">
-                            <span className={`role-badge ${currentUser ? (
-                                currentUser.role === "REQUESTER" ? "role-requester" :
-                                    currentUser.role === "DEPT_APPROVER" ? "role-approver" :
-                                        currentUser.role === "DIRECTOR" ? "role-approver" :
-                                            currentUser.role === "PROCUREMENT" ? "role-procurement" :
-                                                currentUser.role === "WAREHOUSE" ? "role-warehouse" :
-                                                    currentUser.role === "FINANCE" ? "role-finance" : "role-admin"
-                            ) : "role-finance"}`}>
-                                {currentUser?.role || "Chưa định danh"}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="h-9 w-9 rounded-lg bg-erp-navy text-white flex items-center justify-center font-bold text-xs ring-2 ring-erp-navy/10 uppercase">
-                        {currentUser?.icon || "GU"}
-                    </div>
-                </div>
 
             </div>
         </header>

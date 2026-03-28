@@ -6,7 +6,7 @@ import { useProcurement } from "../context/ProcurementContext";
 import Sidebar from "./Sidebar";
 
 export default function AppContent({ children }: { children: React.ReactNode }) {
-    const { currentUser } = useProcurement();
+    const { currentUser, notifications } = useProcurement();
     const pathname = usePathname();
     const router = useRouter();
 
@@ -27,6 +27,33 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
     return (
         <div className="flex h-screen overflow-hidden bg-slate-50">
+            {/* Toast Notifications */}
+            <div className="fixed top-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
+                {notifications && notifications
+                    .filter((n: any) => !n.role || n.role === currentUser?.role)
+                    .map((n: any) => (
+                    <div 
+                        key={n.id}
+                        className={`pointer-events-auto min-w-[320px] p-5 rounded-[24px] shadow-2xl border border-white/20 backdrop-blur-xl animate-in slide-in-from-right-8 duration-500 overflow-hidden flex items-center gap-4 ${
+                            n.type === 'success' ? 'bg-emerald-500/95 text-white shadow-emerald-200/40' :
+                            n.type === 'error' ? 'bg-red-500/95 text-white shadow-red-200/40' :
+                            n.type === 'warning' ? 'bg-amber-400/95 text-erp-navy shadow-amber-200/40' :
+                            'bg-erp-blue/95 text-white shadow-erp-blue/20'
+                        }`}
+                    >
+                        <div className="h-10 w-10 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+                            {n.type === 'success' && <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>}
+                            {n.type === 'error' && <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>}
+                            {n.type === 'warning' && <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>}
+                            {n.type === 'info' && <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
+                        </div>
+                        <div className="flex-1 text-sm font-black uppercase tracking-tight leading-tight">
+                            {n.message}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
             {/* Sidebar Cố định */}
             <Sidebar />
             
@@ -36,7 +63,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
                 <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 shadow-sm">
                     <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                         <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                        {pathname === "/" ? "Bảng điều khiển Hệ thống" : `MODULE / ${pathname.replace("/", "").toUpperCase()}`}
+                        {pathname === "/" ? "Bảng điều khiển Hệ thống" : `MODULE / ${pathname.split('/').pop()?.toUpperCase() || ""}`}
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="relative">

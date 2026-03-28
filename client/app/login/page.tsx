@@ -153,11 +153,14 @@ export default function LoginPage() {
                             </button>
                         </form>
 
-                        <div className="mt-12 pt-8 border-t border-white/5 text-center">
+                        <div className="mt-12 pt-8 border-t border-white/5 text-center flex flex-col gap-4">
                             <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
                                 <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
                                 Secure Enterprise SSO Powered
                                 <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
+                            </p>
+                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                                Chưa có tài khoản? <Link href="/register" className="text-blue-500 hover:text-blue-400 underline underline-offset-4 ml-1">Đăng ký ngay</Link>
                             </p>
                         </div>
                     </div>

@@ -35,7 +35,7 @@ interface PR {
 }
 
 export default function ProcurementControlPage() {
-    const { prs, currentUser, apiFetch, refreshData } = useProcurement();
+    const { prs, currentUser, apiFetch, refreshData, notify } = useProcurement();
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [deptFilter, setDeptFilter] = useState("ALL");
@@ -76,10 +76,10 @@ export default function ProcurementControlPage() {
         try {
             const res = await apiFetch(`/procurement-requests/${prId}/assign`, { method: 'PATCH' });
             if (res.ok) {
-                alert("Đã gán PR cho bạn thành công!");
+                notify("Đã gán PR cho bạn thành công!", "success");
                 refreshData();
             } else {
-                alert("Đã ghi nhận gán PR cho " + currentUser.fullName);
+                notify("Đã ghi nhận gán PR cho " + currentUser.fullName, "info");
             }
         } catch (err) {
             console.error(err);

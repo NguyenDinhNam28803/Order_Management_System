@@ -57,10 +57,13 @@ const navigation = [
         group: "Hệ thống", 
         roles: ["PLATFORM_ADMIN", "FINANCE"],
         items: [
-            { name: "Quản lý nhân sự", icon: Users, path: "/users", roles: ["PLATFORM_ADMIN"] },
-            { name: "Quản lý Phòng ban", icon: Building, path: "/admin/departments", roles: ["PLATFORM_ADMIN"] },
-            { name: "Quản lý Ngân sách", icon: DollarSign, path: "/finance/budgets", roles: ["PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Quản lý Nhà cung cấp", icon: Truck, path: "/admin/suppliers", roles: ["PLATFORM_ADMIN"] },
             { name: "Danh mục sản phẩm", icon: ShoppingBag, path: "/admin/products", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý nhân sự", icon: Users, path: "/users", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Tổ chức", icon: LayoutDashboard, path: "/admin/organizations", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Phòng ban", icon: Building, path: "/admin/departments", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Cost Center", icon: ShieldAlert, path: "/admin/cost-centers", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Ngân sách", icon: DollarSign, path: "/finance/budgets", roles: ["PLATFORM_ADMIN", "FINANCE"] },
             { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["PLATFORM_ADMIN"] },
         ]
     },
@@ -91,9 +94,9 @@ export default function Sidebar() {
     const roleInfo = currentUser ? roleMapping[currentUser.role] : { label: "Khách", class: "role-finance" };
 
     return (
-        <aside className="group fixed left-0 top-0 z-50 h-screen w-16 hover:w-64 border-r border-slate-200 bg-white shadow-xl transition-all duration-300 ease-in-out overflow-hidden">
+        <aside className="group fixed left-0 top-0 z-50 h-screen w-16 hover:w-64 border-r border-slate-200 bg-white shadow-xl transition-all duration-300 ease-in-out flex flex-col overflow-hidden">
             {/* Logo Section */}
-            <div className="flex h-16 items-center px-4 border-b border-slate-100">
+            <div className="flex h-16 items-center px-4 border-b border-slate-100 shrink-0">
                 <div className="h-8 w-8 rounded bg-erp-navy flex items-center justify-center shrink-0">
                     <span className="text-white text-xs font-bold">PP</span>
                 </div>
@@ -103,7 +106,7 @@ export default function Sidebar() {
             </div>
 
             {/* Nav */}
-            <nav className="mt-4 px-2 space-y-4">
+            <nav className="mt-4 px-2 space-y-4 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-32">
                 {navigation.map((group) => {
                     const groupVisible = !currentUser || group.roles.includes(currentUser.role);
                     if (!groupVisible && currentUser?.role !== "PLATFORM_ADMIN") return null;

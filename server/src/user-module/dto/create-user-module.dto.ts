@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  IsBoolean,
   MaxLength,
 } from 'class-validator';
 import { UserRole } from '@prisma/client';
@@ -67,4 +68,9 @@ export class CreateUserModuleDto {
   @IsOptional()
   @MaxLength(255)
   passwordHash: string;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }

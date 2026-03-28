@@ -7,12 +7,24 @@ import { Inbox, FileText, UploadCloud, Send, MessageSquare, ChevronDown, CheckCi
 import { useProcurement } from "../../context/ProcurementContext";
 
 export default function SupplierRFQ() {
-    const { rfqs, submitQuotation } = useProcurement();
+    const { currentUser, rfqs, prs, createQuote, notify } = useProcurement();
     const [viewState, setViewState] = useState<"LIST" | "DETAIL">("LIST");
     const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
     
-    const openRfqs = rfqs.filter((r: any) => r.status === "OPEN");
-    const activeRFQ = selectedRfqId ? rfqs.find((r: any) => r.id === selectedRfqId) : openRfqs[0];
+    // Filter RFQs for this supplier and status is SENT (Initial)
+    const openRfqs = rfqs.filter((r: any) => 
+        (r.status === "SENT" || r.status === "OPEN") && 
+        (r.vendor?.toLowerCase().includes(currentUser?.name?.toLowerCase() || "") || 
+         r.vendor?.toLowerCase().includes(currentUser?.fullName?.toLowerCase() || "") ||
+         currentUser?.role === "PLATFORM_ADMIN")
+    );
+    
+    const activeRFQRaw = selectedRfqId ? rfqs.find((r: any) => r.id === selectedRfqId) : (openRfqs.length > 0 ? openRfqs[0] : null);
+    const relatedPR = activeRFQRaw ? prs.find((p: any) => p.id === activeRFQRaw.prId || p.prNumber === activeRFQRaw.prId) : null;
+    const activeRFQ = activeRFQRaw ? { 
+        ...activeRFQRaw, 
+        items: relatedPR?.items && relatedPR.items.length > 0 ? relatedPR.items : (activeRFQRaw.items || []) 
+    } : null;
 
     const [prices, setPrices] = useState<Record<string, string>>({});
     const [leadTime, setLeadTime] = useState("");
@@ -29,14 +41,14 @@ export default function SupplierRFQ() {
             total += val * item.qty;
         });
 
-        submitQuotation(activeRFQ.id, {
+        createQuote(activeRFQ.id, {
             prices: pricesObj,
             leadTime,
             paymentTerms,
             total
         });
-
-        alert("Báo giá đã được gửi tới Buyer. Trạng thái RFQ đã cập nhật thành QUOTED.");
+        
+        notify(`Báo giá cho RFQ ${activeRFQ.id} đã được gửi thành công!`, "success");
         setViewState("LIST");
     };
 
@@ -63,6 +75,35 @@ export default function SupplierRFQ() {
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                     {/* Cột trái: Thông tin RFQ & Q&A */}
                     <div className="space-y-6">
+                        {/* NEW: THÔNG TIN PR THAM CHIẾU PANEL */}
+                        <div className="erp-card shadow-sm border border-slate-200 bg-white overflow-hidden">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
+                                <FileText size={14} className="text-erp-blue" /> Thông tin PR tham chiếu
+                            </h3>
+                            <div className="space-y-3">
+                                <div className="flex justify-between">
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Mã PR</span>
+                                    <span className="text-xs font-black text-erp-navy">{relatedPR?.prNumber || relatedPR?.id}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Người yêu cầu</span>
+                                    <span className="text-xs font-bold text-slate-700">
+                                        {typeof relatedPR?.requester === 'object' ? relatedPR.requester.fullName : (relatedPR?.requester || "Buyer Admin")}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Phòng ban</span>
+                                    <span className="text-xs font-bold text-slate-700">
+                                        {relatedPR ? (typeof relatedPR.department === 'string' ? relatedPR.department : relatedPR.department?.name) : "N/A"}
+                                    </span>
+                                </div>
+                                <div className="pt-2 mt-2 border-t border-slate-50">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Mục đích mua sắm</div>
+                                    <p className="text-xs font-medium text-slate-600 italic">"{relatedPR?.title || "Mua sắm trang thiết bị định kỳ"}"</p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="erp-card shadow-sm border border-slate-200">
                             <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 border-b border-slate-100 pb-2">
                                 Yêu cầu kỹ thuật & File đính kèm
@@ -79,10 +120,10 @@ export default function SupplierRFQ() {
                             </div>
                         </div>
 
-                        <div className="erp-card shadow-sm border border-slate-200 flex flex-col h-[400px]">
+                        <div className="erp-card shadow-sm border border-slate-200 flex flex-col h-[300px]">
                             <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 border-b border-slate-100 pb-2 flex items-center justify-between">
                                 Q&A Thread 
-                                <span className="bg-slate-100 px-2 py-0.5 rounded text-[10px] text-slate-400">Ẩn danh NCC</span>
+                                <span className="bg-slate-100 px-2 py-0.5 rounded text-[10px] text-slate-400">NCC</span>
                             </h3>
                             <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                                 <div className="bg-slate-50 p-3 rounded-tr-none rounded-xl border border-slate-200 ml-8 text-xs text-slate-600 font-medium">
@@ -93,10 +134,6 @@ export default function SupplierRFQ() {
                                     <div className="font-bold text-erp-blue text-[9px] uppercase mb-1">Buyer (ProcurePro)</div>
                                     Vui lòng báo loại tiêu chuẩn mới nhất.
                                 </div>
-                            </div>
-                            <div className="mt-4 pt-4 border-t border-slate-100 relative">
-                                <input type="text" className="erp-input w-full pr-10 bg-slate-50 text-xs" placeholder="Đặt câu hỏi làm rõ spec..." />
-                                <button className="absolute right-3 top-1/2 -translate-y-1/2 text-erp-blue"><Send size={16}/></button>
                             </div>
                         </div>
                     </div>
@@ -118,36 +155,54 @@ export default function SupplierRFQ() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {activeRFQ.items.map((item: any) => (
-                                        <tr key={item.id} className="border-b border-slate-100 hover:bg-slate-50 group">
-                                            <td className="font-bold text-slate-700">{item.description}</td>
-                                            <td className="text-center font-mono font-black">{item.qty} {item.unit}</td>
-                                            <td className="text-right">
-                                                <input 
-                                                    type="number" 
-                                                    className="erp-input w-full text-right font-mono text-emerald-600 font-black focus:border-emerald-500 bg-slate-50 group-hover:bg-white" 
-                                                    placeholder="0"
-                                                    value={prices[item.id] || ""}  
-                                                    onChange={e => setPrices({...prices, [item.id]: e.target.value})}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input type="text" className="erp-input w-full text-[10px] bg-slate-50 group-hover:bg-white" placeholder="Model, xuất xứ..." />
-                                            </td>
-                                        </tr>
-                                    ))}
+                                    {activeRFQ.items.map((item: any, idx: number) => {
+                                        const itemId = item.id || `item-${idx}`;
+                                        const itemName = item.item_name || item.description || "N/A";
+                                        const itemCode = item.item_code || "SKU-ANY";
+                                        const quantity = item.quantity || item.qty || 0;
+                                        const unit = item.unit || "UNIT";
+
+                                        return (
+                                            <tr key={itemId} className="border-b border-slate-100 hover:bg-slate-50 group">
+                                                <td className="px-6 py-4">
+                                                    <div className="font-black text-slate-700">{itemName}</div>
+                                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Mã: {itemCode}</div>
+                                                </td>
+                                                <td className="text-center font-mono font-black border-x border-slate-50">
+                                                    <div className="text-erp-navy">{quantity}</div>
+                                                    <div className="text-[9px] text-slate-400 uppercase tracking-widest">{unit}</div>
+                                                </td>
+                                                <td className="text-right p-4 bg-emerald-50/20">
+                                                    <input 
+                                                        type="number" 
+                                                        className="erp-input w-full text-right font-mono text-emerald-600 font-black focus:border-emerald-500 bg-white shadow-sm" 
+                                                        placeholder="Nhập giá..."
+                                                        value={prices[itemId] || ""}  
+                                                        onChange={e => setPrices({...prices, [itemId]: e.target.value})}
+                                                    />
+                                                </td>
+                                                <td className="p-4">
+                                                    <input type="text" className="erp-input w-full text-[10px] bg-slate-50 group-hover:bg-white border-transparent focus:border-slate-200" placeholder="Model, xuất sứ, VAT..." />
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                     <tr className="bg-slate-100/50">
                                         <td colSpan={2} className="text-right font-black text-slate-500 uppercase tracking-widest py-4">Tổng tiền nháp:</td>
                                         <td className="text-right font-black font-mono text-erp-navy text-lg py-4">
                                             {(() => {
                                                 const total = activeRFQ.items.reduce((sum: number, item: any) => {
-                                                    const priceVal = Number(prices[item.id]) || 0;
-                                                    return sum + (priceVal * item.qty);
+                                                    const itemId = item.id;
+                                                    const priceVal = Number(prices[itemId]) || 0;
+                                                    const quantity = item.quantity || item.qty || 0;
+                                                    return sum + (priceVal * quantity);
                                                 }, 0);
                                                 return total.toLocaleString();
                                             })()} ₫
                                         </td>
-                                        <td></td>
+                                        <td className="text-[9px] font-bold text-slate-400 italic text-right px-4">
+                                            * Các trường Đơn giá và Ghi chú là có thể chỉnh sửa.
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -212,20 +267,42 @@ export default function SupplierRFQ() {
                         </tr>
                     </thead>
                     <tbody>
-                        {openRfqs.map((r: any) => (
-                            <tr key={r.id} className="hover:bg-slate-50 border-b border-slate-100 cursor-pointer" onClick={() => { setSelectedRfqId(r.id); setViewState("DETAIL"); }}>
-                                <td className="font-bold text-erp-navy">{r.id}</td>
-                                <td className="font-bold text-slate-700">ProcurePro (Buyer)</td>
-                                <td className="text-slate-500 truncate max-w-[200px]" title="Mua vật tư">Mua vật tư từ {r.prId}</td>
-                                <td className="font-mono">{r.createdAt}</td>
-                                <td className="text-center">
-                                    <span className="bg-red-50 text-red-600 border border-red-200 font-black uppercase text-[9px] px-2 py-1 rounded tracking-widest animate-pulse">20h 15m</span>
-                                </td>
-                                <td className="text-right">
-                                    <button className="text-[10px] font-black uppercase tracking-widest text-erp-blue flex items-center gap-1 ml-auto">Xem chi tiết & Báo giá <ChevronDown size={14} className="-rotate-90"/></button>
-                                </td>
-                            </tr>
-                        ))}
+                        {openRfqs.map((r: any) => {
+                            const prDetail = prs.find((p: any) => p.id === r.prId);
+                            const customerName = prDetail ? (typeof prDetail.department === 'string' ? prDetail.department : prDetail.department?.name) : "ProcurePro Network";
+                            
+                            return (
+                                <tr key={r.id} className="hover:bg-slate-50 border-b border-slate-100 cursor-pointer group" onClick={() => { setSelectedRfqId(r.id); setViewState("DETAIL"); }}>
+                                    <td className="font-black text-erp-navy px-6 py-6 uppercase tracking-tight">{r.id}</td>
+                                    <td className="font-bold text-slate-700">{customerName}</td>
+                                    <td className="text-slate-500 font-medium">
+                                        <div className="flex flex-wrap gap-1">
+                                            {prDetail?.items && prDetail.items.length > 0 ? (
+                                                prDetail.items.slice(0, 3).map((item: any, i: number) => (
+                                                    <span key={i} className="bg-slate-100 text-[10px] px-2 py-0.5 rounded border border-slate-200">
+                                                        {item.item_name || item.description} x{item.quantity || item.qty}
+                                                    </span>
+                                                ))
+                                            ) : (
+                                                <span className="italic text-slate-300">Không có hạng mục</span>
+                                            )}
+                                            {prDetail?.items && prDetail.items.length > 3 && (
+                                                <span className="text-[9px] text-slate-400 pt-1">+{prDetail.items.length - 3} khác</span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="font-mono text-slate-400 text-[10px]">{new Date(r.createdAt || Date.now()).toLocaleString()}</td>
+                                    <td className="text-center">
+                                        <span className="bg-red-50 text-red-600 border border-red-100 font-black uppercase text-[9px] px-2 py-1 rounded-lg tracking-widest animate-pulse">20h 15m</span>
+                                    </td>
+                                    <td className="text-right px-6">
+                                        <button className="text-[10px] font-black uppercase tracking-widest text-erp-blue flex items-center gap-1 ml-auto group-hover:gap-2 transition-all">
+                                            Xem chi tiết & Báo giá <ChevronDown size={14} className="-rotate-90"/>
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                         {openRfqs.length === 0 && (
                             <tr>
                                 <td colSpan={6} className="text-center py-12 text-slate-400 font-bold uppercase tracking-widest">

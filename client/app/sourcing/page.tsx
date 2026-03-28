@@ -12,14 +12,18 @@ import {
 import Link from "next/link";
 
 export default function SourcingPage() {
-    const { prs, rfqs, pos, currentUser, apiFetch, refreshData } = useProcurement();
+    const { prs, rfqs, pos, currentUser, apiFetch, refreshData, notify, createRFQ } = useProcurement();
     const [activeTab, setActiveTab] = useState("approved-prs");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // 1. Get Approved PRs that need sourcing
-    const approvedPRs = (prs || []).filter((pr: any) => pr.status === "APPROVED" || pr.status === "PENDING_QUOTATION");
+    // 1. Get Approved PRs that need sourcing (not already in an RFQ)
+    const rfqsPrIds = (rfqs || []).map((r: any) => r.prId);
+    const approvedPRs = (prs || []).filter((pr: any) => 
+        (pr.status === "APPROVED" || pr.status === "PENDING_QUOTATION") && 
+        !rfqsPrIds.includes(pr.id)
+    );
 
     // 2. Get active RFQs
     const activeRFQs = (rfqs || []);
@@ -36,11 +40,14 @@ export default function SourcingPage() {
                 })
             });
             if (res.ok) {
-                alert("Đã khởi tạo RFQ thành công cho đơn " + prId);
+                // Call context-level local createRFQ for local storage/demo state
+                await createRFQ({ prId, vendor: "Thiên Long Digital" });
+                notify("Đã khởi tạo RFQ thành công cho đơn " + prId, "success");
                 refreshData();
             }
         } catch (err) {
             console.error(err);
+            notify("Lỗi khi khởi tạo RFQ", "error");
         } finally {
             setIsProcessing(false);
         }
@@ -73,9 +80,11 @@ export default function SourcingPage() {
                     <button className="flex items-center gap-2 bg-slate-100 text-slate-600 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">
                         <Filter size={16} /> Bộ lọc nâng cao
                     </button>
-                    <button className="flex items-center gap-2 bg-erp-navy text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-erp-navy/20 hover:scale-105 active:scale-95 transition-all">
-                        <PlusIcon size={16} /> Tạo RFQ thủ công
-                    </button>
+                    <Link href="/sourcing/rfq-create">
+                        <button className="flex items-center gap-2 bg-erp-navy text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-erp-navy/20 hover:scale-105 active:scale-95 transition-all">
+                            <PlusIcon size={16} /> Tạo RFQ thủ công
+                        </button>
+                    </Link>
                 </div>
             </div>
 

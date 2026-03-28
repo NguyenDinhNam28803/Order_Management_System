@@ -1,630 +1,355 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { 
     DollarSign, 
     Calendar, 
-    Plus, 
-    BarChart2, 
     TrendingUp, 
     AlertCircle, 
-    Building2,
+    CheckCircle2,
+    Save,
+    RefreshCcw,
+    ShieldCheck,
+    LayoutDashboard,
+    PlusCircle,
     Search,
     Filter,
     ArrowUpRight,
     ArrowDownRight,
-    Clock,
-    CheckCircle2,
-    XCircle,
-    ChevronDown,
-    MoreVertical,
-    Edit2,
-    Trash2
+    Target
 } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
 
 export default function FinanceBudgetsPage() {
     const { 
-        budgetPeriods, 
-        budgetAllocations, 
         departments, 
-        costCenters, 
-        addBudgetPeriod, 
-        addBudgetAllocation,
-        removeBudgetAllocation,
-        currentUser 
+        costCenters,
+        budgetAllocations,
+        addBudgetAllocationBundle,
+        fiscalYears = [2024, 2025, 2026]
     } = useProcurement();
 
-    const [activeTab, setActiveTab] = useState<'allocations' | 'periods'>('allocations');
-    const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
-    const [isAllocModalOpen, setIsAllocModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<'dashboard' | 'tools'>('dashboard');
+    
+    // TOOL STATE
+    const [selectedDeptId, setSelectedDeptId] = useState("");
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [totalAnnualBudget, setTotalAnnualBudget] = useState(0);
+    const [buckets, setBuckets] = useState({ q1: 0, q2: 0, q3: 0, q4: 0, reserve: 0 });
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
 
-    // Stats calculations
-    const totalAllocated = budgetAllocations.reduce((sum: number, a: any) => sum + Number(a.allocatedAmount), 0);
-    const totalSpent = budgetAllocations.reduce((sum: number, a: any) => sum + Number(a.spentAmount), 0);
-    const utilizationRate = totalAllocated > 0 ? (totalSpent / totalAllocated) * 100 : 0;
+    // DASHBOARD STATE
+    const [searchTerm, setSearchTerm] = useState("");
 
-    const [newPeriod, setNewPeriod] = useState({
-        fiscalYear: new Date().getFullYear(),
-        periodType: 'ANNUAL',
-        startDate: `${new Date().getFullYear()}-01-01`,
-        endDate: `${new Date().getFullYear()}-12-31`,
-        isActive: true
-    });
-
-    const [newAlloc, setNewAlloc] = useState({
-        budgetPeriodId: '',
-        costCenterId: '',
-        deptId: '',
-        allocatedAmount: 0,
-        notes: ''
-    });
-
-    const handleCreatePeriod = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const success = await addBudgetPeriod(newPeriod);
-        if (success) setIsPeriodModalOpen(false);
+    // Tool Handlers
+    const handleTotalBudgetChange = (val: number) => {
+        setTotalAnnualBudget(val);
+        const each = Math.floor(val / 5);
+        setBuckets({ q1: each, q2: each, q3: each, q4: each, reserve: val - (each * 4) });
     };
 
-    const handleCreateAlloc = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const success = await addBudgetAllocation(newAlloc);
-        if (success) setIsAllocModalOpen(false);
+    const handleDeptChange = (deptId: string) => {
+        setSelectedDeptId(deptId);
+        if (!deptId) { handleTotalBudgetChange(0); return; }
+        const total = costCenters
+            .filter((cc: any) => cc.deptId === deptId)
+            .reduce((sum: number, cc: any) => sum + Number(cc.budgetAnnual), 0);
+        handleTotalBudgetChange(total);
     };
 
-    const formatCurrency = (val: number) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+    const handleBucketEdit = (key: keyof typeof buckets, val: number) => {
+        setBuckets(prev => ({ ...prev, [key]: val }));
     };
+
+    const handleSave = async () => {
+        if (!isValid || !selectedDeptId) return;
+        setIsSaving(true);
+        
+        // Simulating API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const success = await addBudgetAllocationBundle?.({
+            deptId: selectedDeptId,
+            fiscalYear: selectedYear,
+            totalBudget: totalAnnualBudget,
+            splits: buckets
+        });
+
+        setIsSaving(false);
+        if (success) {
+            setSaveSuccess(true);
+            // After 2 seconds, reset and go to dashboard
+            setTimeout(() => {
+                setSaveSuccess(false);
+                setActiveTab('dashboard');
+            }, 2000);
+        }
+    };
+
+    // Dashboard Memoized Data
+    const stats = useMemo(() => {
+        const total = budgetAllocations.reduce((sum: number, a: any) => sum + Number(a.allocatedAmount), 0);
+        const spent = budgetAllocations.reduce((sum: number, a: any) => sum + Number(a.spentAmount), 0);
+        return { total, spent, remaining: total - spent, percent: total > 0 ? (spent / total) * 100 : 0 };
+    }, [budgetAllocations]);
+
+    const currentSum = useMemo(() => buckets.q1 + buckets.q2 + buckets.q3 + buckets.q4 + buckets.reserve, [buckets]);
+    const difference = totalAnnualBudget - currentSum;
+    const isValid = totalAnnualBudget > 0 && difference === 0;
+
+    const formatCurrency = (val: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+    const getBucketPercentage = (val: number) => totalAnnualBudget === 0 ? 0 : (val / totalAnnualBudget) * 100;
 
     return (
-        <div className="finance-container">
-            {/* Header */}
-            <header className="page-header">
-                <div>
-                    <h1>Quản lý Ngân sách</h1>
-                    <p className="subtitle">Thiết lập chu kỳ và phân bổ ngân sách cho các phòng ban</p>
-                </div>
-                <div className="header-actions">
-                    <button className="btn btn-secondary" onClick={() => setIsPeriodModalOpen(true)}>
-                        <Calendar size={18} />
-                        <span>Chu kỳ mới</span>
-                    </button>
-                    <button className="btn btn-primary" onClick={() => setIsAllocModalOpen(true)}>
-                        <Plus size={18} />
-                        <span>Phân bổ ngân sách</span>
-                    </button>
-                </div>
-            </header>
-
-            {/* Stats Overview */}
-            <div className="stats-grid">
-                <div className="stat-card">
-                    <div className="stat-icon bg-blue">
-                        <DollarSign size={24} />
-                    </div>
-                    <div className="stat-info">
-                        <span className="stat-label">Tổng Ngân sách Phân bổ</span>
-                        <h2 className="stat-value">{formatCurrency(totalAllocated)}</h2>
-                        <span className="stat-trend trend-up">
-                            <ArrowUpRight size={14} /> +12% so với năm ngoái
-                        </span>
-                    </div>
-                </div>
-
-                <div className="stat-card">
-                    <div className="stat-icon bg-purple">
-                        <TrendingUp size={24} />
-                    </div>
-                    <div className="stat-info">
-                        <span className="stat-label">Ngân sách Đã sử dụng</span>
-                        <h2 className="stat-value">{formatCurrency(totalSpent)}</h2>
-                        <div className="progress-bar-small">
-                            <div className="progress-fill" style={{ width: `${utilizationRate}%` }}></div>
+        <div className="budget-page-container p-8 bg-[#F5F7FA] min-h-screen animate-in fade-in duration-700 relative">
+            {/* Success Toast */}
+            {saveSuccess && (
+                <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-10 duration-500">
+                    <div className="bg-white rounded-[24px] shadow-2xl shadow-erp-navy/20 border border-slate-100 p-6 pr-10 flex items-center gap-5">
+                        <div className="h-14 w-14 rounded-2xl bg-green-500 flex items-center justify-center text-white shadow-lg shadow-green-200">
+                            <CheckCircle2 size={32} className="animate-bounce" />
                         </div>
-                        <span className="stat-meta">{utilizationRate.toFixed(1)}% tỉ lệ sử dụng</span>
+                        <div>
+                            <div className="text-lg font-black text-erp-navy uppercase tracking-tight">Phân bổ thành công!</div>
+                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Đang chuyển về Dashboard...</p>
+                        </div>
                     </div>
+                </div>
+            )}
+
+            {/* Nav Tabs */}
+            <div className="max-w-6xl mx-auto flex justify-between items-center mb-10">
+                <div className="flex bg-white p-1.5 rounded-[22px] shadow-sm border border-slate-200/60">
+                    <button 
+                        onClick={() => setActiveTab('dashboard')}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-[18px] text-xs font-black uppercase tracking-wider transition-all ${
+                            activeTab === 'dashboard' ? 'bg-erp-navy text-white shadow-lg shadow-erp-navy/20' : 'text-slate-400 hover:text-erp-navy'
+                        }`}
+                    >
+                        <LayoutDashboard size={14} /> Tổng quan
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('tools')}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-[18px] text-xs font-black uppercase tracking-wider transition-all ${
+                            activeTab === 'tools' ? 'bg-erp-navy text-white shadow-lg shadow-erp-navy/20' : 'text-slate-400 hover:text-erp-navy'
+                        }`}
+                    >
+                        <PlusCircle size={14} /> Phân bổ định biên
+                    </button>
                 </div>
 
-                <div className="stat-card">
-                    <div className="stat-icon bg-orange">
-                        <AlertCircle size={24} />
+                {activeTab === 'dashboard' && (
+                    <div className="flex gap-4">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                            <input 
+                                type="text" 
+                                placeholder="Tìm kiếm..."
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                                className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold w-64 outline-none focus:ring-2 focus:ring-erp-blue/20"
+                            />
+                        </div>
                     </div>
-                    <div className="stat-info">
-                        <span className="stat-label">Các Phòng ban Vượt định mức</span>
-                        <h2 className="stat-value">0</h2>
-                        <span className="stat-trend text-muted">Mọi thứ vẫn trong tầm kiểm soát</span>
-                    </div>
-                </div>
+                )}
             </div>
 
-            {/* Tabs & Content */}
-            <div className="content-tabs">
-                <button 
-                    className={`tab-item ${activeTab === 'allocations' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('allocations')}
-                >
-                    <BarChart2 size={18} />
-                    Phân bổ Ngân sách
-                </button>
-                <button 
-                    className={`tab-item ${activeTab === 'periods' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('periods')}
-                >
-                    <Clock size={18} />
-                    Chu kỳ Ngân sách
-                </button>
-            </div>
-
-            {activeTab === 'allocations' ? (
-                <div className="table-section">
-                    <div className="table-filters">
-                        <div className="search-box">
-                            <Search size={18} />
-                            <input type="text" placeholder="Tìm kiếm phòng ban, trung tâm chi phí..." />
-                        </div>
-                        <div className="filter-actions">
-                            <button className="btn btn-outline">
-                                <Filter size={18} />
-                                Lọc
-                            </button>
-                        </div>
+            {activeTab === 'dashboard' ? (
+                <div className="max-w-6xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+                    {/* Summary Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[
+                            { label: 'Tổng Ngân sách cấp', val: stats.total, color: 'text-erp-navy', bg: 'bg-blue-50', icon: Target },
+                            { label: 'Đã giải ngân', val: stats.spent, color: 'text-amber-600', bg: 'bg-amber-50', icon: ArrowUpRight },
+                            { label: 'Số dư khả dụng', val: stats.remaining, color: 'text-green-600', bg: 'bg-green-50', icon: ShieldCheck },
+                        ].map((s, idx) => (
+                            <div key={idx} className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-xl shadow-erp-navy/5 relative overflow-hidden group">
+                                <div className={`absolute top-0 right-0 p-4 ${s.bg} rounded-bl-3xl opacity-50 group-hover:opacity-100 transition-opacity`}>
+                                    <s.icon size={20} className={s.color} />
+                                </div>
+                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] mb-2">{s.label}</div>
+                                <div className={`text-2xl font-black ${s.color}`}>{formatCurrency(s.val)}</div>
+                                <div className="mt-4 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                                    <div className={`h-full ${idx === 1 ? 'bg-amber-500' : 'bg-erp-navy'} transition-all duration-1000`} style={{ width: idx === 0 ? '100%' : `${stats.percent}%` }}></div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
-                    <div className="data-table-container">
-                        <table className="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Phòng ban / Cost Center</th>
-                                    <th>Chu kỳ</th>
-                                    <th>Định mức (Allocated)</th>
-                                    <th>Đã dùng (Spent)</th>
-                                    <th>Còn lại</th>
-                                    <th>Trạng thái</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {budgetAllocations.length > 0 ? budgetAllocations.map((alloc: any) => {
-                                    const remaining = Number(alloc.allocatedAmount) - Number(alloc.spentAmount);
-                                    const percent = (Number(alloc.spentAmount) / Number(alloc.allocatedAmount)) * 100;
-                                    
-                                    return (
-                                        <tr key={alloc.id}>
-                                            <td>
-                                                <div className="flex-col">
-                                                    <span className="font-medium">{alloc.department?.name || 'Phòng ban Chung'}</span>
-                                                    <span className="text-muted text-xs">{alloc.costCenter?.name || alloc.costCenter?.code}</span>
-                                                </div>
-                                            </td>
-                                            <td>{alloc.budgetPeriod?.fiscalYear} - {alloc.budgetPeriod?.periodType}</td>
-                                            <td>{formatCurrency(Number(alloc.allocatedAmount))}</td>
-                                            <td>{formatCurrency(Number(alloc.spentAmount))}</td>
-                                            <td className={remaining < 0 ? 'text-danger' : 'text-success'}>
-                                                {formatCurrency(remaining)}
-                                            </td>
-                                            <td>
-                                                <div className="usage-indicator">
-                                                    <div className="progress-mini">
-                                                        <div 
-                                                            className={`progress-fill ${percent > 90 ? 'bg-danger' : percent > 70 ? 'bg-warning' : 'bg-primary'}`} 
-                                                            style={{ width: `${Math.min(percent, 100)}%` }}
-                                                        ></div>
+                    {/* Main Monitoring Table */}
+                    <div className="bg-white rounded-[40px] shadow-xl shadow-erp-navy/5 border border-slate-100 overflow-hidden">
+                        <div className="p-8 border-b border-slate-50 flex justify-between items-center">
+                            <h2 className="text-sm font-black text-erp-navy uppercase tracking-widest flex items-center gap-3">
+                                <Filter size={18} className="text-erp-blue" /> Giám sát sử dụng Ngân sách
+                            </h2>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead>
+                                    <tr className="bg-slate-50/50">
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono">Đơn vị / Cost Center</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono">Định mức</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono text-center">Tiến độ sử dụng</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono">Còn lại</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50">
+                                    {budgetAllocations.length > 0 ? budgetAllocations.map((a: any) => {
+                                        const p = (Number(a.spentAmount) / Number(a.allocatedAmount)) * 100;
+                                        const dept = departments.find(d => d.id === a.deptId);
+                                        const cc = costCenters.find(c => c.id === a.costCenterId);
+                                        return (
+                                            <tr key={a.id} className="hover:bg-slate-50/50 transition-colors">
+                                                <td className="px-8 py-6">
+                                                    <div className="font-black text-erp-navy text-sm">{dept?.name || "Chung"}</div>
+                                                    <div className="text-[10px] font-bold text-slate-400 mt-0.5">{cc?.code} - {cc?.name}</div>
+                                                </td>
+                                                <td className="px-8 py-6 font-black text-slate-600">{formatCurrency(a.allocatedAmount)}</td>
+                                                <td className="px-8 py-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                            <div className={`h-full ${p > 90 ? 'bg-red-500' : p > 70 ? 'bg-amber-500' : 'bg-erp-blue'} transition-all duration-1000`} style={{ width: `${Math.min(p, 100)}%` }}></div>
+                                                        </div>
+                                                        <span className="text-[10px] font-black text-erp-navy">{p.toFixed(0)}%</span>
                                                     </div>
-                                                    <span className="text-xs">{percent.toFixed(0)}%</span>
+                                                </td>
+                                                <td className="px-8 py-6 font-black text-erp-navy">{formatCurrency(a.allocatedAmount - a.spentAmount)}</td>
+                                                <td className="px-8 py-6">
+                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                                                        p > 100 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'
+                                                    }`}>
+                                                        {p > 100 ? 'Vượt định mức' : 'An toàn'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    }) : (
+                                        <tr>
+                                            <td colSpan={5} className="px-8 py-20 text-center">
+                                                <div className="flex flex-col items-center gap-3 opacity-30">
+                                                    <AlertCircle size={48} />
+                                                    <p className="text-xs font-black uppercase tracking-widest">Chưa có dữ liệu phân bổ</p>
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <button className="btn-icon">
-                                                    <MoreVertical size={16} />
-                                                </button>
                                             </td>
                                         </tr>
-                                    );
-                                }) : (
-                                    <tr>
-                                        <td colSpan={7} className="text-center py-8 text-muted">Chưa có dữ liệu phân bổ ngân sách</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             ) : (
-                <div className="periods-grid">
-                    {budgetPeriods.map((period: any) => (
-                        <div key={period.id} className="period-card">
-                            <div className="period-header">
-                                <Calendar className="text-primary" />
-                                <h3>Năm tài chính {period.fiscalYear}</h3>
-                                <span className={`badge ${period.isActive ? 'badge-success' : 'badge-secondary'}`}>
-                                    {period.isActive ? 'Đang hoạt động' : 'Đã kết thúc'}
-                                </span>
-                            </div>
-                            <div className="period-body">
-                                <div className="period-info">
-                                    <span className="label">Loại kỳ:</span>
-                                    <span className="value">{period.periodType}</span>
+                /* ALLOCATION TOOL VIEW (STUCTURED CARD) */
+                <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in slide-in-from-right-4 duration-500">
+                    <div className="lg:col-span-2 space-y-6">
+                        <div className="bg-white rounded-[40px] p-10 shadow-xl shadow-erp-navy/5 border border-slate-50">
+                            {/* Department / Year selectors inside the tool */}
+                            <div className="flex justify-between items-start mb-12">
+                                <div>
+                                    <h2 className="text-2xl font-black text-erp-navy uppercase tracking-tighter">Cấu hình Định biên</h2>
+                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Quy tắc phân bổ 5 phân đoạn</p>
                                 </div>
-                                <div className="period-info">
-                                    <span className="label">Bắt đầu:</span>
-                                    <span className="value">{new Date(period.startDate).toLocaleDateString()}</span>
-                                </div>
-                                <div className="period-info">
-                                    <span className="label">Kết thúc:</span>
-                                    <span className="value">{new Date(period.endDate).toLocaleDateString()}</span>
+                                <div className="flex gap-4">
+                                    <select 
+                                        className="bg-slate-50 px-4 py-2 rounded-xl text-xs font-black border border-slate-100 outline-none"
+                                        value={selectedDeptId}
+                                        onChange={e => handleDeptChange(e.target.value)}
+                                    >
+                                        <option value="">Chọn Phòng ban</option>
+                                        {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                                    </select>
+                                    <select 
+                                        className="bg-slate-50 px-4 py-2 rounded-xl text-xs font-black border border-slate-100 outline-none"
+                                        value={selectedYear}
+                                        onChange={e => setSelectedYear(Number(e.target.value))}
+                                    >
+                                        {fiscalYears.map(y => <option key={y} value={y}>FY {y}</option>)}
+                                    </select>
                                 </div>
                             </div>
-                            <div className="period-footer">
-                                <button className="btn-icon text-primary"><Edit2 size={16} /></button>
-                                <button className="btn-icon text-danger"><Trash2 size={16} /></button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
 
-            {/* Modals - Simplified for now */}
-            {isPeriodModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h2>Thiết lập Chu kỳ Ngân sách</h2>
-                            <button className="close-btn" onClick={() => setIsPeriodModalOpen(false)}>&times;</button>
+                            {/* Total Display */}
+                            <div className="relative mb-12 group">
+                                <label className="absolute -top-2.5 left-8 px-2 bg-white text-[10px] font-black text-erp-blue uppercase tracking-widest z-10">Tổng Ngân sách Năm (VND)</label>
+                                <div className="relative flex items-center">
+                                    <span className="absolute left-10 text-3xl text-slate-200">₫</span>
+                                    <input 
+                                        readOnly
+                                        type="number"
+                                        value={totalAnnualBudget || ''}
+                                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-[35px] pl-20 pr-8 py-10 text-5xl font-black text-erp-navy outline-none cursor-not-allowed"
+                                    />
+                                    <div className="absolute right-10 flex flex-col items-end">
+                                        <span className="text-[9px] font-black text-erp-blue bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 uppercase tracking-widest">Auto-Synced</span>
+                                        {selectedDeptId && <span className="text-[8px] text-slate-400 mt-2">Dựa trên Cost Centers</span>}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {[
+                                    { key: 'q1', label: 'Quý 1', color: 'bg-blue-500' },
+                                    { key: 'q2', label: 'Quý 2', color: 'bg-indigo-500' },
+                                    { key: 'q3', label: 'Quý 3', color: 'bg-purple-500' },
+                                    { key: 'q4', label: 'Quý 4', color: 'bg-pink-500' },
+                                    { key: 'reserve', label: 'Dự phòng', color: 'bg-amber-500' },
+                                ].map((item) => (
+                                    <div key={item.key} className="p-6 rounded-[32px] bg-slate-50/50 border border-slate-100 hover:border-erp-blue/30 transition-all group">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.label}</span>
+                                            <div className="h-1.5 w-8 bg-slate-200 rounded-full overflow-hidden">
+                                                <div className={`h-full ${item.color}`} style={{ width: `${getBucketPercentage(buckets[item.key as keyof typeof buckets])}%` }}></div>
+                                            </div>
+                                        </div>
+                                        <input 
+                                            type="number"
+                                            value={buckets[item.key as keyof typeof buckets] || ''}
+                                            onChange={(e) => handleBucketEdit(item.key as keyof typeof buckets, Number(e.target.value))}
+                                            className="w-full bg-transparent text-2xl font-black text-erp-navy outline-none"
+                                        />
+                                        <div className="text-[10px] font-bold text-slate-400 mt-1">{getBucketPercentage(buckets[item.key as keyof typeof buckets]).toFixed(1)}% / Năm</div>
+                                    </div>
+                                ))}
+
+                                <div className={`p-6 rounded-[32px] border-2 flex flex-col justify-center items-center ${
+                                    isValid ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100 animate-pulse'
+                                }`}>
+                                    <div className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">Check Balance</div>
+                                    <div className={`text-sm font-black ${isValid ? 'text-green-600' : 'text-red-600'}`}>
+                                        {isValid ? "Hạch toán Khớp" : (difference > 0 ? `+${formatCurrency(difference)}` : formatCurrency(difference))}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <form onSubmit={handleCreatePeriod} className="modal-form">
-                            <div className="form-group">
-                                <label>Năm tài chính</label>
-                                <input 
-                                    type="number" 
-                                    value={newPeriod.fiscalYear} 
-                                    onChange={e => setNewPeriod({...newPeriod, fiscalYear: Number(e.target.value)})}
-                                    required 
-                                />
-                            </div>
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Từ ngày</label>
-                                    <input 
-                                        type="date" 
-                                        value={newPeriod.startDate}
-                                        onChange={e => setNewPeriod({...newPeriod, startDate: e.target.value})}
-                                        required 
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Đến ngày</label>
-                                    <input 
-                                        type="date" 
-                                        value={newPeriod.endDate}
-                                        onChange={e => setNewPeriod({...newPeriod, endDate: e.target.value})}
-                                        required 
-                                    />
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-outline" onClick={() => setIsPeriodModalOpen(false)}>Hủy</button>
-                                <button type="submit" className="btn btn-primary">Lưu chu kỳ</button>
-                            </div>
-                        </form>
                     </div>
-                </div>
-            )}
 
-            {isAllocModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h2>Phân bổ Ngân sách mới</h2>
-                            <button className="close-btn" onClick={() => setIsAllocModalOpen(false)}>&times;</button>
+                    <div className="space-y-6">
+                        <div className="bg-erp-navy rounded-[40px] p-8 text-white shadow-2xl shadow-erp-navy/30">
+                            <h3 className="text-xl font-black uppercase tracking-tighter mb-4">Lưu cấu hình</h3>
+                            <p className="text-xs text-slate-400 font-medium leading-relaxed mb-10">
+                                Hệ thống sẽ chốt số liệu cho năm tài chính {selectedYear}. Định mức của từng quý sẽ được dùng làm căn cứ phê duyệt PR.
+                            </p>
+                            
+                            <button 
+                                disabled={!isValid || !selectedDeptId || isSaving}
+                                onClick={handleSave}
+                                className={`w-full py-5 rounded-[24px] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all ${
+                                    isValid && selectedDeptId 
+                                    ? 'bg-white text-erp-navy hover:scale-[1.02] shadow-xl' 
+                                    : 'bg-white/10 text-white/30'
+                                }`}
+                            >
+                                {isSaving ? <RefreshCcw className="animate-spin" /> : (saveSuccess ? "Xác nhận thành công" : "Lưu phân bổ ngay")}
+                            </button>
                         </div>
-                        <form onSubmit={handleCreateAlloc} className="modal-form">
-                            <div className="form-group">
-                                <label>Chu kỳ ngân sách</label>
-                                <select 
-                                    value={newAlloc.budgetPeriodId} 
-                                    onChange={e => setNewAlloc({...newAlloc, budgetPeriodId: e.target.value})}
-                                    required
-                                >
-                                    <option value="">Chọn chu kỳ...</option>
-                                    {budgetPeriods.map((p: any) => (
-                                        <option key={p.id} value={p.id}>{p.fiscalYear} ({p.periodType})</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="form-group">
-                                <label>Cost Center (Trung tâm chi phí)</label>
-                                <select 
-                                    value={newAlloc.costCenterId} 
-                                    onChange={e => {
-                                        const cc = costCenters.find((c: any) => c.id === e.target.value);
-                                        setNewAlloc({...newAlloc, costCenterId: e.target.value, deptId: cc?.deptId || ''});
-                                    }}
-                                    required
-                                >
-                                    <option value="">Chọn cost center...</option>
-                                    {costCenters.map((cc: any) => (
-                                        <option key={cc.id} value={cc.id}>{cc.code} - {cc.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="form-group">
-                                <label>Số tiền ngân sách (VND)</label>
-                                <input 
-                                    type="number" 
-                                    placeholder="0"
-                                    onChange={e => setNewAlloc({...newAlloc, allocatedAmount: Number(e.target.value)})}
-                                    required 
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Ghi chú</label>
-                                <textarea 
-                                    rows={3} 
-                                    placeholder="Lý do phân bổ..."
-                                    onChange={e => setNewAlloc({...newAlloc, notes: e.target.value})}
-                                ></textarea>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-outline" onClick={() => setIsAllocModalOpen(false)}>Hủy</button>
-                                <button type="submit" className="btn btn-primary">Xác nhận phân bổ</button>
-                            </div>
-                        </form>
                     </div>
                 </div>
             )}
 
             <style jsx>{`
-                .finance-container {
-                    padding: 2rem;
-                    background: #f8fafc;
-                    min-height: 100vh;
-                }
-                .page-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 2rem;
-                }
-                h1 { font-size: 1.875rem; color: #1e293b; margin: 0; }
-                .subtitle { color: #64748b; margin-top: 0.25rem; }
-                .header-actions { display: flex; gap: 1rem; }
-                
-                .stats-grid {
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 1.5rem;
-                    margin-bottom: 2.5rem;
-                }
-                .stat-card {
-                    background: white;
-                    padding: 1.5rem;
-                    border-radius: 1rem;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                    display: flex;
-                    gap: 1.25rem;
-                    align-items: center;
-                }
-                .stat-icon {
-                    width: 3.5rem;
-                    height: 3.5rem;
-                    border-radius: 0.75rem;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                }
-                .bg-blue { background: #3b82f6; }
-                .bg-purple { background: #8b5cf6; }
-                .bg-orange { background: #f59e0b; }
-                
-                .stat-label { font-size: 0.875rem; color: #64748b; display: block; }
-                .stat-value { font-size: 1.5rem; margin: 0.25rem 0; color: #1e293b; }
-                .stat-trend { font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem; }
-                .trend-up { color: #10b981; }
-                
-                .progress-bar-small {
-                    width: 100%;
-                    height: 6px;
-                    background: #f1f5f9;
-                    border-radius: 3px;
-                    margin: 0.5rem 0;
-                    overflow: hidden;
-                }
-                .progress-fill { height: 100%; background: #3b82f6; border-radius: 3px; }
-                .bg-warning { background: #f59e0b; }
-                .bg-danger { background: #ef4444; }
-
-                .content-tabs {
-                    display: flex;
-                    gap: 2rem;
-                    border-bottom: 1px solid #e2e8f0;
-                    margin-bottom: 2rem;
-                }
-                .tab-item {
-                    padding: 1rem 0;
-                    background: none;
-                    border: none;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    color: #64748b;
-                    cursor: pointer;
-                    font-weight: 500;
-                    position: relative;
-                }
-                .tab-item.active { color: #3b82f6; }
-                .tab-item.active::after {
-                    content: '';
-                    position: absolute;
-                    bottom: -1px;
-                    left: 0;
-                    right: 0;
-                    height: 2px;
-                    background: #3b82f6;
-                }
-
-                .table-section {
-                    background: white;
-                    border-radius: 1rem;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                    overflow: hidden;
-                }
-                .table-filters {
-                    padding: 1.25rem;
-                    display: flex;
-                    justify-content: space-between;
-                    border-bottom: 1px solid #f1f5f9;
-                }
-                .search-box {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                    background: #f8fafc;
-                    padding: 0.5rem 1rem;
-                    border-radius: 0.5rem;
-                    width: 300px;
-                }
-                .search-box input {
-                    background: none;
-                    border: none;
-                    outline: none;
-                    font-size: 0.875rem;
-                }
-
-                .data-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                .data-table th {
-                    text-align: left;
-                    padding: 1rem 1.25rem;
-                    font-size: 0.75rem;
-                    text-transform: uppercase;
-                    color: #64748b;
-                    background: #f8fafc;
-                }
-                .data-table td {
-                    padding: 1.25rem;
-                    border-bottom: 1px solid #f1f5f9;
-                    font-size: 0.875rem;
-                }
-                .flex-col { display: flex; flex-direction: column; gap: 0.25rem; }
-                .font-medium { font-weight: 500; color: #1e293b; }
-                .text-muted { color: #64748b; }
-                .text-xs { font-size: 0.75rem; }
-                
-                .usage-indicator { display: flex; align-items: center; gap: 0.75rem; width: 120px; }
-                .progress-mini { flex: 1; height: 4px; background: #f1f5f9; border-radius: 2px; overflow: hidden; }
-                
-                .periods-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                    gap: 1.5rem;
-                }
-                .period-card {
-                    background: white;
-                    border-radius: 1rem;
-                    padding: 1.5rem;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                }
-                .period-header {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                    margin-bottom: 1.25rem;
-                    position: relative;
-                }
-                h3 { font-size: 1.125rem; margin: 0; flex: 1; }
-                .badge {
-                    padding: 0.25rem 0.5rem;
-                    border-radius: 0.25rem;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                }
-                .badge-success { background: #dcfce7; color: #166534; }
-                .badge-secondary { background: #f1f5f9; color: #475569; }
-
-                .period-info {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 0.75rem;
-                    font-size: 0.875rem;
-                }
-                .period-info .label { color: #64748b; }
-                .period-info .value { color: #1e293b; font-weight: 500; }
-                
-                .period-footer {
-                    margin-top: 1.5rem;
-                    padding-top: 1rem;
-                    border-top: 1px solid #f1f5f9;
-                    display: flex;
-                    justify-content: flex-end;
-                    gap: 0.5rem;
-                }
-
-                .btn {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    padding: 0.5rem 1rem;
-                    border-radius: 0.5rem;
-                    font-weight: 500;
-                    font-size: 0.875rem;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    border: none;
-                }
-                .btn-primary { background: #3b82f6; color: white; }
-                .btn-secondary { background: #f1f5f9; color: #1e293b; }
-                .btn-outline { background: white; border: 1px solid #e2e8f0; color: #1e293b; }
-                .btn-icon { background: none; border: none; cursor: pointer; color: #94a3b8; }
-                
-                /* Modal Styles */
-                .modal-overlay {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(0,0,0,0.5);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 1000;
-                }
-                .modal-content {
-                    background: white;
-                    border-radius: 1rem;
-                    width: 500px;
-                    max-width: 90%;
-                    padding: 1.5rem;
-                }
-                .modal-header {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 1.5rem;
-                }
-                .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
-                .modal-form {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1.25rem;
-                }
-                .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
-                .form-group label { font-size: 0.875rem; font-weight: 500; color: #475569; }
-                .form-group input, .form-group select, .form-group textarea {
-                    padding: 0.625rem;
-                    border: 1px solid #e2e8f0;
-                    border-radius: 0.5rem;
-                    font-size: 0.875rem;
-                }
-                .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-                .modal-footer {
-                    margin-top: 1rem;
-                    display: flex;
-                    justify-content: flex-end;
-                    gap: 1rem;
-                }
+                input[type="number"]::-webkit-inner-spin-button { appearance: none; }
             `}</style>
         </div>
     );
