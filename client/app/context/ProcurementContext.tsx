@@ -3,10 +3,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo, useEffect } from "react";
 import Cookies from 'js-cookie';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ProcurementContext = createContext<any>(undefined);
-
-interface User {
+export interface User {
     id: string;
     name?: string;
     email: string;
@@ -14,9 +11,10 @@ interface User {
     fullName?: string;
     icon?: string;
     avatarUrl?: string;
+    deptId?: string;
 }
 
-interface PRItem {
+export interface PRItem {
     id: string;
     productId?: string;
     description?: string;
@@ -28,10 +26,11 @@ interface PRItem {
     estimatedPrice: number;
 }
 
-interface PR {
+export interface PR {
     id: string;
     prNumber?: string;
     title?: string;
+    reason?: string;
     description?: string;
     justification?: string;
     status: string;
@@ -49,20 +48,21 @@ interface PR {
     costCenter?: { code: string; name?: string };
     procurementId?: string;
     totalEstimate?: number | string;
+    total?: number | string;
     items?: PRItem[];
     attachments?: { name: string, url: string }[];
     creatorRole?: string; // Fallback helper
     targetApproverRole?: string;
 }
 
-interface POItem {
+export interface POItem {
     id: string;
     description: string;
     qty: number;
     estimatedPrice: number;
 }
 
-interface PO {
+export interface PO {
     id: string;
     vendor: string;
     items: POItem[];
@@ -71,7 +71,7 @@ interface PO {
     createdAt?: string;
 }
 
-interface RFQ {
+export interface RFQ {
     id: string;
     prId: string;
     vendor: string;
@@ -84,14 +84,14 @@ interface RFQ {
     messages?: { sender: string, senderRole: string, text: string, timestamp: string }[];
 }
 
-interface GRN {
+export interface GRN {
     id: string;
     poId: string;
     receivedItems: Record<string, number>;
     createdAt: string;
 }
 
-interface Invoice {
+export interface Invoice {
     id: string;
     vendor: string;
     poId: string;
@@ -100,7 +100,33 @@ interface Invoice {
     createdAt: string;
 }
 
-interface ProcurementState {
+export interface Department {
+    id: string;
+    name: string;
+    code: string;
+    costCenterCode?: string;
+}
+
+export interface CostCenter {
+    id: string;
+    name: string;
+    code: string;
+    budgetAnnual: number;
+    budgetUsed: number;
+    currency: string;
+    deptId: string;
+    departmentName?: string;
+}
+
+export interface Organization {
+    id: string;
+    name: string;
+    code: string;
+    address: string;
+    taxId: string;
+}
+
+export interface ProcurementState {
     currentUser: User | null;
     prs: PR[];
     myPrs: PR[];
@@ -110,16 +136,58 @@ interface ProcurementState {
     invoices: Invoice[];
     budgets: any; // Keep for legacy if needed
     users: User[];
-    departments: any[];
-    costCenters: any[];
-    organizations: any[];
+    departments: Department[];
+    costCenters: CostCenter[];
+    organizations: Organization[];
     budgetPeriods: any[]; 
     budgetAllocations: any[];
     notifications: { id: number; message: string; type: string; role?: string }[];
     quotes: any[];
     products: any[];
     approvals: any[];
+    fiscalYears: number[];
 }
+
+interface ProcurementContextType extends ProcurementState {
+    login: (email: string, password?: string) => Promise<boolean>;
+    logout: () => Promise<void>;
+    refreshData: () => Promise<void>;
+    apiFetch: (url: string, options?: RequestInit) => Promise<Response>;
+    addPR: (data: any) => Promise<string>;
+    approvePR: (id: string) => Promise<boolean>;
+    createRFQ: (prId: string, vendor: string) => Promise<boolean>;
+    createRFQConsolidated: (data: any) => Promise<string>;
+    actionApproval: (workflowId: string, action: string, memo?: string) => Promise<boolean>;
+    addDept: (data: any) => Promise<boolean>;
+    updateDept: (id: string, data: any) => Promise<boolean>;
+    removeDept: (id: string) => Promise<boolean>;
+    addUser: (data: any) => Promise<boolean>;
+    updateUser: (id: string, data: any) => Promise<boolean>;
+    addBudgetPeriod: (data: any) => Promise<boolean>;
+    updateBudgetPeriod: (id: string, data: any) => Promise<boolean>;
+    removeBudgetPeriod: (id: string) => Promise<boolean>;
+    addBudgetAllocation: (data: any) => Promise<boolean>;
+    updateBudgetAllocation: (id: string, data: any) => Promise<boolean>;
+    removeBudgetAllocation: (id: string) => Promise<boolean>;
+    addBudgetAllocationBundle?: (data: any) => Promise<boolean>;
+    addCostCenter: (data: any) => Promise<boolean>;
+    updateCostCenter: (id: string, data: any) => Promise<boolean>;
+    removeCostCenter: (id: string) => Promise<boolean>;
+    addOrganization: (data: any) => Promise<boolean>;
+    updateOrganization: (id: string, data: any) => Promise<boolean>;
+    removeOrganization: (id: string) => Promise<boolean>;
+    notify: (message: string, type?: 'success' | 'error' | 'info' | 'warning', role?: string) => void;
+    register: (data: any) => Promise<boolean>;
+    createQuote: (rfqId: string, quoteData: any) => Promise<boolean>;
+    createGRN: (data: any) => Promise<boolean>;
+    ackPO: (id: string) => Promise<boolean>;
+    shipPO: (id: string) => Promise<boolean>;
+    createInvoice: (data: any) => Promise<boolean>;
+    payInvoice: (id: string) => Promise<boolean>;
+    matchInvoice: (id: string, status?: string) => Promise<boolean>;
+}
+
+const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
 
 const DEMO_USERS = [
     {
@@ -286,7 +354,8 @@ const INITIAL_STATE: ProcurementState = {
         { id: "p8", name: "Chuột Logitech MX Master 3S - Màu Graphite", sku: "MX3S-GRA", unitPriceRef: 3500000, unit: "PCS" },
         { id: "p9", name: "Lót chuột cơ Razer Goliathus Extended Chroma - Black", sku: "RC21-01", unitPriceRef: 1200000, unit: "UNIT" },
         { id: "p10", name: "Bộ sạc pin dự phòng Anker PowerCore Essential 20000", sku: "A1268", unitPriceRef: 1800000, unit: "UNIT" },
-    ]
+    ],
+    fiscalYears: [2024, 2025, 2026]
 };
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
@@ -519,7 +588,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
-    const actionApproval = useCallback((workflowId: string, action: string) => {
+    const actionApproval = useCallback((workflowId: string, action: string, memo?: string) => {
         const prId = workflowId.replace('wf-', '');
         setState(prev => {
             const updatedPrs = prev.prs.map(p => p.id === prId ? { ...p, status: action === 'APPROVE' ? 'APPROVED' : 'REJECTED' } : p);
@@ -637,6 +706,18 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
+    const addBudgetAllocationBundle = useCallback((data: any) => {
+        console.log("addBudgetAllocationBundle called with:", data);
+        return Promise.resolve(true);
+    }, []);
+
+    const createGRN = useCallback((data: any) => Promise.resolve(true), []);
+    const ackPO = useCallback((id: string) => Promise.resolve(true), []);
+    const shipPO = useCallback((id: string) => Promise.resolve(true), []);
+    const createInvoice = useCallback((data: any) => Promise.resolve(true), []);
+    const payInvoice = useCallback((id: string) => Promise.resolve(true), []);
+    const matchInvoice = useCallback((id: string, status?: string) => Promise.resolve(true), []);
+
     const register = useCallback(async (data: any) => {
         try {
             const res = await apiFetch('/auth/register', {
@@ -680,6 +761,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         addBudgetAllocation,
         updateBudgetAllocation,
         removeBudgetAllocation,
+        addBudgetAllocationBundle,
+        createGRN,
+        ackPO,
+        shipPO,
+        createInvoice,
+        payInvoice,
+        matchInvoice,
         addCostCenter,
         updateCostCenter,
         removeCostCenter,
@@ -689,7 +777,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         notify,
         register,
         createQuote
-    }), [state, login, register, logout, refreshData, apiFetch, addPR, approvePR, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addCostCenter, updateCostCenter, removeCostCenter, addOrganization, updateOrganization, removeOrganization, notify, createQuote]);
+    }), [state, login, register, logout, refreshData, apiFetch, addPR, approvePR, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice, addCostCenter, updateCostCenter, removeCostCenter, addOrganization, updateOrganization, removeOrganization, notify, createQuote]);
 
     return (
         <ProcurementContext.Provider value={contextValue}>
@@ -698,4 +786,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export const useProcurement = () => useContext(ProcurementContext);
+export const useProcurement = () => {
+    const context = useContext(ProcurementContext);
+    if (context === undefined) {
+        throw new Error("useProcurement must be used within a ProcurementProvider");
+    }
+    return context;
+};

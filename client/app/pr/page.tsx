@@ -1,24 +1,10 @@
 "use client";
 
 import React from "react";
-import { useProcurement } from "../context/ProcurementContext";
+import { useProcurement, PR } from "../context/ProcurementContext";
 import ERPTable from "../components/shared/ERPTable";
 import { Plus, FileText, Send, CheckCircle2, Check, X } from "lucide-react";
 import Link from "next/link";
-
-interface PR {
-  id: string;
-  prNumber?: string;
-  title?: string;
-  reason?: string;
-  description?: string;
-  status: string;
-  totalEstimate?: number;
-  total?: number;
-  department?: { name: string } | string;
-  costCenter?: { code: string };
-  creatorRole: string;
-}
 
 export default function PRPage() {
     const { prs, myPrs, approvePR, currentUser, actionApproval, costCenters, approvals } = useProcurement();
@@ -51,7 +37,7 @@ export default function PRPage() {
         if (activeTab === "Đã duyệt") return filtered.filter((p: PR) => p.status === "APPROVED");
         
         return filtered;
-    }, [prs, myPrs, activeTab, isManager, isDirector, currentUser, approvals]);
+    }, [prs, myPrs, activeTab, approvals]);
 
     const columns = [
         { 
