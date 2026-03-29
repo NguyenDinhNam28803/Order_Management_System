@@ -1,7 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RfqmoduleService } from '../../rfqmodule/rfqmodule.service';
-import { DocumentType, PrStatus, RfqStatus, PoStatus } from '@prisma/client';
+import {
+  DocumentType,
+  PrStatus,
+  RfqStatus,
+  PoStatus,
+  GrnStatus,
+  QcResult,
+} from '@prisma/client';
 
 @Injectable()
 export class AutomationService {
@@ -20,6 +27,77 @@ export class AutomationService {
 
     if (docType === DocumentType.PURCHASE_REQUISITION) {
       await this.autoCreateRfqFromPr(docId);
+    } else if (docType === DocumentType.PURCHASE_ORDER) {
+      await this.autoCreateGrnFromPo(docId);
+    }
+  }
+
+  /**
+   * Tự động tạo GRN từ PO đã duyệt
+   */
+  private async autoCreateGrnFromPo(poId: string) {
+    try {
+      // 1. Lấy thông tin PO và Items
+      const po = await this.prisma.purchaseOrder.findUnique({
+        where: { id: poId },
+        include: { items: true },
+      });
+
+      if (!po) {
+        this.logger.error(`PO ${poId} not found for auto GRN creation.`);
+        return;
+      }
+
+      // 2. Kiểm tra xem đã có GRN nào cho PO này chưa (đề phòng chạy lại)
+      const existingGrn = await this.prisma.goodsReceipt.findFirst({
+        where: { poId: po.id },
+      });
+
+      if (existingGrn) {
+        this.logger.warn(`GRN already exists for PO ${po.poNumber}. Skipping.`);
+        return;
+      }
+
+      this.logger.log(`Auto-creating GRN for PO: ${po.poNumber}`);
+
+      // 3. Tạo GRN và GRN Items trong transaction
+      const grnNumber = `GRN-AUTO-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+
+      await this.prisma.$transaction(async (tx) => {
+        const grn = await tx.goodsReceipt.create({
+          data: {
+            grnNumber,
+            poId: po.id,
+            orgId: po.orgId,
+            receivedById: po.buyerId, // Mặc định gán cho người mua, bộ phận kho sẽ cập nhật sau
+            status: GrnStatus.DRAFT,
+            notes: `GRN được tạo tự động từ PO ${po.poNumber} sau khi được phê duyệt.`,
+            items: {
+              create: po.items.map((item) => ({
+                poItemId: item.id,
+                receivedQty: item.qty, // Mặc định số lượng nhận bằng số lượng đặt
+                acceptedQty: 0,
+                qcResult: QcResult.PENDING,
+              })),
+            },
+          },
+        });
+
+        // 4. Cập nhật trạng thái PO sang GRN_CREATED
+        await tx.purchaseOrder.update({
+          where: { id: po.id },
+          data: { status: PoStatus.GRN_CREATED },
+        });
+
+        this.logger.log(
+          `GRN ${grn.grnNumber} created automatically for PO ${po.poNumber}`,
+        );
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to auto-create GRN from PO ${poId}: ${error.message}`,
+        error.stack,
+      );
     }
   }
 

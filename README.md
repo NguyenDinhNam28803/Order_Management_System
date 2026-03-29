@@ -1,107 +1,146 @@
 # 🚀 Smart E-Procurement & Order Management System (OMS)
 
-## 1. Tổng quan Hệ thống (Executive Summary)
-Hệ thống OMS này là một giải pháp quản trị mua sắm tập trung (E-Procurement), được thiết kế để chuyển đổi mô hình mua sắm truyền thống sang mô hình **Touchless Procurement**. Hệ thống sử dụng NestJS làm nhân lõi, kết hợp với Trí tuệ nhân tạo (LLM) để tối ưu hóa việc chọn nhà cung cấp và xử lý dữ liệu báo giá, giúp giảm thiểu tối đa thời gian xử lý thủ công và sai sót con người.
+Hệ thống quản trị mua sắm tập trung (E-Procurement) toàn diện, tích hợp Trí tuệ nhân tạo (AI) để tối ưu hóa quy trình từ yêu cầu mua sắm đến thanh toán (Procure-to-Pay).
 
 ---
 
-## 2. Kiến trúc Hệ thống (System Architecture)
+## 🏗️ Kiến trúc Dự án (Project Architecture)
 
-### 🏗️ Công nghệ cốt lõi
-*   **Backend Framework**: NestJS (TypeScript) - Kiến trúc Modular hóa, dễ dàng mở rộng thành Microservices.
-*   **Database**: PostgreSQL 16+ với các extension `pg_trgm` (tìm kiếm mờ) và `uuid-ossp` (quản lý định danh duy nhất).
-*   **ORM**: Prisma Client - Đảm bảo Type-safety tuyệt đối và tối ưu hóa truy vấn.
-*   **Caching & Queue**: Redis & BullMQ - Xử lý các tác vụ AI nặng và hệ thống thông báo thời gian thực.
-*   **AI Integration**: Module `ai-service` hỗ trợ kết nối đa mô hình (GPT-4, Claude, Gemini) để phân tích dữ liệu phi cấu trúc.
-*   **Security**: JWT (Access/Refresh Token), Role-Based Access Control (RBAC), và cơ chế mã hóa AES-256 cho các thông tin cấu hình nhạy cảm.
+*   **`/client`**: Next.js 16 (React 19), Tailwind CSS 4.
+*   **`/server`**: NestJS, Prisma, PostgreSQL, AI Engine (Gemini/OpenAI).
 
 ---
 
-## 3. Phân tích chi tiết các Module nghiệp vụ
+## 🚀 Công nghệ sử dụng
 
-### 🛡️ Nhóm 1: Core Governance (Quản trị lõi)
-*   **Organization Module**: 
-    *   Hỗ trợ mô hình đa tổ chức (Multi-tenant). Mỗi tổ chức có hồ sơ KYC, Trust Score (điểm tín nhiệm) và Tiering (phân hạng chiến lược).
-    *   Tự động tính toán Trust Score dựa trên lịch sử giao dịch: Tỷ lệ giao hàng đúng hạn, chất lượng hàng hóa và tính chính xác của hóa đơn.
-*   **Budget Module**:
-    *   **Logic**: Kiểm soát ngân sách 3 lớp: `OrgBudget` (Tổng) -> `BudgetAllocation` (Phòng ban/Hạng mục) -> `CostCenter` (Trung tâm chi phí).
-    *   **Tính năng**: Cơ chế **Budget Hold** (Đóng băng) khi PR được tạo và **Budget Spend** (Trừ thực tế) khi thanh toán hoàn tất.
-*   **Approval Module (Cơ chế phê duyệt)**:
-    *   **Matrix Rule**: Cấu hình linh hoạt theo `DocumentType`, `TotalAmount` và `Department`.
-    *   **Workflow**: Hỗ trợ duyệt song song, duyệt tuần tự, và tự động leo thang (Escalation) hoặc ủy quyền (Delegation) nếu quá thời hạn SLA.
-
-### 📝 Nhóm 2: Strategic Sourcing (Tìm nguồn chiến lược)
-*   **PR Module (Yêu cầu mua sắm)**: 
-    *   Tự động kiểm tra ngân sách khả dụng theo thời gian thực (Real-time Budget Check).
-    *   Tích hợp AI để phân loại danh mục sản phẩm (Category) tự động dựa trên mô tả yêu cầu.
-*   **RFQ Module (Mời thầu điện tử)**:
-    *   **AI Search**: Tự động quét database nhà cung cấp toàn cầu để mời thầu dựa trên năng lực và uy tín.
-    *   **QA Thread**: Hệ thống hỏi đáp tập trung, minh bạch giữa bên mua và các bên thầu.
-    *   **Counter-Offer**: Cơ chế đàm phán giá/điều khoản nhiều vòng, có AI hỗ trợ đưa ra mức giá trần phù hợp.
-
-### 📦 Nhóm 3: Transactional Execution (Thực thi giao dịch)
-*   **PO Module (Đơn hàng mua sắm)**: 
-    *   Quản lý phiên bản đơn hàng (PO Amendment) và lịch sử thay đổi.
-    *   Tự động tạo file PO PDF chuẩn hóa và quản lý ký số (Digital Signature).
-*   **GRN Module (Nhập kho)**:
-    *   Hỗ trợ nhập kho từng phần (Partial Delivery) và theo dõi số lượng tồn đọng.
-    *   Hệ thống QC tích hợp: Chấm điểm chất lượng, chụp ảnh minh chứng tại hiện trường và ghi nhận lỗi.
-    *   Tự động kích hoạt luồng **Return to Vendor (RTV)** nếu hàng hóa bị loại bỏ trong quá trình QC.
-
-### 💰 Nhóm 4: Financial Settlement (Quyết toán tài chính)
-*   **Invoice & 3-Way Matching**:
-    *   Tự động đối soát khớp 3 bên: `PO Quantity/Price` ↔ `GRN Quantity` ↔ `Invoice Quantity/Price`.
-    *   Phát hiện sai lệch (Variance) và tự động chuyển trạng thái `Exception Review` cho phòng Tài chính nếu vượt ngưỡng cho phép.
-*   **Escrow & Payment**:
-    *   Cơ chế ký quỹ (Escrow): Tiền được giữ an toàn trên hệ thống và chỉ giải ngân cho nhà cung cấp khi GRN được xác nhận "Pass QC".
+- **Framework:** [NestJS](https://nestjs.com/) (Node.js) - Kiến trúc module mạnh mẽ và dễ mở rộng.
+- **Database ORM:** [Prisma](https://www.prisma.io/) kết nối PostgreSQL.
+- **Xác thực:** JWT (JSON Web Token), Passport.js, Bcrypt mã hóa mật khẩu.
+- **AI Integration:** OpenAI API & Google Generative AI (Gemini) cho các tính năng thông minh.
+- **Real-time:** Socket.io cho thông báo tức thời.
+- **Caching & Queue:** Redis & BullMQ xử lý tác vụ nền và hàng đợi.
+- **Tài liệu API:** Swagger UI (OpenAPI).
+- **Giao tiếp:** Nodemailer (Email) & Twilio (SMS).
 
 ---
 
-## 4. Luồng Tự động hóa Thông minh (Automation Flow)
+## 🧩 Chi tiết các Nhóm Module Nghiệp vụ (Business Domains)
 
-Chúng tôi triển khai cơ chế **Event-Driven Automation** (Tự động hóa theo sự kiện) để loại bỏ các thao tác thừa:
+Hệ thống được tổ chức thành 5 nhóm module chính để đảm bảo tính tách biệt và dễ bảo trì:
 
-### Luồng A: Auto-Sourcing (PR ➡️ RFQ)
-1.  **Trigger**: Một PR được phê duyệt hoàn toàn (`APPROVED`).
-2.  **Action**: 
-    *   Hệ thống tự bốc tách dữ liệu PR Items để tạo `RfqRequest`.
-    *   AI phân tích mặt hàng và tự động gửi lời mời thầu đến các nhà cung cấp có Trust Score > 80 trong cùng ngành hàng.
-    *   RFQ tự động chuyển trạng thái sang `SENT` mà không cần nhân viên Procurement can thiệp.
+### 🛡️ 1. Nhóm Quản trị & Hệ thống (Core & Admin)
+*   **`auth-module`**: Xử lý Đăng nhập/Đăng ký, JWT, Phân quyền dựa trên vai trò (RBAC).
+*   **`user-module`**: Quản lý hồ sơ người dùng và phân quyền chi tiết.
+*   **`organization-module`**: Định nghĩa cấu trúc công ty (Chi nhánh, Phòng ban, Tổ chức con).
+*   **`system-config-module`**: Lưu trữ cấu hình hệ thống (Tỷ giá, tham số phê duyệt, cài đặt email).
+*   **`audit-module`**: Ghi lại nhật ký thay đổi dữ liệu (Audit Log - Who, When, What).
 
-### Luồng B: Auto-Ordering (RFQ ➡️ PO)
-1.  **Trigger**: Người mua nhấn chọn "Trao thầu" (`Award`) cho một báo giá.
-2.  **Action**: 
-    *   Hệ thống tự động chuyển báo giá thắng thầu thành `Purchase Order`.
-    *   Dữ liệu về giá, thuế, điều khoản thanh toán và lead-time được ánh xạ 1:1 sang PO.
-    *   Tự động thực hiện cam kết ngân sách (`Committed Amount`) trong hệ thống tài chính.
+### 🛒 2. Nhóm Thu mua & Cung ứng (Procurement & Sourcing)
+*   **`prmodule` (Purchase Request)**: Khởi tạo yêu cầu mua sắm, kiểm tra ngân sách tự động.
+*   **`rfqmodule` (Request for Quotation)**: Quản lý yêu cầu báo giá và so sánh giá từ các nhà cung cấp.
+*   **`pomodule` (Purchase Order)**: Quản lý đơn hàng chính thức từ PR/RFQ đã duyệt.
+*   **`product-module`**: Quản lý danh mục sản phẩm, mã SKU và giá tham chiếu.
+*   **`supplier-kpimodule`**: Đánh giá hiệu quả nhà cung cấp (Giao hàng, Chất lượng, Giá cả).
+
+### 💰 3. Nhóm Tài chính & Kiểm soát (Finance & Compliance)
+*   **`budget-module`**: Quản lý hạn mức ngân sách theo năm/quý/tháng.
+*   **`cost-center-module`**: Phân bổ chi phí cho từng trung tâm chi phí cụ thể.
+*   **`approval-module`**: Công cụ xử lý luồng phê duyệt động theo điều kiện (Amount, Department).
+*   **`invoice-module`**: Tiếp nhận hóa đơn và thực hiện **"3-way matching"** (PO - GRN - Invoice).
+*   **`payment-module`**: Lập kế hoạch và theo dõi lịch sử thanh toán.
+
+### 📦 4. Nhóm Vận hành & Kho (Operations & Logistics)
+*   **`grnmodule` (Goods Receipt Note)**: Xác nhận số lượng/chất lượng hàng thực tế nhận tại kho.
+*   **`dispute-module`**: Xử lý các tranh chấp, khiếu nại hàng hóa (thiếu, hỏng).
+*   **`review-module`**: Người dùng đánh giá chất lượng sản phẩm và dịch vụ sau khi nhận hàng.
+
+### 🧠 5. Nhóm Thông minh & Giao tiếp (Intelligence & Communication)
+*   **`ai-service`**: Tích hợp AI để gợi ý nhà cung cấp, phân tích chi tiêu và dự báo nhu cầu.
+*   **`notification-module`**: Thông báo thời gian thực qua Web (Socket), Email và SMS.
+*   **`report-module`**: Xuất báo cáo tổng quan chi tiêu và hiệu suất thu mua.
+
+---
+
+## 🔄 Luồng Nghiệp vụ Chi tiết (Detailed Operational & Data Flow)
+
+Đây là quy trình vận hành chi tiết của hệ thống, mô tả cách dữ liệu di chuyển và xử lý trong các tình huống khác nhau.
+
+### 1. Giai đoạn: Khởi tạo Yêu cầu (Purchase Request - PR)
+*   **Hành động**: User (Requester) tạo và gửi PR.
+*   **Dữ liệu đi đâu?**: 
+    *   Tạo bản ghi trong bảng `PR` với trạng thái `PENDING`.
+    *   Truy vấn bảng `Budget` để kiểm tra số dư.
+*   **Trường hợp ĐÚNG (Hợp lệ)**: 
+    *   Ngân sách đủ -> Hệ thống thực hiện **Soft Commit** (Trừ ảo vào `Budget.HoldAmount`).
+    *   Gửi thông báo (Socket.io/Email) cho người duyệt cấp 1.
+*   **Trường hợp SAI (Thất bại)**: 
+    *   Ngân sách thiếu -> Trả về lỗi `400 Bad Request`. Dữ liệu PR không được lưu hoặc giữ trạng thái `DRAFT` kèm cảnh báo "Over Budget".
+
+### 2. Giai đoạn: Phê duyệt (Approval Workflow)
+*   **Hành động**: Người duyệt (Approver) nhấn Duyệt hoặc Từ chối.
+*   **Dữ liệu đi đâu?**: 
+    *   Cập nhật bảng `ApprovalLog`.
+    *   Nếu duyệt: Chuyển trạng thái PR hoặc đẩy lên cấp duyệt cao hơn dựa trên `ApprovalMatrix`.
+*   **Trường hợp ĐÚNG (Duyệt hết)**: 
+    *   PR chuyển trạng thái `APPROVED`. 
+    *   Dữ liệu sẵn sàng để chuyển thành RFQ hoặc PO.
+*   **Trường hợp SAI (Từ chối)**: 
+    *   Dữ liệu PR chuyển trạng thái `REJECTED`. 
+    *   Giải phóng ngân sách: Trả lại số tiền từ `Budget.HoldAmount` về lại ngân sách khả dụng.
+    *   Thông báo cho Requester kèm lý do từ chối.
+
+### 3. Giai đoạn: Tìm nguồn & Báo giá (RFQ - Strategic Sourcing)
+*   **Hành động**: Chuyển PR -> RFQ và mời Nhà cung cấp báo giá.
+*   **Dữ liệu đi đâu?**: 
+    *   Tạo bảng `RFQ` liên kết với `PR_Items`.
+    *   Gửi email/Portal link cho `Suppliers`.
+*   **Trường hợp ĐÚNG (Có báo giá tốt)**: 
+    *   AI so sánh báo giá, gợi ý Vendor thắng thầu. 
+    *   Người dùng chọn "Award" -> Hệ thống tự động khóa RFQ và chuẩn bị tạo PO.
+*   **Trường hợp SAI (Không có báo giá/Giá quá cao)**: 
+    *   Hệ thống cho phép mở vòng đấu thầu mới hoặc hủy RFQ.
+
+### 4. Giai đoạn: Nhận hàng & Kiểm soát chất lượng (GRN & QC)
+*   **Hành động**: Kho xác nhận nhập hàng (Goods Receipt Note).
+*   **Dữ liệu đi đâu?**: 
+    *   Cập nhật số lượng thực nhận vào bảng `GRN`.
+    *   Liên kết `GRN` với `PO`.
+*   **Trường hợp ĐÚNG (Khớp hoàn toàn)**: 
+    *   Số lượng thực nhận = Số lượng đặt trên PO. 
+    *   Trạng thái đơn hàng chuyển sang `RECEIVED`.
+*   **Trường hợp SAI (Sai lệch/Hỏng)**: 
+    *   Thực nhận < Đặt hàng -> PO ở trạng thái `PARTIALLY_RECEIVED`.
+    *   Hàng hỏng -> Kích hoạt module `Dispute`. Dữ liệu lỗi được lưu vào `DisputeLog`, tạm dừng luồng thanh toán cho phần hàng lỗi.
+
+### 5. Giai đoạn: Đối soát 3 bên & Thanh toán (3-Way Match & Payment)
+*   **Hành động**: Kế toán tiếp nhận Hóa đơn (Invoice).
+*   **Dữ liệu đi đâu?**: 
+    *   Hệ thống chạy thuật toán so sánh: `PO.Price/Qty` vs `GRN.Qty` vs `Invoice.Price/Qty`.
+*   **Trường hợp ĐÚNG (Match Success)**: 
+    *   Dữ liệu khớp -> Tạo lệnh thanh toán `PaymentSchedule`.
+    *   Thực hiện **Hard Commit**: Trừ ngân sách thực tế (`Budget.ActualSpent`), giải phóng hoàn toàn `HoldAmount`.
+*   **Trường hợp SAI (Mismatch)**: 
+    *   Lệch giá hoặc số lượng -> Hệ thống chặn thanh toán, đẩy vào trạng thái `PENDING_REVIEW`. 
+    *   Gửi cảnh báo cho phòng Thu mua và Tài chính để xử lý thủ công.
 
 ---
 
-## 5. Tích hợp Trí tuệ nhân tạo (AI Engine)
+## ⚙️ Hệ thống Tự động hóa (Automation Engine)
 
-Module `ai-service` đóng vai trò là "Trợ lý ảo" cho toàn hệ thống:
-*   **Supplier Scoring**: Chấm điểm báo giá dựa trên ma trận: Giá thầu (40%) + Thời gian giao hàng (30%) + Uy tín nhà cung cấp (30%).
-*   **Risk Analysis**: Cảnh báo rủi ro về giá (quá thấp/quá cao) hoặc nhà cung cấp có lịch sử tranh chấp.
-*   **OCR Integration**: Tự động bóc tách dữ liệu từ hóa đơn PDF hoặc ảnh chụp GRN của nhà cung cấp.
+Hệ thống được thiết kế với các điểm chạm tự động (Automated Touchpoints) để giảm thiểu thao tác thủ công và sai sót:
 
----
-
-## 6. Sơ đồ dữ liệu cốt lõi (Data Relationship)
-
-*   `User` ↔ `Department` ↔ `Organization` (Phân cấp tổ chức)
-*   `PR` → `RFQ` → `Quotation` → `PO` (Chuỗi giá trị mua sắm)
-*   `PO` ↔ `GRN` ↔ `Invoice` (Vòng lặp đối soát tài chính)
-*   `ApprovalWorkflow` ↔ `AutomationService` (Điều khiển luồng nghiệp vụ)
+1.  **Auto-Budget Check**: Tự động kiểm tra và giữ ngân sách (Soft Commit) ngay khi PR được tạo.
+2.  **Auto-Approval Routing**: Tự động xác định cấp phê duyệt dựa trên ma trận rủi ro (Giá trị đơn hàng, Loại hàng hóa).
+3.  **Auto-GRN Creation (New)**: Ngay khi Purchase Order (PO) được phê duyệt hoàn toàn, hệ thống tự động khởi tạo bản ghi Goods Receipt Note (GRN) ở trạng thái chờ nhập hàng, giúp bộ phận kho chuẩn bị kế hoạch tiếp nhận.
+4.  **Auto-3-Way Matching**: Tự động so khớp dữ liệu giữa PO, GRN và Invoice để phát hiện sai lệch giá và số lượng.
+5.  **AI Supplier Suggestion**: Tự động phân tích và đề xuất 3 nhà cung cấp tối ưu nhất cho mỗi yêu cầu mua sắm.
 
 ---
 
-## 7. Hướng dẫn Triển khai (Deployment)
-
-1.  **Cài đặt**: `npm install` (trong thư mục server).
-2.  **Database**: `npx prisma generate` && `npx prisma db push`.
-3.  **Seeding**: `npx prisma db seed` (Khởi tạo luật duyệt, danh mục và user admin).
-4.  **Running**: `npm run start:dev`.
-5.  **Docs**: Xem tài liệu API tại `/api` (Swagger UI).
+## 🤖 Vai trò của AI trong luồng dữ liệu
+*   **Input**: Dữ liệu thô từ báo giá (PDF/Excel).
+*   **Process**: AI bóc tách dữ liệu, chấm điểm Vendor dựa trên tiêu chí: Giá (40%), Lead-time (30%), Quality (30%).
+*   **Output**: Bảng xếp hạng gợi ý giúp người mua ra quyết định trong bước "Award RFQ".
 
 ---
-*Dự án hướng tới mục tiêu tối ưu hóa 100% quy trình mua sắm doanh nghiệp thông qua công nghệ.*
+*Tài liệu được thiết kế để hỗ trợ cả Developer và Business Analyst.*
