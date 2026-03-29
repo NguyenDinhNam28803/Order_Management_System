@@ -87,4 +87,6 @@ export class CreateBudgetAllocationDto {
   notes?: string;
 }
 
-export class UpdateBudgetAllocationDto extends PartialType(CreateBudgetAllocationDto) {}
+export class UpdateBudgetAllocationDto extends PartialType(
+  CreateBudgetAllocationDto,
+) {}

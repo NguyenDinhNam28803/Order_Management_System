@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Delete } from '@nestjs/common';
 import { AdminModuleService } from './admin-module.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
