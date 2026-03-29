@@ -58,7 +58,10 @@ export class BudgetModuleController {
   @Patch('periods/:id')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Cập nhật chu kỳ ngân sách' })
-  async updatePeriod(@Param('id') id: string, @Body() dto: UpdateBudgetPeriodDto) {
+  async updatePeriod(
+    @Param('id') id: string,
+    @Body() dto: UpdateBudgetPeriodDto,
+  ) {
     return this.budgetService.updatePeriod(id, dto);
   }
 

@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ContractModuleService } from './contract-module.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
@@ -21,8 +31,15 @@ export class ContractModuleController {
    */
   @Post()
   @ApiOperation({ summary: 'Tạo hợp đồng mới' })
-  create(@Body() createContractDto: CreateContractDto, @Request() req: { user: JwtPayload }) {
-    return this.contractModuleService.create(createContractDto, req.user.sub, req.user.orgId);
+  create(
+    @Body() createContractDto: CreateContractDto,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.contractModuleService.create(
+      createContractDto,
+      req.user.sub,
+      req.user.orgId,
+    );
   }
 
   /**
@@ -33,7 +50,10 @@ export class ContractModuleController {
    */
   @Post(':id/submit')
   @ApiOperation({ summary: 'Gửi hợp đồng để phê duyệt' })
-  submitForApproval(@Param('id') id: string, @Body('approverId') approverId: string) {
+  submitForApproval(
+    @Param('id') id: string,
+    @Body('approverId') approverId: string,
+  ) {
     return this.contractModuleService.submitForApproval(id, approverId);
   }
 
@@ -67,7 +87,10 @@ export class ContractModuleController {
    */
   @Patch(':id')
   @ApiOperation({ summary: 'Cập nhật hợp đồng theo ID' })
-  update(@Param('id') id: string, @Body() updateContractDto: UpdateContractDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateContractDto: UpdateContractDto,
+  ) {
     return this.contractModuleService.update(id, updateContractDto);
   }
 
