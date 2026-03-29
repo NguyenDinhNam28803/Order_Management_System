@@ -17,11 +17,13 @@ import { CreateCounterOfferDto } from './dto/create-counter-offer.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { AwardRfqDto } from './dto/award-rfq.dto';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 
 @ApiTags('Request for Quotation (RFQ)')
 @Controller('request-for-quotations')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class RfqmoduleController {
   constructor(private readonly rfqService: RfqmoduleService) {}
 
@@ -44,6 +46,7 @@ export class RfqmoduleController {
    * @returns RFQ vừa tạo
    */
   @Post()
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Tạo yêu cầu báo giá mới',
     description: 'Tạo một yêu cầu báo giá mới từ một đơn hàng mua sắm',
@@ -84,6 +87,7 @@ export class RfqmoduleController {
    * @returns RFQ sau khi cập nhật trạng thái
    */
   @Put(':id/status')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Cập nhật trạng thái RFQ',
     description: 'Cập nhật trạng thái của một yêu cầu báo giá cụ thể',
@@ -99,6 +103,7 @@ export class RfqmoduleController {
    * @returns Kết quả xóa
    */
   @Delete(':id')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Xóa yêu cầu báo giá',
     description: 'Xóa một yêu cầu báo giá cụ thể',
@@ -130,6 +135,7 @@ export class RfqmoduleController {
    * @returns Báo giá vừa tạo
    */
   @Post(':rfqId/quotations')
+  @Roles(UserRole.SUPPLIER, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Gửi báo giá cho RFQ',
     description: 'Gửi một báo giá mới cho một yêu cầu báo giá cụ thể',
@@ -143,10 +149,9 @@ export class RfqmoduleController {
 
   /**
    * Lấy danh sách tất cả các báo giá đã nhận được cho một RFQ
-   * @param rfqId ID của RFQ
-   * @returns Danh sách các báo giá
    */
   @Get(':rfqId/quotations')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN, UserRole.FINANCE)
   @ApiOperation({
     summary: 'Lấy tất cả báo giá cho RFQ',
     description:
@@ -158,8 +163,6 @@ export class RfqmoduleController {
 
   /**
    * Lấy thông tin chi tiết của một bản báo giá theo ID
-   * @param id ID của báo giá
-   * @returns Chi tiết báo giá
    */
   @Get('quotations/:id')
   @ApiOperation({
@@ -172,10 +175,9 @@ export class RfqmoduleController {
 
   /**
    * Gửi chính thức một báo giá (thay đổi trạng thái từ nháp sang đã gửi)
-   * @param id ID của báo giá
-   * @returns Trạng thái báo giá sau khi gửi
    */
   @Put('quotations/:id/submit')
+  @Roles(UserRole.SUPPLIER, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Gửi báo giá',
     description: 'Gửi một báo giá mới cho một yêu cầu báo giá cụ thể',
@@ -186,11 +188,9 @@ export class RfqmoduleController {
 
   /**
    * Chuyên viên mua sắm xem xét báo giá
-   * @param id ID của báo giá
-   * @param req Thông tin người xem xét
-   * @returns Báo giá sau khi cập nhật trạng thái xem xét
    */
   @Put('quotations/:id/review')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Xem xét báo giá',
     description: 'Xem xét một báo giá cụ thể',
@@ -202,11 +202,9 @@ export class RfqmoduleController {
 
   /**
    * Chấp nhận một báo giá và có thể tiến tới tạo đơn hàng (PO)
-   * @param id ID của báo giá được chấp nhận
-   * @param req Thông tin người chấp nhận
-   * @returns Báo giá sau khi được chấp nhận
    */
   @Put('quotations/:id/accept')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Chấp nhận báo giá',
     description: 'Chấp nhận một báo giá cụ thể',
@@ -218,11 +216,9 @@ export class RfqmoduleController {
 
   /**
    * Từ chối một báo giá từ nhà cung cấp
-   * @param id ID của báo giá bị từ chối
-   * @param req Thông tin người từ chối
-   * @returns Báo giá sau khi bị từ chối
    */
   @Put('quotations/:id/reject')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Từ chối báo giá',
     description: 'Từ chối một báo giá cụ thể',

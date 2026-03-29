@@ -1,7 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
 import { PrRepository } from './pr.repository';
-import { PrStatus, PurchaseRequisition, DocumentType } from '@prisma/client';
+import {
+  PrStatus,
+  PurchaseRequisition,
+  DocumentType,
+  UserRole,
+} from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
@@ -37,7 +46,7 @@ export class PrmoduleService {
     });
 
     if (!period) {
-      throw new Error(
+      throw new BadRequestException(
         `Không tìm thấy kỳ ngân sách Quý ${quarter}/${fiscalYear} cho tổ chức này.`,
       );
     }
@@ -53,7 +62,7 @@ export class PrmoduleService {
     });
 
     if (!allocation) {
-      throw new Error(
+      throw new BadRequestException(
         `Cost center chưa được cấp ngân sách cho Quý ${quarter}/${fiscalYear}.`,
       );
     }
@@ -65,7 +74,7 @@ export class PrmoduleService {
       Number(allocation.spentAmount);
 
     if (available < amount) {
-      throw new Error(
+      throw new BadRequestException(
         `Ngân sách không đủ. Hạn mức còn lại: ${available.toLocaleString()} VND, cần: ${amount.toLocaleString()} VND.`,
       );
     }
@@ -75,10 +84,65 @@ export class PrmoduleService {
     createPrDto: CreatePrDto,
     user: JwtPayload,
   ): Promise<PurchaseRequisition> {
+    // 1. Tính tổng giá trị PR
+    const totalAmount = createPrDto.items.reduce(
+      (sum, item) => sum + item.estimatedPrice * item.qty,
+      0,
+    );
+
+    if (totalAmount <= 0) {
+      throw new BadRequestException('Giá trị PR phải lớn hơn 0.');
+    }
+
+    // 2. Kiểm tra Quyền khởi tạo PR theo Hạn mức trần (Hierarchical Ceiling)
+    const role = user.role as UserRole;
+    const isPlatformAdmin = role === UserRole.PLATFORM_ADMIN;
+
+    if (!isPlatformAdmin) {
+      if (totalAmount < 10000000) {
+        // Mọi Role nghiệp vụ đều có quyền tạo PR dưới 10tr
+        const allowedRoles: UserRole[] = [
+          UserRole.REQUESTER,
+          UserRole.DEPT_APPROVER,
+          UserRole.DIRECTOR,
+          UserRole.CEO,
+        ];
+        if (!allowedRoles.includes(role)) {
+          throw new BadRequestException(
+            'Bạn không có quyền khởi tạo yêu cầu mua sắm.',
+          );
+        }
+      } else if (totalAmount >= 10000000 && totalAmount < 30000000) {
+        // Chỉ Approver trở lên mới được tạo PR từ 10tr - 30tr
+        const allowedRoles: UserRole[] = [
+          UserRole.DEPT_APPROVER,
+          UserRole.DIRECTOR,
+          UserRole.CEO,
+        ];
+        if (!allowedRoles.includes(role)) {
+          throw new BadRequestException(
+            'Hạn mức khởi tạo của bạn tối đa là 10 triệu VND.',
+          );
+        }
+      } else if (totalAmount >= 30000000 && totalAmount < 100000000) {
+        // Chỉ Director trở lên mới được tạo PR từ 30tr - 100tr
+        const allowedRoles: UserRole[] = [UserRole.DIRECTOR, UserRole.CEO];
+        if (!allowedRoles.includes(role)) {
+          throw new BadRequestException(
+            'Hạn mức khởi tạo của bạn tối đa là 30 triệu VND.',
+          );
+        }
+      } else if (totalAmount >= 100000000) {
+        // Chỉ CEO mới được tạo PR trên 100tr
+        if (role !== UserRole.CEO) {
+          throw new BadRequestException(
+            'Hạn mức khởi tạo của bạn tối đa là 100 triệu VND.',
+          );
+        }
+      }
+    }
+
     const prNumber = `PR-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-
-    // Giả sử user object có orgId và deptId từ JWT payload
-
     const orgId = user.orgId;
     let deptId = user.deptId;
 
@@ -88,27 +152,19 @@ export class PrmoduleService {
         select: { deptId: true },
       });
       if (!userFromDb?.deptId) {
-        throw new Error('User does not belong to any department');
+        throw new BadRequestException('Người dùng không thuộc phòng ban nào.');
       }
       deptId = userFromDb.deptId;
     }
 
     // Kiểm tra ngân sách nếu có Cost Center
     if (createPrDto.costCenterId) {
-      const totalAmount = createPrDto.items.reduce(
-        (sum, item) => sum + item.estimatedPrice * item.qty,
-        0,
-      );
       await this.checkAndReserveBudget(
         createPrDto.costCenterId,
         orgId,
         totalAmount,
       );
     }
-
-    // AI gợi ý công ty phù hợp dựa trên mô tả sản phẩm
-    // const aiSuggestion = await this.AiSuggest(createPrDto.items);
-    // console.log('AI Suggestion:', aiSuggestion);
 
     return this.repository.create(
       createPrDto,
@@ -118,6 +174,10 @@ export class PrmoduleService {
       prNumber,
     );
   }
+
+  // AI gợi ý công ty phù hợp dựa trên mô tả sản phẩm
+  // const aiSuggestion = await this.AiSuggest(createPrDto.items);
+  // console.log('AI Suggestion:', aiSuggestion);
 
   async AiSuggest(items: CreatePrItemDto[]) {
     const aiSuggestion = await this.aiService.getCompanySuggestion(items);

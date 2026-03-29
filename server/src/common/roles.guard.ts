@@ -13,13 +13,14 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>('roles', [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
+      'roles',
+      [context.getHandler(), context.getClass()],
+    );
     if (!requiredRoles) {
       return true;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const request = context.switchToHttp().getRequest();
     const user = request.user as JwtPayload;
 
@@ -29,7 +30,9 @@ export class RolesGuard implements CanActivate {
 
     const hasRole = requiredRoles.some((role) => user.role === role);
     if (!hasRole) {
-      throw new ForbiddenException('Bạn không có quyền thực hiện hành động này');
+      throw new ForbiddenException(
+        'Bạn không có quyền thực hiện hành động này',
+      );
     }
     return true;
   }

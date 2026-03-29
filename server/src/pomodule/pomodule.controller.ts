@@ -12,11 +12,14 @@ import { PomoduleService } from './pomodule.service';
 import { CreatePoDto } from './dto/create-po.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 
 @ApiTags('Purchase Order (PO)')
 @Controller('purchase-orders')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
 export class PomoduleController {
   constructor(private readonly poService: PomoduleService) {}
 

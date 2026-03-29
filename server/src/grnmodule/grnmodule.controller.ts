@@ -14,12 +14,20 @@ import { CreateGrnmoduleDto } from './dto/create-grnmodule.dto';
 // import { UpdateGrnmoduleDto } from './dto/update-grnmodule.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { UpdateGrnItemQcResultDto } from './dto/update-grn-item-qc.dto';
 
 @ApiTags('Goods Receipt Note (GRN) - Quản lý Nhập kho')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JWT-auth')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(
+  UserRole.WAREHOUSE,
+  UserRole.QA,
+  UserRole.PROCUREMENT,
+  UserRole.PLATFORM_ADMIN,
+)
 @Controller('goods-received-notes')
 export class GrnmoduleController {
   constructor(private readonly grnService: GrnmoduleService) {}
