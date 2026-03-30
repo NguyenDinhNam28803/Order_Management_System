@@ -1,25 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useProcurement } from "../../context/ProcurementContext";
+import { useState, useEffect } from "react";
+import { useProcurement, Product, ProductCategory } from "../../context/ProcurementContext";
 import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable from "../../components/shared/ERPTable";
 import { 
     Plus, Search, Edit2, Trash2, Filter, 
-    MoreVertical, Package, Layers, Tag,
-    DollarSign, ExternalLink, AlertCircle, ShoppingBag
-} from "lucide-react";
+    Package, Layers, Tag} from "lucide-react";
 
 export default function ProductAdminPage() {
     const { apiFetch } = useProcurement();
-    const [products, setProducts] = useState<any[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<ProductCategory[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState("Sản phẩm"); // "Sản phẩm" or "Danh mục"
 
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<any>(null);
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
     useEffect(() => {
         fetchData();
@@ -65,7 +63,7 @@ export default function ProductAdminPage() {
         { 
             label: "Sản phẩm", 
             key: "name",
-            render: (row: any) => (
+            render: (row: Product) => (
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200 uppercase font-black text-[10px]">
                         {row.name.substring(0,2)}
@@ -80,7 +78,7 @@ export default function ProductAdminPage() {
         {
             label: "Danh mục",
             key: "category",
-            render: (row: any) => (
+            render: (row: Product) => (
                 <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-200">
                     {row.category?.name || "N/A"}
                 </span>
@@ -89,12 +87,12 @@ export default function ProductAdminPage() {
         {
             label: "Đơn vị",
             key: "unit",
-            render: (row: any) => <span className="text-xs font-bold text-slate-500 uppercase">{row.unit || "PCS"}</span>
+            render: (row: Product) => <span className="text-xs font-bold text-slate-500 uppercase">{row.unit || "PCS"}</span>
         },
         {
             label: "Giá tham khảo",
             key: "unitPriceRef",
-            render: (row: any) => (
+            render: (row: Product) => (
                 <div className="font-mono font-black text-erp-navy text-sm">
                     {Number(row.unitPriceRef || 0).toLocaleString()} ₫
                 </div>
@@ -103,7 +101,7 @@ export default function ProductAdminPage() {
         {
             label: "Trạng thái",
             key: "isActive",
-            render: (row: any) => (
+            render: (row: Product) => (
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${
                     row.isActive ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-red-50 text-red-600 border border-red-100"
                 }`}>
@@ -115,7 +113,7 @@ export default function ProductAdminPage() {
         {
             label: "Thao tác",
             key: "actions",
-            render: (row: any) => (
+            render: (row: Product) => (
                 <div className="flex gap-2">
                     <button 
                         className="p-2 text-slate-400 hover:text-erp-blue hover:bg-erp-blue/5 rounded-lg transition-all"
@@ -141,12 +139,12 @@ export default function ProductAdminPage() {
         {
             label: "Mã",
             key: "code",
-            render: (row: any) => <span className="font-mono text-xs font-bold text-erp-navy">{row.code}</span>
+            render: (row: ProductCategory) => <span className="font-mono text-xs font-bold text-erp-navy">{row.code}</span>
         },
         {
             label: "Tên danh mục",
             key: "name",
-            render: (row: any) => (
+            render: (row: ProductCategory) => (
                 <div className="flex items-center gap-2">
                     <Layers size={14} className="text-slate-400" />
                     <span className="font-bold text-slate-700">{row.name}</span>
@@ -156,12 +154,12 @@ export default function ProductAdminPage() {
         {
             label: "Mô tả",
             key: "description",
-            render: (row: any) => <span className="text-xs text-slate-500 italic">{row.description || "-"}</span>
+            render: (row: ProductCategory) => <span className="text-xs text-slate-500 italic">{row.description || "-"}</span>
         },
         {
             label: "Thao tác",
             key: "actions",
-            render: (row: any) => (
+            render: (row: ProductCategory) => (
                 <div className="flex gap-2">
                     <button className="p-2 text-slate-400 hover:text-erp-blue hover:bg-erp-blue/5 rounded-lg transition-all"><Edit2 size={16}/></button>
                     <button className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16}/></button>
@@ -199,7 +197,7 @@ export default function ProductAdminPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-8">
-                <div className="bg-white rounded-[2rem] border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
+                <div className="bg-white rounded-4xl border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
                     {/* Toolbar */}
                     <div className="p-6 border-b border-slate-50 bg-slate-50/30 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="flex gap-1 p-1 bg-white border border-slate-200 rounded-2xl w-fit">
@@ -252,7 +250,7 @@ export default function ProductAdminPage() {
 
                 {/* Stats Summary Area */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all">
+                    <div className="bg-white p-8 rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all">
                         <div className="h-16 w-16 rounded-3xl bg-blue-50 flex items-center justify-center text-erp-blue group-hover:bg-erp-blue group-hover:text-white transition-all">
                             <Package size={32} />
                         </div>
@@ -262,7 +260,7 @@ export default function ProductAdminPage() {
                         </div>
                     </div>
                     
-                    <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all">
+                    <div className="bg-white p-8 rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all">
                         <div className="h-16 w-16 rounded-3xl bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-all">
                             <Layers size={32} />
                         </div>
@@ -272,7 +270,7 @@ export default function ProductAdminPage() {
                         </div>
                     </div>
 
-                    <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all">
+                    <div className="bg-white p-8 rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all">
                         <div className="h-16 w-16 rounded-3xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
                             <Tag size={32} />
                         </div>
@@ -286,7 +284,7 @@ export default function ProductAdminPage() {
 
             {/* Simple Mock Modal for Product Creation/Edit */}
             {isProductModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-erp-navy/60 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-erp-navy/60 backdrop-blur-sm p-4">
                     <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in duration-300">
                         <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                             <h3 className="text-2xl font-black text-erp-navy uppercase tracking-tight">

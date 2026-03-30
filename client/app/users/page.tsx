@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { UserPlus, Mail, Edit2, Trash2, Search, Building, ShieldCheck, CheckCircle, XCircle, ChevronDown } from "lucide-react";
-import { useProcurement } from "../context/ProcurementContext";
+import { useProcurement, User, Department, Organization } from "../context/ProcurementContext";
 
 export default function UsersPage() {
     const { users, departments, organizations, addUser, updateUser } = useProcurement();
     const [showModal, setShowModal] = useState(false);
-    const [editingUser, setEditingUser] = useState<any>(null);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedDept, setSelectedDept] = useState("all");
     const [formData, setFormData] = useState({
@@ -22,7 +22,7 @@ export default function UsersPage() {
         isActive: true
     });
 
-    const handleOpenModal = (user?: any) => {
+    const handleOpenModal = (user?: User) => {
         if (user) {
             setEditingUser(user);
             setFormData({
@@ -78,7 +78,7 @@ export default function UsersPage() {
         }
     };
 
-    const filteredUsers = users?.filter((user: any) => {
+    const filteredUsers = users?.filter((user: User) => {
         const matchesSearch = (user.fullName || user.name || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
                               user.email.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesDept = selectedDept === "all" || user.deptId === selectedDept;
@@ -115,7 +115,7 @@ export default function UsersPage() {
                                 className="pl-10 pr-8 py-2.5 bg-white border border-slate-100 rounded-xl text-xs font-bold text-erp-navy outline-none focus:ring-2 focus:ring-erp-blue/10 appearance-none shadow-sm min-w-[180px]"
                             >
                                 <option value="all">Tất cả phòng ban</option>
-                                {departments?.map((d: any) => (
+                                {departments?.map((d: Department) => (
                                     <option key={d.id} value={d.id}>{d.name}</option>
                                 ))}
                             </select>
@@ -148,7 +148,7 @@ export default function UsersPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredUsers?.map((user: any, i: number) => (
+                            {filteredUsers?.map((user: User, i: number) => (
                                 <tr key={user.id || i} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
@@ -272,7 +272,7 @@ export default function UsersPage() {
                                             className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
                                         >
                                             <option value="">Chưa phân bổ</option>
-                                            {departments?.map((d: any) => (
+                                            {departments?.map((d: Department) => (
                                                 <option key={d.id} value={d.id}>{d.name}</option>
                                             ))}
                                         </select>

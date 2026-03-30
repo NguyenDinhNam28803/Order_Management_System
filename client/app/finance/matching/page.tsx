@@ -5,32 +5,16 @@ import DashboardHeader from "../../components/DashboardHeader";
 import { FileCheck, ShieldAlert, CheckCircle2, AlertTriangle, ArrowLeft, Send, Calendar, CreditCard } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 
-import { useProcurement } from "../../context/ProcurementContext";
+import { useProcurement, PO, POItem, GRN, Invoice } from "../../context/ProcurementContext";
 
-interface POItem {
+interface MatchItem {
     id: string;
-    description: string;
-    qty: number;
-    estimatedPrice: number;
-}
-
-interface PO {
-    id: string;
-    items: POItem[];
-}
-
-interface GRN {
-    poId: string;
-    receivedItems: Record<string, number>;
-}
-
-interface Invoice {
-    id: string;
-    vendor: string;
-    poId: string;
-    amount: number;
-    status: "PENDING" | "EXCEPTION" | "APPROVED";
-    createdAt: string;
+    desc: string;
+    po: { qty: number, price: number };
+    grn: { qty: number };
+    inv: { qty: number, price: number };
+    matched: boolean;
+    diffPct: number;
 }
 
 export default function FinanceMatching() {
@@ -47,7 +31,7 @@ export default function FinanceMatching() {
     // Mock Dynamic Data: Let's assume exception if invoice total doesn't match PO total
     const isException = false;
 
-    const items = po?.items.map((item: POItem) => {
+    const items: MatchItem[] = po?.items.map((item: POItem) => {
         const grnQty = grn?.receivedItems[item.id] || 0;
         return {
             id: item.id,
@@ -57,7 +41,7 @@ export default function FinanceMatching() {
             inv: { qty: grnQty, price: item.estimatedPrice || 0 }, 
             matched: item.qty === grnQty,
             diffPct: item.qty === 0 ? 0 : ((grnQty - item.qty) / item.qty) * 100
-        }
+        };
     }) || [];
 
     const [approvalState, setApprovalState] = useState<"IDLE"|"REVIEW"|"APPROVED">("IDLE");
@@ -74,13 +58,13 @@ export default function FinanceMatching() {
         if (invId) matchInvoice(invId, "EXCEPTION");
         alert("Đã gửi thông báo Reject/Debit Note tới Portal Nhà Cung Cấp!");
         router.push("/finance/dashboard");
-    }
+    };
 
     const handleApprove = () => {
         if (invId) payInvoice(invId);
         alert("Thanh toán đã được xếp lịch. Lệnh chuyển UNC đã hoàn tất!");
         router.push("/finance/dashboard");
-    }
+    };
 
     return (
         <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300 min-h-screen bg-slate-50">
@@ -128,7 +112,7 @@ export default function FinanceMatching() {
                             </tr>
                         </thead>
                         <tbody>
-                            {items.map((item: any) => (
+                            {items.map((item: MatchItem) => (
                                 <tr key={item.id} className={`border-b ${item.matched ? 'border-slate-50 hover:bg-slate-50' : 'bg-red-50/30'}`}>
                                     <td className="font-bold text-slate-700 p-4 border-r border-slate-100">{item.desc}</td>
                                     <td className="p-4 text-center border-r border-slate-100 bg-blue-50/10">

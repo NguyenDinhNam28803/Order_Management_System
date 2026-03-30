@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { LayoutDashboard, Plus, Edit2, Trash2, Search, MapPin, Hash, Building2 } from "lucide-react";
-import { useProcurement } from "../../context/ProcurementContext";
+import { useProcurement, Organization } from "../../context/ProcurementContext";
 
 export default function OrganizationsPage() {
     const { organizations, addOrganization, updateOrganization, removeOrganization } = useProcurement();
     const [showModal, setShowModal] = useState(false);
-    const [editingOrg, setEditingOrg] = useState<any>(null);
+    const [editingOrg, setEditingOrg] = useState<Organization | null>(null);
     const [formData, setFormData] = useState({
         code: "",
         name: "",
@@ -15,7 +15,7 @@ export default function OrganizationsPage() {
         taxId: ""
     });
 
-    const handleOpenModal = (org?: any) => {
+    const handleOpenModal = (org?: Organization) => {
         if (org) {
             setEditingOrg(org);
             setFormData({
@@ -92,7 +92,7 @@ export default function OrganizationsPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {organizations?.map((org: any) => (
+                            {organizations?.map((org: Organization) => (
                                 <tr key={org.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">

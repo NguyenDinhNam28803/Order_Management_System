@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { Building2, Plus, Edit2, Trash2, Users, Search } from "lucide-react";
-import { useProcurement } from "../../context/ProcurementContext";
+import { useProcurement, Department, User, Organization } from "../../context/ProcurementContext";
 
 export default function DepartmentsPage() {
     const { departments, users, addDept, updateDept, removeDept, organizations, costCenters } = useProcurement();
     const [showModal, setShowModal] = useState(false);
-    const [editingDept, setEditingDept] = useState<any>(null);
+    const [editingDept, setEditingDept] = useState<Department | null>(null);
     const [formData, setFormData] = useState({
         orgId: "",
         code: "",
@@ -15,11 +15,11 @@ export default function DepartmentsPage() {
         headUserId: "",
     });
 
-    const handleOpenModal = (dept?: any) => {
+    const handleOpenModal = (dept?: Department) => {
         if (dept) {
             setEditingDept(dept);
             setFormData({
-                orgId: dept.orgId,
+                orgId: dept.orgId || "",
                 code: dept.code,
                 name: dept.name,
                 headUserId: dept.headUserId || "",
@@ -69,7 +69,7 @@ export default function DepartmentsPage() {
                 </button>
             </div>
 
-            <div className="bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-erp-navy/5 overflow-hidden">
+            <div className="bg-white rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 overflow-hidden">
                 <div className="p-8 bg-slate-50/20 border-b border-slate-50 flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-200 pr-4">Cơ cấu Tổ chức (Structure)</div>
@@ -96,7 +96,7 @@ export default function DepartmentsPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {departments?.map((dept: any) => (
+                            {departments?.map((dept: Department) => (
                                 <tr key={dept.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
@@ -193,7 +193,7 @@ export default function DepartmentsPage() {
                                         className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
                                     >
                                         <option value="">Chọn tổ chức</option>
-                                        {organizations?.map((org: any) => (
+                                        {organizations?.map((org: Organization) => (
                                             <option key={org.id} value={org.id}>{org.name}</option>
                                         ))}
                                     </select>
@@ -207,7 +207,7 @@ export default function DepartmentsPage() {
                                         className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
                                     >
                                         <option value="">Chưa chỉ định</option>
-                                        {users?.map((u: any) => (
+                                        {users?.map((u: User) => (
                                             <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>
                                         ))}
                                     </select>
