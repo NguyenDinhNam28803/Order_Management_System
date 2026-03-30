@@ -15,6 +15,7 @@ import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
 import { AiService } from '../ai-service/ai-service.service';
+import { BudgetModuleService } from '../budget-module/budget-module.service';
 
 @Injectable()
 export class PrmoduleService {
@@ -23,6 +24,7 @@ export class PrmoduleService {
     private readonly prisma: PrismaService,
     private readonly approvalService: ApprovalModuleService,
     private readonly aiService: AiService,
+    private readonly budgetService: BudgetModuleService,
   ) {}
 
   private async checkAndReserveBudget(
@@ -35,39 +37,22 @@ export class PrmoduleService {
     const month = now.getMonth() + 1;
     const quarter = Math.ceil(month / 3);
 
-    // 1. Tìm kỳ ngân sách
-    const period = await this.prisma.budgetPeriod.findFirst({
-      where: {
-        orgId,
-        fiscalYear,
-        periodType: 'QUARTERLY',
-        periodNumber: quarter,
-      },
-    });
-
-    if (!period) {
-      throw new BadRequestException(
-        `Không tìm thấy kỳ ngân sách Quý ${quarter}/${fiscalYear} cho tổ chức này.`,
-      );
-    }
-
-    // 2. Tìm phân bổ ngân sách cho Cost Center trong kỳ đó
-    const allocation = await this.prisma.budgetAllocation.findUnique({
-      where: {
-        budgetPeriodId_costCenterId: {
-          budgetPeriodId: period.id,
-          costCenterId,
-        },
-      },
-    });
+    // 1. Kiểm tra ngân sách quý và tự động trích từ quỹ dự phòng nếu cần
+    const allocation = await this.budgetService.checkAndPullFromReserve(
+      costCenterId,
+      orgId,
+      fiscalYear,
+      quarter,
+      amount,
+    );
 
     if (!allocation) {
       throw new BadRequestException(
-        `Cost center chưa được cấp ngân sách cho Quý ${quarter}/${fiscalYear}.`,
+        `Không tìm thấy phân bổ ngân sách cho Cost center này trong Quý ${quarter}/${fiscalYear}.`,
       );
     }
 
-    // 3. Kiểm tra hạn mức
+    // 2. Kiểm tra hạn mức cuối cùng sau khi đã trích dự phòng (nếu có)
     const available =
       Number(allocation.allocatedAmount) -
       Number(allocation.committedAmount) -
@@ -75,7 +60,7 @@ export class PrmoduleService {
 
     if (available < amount) {
       throw new BadRequestException(
-        `Ngân sách không đủ. Hạn mức còn lại: ${available.toLocaleString()} VND, cần: ${amount.toLocaleString()} VND.`,
+        `Ngân sách không đủ (kể cả sau khi đã trích quỹ dự phòng). Hạn mức còn lại: ${available.toLocaleString()} VND, cần: ${amount.toLocaleString()} VND.`,
       );
     }
   }
@@ -263,7 +248,10 @@ export class PrmoduleService {
       return this.findOne(pr.id);
     } catch (error) {
       console.error('[PR-SUBMIT] CRITICAL ERROR:', error);
-      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
         throw error;
       }
       throw new BadRequestException(

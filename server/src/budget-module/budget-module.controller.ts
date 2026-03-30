@@ -181,4 +181,50 @@ export class BudgetModuleController {
   async removeAllocation(@Param('id') id: string) {
     return this.budgetService.removeAllocation(id);
   }
+
+  /**
+   * Phân bổ ngân sách hàng năm theo quy tắc 20/80
+   */
+  @Post('distribute-annual/:costCenterId/:fiscalYear')
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({
+    summary: 'Phân bổ ngân sách năm (20% Dự phòng, 80% Quý)',
+    description:
+      'Thực hiện phân bổ ngân sách hàng năm từ Cost Center: trích 20% vào quỹ dự phòng và chia 80% còn lại cho 4 quý (mỗi quý 20%).',
+  })
+  async distributeAnnual(
+    @Param('costCenterId') costCenterId: string,
+    @Param('fiscalYear') fiscalYear: string,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetService.distributeAnnualBudget(
+      costCenterId,
+      parseInt(fiscalYear),
+      req.user,
+    );
+  }
+
+  /**
+   * Kết thúc quý: Chuyển tiền thừa vào quỹ dự phòng
+   */
+  @Post('reconcile-quarter/:costCenterId/:fiscalYear/:quarter')
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({
+    summary: 'Quyết toán quý: Chuyển tiền thừa vào dự phòng',
+    description:
+      'Thu hồi số tiền chưa sử dụng hết của một quý và cộng dồn vào quỹ dự phòng của Cost Center đó.',
+  })
+  async reconcileQuarter(
+    @Param('costCenterId') costCenterId: string,
+    @Param('fiscalYear') fiscalYear: string,
+    @Param('quarter') quarter: string,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetService.reconcileQuarterToReserve(
+      costCenterId,
+      req.user.orgId,
+      parseInt(fiscalYear),
+      parseInt(quarter),
+    );
+  }
 }
