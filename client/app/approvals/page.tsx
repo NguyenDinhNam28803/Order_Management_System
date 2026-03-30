@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
 import { CheckSquare, XCircle, CheckCircle2, Eye, FileText, AlertTriangle, History, ArrowLeft, MessageSquareWarning, Paperclip, Check } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
+import { formatVND } from "../utils/formatUtils";
 import { useRouter } from "next/navigation";
 
 export default function ApprovalsPage() {
@@ -13,6 +14,14 @@ export default function ApprovalsPage() {
     const pendingPRs = (approvals || []).map((app: any) => {
         const pr = prs.find((p: any) => p.id === app.documentId);
         if (!pr) return null;
+        
+        // Filter by policy: 
+        // Manager only handles < 10,000,000 VND
+        // Director handles all >= 10,000,000 VND
+        const prTotal = Number(pr.totalEstimate) || 0;
+        if (currentUser?.role === "MANAGER" && prTotal >= 10000000) return null;
+        if (currentUser?.role === "DIRECTOR" && prTotal < 10000000) return null;
+
         return { ...pr, workflowId: app.id };
     }).filter(Boolean);
 
@@ -111,7 +120,7 @@ export default function ApprovalsPage() {
                                             <div className="font-bold text-erp-navy truncate" title={pr.title}>{pr.title}</div>
                                             <div className="text-xs text-slate-500 truncate" title={pr.justification}>{pr.justification}</div>
                                         </td>
-                                        <td className="font-mono text-right font-black text-erp-blue text-lg">{(Number(pr.totalEstimate) || 0).toLocaleString()} ₫</td>
+                                        <td className="font-mono text-right font-black text-erp-blue text-lg">{formatVND(pr.totalEstimate)} ₫</td>
                                         <td className="text-center">
                                             {idx === 0 ? (
                                                 <span className="text-[10px] font-black text-red-500 bg-red-50 px-2 py-1 rounded inline-flex items-center gap-1 border border-red-100"><AlertTriangle size={10} /> 26h (Quá SLA)</span>
@@ -226,9 +235,9 @@ export default function ApprovalsPage() {
                                                     </td>
                                                     <td className="text-center font-black text-erp-blue">{item.qty}</td>
                                                     <td className="text-center font-bold text-slate-500">{item.unit || 'Cái'}</td>
-                                                    <td className="text-right font-mono text-slate-500">{item.estimatedPrice.toLocaleString()}</td>
+                                                    <td className="text-right font-mono text-slate-500">{formatVND(item.estimatedPrice)}</td>
                                                     <td className={`text-right font-mono font-black ${isSuperHigh ? 'text-red-600' : isHigh ? 'text-orange-600' : 'text-erp-navy'}`}>
-                                                        {rowTotal.toLocaleString()}
+                                                        {formatVND(rowTotal)}
                                                     </td>
                                                 </tr>
                                             )
@@ -243,7 +252,7 @@ export default function ApprovalsPage() {
                                                 </div>
                                             </td>
                                             <td className="text-right font-mono font-black text-2xl text-erp-navy py-4 pr-3">
-                                                {(Number(selectedPR.totalEstimate) || 0).toLocaleString()} ₫
+                                                {formatVND(Number(selectedPR.totalEstimate) || 0)} ₫
                                             </td>
                                         </tr>
                                     </tfoot>

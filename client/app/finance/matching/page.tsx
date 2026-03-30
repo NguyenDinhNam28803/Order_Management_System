@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
 import { FileCheck, ShieldAlert, CheckCircle2, AlertTriangle, ArrowLeft, Send, Calendar, CreditCard } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { useProcurement, PO, POItem, GRN, Invoice } from "../../context/ProcurementContext";
+import { formatVND } from "../../utils/formatUtils";
 
 interface MatchItem {
     id: string;
@@ -118,7 +119,7 @@ export default function FinanceMatching() {
                                     <td className="p-4 text-center border-r border-slate-100 bg-blue-50/10">
                                         <div className="flex flex-col gap-1 items-center">
                                             <span className="font-mono font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded text-[10px]">SL: {item.po.qty}</span>
-                                            <span className="font-mono text-[9px] text-slate-400">@ {item.po.price.toLocaleString()}</span>
+                                            <span className="font-mono text-[9px] text-slate-400">@ {formatVND(item.po.price)}</span>
                                         </div>
                                     </td>
                                     <td className="p-4 text-center border-r border-slate-100 bg-orange-50/10">
@@ -135,10 +136,10 @@ export default function FinanceMatching() {
                                                 <span className={`font-mono font-black px-2 py-0.5 rounded text-[10px] ${!item.matched ? 'text-red-700 bg-red-100' : 'text-slate-500 bg-slate-100'}`}>
                                                     SL: {item.inv.qty}
                                                 </span>
-                                                <span className="font-mono text-[9px] text-slate-400">@ {item.inv.price.toLocaleString()}</span>
+                                                <span className="font-mono text-[9px] text-slate-400">@ {formatVND(item.inv.price)}</span>
                                             </div>
                                             <div className="text-right font-mono font-black text-erp-navy text-sm">
-                                                {(item.inv.qty * item.inv.price).toLocaleString()} ₫
+                                                {formatVND(item.inv.qty * item.inv.price)} ₫
                                             </div>
                                         </div>
                                         {!item.matched && (

@@ -1,18 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
-import { LayoutDashboard, Plus, Edit2, Trash2, Search, MapPin, Hash, Building2 } from "lucide-react";
-import { useProcurement, Organization } from "../../context/ProcurementContext";
+import { Plus, Edit2, Trash2, Search, MapPin, Hash, Building2 } from "lucide-react";
+import { useProcurement } from "../../context/ProcurementContext";
+import { Organization } from "@/app/types/api-types";
 
 export default function OrganizationsPage() {
-    const { organizations, addOrganization, updateOrganization, removeOrganization } = useProcurement();
+    const { organizations, addOrganization, updateOrganization, removeOrganization, refreshData } = useProcurement();
     const [showModal, setShowModal] = useState(false);
     const [editingOrg, setEditingOrg] = useState<Organization | null>(null);
+
+    React.useEffect(() => {
+        refreshData();
+    }, [refreshData]);
     const [formData, setFormData] = useState({
         code: "",
         name: "",
         address: "",
-        taxId: ""
+        taxCode: ""
     });
 
     const handleOpenModal = (org?: Organization) => {
@@ -22,7 +27,7 @@ export default function OrganizationsPage() {
                 code: org.code,
                 name: org.name,
                 address: org.address || "",
-                taxId: org.taxId || ""
+                taxCode: org.taxCode || ""
             });
         } else {
             setEditingOrg(null);
@@ -30,7 +35,7 @@ export default function OrganizationsPage() {
                 code: "",
                 name: "",
                 address: "",
-                taxId: ""
+                taxCode: ""
             });
         }
         setShowModal(true);
@@ -57,7 +62,7 @@ export default function OrganizationsPage() {
                     <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Quản lý Tổ chức</h1>
                     <p className="text-sm text-slate-500 mt-1 font-medium italic">THIẾT LẬP THỰC THỂ PHÁP NHÂN VÀ THÔNG TIN CÔNG TY</p>
                 </div>
-                <button 
+                <button
                     onClick={() => handleOpenModal()}
                     className="flex items-center gap-2 bg-erp-navy text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-erp-navy/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
@@ -65,7 +70,7 @@ export default function OrganizationsPage() {
                 </button>
             </div>
 
-            <div className="bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-erp-navy/5 overflow-hidden">
+            <div className="bg-white rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 overflow-hidden">
                 <div className="p-8 bg-slate-50/20 border-b border-slate-50 flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-200 pr-4">Entity Directory</div>
@@ -73,14 +78,14 @@ export default function OrganizationsPage() {
                     </div>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-                        <input 
-                            type="text" 
-                            placeholder="Tìm kiếm mã hoặc tên..." 
+                        <input
+                            type="text"
+                            placeholder="Tìm kiếm mã hoặc tên..."
                             className="pl-10 pr-4 py-2 bg-slate-100/50 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-erp-blue/20 w-64"
                         />
                     </div>
                 </div>
-                
+
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
                         <thead>
@@ -116,18 +121,18 @@ export default function OrganizationsPage() {
                                     <td>
                                         <div className="flex items-center gap-2 font-black text-erp-navy">
                                             <Hash size={14} className="text-erp-blue" />
-                                            {org.taxId || "N/A"}
+                                            {org.taxCode || "N/A"}
                                         </div>
                                     </td>
                                     <td className="text-center">
                                         <div className="flex justify-center gap-3">
-                                            <button 
+                                            <button
                                                 onClick={() => handleOpenModal(org)}
                                                 className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-erp-blue hover:border-erp-blue/30 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Edit2 size={14} />
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => removeOrganization(org.id)}
                                                 className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 rounded-xl transition-all shadow-sm"
                                             >
@@ -155,22 +160,22 @@ export default function OrganizationsPage() {
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã Tổ chức (Tự động nếu để trống)</label>
-                                        <input 
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã Tổ chức</label>
+                                        <input
                                             value={formData.code}
-                                            onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
-                                            type="text" 
+                                            onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+                                            type="text"
                                             placeholder="VD: PP-GLOBAL"
                                             className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all placeholder:text-slate-300"
                                         />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tên Tổ chức</label>
-                                        <input 
+                                        <input
                                             required
                                             value={formData.name}
-                                            onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                            type="text" 
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            type="text"
                                             placeholder="VD: Công ty TNHH ProcurePro"
                                             className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all placeholder:text-slate-300"
                                         />
@@ -179,10 +184,10 @@ export default function OrganizationsPage() {
 
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Địa chỉ trụ sở</label>
-                                    <input 
+                                    <input
                                         value={formData.address}
-                                        onChange={(e) => setFormData({...formData, address: e.target.value})}
-                                        type="text" 
+                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                        type="text"
                                         placeholder="Số nhà, Tên đường, Quận/Huyện, Tỉnh/Thành phố"
                                         className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all placeholder:text-slate-300"
                                     />
@@ -190,24 +195,24 @@ export default function OrganizationsPage() {
 
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã số thuế</label>
-                                    <input 
-                                        value={formData.taxId}
-                                        onChange={(e) => setFormData({...formData, taxId: e.target.value})}
-                                        type="text" 
+                                    <input
+                                        value={formData.taxCode}
+                                        onChange={(e) => setFormData({ ...formData, taxCode: e.target.value })}
+                                        type="text"
                                         placeholder="VD: 0101234567"
                                         className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all placeholder:text-slate-300"
                                     />
                                 </div>
 
                                 <div className="flex gap-4 pt-6">
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => setShowModal(false)}
                                         className="flex-1 px-8 py-4 bg-slate-100 rounded-3xl font-black text-slate-400 uppercase tracking-widest hover:bg-slate-200 transition-colors"
                                     >
                                         Hủy
                                     </button>
-                                    <button 
+                                    <button
                                         type="submit"
                                         className="flex-1 px-8 py-4 bg-erp-navy text-white rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-erp-navy/20 hover:scale-[1.02] transition-all"
                                     >
