@@ -3,29 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
-import { useProcurement } from "../../context/ProcurementContext";
+import { useProcurement, Product, CostCenter } from "../../context/ProcurementContext";
 import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
-
-interface Product {
-    id: string;
-    name: string;
-    sku: string;
-    categoryId: string;
-    unitPriceRef: number;
-    unit: string;
-}
-
-interface CostCenter {
-    id: string;
-    name: string;
-    code: string;
-    deptId?: string;
-    budgetAnnual: number;
-    budgetUsed: number;
-    currency: string;
-}
 
 interface PRItem {
     productId?: string;
@@ -211,7 +192,7 @@ export default function CreatePRPage() {
                         className="px-6 py-3 font-black text-blue-600 hover:bg-blue-50 border border-blue-200 rounded-xl text-xs uppercase tracking-widest transition-colors"
                         onClick={() => {
                             if (products.length > 0 && filteredCostCenters.length > 0) {
-                                const cc = filteredCostCenters.find((c: any) => c.code === 'CC_IT_OPS') || filteredCostCenters[0];
+                                const cc = filteredCostCenters.find((c: CostCenter) => c.code === 'CC_IT_OPS') || filteredCostCenters[0];
                                 const sampleProducts = products.slice(0, 2);
                                 
                                 setForm({
@@ -386,6 +367,7 @@ export default function CreatePRPage() {
                                 className="text-sm font-bold"
                                 placeholder="Nhập tên sản phẩm hoặc mã SKU..."
                                 styles={{
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     control: (base: Record<string, unknown>, state: any) => ({
                                         ...base,
                                         borderRadius: '1rem',
@@ -396,6 +378,7 @@ export default function CreatePRPage() {
                                         transition: 'all 0.3s ease',
                                         '&:hover': { borderColor: '#2563eb' }
                                     }),
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     placeholder: (base: any) => ({
                                         ...base,
                                         color: '#cbd5e1',

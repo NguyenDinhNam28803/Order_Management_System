@@ -660,7 +660,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         refreshData();
-    }, [state.currentUser]);
+    }, [refreshData, state.currentUser]);
 
     const login = useCallback(async (email: string, password?: string) => {
         const localUser = state.users.find(u => u.email === email);
