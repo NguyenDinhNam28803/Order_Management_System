@@ -10,6 +10,8 @@ export default function UsersPage() {
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedDept, setSelectedDept] = useState("all");
+    const [selectedOrg, setSelectedOrg] = useState("all");
+    const [selectedRole, setSelectedRole] = useState("all");
     const [formData, setFormData] = useState({
         orgId: "",
         deptId: "",
@@ -82,7 +84,9 @@ export default function UsersPage() {
         const matchesSearch = (user.fullName || user.name || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
                               user.email.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesDept = selectedDept === "all" || user.deptId === selectedDept;
-        return matchesSearch && matchesDept;
+        const matchesOrg = selectedOrg === "all" || user.orgId === selectedOrg;
+        const matchesRole = selectedRole === "all" || user.role === selectedRole;
+        return matchesSearch && matchesDept && matchesOrg && matchesRole;
     });
 
     return (
@@ -106,21 +110,60 @@ export default function UsersPage() {
                         <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-200 pr-4">Danh mục nhân sự (Directory)</div>
                         <div className="text-[10px] font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-full">{filteredUsers?.length || 0} Kết quả</div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
+                        {/* Org Filter */}
                         <div className="relative group">
-                            <Building className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                            <select 
+                                value={selectedOrg}
+                                onChange={(e) => setSelectedOrg(e.target.value)}
+                                className="pl-4 pr-8 py-2.5 bg-white border border-slate-100 rounded-xl text-[10px] font-black uppercase text-erp-navy outline-none focus:ring-2 focus:ring-erp-blue/10 appearance-none shadow-sm min-w-[140px]"
+                            >
+                                <option value="all">Tổ chức</option>
+                                {organizations?.map((org: Organization) => (
+                                    <option key={org.id} value={org.id}>{org.name}</option>
+                                ))}
+                            </select>
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                <ChevronDown size={12} />
+                            </div>
+                        </div>
+
+                        {/* Dept Filter */}
+                        <div className="relative group">
                             <select 
                                 value={selectedDept}
                                 onChange={(e) => setSelectedDept(e.target.value)}
-                                className="pl-10 pr-8 py-2.5 bg-white border border-slate-100 rounded-xl text-xs font-bold text-erp-navy outline-none focus:ring-2 focus:ring-erp-blue/10 appearance-none shadow-sm min-w-[180px]"
+                                className="pl-4 pr-8 py-2.5 bg-white border border-slate-100 rounded-xl text-[10px] font-black uppercase text-erp-navy outline-none focus:ring-2 focus:ring-erp-blue/10 appearance-none shadow-sm min-w-[140px]"
                             >
-                                <option value="all">Tất cả phòng ban</option>
+                                <option value="all">Phòng ban</option>
                                 {departments?.map((d: Department) => (
                                     <option key={d.id} value={d.id}>{d.name}</option>
                                 ))}
                             </select>
                             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                                <ChevronDown size={14} />
+                                <ChevronDown size={12} />
+                            </div>
+                        </div>
+
+                        {/* Role Filter */}
+                        <div className="relative group">
+                            <select 
+                                value={selectedRole}
+                                onChange={(e) => setSelectedRole(e.target.value)}
+                                className="pl-4 pr-8 py-2.5 bg-white border border-slate-100 rounded-xl text-[10px] font-black uppercase text-erp-navy outline-none focus:ring-2 focus:ring-erp-blue/10 appearance-none shadow-sm min-w-[140px]"
+                            >
+                                <option value="all">Vai trò</option>
+                                <option value="REQUESTER">REQUESTER</option>
+                                <option value="DEPT_APPROVER">APPROVER</option>
+                                <option value="PROCUREMENT">PROCUREMENT</option>
+                                <option value="FINANCE">FINANCE</option>
+                                <option value="WAREHOUSE">WAREHOUSE</option>
+                                <option value="DIRECTOR">DIRECTOR</option>
+                                <option value="CEO">CEO</option>
+                                <option value="PLATFORM_ADMIN">ADMIN</option>
+                            </select>
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                <ChevronDown size={12} />
                             </div>
                         </div>
 
@@ -128,10 +171,10 @@ export default function UsersPage() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                             <input 
                                 type="text" 
-                                placeholder="Tìm kiếm theo tên, email..." 
+                                placeholder="Tìm kiếm tên, email..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 pr-4 py-2.5 bg-slate-100/50 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-erp-blue/20 w-64 shadow-inner"
+                                className="pl-10 pr-4 py-2.5 bg-slate-100/50 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-erp-blue/20 w-48 shadow-inner"
                             />
                         </div>
                     </div>

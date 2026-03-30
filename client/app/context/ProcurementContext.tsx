@@ -695,14 +695,19 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         try {
             const res = await fetch(`http://localhost:5000${url}`, { ...options, credentials: 'include', headers });
             if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
+                const contentType = res.headers.get("content-type");
+                let errorData;
+                if (contentType && contentType.includes("application/json")) {
+                    errorData = await res.json().catch(() => ({}));
+                } else {
+                    errorData = { rawText: await res.text().catch(() => "N/A") };
+                }
                 console.error(`API Error (${url}) - Status ${res.status}:`, errorData);
             }
             return res;
         } catch (error) {
             console.error(`API Fetch Network Error (${url}):`, error);
-            // Fallback for demo build when backend is completely offline
-            return { ok: false, status: 503, json: async () => ({ data: [] }) } as Response;
+            return { ok: false, status: 503, json: async () => ({ message: 'Network error', data: [] }) } as Response;
         }
     }, [addPR, createRFQ]);
 
@@ -884,9 +889,33 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData, notify]);
 
     const addOrganization = useCallback(async (data: Partial<Organization>) => {
+        if (!data.code || !data.name) {
+            notify("Mã và Tên tổ chức không được để trống", "error");
+            return false;
+        }
+
+        // Complete the payload with required fields to avoid 400 Bad Request
+        const payload = {
+            code: data.code,
+            name: data.name,
+            legalName: data.name, // Auto-map name to legalName
+            taxCode: data.taxCode || undefined, // Must be unique or undefined
+            companyType: "BUYER", // Must be one of enum values: BUYER, SUPPLIER, BOTH
+            industry: data.industry || "",
+            countryCode: "VN",
+            province: data.province || "",
+            address: data.address || "",
+            phone: data.phone || "",
+            email: data.email || undefined,
+            website: data.website || undefined,
+            isActive: true
+        };
+
+        console.log('--- Creating Organization Payload ---', payload);
+
         const res = await apiFetch('/organizations', {
             method: 'POST',
-            body: JSON.stringify(data)
+            body: JSON.stringify(payload)
         });
         if (res.ok) {
             notify("Thêm tổ chức thành công", "success");
@@ -898,9 +927,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData, notify]);
 
     const updateOrganization = useCallback(async (id: string, data: Partial<Organization>) => {
+        // Remove fields that should not be updated or cause validation errors
+        const { id: _, createdAt, updatedAt, ...updateData } = data as any;
+        
         const res = await apiFetch(`/organizations/${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(data)
+            body: JSON.stringify(updateData)
         });
         if (res.ok) {
             notify("Cập nhật tổ chức thành công", "success");

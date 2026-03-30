@@ -17,6 +17,17 @@ export default function DepartmentsPage() {
         budgetAnnual: 0,
     });
 
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterOrgId, setFilterOrgId] = useState("");
+
+    const filteredDepartments = departments?.filter((dept: Department) => {
+        const matchesSearch =
+            dept.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            dept.code.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesOrg = filterOrgId === "" || dept.orgId === filterOrgId;
+        return matchesSearch && matchesOrg;
+    });
+
     const handleOpenModal = (dept?: Department) => {
         if (dept) {
             setEditingDept(dept);
@@ -77,15 +88,29 @@ export default function DepartmentsPage() {
                 <div className="p-8 bg-slate-50/20 border-b border-slate-50 flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-200 pr-4">Cơ cấu Tổ chức (Structure)</div>
-                        <div className="text-[10px] font-black text-erp-blue bg-blue-50 px-3 py-1 rounded-full">{departments?.length || 0} Phòng ban</div>
+                        <div className="text-[10px] font-black text-erp-blue bg-blue-50 px-3 py-1 rounded-full">{filteredDepartments?.length || 0} Phòng ban</div>
                     </div>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm phòng ban..."
-                            className="pl-10 pr-4 py-2 bg-slate-100/50 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-erp-blue/20 w-64"
-                        />
+                    <div className="flex items-center gap-3">
+                        <select
+                            value={filterOrgId}
+                            onChange={(e) => setFilterOrgId(e.target.value)}
+                            className="bg-slate-100/50 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-erp-blue/20 py-2 px-4 outline-none"
+                        >
+                            <option value="">Tất cả tổ chức</option>
+                            {organizations?.map((org: Organization) => (
+                                <option key={org.id} value={org.id}>{org.name}</option>
+                            ))}
+                        </select>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Tìm kiếm phòng ban..."
+                                className="pl-10 pr-4 py-2 bg-slate-100/50 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-erp-blue/20 w-64 outline-none"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className="overflow-x-auto">
@@ -100,7 +125,7 @@ export default function DepartmentsPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {departments?.map((dept: Department) => (
+                            {filteredDepartments?.map((dept: Department) => (
                                 <tr key={dept.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">

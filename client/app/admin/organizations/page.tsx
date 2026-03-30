@@ -20,6 +20,13 @@ export default function OrganizationsPage() {
         taxCode: ""
     });
 
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredOrganizations = organizations?.filter((org: Organization) => 
+        org.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        org.code.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const handleOpenModal = (org?: Organization) => {
         if (org) {
             setEditingOrg(org);
@@ -80,8 +87,10 @@ export default function OrganizationsPage() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                         <input
                             type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Tìm kiếm mã hoặc tên..."
-                            className="pl-10 pr-4 py-2 bg-slate-100/50 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-erp-blue/20 w-64"
+                            className="pl-10 pr-4 py-2 bg-slate-100/50 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-erp-blue/20 w-64 outline-none"
                         />
                     </div>
                 </div>
@@ -97,7 +106,7 @@ export default function OrganizationsPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {organizations?.map((org: Organization) => (
+                            {filteredOrganizations?.map((org: Organization) => (
                                 <tr key={org.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
@@ -162,6 +171,7 @@ export default function OrganizationsPage() {
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã Tổ chức</label>
                                         <input
+                                            required
                                             value={formData.code}
                                             onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                                             type="text"
