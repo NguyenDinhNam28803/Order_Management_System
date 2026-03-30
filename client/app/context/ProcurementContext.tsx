@@ -79,7 +79,7 @@ export interface RFQ {
     title?: string;
     dueDate?: string;
     createdAt?: string;
-    items?: any[];
+    items?: PRItem[];
     attachments?: { name: string, url: string }[];
     messages?: { sender: string, senderRole: string, text: string, timestamp: string }[];
 }
@@ -127,6 +127,69 @@ export interface Organization {
     email?: string;
 }
 
+export interface BudgetStats {
+    allocated: number;
+    committed: number;
+    spent: number;
+}
+
+export interface BudgetPeriod {
+    id: string;
+    orgId: string;
+    fiscalYear: number;
+    periodType: string;
+    periodNumber: number;
+    startDate: string;
+    endDate: string;
+    isActive: boolean;
+}
+
+export interface BudgetAllocation {
+    id: string;
+    budgetPeriodId: string;
+    costCenterId: string;
+    orgId: string;
+    deptId?: string;
+    allocatedAmount: number;
+    committedAmount: number;
+    spentAmount: number;
+    currency: string;
+    notes?: string;
+}
+
+export interface Product {
+    id: string;
+    name: string;
+    sku: string;
+    unitPriceRef: number;
+    unit: string;
+    description?: string;
+}
+
+export interface Quote {
+    id: string;
+    rfqId: string;
+    supplierId: string;
+    totalPrice: number;
+    currency: string;
+    leadTimeDays: number;
+    status: string;
+    createdAt: string;
+}
+
+export interface ApprovalWorkflow {
+    id: string;
+    documentId: string;
+    status: string;
+}
+
+export interface Notification {
+    id: number;
+    message: string;
+    type: string;
+    role?: string;
+}
+
 export interface ProcurementState {
     currentUser: User | null;
     prs: PR[];
@@ -135,17 +198,17 @@ export interface ProcurementState {
     rfqs: RFQ[];
     grns: GRN[];
     invoices: Invoice[];
-    budgets: any; // Keep for legacy if needed
+    budgets: BudgetStats | null;
     users: User[];
     departments: Department[];
     costCenters: CostCenter[];
     organizations: Organization[];
-    budgetPeriods: any[]; 
-    budgetAllocations: any[];
-    notifications: { id: number; message: string; type: string; role?: string }[];
-    quotes: any[];
-    products: any[];
-    approvals: any[];
+    budgetPeriods: BudgetPeriod[];
+    budgetAllocations: BudgetAllocation[];
+    notifications: Notification[];
+    quotes: Quote[];
+    products: Product[];
+    approvals: ApprovalWorkflow[];
     fiscalYears: number[];
 }
 
@@ -154,36 +217,36 @@ interface ProcurementContextType extends ProcurementState {
     logout: () => Promise<void>;
     refreshData: () => Promise<void>;
     apiFetch: (url: string, options?: RequestInit) => Promise<Response>;
-    addPR: (data: any) => Promise<string>;
+    addPR: (data: Partial<PR>) => Promise<string>;
     approvePR: (id: string) => Promise<boolean>;
     createRFQ: (prId: string, vendor: string) => Promise<boolean>;
-    createRFQConsolidated: (data: any) => Promise<string>;
+    createRFQConsolidated: (data: { title: string, vendor: string, items: PRItem[], prIds: string[], dueDate: string, attachments?: { name: string, url: string }[] }) => Promise<string>;
     actionApproval: (workflowId: string, action: string, memo?: string) => Promise<boolean>;
-    addDept: (data: any) => Promise<boolean>;
-    updateDept: (id: string, data: any) => Promise<boolean>;
+    addDept: (data: Partial<Department>) => Promise<boolean>;
+    updateDept: (id: string, data: Partial<Department>) => Promise<boolean>;
     removeDept: (id: string) => Promise<boolean>;
-    addUser: (data: any) => Promise<boolean>;
-    updateUser: (id: string, data: any) => Promise<boolean>;
-    addBudgetPeriod: (data: any) => Promise<boolean>;
-    updateBudgetPeriod: (id: string, data: any) => Promise<boolean>;
+    addUser: (data: Partial<User>) => Promise<boolean>;
+    updateUser: (id: string, data: Partial<User>) => Promise<boolean>;
+    addBudgetPeriod: (data: Partial<BudgetPeriod>) => Promise<boolean>;
+    updateBudgetPeriod: (id: string, data: Partial<BudgetPeriod>) => Promise<boolean>;
     removeBudgetPeriod: (id: string) => Promise<boolean>;
-    addBudgetAllocation: (data: any) => Promise<boolean>;
-    updateBudgetAllocation: (id: string, data: any) => Promise<boolean>;
+    addBudgetAllocation: (data: Partial<BudgetAllocation>) => Promise<boolean>;
+    updateBudgetAllocation: (id: string, data: Partial<BudgetAllocation>) => Promise<boolean>;
     removeBudgetAllocation: (id: string) => Promise<boolean>;
-    addBudgetAllocationBundle?: (data: any) => Promise<boolean>;
-    addCostCenter: (data: any) => Promise<boolean>;
-    updateCostCenter: (id: string, data: any) => Promise<boolean>;
+    addBudgetAllocationBundle?: (data: Partial<BudgetAllocation>[]) => Promise<boolean>;
+    addCostCenter: (data: Partial<CostCenter>) => Promise<boolean>;
+    updateCostCenter: (id: string, data: Partial<CostCenter>) => Promise<boolean>;
     removeCostCenter: (id: string) => Promise<boolean>;
-    addOrganization: (data: any) => Promise<boolean>;
-    updateOrganization: (id: string, data: any) => Promise<boolean>;
+    addOrganization: (data: Partial<Organization>) => Promise<boolean>;
+    updateOrganization: (id: string, data: Partial<Organization>) => Promise<boolean>;
     removeOrganization: (id: string) => Promise<boolean>;
     notify: (message: string, type?: 'success' | 'error' | 'info' | 'warning', role?: string) => void;
-    register: (data: any) => Promise<boolean>;
-    createQuote: (rfqId: string, quoteData: any) => Promise<boolean>;
-    createGRN: (data: any) => Promise<boolean>;
+    register: (data: Partial<User> & { password?: string }) => Promise<boolean>;
+    createQuote: (rfqId: string, quoteData: Partial<Quote>) => Promise<boolean>;
+    createGRN: (data: { poId: string, receivedItems: Record<string, number> }) => Promise<boolean>;
     ackPO: (id: string) => Promise<boolean>;
     shipPO: (id: string) => Promise<boolean>;
-    createInvoice: (data: any) => Promise<boolean>;
+    createInvoice: (data: { poId: string, vendor: string, amount: number }) => Promise<boolean>;
     payInvoice: (id: string) => Promise<boolean>;
     matchInvoice: (id: string, status?: string) => Promise<boolean>;
 }
@@ -373,11 +436,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                     // Force refresh users and products to include new additions
                     users: [
                         ...DEMO_USERS,
-                        ...(parsed.users || []).filter((u: any) => !DEMO_USERS.find(du => du.email === u.email))
+                        ...(parsed.users || []).filter((u: User) => !DEMO_USERS.find(du => du.email === u.email))
                     ],
                     products: [
                         ...INITIAL_STATE.products,
-                        ...(parsed.products || []).filter((p: any) => !INITIAL_STATE.products.find(ip => ip.id === p.id))
+                        ...(parsed.products || []).filter((p: Product) => !INITIAL_STATE.products.find(ip => ip.id === p.id))
                     ],
                     currentUser: prev.currentUser
                 }));
@@ -404,11 +467,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         }, 5000);
     }, []);
 
-    const addPR = useCallback((data: any) => {
+    const addPR = useCallback((data: Partial<PR>) => {
         const nextId = state.prs.length + 1;
-        const total = (data.items || []).reduce((s: number, i: any) => s + (Number(i.qty || i.quantity) * Number(i.estimatedPrice)), 0);
+        const total = (data.items || []).reduce((s: number, i: PRItem) => s + (Number(i.qty || i.quantity) * Number(i.estimatedPrice)), 0);
         
-        let status = "PENDING_APPROVAL";
+        const status = "PENDING_APPROVAL";
         let targetApproverRole = "DEPT_APPROVER";
         const user = state.currentUser;
         
@@ -459,7 +522,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, [notify, state.prs, state.rfqs.length]);
 
-    const createRFQConsolidated = useCallback((data: { title: string, vendor: string, items: any[], prIds: string[], dueDate: string, attachments?: any[] }) => {
+    const createRFQConsolidated = useCallback((data: { title: string, vendor: string, items: PRItem[], prIds: string[], dueDate: string, attachments?: { name: string, url: string }[] }) => {
         const newRFQ: RFQ = {
             id: `rfq-${state.rfqs.length + 1}`,
             prId: data.prIds.join(","), // Legacy support
@@ -489,11 +552,14 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(newRFQ.id);
     }, [notify, state.rfqs.length]);
 
-    const createQuote = useCallback(async (rfqId: string, quoteData: any) => {
-        const newQuote = {
+    const createQuote = useCallback(async (rfqId: string, quoteData: Partial<Quote>) => {
+        const newQuote: Quote = {
             id: `q-${state.quotes.length + 1}`,
             rfqId,
-            ...quoteData,
+            supplierId: quoteData.supplierId || "",
+            totalPrice: quoteData.totalPrice || 0,
+            currency: quoteData.currency || "VND",
+            leadTimeDays: quoteData.leadTimeDays || 7,
             status: "PENDING",
             createdAt: new Date().toISOString()
         };
@@ -598,16 +664,16 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
-    const addDept = useCallback((data: any) => {
+    const addDept = useCallback((data: Partial<Department>) => {
         setState(prev => {
             const nextId = prev.departments.length + 1;
-            const newDept = { ...data, id: `dept-${nextId}`, code: data.code || `DEPT-${String(nextId).padStart(3, '0')}` };
-            return { ...prev, departments: [...prev.departments, newDept] };
+            const newDept = { ...data, id: `dept-${nextId}`, code: data.code || `DEPT-${String(nextId).padStart(3, '0')}`, name: data.name || "" };
+            return { ...prev, departments: [...prev.departments, newDept as Department] };
         });
         return Promise.resolve(true);
     }, []);
 
-    const updateDept = useCallback((id: string, data: any) => {
+    const updateDept = useCallback((id: string, data: Partial<Department>) => {
         setState(prev => ({ ...prev, departments: prev.departments.map(d => d.id === id ? { ...d, ...data } : d) }));
         return Promise.resolve(true);
     }, []);
@@ -617,16 +683,16 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
-    const addCostCenter = useCallback((data: any) => {
+    const addCostCenter = useCallback((data: Partial<CostCenter>) => {
         setState(prev => {
             const nextId = prev.costCenters.length + 1;
-            const newCC = { ...data, id: `cc-${nextId}`, code: data.code || `CC-${String(nextId).padStart(3, '0')}`, budgetUsed: 0, currency: data.currency || "VND" };
-            return { ...prev, costCenters: [...prev.costCenters, newCC] };
+            const newCC = { ...data, id: `cc-${nextId}`, code: data.code || `CC-${String(nextId).padStart(3, '0')}`, budgetUsed: 0, currency: data.currency || "VND", name: data.name || "", budgetAnnual: data.budgetAnnual || 0, deptId: data.deptId || "" };
+            return { ...prev, costCenters: [...prev.costCenters, newCC as CostCenter] };
         });
         return Promise.resolve(true);
     }, []);
 
-    const updateCostCenter = useCallback((id: string, data: any) => {
+    const updateCostCenter = useCallback((id: string, data: Partial<CostCenter>) => {
         setState(prev => ({ ...prev, costCenters: prev.costCenters.map(cc => cc.id === id ? { ...cc, ...data } : cc) }));
         return Promise.resolve(true);
     }, []);
@@ -636,16 +702,16 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
-    const addOrganization = useCallback((data: any) => {
+    const addOrganization = useCallback((data: Partial<Organization>) => {
         setState(prev => {
             const nextId = prev.organizations.length + 1;
-            const newOrg = { ...data, id: `org-${nextId}`, code: data.code || `ORG-${String(nextId).padStart(3, '0')}` };
-            return { ...prev, organizations: [...prev.organizations, newOrg] };
+            const newOrg = { ...data, id: `org-${nextId}`, code: data.code || `ORG-${String(nextId).padStart(3, '0')}`, name: data.name || "", address: data.address || "", taxId: data.taxId || "" };
+            return { ...prev, organizations: [...prev.organizations, newOrg as Organization] };
         });
         return Promise.resolve(true);
     }, []);
 
-    const updateOrganization = useCallback((id: string, data: any) => {
+    const updateOrganization = useCallback((id: string, data: Partial<Organization>) => {
         setState(prev => ({ ...prev, organizations: prev.organizations.map(o => o.id === id ? { ...o, ...data } : o) }));
         return Promise.resolve(true);
     }, []);
@@ -655,30 +721,30 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
-    const addUser = useCallback((data: any) => {
+    const addUser = useCallback((data: Partial<User> & { employeeCode?: string }) => {
         setState(prev => {
             const nextId = prev.users.length + 1;
             const newUser = { ...data, id: `user-${nextId}`, employeeCode: data.employeeCode || `EMP-${String(nextId).padStart(3, '0')}` };
-            return { ...prev, users: [...prev.users, newUser] };
+            return { ...prev, users: [...prev.users, newUser as User] };
         });
         return Promise.resolve(true);
     }, []);
 
-    const updateUser = useCallback((id: string, data: any) => {
+    const updateUser = useCallback((id: string, data: Partial<User>) => {
         setState(prev => ({ ...prev, users: prev.users.map(u => u.id === id ? { ...u, ...data } : u) }));
         return Promise.resolve(true);
     }, []);
 
-    const addBudgetPeriod = useCallback((data: any) => {
+    const addBudgetPeriod = useCallback((data: Partial<BudgetPeriod>) => {
         setState(prev => {
             const nextId = prev.budgetPeriods.length + 1;
             const newP = { ...data, id: `bp-${nextId}` };
-            return { ...prev, budgetPeriods: [...prev.budgetPeriods, newP] };
+            return { ...prev, budgetPeriods: [...prev.budgetPeriods, newP as BudgetPeriod] };
         });
         return Promise.resolve(true);
     }, []);
 
-    const updateBudgetPeriod = useCallback((id: string, data: any) => {
+    const updateBudgetPeriod = useCallback((id: string, data: Partial<BudgetPeriod>) => {
         setState(prev => ({ ...prev, budgetPeriods: prev.budgetPeriods.map(p => p.id === id ? { ...p, ...data } : p) }));
         return Promise.resolve(true);
     }, []);
@@ -688,16 +754,16 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
-    const addBudgetAllocation = useCallback((data: any) => {
+    const addBudgetAllocation = useCallback((data: Partial<BudgetAllocation>) => {
         setState(prev => {
             const nextId = prev.budgetAllocations.length + 1;
             const newA = { ...data, id: `ba-${nextId}` };
-            return { ...prev, budgetAllocations: [...prev.budgetAllocations, newA] };
+            return { ...prev, budgetAllocations: [...prev.budgetAllocations, newA as BudgetAllocation] };
         });
         return Promise.resolve(true);
     }, []);
 
-    const updateBudgetAllocation = useCallback((id: string, data: any) => {
+    const updateBudgetAllocation = useCallback((id: string, data: Partial<BudgetAllocation>) => {
         setState(prev => ({ ...prev, budgetAllocations: prev.budgetAllocations.map(a => a.id === id ? { ...a, ...data } : a) }));
         return Promise.resolve(true);
     }, []);
@@ -707,19 +773,19 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
-    const addBudgetAllocationBundle = useCallback((data: any) => {
+    const addBudgetAllocationBundle = useCallback((data: Partial<BudgetAllocation>[]) => {
         console.log("addBudgetAllocationBundle called with:", data);
         return Promise.resolve(true);
     }, []);
 
-    const createGRN = useCallback((data: any) => Promise.resolve(true), []);
-    const ackPO = useCallback((id: string) => Promise.resolve(true), []);
-    const shipPO = useCallback((id: string) => Promise.resolve(true), []);
-    const createInvoice = useCallback((data: any) => Promise.resolve(true), []);
-    const payInvoice = useCallback((id: string) => Promise.resolve(true), []);
-    const matchInvoice = useCallback((id: string, status?: string) => Promise.resolve(true), []);
+    const createGRN = useCallback((_data: { poId: string, receivedItems: Record<string, number> }) => Promise.resolve(true), []);
+    const ackPO = useCallback((_id: string) => Promise.resolve(true), []);
+    const shipPO = useCallback((_id: string) => Promise.resolve(true), []);
+    const createInvoice = useCallback((_data: { poId: string, vendor: string, amount: number }) => Promise.resolve(true), []);
+    const payInvoice = useCallback((_id: string) => Promise.resolve(true), []);
+    const matchInvoice = useCallback((_id: string, _status?: string) => Promise.resolve(true), []);
 
-    const register = useCallback(async (data: any) => {
+    const register = useCallback(async (data: Partial<User> & { password?: string }) => {
         try {
             const res = await apiFetch('/auth/register', {
                 method: 'POST',
@@ -778,7 +844,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         notify,
         register,
         createQuote
-    }), [state, login, register, logout, refreshData, apiFetch, addPR, approvePR, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice, addCostCenter, updateCostCenter, removeCostCenter, addOrganization, updateOrganization, removeOrganization, notify, createQuote]);
+    }), [state, login, register, logout, refreshData, apiFetch, addPR, approvePR, createRFQ, createRFQConsolidated, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice, addCostCenter, updateCostCenter, removeCostCenter, addOrganization, updateOrganization, removeOrganization, notify, createQuote]);
 
     return (
         <ProcurementContext.Provider value={contextValue}>
