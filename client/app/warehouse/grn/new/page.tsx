@@ -85,7 +85,7 @@ export default function CreateGRN() {
            receivedItems[item.id] = Number(recvData[item.id].actual) || 0;
         });
 
-        createGRN(activePO.id, receivedItems);
+        createGRN({ poId: activePO.id, receivedItems });
         alert("GRN Đã được ghi nhận. Hệ thống tự động đẩy dữ liệu sang TồnKho & Chuyển sang 3-Way Matching cho kế toán (Finance).");
         setActivePO(null);
         setPoLookup("");

@@ -45,7 +45,7 @@ export default function ProcurementControlPage() {
     const departments = useMemo((): string[] => {
     const depts = new Set(
         (prs || [])
-            .map((pr: PR) => (typeof pr.department === 'string' ? pr.department : pr.department?.name))
+            .map((pr: any) => (typeof pr.department === 'string' ? pr.department : pr.department?.name))
             .filter(Boolean) as string[]
         );
         return Array.from(depts);
@@ -53,7 +53,7 @@ export default function ProcurementControlPage() {
 
     // Filtered data
     const filteredPRs = useMemo(() => {
-        return (prs || []).filter((pr: PR) => {
+        return (prs || []).filter((pr: any) => {
             const matchesSearch = 
                 (pr.prNumber || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (pr.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -184,9 +184,9 @@ export default function ProcurementControlPage() {
 
     const stats = [
         { label: "Tổng số PR", value: prs.length, icon: FileText, color: "text-slate-500", bg: "bg-slate-50" },
-        { label: "Chờ Tìm Nguồn", value: prs.filter((p: PR) => p.status === 'APPROVED').length, icon: Zap, color: "text-amber-500", bg: "bg-amber-50" },
-        { label: "Đang Báo Giá", value: prs.filter((p: PR) => p.status === 'IN_SOURCING').length, icon: Send, color: "text-blue-500", bg: "bg-blue-50" },
-        { label: "Hoàn tất PO", value: prs.filter((p: PR) => p.status === 'PO_CREATED').length, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-50" },
+        { label: "Chờ Tìm Nguồn", value: prs.filter((p: any) => p.status === 'APPROVED').length, icon: Zap, color: "text-amber-500", bg: "bg-amber-50" },
+        { label: "Đang Báo Giá", value: prs.filter((p: any) => p.status === 'IN_SOURCING').length, icon: Send, color: "text-blue-500", bg: "bg-blue-50" },
+        { label: "Hoàn tất PO", value: prs.filter((p: any) => p.status === 'PO_CREATED').length, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-50" },
     ];
 
     return (

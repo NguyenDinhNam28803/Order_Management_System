@@ -47,8 +47,8 @@ export interface PR {
     costCenterId?: string;
     costCenter?: { code: string; name?: string };
     procurementId?: string;
-    totalEstimate?: number | string;
-    total?: number | string;
+    totalEstimate?: number;
+    total?: number;
     items?: PRItem[];
     attachments?: { name: string, url: string }[];
     creatorRole?: string; // Fallback helper
@@ -124,6 +124,7 @@ export interface Organization {
     code: string;
     address: string;
     taxId: string;
+    email?: string;
 }
 
 export interface ProcurementState {
@@ -405,7 +406,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const addPR = useCallback((data: any) => {
         const nextId = state.prs.length + 1;
-        const total = (data.items || []).reduce((s: number, i: any) => s + (Number(i.qty) * Number(i.estimatedPrice)), 0);
+        const total = (data.items || []).reduce((s: number, i: any) => s + (Number(i.qty || i.quantity) * Number(i.estimatedPrice)), 0);
         
         let status = "PENDING_APPROVAL";
         let targetApproverRole = "DEPT_APPROVER";

@@ -22,7 +22,8 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "generated/*": ["generated/*"]
+      "generated/*": ["generated/*"],
+      "src/*": ["src/*"]
     }
   },
   "exclude": ["node_modules", "dist"]
