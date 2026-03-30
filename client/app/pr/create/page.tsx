@@ -32,10 +32,47 @@ interface PRForm {
     justification: string;
     requiredDate: string;
     priority: number;
-    currency: string;
+    currency: "VND" | "USD" | "EUR" | "SGD" | "JPY" | "CNY" | "GBP" | "AUD";
     costCenterId: string;
     items: PRItem[];
 }
+
+/**
+ * STRICT INTERFACES FOR API PAYLOAD
+ * As per PRModule DTOs (create-pr.dto.ts)
+ */
+interface PRItemPayload {
+  productId?: string;
+  productDesc: string;
+  sku?: string;
+  categoryId?: string;
+  qty: number;
+  unit?: string;
+  estimatedPrice: number;
+  currency?: string;
+  specNote?: string;
+}
+
+interface PRPayload {
+  title: string;
+  description?: string;
+  justification?: string;
+  requiredDate?: string;
+  priority?: number;
+  currency?: string;
+  costCenterId?: string;
+  items: PRItemPayload[];
+}
+
+/**
+ * UTILITY: Check if string is a valid UUID
+ * To prevent 400 Bad Request from dummy data like "p1"
+ */
+const isValidUuid = (id: string | undefined): boolean => {
+    if (!id) return false;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(id);
+};
 
 export default function CreatePRPage() {
     const { apiFetch, costCenters, currentUser, products, notify } = useProcurement();
@@ -119,62 +156,94 @@ export default function CreatePRPage() {
     const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = async () => {
+        // Validation check
         if (!form.title || form.items.length === 0 || !form.costCenterId) {
             setErrorMessage("Vui lòng nhập đầy đủ tiêu đề, trung tâm chi phí và ít nhất 1 sản phẩm.");
             setSubmissionStatus('error');
             return;
         }
 
-        const payload = {
-            title: form.title,
-            description: form.description || undefined,
-            justification: form.justification || undefined,
-            requiredDate: form.requiredDate || undefined,
-            priority: Number(form.priority),
-            currency: form.currency || "VND",
-            costCenterId: form.costCenterId,
+        /**
+         * STEP 0: Prepare Payload with strict data binding
+         * Grouping item details and ensuring default values for mandatory fields
+         */
+        const payload: PRPayload = {
+            title: form.title.trim(),
+            description: form.description?.trim() || undefined,
+            justification: form.justification?.trim() || undefined,
+            // Convert to ISO string or undefined if empty
+            requiredDate: form.requiredDate ? new Date(form.requiredDate).toISOString() : undefined,
+            priority: Number(form.priority) || 2, // Default: Medium (2)
+            currency: form.currency || "VND",    // Default: VND
+            costCenterId: isValidUuid(form.costCenterId) ? form.costCenterId : undefined,
             items: form.items.map((i: PRItem) => ({
-                productId: i.productId || undefined,
+                productId: isValidUuid(i.productId) ? i.productId : undefined,
                 productDesc: i.productDesc,
                 sku: i.sku || undefined,
-                categoryId: i.categoryId || undefined,
+                categoryId: isValidUuid(i.categoryId) ? i.categoryId : undefined,
                 qty: Number(i.qty),
-                unit: i.unit || "PCS",
+                unit: i.unit || "PCS",           // Default unit
                 estimatedPrice: Number(i.estimatedPrice),
-                currency: i.currency || "VND",
-                specNote: i.specNote || undefined
+                currency: i.currency || form.currency || "VND",
+                specNote: i.specNote?.trim() || undefined
             }))
         };
 
         setSubmissionStatus('loading');
+        setIsSubmitting(true);
+
         try {
+            /**
+             * STEP 1: CREATE DRAFT PR
+             * POST /procurement-requests
+             */
             const createRes = await apiFetch('/procurement-requests', {
                 method: 'POST',
                 body: JSON.stringify(payload)
             });
             const createData = await createRes.json();
 
+            // Check if Step 1 succeeded and we have a valid ID (inside data wrapper)
             if (createRes.ok && createData.data?.id) {
-                const prId = createData.data.id;
+                // EXCEPTIONALLY IMPORTANT: Extract the exact ID string and REMOVE any 'pr-' prefix
+                // to match backend requirements: /procurement-requests/{id}/submit
+                const prId = String(createData.data.id).replace('pr-', ''); 
+
+                /**
+                 * STEP 2: SUBMIT FOR APPROVAL (CHAINING)
+                 * POST /procurement-requests/{id}/submit
+                 * Using exact ID without any prefixes to prevent 404
+                 */
                 const submitRes = await apiFetch(`/procurement-requests/${prId}/submit`, {
                     method: 'POST'
                 });
 
                 if (submitRes.ok) {
                     setSubmissionStatus('success');
+                    // Notification of success
+                    notify("Gửi yêu cầu mua hàng thành công!", "success");
+                    // Redirect after a short delay
                     setTimeout(() => router.push("/pr"), 2000);
                 } else {
-                    setErrorMessage("Đã tạo nháp PR nhưng không thể gửi phê duyệt tự động.");
+                    // Step 1 success, Step 2 failed
+                    const errData = await submitRes.json().catch(() => ({}));
+                    setErrorMessage(errData.message || "Đã tạo nháp PR nhưng không thể gửi phê duyệt tự động");
                     setSubmissionStatus('error');
+                    notify("PR đã được lưu nháp nhưng chưa gửi duyệt được", "warning");
                 }
             } else {
-                setErrorMessage(createData.message || "Không thể tạo PR. Vui lòng kiểm tra lại dữ liệu.");
+                // Step 1 failed
+                setErrorMessage(createData.message || "Tạo thất bại. Vui lòng kiểm tra lại dữ liệu.");
                 setSubmissionStatus('error');
+                notify("Không thể tạo yêu cầu mua hàng", "error");
             }
         } catch (err) {
-            console.error(err);
+            console.error("PR Submission Error:", err);
             setErrorMessage("Lỗi kết nối máy chủ. Vui lòng thử lại sau.");
             setSubmissionStatus('error');
+            notify("Lỗi hệ thống khi gửi PR", "error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 

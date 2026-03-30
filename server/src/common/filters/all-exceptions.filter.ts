@@ -10,6 +10,10 @@ import { Response } from 'express';
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
+    console.error('--- EXCEPTION CAUGHT BY GLOBAL FILTER ---', exception);
+    if (exception instanceof Error) {
+      console.error('Stack:', exception.stack);
+    }
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

@@ -65,16 +65,28 @@ export class RfqmoduleService {
       await this.aiService.getCompanySuggestion(items);
 
     console.log(suggestedSupplierIds);
-    if (!suggestedSupplierIds || suggestedSupplierIds.length === 0) {
+    if (!suggestedSupplierIds || !suggestedSupplierIds.data || suggestedSupplierIds.data.length === 0) {
       return [];
     }
 
-    // Extract supplier IDs from the AI response
-    const supplierIds = Array.isArray(suggestedSupplierIds.data)
+    // Extract supplier IDs from the AI response and ensure they are valid strings
+    const rawSupplierData = Array.isArray(suggestedSupplierIds.data)
       ? suggestedSupplierIds.data
       : [suggestedSupplierIds.data];
 
-    const supplierData: RfqSupplierCreateManyInput[] = supplierIds.map(
+    const validSupplierIds = rawSupplierData
+      .map((item: any) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object') return item.id || item.supplierId || item.orgId;
+        return null;
+      })
+      .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+    if (validSupplierIds.length === 0) {
+      return [];
+    }
+
+    const supplierData: RfqSupplierCreateManyInput[] = validSupplierIds.map(
       (sId: string) => ({
         rfqId: rfq.id,
         supplierId: sId,

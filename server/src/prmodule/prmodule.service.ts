@@ -189,11 +189,33 @@ export class PrmoduleService {
   }
 
   async findOne(id: string): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const pr = await this.repository.findOne(id);
+    // Thử tìm theo ID (UUID) trước, nếu không phải UUID thì tìm theo prNumber
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        id,
+      );
+
+    let pr;
+    if (isUuid) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      pr = await this.repository.findOne(id);
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      pr = await this.prisma.purchaseRequisition.findUnique({
+        where: { prNumber: id },
+        include: {
+          items: true,
+          requester: true,
+          department: true,
+          costCenter: true,
+          procurement: true,
+        },
+      });
+    }
+
     if (!pr) {
       throw new NotFoundException(
-        `Purchase Requisition with ID ${id} not found`,
+        `Purchase Requisition with identifier ${id} not found`,
       );
     }
     return pr;
@@ -201,31 +223,53 @@ export class PrmoduleService {
 
   async submit(id: string): Promise<PurchaseRequisition> {
     if (!id) {
-      throw new NotFoundException(`Purchase Requisition ID is required`);
+      throw new BadRequestException(`Purchase Requisition ID is required`);
     }
 
-    // 1. Tìm PR
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const pr = await this.findOne(id);
-    if (pr.status !== PrStatus.DRAFT) {
-      throw new Error('Only draft PRs can be submitted');
+    try {
+      // 1. Tìm PR
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const pr = await this.findOne(id);
+      if (!pr) {
+        throw new NotFoundException(
+          `Purchase Requisition with ID ${id} not found`,
+        );
+      }
+
+      console.log(`[PR-SUBMIT] Submitting PR: ${id} (Status: ${pr.status})`);
+
+      if (pr.status !== PrStatus.DRAFT) {
+        throw new BadRequestException(
+          `Chỉ hồ sơ ở trạng thái NHÁP mới được sửa hoặc gửi duyệt. Trạng thái hiện tại: ${pr.status}`,
+        );
+      }
+
+      // 2. Kích hoạt luồng duyệt (Multi-level Approval)
+      await this.approvalService.initiateWorkflow({
+        docType: DocumentType.PURCHASE_REQUISITION,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        docId: pr.id,
+        totalAmount: Number(pr.totalEstimate),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        orgId: pr.orgId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        requesterId: pr.requesterId,
+      });
+
+      console.log(`[PR-SUBMIT] Workflow initiated for PR: ${pr.id}`);
+
+      // 3. Trạng thái PENDING_APPROVAL đã được cập nhật bên trong initiateWorkflow
+      // nhưng ta vẫn trả về PR mới nhất để đồng bộ UI
+      return this.findOne(pr.id);
+    } catch (error) {
+      console.error('[PR-SUBMIT] CRITICAL ERROR:', error);
+      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException(
+        `Không thể gửi duyệt PR: ${error.message || 'Lỗi không xác định'}`,
+      );
     }
-
-    // 2. Kích hoạt luồng duyệt (Multi-level Approval)
-    await this.approvalService.initiateWorkflow({
-      docType: DocumentType.PURCHASE_REQUISITION,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      docId: pr.id,
-      totalAmount: Number(pr.totalEstimate),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      orgId: pr.orgId,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      requesterId: pr.requesterId,
-    });
-
-    // 3. Trạng thái PENDING_APPROVAL đã được cập nhật bên trong initiateWorkflow
-    // nhưng ta vẫn trả về PR mới nhất để đồng bộ UI
-    return this.findOne(id);
   }
 
   async findMyPrs(userId: string): Promise<PurchaseRequisition[]> {

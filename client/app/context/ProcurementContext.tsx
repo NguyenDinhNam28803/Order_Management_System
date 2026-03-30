@@ -394,7 +394,7 @@ const INITIAL_STATE: ProcurementState = {
     currentUser: null,
     prs: [
         {
-            id: "pr-001",
+            id: "001",
             prNumber: "PR-2026-0001",
             title: "Mua sắm thiết bị IT tháng 3",
             status: "PENDING_APPROVAL",
@@ -411,7 +411,7 @@ const INITIAL_STATE: ProcurementState = {
             ]
         },
         {
-            id: "pr-002",
+            id: "002",
             prNumber: "PR-2026-0002",
             title: "Văn phòng phẩm quý 1",
             status: "APPROVED",
@@ -427,7 +427,7 @@ const INITIAL_STATE: ProcurementState = {
             ]
         },
         {
-            id: "pr-006",
+            id: "006",
             prNumber: "PR-2026-0006",
             title: "Mua chuột & Phụ kiện",
             status: "APPROVED",
@@ -580,7 +580,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
         const newPR = {
             ...data,
-            id: `pr-${nextId}`,
+            id: `${nextId}`,
             prNumber: `PR-2026-${String(nextId).padStart(4, '0')}`,
             status: status,
             targetApproverRole: targetApproverRole,
@@ -671,19 +671,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [notify, state.quotes.length]);
 
     const apiFetch = useCallback(async (url: string, options: RequestInit = {}) => {
-        // Special Mocks for this demo build
-        if (url === '/procurement-requests' && options.method === 'POST') {
-            const data = JSON.parse(options.body as string);
-            const prId = await addPR(data);
-            return { ok: true, status: 201, json: async () => ({ data: { id: prId } }) } as Response;
-        }
-
-        if (url === '/request-for-quotations' && options.method === 'POST') {
-            const data = JSON.parse(options.body as string);
-            await createRFQ(data.prId, data.vendor);
-            return { ok: true, status: 201, json: async () => ({ data: { id: Date.now() } }) } as Response;
-        }
-
+        /**
+         * REMOVED MOCK LOGIC: We are now integrating with the real backend API.
+         * Previous mocks for '/procurement-requests' and '/request-for-quotations' have been disabled
+         * to prevent 404 errors during two-step submission/chaining flows.
+         */
+        
         // Real API Calls 
         const token = Cookies.get('accessToken');
         const headers: HeadersInit = {
@@ -697,10 +690,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             if (!res.ok) {
                 const contentType = res.headers.get("content-type");
                 let errorData;
+                // Clone the response before reading it for logging
+                const clonedRes = res.clone();
                 if (contentType && contentType.includes("application/json")) {
-                    errorData = await res.json().catch(() => ({}));
+                    errorData = await clonedRes.json().catch(() => ({}));
                 } else {
-                    errorData = { rawText: await res.text().catch(() => "N/A") };
+                    errorData = { rawText: await clonedRes.text().catch(() => "N/A") };
                 }
                 console.error(`API Error (${url}) - Status ${res.status}:`, errorData);
             }
@@ -715,31 +710,36 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         const token = Cookies.get('accessToken');
         if (!token) return;
 
-        // Fetch real data from backend
-        const [ccRes, orgRes, deptRes] = await Promise.all([
-            apiFetch('/cost-centers'),
-            apiFetch('/organizations'),
-            apiFetch('/departments')
-        ]);
+        // Fetch real data from backend concurrently
+        try {
+            const [ccRes, orgRes, deptRes, allPrRes, myPrRes, pendingApprRes] = await Promise.all([
+                apiFetch('/cost-centers'),
+                apiFetch('/organizations'),
+                apiFetch('/departments'),
+                apiFetch('/procurement-requests'),
+                apiFetch('/procurement-requests/my'),
+                apiFetch('/approvals/pending')
+            ]);
 
-        const costCenters = ccRes.ok ? (await ccRes.json()).data : null;
-        const organizations = orgRes.ok ? (await orgRes.json()).data : null;
-        const departments = deptRes.ok ? (await deptRes.json()).data : null;
+            const costCenters = ccRes.ok ? (await ccRes.json()).data : null;
+            const organizations = orgRes.ok ? (await orgRes.json()).data : null;
+            const departments = deptRes.ok ? (await deptRes.json()).data : null;
+            const allPrs = allPrRes.ok ? (await allPrRes.json()).data : null;
+            const myPrs = myPrRes.ok ? (await myPrRes.json()).data : null;
+            const pendingApprovals = pendingApprRes.ok ? (await pendingApprRes.json()).data : null;
 
-        setState(prev => ({
-            ...prev,
-            costCenters: Array.isArray(costCenters) ? costCenters : prev.costCenters,
-            organizations: Array.isArray(organizations) ? organizations : prev.organizations,
-            departments: Array.isArray(departments) ? departments : prev.departments,
-            myPrs: prev.prs.filter(p => p.requester?.email === prev.currentUser?.email),
-            approvals: prev.prs
-                .filter(p => p.status === "PENDING_APPROVAL" && (p.targetApproverRole === prev.currentUser?.role || prev.currentUser?.role === "PLATFORM_ADMIN"))
-                .map(p => ({
-                    id: `wf-${p.id}`,
-                    documentId: p.id,
-                    status: "PENDING_APPROVAL"
-                })),
-        }));
+            setState(prev => ({
+                ...prev,
+                costCenters: Array.isArray(costCenters) ? costCenters : prev.costCenters,
+                organizations: Array.isArray(organizations) ? organizations : prev.organizations,
+                departments: Array.isArray(departments) ? departments : prev.departments,
+                prs: Array.isArray(allPrs) ? allPrs : prev.prs,
+                myPrs: Array.isArray(myPrs) ? myPrs : prev.myPrs,
+                approvals: Array.isArray(pendingApprovals) ? pendingApprovals : prev.approvals,
+            }));
+        } catch (error) {
+            console.error("Error refreshing data from backend:", error);
+        }
     }, [apiFetch]);
 
     useEffect(() => {
@@ -780,14 +780,28 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
-    const actionApproval = useCallback((workflowId: string, action: string, memo?: string) => {
-        const prId = workflowId.replace('wf-', '');
-        setState(prev => {
-            const updatedPrs = prev.prs.map(p => p.id === prId ? { ...p, status: action === 'APPROVE' ? 'APPROVED' : 'REJECTED' } : p);
-            return { ...prev, prs: updatedPrs };
-        });
-        return Promise.resolve(true);
-    }, []);
+    const actionApproval = useCallback(async (workflowId: string, action: string, comment?: string) => {
+        try {
+            const res = await apiFetch(`/approvals/${workflowId}/action`, {
+                method: 'POST',
+                body: JSON.stringify({ action, comment })
+            });
+            
+            if (res.ok) {
+                notify(action === 'APPROVE' ? "Đã duyệt yêu cầu" : "Đã từ chối yêu cầu", "success");
+                await refreshData();
+                return true;
+            } else {
+                const err = await res.json().catch(() => ({}));
+                notify(err.message || "Lỗi khi thực hiện phê duyệt", "error");
+                return false;
+            }
+        } catch (error) {
+            console.error("Approval action error:", error);
+            notify("Lỗi hệ thống khi phê duyệt", "error");
+            return false;
+        }
+    }, [apiFetch, refreshData, notify]);
 
     const addDept = useCallback(async (data: Partial<Department>) => {
         // Clean Payload: Convert empty strings to undefined to avoid backend validation failure (e.g. UUID)
