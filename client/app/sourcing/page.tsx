@@ -41,7 +41,7 @@ export default function SourcingPage() {
             });
             if (res.ok) {
                 // Call context-level local createRFQ for local storage/demo state
-                await createRFQ({ prId, vendor: "Thiên Long Digital" });
+                await createRFQ(prId, "Thiên Long Digital");
                 notify("Đã khởi tạo RFQ thành công cho đơn " + prId, "success");
                 refreshData();
             }

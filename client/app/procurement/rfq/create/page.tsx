@@ -76,7 +76,7 @@ export default function CreateRFQPage() {
             // Updated to match backend CreateRfqDto
             const payload = {
                 prId: prId,
-                title: `RFQ for ${targetPR.prNumber || targetPR.id}`,
+                title: targetPR ? `RFQ for ${targetPR.prNumber || targetPR.id}` : `RFQ for ${prId}`,
                 description: note,
                 deadline: new Date(deadline).toISOString(),
                 supplierIds: selectedVendors.map(v => v.id),

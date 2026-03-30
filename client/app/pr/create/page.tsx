@@ -3,29 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
-import { useProcurement } from "../../context/ProcurementContext";
+import { useProcurement, Product, CostCenter } from "../../context/ProcurementContext";
 import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
 
-interface Product {
-    id: string;
-    name: string;
-    sku: string;
-    categoryId: string;
-    unitPriceRef: number;
-    unit: string;
-}
-
-interface CostCenter {
-    id: string;
-    name: string;
-    code: string;
-    deptId?: string;
-    budgetAnnual: number;
-    budgetUsed: number;
-    currency: string;
-}
 
 interface PRItem {
     productId?: string;

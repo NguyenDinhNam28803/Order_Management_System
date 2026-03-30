@@ -42,10 +42,9 @@ export default function SupplierRFQ() {
         });
 
         createQuote(activeRFQ.id, {
-            prices: pricesObj,
-            leadTime,
-            paymentTerms,
-            total
+            totalPrice: total,
+            leadTimeDays: Number(leadTime) || 7,
+            currency: "VND"
         });
         
         notify(`Báo giá cho RFQ ${activeRFQ.id} đã được gửi thành công!`, "success");
@@ -317,7 +316,7 @@ export default function SupplierRFQ() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="font-mono text-slate-400 text-[10px]">{new Date(r.createdAt || Date.now()).toLocaleString()}</td>
+                                    <td className="font-mono text-slate-400 text-[10px]">{new Date(r.createdAt || 0).toLocaleString()}</td>
                                     <td className="text-center">
                                         <span className="bg-red-50 text-red-600 border border-red-100 font-black uppercase text-[9px] px-2 py-1 rounded-lg tracking-widest animate-pulse">20h 15m</span>
                                     </td>

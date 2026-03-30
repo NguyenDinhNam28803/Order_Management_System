@@ -25,9 +25,9 @@ export default function SupplierDashboard() {
 
     const handleQuote = (rfqId: string) => {
         createQuote(rfqId, {
-            price: 5000000,
-            deliveryDate: "2026-04-10",
-            notes: "Chúng tôi cam kết giao hàng chất lượng cao nhất."
+            totalPrice: 5000000,
+            leadTimeDays: 7,
+            currency: "VND"
         });
         notify(`Đã gửi báo giá cho ${rfqId} thành công!`, "success");
     };

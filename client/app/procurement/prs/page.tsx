@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useProcurement } from "../../context/ProcurementContext";
+import { useProcurement, PR } from "../../context/ProcurementContext";
 import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable from "../../components/shared/ERPTable";
 import { 
@@ -13,26 +13,6 @@ import {
     UserPlus, Settings} from "lucide-react";
 import Link from "next/link";
 
-interface PRItem {
-    id: string;
-    description: string;
-    qty: number;
-    estimatedPrice: number;
-}
-
-interface PR {
-    id: string;
-    prNumber?: string;
-    title?: string;
-    status: string;
-    createdAt: string;
-    requester?: { fullName?: string; name?: string };
-    department?: { name: string } | string;
-    costCenter?: { code: string };
-    procurementId?: string;
-    totalEstimate?: number;
-    items?: PRItem[];
-}
 
 export default function ProcurementControlPage() {
     const { prs, currentUser, apiFetch, refreshData, notify } = useProcurement();
