@@ -6,6 +6,7 @@ import { FileCheck, ShieldAlert, CalendarClock, TrendingDown, Search, CheckCircl
 import { useRouter } from "next/navigation";
 
 import { useProcurement } from "../../context/ProcurementContext";
+import { formatVND } from "../../utils/formatUtils";
 
 interface Invoice {
     id: string;
@@ -113,7 +114,7 @@ export default function FinanceDashboard() {
                                 <td className="font-bold text-erp-navy text-sm">{inv.id}</td>
                                 <td className="font-bold text-slate-700">{inv.vendor}</td>
                                 <td className="font-mono text-slate-500">{inv.poId}</td>
-                                <td className="text-right font-mono font-black text-slate-700">{inv.amount.toLocaleString()} ₫</td>
+                                <td className="text-right font-mono font-black text-slate-700">{formatVND(inv.amount)} ₫</td>
                                 <td className="text-slate-500">{inv.createdAt}</td>
                                 <td className="text-center">
                                     {inv.status === "PENDING" ? (

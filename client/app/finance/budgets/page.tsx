@@ -14,6 +14,7 @@ import {
     Target
 } from "lucide-react";
 import { useProcurement, CostCenter, BudgetAllocation } from "../../context/ProcurementContext";
+import { formatVND, parseMoney } from "../../utils/formatUtils";
 
 export default function FinanceBudgetsPage() {
     const { 
@@ -93,7 +94,6 @@ export default function FinanceBudgetsPage() {
     const difference = totalAnnualBudget - currentSum;
     const isValid = totalAnnualBudget > 0 && difference === 0;
 
-    const formatCurrency = (val: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
     const getBucketPercentage = (val: number) => totalAnnualBudget === 0 ? 0 : (val / totalAnnualBudget) * 100;
 
     return (
@@ -164,7 +164,7 @@ export default function FinanceBudgetsPage() {
                                     <s.icon size={20} className={s.color} />
                                 </div>
                                 <div className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] mb-2">{s.label}</div>
-                                <div className={`text-2xl font-black ${s.color}`}>{formatCurrency(s.val)}</div>
+                                <div className={`text-2xl font-black ${s.color}`}>{formatVND(s.val, true)}</div>
                                 <div className="mt-4 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                                     <div className={`h-full ${idx === 1 ? 'bg-amber-500' : 'bg-erp-navy'} transition-all duration-1000`} style={{ width: idx === 0 ? '100%' : `${stats.percent}%` }}></div>
                                 </div>
@@ -201,7 +201,7 @@ export default function FinanceBudgetsPage() {
                                                     <div className="font-black text-erp-navy text-sm">{dept?.name || "Chung"}</div>
                                                     <div className="text-[10px] font-bold text-slate-400 mt-0.5">{cc?.code} - {cc?.name}</div>
                                                 </td>
-                                                <td className="px-8 py-6 font-black text-slate-600">{formatCurrency(a.allocatedAmount)}</td>
+                                                <td className="px-8 py-6 font-black text-slate-600">{formatVND(a.allocatedAmount, true)}</td>
                                                 <td className="px-8 py-6">
                                                     <div className="flex items-center gap-4">
                                                         <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -210,7 +210,7 @@ export default function FinanceBudgetsPage() {
                                                         <span className="text-[10px] font-black text-erp-navy">{p.toFixed(0)}%</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-6 font-black text-erp-navy">{formatCurrency(a.allocatedAmount - a.spentAmount)}</td>
+                                                <td className="px-8 py-6 font-black text-erp-navy">{formatVND(a.allocatedAmount - a.spentAmount, true)}</td>
                                                 <td className="px-8 py-6">
                                                     <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
                                                         p > 100 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'
@@ -272,8 +272,8 @@ export default function FinanceBudgetsPage() {
                                     <span className="absolute left-10 text-3xl text-slate-200">₫</span>
                                     <input 
                                         readOnly
-                                        type="number"
-                                        value={totalAnnualBudget || ''}
+                                        type="text"
+                                        value={formatVND(totalAnnualBudget) || ''}
                                         className="w-full bg-slate-50 border-2 border-slate-100 rounded-[35px] pl-20 pr-8 py-10 text-5xl font-black text-erp-navy outline-none cursor-not-allowed"
                                     />
                                     <div className="absolute right-10 flex flex-col items-end">
@@ -299,9 +299,9 @@ export default function FinanceBudgetsPage() {
                                             </div>
                                         </div>
                                         <input 
-                                            type="number"
-                                            value={buckets[item.key as keyof typeof buckets] || ''}
-                                            onChange={(e) => handleBucketEdit(item.key as keyof typeof buckets, Number(e.target.value))}
+                                            type="text"
+                                            value={formatVND(buckets[item.key as keyof typeof buckets]) || ''}
+                                            onChange={(e) => handleBucketEdit(item.key as keyof typeof buckets, parseMoney(e.target.value))}
                                             className="w-full bg-transparent text-2xl font-black text-erp-navy outline-none"
                                         />
                                         <div className="text-[10px] font-bold text-slate-400 mt-1">{getBucketPercentage(buckets[item.key as keyof typeof buckets]).toFixed(1)}% / Năm</div>
@@ -313,7 +313,7 @@ export default function FinanceBudgetsPage() {
                                 }`}>
                                     <div className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">Check Balance</div>
                                     <div className={`text-sm font-black ${isValid ? 'text-green-600' : 'text-red-600'}`}>
-                                        {isValid ? "Hạch toán Khớp" : (difference > 0 ? `+${formatCurrency(difference)}` : formatCurrency(difference))}
+                                        {isValid ? "Hạch toán Khớp" : (difference > 0 ? `+${formatVND(difference, true)}` : formatVND(difference, true))}
                                     </div>
                                 </div>
                             </div>

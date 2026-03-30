@@ -2,6 +2,14 @@
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo, useEffect } from "react";
 import Cookies from 'js-cookie';
+import { 
+    Organization, 
+    CostCenter, 
+    CreateOrganizationPayload, 
+    UpdateOrganizationPayload,
+    CreateCostCenterPayload,
+    UpdateCostCenterPayload 
+} from "../types/api-types";
 
 export interface User {
     id: string;
@@ -129,25 +137,9 @@ export interface Department {
     _count?: { users: number };
 }
 
-export interface CostCenter {
-    id: string;
-    name: string;
-    code: string;
-    budgetAnnual: number;
-    budgetUsed: number;
-    currency: string;
-    deptId: string;
-    departmentName?: string;
-}
+// Imported from api-types
 
-export interface Organization {
-    id: string;
-    name: string;
-    code: string;
-    address: string;
-    taxId: string;
-    email?: string;
-}
+// Imported from api-types
 
 export interface BudgetStats {
     allocated: number;
@@ -349,6 +341,34 @@ const DEMO_USERS = [
         fullName: "Hanoi Hardware",
         role: "SUPPLIER",
         icon: "HW"
+    },
+    {
+        id: "fpt-requester",
+        email: "fpt.requester@fpt.com",
+        fullName: "FPT Requester",
+        role: "REQUESTER",
+        icon: "FR"
+    },
+    {
+        id: "fpt-manager",
+        email: "fpt.manager@fpt.com",
+        fullName: "FPT Manager",
+        role: "DEPT_APPROVER",
+        icon: "FM"
+    },
+    {
+        id: "fpt-director",
+        email: "fpt.director@fpt.com",
+        fullName: "FPT Director",
+        role: "DIRECTOR",
+        icon: "FD"
+    },
+    {
+        id: "fpt-ceo",
+        email: "fpt.ceo@fpt.com",
+        fullName: "FPT CEO",
+        role: "CEO",
+        icon: "FC"
     }
 ];
 
@@ -433,13 +453,19 @@ const INITIAL_STATE: ProcurementState = {
     notifications: [],
     approvals: [],
     costCenters: [
-        { id: "cc-it-1", name: "IT Operations Cost", code: "CC_IT_OPS", budgetAnnual: 1000000000, budgetUsed: 450000000, currency: "VND", deptId: "dept-it" },
-        { id: "cc-it-2", name: "Digital Innovation", code: "CC_IT_DIG", budgetAnnual: 500000000, budgetUsed: 120000000, currency: "VND", deptId: "dept-it" },
-        { id: "cc-fn-1", name: "General Administration", code: "CC_FN_GEN", budgetAnnual: 800000000, budgetUsed: 780000000, currency: "VND", deptId: "dept-fn" }
+        { id: "cc-it-1", name: "IT Operations Cost", code: "CC_IT_OPS", budgetAnnual: 1000000000, budgetUsed: 450000000, currency: "VND" as any, deptId: "dept-it", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() },
+        { id: "cc-it-2", name: "Digital Innovation", code: "CC_IT_DIG", budgetAnnual: 500000000, budgetUsed: 120000000, currency: "VND" as any, deptId: "dept-it", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() },
+        { id: "cc-fn-1", name: "General Administration", code: "CC_FN_GEN", budgetAnnual: 800000000, budgetUsed: 780000000, currency: "VND" as any, deptId: "dept-fn", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() }
     ],
     organizations: [
-        { id: "org-1", name: "ProcurePro Global Corp", code: "PP-GLOBAL", address: "123 Business Ave, District 1, HCM", taxId: "0123456789" },
-        { id: "org-2", name: "Tech Solutions Asia", code: "TS-ASIA", address: "456 Innovation Park, District 7, HCM", taxId: "9876543210" }
+        { 
+            id: "org-1", name: "ProcurePro Global Corp", code: "PP-GLOBAL", address: "123 Business Ave, District 1, HCM", taxCode: "0123456789", 
+            companyType: "BUYER" as any, countryCode: "VN", isActive: true, kycStatus: "APPROVED" as any, trustScore: 100, metadata: {}, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() 
+        },
+        { 
+            id: "org-2", name: "Tech Solutions Asia", code: "TS-ASIA", address: "456 Innovation Park, District 7, HCM", taxCode: "9876543210",
+            companyType: "BUYER" as any, countryCode: "VN", isActive: true, kycStatus: "APPROVED" as any, trustScore: 100, metadata: {}, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() 
+        }
     ],
     budgetPeriods: [],
     budgetAllocations: [],
@@ -618,16 +644,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [notify, state.quotes.length]);
 
     const apiFetch = useCallback(async (url: string, options: RequestInit = {}) => {
-        if (url.startsWith('/auth')) {
-            const token = Cookies.get('accessToken');
-            const headers: HeadersInit = {
-                'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-                ...options.headers,
-            };
-            return await fetch(`http://localhost:5000${url}`, { ...options, credentials: 'include', headers });
-        }
-
+        // Special Mocks for this demo build
         if (url === '/procurement-requests' && options.method === 'POST') {
             const data = JSON.parse(options.body as string);
             const prId = await addPR(data);
@@ -640,12 +657,43 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             return { ok: true, status: 201, json: async () => ({ data: { id: Date.now() } }) } as Response;
         }
 
-        return { ok: true, status: 200, json: async () => ({ data: [] }) } as Response;
+        // Real API Calls 
+        const token = Cookies.get('accessToken');
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            ...options.headers,
+        };
+
+        try {
+            return await fetch(`http://localhost:5000${url}`, { ...options, credentials: 'include', headers });
+        } catch (error) {
+            console.error(`API Fetch Error (${url}):`, error);
+            // Fallback for demo when backend is offline
+            return { ok: true, status: 200, json: async () => ({ data: [] }) } as Response;
+        }
     }, [addPR, createRFQ]);
 
     const refreshData = useCallback(async () => {
+        const token = Cookies.get('accessToken');
+        if (!token) return;
+
+        // Fetch real data from backend
+        const [ccRes, orgRes, deptRes] = await Promise.all([
+            apiFetch('/cost-centers'),
+            apiFetch('/organizations'),
+            apiFetch('/departments')
+        ]);
+
+        const costCenters = ccRes.ok ? (await ccRes.json()).data : [];
+        const organizations = orgRes.ok ? (await orgRes.json()).data : [];
+        const departments = deptRes.ok ? (await deptRes.json()).data : [];
+
         setState(prev => ({
             ...prev,
+            costCenters: Array.isArray(costCenters) ? costCenters : prev.costCenters,
+            organizations: Array.isArray(organizations) ? organizations : prev.organizations,
+            departments: Array.isArray(departments) ? departments : prev.departments,
             myPrs: prev.prs.filter(p => p.requester?.email === prev.currentUser?.email),
             approvals: prev.prs
                 .filter(p => p.status === "PENDING_APPROVAL" && (p.targetApproverRole === prev.currentUser?.role || prev.currentUser?.role === "PLATFORM_ADMIN"))
@@ -655,7 +703,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                     status: "PENDING_APPROVAL"
                 })),
         }));
-    }, []);
+    }, [apiFetch]);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -663,12 +711,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [state.currentUser]);
 
     const login = useCallback(async (email: string, password?: string) => {
-        const localUser = state.users.find(u => u.email === email);
-        if (localUser) {
-            setState(prev => ({ ...prev, currentUser: localUser }));
-            return true;
-        }
-
         const res = await apiFetch('/auth/login', {
             method: 'POST',
             body: JSON.stringify({ email, password: password || "password123" })
@@ -682,8 +724,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             setState(prev => ({ ...prev, currentUser: data.user }));
             return true;
         }
+        notify("Thông tin đăng nhập không chính xác hoặc lỗi hệ thống", "error");
         return false;
-    }, [apiFetch, state.users]);
+    }, [apiFetch, notify]);
 
     const logout = useCallback(async () => {
         await apiFetch('/auth/logout', { method: 'POST' }).catch(() => {});
@@ -709,62 +752,128 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
-    const addDept = useCallback((data: Partial<Department>) => {
-        setState(prev => {
-            const nextId = prev.departments.length + 1;
-            const newDept = { ...data, id: `dept-${nextId}`, code: data.code || `DEPT-${String(nextId).padStart(3, '0')}`, name: data.name || "" };
-            return { ...prev, departments: [...prev.departments, newDept as Department] };
+    const addDept = useCallback(async (data: Partial<Department>) => {
+        const res = await apiFetch('/departments', {
+            method: 'POST',
+            body: JSON.stringify({ ...data, orgId: state.currentUser?.orgId })
         });
-        return Promise.resolve(true);
-    }, []);
+        if (res.ok) {
+            notify("Thêm phòng ban thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi thêm phòng ban", "error");
+        return false;
+    }, [apiFetch, state.currentUser?.orgId, refreshData, notify]);
 
-    const updateDept = useCallback((id: string, data: Partial<Department>) => {
-        setState(prev => ({ ...prev, departments: prev.departments.map(d => d.id === id ? { ...d, ...data } : d) }));
-        return Promise.resolve(true);
-    }, []);
-
-    const removeDept = useCallback((id: string) => {
-        setState(prev => ({ ...prev, departments: prev.departments.filter(d => d.id !== id) }));
-        return Promise.resolve(true);
-    }, []);
-
-    const addCostCenter = useCallback((data: Partial<CostCenter>) => {
-        setState(prev => {
-            const nextId = prev.costCenters.length + 1;
-            const newCC = { ...data, id: `cc-${nextId}`, code: data.code || `CC-${String(nextId).padStart(3, '0')}`, budgetUsed: 0, currency: data.currency || "VND", name: data.name || "", budgetAnnual: data.budgetAnnual || 0, deptId: data.deptId || "" };
-            return { ...prev, costCenters: [...prev.costCenters, newCC as CostCenter] };
+    const updateDept = useCallback(async (id: string, data: Partial<Department>) => {
+        const res = await apiFetch(`/departments/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(data)
         });
-        return Promise.resolve(true);
-    }, []);
+        if (res.ok) {
+            notify("Cập nhật phòng ban thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi cập nhật phòng ban", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
 
-    const updateCostCenter = useCallback((id: string, data: Partial<CostCenter>) => {
-        setState(prev => ({ ...prev, costCenters: prev.costCenters.map(cc => cc.id === id ? { ...cc, ...data } : cc) }));
-        return Promise.resolve(true);
-    }, []);
-
-    const removeCostCenter = useCallback((id: string) => {
-        setState(prev => ({ ...prev, costCenters: prev.costCenters.filter(cc => cc.id !== id) }));
-        return Promise.resolve(true);
-    }, []);
-
-    const addOrganization = useCallback((data: Partial<Organization>) => {
-        setState(prev => {
-            const nextId = prev.organizations.length + 1;
-            const newOrg = { ...data, id: `org-${nextId}`, code: data.code || `ORG-${String(nextId).padStart(3, '0')}`, name: data.name || "", address: data.address || "", taxId: data.taxId || "" };
-            return { ...prev, organizations: [...prev.organizations, newOrg as Organization] };
+    const removeDept = useCallback(async (id: string) => {
+        const res = await apiFetch(`/departments/${id}`, {
+            method: 'DELETE'
         });
-        return Promise.resolve(true);
-    }, []);
+        if (res.ok) {
+            notify("Xóa phòng ban thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi xóa phòng ban", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
 
-    const updateOrganization = useCallback((id: string, data: Partial<Organization>) => {
-        setState(prev => ({ ...prev, organizations: prev.organizations.map(o => o.id === id ? { ...o, ...data } : o) }));
-        return Promise.resolve(true);
-    }, []);
+    const addCostCenter = useCallback(async (data: Partial<CostCenter>) => {
+        const res = await apiFetch('/cost-centers', {
+            method: 'POST',
+            body: JSON.stringify({ ...data, orgId: state.currentUser?.orgId })
+        });
+        if (res.ok) {
+            notify("Thêm trung tâm chi phí thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi thêm trung tâm chi phí", "error");
+        return false;
+    }, [apiFetch, state.currentUser?.orgId, refreshData, notify]);
 
-    const removeOrganization = useCallback((id: string) => {
-        setState(prev => ({ ...prev, organizations: prev.organizations.filter(o => o.id !== id) }));
-        return Promise.resolve(true);
-    }, []);
+    const updateCostCenter = useCallback(async (id: string, data: Partial<CostCenter>) => {
+        const res = await apiFetch(`/cost-centers/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            notify("Cập nhật trung tâm chi phí thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi cập nhật trung tâm chi phí", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const removeCostCenter = useCallback(async (id: string) => {
+        const res = await apiFetch(`/cost-centers/${id}`, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            notify("Xóa trung tâm chi phí thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi xóa trung tâm chi phí", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const addOrganization = useCallback(async (data: Partial<Organization>) => {
+        const res = await apiFetch('/organizations', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            notify("Thêm tổ chức thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi thêm tổ chức", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const updateOrganization = useCallback(async (id: string, data: Partial<Organization>) => {
+        const res = await apiFetch(`/organizations/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            notify("Cập nhật tổ chức thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi cập nhật tổ chức", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const removeOrganization = useCallback(async (id: string) => {
+        const res = await apiFetch(`/organizations/${id}`, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            notify("Xóa tổ chức thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi xóa tổ chức", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
 
     const addUser = useCallback((data: Partial<User> & { employeeCode?: string }) => {
         setState(prev => {

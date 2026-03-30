@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useProcurement } from "../../../context/ProcurementContext";
+import { formatVND } from "../../../utils/formatUtils";
 import DashboardHeader from "../../../components/DashboardHeader";
 import { 
     FileText, 
@@ -176,7 +177,7 @@ export default function CreateRFQPage() {
                             </div>
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Ước tính (VNĐ)</span>
-                                <span className="text-erp-blue font-black font-mono">{(Number(targetPR.totalEstimate) || 0).toLocaleString()} \u20ab</span>
+                                <span className="text-erp-blue font-black font-mono">{formatVND(targetPR.totalEstimate)} \u20ab</span>
                             </div>
                             
                             <div className="pt-6 border-t border-slate-50">
@@ -188,7 +189,7 @@ export default function CreateRFQPage() {
                                                 <span className="text-[11px] font-black text-slate-700">{item.product?.name || item.name || "Sản phẩm " + (idx+1)}</span>
                                                 <span className="text-[10px] text-slate-400 font-bold italic">{item.qty} {item.unit}</span>
                                             </div>
-                                            <span className="text-[11px] font-black text-slate-400">{(Number(item.estimatedPrice) || 0).toLocaleString()}</span>
+                                            <span className="text-[11px] font-black text-slate-400">{formatVND(item.estimatedPrice)}</span>
                                         </div>
                                     ))}
                                 </div>

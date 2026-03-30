@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useProcurement } from "../../context/ProcurementContext";
+import { formatVND } from "../../utils/formatUtils";
 import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable from "../../components/shared/ERPTable";
 import { 
@@ -136,7 +137,7 @@ export default function ProcurementControlPage() {
             key: "totalEstimate",
             render: (row: PR) => (
                 <div className="text-right">
-                    <div className="font-mono font-black text-erp-blue text-sm">{(Number(row.totalEstimate) || 0).toLocaleString()} \u20ab</div>
+                    <div className="font-mono font-black text-erp-blue text-sm">{formatVND(row.totalEstimate)} \u20ab</div>
                     <div className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Base Amount</div>
                 </div>
             )

@@ -10,6 +10,7 @@ import {
   Clock, CheckCircle, Package, AlertCircle, AlertTriangle, ChevronRight, History, Bell, Send
 } from "lucide-react";
 import { useProcurement } from "./context/ProcurementContext";
+import { formatVND } from "./utils/formatUtils";
 
 export default function Dashboard() {
   const { budgets, prs, pos, currentUser } = useProcurement();
@@ -131,7 +132,7 @@ export default function Dashboard() {
                                         <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0, 8)}</td>
                                         <td className="max-w-[200px] truncate font-medium text-slate-600" title={pr.title}>{pr.title}</td>
                                         <td className="text-slate-400">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</td>
-                                        <td className="font-mono text-right font-black text-erp-navy">{(Number(pr.totalEstimate) || 0).toLocaleString()} ₫</td>
+                                        <td className="font-mono text-right font-black text-erp-navy">{formatVND(pr.totalEstimate)} ₫</td>
                                         <td className="text-center">
                                             <span className={`status-pill status-${(pr.status || 'DRAFT').toLowerCase()}`}>
                                                 {pr.status}
@@ -227,7 +228,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="p-4 bg-erp-navy rounded-2xl border border-erp-navy shadow-lg shadow-erp-navy/20">
                                     <div className="text-[9px] font-black uppercase text-white/40 mb-1">Tổng dự toán</div>
-                                    <div className="text-sm font-black text-emerald-400 font-mono">{(selectedPRDetails.total || selectedPRDetails.totalEstimate || 0).toLocaleString()} ₫</div>
+                                    <div className="text-sm font-black text-emerald-400 font-mono">{formatVND(selectedPRDetails.total || selectedPRDetails.totalEstimate || 0)} ₫</div>
                                 </div>
                             </div>
 
@@ -263,7 +264,7 @@ export default function Dashboard() {
                                                     </td>
                                                     <td className="p-4 text-center text-xs font-black text-erp-blue">{item.qty} {item.unit}</td>
                                                     <td className="p-4 text-right font-mono text-xs font-black text-erp-navy">
-                                                        {((item.qty || 0) * (item.estimatedPrice || item.price || 0)).toLocaleString()} ₫
+                                                        {formatVND((item.qty || 0) * (item.estimatedPrice || item.price || 0))} ₫
                                                     </td>
                                                 </tr>
                                             ))}
@@ -391,7 +392,7 @@ export default function Dashboard() {
                                         </div>
                                         <div className="text-right flex items-center gap-4">
                                             <div>
-                                                <div className="text-xs font-black text-erp-blue font-mono">{(Number(pr.totalEstimate) || 0).toLocaleString()} ₫</div>
+                                                <div className="text-xs font-black text-erp-blue font-mono">{formatVND(pr.totalEstimate)} ₫</div>
                                                 <div className="text-[9px] text-slate-400 uppercase font-bold tracking-widest">Giá trị dự toán</div>
                                             </div>
                                             <Link href="/sourcing" className="bg-erp-navy text-white text-[9px] font-black uppercase px-4 py-2 rounded-xl shadow-lg shadow-erp-navy/20 active:scale-95 transition-all">Sourcing</Link>
@@ -537,7 +538,7 @@ export default function Dashboard() {
                                                 <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0,8)}</td>
                                                 <td className="font-bold text-slate-500">{pr.department?.name || "N/A"}</td>
                                                 <td className="max-w-[150px] truncate font-medium" title={pr.title}>{pr.title}</td>
-                                                <td className="font-mono text-right font-black text-erp-blue">{(Number(pr.totalEstimate) || 0).toLocaleString()} ₫</td>
+                                                <td className="font-mono text-right font-black text-erp-blue">{formatVND(pr.totalEstimate)} ₫</td>
                                                 <td className="text-center">
                                                     <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">4h</span>
                                                 </td>
@@ -610,7 +611,7 @@ export default function Dashboard() {
             <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-3 py-1 rounded">Phân bổ (Allocated)</span>
           </div>
           <div className="text-2xl font-black text-erp-navy font-mono">
-            { (budgets?.allocated || 0).toLocaleString() } ₫
+            { formatVND(budgets?.allocated || 0) } ₫
           </div>
           <div className="mt-2 text-[10px] text-slate-400 font-bold flex items-center gap-1">
             <ArrowUpRight size={12} className="text-emerald-500" /> Quản lý bởi Phòng Tài Chính
@@ -623,7 +624,7 @@ export default function Dashboard() {
             <span className="text-[10px] font-black uppercase text-erp-blue bg-blue-50 px-3 py-1 rounded">Cam kết (Committed)</span>
           </div>
           <div className="text-2xl font-black text-erp-blue font-mono">
-             { (budgets?.committed || 0).toLocaleString() } ₫
+             { formatVND(budgets?.committed || 0) } ₫
           </div>
           <div className="mt-2 text-[10px] text-slate-400 font-bold">Giá trị PR/PO đang xử lý</div>
         </div>
@@ -634,7 +635,7 @@ export default function Dashboard() {
             <span className="text-[10px] font-black uppercase text-erp-navy bg-slate-100 px-3 py-1 rounded">Đã chi (Spent)</span>
           </div>
           <div className="text-2xl font-black text-erp-navy font-mono">
-            { (budgets?.spent || 0).toLocaleString() } ₫
+            { formatVND(budgets?.spent || 0) } ₫
           </div>
           <div className="mt-2 text-[10px] text-slate-400 font-bold flex items-center gap-1">
             <ArrowDownRight size={12} className="text-red-500" /> Thanh toán thực tế
@@ -649,7 +650,7 @@ export default function Dashboard() {
             <div>
               <div className="text-[10px] font-black uppercase text-white/40 tracking-widest mb-1">Cơ cấu Ngân sách Khả dụng</div>
               <div className="text-3xl font-black text-emerald-400 font-mono">
-                { availableBudget.toLocaleString() } ₫
+                { formatVND(availableBudget) } ₫
               </div>
             </div>
             <div className="mt-6">
@@ -699,7 +700,7 @@ export default function Dashboard() {
                                 {pr.items?.length || 0}
                             </span>
                         </td>
-                        <td className="font-mono text-right font-black text-erp-navy">{(pr.total || pr.totalEstimate || 0).toLocaleString()} ₫</td>
+                        <td className="font-mono text-right font-black text-erp-navy">{formatVND(pr.total || pr.totalEstimate || 0)} ₫</td>
                         <td className="text-center">
                             <span className={`status-pill status-${(pr.status || 'draft').toLowerCase()}`}>
                                 {pr.status}
