@@ -104,8 +104,10 @@ async function main() {
   });
 
   // Re-fetch FPT Org to get ID
-  const fptOrg = await prisma.organization.findUnique({ where: { code: 'FPT-SOFT' } });
-  
+  const fptOrg = await prisma.organization.findUnique({
+    where: { code: 'FPT-SOFT' },
+  });
+
   if (fptOrg) {
     const fptDept = await prisma.department.upsert({
       where: { orgId_code: { orgId: fptOrg.id, code: 'FPT_IT' } },
@@ -118,9 +120,21 @@ async function main() {
     });
 
     const fptUsers = [
-      { email: 'fpt.requester@fpt.com', fullName: 'FPT Requester', role: UserRole.REQUESTER },
-      { email: 'fpt.manager@fpt.com', fullName: 'FPT Manager', role: UserRole.DEPT_APPROVER },
-      { email: 'fpt.director@fpt.com', fullName: 'FPT Director', role: UserRole.DIRECTOR },
+      {
+        email: 'fpt.requester@fpt.com',
+        fullName: 'FPT Requester',
+        role: UserRole.REQUESTER,
+      },
+      {
+        email: 'fpt.manager@fpt.com',
+        fullName: 'FPT Manager',
+        role: UserRole.DEPT_APPROVER,
+      },
+      {
+        email: 'fpt.director@fpt.com',
+        fullName: 'FPT Director',
+        role: UserRole.DIRECTOR,
+      },
       { email: 'fpt.ceo@fpt.com', fullName: 'FPT CEO', role: UserRole.CEO },
     ];
 
@@ -491,8 +505,8 @@ async function main() {
       level: 2,
       approverRole: UserRole.DIRECTOR,
       minTotalAmount: 0,
-       slaHours: 48,
-       autoEscalateHours: 72,
+      slaHours: 48,
+      autoEscalateHours: 72,
     },
     {
       orgId: buyerOrg.id,

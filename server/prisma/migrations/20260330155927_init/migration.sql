@@ -1,11 +1,9 @@
--- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "pg_trgm";
-
--- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
--- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- CreateEnum
+CREATE TYPE "BudgetPeriodType" AS ENUM ('MONTHLY', 'QUARTERLY', 'ANNUAL', 'RESERVE');
 
 -- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('REQUESTER', 'DEPT_APPROVER', 'DIRECTOR', 'CEO', 'PROCUREMENT', 'WAREHOUSE', 'QA', 'FINANCE', 'SUPPLIER', 'PLATFORM_ADMIN', 'SYSTEM');
@@ -29,7 +27,7 @@ CREATE TYPE "RfqStatus" AS ENUM ('DRAFT', 'SENT', 'SUPPLIER_REVIEWING', 'QUOTATI
 CREATE TYPE "QuotationStatus" AS ENUM ('DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'ACCEPTED', 'REJECTED', 'EXPIRED');
 
 -- CreateEnum
-CREATE TYPE "PoStatus" AS ENUM ('DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'ISSUED', 'ACKNOWLEDGED', 'IN_PROGRESS', 'SHIPPED', 'GRN_CREATED', 'INVOICED', 'COMPLETED', 'CANCELLED', 'DISPUTED', 'ON_HOLD');
+CREATE TYPE "PoStatus" AS ENUM ('DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'ISSUED', 'ACKNOWLEDGED', 'IN_PROGRESS', 'SHIPPED', 'GRN_CREATED', 'INVOICED', 'COMPLETED', 'CANCELLED', 'DISPUTED', 'ON_HOLD', 'CONFIRMED', 'REJECTED');
 
 -- CreateEnum
 CREATE TYPE "GrnStatus" AS ENUM ('DRAFT', 'COUNTING', 'INSPECTING', 'INSPECTION_DONE', 'UNDER_REVIEW', 'CONFIRMED', 'POSTED', 'DISPUTED');
@@ -91,13 +89,13 @@ CREATE TABLE "organizations" (
     "logo_url" VARCHAR(500),
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "kyc_status" "KycStatus" NOT NULL DEFAULT 'PENDING',
-    "kyc_verified_at" TIMESTAMPTZ,
+    "kyc_verified_at" TIMESTAMPTZ(6),
     "kyc_verified_by" UUID,
     "supplier_tier" "SupplierTier" NOT NULL DEFAULT 'PENDING',
     "trust_score" DECIMAL(5,2) NOT NULL DEFAULT 0,
     "metadata" JSONB NOT NULL DEFAULT '{}',
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "organizations_pkey" PRIMARY KEY ("id")
 );
@@ -114,9 +112,9 @@ CREATE TABLE "organization_documents" (
     "issuing_body" VARCHAR(255),
     "is_verified" BOOLEAN NOT NULL DEFAULT false,
     "verified_by" UUID,
-    "verified_at" TIMESTAMPTZ,
+    "verified_at" TIMESTAMPTZ(6),
     "notes" TEXT,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "organization_documents_pkey" PRIMARY KEY ("id")
 );
@@ -133,8 +131,8 @@ CREATE TABLE "departments" (
     "cost_center_code" VARCHAR(30),
     "head_user_id" UUID,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "departments_pkey" PRIMARY KEY ("id")
 );
@@ -152,7 +150,7 @@ CREATE TABLE "cost_centers" (
     "currency" "CurrencyCode" NOT NULL DEFAULT 'VND',
     "fiscal_year" SMALLINT,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "cost_centers_pkey" PRIMARY KEY ("id")
 );
@@ -171,15 +169,16 @@ CREATE TABLE "users" (
     "role" "UserRole" NOT NULL,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "is_verified" BOOLEAN NOT NULL DEFAULT false,
-    "last_login_at" TIMESTAMPTZ,
+    "last_login_at" TIMESTAMPTZ(6),
     "password_hash" VARCHAR(255),
     "mfa_secret" VARCHAR(100),
     "mfa_enabled" BOOLEAN NOT NULL DEFAULT false,
     "kyc_status" "KycStatus" NOT NULL DEFAULT 'PENDING',
     "trust_score" DECIMAL(5,2) NOT NULL DEFAULT 100,
     "preferences" JSONB NOT NULL DEFAULT '{}',
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
+    "hashed_refresh_token" VARCHAR(255),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -191,11 +190,11 @@ CREATE TABLE "user_delegates" (
     "delegate_id" UUID NOT NULL,
     "role" "UserRole" NOT NULL,
     "scope" VARCHAR(100),
-    "valid_from" TIMESTAMPTZ NOT NULL,
-    "valid_until" TIMESTAMPTZ NOT NULL,
+    "valid_from" TIMESTAMPTZ(6) NOT NULL,
+    "valid_until" TIMESTAMPTZ(6) NOT NULL,
     "reason" TEXT,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "user_delegates_pkey" PRIMARY KEY ("id")
 );
@@ -216,8 +215,8 @@ CREATE TABLE "approval_matrix_rules" (
     "effective_from" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "effective_until" DATE,
     "created_by" UUID,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "approval_matrix_rules_pkey" PRIMARY KEY ("id")
 );
@@ -232,13 +231,13 @@ CREATE TABLE "approval_workflows" (
     "delegated_from" UUID,
     "status" "ApprovalStatus" NOT NULL DEFAULT 'PENDING',
     "comment" TEXT,
-    "actioned_at" TIMESTAMPTZ,
-    "due_at" TIMESTAMPTZ,
-    "reminder_sent_at" TIMESTAMPTZ,
-    "escalated_at" TIMESTAMPTZ,
+    "actioned_at" TIMESTAMPTZ(6),
+    "due_at" TIMESTAMPTZ(6),
+    "reminder_sent_at" TIMESTAMPTZ(6),
+    "escalated_at" TIMESTAMPTZ(6),
     "escalated_to" UUID,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "approval_workflows_pkey" PRIMARY KEY ("id")
 );
@@ -252,7 +251,7 @@ CREATE TABLE "product_categories" (
     "name" VARCHAR(150) NOT NULL,
     "description" TEXT,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "product_categories_pkey" PRIMARY KEY ("id")
 );
@@ -272,8 +271,8 @@ CREATE TABLE "products" (
     "image_urls" JSONB NOT NULL DEFAULT '[]',
     "attributes" JSONB NOT NULL DEFAULT '{}',
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
@@ -297,14 +296,14 @@ CREATE TABLE "purchase_requisitions" (
     "approval_level" SMALLINT NOT NULL DEFAULT 1,
     "fast_track" BOOLEAN NOT NULL DEFAULT false,
     "procurement_id" UUID,
-    "submitted_at" TIMESTAMPTZ,
-    "approved_at" TIMESTAMPTZ,
-    "completed_at" TIMESTAMPTZ,
-    "cancelled_at" TIMESTAMPTZ,
+    "submitted_at" TIMESTAMPTZ(6),
+    "approved_at" TIMESTAMPTZ(6),
+    "completed_at" TIMESTAMPTZ(6),
+    "cancelled_at" TIMESTAMPTZ(6),
     "cancel_reason" TEXT,
     "metadata" JSONB NOT NULL DEFAULT '{}',
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "purchase_requisitions_pkey" PRIMARY KEY ("id")
 );
@@ -324,7 +323,7 @@ CREATE TABLE "pr_items" (
     "currency" "CurrencyCode" NOT NULL DEFAULT 'VND',
     "spec_note" TEXT,
     "preferred_supplier_id" UUID,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "pr_items_pkey" PRIMARY KEY ("id")
 );
@@ -338,7 +337,7 @@ CREATE TABLE "pr_attachments" (
     "file_type" VARCHAR(50),
     "file_size_bytes" BIGINT,
     "uploaded_by" UUID,
-    "uploaded_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "uploaded_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "pr_attachments_pkey" PRIMARY KEY ("id")
 );
@@ -353,20 +352,20 @@ CREATE TABLE "rfq_requests" (
     "title" VARCHAR(255),
     "description" TEXT,
     "technical_spec" TEXT,
-    "deadline" TIMESTAMPTZ NOT NULL,
+    "deadline" TIMESTAMPTZ(6) NOT NULL,
     "status" "RfqStatus" NOT NULL DEFAULT 'DRAFT',
     "min_suppliers" SMALLINT NOT NULL DEFAULT 3,
     "single_source_approved" BOOLEAN NOT NULL DEFAULT false,
     "single_source_reason" TEXT,
     "single_source_approver" UUID,
-    "ai_suggested_at" TIMESTAMPTZ,
-    "ai_analysis_at" TIMESTAMPTZ,
+    "ai_suggested_at" TIMESTAMPTZ(6),
+    "ai_analysis_at" TIMESTAMPTZ(6),
     "ai_report" JSONB NOT NULL DEFAULT '{}',
     "awarded_supplier_id" UUID,
-    "awarded_at" TIMESTAMPTZ,
+    "awarded_at" TIMESTAMPTZ(6),
     "created_by" UUID NOT NULL,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "rfq_requests_pkey" PRIMARY KEY ("id")
 );
@@ -384,7 +383,7 @@ CREATE TABLE "rfq_items" (
     "unit" VARCHAR(30) NOT NULL DEFAULT 'PCS',
     "target_price" DECIMAL(18,2),
     "tech_requirement" TEXT,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "rfq_items_pkey" PRIMARY KEY ("id")
 );
@@ -394,8 +393,8 @@ CREATE TABLE "rfq_suppliers" (
     "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "rfq_id" UUID NOT NULL,
     "supplier_id" UUID NOT NULL,
-    "invited_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "responded_at" TIMESTAMPTZ,
+    "invited_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "responded_at" TIMESTAMPTZ(6),
     "ai_suggested" BOOLEAN NOT NULL DEFAULT false,
     "ai_score" DECIMAL(5,2),
     "status" VARCHAR(30) NOT NULL DEFAULT 'INVITED',
@@ -412,8 +411,8 @@ CREATE TABLE "rfq_qa_threads" (
     "answer" TEXT,
     "asked_by" UUID NOT NULL,
     "answered_by" UUID,
-    "asked_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "answered_at" TIMESTAMPTZ,
+    "asked_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "answered_at" TIMESTAMPTZ(6),
     "is_public" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "rfq_qa_threads_pkey" PRIMARY KEY ("id")
@@ -436,12 +435,12 @@ CREATE TABLE "rfq_quotations" (
     "ai_score" DECIMAL(5,2),
     "ai_breakdown" JSONB NOT NULL DEFAULT '{}',
     "ai_flags" JSONB NOT NULL DEFAULT '[]',
-    "submitted_at" TIMESTAMPTZ,
-    "reviewed_at" TIMESTAMPTZ,
+    "submitted_at" TIMESTAMPTZ(6),
+    "reviewed_at" TIMESTAMPTZ(6),
     "reviewed_by" UUID,
     "override_reason" TEXT,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "rfq_quotations_pkey" PRIMARY KEY ("id")
 );
@@ -456,7 +455,7 @@ CREATE TABLE "rfq_quotation_items" (
     "discount_pct" DECIMAL(5,2) NOT NULL DEFAULT 0,
     "lead_time_days" INTEGER,
     "notes" TEXT,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "rfq_quotation_items_pkey" PRIMARY KEY ("id")
 );
@@ -471,8 +470,8 @@ CREATE TABLE "rfq_counter_offers" (
     "proposed_terms" TEXT,
     "ai_suggestion" TEXT,
     "response" TEXT,
-    "responded_at" TIMESTAMPTZ,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "responded_at" TIMESTAMPTZ(6),
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "rfq_counter_offers_pkey" PRIMARY KEY ("id")
 );
@@ -501,19 +500,19 @@ CREATE TABLE "purchase_orders" (
     "late_penalty_pct" DECIMAL(5,2) NOT NULL DEFAULT 0.1,
     "late_penalty_max_days" INTEGER NOT NULL DEFAULT 30,
     "signed_by" UUID,
-    "signed_at" TIMESTAMPTZ,
-    "issued_at" TIMESTAMPTZ,
-    "acknowledged_at" TIMESTAMPTZ,
-    "completed_at" TIMESTAMPTZ,
-    "cancelled_at" TIMESTAMPTZ,
+    "signed_at" TIMESTAMPTZ(6),
+    "issued_at" TIMESTAMPTZ(6),
+    "acknowledged_at" TIMESTAMPTZ(6),
+    "completed_at" TIMESTAMPTZ(6),
+    "cancelled_at" TIMESTAMPTZ(6),
     "cancel_reason" TEXT,
     "po_pdf_url" VARCHAR(500),
     "escrow_locked" BOOLEAN NOT NULL DEFAULT false,
-    "escrow_locked_at" TIMESTAMPTZ,
+    "escrow_locked_at" TIMESTAMPTZ(6),
     "notes" TEXT,
     "metadata" JSONB NOT NULL DEFAULT '{}',
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "purchase_orders_pkey" PRIMARY KEY ("id")
 );
@@ -534,7 +533,7 @@ CREATE TABLE "po_items" (
     "total" DECIMAL(18,2) NOT NULL,
     "delivery_date" DATE,
     "notes" TEXT,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "po_items_pkey" PRIMARY KEY ("id")
 );
@@ -551,9 +550,9 @@ CREATE TABLE "po_amendments" (
     "change_pct" DECIMAL(7,2),
     "requires_approval" BOOLEAN NOT NULL DEFAULT true,
     "approved_by" UUID,
-    "approved_at" TIMESTAMPTZ,
+    "approved_at" TIMESTAMPTZ(6),
     "created_by" UUID NOT NULL,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "po_amendments_pkey" PRIMARY KEY ("id")
 );
@@ -564,15 +563,15 @@ CREATE TABLE "po_shipment_tracking" (
     "po_id" UUID NOT NULL,
     "tracking_number" VARCHAR(100),
     "carrier" VARCHAR(100),
-    "shipped_at" TIMESTAMPTZ,
-    "estimated_arrival" TIMESTAMPTZ,
-    "actual_arrival" TIMESTAMPTZ,
+    "shipped_at" TIMESTAMPTZ(6),
+    "estimated_arrival" TIMESTAMPTZ(6),
+    "actual_arrival" TIMESTAMPTZ(6),
     "packing_list_url" VARCHAR(500),
     "status" VARCHAR(50) NOT NULL DEFAULT 'PENDING',
     "notes" TEXT,
     "updated_by" UUID,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "po_shipment_tracking_pkey" PRIMARY KEY ("id")
 );
@@ -588,16 +587,16 @@ CREATE TABLE "goods_receipts" (
     "inspected_by" UUID,
     "status" "GrnStatus" NOT NULL DEFAULT 'DRAFT',
     "grn_type" VARCHAR(20) NOT NULL DEFAULT 'FULL',
-    "received_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "inspection_completed_at" TIMESTAMPTZ,
-    "confirmed_at" TIMESTAMPTZ,
+    "received_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "inspection_completed_at" TIMESTAMPTZ(6),
+    "confirmed_at" TIMESTAMPTZ(6),
     "confirmed_by" UUID,
     "packing_list_url" VARCHAR(500),
     "coa_url" VARCHAR(500),
     "waybill_number" VARCHAR(100),
     "notes" TEXT,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "goods_receipts_pkey" PRIMARY KEY ("id")
 );
@@ -617,7 +616,7 @@ CREATE TABLE "grn_items" (
     "batch_number" VARCHAR(100),
     "expiry_date" DATE,
     "storage_location" VARCHAR(100),
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "grn_items_pkey" PRIMARY KEY ("id")
 );
@@ -630,7 +629,7 @@ CREATE TABLE "grn_photos" (
     "photo_url" VARCHAR(500) NOT NULL,
     "caption" VARCHAR(255),
     "uploaded_by" UUID,
-    "uploaded_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "uploaded_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "grn_photos_pkey" PRIMARY KEY ("id")
 );
@@ -646,11 +645,11 @@ CREATE TABLE "return_to_vendor" (
     "return_type" VARCHAR(20) NOT NULL DEFAULT 'REPLACE',
     "status" VARCHAR(30) NOT NULL DEFAULT 'PENDING',
     "total_return_qty" DECIMAL(12,3),
-    "resolved_at" TIMESTAMPTZ,
+    "resolved_at" TIMESTAMPTZ(6),
     "resolved_by" UUID,
     "created_by" UUID NOT NULL,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "return_to_vendor_pkey" PRIMARY KEY ("id")
 );
@@ -677,14 +676,14 @@ CREATE TABLE "supplier_invoices" (
     "matching_result" JSONB NOT NULL DEFAULT '{}',
     "match_variance_pct" DECIMAL(7,4),
     "exception_reason" TEXT,
-    "submitted_at" TIMESTAMPTZ,
-    "matched_at" TIMESTAMPTZ,
-    "approved_at" TIMESTAMPTZ,
+    "submitted_at" TIMESTAMPTZ(6),
+    "matched_at" TIMESTAMPTZ(6),
+    "approved_at" TIMESTAMPTZ(6),
     "approved_by" UUID,
-    "paid_at" TIMESTAMPTZ,
+    "paid_at" TIMESTAMPTZ(6),
     "notes" TEXT,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "supplier_invoices_pkey" PRIMARY KEY ("id")
 );
@@ -701,7 +700,7 @@ CREATE TABLE "invoice_items" (
     "total" DECIMAL(18,2) NOT NULL,
     "match_status" VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     "variance_note" TEXT,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "invoice_items_pkey" PRIMARY KEY ("id")
 );
@@ -716,7 +715,7 @@ CREATE TABLE "debit_credit_notes" (
     "reason" TEXT NOT NULL,
     "issued_by" UUID NOT NULL,
     "approved_by" UUID,
-    "issued_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "issued_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "status" VARCHAR(20) NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "debit_credit_notes_pkey" PRIMARY KEY ("id")
@@ -731,9 +730,9 @@ CREATE TABLE "escrow_accounts" (
     "currency" "CurrencyCode" NOT NULL DEFAULT 'VND',
     "bank_account" VARCHAR(50),
     "bank_name" VARCHAR(100),
-    "last_reconciled_at" TIMESTAMPTZ,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "last_reconciled_at" TIMESTAMPTZ(6),
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "escrow_accounts_pkey" PRIMARY KEY ("id")
 );
@@ -750,7 +749,7 @@ CREATE TABLE "escrow_transactions" (
     "reference_id" VARCHAR(100),
     "notes" TEXT,
     "created_by" UUID,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "escrow_transactions_pkey" PRIMARY KEY ("id")
 );
@@ -771,14 +770,14 @@ CREATE TABLE "payments" (
     "bank_ref" VARCHAR(100),
     "payment_date" DATE,
     "scheduled_date" DATE,
-    "processed_at" TIMESTAMPTZ,
-    "escrow_released_at" TIMESTAMPTZ,
+    "processed_at" TIMESTAMPTZ(6),
+    "escrow_released_at" TIMESTAMPTZ(6),
     "failure_reason" TEXT,
     "created_by" UUID,
     "approved_by" UUID,
-    "approved_at" TIMESTAMPTZ,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "approved_at" TIMESTAMPTZ(6),
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "payments_pkey" PRIMARY KEY ("id")
 );
@@ -801,14 +800,14 @@ CREATE TABLE "contracts" (
     "renewal_notice_days" INTEGER NOT NULL DEFAULT 30,
     "signed_by_buyer" UUID,
     "signed_by_supplier" UUID,
-    "signed_at" TIMESTAMPTZ,
+    "signed_at" TIMESTAMPTZ(6),
     "file_url" VARCHAR(500),
     "nda_url" VARCHAR(500),
     "terms" TEXT,
     "notes" TEXT,
     "created_by" UUID,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "contracts_pkey" PRIMARY KEY ("id")
 );
@@ -824,7 +823,7 @@ CREATE TABLE "contract_milestones" (
     "payment_trigger" BOOLEAN NOT NULL DEFAULT false,
     "payment_pct" DECIMAL(5,2),
     "status" VARCHAR(20) NOT NULL DEFAULT 'PENDING',
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "contract_milestones_pkey" PRIMARY KEY ("id")
 );
@@ -847,12 +846,12 @@ CREATE TABLE "supplier_kpi_scores" (
     "po_count" INTEGER NOT NULL DEFAULT 0,
     "dispute_count" INTEGER NOT NULL DEFAULT 0,
     "review_completed" BOOLEAN NOT NULL DEFAULT false,
-    "qbr_held_at" TIMESTAMPTZ,
+    "qbr_held_at" TIMESTAMPTZ(6),
     "improvement_plan" TEXT,
     "notes" TEXT,
-    "calculated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "calculated_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "supplier_kpi_scores_pkey" PRIMARY KEY ("id")
 );
@@ -874,7 +873,7 @@ CREATE TABLE "supplier_manual_reviews" (
     "exception_handling" SMALLINT,
     "overall_score" DECIMAL(5,2) NOT NULL,
     "comment" TEXT,
-    "reviewed_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "reviewed_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "supplier_manual_reviews_pkey" PRIMARY KEY ("id")
 );
@@ -893,7 +892,7 @@ CREATE TABLE "buyer_ratings" (
     "dispute_fairness_score" SMALLINT NOT NULL,
     "comment" TEXT,
     "is_anonymous" BOOLEAN NOT NULL DEFAULT true,
-    "rated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "rated_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "buyer_ratings_pkey" PRIMARY KEY ("id")
 );
@@ -917,13 +916,13 @@ CREATE TABLE "disputes" (
     "resolution_note" TEXT,
     "admin_id" UUID,
     "admin_decision" TEXT,
-    "decided_at" TIMESTAMPTZ,
-    "closed_at" TIMESTAMPTZ,
-    "appeal_deadline" TIMESTAMPTZ,
-    "appealed_at" TIMESTAMPTZ,
+    "decided_at" TIMESTAMPTZ(6),
+    "closed_at" TIMESTAMPTZ(6),
+    "appeal_deadline" TIMESTAMPTZ(6),
+    "appealed_at" TIMESTAMPTZ(6),
     "appeal_reason" TEXT,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "disputes_pkey" PRIMARY KEY ("id")
 );
@@ -937,7 +936,7 @@ CREATE TABLE "dispute_evidence" (
     "evidence_type" VARCHAR(50) NOT NULL,
     "file_url" VARCHAR(500) NOT NULL,
     "description" TEXT,
-    "submitted_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "submitted_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "dispute_evidence_pkey" PRIMARY KEY ("id")
 );
@@ -951,7 +950,7 @@ CREATE TABLE "dispute_messages" (
     "message" TEXT NOT NULL,
     "attachments" JSONB NOT NULL DEFAULT '[]',
     "is_admin" BOOLEAN NOT NULL DEFAULT false,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "dispute_messages_pkey" PRIMARY KEY ("id")
 );
@@ -965,7 +964,7 @@ CREATE TABLE "notification_templates" (
     "body_template" TEXT NOT NULL,
     "priority" SMALLINT NOT NULL DEFAULT 2,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "notification_templates_pkey" PRIMARY KEY ("id")
 );
@@ -983,12 +982,12 @@ CREATE TABLE "notifications" (
     "reference_type" VARCHAR(50),
     "reference_id" UUID,
     "status" "NotificationStatus" NOT NULL DEFAULT 'QUEUED',
-    "sent_at" TIMESTAMPTZ,
-    "delivered_at" TIMESTAMPTZ,
-    "read_at" TIMESTAMPTZ,
+    "sent_at" TIMESTAMPTZ(6),
+    "delivered_at" TIMESTAMPTZ(6),
+    "read_at" TIMESTAMPTZ(6),
     "failure_reason" TEXT,
     "retry_count" SMALLINT NOT NULL DEFAULT 0,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "notifications_pkey" PRIMARY KEY ("id")
 );
@@ -1006,7 +1005,7 @@ CREATE TABLE "audit_logs" (
     "ip_address" TEXT,
     "user_agent" TEXT,
     "session_id" VARCHAR(100),
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "audit_logs_pkey" PRIMARY KEY ("id")
 );
@@ -1016,12 +1015,12 @@ CREATE TABLE "budget_periods" (
     "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "org_id" UUID NOT NULL,
     "fiscal_year" SMALLINT NOT NULL,
-    "period_type" VARCHAR(10) NOT NULL DEFAULT 'ANNUAL',
+    "period_type" "BudgetPeriodType" NOT NULL DEFAULT 'ANNUAL',
     "period_number" SMALLINT NOT NULL DEFAULT 1,
     "start_date" DATE NOT NULL,
     "end_date" DATE NOT NULL,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "budget_periods_pkey" PRIMARY KEY ("id")
 );
@@ -1040,8 +1039,8 @@ CREATE TABLE "budget_allocations" (
     "currency" "CurrencyCode" NOT NULL DEFAULT 'VND',
     "notes" TEXT,
     "created_by" UUID,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "budget_allocations_pkey" PRIMARY KEY ("id")
 );
@@ -1056,8 +1055,8 @@ CREATE TABLE "system_configs" (
     "description" TEXT,
     "is_encrypted" BOOLEAN NOT NULL DEFAULT false,
     "updated_by" UUID,
-    "updated_at" TIMESTAMPTZ NOT NULL,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "system_configs_pkey" PRIMARY KEY ("id")
 );
@@ -1071,10 +1070,10 @@ CREATE TABLE "webhook_configs" (
     "secret_hash" VARCHAR(255),
     "events" JSONB NOT NULL DEFAULT '[]',
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "last_triggered_at" TIMESTAMPTZ,
+    "last_triggered_at" TIMESTAMPTZ(6),
     "failure_count" INTEGER NOT NULL DEFAULT 0,
     "created_by" UUID,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "webhook_configs_pkey" PRIMARY KEY ("id")
 );
@@ -1095,9 +1094,22 @@ CREATE TABLE "spend_analytics_snapshots" (
     "by_category" JSONB NOT NULL DEFAULT '{}',
     "by_supplier" JSONB NOT NULL DEFAULT '{}',
     "by_dept" JSONB NOT NULL DEFAULT '{}',
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "spend_analytics_snapshots_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "org_budgets" (
+    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "org_id" UUID NOT NULL,
+    "fiscal_year" SMALLINT NOT NULL,
+    "total_amount" DECIMAL(18,2) NOT NULL,
+    "currency" "CurrencyCode" NOT NULL DEFAULT 'VND',
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
+
+    CONSTRAINT "org_budgets_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -1229,11 +1241,17 @@ CREATE UNIQUE INDEX "system_configs_org_id_config_key_key" ON "system_configs"("
 -- CreateIndex
 CREATE UNIQUE INDEX "spend_analytics_snapshots_org_id_snapshot_date_period_type_key" ON "spend_analytics_snapshots"("org_id", "snapshot_date", "period_type");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "org_budgets_org_id_fiscal_year_key" ON "org_budgets"("org_id", "fiscal_year");
+
 -- AddForeignKey
 ALTER TABLE "organizations" ADD CONSTRAINT "organizations_kyc_verified_by_fkey" FOREIGN KEY ("kyc_verified_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "organization_documents" ADD CONSTRAINT "organization_documents_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "departments" ADD CONSTRAINT "departments_head_user_id_fkey" FOREIGN KEY ("head_user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "departments" ADD CONSTRAINT "departments_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1242,40 +1260,37 @@ ALTER TABLE "departments" ADD CONSTRAINT "departments_org_id_fkey" FOREIGN KEY (
 ALTER TABLE "departments" ADD CONSTRAINT "departments_parent_dept_id_fkey" FOREIGN KEY ("parent_dept_id") REFERENCES "departments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "departments" ADD CONSTRAINT "departments_head_user_id_fkey" FOREIGN KEY ("head_user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "cost_centers" ADD CONSTRAINT "cost_centers_dept_id_fkey" FOREIGN KEY ("dept_id") REFERENCES "departments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "cost_centers" ADD CONSTRAINT "cost_centers_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "cost_centers" ADD CONSTRAINT "cost_centers_dept_id_fkey" FOREIGN KEY ("dept_id") REFERENCES "departments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "users" ADD CONSTRAINT "users_dept_id_fkey" FOREIGN KEY ("dept_id") REFERENCES "departments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_dept_id_fkey" FOREIGN KEY ("dept_id") REFERENCES "departments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "user_delegates" ADD CONSTRAINT "user_delegates_delegate_id_fkey" FOREIGN KEY ("delegate_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "user_delegates" ADD CONSTRAINT "user_delegates_delegator_id_fkey" FOREIGN KEY ("delegator_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "user_delegates" ADD CONSTRAINT "user_delegates_delegate_id_fkey" FOREIGN KEY ("delegate_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "approval_matrix_rules" ADD CONSTRAINT "approval_matrix_rules_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "approval_matrix_rules" ADD CONSTRAINT "approval_matrix_rules_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "approval_matrix_rules" ADD CONSTRAINT "approval_matrix_rules_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "approval_workflows" ADD CONSTRAINT "approval_workflows_approver_id_fkey" FOREIGN KEY ("approver_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "approval_workflows" ADD CONSTRAINT "approval_workflows_escalated_to_fkey" FOREIGN KEY ("escalated_to") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "approval_workflows" ADD CONSTRAINT "approval_workflows_delegated_from_fkey" FOREIGN KEY ("delegated_from") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "approval_workflows" ADD CONSTRAINT "approval_workflows_delegated_from_fkey" FOREIGN KEY ("delegated_from") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "approval_workflows" ADD CONSTRAINT "approval_workflows_escalated_to_fkey" FOREIGN KEY ("escalated_to") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "product_categories" ADD CONSTRAINT "product_categories_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1284,34 +1299,40 @@ ALTER TABLE "product_categories" ADD CONSTRAINT "product_categories_parent_id_fk
 ALTER TABLE "products" ADD CONSTRAINT "products_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "purchase_requisitions" ADD CONSTRAINT "purchase_requisitions_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "purchase_requisitions" ADD CONSTRAINT "purchase_requisitions_requester_id_fkey" FOREIGN KEY ("requester_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "purchase_requisitions" ADD CONSTRAINT "purchase_requisitions_cost_center_id_fkey" FOREIGN KEY ("cost_center_id") REFERENCES "cost_centers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "purchase_requisitions" ADD CONSTRAINT "purchase_requisitions_dept_id_fkey" FOREIGN KEY ("dept_id") REFERENCES "departments"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "purchase_requisitions" ADD CONSTRAINT "purchase_requisitions_cost_center_id_fkey" FOREIGN KEY ("cost_center_id") REFERENCES "cost_centers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "purchase_requisitions" ADD CONSTRAINT "purchase_requisitions_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "purchase_requisitions" ADD CONSTRAINT "purchase_requisitions_procurement_id_fkey" FOREIGN KEY ("procurement_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "pr_items" ADD CONSTRAINT "pr_items_pr_id_fkey" FOREIGN KEY ("pr_id") REFERENCES "purchase_requisitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "pr_items" ADD CONSTRAINT "pr_items_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "purchase_requisitions" ADD CONSTRAINT "purchase_requisitions_requester_id_fkey" FOREIGN KEY ("requester_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "pr_items" ADD CONSTRAINT "pr_items_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "pr_items" ADD CONSTRAINT "pr_items_pr_id_fkey" FOREIGN KEY ("pr_id") REFERENCES "purchase_requisitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "pr_items" ADD CONSTRAINT "pr_items_preferred_supplier_id_fkey" FOREIGN KEY ("preferred_supplier_id") REFERENCES "organizations"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "pr_items" ADD CONSTRAINT "pr_items_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "pr_attachments" ADD CONSTRAINT "pr_attachments_pr_id_fkey" FOREIGN KEY ("pr_id") REFERENCES "purchase_requisitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "rfq_requests" ADD CONSTRAINT "rfq_requests_awarded_supplier_id_fkey" FOREIGN KEY ("awarded_supplier_id") REFERENCES "organizations"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "rfq_requests" ADD CONSTRAINT "rfq_requests_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "rfq_requests" ADD CONSTRAINT "rfq_requests_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1320,22 +1341,16 @@ ALTER TABLE "rfq_requests" ADD CONSTRAINT "rfq_requests_org_id_fkey" FOREIGN KEY
 ALTER TABLE "rfq_requests" ADD CONSTRAINT "rfq_requests_pr_id_fkey" FOREIGN KEY ("pr_id") REFERENCES "purchase_requisitions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "rfq_requests" ADD CONSTRAINT "rfq_requests_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "rfq_requests" ADD CONSTRAINT "rfq_requests_single_source_approver_fkey" FOREIGN KEY ("single_source_approver") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "rfq_requests" ADD CONSTRAINT "rfq_requests_awarded_supplier_id_fkey" FOREIGN KEY ("awarded_supplier_id") REFERENCES "organizations"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "rfq_items" ADD CONSTRAINT "rfq_items_rfq_id_fkey" FOREIGN KEY ("rfq_id") REFERENCES "rfq_requests"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "rfq_items" ADD CONSTRAINT "rfq_items_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "rfq_items" ADD CONSTRAINT "rfq_items_pr_item_id_fkey" FOREIGN KEY ("pr_item_id") REFERENCES "pr_items"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "rfq_items" ADD CONSTRAINT "rfq_items_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "rfq_items" ADD CONSTRAINT "rfq_items_rfq_id_fkey" FOREIGN KEY ("rfq_id") REFERENCES "rfq_requests"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "rfq_suppliers" ADD CONSTRAINT "rfq_suppliers_rfq_id_fkey" FOREIGN KEY ("rfq_id") REFERENCES "rfq_requests"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1344,19 +1359,19 @@ ALTER TABLE "rfq_suppliers" ADD CONSTRAINT "rfq_suppliers_rfq_id_fkey" FOREIGN K
 ALTER TABLE "rfq_suppliers" ADD CONSTRAINT "rfq_suppliers_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "rfq_qa_threads" ADD CONSTRAINT "rfq_qa_threads_rfq_id_fkey" FOREIGN KEY ("rfq_id") REFERENCES "rfq_requests"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "rfq_qa_threads" ADD CONSTRAINT "rfq_qa_threads_answered_by_fkey" FOREIGN KEY ("answered_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "rfq_qa_threads" ADD CONSTRAINT "rfq_qa_threads_asked_by_fkey" FOREIGN KEY ("asked_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "rfq_qa_threads" ADD CONSTRAINT "rfq_qa_threads_answered_by_fkey" FOREIGN KEY ("answered_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "rfq_quotations" ADD CONSTRAINT "rfq_quotations_rfq_id_fkey" FOREIGN KEY ("rfq_id") REFERENCES "rfq_requests"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "rfq_qa_threads" ADD CONSTRAINT "rfq_qa_threads_rfq_id_fkey" FOREIGN KEY ("rfq_id") REFERENCES "rfq_requests"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "rfq_quotations" ADD CONSTRAINT "rfq_quotations_reviewed_by_fkey" FOREIGN KEY ("reviewed_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "rfq_quotations" ADD CONSTRAINT "rfq_quotations_rfq_id_fkey" FOREIGN KEY ("rfq_id") REFERENCES "rfq_requests"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "rfq_quotation_items" ADD CONSTRAINT "rfq_quotation_items_quotation_id_fkey" FOREIGN KEY ("quotation_id") REFERENCES "rfq_quotations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1365,40 +1380,40 @@ ALTER TABLE "rfq_quotation_items" ADD CONSTRAINT "rfq_quotation_items_quotation_
 ALTER TABLE "rfq_quotation_items" ADD CONSTRAINT "rfq_quotation_items_rfq_item_id_fkey" FOREIGN KEY ("rfq_item_id") REFERENCES "rfq_items"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "rfq_counter_offers" ADD CONSTRAINT "rfq_counter_offers_quotation_id_fkey" FOREIGN KEY ("quotation_id") REFERENCES "rfq_quotations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "rfq_counter_offers" ADD CONSTRAINT "rfq_counter_offers_offered_by_fkey" FOREIGN KEY ("offered_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "rfq_counter_offers" ADD CONSTRAINT "rfq_counter_offers_quotation_id_fkey" FOREIGN KEY ("quotation_id") REFERENCES "rfq_quotations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_buyer_id_fkey" FOREIGN KEY ("buyer_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_signed_by_fkey" FOREIGN KEY ("signed_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_pr_id_fkey" FOREIGN KEY ("pr_id") REFERENCES "purchase_requisitions"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_rfq_id_fkey" FOREIGN KEY ("rfq_id") REFERENCES "rfq_requests"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_quotation_id_fkey" FOREIGN KEY ("quotation_id") REFERENCES "rfq_quotations"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_contract_id_fkey" FOREIGN KEY ("contract_id") REFERENCES "contracts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_cost_center_id_fkey" FOREIGN KEY ("cost_center_id") REFERENCES "cost_centers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_dept_id_fkey" FOREIGN KEY ("dept_id") REFERENCES "departments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_cost_center_id_fkey" FOREIGN KEY ("cost_center_id") REFERENCES "cost_centers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_pr_id_fkey" FOREIGN KEY ("pr_id") REFERENCES "purchase_requisitions"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_quotation_id_fkey" FOREIGN KEY ("quotation_id") REFERENCES "rfq_quotations"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_rfq_id_fkey" FOREIGN KEY ("rfq_id") REFERENCES "rfq_requests"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_signed_by_fkey" FOREIGN KEY ("signed_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "po_items" ADD CONSTRAINT "po_items_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1410,13 +1425,13 @@ ALTER TABLE "po_items" ADD CONSTRAINT "po_items_pr_item_id_fkey" FOREIGN KEY ("p
 ALTER TABLE "po_items" ADD CONSTRAINT "po_items_quotation_item_id_fkey" FOREIGN KEY ("quotation_item_id") REFERENCES "rfq_quotation_items"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "po_amendments" ADD CONSTRAINT "po_amendments_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "po_amendments" ADD CONSTRAINT "po_amendments_approved_by_fkey" FOREIGN KEY ("approved_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "po_amendments" ADD CONSTRAINT "po_amendments_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "po_amendments" ADD CONSTRAINT "po_amendments_approved_by_fkey" FOREIGN KEY ("approved_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "po_amendments" ADD CONSTRAINT "po_amendments_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "po_shipment_tracking" ADD CONSTRAINT "po_shipment_tracking_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1425,22 +1440,22 @@ ALTER TABLE "po_shipment_tracking" ADD CONSTRAINT "po_shipment_tracking_po_id_fk
 ALTER TABLE "po_shipment_tracking" ADD CONSTRAINT "po_shipment_tracking_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_warehouse_id_fkey" FOREIGN KEY ("warehouse_id") REFERENCES "departments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_received_by_fkey" FOREIGN KEY ("received_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_confirmed_by_fkey" FOREIGN KEY ("confirmed_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_inspected_by_fkey" FOREIGN KEY ("inspected_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_confirmed_by_fkey" FOREIGN KEY ("confirmed_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_received_by_fkey" FOREIGN KEY ("received_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "goods_receipts" ADD CONSTRAINT "goods_receipts_warehouse_id_fkey" FOREIGN KEY ("warehouse_id") REFERENCES "departments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "grn_items" ADD CONSTRAINT "grn_items_grn_id_fkey" FOREIGN KEY ("grn_id") REFERENCES "goods_receipts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1458,28 +1473,31 @@ ALTER TABLE "grn_photos" ADD CONSTRAINT "grn_photos_grn_item_id_fkey" FOREIGN KE
 ALTER TABLE "grn_photos" ADD CONSTRAINT "grn_photos_uploaded_by_fkey" FOREIGN KEY ("uploaded_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "return_to_vendor" ADD CONSTRAINT "return_to_vendor_grn_id_fkey" FOREIGN KEY ("grn_id") REFERENCES "goods_receipts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "return_to_vendor" ADD CONSTRAINT "return_to_vendor_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "return_to_vendor" ADD CONSTRAINT "return_to_vendor_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "return_to_vendor" ADD CONSTRAINT "return_to_vendor_grn_id_fkey" FOREIGN KEY ("grn_id") REFERENCES "goods_receipts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "return_to_vendor" ADD CONSTRAINT "return_to_vendor_resolved_by_fkey" FOREIGN KEY ("resolved_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "supplier_invoices" ADD CONSTRAINT "supplier_invoices_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "supplier_invoices" ADD CONSTRAINT "supplier_invoices_approved_by_fkey" FOREIGN KEY ("approved_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "supplier_invoices" ADD CONSTRAINT "supplier_invoices_grn_id_fkey" FOREIGN KEY ("grn_id") REFERENCES "goods_receipts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "supplier_invoices" ADD CONSTRAINT "supplier_invoices_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "supplier_invoices" ADD CONSTRAINT "supplier_invoices_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "supplier_invoices" ADD CONSTRAINT "supplier_invoices_approved_by_fkey" FOREIGN KEY ("approved_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "supplier_invoices" ADD CONSTRAINT "supplier_invoices_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "supplier_invoices" ADD CONSTRAINT "supplier_invoices_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "invoice_items" ADD CONSTRAINT "invoice_items_grn_item_id_fkey" FOREIGN KEY ("grn_item_id") REFERENCES "grn_items"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "invoice_items" ADD CONSTRAINT "invoice_items_invoice_id_fkey" FOREIGN KEY ("invoice_id") REFERENCES "supplier_invoices"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1488,7 +1506,7 @@ ALTER TABLE "invoice_items" ADD CONSTRAINT "invoice_items_invoice_id_fkey" FOREI
 ALTER TABLE "invoice_items" ADD CONSTRAINT "invoice_items_po_item_id_fkey" FOREIGN KEY ("po_item_id") REFERENCES "po_items"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "invoice_items" ADD CONSTRAINT "invoice_items_grn_item_id_fkey" FOREIGN KEY ("grn_item_id") REFERENCES "grn_items"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "debit_credit_notes" ADD CONSTRAINT "debit_credit_notes_approved_by_fkey" FOREIGN KEY ("approved_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "debit_credit_notes" ADD CONSTRAINT "debit_credit_notes_invoice_id_fkey" FOREIGN KEY ("invoice_id") REFERENCES "supplier_invoices"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1497,22 +1515,25 @@ ALTER TABLE "debit_credit_notes" ADD CONSTRAINT "debit_credit_notes_invoice_id_f
 ALTER TABLE "debit_credit_notes" ADD CONSTRAINT "debit_credit_notes_issued_by_fkey" FOREIGN KEY ("issued_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "debit_credit_notes" ADD CONSTRAINT "debit_credit_notes_approved_by_fkey" FOREIGN KEY ("approved_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "escrow_accounts" ADD CONSTRAINT "escrow_accounts_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "escrow_accounts" ADD CONSTRAINT "escrow_accounts_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "escrow_transactions" ADD CONSTRAINT "escrow_transactions_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "escrow_transactions" ADD CONSTRAINT "escrow_transactions_escrow_id_fkey" FOREIGN KEY ("escrow_id") REFERENCES "escrow_accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "escrow_transactions" ADD CONSTRAINT "escrow_transactions_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "escrow_transactions" ADD CONSTRAINT "escrow_transactions_invoice_id_fkey" FOREIGN KEY ("invoice_id") REFERENCES "supplier_invoices"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "escrow_transactions" ADD CONSTRAINT "escrow_transactions_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "escrow_transactions" ADD CONSTRAINT "escrow_transactions_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "payments" ADD CONSTRAINT "payments_approved_by_fkey" FOREIGN KEY ("approved_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "payments" ADD CONSTRAINT "payments_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "payments" ADD CONSTRAINT "payments_invoice_id_fkey" FOREIGN KEY ("invoice_id") REFERENCES "supplier_invoices"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1521,16 +1542,10 @@ ALTER TABLE "payments" ADD CONSTRAINT "payments_invoice_id_fkey" FOREIGN KEY ("i
 ALTER TABLE "payments" ADD CONSTRAINT "payments_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "payments" ADD CONSTRAINT "payments_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "payments" ADD CONSTRAINT "payments_approved_by_fkey" FOREIGN KEY ("approved_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "contracts" ADD CONSTRAINT "contracts_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "contracts" ADD CONSTRAINT "contracts_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "contracts" ADD CONSTRAINT "contracts_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "contracts" ADD CONSTRAINT "contracts_signed_by_buyer_fkey" FOREIGN KEY ("signed_by_buyer") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1539,16 +1554,16 @@ ALTER TABLE "contracts" ADD CONSTRAINT "contracts_signed_by_buyer_fkey" FOREIGN 
 ALTER TABLE "contracts" ADD CONSTRAINT "contracts_signed_by_supplier_fkey" FOREIGN KEY ("signed_by_supplier") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "contracts" ADD CONSTRAINT "contracts_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "contracts" ADD CONSTRAINT "contracts_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "contract_milestones" ADD CONSTRAINT "contract_milestones_contract_id_fkey" FOREIGN KEY ("contract_id") REFERENCES "contracts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "supplier_kpi_scores" ADD CONSTRAINT "supplier_kpi_scores_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "supplier_kpi_scores" ADD CONSTRAINT "supplier_kpi_scores_buyer_org_id_fkey" FOREIGN KEY ("buyer_org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "supplier_kpi_scores" ADD CONSTRAINT "supplier_kpi_scores_buyer_org_id_fkey" FOREIGN KEY ("buyer_org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "supplier_kpi_scores" ADD CONSTRAINT "supplier_kpi_scores_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "supplier_manual_reviews" ADD CONSTRAINT "supplier_manual_reviews_kpi_score_id_fkey" FOREIGN KEY ("kpi_score_id") REFERENCES "supplier_kpi_scores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1560,19 +1575,22 @@ ALTER TABLE "supplier_manual_reviews" ADD CONSTRAINT "supplier_manual_reviews_po
 ALTER TABLE "supplier_manual_reviews" ADD CONSTRAINT "supplier_manual_reviews_reviewer_id_fkey" FOREIGN KEY ("reviewer_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "buyer_ratings" ADD CONSTRAINT "buyer_ratings_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "buyer_ratings" ADD CONSTRAINT "buyer_ratings_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "buyer_ratings" ADD CONSTRAINT "buyer_ratings_buyer_org_id_fkey" FOREIGN KEY ("buyer_org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "buyer_ratings" ADD CONSTRAINT "buyer_ratings_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "buyer_ratings" ADD CONSTRAINT "buyer_ratings_rated_by_fkey" FOREIGN KEY ("rated_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "disputes" ADD CONSTRAINT "disputes_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "buyer_ratings" ADD CONSTRAINT "buyer_ratings_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "disputes" ADD CONSTRAINT "disputes_admin_id_fkey" FOREIGN KEY ("admin_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "disputes" ADD CONSTRAINT "disputes_against_org_id_fkey" FOREIGN KEY ("against_org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "disputes" ADD CONSTRAINT "disputes_grn_id_fkey" FOREIGN KEY ("grn_id") REFERENCES "goods_receipts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1587,10 +1605,7 @@ ALTER TABLE "disputes" ADD CONSTRAINT "disputes_opened_by_fkey" FOREIGN KEY ("op
 ALTER TABLE "disputes" ADD CONSTRAINT "disputes_opened_org_id_fkey" FOREIGN KEY ("opened_org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "disputes" ADD CONSTRAINT "disputes_against_org_id_fkey" FOREIGN KEY ("against_org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "disputes" ADD CONSTRAINT "disputes_admin_id_fkey" FOREIGN KEY ("admin_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "disputes" ADD CONSTRAINT "disputes_po_id_fkey" FOREIGN KEY ("po_id") REFERENCES "purchase_orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "dispute_evidence" ADD CONSTRAINT "dispute_evidence_dispute_id_fkey" FOREIGN KEY ("dispute_id") REFERENCES "disputes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1611,19 +1626,19 @@ ALTER TABLE "budget_periods" ADD CONSTRAINT "budget_periods_org_id_fkey" FOREIGN
 ALTER TABLE "budget_allocations" ADD CONSTRAINT "budget_allocations_budget_period_id_fkey" FOREIGN KEY ("budget_period_id") REFERENCES "budget_periods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "budget_allocations" ADD CONSTRAINT "budget_allocations_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "budget_allocations" ADD CONSTRAINT "budget_allocations_cost_center_id_fkey" FOREIGN KEY ("cost_center_id") REFERENCES "cost_centers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "budget_allocations" ADD CONSTRAINT "budget_allocations_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "budget_allocations" ADD CONSTRAINT "budget_allocations_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "budget_allocations" ADD CONSTRAINT "budget_allocations_dept_id_fkey" FOREIGN KEY ("dept_id") REFERENCES "departments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "budget_allocations" ADD CONSTRAINT "budget_allocations_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "budget_allocations" ADD CONSTRAINT "budget_allocations_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "budget_allocations" ADD CONSTRAINT "budget_allocations_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "system_configs" ADD CONSTRAINT "system_configs_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1632,10 +1647,13 @@ ALTER TABLE "system_configs" ADD CONSTRAINT "system_configs_org_id_fkey" FOREIGN
 ALTER TABLE "system_configs" ADD CONSTRAINT "system_configs_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "webhook_configs" ADD CONSTRAINT "webhook_configs_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "webhook_configs" ADD CONSTRAINT "webhook_configs_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "webhook_configs" ADD CONSTRAINT "webhook_configs_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "spend_analytics_snapshots" ADD CONSTRAINT "spend_analytics_snapshots_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "org_budgets" ADD CONSTRAINT "org_budgets_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

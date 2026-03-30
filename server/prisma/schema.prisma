@@ -1,12 +1,11 @@
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
-  moduleFormat    = "commonjs"
-}
 
 datasource db {
   provider   = "postgresql"
-  extensions = [pg_trgm, pgcrypto, uuid_ossp(map: "uuid-ossp")]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  moduleFormat    = "commonjs"
 }
 
 model Organization {
@@ -1193,7 +1192,7 @@ model BudgetPeriod {
   id                String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   orgId             String             @map("org_id") @db.Uuid
   fiscalYear        Int                @map("fiscal_year") @db.SmallInt
-  periodType        String             @default("ANNUAL") @map("period_type") @db.VarChar(10)
+  periodType        BudgetPeriodType   @default(ANNUAL) @map("period_type")
   periodNumber      Int                @default(1) @map("period_number") @db.SmallInt
   startDate         DateTime           @map("start_date") @db.Date
   endDate           DateTime           @map("end_date") @db.Date
@@ -1302,6 +1301,13 @@ model OrgBudget {
 
   @@unique([orgId, fiscalYear])
   @@map("org_budgets")
+}
+
+enum BudgetPeriodType {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+  RESERVE
 }
 
 enum UserRole {

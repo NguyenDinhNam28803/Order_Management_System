@@ -6,7 +6,11 @@ import {
   UpdateBudgetAllocationDto,
   UpdateBudgetPeriodDto,
 } from './dto/budget.dto';
-import { BudgetAllocation, BudgetPeriod } from '@prisma/client';
+import {
+  BudgetAllocation,
+  BudgetPeriod,
+  BudgetPeriodType,
+} from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @Injectable()
@@ -29,6 +33,19 @@ export class BudgetModuleService {
   async findAllPeriods(user: JwtPayload): Promise<BudgetPeriod[]> {
     return this.prisma.budgetPeriod.findMany({
       where: { orgId: user.orgId },
+      orderBy: { fiscalYear: 'desc' },
+    });
+  }
+
+  async findPeriodsByType(
+    type: BudgetPeriodType,
+    user: JwtPayload,
+  ): Promise<BudgetPeriod[]> {
+    return this.prisma.budgetPeriod.findMany({
+      where: {
+        orgId: user.orgId,
+        periodType: type,
+      },
       orderBy: { fiscalYear: 'desc' },
     });
   }

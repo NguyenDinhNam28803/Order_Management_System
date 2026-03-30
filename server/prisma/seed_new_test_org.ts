@@ -1,4 +1,10 @@
-import { PrismaClient, UserRole, CompanyType, KycStatus, CurrencyCode } from '@prisma/client';
+import {
+  PrismaClient,
+  UserRole,
+  CompanyType,
+  KycStatus,
+  CurrencyCode,
+} from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
@@ -63,26 +69,76 @@ async function main() {
   // 3. Create Users for each role and department
   const userData = [
     // IT Department
-    { email: 'it.requester@innhub.com', fullName: 'IT Staff 01', role: UserRole.REQUESTER, deptCode: 'IT_DEPT' },
-    { email: 'it.manager@innhub.com', fullName: 'IT Manager', role: UserRole.DEPT_APPROVER, deptCode: 'IT_DEPT' },
-    
+    {
+      email: 'it.requester@innhub.com',
+      fullName: 'IT Staff 01',
+      role: UserRole.REQUESTER,
+      deptCode: 'IT_DEPT',
+    },
+    {
+      email: 'it.manager@innhub.com',
+      fullName: 'IT Manager',
+      role: UserRole.DEPT_APPROVER,
+      deptCode: 'IT_DEPT',
+    },
+
     // Finance Department
-    { email: 'finance.staff@innhub.com', fullName: 'Accountant 01', role: UserRole.REQUESTER, deptCode: 'FIN_DEPT' },
-    { email: 'cfo@innhub.com', fullName: 'Chief Financial Officer', role: UserRole.FINANCE, deptCode: 'FIN_DEPT' },
-    
+    {
+      email: 'finance.staff@innhub.com',
+      fullName: 'Accountant 01',
+      role: UserRole.REQUESTER,
+      deptCode: 'FIN_DEPT',
+    },
+    {
+      email: 'cfo@innhub.com',
+      fullName: 'Chief Financial Officer',
+      role: UserRole.FINANCE,
+      deptCode: 'FIN_DEPT',
+    },
+
     // Procurement
-    { email: 'proc.officer@innhub.com', fullName: 'Procurement Specialist', role: UserRole.PROCUREMENT, deptCode: 'PROC_DEPT' },
-    
+    {
+      email: 'proc.officer@innhub.com',
+      fullName: 'Procurement Specialist',
+      role: UserRole.PROCUREMENT,
+      deptCode: 'PROC_DEPT',
+    },
+
     // Warehouse & QA
-    { email: 'wh.keeper@innhub.com', fullName: 'Warehouse Keeper', role: UserRole.WAREHOUSE, deptCode: 'WH_DEPT' },
-    { email: 'qa.inspector@innhub.com', fullName: 'Quality Inspector', role: UserRole.QA, deptCode: 'WH_DEPT' },
-    
+    {
+      email: 'wh.keeper@innhub.com',
+      fullName: 'Warehouse Keeper',
+      role: UserRole.WAREHOUSE,
+      deptCode: 'WH_DEPT',
+    },
+    {
+      email: 'qa.inspector@innhub.com',
+      fullName: 'Quality Inspector',
+      role: UserRole.QA,
+      deptCode: 'WH_DEPT',
+    },
+
     // Leadership
-    { email: 'director@innhub.com', fullName: 'Technical Director', role: UserRole.DIRECTOR, deptCode: 'ADMIN_DEPT' },
-    { email: 'ceo@innhub.com', fullName: 'Chief Executive Officer', role: UserRole.CEO, deptCode: 'ADMIN_DEPT' },
-    
+    {
+      email: 'director@innhub.com',
+      fullName: 'Technical Director',
+      role: UserRole.DIRECTOR,
+      deptCode: 'ADMIN_DEPT',
+    },
+    {
+      email: 'ceo@innhub.com',
+      fullName: 'Chief Executive Officer',
+      role: UserRole.CEO,
+      deptCode: 'ADMIN_DEPT',
+    },
+
     // System & Admin
-    { email: 'admin@innhub.com', fullName: 'System Administrator', role: UserRole.PLATFORM_ADMIN, deptCode: 'ADMIN_DEPT' },
+    {
+      email: 'admin@innhub.com',
+      fullName: 'System Administrator',
+      role: UserRole.PLATFORM_ADMIN,
+      deptCode: 'ADMIN_DEPT',
+    },
   ];
 
   for (const u of userData) {
@@ -90,6 +146,7 @@ async function main() {
       where: { email: u.email },
       update: {
         orgId: org.id,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         deptId: depts[u.deptCode].id,
         passwordHash,
       },
@@ -98,6 +155,7 @@ async function main() {
         fullName: u.fullName,
         role: u.role,
         orgId: org.id,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         deptId: depts[u.deptCode].id,
         passwordHash,
         isActive: true,
@@ -106,20 +164,40 @@ async function main() {
     });
 
     // If manager/head, update department head
-    if (u.role === UserRole.DEPT_APPROVER || u.role === UserRole.FINANCE || u.role === UserRole.DIRECTOR) {
-        await prisma.department.update({
-            where: { id: depts[u.deptCode].id },
-            data: { headUserId: user.id }
-        });
+    if (
+      u.role === UserRole.DEPT_APPROVER ||
+      u.role === UserRole.FINANCE ||
+      u.role === UserRole.DIRECTOR
+    ) {
+      await prisma.department.update({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        where: { id: depts[u.deptCode].id },
+        data: { headUserId: user.id },
+      });
     }
   }
   console.log('✅ Users created and assigned to departments.');
 
   // 4. Create Cost Centers
   const ccData = [
-    { code: 'CC_IT_OPS', name: 'IT Operations Cost', deptCode: 'IT_DEPT', budget: 1000000000 },
-    { code: 'CC_PROD_GEN', name: 'General Production', deptCode: 'PROD_DEPT', budget: 5000000000 },
-    { code: 'CC_MKT_CORP', name: 'Corporate Marketing', deptCode: 'ADMIN_DEPT', budget: 2000000000 },
+    {
+      code: 'CC_IT_OPS',
+      name: 'IT Operations Cost',
+      deptCode: 'IT_DEPT',
+      budget: 1000000000,
+    },
+    {
+      code: 'CC_PROD_GEN',
+      name: 'General Production',
+      deptCode: 'PROD_DEPT',
+      budget: 5000000000,
+    },
+    {
+      code: 'CC_MKT_CORP',
+      name: 'Corporate Marketing',
+      deptCode: 'ADMIN_DEPT',
+      budget: 2000000000,
+    },
   ];
 
   for (const cc of ccData) {
@@ -128,6 +206,7 @@ async function main() {
       update: { budgetAnnual: cc.budget },
       create: {
         orgId: org.id,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         deptId: depts[cc.deptCode].id,
         code: cc.code,
         name: cc.name,

@@ -12,7 +12,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
-import { UserRole } from '@prisma/client';
+import { BudgetPeriodType, UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { BudgetModuleService } from './budget-module.service';
 import {
@@ -58,6 +58,22 @@ export class BudgetModuleController {
   })
   async findAllPeriods(@Request() req: { user: JwtPayload }) {
     return this.budgetService.findAllPeriods(req.user);
+  }
+
+  /**
+   * Lấy danh sách chu kỳ ngân sách theo loại (QUARTERLY, MONTHLY, ANNUAL, RESERVE)
+   */
+  @Get('periods/type/:type')
+  @ApiOperation({
+    summary: 'Lấy chu kỳ ngân sách theo loại',
+    description:
+      'Truy vấn danh sách các chu kỳ ngân sách theo loại (ví dụ: QUARTERLY, MONTHLY, RESERVE).',
+  })
+  async findPeriodsByType(
+    @Param('type') type: BudgetPeriodType,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetService.findPeriodsByType(type, req.user);
   }
 
   /**

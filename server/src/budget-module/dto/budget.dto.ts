@@ -10,7 +10,7 @@ import {
   IsUUID,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
-import { CurrencyCode } from '@prisma/client';
+import { CurrencyCode, BudgetPeriodType } from '@prisma/client';
 
 export class CreateBudgetPeriodDto {
   @ApiProperty({ example: 2026 })
@@ -18,10 +18,13 @@ export class CreateBudgetPeriodDto {
   @IsNotEmpty()
   fiscalYear: number;
 
-  @ApiPropertyOptional({ example: 'ANNUAL', default: 'ANNUAL' })
-  @IsString()
+  @ApiPropertyOptional({
+    enum: BudgetPeriodType,
+    default: BudgetPeriodType.ANNUAL,
+  })
+  @IsEnum(BudgetPeriodType)
   @IsOptional()
-  periodType?: string;
+  periodType?: BudgetPeriodType;
 
   @ApiPropertyOptional({ example: 1, default: 1 })
   @IsNumber()
