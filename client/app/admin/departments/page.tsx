@@ -13,6 +13,7 @@ export default function DepartmentsPage() {
         code: "",
         name: "",
         headUserId: "",
+        budgetAnnual: 0,
     });
 
     const handleOpenModal = (dept?: Department) => {
@@ -23,6 +24,7 @@ export default function DepartmentsPage() {
                 code: dept.code,
                 name: dept.name,
                 headUserId: dept.headUserId || "",
+                budgetAnnual: dept.budgetAnnual || 0,
             });
         } else {
             setEditingDept(null);
@@ -31,6 +33,7 @@ export default function DepartmentsPage() {
                 code: "",
                 name: "",
                 headUserId: "",
+                budgetAnnual: 0,
             });
         }
         setShowModal(true);
@@ -197,6 +200,21 @@ export default function DepartmentsPage() {
                                             <option key={org.id} value={org.id}>{org.name}</option>
                                         ))}
                                     </select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Ngân sách hàng năm (Budget)</label>
+                                    <div className="relative">
+                                        <input
+                                            required
+                                            value={formData.budgetAnnual}
+                                            onChange={(e) => setFormData({ ...formData, budgetAnnual: Number(e.target.value) })}
+                                            type="number"
+                                            placeholder="0"
+                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all placeholder:text-slate-300"
+                                        />
+                                        <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">VND</span>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-2">

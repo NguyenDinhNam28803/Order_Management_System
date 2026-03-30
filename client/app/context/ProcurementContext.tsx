@@ -5,11 +5,30 @@ import Cookies from 'js-cookie';
 import { 
     Organization, 
     CostCenter, 
+    Department,
     CreateOrganizationPayload, 
     UpdateOrganizationPayload,
-    CreateCostCenterPayload,
-    UpdateCostCenterPayload 
+    CreateCostCenterPayload, 
+    UpdateCostCenterPayload,
+    CreateDepartmentPayload,
+    UpdateDepartmentPayload,
+    CurrencyCode,
+    CompanyType,
+    KycStatus
 } from "../types/api-types";
+
+export type { 
+    Organization, 
+    CostCenter, 
+    Department,
+    CreateOrganizationPayload, 
+    UpdateOrganizationPayload,
+    CreateCostCenterPayload, 
+    UpdateCostCenterPayload,
+    CreateDepartmentPayload,
+    UpdateDepartmentPayload 
+};
+export { CurrencyCode, CompanyType, KycStatus };
 
 export interface User {
     id: string;
@@ -125,17 +144,7 @@ export interface Invoice {
     createdAt: string;
 }
 
-export interface Department {
-    id: string;
-    name: string;
-    code: string;
-    costCenterCode?: string;
-    orgId?: string;
-    headUserId?: string;
-    head?: { fullName: string };
-    organization?: { name: string };
-    _count?: { users: number };
-}
+// Local interface removed. Using imported Department from api-types.
 
 // Imported from api-types
 
@@ -446,25 +455,25 @@ const INITIAL_STATE: ProcurementState = {
     budgets: null,
     users: DEMO_USERS,
     departments: [
-        { id: "dept-it", name: "IT Operations", code: "IT_OPS", costCenterCode: "CC_IT_OPS" },
-        { id: "dept-fn", name: "Finance & Accounting", code: "FIN_ACC", costCenterCode: "CC_FN_GEN" },
-        { id: "dept-hr", name: "Human Resources", code: "HR_DEPT" }
+        { id: "dept-it", name: "Information Technology", code: "IT_DEPT", orgId: "org-1", budgetAnnual: 1500000000, budgetUsed: 570000000, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: "dept-fn", name: "Finance & Accounting", code: "FN_DEPT", orgId: "org-1", budgetAnnual: 1000000000, budgetUsed: 780000000, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: "dept-hr", name: "Human Resources", code: "HR_DEPT", orgId: "org-1", budgetAnnual: 500000000, budgetUsed: 120000000, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
     ],
     notifications: [],
     approvals: [],
     costCenters: [
-        { id: "cc-it-1", name: "IT Operations Cost", code: "CC_IT_OPS", budgetAnnual: 1000000000, budgetUsed: 450000000, currency: "VND" as any, deptId: "dept-it", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() },
-        { id: "cc-it-2", name: "Digital Innovation", code: "CC_IT_DIG", budgetAnnual: 500000000, budgetUsed: 120000000, currency: "VND" as any, deptId: "dept-it", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() },
-        { id: "cc-fn-1", name: "General Administration", code: "CC_FN_GEN", budgetAnnual: 800000000, budgetUsed: 780000000, currency: "VND" as any, deptId: "dept-fn", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() }
+        { id: "cc-it-1", name: "IT Operations Cost", code: "CC_IT_OPS", budgetAnnual: 1000000000, budgetUsed: 450000000, currency: CurrencyCode.VND, deptId: "dept-it", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() },
+        { id: "cc-it-2", name: "Digital Innovation", code: "CC_IT_DIG", budgetAnnual: 500000000, budgetUsed: 120000000, currency: CurrencyCode.VND, deptId: "dept-it", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() },
+        { id: "cc-fn-1", name: "General Administration", code: "CC_FN_GEN", budgetAnnual: 800000000, budgetUsed: 780000000, currency: CurrencyCode.VND, deptId: "dept-fn", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() }
     ],
     organizations: [
         { 
             id: "org-1", name: "ProcurePro Global Corp", code: "PP-GLOBAL", address: "123 Business Ave, District 1, HCM", taxCode: "0123456789", 
-            companyType: "BUYER" as any, countryCode: "VN", isActive: true, kycStatus: "APPROVED" as any, trustScore: 100, metadata: {}, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() 
+            companyType: CompanyType.BUYER, countryCode: "VN", isActive: true, kycStatus: KycStatus.APPROVED, trustScore: 100, metadata: {}, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() 
         },
         { 
             id: "org-2", name: "Tech Solutions Asia", code: "TS-ASIA", address: "456 Innovation Park, District 7, HCM", taxCode: "9876543210",
-            companyType: "BUYER" as any, countryCode: "VN", isActive: true, kycStatus: "APPROVED" as any, trustScore: 100, metadata: {}, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() 
+            companyType: CompanyType.BUYER, countryCode: "VN", isActive: true, kycStatus: KycStatus.APPROVED, trustScore: 100, metadata: {}, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() 
         }
     ],
     budgetPeriods: [],
@@ -753,9 +762,19 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const addDept = useCallback(async (data: Partial<Department>) => {
+        // Clean Payload: Convert empty strings to undefined to avoid backend validation failure (e.g. UUID)
+        const cleanedData = Object.fromEntries(
+            Object.entries(data).map(([k, v]) => [k, v === "" ? undefined : v])
+        );
+
+        const payload = {
+            ...cleanedData,
+            orgId: cleanedData.orgId || state.currentUser?.orgId
+        };
+
         const res = await apiFetch('/departments', {
             method: 'POST',
-            body: JSON.stringify({ ...data, orgId: state.currentUser?.orgId })
+            body: JSON.stringify(payload)
         });
         if (res.ok) {
             notify("Thêm phòng ban thành công", "success");

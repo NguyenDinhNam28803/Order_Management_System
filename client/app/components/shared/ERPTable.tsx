@@ -3,8 +3,13 @@
 import { useProcurement } from "../../context/ProcurementContext";
 import { Plus } from "lucide-react";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function ERPTable({ columns, data }: { columns: any[], data: any[] }) {
+export interface ERPTableColumn<T> {
+    label: string;
+    key?: keyof T;
+    render?: (item: T) => React.ReactNode;
+}
+
+export default function ERPTable<T>({ columns, data }: { columns: ERPTableColumn<T>[], data: T[] }) {
     return (
         <div className="erp-card p-0 overflow-hidden">
             <table className="erp-table">
@@ -24,7 +29,9 @@ export default function ERPTable({ columns, data }: { columns: any[], data: any[
                         data.map((row, i) => (
                             <tr key={i}>
                                 {columns.map((col, j) => (
-                                    <td key={j}>{col.render ? col.render(row) : row[col.key]}</td>
+                                    <td key={j}>
+                                        {col.render ? col.render(row) : (col.key ? (row[col.key] as React.ReactNode) : null)}
+                                    </td>
                                 ))}
                             </tr>
                         ))

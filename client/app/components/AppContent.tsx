@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useProcurement } from "../context/ProcurementContext";
+import { useProcurement, Notification } from "../context/ProcurementContext";
 import Sidebar from "./Sidebar";
 
 export default function AppContent({ children }: { children: React.ReactNode }) {
@@ -29,9 +29,9 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
         <div className="flex h-screen overflow-hidden bg-slate-50">
             {/* Toast Notifications */}
             <div className="fixed top-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
-                {notifications && notifications
-                    .filter((n: any) => !n.role || n.role === currentUser?.role)
-                    .map((n: any) => (
+                {notifications && (notifications as Notification[])
+                    .filter((n: Notification) => !n.role || n.role === currentUser?.role)
+                    .map((n: Notification) => (
                     <div 
                         key={n.id}
                         className={`pointer-events-auto min-w-[320px] p-5 rounded-[24px] shadow-2xl border border-white/20 backdrop-blur-xl animate-in slide-in-from-right-8 duration-500 overflow-hidden flex items-center gap-4 ${

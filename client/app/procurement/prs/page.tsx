@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useProcurement } from "../../context/ProcurementContext";
+import { useProcurement, PR, PRItem } from "../../context/ProcurementContext";
+import { ERPTableColumn } from "../../components/shared/ERPTable";
 import { formatVND } from "../../utils/formatUtils";
 import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable from "../../components/shared/ERPTable";
@@ -14,26 +15,7 @@ import {
     UserPlus, Settings} from "lucide-react";
 import Link from "next/link";
 
-interface PRItem {
-    id: string;
-    description: string;
-    qty: number;
-    estimatedPrice: number;
-}
-
-interface PR {
-    id: string;
-    prNumber?: string;
-    title?: string;
-    status: string;
-    createdAt: string;
-    requester?: { fullName?: string; name?: string };
-    department?: { name: string } | string;
-    costCenter?: { code: string };
-    procurementId?: string;
-    totalEstimate?: number;
-    items?: PRItem[];
-}
+// Local interfaces removed in favor of global definitions in ProcurementContext.
 
 export default function ProcurementControlPage() {
     const { prs, currentUser, apiFetch, refreshData, notify } = useProcurement();
@@ -89,7 +71,7 @@ export default function ProcurementControlPage() {
         }
     };
 
-    const columns = [
+    const columns: ERPTableColumn<PR>[] = [
         {
             label: "Mã PR",
             key: "prNumber",
@@ -122,7 +104,7 @@ export default function ProcurementControlPage() {
         },
         {
             label: "Bộ phận",
-            key: "department",
+            key: "deptId",
             render: (row: PR) => (
                 <div className="flex flex-col">
                     <span className="text-xs font-black text-erp-navy">
@@ -137,7 +119,7 @@ export default function ProcurementControlPage() {
             key: "totalEstimate",
             render: (row: PR) => (
                 <div className="text-right">
-                    <div className="font-mono font-black text-erp-blue text-sm">{formatVND(row.totalEstimate)} \u20ab</div>
+                    <div className="font-mono font-black text-erp-blue text-sm">{formatVND(row.totalEstimate || 0)} \u20ab</div>
                     <div className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Base Amount</div>
                 </div>
             )
@@ -149,7 +131,6 @@ export default function ProcurementControlPage() {
         },
         {
             label: "Xử lý Thu mua",
-            key: "actions",
             render: (row: PR) => (
                 <div className="flex items-center justify-end gap-2">
                     {row.status === 'APPROVED' && (

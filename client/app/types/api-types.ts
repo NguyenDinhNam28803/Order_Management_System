@@ -26,6 +26,10 @@ export interface Department {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
+    // Relationships
+    organization?: { id: string; name: string };
+    head?: { id: string; fullName: string; email: string };
+    _count?: { users: number };
 }
 
 /**

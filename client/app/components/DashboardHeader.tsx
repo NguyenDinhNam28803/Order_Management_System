@@ -4,12 +4,12 @@ import React from "react";
 import {
     Bell, Globe, Search, ChevronRight, Home, LogOut
 } from "lucide-react";
-import { useProcurement } from "../context/ProcurementContext";
+import { useProcurement, PR } from "../context/ProcurementContext";
 
-export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phải trả", "Đối soát 3 bên"] }) {
+export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phải trả", "Đối soát 3 bên"] }: { breadcrumbs?: string[] }) {
     const { currentUser, logout, prs } = useProcurement();
 
-    const pendingCount = prs.filter((pr: any) => {
+    const pendingCount = prs.filter((pr: PR) => {
         if (!currentUser) return false;
         if (currentUser.role === "REQUESTER") return pr.status === "PENDING";
         if (currentUser.role === "DIRECTOR") return pr.status === "PENDING_DIRECTOR";
