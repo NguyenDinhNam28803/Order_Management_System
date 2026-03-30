@@ -13,7 +13,8 @@ import {
     ArrowUpRight,
     Target
 } from "lucide-react";
-import { useProcurement, CostCenter, BudgetAllocation } from "../../context/ProcurementContext";
+import { useProcurement, BudgetAllocation } from "../../context/ProcurementContext";
+import { CostCenter } from "@/app/types/api-types";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
 
 export default function FinanceBudgetsPage() {

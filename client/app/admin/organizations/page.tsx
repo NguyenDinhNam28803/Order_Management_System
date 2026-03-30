@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { LayoutDashboard, Plus, Edit2, Trash2, Search, MapPin, Hash, Building2 } from "lucide-react";
-import { useProcurement, Organization } from "../../context/ProcurementContext";
+import { Plus, Edit2, Trash2, Search, MapPin, Hash, Building2 } from "lucide-react";
+import { useProcurement } from "../../context/ProcurementContext";
+import { Organization } from "@/app/types/api-types";
 
 export default function OrganizationsPage() {
     const { organizations, addOrganization, updateOrganization, removeOrganization, refreshData } = useProcurement();
@@ -69,7 +70,7 @@ export default function OrganizationsPage() {
                 </button>
             </div>
 
-            <div className="bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-erp-navy/5 overflow-hidden">
+            <div className="bg-white rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 overflow-hidden">
                 <div className="p-8 bg-slate-50/20 border-b border-slate-50 flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-200 pr-4">Entity Directory</div>

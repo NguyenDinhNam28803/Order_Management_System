@@ -162,7 +162,7 @@ export default function SupplierDashboard() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {pos.map((po) => (
+                                {pos.map((po: any) => (
                                     <tr key={po.id} className="cursor-pointer hover:bg-slate-50 border-b border-slate-50" onClick={() => router.push(`/supplier/po`)}>
                                         <td className="font-bold text-erp-navy"><FileText size={12} className="inline mr-1 text-slate-400"/> {po.id}</td>
                                         <td>

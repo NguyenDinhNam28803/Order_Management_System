@@ -2,13 +2,13 @@
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo, useEffect } from "react";
 import Cookies from 'js-cookie';
-import { 
-    Organization, 
-    CostCenter, 
+import {
+    Organization,
+    CostCenter,
     Department,
-    CreateOrganizationPayload, 
+    CreateOrganizationPayload,
     UpdateOrganizationPayload,
-    CreateCostCenterPayload, 
+    CreateCostCenterPayload,
     UpdateCostCenterPayload,
     CreateDepartmentPayload,
     UpdateDepartmentPayload,
@@ -17,16 +17,16 @@ import {
     KycStatus
 } from "../types/api-types";
 
-export type { 
-    Organization, 
-    CostCenter, 
+export type {
+    Organization,
+    CostCenter,
     Department,
-    CreateOrganizationPayload, 
+    CreateOrganizationPayload,
     UpdateOrganizationPayload,
-    CreateCostCenterPayload, 
+    CreateCostCenterPayload,
     UpdateCostCenterPayload,
     CreateDepartmentPayload,
-    UpdateDepartmentPayload 
+    UpdateDepartmentPayload
 };
 export { CurrencyCode, CompanyType, KycStatus };
 
@@ -78,11 +78,12 @@ export interface PR {
     description?: string;
     justification?: string;
     status: string;
+    priority: number;
     createdAt: string;
-    requester?: { 
+    requester?: {
         id: string;
-        fullName?: string; 
-        name?: string; 
+        fullName?: string;
+        name?: string;
         role?: string;
         email?: string;
     };
@@ -208,6 +209,14 @@ export interface Quote {
     leadTimeDays: number;
     status: string;
     createdAt: string;
+    // Extended properties for UI compatibility
+    price?: number;
+    prices?: Record<string, number>;
+    deliveryDate?: string;
+    notes?: string;
+    paymentTerms?: string;
+    leadTime?: string | number;
+    total?: number;
 }
 
 export interface ApprovalWorkflow {
@@ -236,7 +245,7 @@ export interface ProcurementState {
     departments: Department[];
     costCenters: CostCenter[];
     organizations: Organization[];
-    budgetPeriods: BudgetPeriod[]; 
+    budgetPeriods: BudgetPeriod[];
     budgetAllocations: BudgetAllocation[];
     notifications: Notification[];
     quotes: Quote[];
@@ -266,11 +275,11 @@ interface ProcurementContextType extends ProcurementState {
     addBudgetAllocation: (data: Partial<BudgetAllocation>) => Promise<boolean>;
     updateBudgetAllocation: (id: string, data: Partial<BudgetAllocation>) => Promise<boolean>;
     removeBudgetAllocation: (id: string) => Promise<boolean>;
-    addBudgetAllocationBundle?: (data: { 
-        deptId: string, 
-        fiscalYear: number, 
-        totalBudget: number, 
-        splits: { q1: number, q2: number, q3: number, q4: number, reserve: number } 
+    addBudgetAllocationBundle?: (data: {
+        deptId: string,
+        fiscalYear: number,
+        totalBudget: number,
+        splits: { q1: number, q2: number, q3: number, q4: number, reserve: number }
     }) => Promise<boolean>;
     addCostCenter: (data: Partial<CostCenter>) => Promise<boolean>;
     updateCostCenter: (id: string, data: Partial<CostCenter>) => Promise<boolean>;
@@ -390,6 +399,7 @@ const INITIAL_STATE: ProcurementState = {
             title: "Mua sắm thiết bị IT tháng 3",
             status: "PENDING_APPROVAL",
             totalEstimate: 125000000,
+            priority: 2,
             createdAt: new Date().toISOString(),
             requester: { id: "user-1", fullName: "Nguyễn Văn A", email: "it.requester@innhub.com", role: "REQUESTER" },
             costCenter: { code: "CC_IT_OPS", name: "IT Operations Cost" },
@@ -406,6 +416,7 @@ const INITIAL_STATE: ProcurementState = {
             title: "Văn phòng phẩm quý 1",
             status: "APPROVED",
             totalEstimate: 15000000,
+            priority: 2,
             createdAt: new Date(Date.now() - 86400000).toISOString(),
             requester: { id: "user-2", fullName: "Trần Thị B", email: "finance.staff@innhub.com", role: "FINANCE" },
             costCenter: { code: "CC_FN_GEN", name: "General Administration" },
@@ -421,6 +432,7 @@ const INITIAL_STATE: ProcurementState = {
             title: "Mua chuột & Phụ kiện",
             status: "APPROVED",
             totalEstimate: 45000000,
+            priority: 2,
             createdAt: new Date(Date.now() - 3600000).toISOString(),
             requester: { id: "user-1", fullName: "IT Staff 01", email: "it.requester@innhub.com", role: "REQUESTER" },
             costCenter: { code: "CC_IT_OPS", name: "IT Operations Cost" },
@@ -462,18 +474,24 @@ const INITIAL_STATE: ProcurementState = {
     notifications: [],
     approvals: [],
     costCenters: [
-        { id: "cc-it-1", name: "IT Operations Cost", code: "CC_IT_OPS", budgetAnnual: 1000000000, budgetUsed: 450000000, currency: CurrencyCode.VND, deptId: "dept-it", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() },
-        { id: "cc-it-2", name: "Digital Innovation", code: "CC_IT_DIG", budgetAnnual: 500000000, budgetUsed: 120000000, currency: CurrencyCode.VND, deptId: "dept-it", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() },
-        { id: "cc-fn-1", name: "General Administration", code: "CC_FN_GEN", budgetAnnual: 800000000, budgetUsed: 780000000, currency: CurrencyCode.VND, deptId: "dept-fn", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { id: "cc-it-1", name: "IT Operations Cost", code: "CC_IT_OPS", budgetAnnual: 1000000000, budgetUsed: 450000000, currency: "VND" as any, deptId: "dept-it", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { id: "cc-it-2", name: "Digital Innovation", code: "CC_IT_DIG", budgetAnnual: 500000000, budgetUsed: 120000000, currency: "VND" as any, deptId: "dept-it", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { id: "cc-fn-1", name: "General Administration", code: "CC_FN_GEN", budgetAnnual: 800000000, budgetUsed: 780000000, currency: "VND" as any, deptId: "dept-fn", isActive: true, orgId: "org-1", createdAt: new Date().toISOString() }
     ],
     organizations: [
-        { 
-            id: "org-1", name: "ProcurePro Global Corp", code: "PP-GLOBAL", address: "123 Business Ave, District 1, HCM", taxCode: "0123456789", 
-            companyType: CompanyType.BUYER, countryCode: "VN", isActive: true, kycStatus: KycStatus.APPROVED, trustScore: 100, metadata: {}, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() 
+        {
+            id: "org-1", name: "ProcurePro Global Corp", code: "PP-GLOBAL", address: "123 Business Ave, District 1, HCM", taxCode: "0123456789",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            companyType: "BUYER" as any, countryCode: "VN", isActive: true, kycStatus: "APPROVED" as any, trustScore: 100, metadata: {}, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
         },
-        { 
+        {
             id: "org-2", name: "Tech Solutions Asia", code: "TS-ASIA", address: "456 Innovation Park, District 7, HCM", taxCode: "9876543210",
-            companyType: CompanyType.BUYER, countryCode: "VN", isActive: true, kycStatus: KycStatus.APPROVED, trustScore: 100, metadata: {}, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            companyType: "BUYER" as any, countryCode: "VN", isActive: true, kycStatus: "APPROVED" as any, trustScore: 100, metadata: {}, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+
         }
     ],
     budgetPeriods: [],
@@ -543,11 +561,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const addPR = useCallback((data: Partial<PR>) => {
         const nextId = state.prs.length + 1;
         const total = (data.items || []).reduce((s: number, i: PRItem) => s + (Number(i.qty || i.quantity) * Number(i.estimatedPrice)), 0);
-        
+
         const status = "PENDING_APPROVAL";
         let targetApproverRole = "DEPT_APPROVER";
         const user = state.currentUser;
-        
+
         if (user?.role === "DEPT_APPROVER") {
             if (total < 10000000) {
                 targetApproverRole = "DEPT_APPROVER";
@@ -560,8 +578,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             targetApproverRole = "DEPT_APPROVER";
         }
 
-        const newPR = { 
-            ...data, 
+        const newPR = {
+            ...data,
             id: `pr-${nextId}`,
             prNumber: `PR-2026-${String(nextId).padStart(4, '0')}`,
             status: status,
@@ -576,8 +594,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             } : undefined,
             totalEstimate: total
         };
-
-        setState(prev => ({ ...prev, prs: [newPR, ...prev.prs] }));
+        //TODO : Sửa setstate PR
+        // setState(prev => ({ ...prev, prs: [newPR, ...prev.prs] }));
         return Promise.resolve(newPR.id);
     }, [state.prs, state.currentUser]);
 
@@ -675,11 +693,16 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         };
 
         try {
-            return await fetch(`http://localhost:5000${url}`, { ...options, credentials: 'include', headers });
+            const res = await fetch(`http://localhost:5000${url}`, { ...options, credentials: 'include', headers });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                console.error(`API Error (${url}) - Status ${res.status}:`, errorData);
+            }
+            return res;
         } catch (error) {
-            console.error(`API Fetch Error (${url}):`, error);
-            // Fallback for demo when backend is offline
-            return { ok: true, status: 200, json: async () => ({ data: [] }) } as Response;
+            console.error(`API Fetch Network Error (${url}):`, error);
+            // Fallback for demo build when backend is completely offline
+            return { ok: false, status: 503, json: async () => ({ data: [] }) } as Response;
         }
     }, [addPR, createRFQ]);
 
@@ -694,9 +717,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             apiFetch('/departments')
         ]);
 
-        const costCenters = ccRes.ok ? (await ccRes.json()).data : [];
-        const organizations = orgRes.ok ? (await orgRes.json()).data : [];
-        const departments = deptRes.ok ? (await deptRes.json()).data : [];
+        const costCenters = ccRes.ok ? (await ccRes.json()).data : null;
+        const organizations = orgRes.ok ? (await orgRes.json()).data : null;
+        const departments = deptRes.ok ? (await deptRes.json()).data : null;
 
         setState(prev => ({
             ...prev,
@@ -717,7 +740,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         refreshData();
-    }, [state.currentUser]);
+    }, [refreshData, state.currentUser]);
 
     const login = useCallback(async (email: string, password?: string) => {
         const res = await apiFetch('/auth/login', {
@@ -738,7 +761,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, notify]);
 
     const logout = useCallback(async () => {
-        await apiFetch('/auth/logout', { method: 'POST' }).catch(() => {});
+        await apiFetch('/auth/logout', { method: 'POST' }).catch(() => { });
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
         setState(prev => ({ ...prev, currentUser: null }));
@@ -767,9 +790,16 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             Object.entries(data).map(([k, v]) => [k, v === "" ? undefined : v])
         );
 
+        // Whitelist fields from CreateDepartmentDto
         const payload = {
-            ...cleanedData,
-            orgId: cleanedData.orgId || state.currentUser?.orgId
+            orgId: cleanedData.orgId || state.currentUser?.orgId,
+            code: cleanedData.code,
+            name: cleanedData.name,
+            parentDeptId: cleanedData.parentDeptId,
+            budgetAnnual: cleanedData.budgetAnnual,
+            costCenterCode: cleanedData.costCenterCode,
+            headUserId: cleanedData.headUserId,
+            isActive: cleanedData.isActive ?? true
         };
 
         const res = await apiFetch('/departments', {
@@ -946,11 +976,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return Promise.resolve(true);
     }, []);
 
-    const addBudgetAllocationBundle = useCallback((data: { 
-        deptId: string, 
-        fiscalYear: number, 
-        totalBudget: number, 
-        splits: { q1: number, q2: number, q3: number, q4: number, reserve: number } 
+    const addBudgetAllocationBundle = useCallback((data: {
+        deptId: string,
+        fiscalYear: number,
+        totalBudget: number,
+        splits: { q1: number, q2: number, q3: number, q4: number, reserve: number }
     }) => {
         console.log("addBudgetAllocationBundle called with:", data);
         return Promise.resolve(true);

@@ -16,7 +16,6 @@ import {
 import Link from "next/link";
 
 // Local interfaces removed in favor of global definitions in ProcurementContext.
-
 export default function ProcurementControlPage() {
     const { prs, currentUser, apiFetch, refreshData, notify } = useProcurement();
     const [searchTerm, setSearchTerm] = useState("");

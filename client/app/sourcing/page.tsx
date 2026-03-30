@@ -1,26 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
-import { useProcurement } from "../context/ProcurementContext";
+import { useState } from "react";
+import { PR, useProcurement } from "../context/ProcurementContext";
 import DashboardHeader from "../components/DashboardHeader";
 import { 
-    Search, Filter, ListFilter, ArrowRight, 
-    FileText, ShoppingBag, CheckCircle, 
-    Zap, TrendingUp, Users, Clock,
-    Package, DollarSign, Send, MoreHorizontal
-} from "lucide-react";
+    Filter, ArrowRight, 
+    FileText, ShoppingBag, 
+    Zap, TrendingUp, 
+    Package, Send} from "lucide-react";
 import Link from "next/link";
+import { RFQ } from "../context/ProcurementContext";
 
 export default function SourcingPage() {
-    const { prs, rfqs, pos, currentUser, apiFetch, refreshData, notify, createRFQ } = useProcurement();
+    const { prs, rfqs, currentUser, apiFetch, refreshData, notify, createRFQ } = useProcurement();
     const [activeTab, setActiveTab] = useState("approved-prs");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
 
     // 1. Get Approved PRs that need sourcing (not already in an RFQ)
-    const rfqsPrIds = (rfqs || []).map((r: any) => r.prId);
-    const approvedPRs = (prs || []).filter((pr: any) => 
+    const rfqsPrIds = (rfqs || []).map((r: RFQ) => r.prId);
+    const approvedPRs = (prs || []).filter((pr: PR) => 
         (pr.status === "APPROVED" || pr.status === "PENDING_QUOTATION") && 
         !rfqsPrIds.includes(pr.id)
     );
@@ -41,7 +41,7 @@ export default function SourcingPage() {
             });
             if (res.ok) {
                 // Call context-level local createRFQ for local storage/demo state
-                await createRFQ({ prId, vendor: "Thiên Long Digital" });
+                await createRFQ(prId, "Thiên Long Digital");
                 notify("Đã khởi tạo RFQ thành công cho đơn " + prId, "success");
                 refreshData();
             }
@@ -123,7 +123,7 @@ export default function SourcingPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {approvedPRs.length > 0 ? approvedPRs.map((pr: any) => (
+                                    {approvedPRs.length > 0 ? approvedPRs.map((pr: PR) => (
                                         <tr key={pr.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
                                             <td className="px-6 py-5 cursor-pointer"><input type="checkbox" className="rounded" /></td>
                                             <td className="px-6 py-5">
@@ -131,13 +131,13 @@ export default function SourcingPage() {
                                                     <span className="font-black text-erp-navy mb-0.5">{pr.prNumber || pr.id.substring(0,8)}</span>
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-xs text-slate-500 font-bold">{pr.title}</span>
-                                                        {pr.priority === 'High' && <span className="text-[8px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-black uppercase">Ưu tiên</span>}
+                                                        {pr.priority === 2 && <span className="text-[8px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-black uppercase">Ưu tiên</span>}
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-5">
                                                 <div className="flex flex-col gap-1 items-center">
-                                                    <span className="text-xs font-black text-slate-700">{pr.department?.name || "N/A"}</span>
+                                                    <span className="text-xs font-black text-slate-700">{pr.deptId || "N/A"}</span>
                                                     <span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full inline-block font-black uppercase">{pr.costCenter?.code || "DEFAULT"}</span>
                                                 </div>
                                             </td>
@@ -228,6 +228,7 @@ export default function SourcingPage() {
     );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function TabButton({ active, onClick, label, count }: any) {
     return (
         <button 

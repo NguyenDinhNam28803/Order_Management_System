@@ -2,9 +2,10 @@
 
 import React from "react";
 import { useProcurement, PR } from "../context/ProcurementContext";
-import ERPTable from "../components/shared/ERPTable";
-import { Plus, FileText, Send, CheckCircle2, Check, X } from "lucide-react";
+import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
+import { Plus, FileText, Send,  Check, X } from "lucide-react";
 import Link from "next/link";
+import { ApprovalWorkflow } from "../context/ProcurementContext";
 
 export default function PRPage() {
     const { prs, myPrs, approvePR, currentUser, actionApproval, costCenters, approvals } = useProcurement();
@@ -25,7 +26,7 @@ export default function PRPage() {
         
         if (activeTab === "PHÊ DUYỆT PR") {
             // Show PRs that have a pending approval step assigned to the current user
-            const pendingPrIds = (approvals || []).map((a: any) => a.documentId);
+            const pendingPrIds = (approvals || []).map((a: ApprovalWorkflow) => a.documentId);
             return prs.filter((p: PR) => pendingPrIds.includes(p.id));
         }
         
@@ -39,7 +40,7 @@ export default function PRPage() {
         return filtered;
     }, [prs, myPrs, activeTab, approvals]);
 
-    const columns = [
+    const columns: ERPTableColumn<PR>[] = [
         { 
             label: "Mã PR", 
             key: "id", 
@@ -55,18 +56,20 @@ export default function PRPage() {
         { 
             label: "Phòng ban", 
             key: "department", 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             render: (row: any) => {
                 // Try to find the department name from various sources
                 let deptName = typeof row.department === 'string' ? row.department : row.department?.name;
                 
                 // If still missing, cross-reference with costCenters using deptId or costCenterId
                 if (!deptName && costCenters) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const match = costCenters.find((cc: any) => 
                         cc.deptId === row.deptId || 
                         cc.id === row.costCenterId || 
                         cc.code === row.costCenterCode
                     );
-                    if (match) deptName = match.name || match.departmentName;
+                    if (match) deptName = match.name || match.deptId;
                 }
 
                 // Final fallback based on common data in the demo
@@ -86,7 +89,7 @@ export default function PRPage() {
             label: "Mô tả / Lý do", 
             key: "title",
             render: (row: PR) => (
-                <div className="max-w-[300px]">
+                <div className="max-w-75">
                     <p className="text-sm font-bold text-slate-700 truncate">{row.title}</p>
                     <p className="text-[10px] text-slate-400 italic font-medium truncate mt-0.5">{row.reason || row.description || "No description provided"}</p>
                 </div>
@@ -122,10 +125,9 @@ export default function PRPage() {
         },
         { 
             label: "Hành động", 
-            key: "actions", 
             render: (row: PR) => {
                 const handleAction = (prId: string, action: 'APPROVE' | 'REJECT') => {
-                    const step = (approvals as any[]).find(a => a.documentId === prId);
+                    const step = (approvals as ApprovalWorkflow[]).find(a => a.documentId === prId);
                     if (step) {
                         actionApproval(step.id, action);
                     } else {

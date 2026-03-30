@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
-import { useProcurement, Product, CostCenter } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
+import { useProcurement, Product } from "../../context/ProcurementContext";
+import { CostCenter } from "@/app/types/api-types";
 import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
-
 
 interface PRItem {
     productId?: string;
@@ -190,6 +190,43 @@ export default function CreatePRPage() {
                     <p className="text-sm text-slate-500 mt-1">Khởi tạo quy trình mua sắm mới cho bộ phận của bạn.</p>
                 </div>
                 <div className="flex gap-4">
+                    <button 
+                        className="px-6 py-3 font-black text-blue-600 hover:bg-blue-50 border border-blue-200 rounded-xl text-xs uppercase tracking-widest transition-colors"
+                        onClick={() => {
+                            if (products.length > 0 && filteredCostCenters.length > 0) {
+                                const cc = filteredCostCenters.find((c: CostCenter) => c.code === 'CC_IT_OPS') || filteredCostCenters[0];
+                                const sampleProducts = products.slice(0, 2);
+                                
+                                setForm({
+                                    ...form,
+                                    title: "Mua sắm thiết bị IT định kỳ tháng 03/2026",
+                                    description: "Nâng cấp máy tính cho bộ phận vận hành IT và mua thêm phụ kiện chuột, bàn phím.",
+                                    justification: "Các thiết bị cũ đã hỏng và không đáp ứng được nhu cầu công việc hiện tại.",
+                                    requiredDate: "2026-04-15",
+                                    priority: 2,
+                                    costCenterId: cc.id,
+                                    items: sampleProducts.map(p => ({
+                                        productId: p.id,
+                                        productDesc: p.name,
+                                        sku: p.sku,
+                                        categoryId: p.categoryId,
+                                        qty: 2,
+                                        unit: p.unit || "PCS",
+                                        estimatedPrice: p.unitPriceRef || 500000,
+                                        basePrice: p.unitPriceRef || 500000,
+                                        supplierName: "Thiên Long",
+                                        aiStatus: true,
+                                        aiLabel: "GIÁ TỐT NHẤT",
+                                        specNote: "Hàng chính hãng, bảo hành 12 tháng"
+                                    }))
+                                });
+                            } else {
+                                alert("Đang tải dữ liệu sản phẩm, vui lòng đợi trong giây lát...");
+                            }
+                        }}
+                    >
+                        Dữ liệu mẫu
+                    </button>
                     <button className="px-6 py-3 font-black text-slate-500 hover:bg-slate-100 rounded-xl text-xs uppercase tracking-widest transition-colors" onClick={() => router.back()}>Hủy bỏ</button>
                     <button className="btn-primary shadow-xl shadow-erp-navy/30 py-4 px-8" onClick={handleSubmit} disabled={isSubmitting}>
                         {isSubmitting ? "Đang gửi..." : "Gửi Phê Duyệt PR"}
@@ -332,6 +369,7 @@ export default function CreatePRPage() {
                                 className="text-sm font-bold"
                                 placeholder="Nhập tên sản phẩm hoặc mã SKU..."
                                 styles={{
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     control: (base: Record<string, unknown>, state: any) => ({
                                         ...base,
                                         borderRadius: '1rem',
@@ -342,6 +380,7 @@ export default function CreatePRPage() {
                                         transition: 'all 0.3s ease',
                                         '&:hover': { borderColor: '#2563eb' }
                                     }),
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     placeholder: (base: any) => ({
                                         ...base,
                                         color: '#cbd5e1',

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useProcurement, Product, ProductCategory } from "../../context/ProcurementContext";
 import DashboardHeader from "../../components/DashboardHeader";
-import ERPTable from "../../components/shared/ERPTable";
+import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
 import { 
     Plus, Search, Edit2, Trash2, Filter, 
     Package, Layers, Tag} from "lucide-react";
@@ -59,7 +59,7 @@ export default function ProductAdminPage() {
         }
     };
 
-    const productColumns = [
+    const productColumns: ERPTableColumn<Product>[] = [
         { 
             label: "Sản phẩm", 
             key: "name",
@@ -112,7 +112,6 @@ export default function ProductAdminPage() {
         },
         {
             label: "Thao tác",
-            key: "actions",
             render: (row: Product) => (
                 <div className="flex gap-2">
                     <button 
@@ -135,7 +134,7 @@ export default function ProductAdminPage() {
         }
     ];
 
-    const categoryColumns = [
+    const categoryColumns: ERPTableColumn<ProductCategory>[] = [
         {
             label: "Mã",
             key: "code",
@@ -158,7 +157,6 @@ export default function ProductAdminPage() {
         },
         {
             label: "Thao tác",
-            key: "actions",
             render: (row: ProductCategory) => (
                 <div className="flex gap-2">
                     <button className="p-2 text-slate-400 hover:text-erp-blue hover:bg-erp-blue/5 rounded-lg transition-all"><Edit2 size={16}/></button>

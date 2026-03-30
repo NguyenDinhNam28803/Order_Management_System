@@ -1,8 +1,8 @@
 "use client";
-
+// TODO : Sửa lỗi
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useProcurement } from "../../context/ProcurementContext";
+import { PR, PRItem, useProcurement } from "../../context/ProcurementContext";
 import DashboardHeader from "../../components/DashboardHeader";
 import { 
     FileText, ShoppingBag, Send, 
@@ -26,7 +26,7 @@ export default function RFQCreatePage() {
     });
 
     // Only approved PRs can be sourced
-    const approvedPRs = prs.filter((pr: any) => pr.status === "APPROVED" || pr.status === "PENDING_QUOTATION");
+    const approvedPRs = prs.filter((pr: PR) => pr.status === "APPROVED" || pr.status === "PENDING_QUOTATION");
 
     // Sample vendors for testing
     const vendors = [
@@ -39,21 +39,21 @@ export default function RFQCreatePage() {
     ];
 
     const addPRItems = (prId: string) => {
-        const pr = approvedPRs.find((p: any) => p.id === prId);
+        const pr = approvedPRs.find((p: PR) => p.id === prId);
         if (!pr) return;
 
         // Skip if already added
-        if (form.items.some(i => i.prId === prId)) {
+        if (form.items.some((i: any) => i.prId === prId)) {
             notify("Đã thêm các mặt hàng từ PR này rồi", "info");
             return;
         }
 
-        const newItems = pr.items.map((item: any) => ({
+        const newItems = pr.items?.map((item: PRItem) => ({
             ...item,
             prId: pr.id,
             prNumber: pr.prNumber || pr.id.substring(0, 8),
             selected: true
-        }));
+        })) || [];
 
         setForm(prev => ({
             ...prev,
@@ -83,8 +83,8 @@ export default function RFQCreatePage() {
                 description: form.description,
                 deadline: form.deadline,
                 vendorName: form.vendor,
-                itemIds: form.items.map(i => i.id).filter(id => !!id),
-                prIds: Array.from(new Set(form.items.map(i => i.prId)))
+                itemIds: form.items.map((i: any) => i.id).filter((id: string) => !!id),
+                prIds: Array.from(new Set(form.items.map((i: any) => i.prId)))
             };
 
             const res = await apiFetch("/request-for-quotations", {
@@ -94,7 +94,7 @@ export default function RFQCreatePage() {
 
             if (res.ok) {
                 // Consolidated logic: create ONE RFQ with multiple items
-                const uniquePrIds: string[] = Array.from(new Set(form.items.map(i => i.prId)));
+                const uniquePrIds: string[] = Array.from(new Set(form.items.map((i: any) => i.prId)));
                 
                 await createRFQConsolidated({
                     title: form.title,
@@ -258,7 +258,7 @@ export default function RFQCreatePage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
-                                    {form.items.map((item, idx) => (
+                                    {form.items.map((item: any, idx: number) => (
                                         <tr key={idx} className="group hover:bg-erp-blue/5 transition-all">
                                             <td className="px-8 py-5">
                                                 <div className="font-black text-erp-navy text-sm leading-tight mb-1">{item.productDesc || item.name}</div>
@@ -313,7 +313,7 @@ export default function RFQCreatePage() {
                         </div>
 
                         <div className="space-y-4 overflow-y-auto max-h-[600px] pr-2">
-                            {approvedPRs.map((pr: any) => (
+                            {approvedPRs.map((pr: PR) => (
                                 <div 
                                     key={pr.id} 
                                     className="p-4 rounded-3xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 transition-all group cursor-pointer"
@@ -323,7 +323,7 @@ export default function RFQCreatePage() {
                                         <div className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100">
                                             {pr.prNumber || pr.id.substring(0,8)}
                                         </div>
-                                        <div className="text-[10px] font-black text-slate-400">{pr.requiredDate || "No Date"}</div>
+                                        <div className="text-[10px] font-black text-slate-400">{pr.createdAt || "No Date"}</div>
                                     </div>
                                     <h4 className="font-black text-erp-navy text-sm mb-1 group-hover:text-emerald-700 transition-colors uppercase tracking-tight">{pr.title}</h4>
                                     <div className="flex justify-between items-end mt-4">
@@ -351,7 +351,7 @@ export default function RFQCreatePage() {
                             <div className="space-y-4">
                                 <div className="flex justify-between text-xs">
                                     <span className="text-white/50 font-medium">Số PR kết hợp</span>
-                                    <span className="font-black uppercase tracking-widest">{Array.from(new Set(form.items.map(i => i.prId))).length} PRs</span>
+                                    <span className="font-black uppercase tracking-widest">{Array.from(new Set(form.items.map((i: any) => i.prId))).length} PRs</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
                                     <span className="text-white/50 font-medium">Tổng số dòng hàng</span>

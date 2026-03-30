@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useProcurement } from "../../../context/ProcurementContext";
-import { formatVND } from "../../../utils/formatUtils";
+import { PR, PRItem, useProcurement } from "../../../context/ProcurementContext";
 import DashboardHeader from "../../../components/DashboardHeader";
 import { 
     FileText, 
@@ -35,8 +34,9 @@ export default function CreateRFQPage() {
     
     // Get prId from query or params
     const prId = params.id as string || searchParams.get("prId");
-    const targetPR = prs.find((p: any) => p.id === prId);
+    const targetPR = prs.find((p: PR) => p.id === prId);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedVendors, setSelectedVendors] = useState<any[]>([]);
     const [vendorSearch, setVendorSearch] = useState("");
     const [deadline, setDeadline] = useState("");
@@ -46,14 +46,17 @@ export default function CreateRFQPage() {
 
     // Filter organizations to exclude current user's org
     const realVendors = React.useMemo(() => 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (organizations || []).filter((o: any) => o.id !== currentUser?.orgId),
     [organizations, currentUser?.orgId]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filteredVendors = realVendors.filter((v: any) => 
         v.name.toLowerCase().includes(vendorSearch.toLowerCase()) || 
         (v.email && v.email.toLowerCase().includes(vendorSearch.toLowerCase()))
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const addVendor = (v: any) => {
         if (!selectedVendors.find(sv => sv.id === v.id)) {
             setSelectedVendors([...selectedVendors, v]);
@@ -77,7 +80,7 @@ export default function CreateRFQPage() {
             // Updated to match backend CreateRfqDto
             const payload = {
                 prId: prId,
-                title: `RFQ for ${targetPR.prNumber || targetPR.id}`,
+                title: `RFQ for ${targetPR?.prNumber || targetPR?.id}`,
                 description: note,
                 deadline: new Date(deadline).toISOString(),
                 supplierIds: selectedVendors.map(v => v.id),
@@ -99,6 +102,7 @@ export default function CreateRFQPage() {
             setTimeout(() => {
                 router.push("/procurement/prs");
             }, 2000);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             console.error(err);
             alert(`Có lỗi xảy ra khi tạo RFQ: ${err.message}`);
@@ -177,19 +181,19 @@ export default function CreateRFQPage() {
                             </div>
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Ước tính (VNĐ)</span>
-                                <span className="text-erp-blue font-black font-mono">{formatVND(targetPR.totalEstimate)} \u20ab</span>
+                                <span className="text-erp-blue font-black font-mono">{(Number(targetPR.totalEstimate) || 0).toLocaleString()} \u20ab</span>
                             </div>
                             
                             <div className="pt-6 border-t border-slate-50">
                                 <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Danh sách sản phẩm</h3>
                                 <div className="space-y-3">
-                                    {(targetPR.items || []).map((item: any, idx: number) => (
+                                    {(targetPR.items || []).map((item: PRItem, idx: number) => (
                                         <div key={idx} className="flex justify-between items-start">
                                             <div className="flex flex-col">
-                                                <span className="text-[11px] font-black text-slate-700">{item.product?.name || item.name || "Sản phẩm " + (idx+1)}</span>
+                                                <span className="text-[11px] font-black text-slate-700">{item.productId || "Sản phẩm " + (idx+1)}</span>
                                                 <span className="text-[10px] text-slate-400 font-bold italic">{item.qty} {item.unit}</span>
                                             </div>
-                                            <span className="text-[11px] font-black text-slate-400">{formatVND(item.estimatedPrice)}</span>
+                                            <span className="text-[11px] font-black text-slate-400">{(Number(item.estimatedPrice) || 0).toLocaleString()}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -256,7 +260,7 @@ export default function CreateRFQPage() {
                                                 className="w-full text-left p-4 hover:bg-slate-50 flex items-center gap-3"
                                             >
                                                 <Plus size={16} className="text-erp-blue" />
-                                                <span className="text-sm font-bold text-erp-navy">Thêm "<strong>{vendorSearch}</strong>" như nhà cung cấp mới</span>
+                                                <span className="text-sm font-bold text-erp-navy">Thêm &quot;<strong>{vendorSearch}</strong>&quot; như nhà cung cấp mới</span>
                                             </button>
                                         )}
                                     </div>

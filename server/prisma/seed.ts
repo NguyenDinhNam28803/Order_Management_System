@@ -60,6 +60,86 @@ async function main() {
     },
   });
 
+  // Additional Test Organizations
+  await prisma.organization.upsert({
+    where: { code: 'FPT-SOFT' },
+    update: {},
+    create: {
+      code: 'FPT-SOFT',
+      name: 'FPT Software',
+      taxCode: '0101234567',
+      companyType: CompanyType.BOTH,
+      countryCode: 'VN',
+      isActive: true,
+      kycStatus: KycStatus.APPROVED,
+    },
+  });
+
+  await prisma.organization.upsert({
+    where: { code: 'VIN-CORP' },
+    update: {},
+    create: {
+      code: 'VIN-CORP',
+      name: 'Vingroup JSC',
+      taxCode: '0101112223',
+      companyType: CompanyType.BOTH,
+      countryCode: 'VN',
+      isActive: true,
+      kycStatus: KycStatus.APPROVED,
+    },
+  });
+
+  await prisma.organization.upsert({
+    where: { code: 'VIETTEL-GRP' },
+    update: {},
+    create: {
+      code: 'VIETTEL-GRP',
+      name: 'Viettel Group',
+      taxCode: '0102223334',
+      companyType: CompanyType.BOTH,
+      countryCode: 'VN',
+      isActive: true,
+      kycStatus: KycStatus.APPROVED,
+    },
+  });
+
+  // Re-fetch FPT Org to get ID
+  const fptOrg = await prisma.organization.findUnique({ where: { code: 'FPT-SOFT' } });
+  
+  if (fptOrg) {
+    const fptDept = await prisma.department.upsert({
+      where: { orgId_code: { orgId: fptOrg.id, code: 'FPT_IT' } },
+      update: {},
+      create: {
+        orgId: fptOrg.id,
+        code: 'FPT_IT',
+        name: 'FPT IT Services',
+      },
+    });
+
+    const fptUsers = [
+      { email: 'fpt.requester@fpt.com', fullName: 'FPT Requester', role: UserRole.REQUESTER },
+      { email: 'fpt.manager@fpt.com', fullName: 'FPT Manager', role: UserRole.DEPT_APPROVER },
+      { email: 'fpt.director@fpt.com', fullName: 'FPT Director', role: UserRole.DIRECTOR },
+      { email: 'fpt.ceo@fpt.com', fullName: 'FPT CEO', role: UserRole.CEO },
+    ];
+
+    for (const u of fptUsers) {
+      await prisma.user.upsert({
+        where: { email: u.email },
+        update: { passwordHash },
+        create: {
+          ...u,
+          orgId: fptOrg.id,
+          deptId: fptDept.id,
+          passwordHash,
+          isActive: true,
+          isVerified: true,
+        },
+      });
+    }
+  }
+
   // 2. Create Departments
   const itDept = await prisma.department.upsert({
     where: { orgId_code: { orgId: buyerOrg.id, code: 'IT_DEPT' } },

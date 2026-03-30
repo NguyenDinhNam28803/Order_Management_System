@@ -35,7 +35,11 @@ export class BudgetModuleController {
    */
   @Post('periods')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
-  @ApiOperation({ summary: 'Tạo mới chu kỳ ngân sách' })
+  @ApiOperation({
+    summary: 'Tạo mới chu kỳ ngân sách',
+    description:
+      'Tạo một chu kỳ ngân sách mới (ví dụ: Năm 2024, Quý 1/2024) để quản lý việc phân bổ ngân sách. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+  })
   async createPeriod(
     @Body() dto: CreateBudgetPeriodDto,
     @Request() req: { user: JwtPayload },
@@ -47,7 +51,11 @@ export class BudgetModuleController {
    * Lấy danh sách tất cả các chu kỳ ngân sách
    */
   @Get('periods')
-  @ApiOperation({ summary: 'Lấy tất cả các chu kỳ ngân sách' })
+  @ApiOperation({
+    summary: 'Lấy tất cả các chu kỳ ngân sách',
+    description:
+      'Truy vấn danh sách tất cả các chu kỳ ngân sách đã được định nghĩa trong hệ thống.',
+  })
   async findAllPeriods(@Request() req: { user: JwtPayload }) {
     return this.budgetService.findAllPeriods(req.user);
   }
@@ -57,7 +65,11 @@ export class BudgetModuleController {
    */
   @Patch('periods/:id')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
-  @ApiOperation({ summary: 'Cập nhật chu kỳ ngân sách' })
+  @ApiOperation({
+    summary: 'Cập nhật chu kỳ ngân sách',
+    description:
+      'Cập nhật thông tin của một chu kỳ ngân sách hiện có theo mã ID. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+  })
   async updatePeriod(
     @Param('id') id: string,
     @Body() dto: UpdateBudgetPeriodDto,
@@ -70,7 +82,11 @@ export class BudgetModuleController {
    */
   @Delete('periods/:id')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
-  @ApiOperation({ summary: 'Xóa chu kỳ ngân sách' })
+  @ApiOperation({
+    summary: 'Xóa chu kỳ ngân sách',
+    description:
+      'Loại bỏ một chu kỳ ngân sách khỏi hệ thống. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+  })
   async removePeriod(@Param('id') id: string) {
     return this.budgetService.removePeriod(id);
   }
@@ -81,7 +97,11 @@ export class BudgetModuleController {
    */
   @Post('allocations')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
-  @ApiOperation({ summary: 'Tạo một phân bổ ngân sách mới' })
+  @ApiOperation({
+    summary: 'Tạo một phân bổ ngân sách mới',
+    description:
+      'Cấp ngân sách cho một trung tâm chi phí cụ thể trong một chu kỳ ngân sách nhất định. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+  })
   async createAllocation(
     @Body() dto: CreateBudgetAllocationDto,
     @Request() req: { user: JwtPayload },
@@ -93,7 +113,11 @@ export class BudgetModuleController {
    * Lấy danh sách tất cả các khoản phân bổ ngân sách
    */
   @Get('allocations')
-  @ApiOperation({ summary: 'Lấy tất cả phân bổ ngân sách' })
+  @ApiOperation({
+    summary: 'Lấy tất cả phân bổ ngân sách',
+    description:
+      'Truy vấn danh sách các khoản phân bổ ngân sách, cho phép xem ngân sách được cấp và số tiền đã sử dụng của các trung tâm chi phí.',
+  })
   async findAllAllocations(@Request() req: { user: JwtPayload }) {
     return this.budgetService.findAllAllocations(req.user);
   }
@@ -102,7 +126,11 @@ export class BudgetModuleController {
    * Lấy thông tin chi tiết một khoản phân bổ ngân sách theo ID
    */
   @Get('allocations/:id')
-  @ApiOperation({ summary: 'Lấy chi tiết phân bổ ngân sách theo ID' })
+  @ApiOperation({
+    summary: 'Lấy chi tiết phân bổ ngân sách theo ID',
+    description:
+      'Xem thông tin chi tiết của một khoản phân bổ ngân sách cụ thể, bao gồm số tiền định mức và số dư còn lại.',
+  })
   async findAllocationOne(@Param('id') id: string) {
     return this.budgetService.findAllocationOne(id);
   }
@@ -112,7 +140,11 @@ export class BudgetModuleController {
    */
   @Patch('allocations/:id')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
-  @ApiOperation({ summary: 'Cập nhật phân bổ ngân sách' })
+  @ApiOperation({
+    summary: 'Cập nhật phân bổ ngân sách',
+    description:
+      'Điều chỉnh số tiền hoặc thông tin của một khoản phân bổ ngân sách hiện có. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+  })
   async updateAllocation(
     @Param('id') id: string,
     @Body() dto: UpdateBudgetAllocationDto,
@@ -125,7 +157,11 @@ export class BudgetModuleController {
    */
   @Delete('allocations/:id')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
-  @ApiOperation({ summary: 'Xóa một phân bổ ngân sách' })
+  @ApiOperation({
+    summary: 'Xóa một phân bổ ngân sách',
+    description:
+      'Thu hồi hoặc xóa bỏ một khoản phân bổ ngân sách. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+  })
   async removeAllocation(@Param('id') id: string) {
     return this.budgetService.removeAllocation(id);
   }
