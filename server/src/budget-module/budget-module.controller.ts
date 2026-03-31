@@ -89,8 +89,9 @@ export class BudgetModuleController {
   async updatePeriod(
     @Param('id') id: string,
     @Body() dto: UpdateBudgetPeriodDto,
+    @Request() req: { user: JwtPayload },
   ) {
-    return this.budgetService.updatePeriod(id, dto);
+    return this.budgetService.updatePeriod(id, dto, req.user);
   }
 
   /**
@@ -103,8 +104,8 @@ export class BudgetModuleController {
     description:
       'Loại bỏ một chu kỳ ngân sách khỏi hệ thống. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
   })
-  async removePeriod(@Param('id') id: string) {
-    return this.budgetService.removePeriod(id);
+  async removePeriod(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
+    return this.budgetService.removePeriod(id, req.user);
   }
 
   // Budget Allocations
@@ -226,6 +227,7 @@ export class BudgetModuleController {
       req.user.orgId,
       parseInt(fiscalYear),
       parseInt(quarter),
+      req.user,
     );
   }
 

@@ -19,7 +19,7 @@ export class UserModuleService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    // @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly notificationService: NotificationModuleService,
   ) {}
 
@@ -34,7 +34,7 @@ export class UserModuleService {
 
     // 2. Tạo User trong DB (Mật khẩu sẽ được hash trong repository)
     const user = await this.userRepository.create(createUserModuleDto);
-    await this.cacheManager.del('user:all');
+    // await this.cacheManager.del('user:all');
 
     // 3. Tạo một Setup Token đơn giản (Trong thực tế nên lưu vào DB với thời hạn)
     const setupToken = Buffer.from(`${user.id}:${Date.now()}`).toString(
@@ -59,63 +59,40 @@ export class UserModuleService {
   // ... (findAll, findOne, update, remove remain unchanged)
 
   async findAll() {
-    const cacheKey = 'user:all';
-    const cachedData = await this.cacheManager.get<any[]>(cacheKey);
-    if (cachedData) {
-      console.log('--- Trả về dữ liệu từ REDIS (All Users) ---');
-      return cachedData;
-    }
-
     console.log('--- Truy vấn dữ liệu từ database (All Users) ---');
     const users = await this.userRepository.findAll();
-    await this.cacheManager.set(cacheKey, users);
+    // await this.cacheManager.set(cacheKey, users);
     return users;
   }
 
   async findOne(id: string) {
-    const cacheKey = `user:${id}`;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const cachedData = await this.cacheManager.get<any>(cacheKey);
-    if (cachedData) {
-      console.log(`--- Trả về dữ liệu từ REDIS (User ${id}) ---`);
-      return cachedData;
-    }
-
     console.log(`--- Truy vấn dữ liệu từ database (User ${id}) ---`);
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    await this.cacheManager.set(cacheKey, user);
+    // await this.cacheManager.set(cacheKey, user);
     return user;
   }
 
   async findByEmail(email: string) {
-    const cacheKey = `user:email:${email}`;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const cachedData = await this.cacheManager.get<any>(cacheKey);
-    if (cachedData) {
-      console.log(`--- Trả về dữ liệu từ REDIS (Email ${email}) ---`);
-      return cachedData;
-    }
-
     console.log(`--- Truy vấn dữ liệu từ database (Email ${email}) ---`);
     const user = await this.userRepository.findByEmail(email);
-    if (user) {
-      await this.cacheManager.set(cacheKey, user);
-    }
+    // if (user) {
+    //   await this.cacheManager.set(cacheKey, user);
+    // }
 
     return user;
   }
 
   async update(id: string, updateUserModuleDto: UpdateUserModuleDto) {
     const user = await this.userRepository.update(id, updateUserModuleDto);
-    await this.cacheManager.del('user:all');
-    await this.cacheManager.del(`user:${id}`);
-    if (user.email) {
-      await this.cacheManager.del(`user:email:${user.email}`);
-    }
+    // await this.cacheManager.del('user:all');
+    // await this.cacheManager.del(`user:${id}`);
+    // if (user.email) {
+    //   await this.cacheManager.del(`user:email:${user.email}`);
+    // }
     return user;
   }
 
@@ -126,9 +103,9 @@ export class UserModuleService {
     }
 
     await this.userRepository.delete(id);
-    await this.cacheManager.del('user:all');
-    await this.cacheManager.del(`user:${id}`);
-    await this.cacheManager.del(`user:email:${user.email}`);
+    // await this.cacheManager.del('user:all');
+    // await this.cacheManager.del(`user:${id}`);
+    // await this.cacheManager.del(`user:email:${user.email}`);
     return { message: 'User deleted successfully' };
   }
 

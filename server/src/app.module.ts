@@ -51,17 +51,11 @@ import { AutomationModule } from './common/automation/automation.module';
         },
       }),
     }),
-    CacheModule.registerAsync({
-      isGlobal: true,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        store: redisStore,
-        host: configService.get<string>('REDIS_HOST', 'localhost'),
-        port: configService.get<number>('REDIS_PORT', 6379),
-        password: configService.get<string>('REDIS_PASSWORD'),
-      }),
-    }),
+    // CacheModule.register({
+    //   isGlobal: true,
+    //   ttl: 600,
+    //   max: 1000,
+    // }),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

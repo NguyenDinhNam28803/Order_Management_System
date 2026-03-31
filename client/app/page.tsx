@@ -21,6 +21,8 @@ export default function Dashboard() {
   const isProcurement = currentUser?.role === "PROCUREMENT";
   const isCEO = currentUser?.role === "CEO";
 
+  const { fetchPrDetail } = useProcurement();
+
   // --- REQUESTER DASHBOARD ---
   if (isRequester) {
       const personalPRs = myPrs || [];
@@ -151,9 +153,16 @@ export default function Dashboard() {
                                                 </span>
                                             </td>
                                             <td className="text-right">
-                                                <button onClick={() => setSelectedPRDetails(pr)} className="px-3 py-1.5 bg-slate-100 hover:bg-erp-navy hover:text-white text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-sm">
-                                                    Chi tiết
-                                                </button>
+                                                <div className="flex justify-end gap-2">
+                                                    {pr.status === "DRAFT" && (
+                                                        <Link href={`/pr/edit/${pr.id}`} className="px-3 py-1.5 bg-erp-blue/10 hover:bg-erp-blue hover:text-white text-erp-blue text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-sm">
+                                                            Sửa
+                                                        </Link>
+                                                    )}
+                                                    <button onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="px-3 py-1.5 bg-slate-100 hover:bg-erp-navy hover:text-white text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-sm">
+                                                        {loadingMyPrs && selectedPRDetails?.id === pr.id ? 'Loading...' : 'Chi tiết'}
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )) : (
@@ -329,7 +338,12 @@ export default function Dashboard() {
                                 </div>
                            </div>
 
-                           <div className="pt-8 border-t border-slate-200">
+                           <div className="pt-8 border-t border-slate-200 space-y-3">
+                                {selectedPRDetails.status === "DRAFT" && (
+                                    <Link href={`/pr/edit/${selectedPRDetails.id}`} className="w-full h-12 bg-erp-blue text-white flex items-center justify-center rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-erp-navy transition-all shadow-lg shadow-erp-blue/20">
+                                        Chỉnh sửa phiếu
+                                    </Link>
+                                )}
                                 <button className="w-full h-12 bg-white border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 hover:text-erp-navy transition-all shadow-sm">
                                     <Plus size={14} className="inline mr-2" /> In phiếu PR (PDF)
                                 </button>

@@ -96,10 +96,10 @@ export class PrmoduleController {
    */
   @Post(':id/submit')
   @ApiOperation({
-    summary: 'Gửi yêu cầu mua hàng để phê duyệt',
-    description: 'Gửi yêu cầu mua hàng đang ở trạng thái nháp để chờ phê duyệt',
+    summary: 'Gửi PR đi duyệt',
+    description: 'Chuyển trạng thái PR từ DRAFT sang PENDING_APPROVAL',
   })
-  async submit(@Param('id') id: string) {
-    return this.prService.submit(id);
+  async submit(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
+    return this.prService.submit(id, req.user);
   }
 }
