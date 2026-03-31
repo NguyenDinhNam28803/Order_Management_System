@@ -99,12 +99,7 @@ export class PrmoduleController {
     summary: 'Gửi PR đi duyệt',
     description: 'Chuyển trạng thái PR từ DRAFT sang PENDING_APPROVAL',
   })
-<<<<<<< HEAD
-  async submit(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
-    return this.prService.submit(id, req.user);
-=======
   async submit(@Param('id') id: string, @Body() user: JwtPayload) {
     return this.prService.submit(id, user);
->>>>>>> cfab2753f045ccd9436fde323eb9f872d3ce3fe5
   }
 }

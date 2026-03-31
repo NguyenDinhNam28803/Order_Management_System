@@ -1,14 +1,11 @@
 import {
   Injectable,
-  Inject,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
 import { CreateUserModuleDto } from './dto/create-user-module.dto';
 import { UpdateUserModuleDto } from './dto/update-user-module.dto';
 import { UserRepository } from './user.repository';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import type { Cache } from 'cache-manager';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDelegationDto } from './dto/user-delegation.dto';
