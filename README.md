@@ -1,172 +1,157 @@
 # 🚀 Smart E-Procurement & Order Management System (OMS)
 
-Hệ thống quản trị mua sắm tập trung (E-Procurement) toàn diện, tích hợp Trí tuệ nhân tạo (AI) để tối ưu hóa quy trình từ yêu cầu mua sắm đến thanh toán (Procure-to-Pay). Dự án được thiết kế với kiến trúc module mạnh mẽ, khả năng tự động hóa cao và giao diện người dùng hiện đại.
+[![Next.js](https://img.shields.io/badge/Next.js-15%2B-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-11%2B-E0234E?style=for-the-badge&logo=nestjs)](https://nestjs.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-7.5%2B-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%2B-336791?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-7%2B-DC382D?style=for-the-badge&logo=redis)](https://redis.io/)
+[![Gemini AI](https://img.shields.io/badge/Gemini%20AI-Flash-blue?style=for-the-badge&logo=google-gemini)](https://ai.google.dev/)
+
+Hệ thống quản trị mua sắm tập trung (**E-Procurement**) và Quản lý đơn hàng (**OMS**) toàn diện, tiên phong trong việc tích hợp Trí tuệ nhân tạo (AI) để tối ưu hóa toàn bộ chu trình từ yêu cầu mua sắm đến thanh toán (**Procure-to-Pay**). Dự án được thiết kế với kiến trúc hiện đại, module hóa cao và giao diện người dùng theo chuẩn Enterprise.
 
 ---
 
-## 🏗️ Kiến trúc Dự án (Project Architecture)
-
-Hệ thống được chia làm hai phần chính:
-
-*   **`/client`**: Ứng dụng Frontend xây dựng bằng Next.js 16 (React 19), Tailwind CSS 4. Sử dụng Lucide React cho icon và React Hook Form cho quản lý biểu mẫu.
-*   **`/server`**: Hệ thống Backend xây dựng bằng NestJS (Node.js framework). Sử dụng Prisma làm ORM kết nối cơ sở dữ liệu PostgreSQL. Tích hợp Redis và BullMQ để xử lý hàng đợi và cache.
-
----
-
-## 🚀 Công nghệ sử dụng
-
-### Frontend
-- **Framework:** Next.js 16 (React 19) - Tối ưu hóa hiệu năng và SEO.
-- **Styling:** Tailwind CSS 4 - Framework CSS hiện đại.
-- **State Management:** React Context API (ProcurementProvider).
-- **Icons:** Lucide React.
-- **Form Handling:** React Hook Form & Zod.
-
-### Backend
-- **Framework:** NestJS - Kiến trúc module dễ mở rộng.
-- **Database:** PostgreSQL với Prisma ORM.
-- **AI Integration:** Google Generative AI (Gemini 1.5/3 Flash) cho các tính năng thông minh.
-- **Real-time:** Socket.io cho thông báo thời gian thực.
-- **Caching & Queue:** Redis & BullMQ xử lý tác vụ nền.
-- **Security:** JWT (JSON Web Token), Passport.js, Bcrypt.
-- **Communication:** Nodemailer (Email) & Twilio (SMS).
+## 📑 Mục lục
+1. [🏗️ Kiến trúc Hệ thống](#-kiến-trúc-hệ-thống)
+2. [🧠 CPO Virtual Assistant (AI Intelligence)](#-cpo-virtual-assistant-ai-intelligence)
+3. [⚙️ Enterprise Automation Engine](#️-enterprise-automation-engine)
+4. [🛡️ Bảo mật & Tuân thủ](#️-bảo-mật--tuân-thủ)
+5. [🧩 Các Module Nghiệp vụ](#-các-module-nghiệp-vụ)
+6. [🔄 Quy trình Procure-to-Pay (Mermaid)](#-quy-trình-procure-to-pay)
+7. [🛠️ Hướng dẫn Cài đặt](#️-hướng-dẫn-cài-đặt)
 
 ---
 
-## 🧩 Chi tiết các Nhóm Module Nghiệp vụ (Business Domains)
+## 🏗️ Kiến trúc Hệ thống (System Architecture)
 
-### 🛡️ 1. Nhóm Quản trị & Hệ thống (Core & Admin)
-*   **`auth-module`**: Xử lý xác thực, phân quyền dựa trên vai trò (RBAC) với các quyền: REQUESTER, APPROVER, PROCUREMENT, FINANCE, WAREHOUSE, ADMIN.
-*   **`user-module` & `organization-module`**: Quản lý hồ sơ người dùng, sơ đồ tổ chức, phòng ban và chi nhánh.
-*   **`system-config-module`**: Quản lý cấu hình toàn hệ thống.
-*   **`audit-module`**: Ghi lại mọi thay đổi dữ liệu phục vụ hậu kiểm.
+Hệ thống được xây dựng trên mô hình **Separation of Concerns**, đảm bảo tính độc lập và khả năng mở rộng:
 
-### 🛒 2. Nhóm Thu mua & Cung ứng (Procurement & Sourcing)
-*   **`prmodule`**: Quản lý Purchase Request (Yêu cầu mua sắm).
-*   **`rfqmodule`**: Quản lý Request for Quotation (Yêu cầu báo giá), mời thầu và so sánh giá.
-*   **`pomodule`**: Quản lý Purchase Order (Đơn hàng chính thức).
-*   **`product-module`**: Danh mục sản phẩm, SKU và quản lý giá tham chiếu.
-*   **`supplier-kpimodule`**: Đánh giá hiệu suất nhà cung cấp dựa trên dữ liệu thực tế.
-
-### 💰 3. Nhóm Tài chính & Kiểm soát (Finance & Compliance)
-*   **`budget-module`**: Quản lý ngân sách (Allocated, Committed, Spent) theo năm/quý.
-*   **`cost-center-module`**: Quản lý trung tâm chi phí cho từng bộ phận.
-*   **`approval-module`**: Ma trận phê duyệt động dựa trên giá trị đơn hàng và loại tài liệu.
-*   **`invoice-module`**: Xử lý hóa đơn nhà cung cấp.
-*   **`payment-module`**: Lập kế hoạch và thực hiện thanh toán.
-
-### 📦 4. Nhóm Vận hành & Kho (Operations & Logistics)
-*   **`grnmodule`**: Goods Receipt Note - Quy trình nhận hàng và kiểm tra chất lượng (QC).
-*   **`dispute-module`**: Xử lý khiếu nại, tranh chấp hàng hóa lỗi hoặc thiếu.
-*   **`review-module`**: Đánh giá chất lượng sau khi nhận hàng.
-
-### 🧠 5. Nhóm Thông minh & Giao tiếp (Intelligence & Communication)
-*   **`ai-service`**: Trợ lý CPO ảo, phân tích báo giá và gợi ý nhà cung cấp.
-*   **`notification-module`**: Hệ thống thông báo đa kênh (Web, Email, SMS).
+*   **Frontend (`/client`)**:
+    *   **Core:** Next.js 16 (React 19) với App Router.
+    *   **UI/UX:** Tailwind CSS 4, Lucide Icons, Shadcn-like components.
+    *   **State Management:** React Context API (`ProcurementProvider`) kết hợp kiến trúc tập trung hóa DTOs.
+*   **Backend (`/server`)**:
+    *   **Framework:** NestJS (Node.js) - Kiến trúc Module-based.
+    *   **ORM:** Prisma với PostgreSQL 16 (Hỗ trợ Transaction, Indexing chuyên sâu).
+    *   **Background Jobs:** Redis + BullMQ xử lý thông báo và tự động hóa chứng từ.
+    *   **Real-time:** Socket.io đồng bộ trạng thái đơn hàng tức thời.
 
 ---
 
-## 🛡️ Chính sách Hạn mức Khởi tạo PR (PR Creation Ceiling Policy)
+## 🧠 CPO Virtual Assistant (AI Intelligence)
 
-Hệ thống áp dụng phân quyền khởi tạo PR theo mô hình phân tầng (Hierarchical Ceiling), nơi cấp bậc cao hơn sẽ thừa hưởng quyền lợi của cấp bậc thấp hơn:
+Tích hợp **Google Gemini Flash**, hệ thống sở hữu một "Giám đốc Thu mua ảo" (CPO) hỗ trợ ra quyết định thông minh:
 
-| Chức vụ (Role) | Hạn mức Khởi tạo tối đa (VND) | Phạm vi quyền hạn |
-| :--- | :--- | :--- |
-| **`REQUESTER`** | **10,000,000** | Các nhu cầu cơ bản, văn phòng phẩm. |
-| **`DEPT_APPROVER`** | **30,000,000** | Bao gồm quyền Requester + Thiết bị phòng ban. |
-| **`DIRECTOR`** | **100,000,000** | Bao gồm quyền cấp dưới + Tài sản, dự án vừa. |
-| **`CEO`** | **Không giới hạn** | Toàn quyền khởi tạo mọi giá trị đơn hàng. |
-
-*Cơ chế này giúp các cấp lãnh đạo không bị chặn khi cần khởi tạo nhanh các đơn hàng giá trị nhỏ, đồng thời kiểm soát chặt chẽ quyền hạn của nhân viên.*
+1.  **AI Function Calling**: AI có khả năng tự truy vấn database (PR, PO, KPI nhà cung cấp) thông qua các công cụ được định nghĩa sẵn để trả lời câu hỏi bằng ngôn ngữ tự nhiên.
+2.  **Quotation Analysis Engine**:
+    *   Tự động chấm điểm báo giá trên thang 100.
+    *   Trọng số linh hoạt: **Giá (40%)**, **Tiến độ (30%)**, **Uy tín (30%)**.
+    *   Tóm tắt ưu/nhược điểm và đưa ra đề xuất (Recommend/Reject).
+3.  **Supplier Selection AI**: Phân tích lịch sử giao dịch và KPI thực tế để gợi ý nhà cung cấp tối ưu nhất cho từng mặt hàng (SKU).
 
 ---
 
-## 🔄 Luồng Nghiệp vụ Chi tiết (End-to-End Data Flow)
+## ⚙️ Enterprise Automation Engine
 
-Hệ thống vận hành theo quy trình khép kín với các bước tự động hóa then chốt:
+Quy trình vận hành được tự động hóa thông qua `AutomationService` và `BullMQ`:
 
-### 1. Khởi tạo Yêu cầu (PR) & Kiểm tra Ngân sách
-- Người dùng tạo PR. Hệ thống tự động truy vấn `BudgetAllocation`.
-- **Soft Commit**: Nếu đủ ngân sách, số tiền dự kiến được cộng vào `committedAmount`.
-- Trạng thái PR chuyển sang `PENDING_APPROVAL`.
-
-### 2. Phê duyệt Động (Approval Workflow)
-- `ApprovalModuleService` dựa vào `ApprovalMatrixRule` để xác định danh sách người duyệt.
-- Hỗ trợ duyệt nhiều cấp (Trưởng phòng -> Giám đốc -> CEO) dựa trên ngưỡng số tiền.
-- Nếu bị từ chối, ngân sách `committedAmount` được giải phóng ngay lập tức.
-
-### 3. Tìm nguồn Chiến lược (RFQ) & AI Suggestion
-- PR được duyệt hoàn toàn sẽ kích hoạt `AutomationService` để tạo RFQ.
-- AI phân tích mặt hàng và gợi ý danh sách nhà cung cấp phù hợp nhất từ database hoặc tìm kiếm bên ngoài.
-- Hệ thống gửi lời mời báo giá tự động qua Email cho các nhà cung cấp được chọn.
-
-### 4. Báo giá & Phân tích AI
-- Nhà cung cấp nộp báo giá qua Portal.
-- AI thực hiện chấm điểm báo giá dựa trên 3 tiêu chí: **Giá cả (40%)**, **Thời gian giao hàng (30%)**, và **Uy tín nhà cung cấp (30%)**.
-- AI cung cấp bản tóm tắt Ưu/Nhược điểm của từng báo giá để Buyer ra quyết định.
-
-### 5. Đơn hàng (PO) & Tự động hóa Kho
-- Khi Buyer chọn "Award" cho một báo giá, hệ thống tự động:
-    1. Chuyển RFQ sang trạng thái `AWARDED`.
-    2. Tạo Purchase Order (PO) với đầy đủ thông tin từ báo giá.
-    3. Cập nhật lại cam kết ngân sách chính xác theo giá trị PO.
-    4. Tự động khởi tạo bản ghi Goods Receipt (GRN) ở trạng thái `DRAFT` để bộ phận kho chuẩn bị nhận hàng.
-
-### 6. Nhận hàng (GRN) & Đối soát 3 bên (3-Way Match)
-- Kho thực hiện xác nhận số lượng thực nhận và kết quả QC.
-- Kế toán tiếp nhận hóa đơn (Invoice). Hệ thống thực hiện so khớp tự động giữa: **PO (Đặt hàng) - GRN (Thực nhận) - Invoice (Hóa đơn)**.
-
-### 7. Thanh toán & Hard Commit
-- Sau khi thanh toán thành công, hệ thống thực hiện **Hard Commit**:
-    - Trừ `committedAmount`.
-    - Cộng vào `spentAmount`.
-- Ghi nhận lịch sử vào `AuditLog`.
+*   **Auto-Trigger**: Khi PR được duyệt hoàn toàn -> Tự động khởi tạo RFQ.
+*   **Supplier Invitation**: Hệ thống tự gửi Email mời thầu tới các nhà cung cấp được AI gợi ý.
+*   **PO Issuance**: Khi chọn báo giá (Awarded) -> Tự động tạo PO & Soft Commit ngân sách.
+*   **GRN Generation**: Sau khi PO được phát hành -> Tự động tạo bản ghi Nhập kho (Draft GRN).
+*   **Budget Integrity**: Tự động cập nhật `Allocated` -> `Committed` -> `Spent` xuyên suốt vòng đời.
 
 ---
 
-## ⚙️ Hệ thống AI & Tự động hóa (Automation Engine)
+## 🛡️ Bảo mật & Tuân thủ (Security & Compliance)
 
-Hệ thống tích hợp "CPO Virtual Assistant" giúp tối ưu hóa vận hành:
-
-1.  **Auto-Generation**: Tự động chuyển đổi chứng từ (PR -> RFQ, RFQ -> PO, PO -> GRN).
-2.  **AI Analysis**: Phân tích rủi ro nhà cung cấp từ lịch sử tranh chấp và KPI.
-3.  **Natural Language Query**: Cho phép người quản lý hỏi đáp về dữ liệu hệ thống bằng ngôn ngữ tự nhiên (Vd: "Liệt kê các nhà cung cấp có tỷ lệ giao hàng trễ cao nhất").
-4.  **Auto-Escalation**: Tự động nhắc nhở hoặc chuyển cấp phê duyệt nếu quá thời hạn SLA.
+*   **Xác thực**: JWT (JSON Web Token) với cơ chế Access/Refresh token.
+*   **Phân quyền (RBAC)**: Hệ thống vai trò phân tầng: `REQUESTER`, `APPROVER`, `PROCUREMENT`, `FINANCE`, `WAREHOUSE`, `CEO`, `PLATFORM_ADMIN`.
+*   **Security Middleware**: Helmet.js bảo vệ header, Throttler chống DDoS, và ValidationPipe chuẩn hóa dữ liệu đầu vào.
+*   **Audit Logging**: `audit-module` ghi lại mọi dấu vết (Ai thay đổi? Thay đổi cái gì? Lúc nào?) phục vụ hậu kiểm.
 
 ---
 
-## 🛠️ Hướng dẫn Cài đặt & Phát triển
+## 🧩 Các Module Nghiệp vụ (Business Domains)
 
-### Yêu cầu hệ thống
-- Node.js 18+
-- PostgreSQL
-- Redis
-- Google Gemini API Key
+### 🛒 Thu mua & Sourcing
+*   **`prmodule`**: Quản lý nhu cầu, kiểm soát hạn mức (Ceiling) theo cấp bậc.
+*   **`rfqmodule`**: So sánh giá, đấu thầu minh bạch.
+*   **`supplier-kpimodule`**: Đánh giá OTD (Giao hàng đúng hạn), Quality, và Trust Score.
 
-### Cài đặt Backend
+### 💰 Tài chính & Kiểm soát
+*   **`budget-module`**: Quản lý ngân sách theo năm/quý/bộ phận.
+*   **`approval-module`**: Ma trận phê duyệt động (Dynamic Approval Matrix) dựa trên ngưỡng giá trị.
+*   **`invoice-module`**: Đối soát 3 bên (3-Way Matching: PO - GRN - Invoice).
+
+### 📦 Kho & Vận hành
+*   **`grnmodule`**: Quy trình nhận hàng và kiểm soát chất lượng (QC).
+*   **`dispute-module`**: Xử lý sai lệch hàng hóa, hàng lỗi.
+
+---
+
+## 🔄 Quy trình Procure-to-Pay
+
+```mermaid
+sequenceDiagram
+    participant Requester
+    participant Manager
+    participant AI_Engine
+    participant Supplier
+    participant Warehouse
+
+    Requester->>Manager: Create PR (Check Budget)
+    Manager-->>Requester: Approved PR
+    AI_Engine->>AI_Engine: Auto Create RFQ
+    AI_Engine->>Supplier: Invite to Bid (Email)
+    Supplier->>AI_Engine: Submit Quotation
+    AI_Engine->>AI_Engine: Score & Compare Quotations
+    AI_Engine->>Requester: Recommend Best Option
+    Requester->>Supplier: Award & Create PO
+    Supplier->>Warehouse: Ship Goods
+    Warehouse->>Warehouse: Create GRN (QC Pass)
+```
+
+---
+
+## 🛠️ Hướng dẫn Cài đặt
+
+### Yêu cầu tiên quyết
+- **Node.js**: v18.x hoặc cao hơn.
+- **Docker**: (Khuyên dùng để chạy PostgreSQL & Redis).
+- **Google Cloud API Key**: Để sử dụng tính năng Gemini AI.
+
+### Bước 1: Thiết lập Cơ sở dữ liệu & Caching
+```bash
+# Sử dụng Docker để khởi tạo nhanh
+docker run --name pg-oms -e POSTGRES_PASSWORD=yourpass -p 5432:5432 -d postgres
+docker run --name redis-oms -p 6379:6379 -d redis
+```
+
+### Bước 2: Cài đặt Backend (`/server`)
 ```bash
 cd server
 npm install
-# Tạo tệp .env dựa trên danh sách biến môi trường bên dưới
+# Tạo .env từ .env.example và điền các thông số
 npx prisma generate
+npx prisma migrate dev
 npm run start:dev
 ```
 
-### Cài đặt Frontend
+### Bước 3: Cài đặt Frontend (`/client`)
 ```bash
 cd client
 npm install
 npm run dev
 ```
 
-### Biến môi trường (.env) quan trọng
-| Biến | Mô tả |
-| :--- | :--- |
-| `DATABASE_URL` | Chuỗi kết nối PostgreSQL |
-| `GEMINI_API_KEY` | API Key từ Google AI Studio |
-| `JWT_SECRET` | Khóa bí mật cho xác thực JWT |
-| `REDIS_HOST/PORT` | Cấu hình kết nối Redis |
-| `EMAIL_HOST/USER/PASS` | Cấu hình gửi thông báo qua Email |
+### 📋 Biến môi trường (.env) quan trọng
+| Biến | Mô tả | Mặc định |
+| :--- | :--- | :--- |
+| `DATABASE_URL` | Kết nối PostgreSQL | `postgresql://...` |
+| `REDIS_HOST` | Địa chỉ máy chủ Redis | `localhost` |
+| `GEMINI_API_KEY` | Key từ Google AI Studio | `Required` |
+| `JWT_SECRET` | Khóa bảo mật Token | `Random String` |
 
 ---
-*Tài liệu này được cập nhật dựa trên cấu trúc mã nguồn thực tế của dự án.*
+*Tài liệu được xây dựng chuyên nghiệp nhằm phục vụ việc bàn giao và phát triển bền vững.*

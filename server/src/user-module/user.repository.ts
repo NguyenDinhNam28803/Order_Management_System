@@ -48,7 +48,7 @@ export class UserRepository {
       },
     });
   }
- 
+
   async findById(id: string) {
     return this.prisma.user.findUnique({
       where: { id },
@@ -62,7 +62,7 @@ export class UserRepository {
       },
     });
   }
- 
+
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
@@ -76,7 +76,7 @@ export class UserRepository {
       },
     });
   }
- 
+
   async update(id: string, data: UpdateUserModuleDto) {
     return this.prisma.user.update({
       where: { id },
@@ -91,7 +91,7 @@ export class UserRepository {
       },
     });
   }
- 
+
   async delete(id: string) {
     return this.prisma.user.delete({
       where: { id },

@@ -65,7 +65,11 @@ export class RfqmoduleService {
       await this.aiService.getCompanySuggestion(items);
 
     console.log(suggestedSupplierIds);
-    if (!suggestedSupplierIds || !suggestedSupplierIds.data || suggestedSupplierIds.data.length === 0) {
+    if (
+      !suggestedSupplierIds ||
+      !suggestedSupplierIds.data ||
+      suggestedSupplierIds.data.length === 0
+    ) {
       return [];
     }
 
@@ -77,7 +81,8 @@ export class RfqmoduleService {
     const validSupplierIds = rawSupplierData
       .map((item: any) => {
         if (typeof item === 'string') return item;
-        if (item && typeof item === 'object') return item.id || item.supplierId || item.orgId;
+        if (item && typeof item === 'object')
+          return item.id || item.supplierId || item.orgId;
         return null;
       })
       .filter((id): id is string => typeof id === 'string' && id.length > 0);

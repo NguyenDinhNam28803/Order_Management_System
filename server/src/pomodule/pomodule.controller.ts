@@ -138,7 +138,6 @@ export class PomoduleController {
     description: 'Cập nhật trạng thái của một đơn hàng cụ thể',
   })
   updateStatus(@Param('id') id: string, @Body() body: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.poService.updateStatus(id, body.status);
   }
 }

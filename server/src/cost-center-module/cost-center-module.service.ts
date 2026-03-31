@@ -48,14 +48,14 @@ export class CostCenterModuleService {
     }
 
     const { deptId, ...rest } = createCostCenterDto;
-    const sanitizedDeptId = deptId === "" ? null : deptId;
+    const sanitizedDeptId = deptId === '' ? null : deptId;
 
     const result = await this.prisma.costCenter.create({
       data: {
         ...rest,
         deptId: sanitizedDeptId,
       },
-      include: { department: true }
+      include: { department: true },
     });
 
     return this.mapCostCenter(result);
@@ -72,12 +72,12 @@ export class CostCenterModuleService {
         budgetAllocations: true,
       },
     });
-    return results.map(cc => this.mapCostCenter(cc));
+    return results.map((cc) => this.mapCostCenter(cc));
   }
 
   async findAll(orgId: string) {
     const results = await this.prisma.costCenter.findMany({
-      where: { 
+      where: {
         orgId,
         isActive: true,
       },
@@ -87,7 +87,7 @@ export class CostCenterModuleService {
       },
       orderBy: { createdAt: 'desc' },
     });
-    return results.map(cc => this.mapCostCenter(cc));
+    return results.map((cc) => this.mapCostCenter(cc));
   }
 
   async findOne(id: string) {
@@ -103,12 +103,14 @@ export class CostCenterModuleService {
         throw new NotFoundException(`Cost Center with ID ${id} not found`);
       }
 
-      const allocations = await this.prisma.budgetAllocation.findMany({
-        where: { costCenterId: id },
-        include: { budgetPeriod: true },
-        take: 10,
-        orderBy: { createdAt: 'desc' },
-      }).catch(() => []);
+      const allocations = await this.prisma.budgetAllocation
+        .findMany({
+          where: { costCenterId: id },
+          include: { budgetPeriod: true },
+          take: 10,
+          orderBy: { createdAt: 'desc' },
+        })
+        .catch(() => []);
 
       return this.mapCostCenter({
         ...costCenter,
@@ -116,38 +118,44 @@ export class CostCenterModuleService {
       });
     } catch (error: any) {
       if (error instanceof NotFoundException) throw error;
-      throw new BadRequestException(`Lỗi hệ thống khi truy vấn Trung tâm chi phí: ${error.message}`);
+      throw new BadRequestException(
+        `Lỗi hệ thống khi truy vấn Trung tâm chi phí: ${error.message}`,
+      );
     }
   }
 
   async update(id: string, updateCostCenterDto: UpdateCostCenterDto) {
     try {
       await this.findOne(id);
-      
+
       const { budgetAnnual, deptId, ...rest } = updateCostCenterDto;
-      const sanitizedDeptId = deptId === "" ? null : deptId;
-      
+      const sanitizedDeptId = deptId === '' ? null : deptId;
+
       const result = await this.prisma.costCenter.update({
         where: { id },
         data: {
           ...rest,
           deptId: sanitizedDeptId,
-          ...(budgetAnnual !== undefined && { budgetAnnual: Number(budgetAnnual) }),
+          ...(budgetAnnual !== undefined && {
+            budgetAnnual: Number(budgetAnnual),
+          }),
         },
-        include: { department: true, budgetAllocations: true }
+        include: { department: true, budgetAllocations: true },
       });
 
       return this.mapCostCenter(result);
     } catch (error: any) {
       console.error(`[CostCenterModuleService] update error for ${id}:`, error);
-      throw new BadRequestException(`Không thể cập nhật Cost Center: ${error.message}`);
+      throw new BadRequestException(
+        `Không thể cập nhật Cost Center: ${error.message}`,
+      );
     }
   }
 
   async remove(id: string) {
     try {
       const cc = await this.findOne(id);
-      
+
       const hasAllocations = await this.prisma.budgetAllocation.count({
         where: { costCenterId: id },
       });
@@ -166,16 +174,16 @@ export class CostCenterModuleService {
           where: { id },
           data: { isActive: false },
         });
-        
+
         const reasons: string[] = [];
-        if (hasAllocations > 0) reasons.push("Ngân sách");
-        if (hasPRs > 0) reasons.push("Yêu cầu mua hàng (PR)");
-        if (hasPOs > 0) reasons.push("Đơn mua hàng (PO)");
+        if (hasAllocations > 0) reasons.push('Ngân sách');
+        if (hasPRs > 0) reasons.push('Yêu cầu mua hàng (PR)');
+        if (hasPOs > 0) reasons.push('Đơn mua hàng (PO)');
 
         return {
           ...this.mapCostCenter(updatedCC),
           isSoftDeleted: true,
-          message: `Trung tâm chi phí '${cc.name}' đã có dữ liệu liên kết (${reasons.join(', ')}). Hệ thống đã chuyển sang trạng thái 'Ngưng hoạt động'.`
+          message: `Trung tâm chi phí '${cc.name}' đã có dữ liệu liên kết (${reasons.join(', ')}). Hệ thống đã chuyển sang trạng thái 'Ngưng hoạt động'.`,
         };
       }
 
@@ -183,13 +191,20 @@ export class CostCenterModuleService {
         where: { id },
       });
     } catch (error: any) {
-      if (error instanceof NotFoundException || error instanceof ConflictException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
         throw error;
       }
       if (error.code === 'P2003') {
-        throw new ConflictException('Lỗi ràng buộc: Dữ liệu này đang được sử dụng ở phân hệ khác.');
+        throw new ConflictException(
+          'Lỗi ràng buộc: Dữ liệu này đang được sử dụng ở phân hệ khác.',
+        );
       }
-      throw new BadRequestException(`Không thể hoàn tất yêu cầu xóa: ${error.message}`);
+      throw new BadRequestException(
+        `Không thể hoàn tất yêu cầu xóa: ${error.message}`,
+      );
     }
   }
 }
