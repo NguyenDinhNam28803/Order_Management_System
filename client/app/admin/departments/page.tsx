@@ -251,8 +251,8 @@ export default function DepartmentsPage() {
                                         className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
                                     >
                                         <option value="">Chưa chỉ định</option>
-                                        {users?.map((u: User) => (
-                                            <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>
+                                        {users?.filter((u: User) => editingDept && u.deptId === editingDept.id).map((u: User) => (
+                                            <option key={u.id} value={u.id}>{u.fullName || u.name} ({u.email})</option>
                                         ))}
                                     </select>
                                 </div>

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
 import { formatVND } from "../../utils/formatUtils";
-import { useProcurement, Product } from "../../context/ProcurementContext";
+import { useProcurement, Product, BudgetAllocation, BudgetPeriod } from "../../context/ProcurementContext";
 import { CostCenter } from "@/app/types/api-types";
 import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
@@ -75,7 +75,16 @@ const isValidUuid = (id: string | undefined): boolean => {
 };
 
 export default function CreatePRPage() {
-    const { apiFetch, costCenters, currentUser, products, notify } = useProcurement();
+    const { 
+        apiFetch, 
+        costCenters, 
+        currentUser, 
+        products, 
+        notify, 
+        budgetAllocations, 
+        budgetPeriods: periods 
+    } = useProcurement();
+
     const router = useRouter();
     const [form, setForm] = useState<PRForm>({
         title: "",
@@ -100,7 +109,17 @@ export default function CreatePRPage() {
 
     const activeCC = filteredCostCenters.find((cc: CostCenter) => cc.id === form.costCenterId);
     const totalEstimate = form.items.reduce((sum: number, item: PRItem) => sum + (item.qty * item.estimatedPrice), 0);
-    const isOverBudget = activeCC && (Number(activeCC.budgetAnnual) - Number(activeCC.budgetUsed) < totalEstimate);
+    const activePeriod = periods.find(p => p.isActive);
+    const activeAllocation = activeCC ? (budgetAllocations.find(a => a.costCenterId === activeCC.id && (!activePeriod || a.budgetPeriodId === activePeriod.id)) || 
+        (activeCC as any).budgetAllocations?.find((a: any) => !activePeriod || a.budgetPeriodId === activePeriod.id)) : null;
+
+    const remainingBudget = activeAllocation 
+        ? (Number(activeAllocation.allocatedAmount) - Number(activeAllocation.spentAmount) - Number(activeAllocation.committedAmount))
+        : activeCC 
+            ? (Number(activeCC.budgetAnnual) - Number(activeCC.budgetUsed))
+            : 0;
+
+    const isOverBudget = activeCC && (remainingBudget < totalEstimate);
 
     const addItem = (option: { value: string; label: string }) => {
         const product = products.find((p: Product) => p.id === option.value);
@@ -349,11 +368,59 @@ export default function CreatePRPage() {
                                     ))}
                                 </select>
                                 {activeCC && (
-                                    <div className={`mt-3 flex items-center gap-2 px-4 py-2 rounded-2xl border w-fit animate-in slide-in-from-top-2 duration-300 shadow-sm ${isOverBudget ? 'bg-red-50 border-red-100 text-red-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
-                                        {isOverBudget ? <AlertCircle size={14} /> : <Sparkles size={14} className="fill-emerald-600" />}
-                                        <span className="text-[10px] font-black uppercase tracking-widest leading-none">
-                                            {isOverBudget ? '⚠️ Vượt hạn mức ngân sách' : '✅ Ngân sách khả dụng'}
-                                        </span>
+                                    <div className="mt-6 animate-in fade-in slide-in-from-top-4 duration-500 overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-xl">
+                                        <div className={`p-4 flex items-center justify-between ${isOverBudget ? 'bg-red-500 text-white' : 'bg-erp-blue text-white'}`}>
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
+                                                    {isOverBudget ? <AlertCircle size={20} /> : <Sparkles size={20} className="fill-white" />}
+                                                </div>
+                                                <div>
+                                                    <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">Trạng thái ngân sách</div>
+                                                    <div className="text-sm font-black uppercase tracking-tighter">
+                                                        {isOverBudget ? '⚠️ Vượt hạn mức dự toán' : '✅ Đủ điều kiện cấp vốn'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-[10px] font-black uppercase opacity-70">Mã CC</div>
+                                                <div className="text-sm font-black">{activeCC.code}</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="p-6 grid grid-cols-2 gap-6 bg-white">
+                                            <div className="space-y-1">
+                                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ngân sách khả dụng</div>
+                                                <div className="text-xl font-black text-erp-navy tracking-tight">
+                                                    {formatVND(remainingBudget)} ₫
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Chi phí dự kiến</div>
+                                                <div className={`text-xl font-black tracking-tight ${isOverBudget ? 'text-red-500' : 'text-emerald-500'}`}>
+                                                    {formatVND(totalEstimate)} ₫
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="col-span-2 pt-4 border-t border-slate-50">
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hiệu suất sử dụng (Impact)</span>
+                                                    <span className="text-[10px] font-black text-erp-navy uppercase">
+                                                        {remainingBudget > 0 ? ((totalEstimate / remainingBudget) * 100).toFixed(1) : 100}%
+                                                    </span>
+                                                </div>
+                                                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                                                    <div 
+                                                        className={`h-full transition-all duration-1000 ease-out rounded-full ${isOverBudget ? 'bg-red-500' : 'bg-erp-blue'}`}
+                                                        style={{ width: `${Math.min(100, (totalEstimate / (remainingBudget || 1)) * 100)}%` }}
+                                                    />
+                                                </div>
+                                                {isOverBudget && (
+                                                    <div className="mt-3 text-[10px] font-bold text-red-500 flex items-center gap-1.5 animate-pulse uppercase tracking-wider">
+                                                        <AlertCircle size={12} /> Cần phê duyệt vượt mức từ Giám đốc Tài chính
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </div>

@@ -80,7 +80,7 @@ async function seedBudgetForTesting() {
         orgId_fiscalYear_periodType_periodNumber: {
           orgId,
           fiscalYear,
-          periodType: BudgetPeriodType.QUARTERLY,
+          periodType: p.type as BudgetPeriodType,
           periodNumber: p.num,
         },
       },
@@ -90,7 +90,7 @@ async function seedBudgetForTesting() {
       create: {
         orgId,
         fiscalYear,
-        periodType: BudgetPeriodType.QUARTERLY,
+        periodType: p.type as BudgetPeriodType,
         periodNumber: p.num,
         startDate: new Date(p.start),
         endDate: new Date(p.end),

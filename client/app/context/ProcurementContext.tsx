@@ -252,6 +252,7 @@ export interface ProcurementState {
     products: Product[];
     approvals: ApprovalWorkflow[];
     fiscalYears: number[];
+    token: string | null;
 }
 
 interface ProcurementContextType extends ProcurementState {
@@ -509,7 +510,8 @@ const INITIAL_STATE: ProcurementState = {
         { id: "p9", name: "Lót chuột cơ Razer Goliathus Extended Chroma - Black", sku: "RC21-01", unitPriceRef: 1200000, unit: "UNIT" },
         { id: "p10", name: "Bộ sạc pin dự phòng Anker PowerCore Essential 20000", sku: "A1268", unitPriceRef: 1800000, unit: "UNIT" },
     ],
-    fiscalYears: [2024, 2025, 2026]
+    fiscalYears: [2024, 2025, 2026],
+    token: null
 };
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
@@ -712,22 +714,28 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
         // Fetch real data from backend concurrently
         try {
-            const [ccRes, orgRes, deptRes, allPrRes, myPrRes, pendingApprRes] = await Promise.all([
+            const [ccRes, orgRes, deptRes, allPrRes, myPrRes, pendingApprRes, usersRes, budgetAllocRes, budgetPeriodRes] = await Promise.all([
                 apiFetch('/cost-centers'),
                 apiFetch('/organizations'),
                 apiFetch('/departments'),
                 apiFetch('/procurement-requests'),
                 apiFetch('/procurement-requests/my'),
-                apiFetch('/approvals/pending')
+                apiFetch('/approvals/pending'),
+                apiFetch('/users'),
+                apiFetch('/budgets/allocations'),
+                apiFetch('/budgets/periods')
             ]);
-
+ 
             const costCenters = ccRes.ok ? (await ccRes.json()).data : null;
             const organizations = orgRes.ok ? (await orgRes.json()).data : null;
             const departments = deptRes.ok ? (await deptRes.json()).data : null;
             const allPrs = allPrRes.ok ? (await allPrRes.json()).data : null;
             const myPrs = myPrRes.ok ? (await myPrRes.json()).data : null;
             const pendingApprovals = pendingApprRes.ok ? (await pendingApprRes.json()).data : null;
-
+            const fetchedUsers = usersRes.ok ? (await usersRes.json()).data : null;
+            const fetchedBudgetAllocations = budgetAllocRes.ok ? (await budgetAllocRes.json()).data : null;
+            const fetchedBudgetPeriods = budgetPeriodRes.ok ? (await budgetPeriodRes.json()).data : null;
+ 
             setState(prev => ({
                 ...prev,
                 costCenters: Array.isArray(costCenters) ? costCenters : prev.costCenters,
@@ -736,6 +744,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 prs: Array.isArray(allPrs) ? allPrs : prev.prs,
                 myPrs: Array.isArray(myPrs) ? myPrs : prev.myPrs,
                 approvals: Array.isArray(pendingApprovals) ? pendingApprovals : prev.approvals,
+                users: Array.isArray(fetchedUsers) ? fetchedUsers : prev.users,
+                budgetAllocations: Array.isArray(fetchedBudgetAllocations) ? fetchedBudgetAllocations : prev.budgetAllocations,
+                budgetPeriods: Array.isArray(fetchedBudgetPeriods) ? fetchedBudgetPeriods : prev.budgetPeriods,
             }));
         } catch (error) {
             console.error("Error refreshing data from backend:", error);
@@ -743,9 +754,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch]);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        refreshData();
-    }, [refreshData, state.currentUser]);
+        if (state.token) {
+            refreshData();
+        }
+    }, [state.token]);
 
     const login = useCallback(async (email: string, password?: string) => {
         const res = await apiFetch('/auth/login', {
@@ -835,16 +847,23 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, state.currentUser?.orgId, refreshData, notify]);
 
     const updateDept = useCallback(async (id: string, data: Partial<Department>) => {
+        // Clean Payload: Convert empty strings to null to avoid backend validation failure
+        const cleanedData = Object.fromEntries(
+            Object.entries(data).map(([k, v]) => [k, v === "" ? null : v])
+        );
+
         const res = await apiFetch(`/departments/${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(data)
+            body: JSON.stringify(cleanedData)
         });
         if (res.ok) {
             notify("Cập nhật phòng ban thành công", "success");
             await refreshData();
             return true;
         }
-        notify("Lỗi khi cập nhật phòng ban", "error");
+        
+        const err = await res.json().catch(() => ({}));
+        notify(err.message || "Lỗi khi cập nhật phòng ban", "error");
         return false;
     }, [apiFetch, refreshData, notify]);
 
@@ -970,19 +989,35 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const addUser = useCallback((data: Partial<User> & { employeeCode?: string }) => {
-        setState(prev => {
-            const nextId = prev.users.length + 1;
-            const newUser = { ...data, id: `user-${nextId}`, employeeCode: data.employeeCode || `EMP-${String(nextId).padStart(3, '0')}` };
-            return { ...prev, users: [...prev.users, newUser as User] };
+    const addUser = useCallback(async (data: Partial<User>) => {
+        const res = await apiFetch('/users', {
+            method: 'POST',
+            body: JSON.stringify({ ...data, passwordHash: 'password123' })
         });
-        return Promise.resolve(true);
-    }, []);
-
-    const updateUser = useCallback((id: string, data: Partial<User>) => {
-        setState(prev => ({ ...prev, users: prev.users.map(u => u.id === id ? { ...u, ...data } : u) }));
-        return Promise.resolve(true);
-    }, []);
+        if (res.ok) {
+            notify("Thêm nhân sự mới thành công!", "success");
+            await refreshData();
+            return true;
+        }
+        const err = await res.json().catch(() => ({}));
+        notify(err.message || "Lỗi khi thêm nhân sự", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
+ 
+    const updateUser = useCallback(async (id: string, data: Partial<User>) => {
+        const res = await apiFetch(`/users/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            notify("Cập nhật thông tin nhân sự thành công!", "success");
+            await refreshData();
+            return true;
+        }
+        const err = await res.json().catch(() => ({}));
+        notify(err.message || "Lỗi khi cập nhật nhân sự", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
 
     const addBudgetPeriod = useCallback((data: Partial<BudgetPeriod>) => {
         setState(prev => {

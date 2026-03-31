@@ -24,6 +24,24 @@ export default function UsersPage() {
         isActive: true
     });
 
+    const ROLE_TITLES: Record<string, string> = {
+        'REQUESTER': 'Nhân viên (Requester)',
+        'DEPT_APPROVER': 'Trưởng phòng (Manager)',
+        'PROCUREMENT': 'Chuyên viên mua hàng',
+        'FINANCE': 'Kế toán trưởng',
+        'WAREHOUSE': 'Thủ kho',
+        'DIRECTOR': 'Giám đốc khối',
+        'CEO': 'Tổng giám đốc',
+        'PLATFORM_ADMIN': 'Quản trị hệ thống',
+        'QA': 'Chuyên viên QA',
+        'SUPPLIER': 'Nhà cung cấp'
+    };
+
+    const getJobTitle = (user: User) => {
+        if (user.jobTitle) return user.jobTitle;
+        return ROLE_TITLES[user.role] || "Nhân viên";
+    };
+
     const handleOpenModal = (user?: User) => {
         if (user) {
             setEditingUser(user);
@@ -210,10 +228,10 @@ export default function UsersPage() {
                                         <div className="flex flex-col gap-1">
                                             <div className="flex items-center gap-1.5 text-slate-600 font-bold">
                                                 <Building size={12} className="text-slate-300" />
-                                                {user.department?.name || "Chưa có phòng ban"}
+                                                {user.department?.name || departments?.find(d => d.id === user.deptId)?.name || "Chưa có phòng ban"}
                                             </div>
                                             <div className="text-[10px] text-slate-400 italic bg-slate-50 w-fit px-2 py-0.5 rounded-md">
-                                                {user.jobTitle || "Nhân viên"}
+                                                {getJobTitle(user)}
                                             </div>
                                         </div>
                                     </td>
