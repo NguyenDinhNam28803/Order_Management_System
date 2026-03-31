@@ -743,9 +743,11 @@ export class BudgetModuleService {
 
     if (!period) {
       // Fallback: Nếu chưa có period, ta trích xuất thông tin Cost Center để trả về "Virtual Budget" (20%)
-      const cc = await this.prisma.costCenter.findUnique({ where: { id: costCenterId } });
+      const cc = await this.prisma.costCenter.findUnique({
+        where: { id: costCenterId },
+      });
       if (!cc || !cc.budgetAnnual) return null;
-      
+
       const virtualAlloc = Number(cc.budgetAnnual) * 0.2;
       return {
         isVirtual: true,
@@ -753,7 +755,7 @@ export class BudgetModuleService {
         spentAmount: Number(cc.budgetUsed) * 0.2, // Giả định dùng 20% thực tế
         committedAmount: 0,
         currency: cc.currency,
-        notes: `Ngân sách dự kiến Quý ${quarter} (Tính tự động 20% từ tổng năm)`
+        notes: `Ngân sách dự kiến Quý ${quarter} (Tính tự động 20% từ tổng năm)`,
       };
     }
 
@@ -770,7 +772,9 @@ export class BudgetModuleService {
     });
 
     if (!alloc) {
-      const cc = await this.prisma.costCenter.findUnique({ where: { id: costCenterId } });
+      const cc = await this.prisma.costCenter.findUnique({
+        where: { id: costCenterId },
+      });
       if (!cc || !cc.budgetAnnual) return null;
       const virtualAlloc = Number(cc.budgetAnnual) * 0.2;
       return {
@@ -779,7 +783,7 @@ export class BudgetModuleService {
         spentAmount: 0,
         committedAmount: 0,
         currency: cc.currency,
-        notes: `Ngân sách dự kiến Quý ${quarter} (Tính tự động 20% từ tổng năm)`
+        notes: `Ngân sách dự kiến Quý ${quarter} (Tính tự động 20% từ tổng năm)`,
       };
     }
 

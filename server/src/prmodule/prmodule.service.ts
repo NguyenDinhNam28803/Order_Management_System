@@ -185,7 +185,9 @@ export class PrmoduleService {
       // 2. Khóa ngân sách (Budget Reservation) - CHỈ KHI SUBMIT
       if (pr.costCenterId) {
         await this.budgetService.reserveBudget(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           pr.costCenterId,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           pr.orgId,
           Number(pr.totalEstimate),
           user,

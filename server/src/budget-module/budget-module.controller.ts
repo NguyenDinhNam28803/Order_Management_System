@@ -13,7 +13,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
 import { BudgetPeriodType, UserRole } from '@prisma/client';
-import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { BudgetModuleService } from './budget-module.service';
 import {
   CreateBudgetAllocationDto,
@@ -34,7 +34,12 @@ export class BudgetModuleController {
    * Tạo một chu kỳ ngân sách mới
    */
   @Post('periods')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Tạo mới chu kỳ ngân sách',
     description:
@@ -80,7 +85,12 @@ export class BudgetModuleController {
    * Cập nhật chu kỳ ngân sách
    */
   @Patch('periods/:id')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Cập nhật chu kỳ ngân sách',
     description:
@@ -89,23 +99,39 @@ export class BudgetModuleController {
   async updatePeriod(
     @Param('id') id: string,
     @Body() dto: UpdateBudgetPeriodDto,
+<<<<<<< HEAD
     @Request() req: { user: JwtPayload },
   ) {
     return this.budgetService.updatePeriod(id, dto, req.user);
+=======
+    @Request() user: JwtPayload,
+  ) {
+    return this.budgetService.updatePeriod(id, dto, user);
+>>>>>>> cfab2753f045ccd9436fde323eb9f872d3ce3fe5
   }
 
   /**
    * Xóa chu kỳ ngân sách
    */
   @Delete('periods/:id')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Xóa chu kỳ ngân sách',
     description:
       'Loại bỏ một chu kỳ ngân sách khỏi hệ thống. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
   })
+<<<<<<< HEAD
   async removePeriod(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
     return this.budgetService.removePeriod(id, req.user);
+=======
+  async removePeriod(@Param('id') id: string, @Request() user: JwtPayload) {
+    return this.budgetService.removePeriod(id, user);
+>>>>>>> cfab2753f045ccd9436fde323eb9f872d3ce3fe5
   }
 
   // Budget Allocations
@@ -113,7 +139,12 @@ export class BudgetModuleController {
    * Tạo một khoản phân bổ ngân sách mới
    */
   @Post('allocations')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Tạo một phân bổ ngân sách mới',
     description:
@@ -156,7 +187,12 @@ export class BudgetModuleController {
    * Cập nhật thông tin một khoản phân bổ ngân sách theo ID
    */
   @Patch('allocations/:id')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Cập nhật phân bổ ngân sách',
     description:
@@ -174,13 +210,21 @@ export class BudgetModuleController {
    * Xóa một khoản phân bổ ngân sách theo ID
    */
   @Delete('allocations/:id')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Xóa một phân bổ ngân sách',
     description:
       'Thu hồi hoặc xóa bỏ một khoản phân bổ ngân sách. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
   })
-  async removeAllocation(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
+  async removeAllocation(
+    @Param('id') id: string,
+    @Request() req: { user: JwtPayload },
+  ) {
     return this.budgetService.removeAllocation(id, req.user);
   }
 
@@ -188,9 +232,14 @@ export class BudgetModuleController {
    * Phân bổ ngân sách hàng năm theo quy tắc 20/80
    */
   @Post('distribute-annual/:costCenterId/:fiscalYear')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
-    summary: 'Phân bổ ngân sách năm (20% Dự phòng, 80% Quý)',
+    summary: 'Phân bổ ngân sách năm 2026 (20% Dự phòng, 80% Quý)',
     description:
       'Thực hiện phân bổ ngân sách hàng năm từ Cost Center: trích 20% vào quỹ dự phòng và chia 80% còn lại cho 4 quý (mỗi quý 20%).',
   })
@@ -210,7 +259,12 @@ export class BudgetModuleController {
    * Kết thúc quý: Chuyển tiền thừa vào quỹ dự phòng
    */
   @Post('reconcile-quarter/:costCenterId/:fiscalYear/:quarter')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Quyết toán quý: Chuyển tiền thừa vào dự phòng',
     description:
