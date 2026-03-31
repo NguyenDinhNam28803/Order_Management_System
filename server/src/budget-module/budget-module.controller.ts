@@ -248,7 +248,12 @@ export class BudgetModuleController {
    * Kết thúc quý: Chuyển tiền thừa vào quỹ dự phòng
    */
   @Post('reconcile-quarter/:costCenterId/:fiscalYear/:quarter')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Quyết toán quý: Chuyển tiền thừa vào dự phòng',
     description:
