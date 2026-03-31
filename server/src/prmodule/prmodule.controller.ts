@@ -11,7 +11,7 @@ import { PrmoduleService } from './prmodule.service';
 import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
-import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('Purchase Requisition (PR)')
 @Controller('procurement-requests')
@@ -99,7 +99,7 @@ export class PrmoduleController {
     summary: 'Gửi yêu cầu mua hàng để phê duyệt',
     description: 'Gửi yêu cầu mua hàng đang ở trạng thái nháp để chờ phê duyệt',
   })
-  async submit(@Param('id') id: string) {
-    return this.prService.submit(id);
+  async submit(@Param('id') id: string, @Body() user: JwtPayload) {
+    return this.prService.submit(id, user);
   }
 }
