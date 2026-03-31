@@ -253,6 +253,7 @@ export interface ProcurementState {
     approvals: ApprovalWorkflow[];
     fiscalYears: number[];
     token: string | null;
+    loadingMyPrs: boolean;
 }
 
 interface ProcurementContextType extends ProcurementState {
@@ -276,18 +277,17 @@ interface ProcurementContextType extends ProcurementState {
     addBudgetAllocation: (data: Partial<BudgetAllocation>) => Promise<boolean>;
     updateBudgetAllocation: (id: string, data: Partial<BudgetAllocation>) => Promise<boolean>;
     removeBudgetAllocation: (id: string) => Promise<boolean>;
-    addBudgetAllocationBundle?: (data: {
-        deptId: string,
-        fiscalYear: number,
-        totalBudget: number,
-        splits: { q1: number, q2: number, q3: number, q4: number, reserve: number }
-    }) => Promise<boolean>;
+    addBudgetAllocationBundle: (data: { costCenterId: string, fiscalYear: number }) => Promise<boolean>;
+    reconcileQuarter: (costCenterId: string, fiscalYear: number, quarter: number) => Promise<boolean>;
     addCostCenter: (data: Partial<CostCenter>) => Promise<boolean>;
     updateCostCenter: (id: string, data: Partial<CostCenter>) => Promise<boolean>;
     removeCostCenter: (id: string) => Promise<boolean>;
+    fetchCostCenter: (id: string) => Promise<CostCenter | null>;
+    fetchQuarterlyBudget: (costCenterId: string, fiscalYear: number, quarter: number) => Promise<any>;
     addOrganization: (data: Partial<Organization>) => Promise<boolean>;
     updateOrganization: (id: string, data: Partial<Organization>) => Promise<boolean>;
     removeOrganization: (id: string) => Promise<boolean>;
+    removeNotification: (id: number) => void;
     notify: (message: string, type?: 'success' | 'error' | 'info' | 'warning', role?: string) => void;
     register: (data: Partial<User> & { password?: string }) => Promise<boolean>;
     createQuote: (rfqId: string, quoteData: Partial<Quote>) => Promise<boolean>;
@@ -511,7 +511,8 @@ const INITIAL_STATE: ProcurementState = {
         { id: "p10", name: "Bộ sạc pin dự phòng Anker PowerCore Essential 20000", sku: "A1268", unitPriceRef: 1800000, unit: "UNIT" },
     ],
     fiscalYears: [2024, 2025, 2026],
-    token: null
+    token: null,
+    loadingMyPrs: false
 };
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
@@ -542,9 +543,17 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, []);
 
     useEffect(() => {
-        const { currentUser, myPrs, ...toSave } = state;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { currentUser, myPrs, notifications, ...toSave } = state;
         localStorage.setItem('erp_sim_state', JSON.stringify(toSave));
     }, [state]);
+
+    const removeNotification = useCallback((id: number) => {
+        setState(prev => ({
+            ...prev,
+            notifications: prev.notifications.filter(n => n.id !== id)
+        }));
+    }, []);
 
     const notify = useCallback((message: string, type: 'success' | 'error' | 'info' | 'warning' = 'success', role?: string) => {
         const id = Date.now();
@@ -714,6 +723,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
         // Fetch real data from backend concurrently
         try {
+            setState(prev => ({ ...prev, loadingMyPrs: true }));
             const [ccRes, orgRes, deptRes, allPrRes, myPrRes, pendingApprRes, usersRes, budgetAllocRes, budgetPeriodRes] = await Promise.all([
                 apiFetch('/cost-centers'),
                 apiFetch('/organizations'),
@@ -747,9 +757,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 users: Array.isArray(fetchedUsers) ? fetchedUsers : prev.users,
                 budgetAllocations: Array.isArray(fetchedBudgetAllocations) ? fetchedBudgetAllocations : prev.budgetAllocations,
                 budgetPeriods: Array.isArray(fetchedBudgetPeriods) ? fetchedBudgetPeriods : prev.budgetPeriods,
+                loadingMyPrs: false
             }));
         } catch (error) {
             console.error("Error refreshing data from backend:", error);
+            setState(prev => ({ ...prev, loadingMyPrs: false }));
         }
     }, [apiFetch]);
 
@@ -772,9 +784,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             }
             setState(prev => ({ ...prev, currentUser: data.user }));
             return true;
+        } else {
+            // Attempt to get the server's error message
+            const errorRes = await res.json().catch(() => ({}));
+            const msg = errorRes.message || "Email hoặc mật khẩu không chính xác";
+            notify(msg, "error");
+            return false;
         }
-        notify("Thông tin đăng nhập không chính xác hoặc lỗi hệ thống", "error");
-        return false;
     }, [apiFetch, notify]);
 
     const logout = useCallback(async () => {
@@ -904,7 +920,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             await refreshData();
             return true;
         }
-        notify("Lỗi khi cập nhật trung tâm chi phí", "error");
+        const err = await res.json().catch(() => ({}));
+        notify(err.message || "Lỗi khi cập nhật trung tâm chi phí", "error");
         return false;
     }, [apiFetch, refreshData, notify]);
 
@@ -912,14 +929,40 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         const res = await apiFetch(`/cost-centers/${id}`, {
             method: 'DELETE'
         });
+        const data = await res.json().catch(() => ({}));
+
         if (res.ok) {
-            notify("Xóa trung tâm chi phí thành công", "success");
+            notify(data.message || "Xóa trung tâm chi phí thành công", "success");
             await refreshData();
             return true;
         }
-        notify("Lỗi khi xóa trung tâm chi phí", "error");
+        
+        notify(data.message || "Lỗi khi xóa trung tâm chi phí", "error");
         return false;
     }, [apiFetch, refreshData, notify]);
+
+    /**
+     * Fetch a single cost center with details
+     */
+    const fetchCostCenter = useCallback(async (id: string) => {
+        const res = await apiFetch(`/cost-centers/${id}`);
+        if (res.ok) {
+            const result = await res.json();
+            return result.data; // Return only the cost center data
+        }
+        return null;
+    }, [apiFetch]);
+
+    /**
+     * Fetch quarterly budget for a cost center
+     */
+    const fetchQuarterlyBudget = useCallback(async (costCenterId: string, fiscalYear: number, quarter: number) => {
+        const res = await apiFetch(`/budgets/allocations/quarterly/${costCenterId}/${fiscalYear}/${quarter}`);
+        if (res.ok) {
+            return await res.json();
+        }
+        return null;
+    }, [apiFetch]);
 
     const addOrganization = useCallback(async (data: Partial<Organization>) => {
         if (!data.code || !data.name) {
@@ -1019,53 +1062,122 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const addBudgetPeriod = useCallback((data: Partial<BudgetPeriod>) => {
-        setState(prev => {
-            const nextId = prev.budgetPeriods.length + 1;
-            const newP = { ...data, id: `bp-${nextId}` };
-            return { ...prev, budgetPeriods: [...prev.budgetPeriods, newP as BudgetPeriod] };
+    const addBudgetPeriod = useCallback(async (data: Partial<BudgetPeriod>) => {
+        const res = await apiFetch('/budgets/periods', {
+            method: 'POST',
+            body: JSON.stringify(data)
         });
-        return Promise.resolve(true);
-    }, []);
+        if (res.ok) {
+            notify("Thêm chu kỳ ngân sách thành công", "success");
+            await refreshData();
+            return true;
+        }
+        const err = await res.json().catch(() => ({}));
+        notify(err.message || "Lỗi khi thêm chu kỳ", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
 
-    const updateBudgetPeriod = useCallback((id: string, data: Partial<BudgetPeriod>) => {
-        setState(prev => ({ ...prev, budgetPeriods: prev.budgetPeriods.map(p => p.id === id ? { ...p, ...data } : p) }));
-        return Promise.resolve(true);
-    }, []);
-
-    const removeBudgetPeriod = useCallback((id: string) => {
-        setState(prev => ({ ...prev, budgetPeriods: prev.budgetPeriods.filter(p => p.id !== id) }));
-        return Promise.resolve(true);
-    }, []);
-
-    const addBudgetAllocation = useCallback((data: Partial<BudgetAllocation>) => {
-        setState(prev => {
-            const nextId = prev.budgetAllocations.length + 1;
-            const newA = { ...data, id: `ba-${nextId}` };
-            return { ...prev, budgetAllocations: [...prev.budgetAllocations, newA as BudgetAllocation] };
+    const updateBudgetPeriod = useCallback(async (id: string, data: Partial<BudgetPeriod>) => {
+        const res = await apiFetch(`/budgets/periods/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(data)
         });
-        return Promise.resolve(true);
-    }, []);
+        if (res.ok) {
+            notify("Cập nhật chu kỳ thành công", "success");
+            await refreshData();
+            return true;
+        }
+        const err = await res.json().catch(() => ({}));
+        notify(err.message || "Lỗi khi cập nhật chu kỳ", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
 
-    const updateBudgetAllocation = useCallback((id: string, data: Partial<BudgetAllocation>) => {
-        setState(prev => ({ ...prev, budgetAllocations: prev.budgetAllocations.map(a => a.id === id ? { ...a, ...data } : a) }));
-        return Promise.resolve(true);
-    }, []);
+    const removeBudgetPeriod = useCallback(async (id: string) => {
+        const res = await apiFetch(`/budgets/periods/${id}`, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            notify("Xóa chu kỳ ngân sách thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi xóa chu kỳ", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
 
-    const removeBudgetAllocation = useCallback((id: string) => {
-        setState(prev => ({ ...prev, budgetAllocations: prev.budgetAllocations.filter(a => a.id !== id) }));
-        return Promise.resolve(true);
-    }, []);
+    const addBudgetAllocation = useCallback(async (data: Partial<BudgetAllocation>) => {
+        const res = await apiFetch('/budgets/allocations', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            notify("Phân bổ ngân sách thành công", "success");
+            await refreshData();
+            return true;
+        }
+        const err = await res.json().catch(() => ({}));
+        notify(err.message || "Lỗi khi phân bổ ngân sách", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
 
-    const addBudgetAllocationBundle = useCallback((data: {
-        deptId: string,
-        fiscalYear: number,
-        totalBudget: number,
-        splits: { q1: number, q2: number, q3: number, q4: number, reserve: number }
+    const updateBudgetAllocation = useCallback(async (id: string, data: Partial<BudgetAllocation>) => {
+        const res = await apiFetch(`/budgets/allocations/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            notify("Cập nhật phân bổ thành công", "success");
+            await refreshData();
+            return true;
+        }
+        const err = await res.json().catch(() => ({}));
+        notify(err.message || "Lỗi khi cập nhật phân bổ", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const removeBudgetAllocation = useCallback(async (id: string) => {
+        const res = await apiFetch(`/budgets/allocations/${id}`, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            notify("Thu hồi phân bổ thành công", "success");
+            await refreshData();
+            return true;
+        }
+        notify("Lỗi khi thu hồi phân bổ", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const addBudgetAllocationBundle = useCallback(async (data: {
+        costCenterId: string,
+        fiscalYear: number
     }) => {
-        console.log("addBudgetAllocationBundle called with:", data);
-        return Promise.resolve(true);
-    }, []);
+        const res = await apiFetch(`/budgets/distribute-annual/${data.costCenterId}/${data.fiscalYear}`, {
+            method: 'POST'
+        });
+        if (res.ok) {
+            notify("Tự động phân bổ ngân sách 80/20 thành công", "success");
+            await refreshData();
+            return true;
+        }
+        const err = await res.json().catch(() => ({}));
+        notify(err.message || "Lỗi khi phân bổ tự động", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const reconcileQuarter = useCallback(async (costCenterId: string, fiscalYear: number, quarter: number) => {
+        const res = await apiFetch(`/budgets/reconcile-quarter/${costCenterId}/${fiscalYear}/${quarter}`, {
+            method: 'POST'
+        });
+        if (res.ok) {
+            notify(`Đã quyết toán Quý ${quarter}/${fiscalYear} thành công`, "success");
+            await refreshData();
+            return true;
+        }
+        const err = await res.json().catch(() => ({}));
+        notify(err.message || "Lỗi khi quyết toán quý", "error");
+        return false;
+    }, [apiFetch, refreshData, notify]);
 
     const createGRN = useCallback((_data: { poId: string, receivedItems: Record<string, number> }) => Promise.resolve(true), []);
     const ackPO = useCallback((_id: string) => Promise.resolve(true), []);
@@ -1118,6 +1230,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         updateBudgetAllocation,
         removeBudgetAllocation,
         addBudgetAllocationBundle,
+        reconcileQuarter,
         createGRN,
         ackPO,
         shipPO,
@@ -1127,13 +1240,16 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         addCostCenter,
         updateCostCenter,
         removeCostCenter,
+        fetchCostCenter,
+        fetchQuarterlyBudget,
         addOrganization,
         updateOrganization,
         removeOrganization,
+        removeNotification,
         notify,
         register,
         createQuote
-    }), [state, login, register, logout, refreshData, apiFetch, addPR, approvePR, createRFQ, createRFQConsolidated, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice, addCostCenter, updateCostCenter, removeCostCenter, addOrganization, updateOrganization, removeOrganization, notify, createQuote]);
+    }), [state, login, register, logout, refreshData, apiFetch, addPR, approvePR, createRFQ, createRFQConsolidated, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, reconcileQuarter, createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchQuarterlyBudget, addOrganization, updateOrganization, removeOrganization, notify, removeNotification, createQuote]);
 
     return (
         <ProcurementContext.Provider value={contextValue}>

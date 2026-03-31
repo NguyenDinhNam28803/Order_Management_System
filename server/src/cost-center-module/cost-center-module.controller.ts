@@ -8,7 +8,10 @@ import {
   Delete,
   Request,
   UseGuards,
+  ParseUUIDPipe,
 } from '@nestjs/common';
+import { UserRole } from '@prisma/client';
+import { RolesGuard, Roles } from '../common/roles.guard';
 import {
   ApiTags,
   ApiOperation,
@@ -25,7 +28,7 @@ import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 @ApiTags('Cost-center-module')
 @Controller('cost-centers')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class CostCenterModuleController {
   constructor(private readonly costCenterService: CostCenterModuleService) {}
 
@@ -39,6 +42,7 @@ export class CostCenterModuleController {
     summary: 'Tạo trung tâm chi phí mới',
     description: 'Tạo một trung tâm chi phí mới cho tổ chức hiện tại',
   })
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
   create(@Body() createCostCenterDto: CreateCostCenterDto) {
     return this.costCenterService.create(createCostCenterDto);
   }
@@ -81,9 +85,9 @@ export class CostCenterModuleController {
   @Get(':id')
   @ApiOperation({
     summary: 'Lấy chi tiết trung tâm chi phí theo ID',
-    description: 'Trả về thông tin chi tiết của một trung tâm chi phí cụ thể',
+    description: 'Truy vấn thông tin chi tiết của một trung tâm chi phí theo mã UUID',
   })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.costCenterService.findOne(id);
   }
 
@@ -98,8 +102,9 @@ export class CostCenterModuleController {
     summary: 'Cập nhật trung tâm chi phí',
     description: 'Cập nhật thông tin của một trung tâm chi phí cụ thể',
   })
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
   update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCostCenterDto: UpdateCostCenterDto,
   ) {
     return this.costCenterService.update(id, updateCostCenterDto);
@@ -115,7 +120,8 @@ export class CostCenterModuleController {
     summary: 'Xóa trung tâm chi phí',
     description: 'Xóa một trung tâm chi phí cụ thể',
   })
-  remove(@Param('id') id: string) {
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.costCenterService.remove(id);
   }
 }

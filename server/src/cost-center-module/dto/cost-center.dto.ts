@@ -57,6 +57,11 @@ export class CreateCostCenterDto {
 }
 
 export class UpdateCostCenterDto {
+  @ApiProperty({ description: 'Cost Center Code', required: false })
+  @IsOptional()
+  @IsString()
+  code?: string;
+
   @ApiProperty({ description: 'Department ID', required: false })
   @IsOptional()
   @IsString()

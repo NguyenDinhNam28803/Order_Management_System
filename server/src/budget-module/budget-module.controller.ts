@@ -248,7 +248,7 @@ export class BudgetModuleController {
    * Kết thúc quý: Chuyển tiền thừa vào quỹ dự phòng
    */
   @Post('reconcile-quarter/:costCenterId/:fiscalYear/:quarter')
-  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Quyết toán quý: Chuyển tiền thừa vào dự phòng',
     description:
@@ -266,6 +266,29 @@ export class BudgetModuleController {
       parseInt(fiscalYear),
       parseInt(quarter),
       req.user,
+    );
+  }
+
+  /**
+   * Lấy phân bổ ngân sách theo quý của một trung tâm chi phí
+   */
+  @Get('allocations/quarterly/:costCenterId/:fiscalYear/:quarter')
+  @ApiOperation({
+    summary: 'Lấy phân bổ ngân sách quý',
+    description:
+      'Truy vấn khoản phân bổ ngân sách cụ thể của một trung tâm chi phí cho một quý và năm tài chính xác định.',
+  })
+  async findQuarterlyAllocation(
+    @Param('costCenterId') costCenterId: string,
+    @Param('fiscalYear') fiscalYear: string,
+    @Param('quarter') quarter: string,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetService.findQuarterlyAllocation(
+      costCenterId,
+      req.user.orgId,
+      parseInt(fiscalYear),
+      parseInt(quarter),
     );
   }
 }
