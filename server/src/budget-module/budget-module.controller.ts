@@ -228,7 +228,7 @@ export class BudgetModuleController {
     UserRole.PLATFORM_ADMIN,
   )
   @ApiOperation({
-    summary: 'Phân bổ ngân sách năm (20% Dự phòng, 80% Quý)',
+    summary: 'Phân bổ ngân sách năm 2026 (20% Dự phòng, 80% Quý)',
     description:
       'Thực hiện phân bổ ngân sách hàng năm từ Cost Center: trích 20% vào quỹ dự phòng và chia 80% còn lại cho 4 quý (mỗi quý 20%).',
   })
