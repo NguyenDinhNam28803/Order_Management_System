@@ -22,6 +22,8 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UserModule } from './entities/user-module.entity';
+import { CreateUserDelegationDto } from './dto/user-delegation.dto';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('User Module')
 @Controller('users')
@@ -43,6 +45,48 @@ export class UserModuleController {
   getProfile(@Request() req) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.userModuleService.findOne(req.user.sub);
+  }
+
+  // --- Delegation APIs ---
+
+  /**
+   * Tạo một ủy quyền mới (Ủy quyền cho người khác duyệt thay mình)
+   */
+  @UseGuards(JwtAuthGuard)
+  @Post('delegations')
+  @ApiOperation({
+    summary: 'Tạo ủy quyền phê duyệt mới',
+    description: 'Thiết lập một người dùng khác phê duyệt thay thế mình trong một khoảng thời gian nhất định',
+  })
+  async createDelegation(
+    @Body() dto: CreateUserDelegationDto,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.userModuleService.createDelegation(dto, req.user);
+  }
+
+  /**
+   * Lấy danh sách các ủy quyền tôi đã tạo
+   */
+  @UseGuards(JwtAuthGuard)
+  @Get('delegations/me')
+  @ApiOperation({ summary: 'Lấy danh sách các ủy quyền của tôi' })
+  async getMyDelegations(@Request() req: { user: JwtPayload }) {
+    return this.userModuleService.findMyDelegations(req.user.sub);
+  }
+
+  /**
+   * Bật/Tắt một bản ghi ủy quyền
+   */
+  @UseGuards(JwtAuthGuard)
+  @Patch('delegations/:id/toggle')
+  @ApiOperation({ summary: 'Bật/Tắt trạng thái ủy quyền' })
+  async toggleDelegation(
+    @Param('id') id: string,
+    @Body('isActive') isActive: boolean,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.userModuleService.toggleDelegation(id, req.user.sub, isActive);
   }
 
   /**
@@ -112,3 +156,4 @@ export class UserModuleController {
     return this.userModuleService.remove(id);
   }
 }
+

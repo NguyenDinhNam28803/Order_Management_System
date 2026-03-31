@@ -27,44 +27,6 @@ export class PrmoduleService {
     private readonly budgetService: BudgetModuleService,
   ) {}
 
-  private async checkAndReserveBudget(
-    costCenterId: string,
-    orgId: string,
-    amount: number,
-  ) {
-    const now = new Date();
-    const fiscalYear = now.getFullYear();
-    const month = now.getMonth() + 1;
-    const quarter = Math.ceil(month / 3);
-
-    // 1. Kiểm tra ngân sách quý và tự động trích từ quỹ dự phòng nếu cần
-    const allocation = await this.budgetService.checkAndPullFromReserve(
-      costCenterId,
-      orgId,
-      fiscalYear,
-      quarter,
-      amount,
-    );
-
-    if (!allocation) {
-      throw new BadRequestException(
-        `Không tìm thấy phân bổ ngân sách cho Cost center này trong Quý ${quarter}/${fiscalYear}.`,
-      );
-    }
-
-    // 2. Kiểm tra hạn mức cuối cùng sau khi đã trích dự phòng (nếu có)
-    const available =
-      Number(allocation.allocatedAmount) -
-      Number(allocation.committedAmount) -
-      Number(allocation.spentAmount);
-
-    if (available < amount) {
-      throw new BadRequestException(
-        `Ngân sách không đủ (kể cả sau khi đã trích quỹ dự phòng). Hạn mức còn lại: ${available.toLocaleString()} VND, cần: ${amount.toLocaleString()} VND.`,
-      );
-    }
-  }
-
   async create(
     createPrDto: CreatePrDto,
     user: JwtPayload,
@@ -142,15 +104,6 @@ export class PrmoduleService {
       deptId = userFromDb.deptId;
     }
 
-    // Kiểm tra ngân sách nếu có Cost Center
-    if (createPrDto.costCenterId) {
-      await this.checkAndReserveBudget(
-        createPrDto.costCenterId,
-        orgId,
-        totalAmount,
-      );
-    }
-
     return this.repository.create(
       createPrDto,
       user.sub,
@@ -206,7 +159,7 @@ export class PrmoduleService {
     return pr;
   }
 
-  async submit(id: string): Promise<PurchaseRequisition> {
+  async submit(id: string, user: JwtPayload): Promise<PurchaseRequisition> {
     if (!id) {
       throw new BadRequestException(`Purchase Requisition ID is required`);
     }
@@ -229,7 +182,17 @@ export class PrmoduleService {
         );
       }
 
-      // 2. Kích hoạt luồng duyệt (Multi-level Approval)
+      // 2. Khóa ngân sách (Budget Reservation) - CHỈ KHI SUBMIT
+      if (pr.costCenterId) {
+        await this.budgetService.reserveBudget(
+          pr.costCenterId,
+          pr.orgId,
+          Number(pr.totalEstimate),
+          user,
+        );
+      }
+
+      // 3. Kích hoạt luồng duyệt (Multi-level Approval)
       await this.approvalService.initiateWorkflow({
         docType: DocumentType.PURCHASE_REQUISITION,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -243,7 +206,7 @@ export class PrmoduleService {
 
       console.log(`[PR-SUBMIT] Workflow initiated for PR: ${pr.id}`);
 
-      // 3. Trạng thái PENDING_APPROVAL đã được cập nhật bên trong initiateWorkflow
+      // 4. Trạng thái PENDING_APPROVAL đã được cập nhật bên trong initiateWorkflow
       // nhưng ta vẫn trả về PR mới nhất để đồng bộ UI
       return this.findOne(pr.id);
     } catch (error) {

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   CreateBudgetAllocationDto,
@@ -12,22 +16,39 @@ import {
   BudgetPeriodType,
 } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { AuditModuleService } from '../audit-module/audit-module.service';
 
 @Injectable()
 export class BudgetModuleService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auditService: AuditModuleService,
+  ) {}
 
   // Budget Period
   async createPeriod(
     dto: CreateBudgetPeriodDto,
     user: JwtPayload,
   ): Promise<BudgetPeriod> {
-    return this.prisma.budgetPeriod.create({
+    const period = await this.prisma.budgetPeriod.create({
       data: {
         ...dto,
         orgId: user.orgId,
       },
     });
+
+    // Audit log
+    await this.auditService.create(
+      {
+        action: 'CREATE_BUDGET_PERIOD',
+        entityType: 'BudgetPeriod',
+        entityId: period.id,
+        newValue: period,
+      },
+      user,
+    );
+
+    return period;
   }
 
   async findAllPeriods(user: JwtPayload): Promise<BudgetPeriod[]> {
@@ -53,17 +74,51 @@ export class BudgetModuleService {
   async updatePeriod(
     id: string,
     dto: UpdateBudgetPeriodDto,
+    user: JwtPayload,
   ): Promise<BudgetPeriod> {
-    return this.prisma.budgetPeriod.update({
+    const oldPeriod = await this.prisma.budgetPeriod.findUnique({
+      where: { id },
+    });
+    const updated = await this.prisma.budgetPeriod.update({
       where: { id },
       data: dto,
     });
+
+    // Audit log
+    await this.auditService.create(
+      {
+        action: 'UPDATE_BUDGET_PERIOD',
+        entityType: 'BudgetPeriod',
+        entityId: id,
+        oldValue: oldPeriod,
+        newValue: updated,
+      },
+      user,
+    );
+
+    return updated;
   }
 
-  async removePeriod(id: string): Promise<BudgetPeriod> {
-    return this.prisma.budgetPeriod.delete({
+  async removePeriod(id: string, user: JwtPayload): Promise<BudgetPeriod> {
+    const oldPeriod = await this.prisma.budgetPeriod.findUnique({
       where: { id },
     });
+    const deleted = await this.prisma.budgetPeriod.delete({
+      where: { id },
+    });
+
+    // Audit log
+    await this.auditService.create(
+      {
+        action: 'DELETE_BUDGET_PERIOD',
+        entityType: 'BudgetPeriod',
+        entityId: id,
+        oldValue: oldPeriod,
+      },
+      user,
+    );
+
+    return deleted;
   }
 
   // Budget Allocation
@@ -71,13 +126,26 @@ export class BudgetModuleService {
     dto: CreateBudgetAllocationDto,
     user: JwtPayload,
   ): Promise<BudgetAllocation> {
-    return this.prisma.budgetAllocation.create({
+    const allocation = await this.prisma.budgetAllocation.create({
       data: {
         ...dto,
         orgId: user.orgId,
         createdById: user.sub,
       },
     });
+
+    // Audit log
+    await this.auditService.create(
+      {
+        action: 'CREATE_BUDGET_ALLOCATION',
+        entityType: 'BudgetAllocation',
+        entityId: allocation.id,
+        newValue: allocation,
+      },
+      user,
+    );
+
+    return allocation;
   }
 
   async findAllAllocations(user: JwtPayload): Promise<BudgetAllocation[]> {
@@ -115,19 +183,220 @@ export class BudgetModuleService {
   async updateAllocation(
     id: string,
     dto: UpdateBudgetAllocationDto,
+    user: JwtPayload,
   ): Promise<BudgetAllocation> {
-    await this.findAllocationOne(id);
-    return this.prisma.budgetAllocation.update({
+    const oldAllocation = await this.findAllocationOne(id);
+    const updated = await this.prisma.budgetAllocation.update({
       where: { id },
       data: dto,
     });
+
+    // Audit log
+    await this.auditService.create(
+      {
+        action: 'UPDATE_BUDGET_ALLOCATION',
+        entityType: 'BudgetAllocation',
+        entityId: id,
+        oldValue: oldAllocation,
+        newValue: updated,
+      },
+      user,
+    );
+
+    return updated;
   }
 
-  async removeAllocation(id: string): Promise<BudgetAllocation> {
-    await this.findAllocationOne(id);
-    return this.prisma.budgetAllocation.delete({
+  async removeAllocation(
+    id: string,
+    user: JwtPayload,
+  ): Promise<BudgetAllocation> {
+    const oldAllocation = await this.findAllocationOne(id);
+    const deleted = await this.prisma.budgetAllocation.delete({
       where: { id },
     });
+
+    // Audit log
+    await this.auditService.create(
+      {
+        action: 'DELETE_BUDGET_ALLOCATION',
+        entityType: 'BudgetAllocation',
+        entityId: id,
+        oldValue: oldAllocation,
+      },
+      user,
+    );
+
+    return deleted;
+  }
+
+  /**
+   * Giữ chỗ ngân sách (Atomic Reservation)
+   * Gọi khi PR được submit cho việc phê duyệt
+   */
+  async reserveBudget(
+    costCenterId: string,
+    orgId: string,
+    amount: number,
+    user: JwtPayload,
+  ): Promise<BudgetAllocation> {
+    const now = new Date();
+    const fiscalYear = now.getFullYear();
+    const quarter = Math.ceil((now.getMonth() + 1) / 3);
+
+    // 1. Kiểm tra ngân sách quý và tự động trích từ quỹ dự phòng nếu cần
+    const allocation = await this.checkAndPullFromReserve(
+      costCenterId,
+      orgId,
+      fiscalYear,
+      quarter,
+      amount,
+      user, // Pass user for internal audit logging
+    );
+
+    if (!allocation) {
+      throw new BadRequestException(
+        `Không tìm thấy ngân sách cho Cost Center trong Quý ${quarter}/${fiscalYear}`,
+      );
+    }
+
+    // 2. Thực hiện cập nhật committedAmount một cách nguyên tử (Atomic)
+    // Đồng thời kiểm tra điều kiện ngân sách không bị âm sau khi cập nhật
+    const updated = await this.prisma.budgetAllocation.update({
+      where: { id: allocation.id },
+      data: {
+        committedAmount: { increment: amount },
+      },
+    });
+
+    const available =
+      Number(updated.allocatedAmount) -
+      Number(updated.committedAmount) -
+      Number(updated.spentAmount);
+
+    if (available < 0) {
+      // Rollback nếu vượt hạn mức (Giảm lại số tiền vừa cộng)
+      await this.prisma.budgetAllocation.update({
+        where: { id: updated.id },
+        data: { committedAmount: { decrement: amount } },
+      });
+      throw new BadRequestException(
+        `Vượt hạn mức ngân sách. Hạn mức khả dụng còn lại: ${(Number(available) + amount).toLocaleString()} VND`,
+      );
+    }
+
+    // Audit log for reservation
+    await this.auditService.create(
+      {
+        action: 'RESERVE_BUDGET',
+        entityType: 'BudgetAllocation',
+        entityId: updated.id,
+        newValue: {
+          reservedAmount: amount,
+          currentCommitted: updated.committedAmount,
+        },
+      },
+      user,
+    );
+
+    return updated;
+  }
+
+  /**
+   * Giải phóng ngân sách đã giữ chỗ (Atomic Release)
+   * Gọi khi PR/PO bị hủy hoặc bị từ chối
+   */
+  async releaseBudget(
+    costCenterId: string,
+    orgId: string,
+    amount: number,
+    user: JwtPayload,
+  ): Promise<void> {
+    const now = new Date();
+    const fiscalYear = now.getFullYear();
+    const quarter = Math.ceil((now.getMonth() + 1) / 3);
+
+    const period = await this.prisma.budgetPeriod.findFirst({
+      where: {
+        orgId,
+        fiscalYear,
+        periodType: 'QUARTERLY',
+        periodNumber: quarter,
+      },
+    });
+
+    if (!period) return;
+
+    const updated = await this.prisma.budgetAllocation.updateMany({
+      where: {
+        costCenterId,
+        budgetPeriodId: period.id,
+        committedAmount: { gte: amount }, // Chỉ giảm nếu committed >= amount để tránh âm
+      },
+      data: {
+        committedAmount: { decrement: amount },
+      },
+    });
+
+    if (updated.count > 0) {
+      await this.auditService.create(
+        {
+          action: 'RELEASE_BUDGET',
+          entityType: 'BudgetAllocation',
+          entityId: costCenterId, // CC ID used as entity ID for summary log
+          newValue: { releasedAmount: amount },
+        },
+        user,
+      );
+    }
+  }
+
+  /**
+   * Chuyển từ Giữ chỗ sang Chi tiêu thực tế (Atomic Commit)
+   * Gọi khi PO hoàn thành hoặc Invoice được thanh toán
+   */
+  async commitSpentBudget(
+    costCenterId: string,
+    orgId: string,
+    amount: number,
+    user: JwtPayload,
+  ): Promise<void> {
+    const now = new Date();
+    const fiscalYear = now.getFullYear();
+    const quarter = Math.ceil((now.getMonth() + 1) / 3);
+
+    const period = await this.prisma.budgetPeriod.findFirst({
+      where: {
+        orgId,
+        fiscalYear,
+        periodType: 'QUARTERLY',
+        periodNumber: quarter,
+      },
+    });
+
+    if (!period) return;
+
+    const updated = await this.prisma.budgetAllocation.updateMany({
+      where: {
+        costCenterId,
+        budgetPeriodId: period.id,
+      },
+      data: {
+        committedAmount: { decrement: amount },
+        spentAmount: { increment: amount },
+      },
+    });
+
+    if (updated.count > 0) {
+      await this.auditService.create(
+        {
+          action: 'COMMIT_SPENT_BUDGET',
+          entityType: 'BudgetAllocation',
+          entityId: costCenterId,
+          newValue: { spentAmount: amount },
+        },
+        user,
+      );
+    }
   }
 
   // Phân bổ ngân sách hàng năm: 20% Dự phòng, 80% chia đều cho 4 Quý (mỗi quý 20%)
@@ -149,8 +418,6 @@ export class BudgetModuleService {
     const annualBudget = Number(costCenter.budgetAnnual);
     const reserveAmount = annualBudget * 0.2;
     const quarterAmount = (annualBudget * 0.8) / 4;
-
-    // 1. Đảm bảo có BudgetPeriod cho Reserve và 4 Quý
     const periods: { periodId: string; amount: number; notes: string }[] = [];
 
     // Reserve Period
@@ -238,6 +505,21 @@ export class BudgetModuleService {
       results.push(allocation);
     }
 
+    // Audit log for mass distribution
+    await this.auditService.create(
+      {
+        action: 'DISTRIBUTE_ANNUAL_BUDGET',
+        entityType: 'CostCenter',
+        entityId: costCenterId,
+        newValue: {
+          fiscalYear,
+          totalBudget: annualBudget,
+          distribution: results,
+        },
+      },
+      user,
+    );
+
     return results;
   }
 
@@ -248,6 +530,7 @@ export class BudgetModuleService {
     fiscalYear: number,
     quarter: number,
     neededAmount: number,
+    user: JwtPayload,
   ) {
     // 1. Tìm phân bổ quý hiện tại
     const currentPeriod = await this.prisma.budgetPeriod.findFirst({
@@ -309,7 +592,7 @@ export class BudgetModuleService {
     const pullAmount = Math.min(shortfall, reserveAvailable);
 
     // 3. Thực hiện chuyển tiền (Giao dịch Prisma)
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       // Giảm quỹ dự phòng
       await tx.budgetAllocation.update({
         where: { id: reserveAlloc.id },
@@ -332,6 +615,22 @@ export class BudgetModuleService {
         },
       });
     });
+
+    // Audit log for internal transfer
+    await this.auditService.create(
+      {
+        action: 'PULL_FROM_RESERVE',
+        entityType: 'BudgetAllocation',
+        entityId: currentAlloc.id,
+        newValue: {
+          amount: pullAmount,
+          reason: `Shortfall in Quarter ${quarter}`,
+        },
+      },
+      user,
+    );
+
+    return result;
   }
 
   // Kết thúc quý: Chuyển tiền thừa vào quỹ dự phòng
@@ -340,6 +639,7 @@ export class BudgetModuleService {
     orgId: string,
     fiscalYear: number,
     quarter: number,
+    user: JwtPayload,
   ) {
     const currentPeriod = await this.prisma.budgetPeriod.findFirst({
       where: {
@@ -387,7 +687,7 @@ export class BudgetModuleService {
 
     if (!reserveAlloc) return currentAlloc;
 
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       // Giảm ngân sách quý (thu hồi tiền thừa)
       await tx.budgetAllocation.update({
         where: { id: currentAlloc.id },
@@ -410,5 +710,18 @@ export class BudgetModuleService {
         },
       });
     });
+
+    // Audit log for reconciliation
+    await this.auditService.create(
+      {
+        action: 'RECONCILE_QUARTER_TO_RESERVE',
+        entityType: 'BudgetAllocation',
+        entityId: currentAlloc.id,
+        newValue: { surplusAmount: surplus },
+      },
+      user,
+    );
+
+    return result;
   }
 }
