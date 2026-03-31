@@ -12,12 +12,17 @@ import {
   PrStatus,
   PoStatus,
 } from '@prisma/client';
+import { BudgetModuleService } from '../budget-module/budget-module.service';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { UserModuleService } from '../user-module/user-module.service';
 
 @Injectable()
 export class ApprovalModuleService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly automationService: AutomationService,
+    private readonly budgetService: BudgetModuleService,
+    private readonly userService: UserModuleService,
   ) {}
 
   /**
@@ -30,8 +35,9 @@ export class ApprovalModuleService {
     totalAmount: number;
     orgId: string;
     requesterId: string;
+    user?: JwtPayload; // Thêm user payload để ghi audit log
   }) {
-    const { docType, docId, totalAmount, orgId, requesterId } = params;
+    const { docType, docId, totalAmount, orgId, requesterId, user } = params;
 
     // A. Tìm các quy tắc (Rules) phù hợp với loại tài liệu và hạn mức tiền
     const rules = await this.prisma.approvalMatrixRule.findMany({
@@ -47,40 +53,40 @@ export class ApprovalModuleService {
     if (rules.length === 0) {
       // Nếu không có luật nào, tự động duyệt tài liệu
       console.log(`No rules found for ${docType} ${docId}. Auto-approving...`);
-      await this.updateSourceDocumentStatus(docType, docId, 'APPROVED');
+      await this.updateSourceDocumentStatus(docType, docId, 'APPROVED', user);
       return { message: 'No rules found. Document auto-approved.' };
     }
 
     // B. Tạo các bước duyệt (Workflow Steps)
-    const workflowData: Array<{
-      documentType: DocumentType;
-      documentId: string;
-      step: number;
-      approverId: string;
-      status: ApprovalStatus;
-      dueAt: Date;
-    }> = [];
+    const workflowData: any[] = [];
 
     for (const rule of rules) {
-      const approverId = await this.resolveApproverId(
+      const originalApproverId = await this.resolveApproverId(
         rule.approverRole,
         requesterId,
         orgId,
       );
 
-      if (!approverId) {
+      if (!originalApproverId) {
         throw new NotFoundException(
           `Không tìm thấy người duyệt có vai trò ${rule.approverRole} trong tổ chức.`,
         );
       }
+
+      // --- LOGIC ỦY QUYỀN (Delegation Logic) ---
+      // Kiểm tra xem người duyệt gốc có đang ủy quyền cho ai không
+      const delegateId =
+        await this.userService.getActiveDelegate(originalApproverId);
+      const approverId = delegateId ? delegateId : originalApproverId;
+      const delegatedFromId = delegateId ? originalApproverId : null;
 
       workflowData.push({
         documentType: docType,
         documentId: docId,
         step: rule.level,
         approverId: approverId,
-        status:
-          rule.level === 1 ? ApprovalStatus.PENDING : ApprovalStatus.PENDING, // Hoặc WAITING cho step > 1
+        delegatedFromId: delegatedFromId, // Lưu vết người ủy quyền
+        status: ApprovalStatus.PENDING,
         dueAt: new Date(Date.now() + rule.slaHours * 60 * 60 * 1000),
       });
     }
@@ -91,7 +97,12 @@ export class ApprovalModuleService {
     });
 
     // D. Cập nhật trạng thái tài liệu gốc sang 'PENDING_APPROVAL'
-    await this.updateSourceDocumentStatus(docType, docId, 'PENDING_APPROVAL');
+    await this.updateSourceDocumentStatus(
+      docType,
+      docId,
+      'PENDING_APPROVAL',
+      user,
+    );
 
     return {
       message: 'Workflow initiated successfully',
@@ -105,10 +116,11 @@ export class ApprovalModuleService {
    */
   async handleAction(
     workflowId: string,
-    userId: string,
+    user: JwtPayload,
     action: 'APPROVE' | 'REJECT',
     comment?: string,
   ) {
+    const userId = user.sub;
     // A. Kiểm tra bước duyệt hiện tại
     const currentStep = await this.prisma.approvalWorkflow.findUnique({
       where: { id: workflowId },
@@ -143,6 +155,7 @@ export class ApprovalModuleService {
         currentStep.documentType,
         currentStep.documentId,
         'REJECTED',
+        user,
       );
       return { status: 'REJECTED', message: 'Tài liệu đã bị từ chối.' };
     }
@@ -164,6 +177,7 @@ export class ApprovalModuleService {
         currentStep.documentType,
         currentStep.documentId,
         'APPROVED',
+        user,
       );
       return {
         status: 'FULLY_APPROVED',
@@ -215,6 +229,7 @@ export class ApprovalModuleService {
     type: DocumentType,
     id: string,
     status: string,
+    user?: JwtPayload,
   ) {
     const data: any = { status };
 
@@ -226,44 +241,69 @@ export class ApprovalModuleService {
     }
 
     switch (type) {
-      case DocumentType.PURCHASE_REQUISITION:
+      case DocumentType.PURCHASE_REQUISITION: {
+        const pr = await this.prisma.purchaseRequisition.findUnique({
+          where: { id },
+          select: {
+            costCenterId: true,
+            orgId: true,
+            totalEstimate: true,
+            status: true,
+          },
+        });
+
+        if (
+          pr &&
+          status === 'REJECTED' &&
+          pr.status !== PrStatus.REJECTED &&
+          user
+        ) {
+          // Giải phóng ngân sách đã giữ chỗ khi PR bị từ chối
+          if (pr.costCenterId) {
+            await this.budgetService.releaseBudget(
+              pr.costCenterId,
+              pr.orgId,
+              Number(pr.totalEstimate),
+              user,
+            );
+          }
+        }
+
         await this.prisma.purchaseRequisition.update({
           where: { id },
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: { status: status as PrStatus, approvedAt: data.approvedAt },
         });
         break;
-      case DocumentType.PURCHASE_ORDER:
-        await this.prisma.$transaction(async (tx) => {
-          const po = await tx.purchaseOrder.findUnique({ where: { id } });
-          if (!po) return;
+      }
 
-          // Nếu bị từ chối, giải phóng ngân sách đã cam kết
-          if (status === 'REJECTED' && po.status !== PoStatus.REJECTED) {
-            if (po.deptId && po.costCenterId) {
-              const budget = await tx.budgetAllocation.findFirst({
-                where: {
-                  orgId: po.orgId,
-                  deptId: po.deptId,
-                  costCenterId: po.costCenterId,
-                  currency: po.currency,
-                },
-              });
-              if (budget) {
-                await tx.budgetAllocation.update({
-                  where: { id: budget.id },
-                  data: { committedAmount: { decrement: po.totalAmount } },
-                });
-              }
-            }
+      case DocumentType.PURCHASE_ORDER: {
+        const po = await this.prisma.purchaseOrder.findUnique({
+          where: { id },
+        });
+        if (
+          po &&
+          status === 'REJECTED' &&
+          po.status !== PoStatus.REJECTED &&
+          user
+        ) {
+          // Giải phóng ngân sách đã cam kết khi PO bị từ chối
+          if (po.costCenterId) {
+            await this.budgetService.releaseBudget(
+              po.costCenterId,
+              po.orgId,
+              Number(po.totalAmount),
+              user,
+            );
           }
+        }
 
-          await tx.purchaseOrder.update({
-            where: { id },
-            data: { status: status as PoStatus },
-          });
+        await this.prisma.purchaseOrder.update({
+          where: { id },
+          data: { status: status as PoStatus },
         });
         break;
+      }
       // Thêm các loại khác (GRN, INVOICE, PAYMENT) khi hệ thống mở rộng
     }
   }

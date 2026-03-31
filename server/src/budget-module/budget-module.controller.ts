@@ -38,7 +38,7 @@ export class BudgetModuleController {
   @ApiOperation({
     summary: 'Tạo mới chu kỳ ngân sách',
     description:
-      'Tạo một chu kỳ ngân sách mới (ví dụ: Năm 2024, Quý 1/2024) để quản lý việc phân bổ ngân sách. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+      'Tạo một chu kỳ ngân sách mới (ví dụ: Năm 2024, Quý 1/2024) để quản lý việc phân bổ ngân sách. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
   })
   async createPeriod(
     @Body() dto: CreateBudgetPeriodDto,
@@ -84,7 +84,7 @@ export class BudgetModuleController {
   @ApiOperation({
     summary: 'Cập nhật chu kỳ ngân sách',
     description:
-      'Cập nhật thông tin của một chu kỳ ngân sách hiện có theo mã ID. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+      'Cập nhật thông tin của một chu kỳ ngân sách hiện có theo mã ID. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
   })
   async updatePeriod(
     @Param('id') id: string,
@@ -101,7 +101,7 @@ export class BudgetModuleController {
   @ApiOperation({
     summary: 'Xóa chu kỳ ngân sách',
     description:
-      'Loại bỏ một chu kỳ ngân sách khỏi hệ thống. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+      'Loại bỏ một chu kỳ ngân sách khỏi hệ thống. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
   })
   async removePeriod(@Param('id') id: string) {
     return this.budgetService.removePeriod(id);
@@ -116,7 +116,7 @@ export class BudgetModuleController {
   @ApiOperation({
     summary: 'Tạo một phân bổ ngân sách mới',
     description:
-      'Cấp ngân sách cho một trung tâm chi phí cụ thể trong một chu kỳ ngân sách nhất định. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+      'Cấp ngân sách cho một trung tâm chi phí cụ thể trong một chu kỳ ngân sách nhất định. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
   })
   async createAllocation(
     @Body() dto: CreateBudgetAllocationDto,
@@ -159,13 +159,14 @@ export class BudgetModuleController {
   @ApiOperation({
     summary: 'Cập nhật phân bổ ngân sách',
     description:
-      'Điều chỉnh số tiền hoặc thông tin của một khoản phân bổ ngân sách hiện có. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+      'Điều chỉnh số tiền hoặc thông tin của một khoản phân bổ ngân sách hiện có. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
   })
   async updateAllocation(
     @Param('id') id: string,
     @Body() dto: UpdateBudgetAllocationDto,
+    @Request() req: { user: JwtPayload },
   ) {
-    return this.budgetService.updateAllocation(id, dto);
+    return this.budgetService.updateAllocation(id, dto, req.user);
   }
 
   /**
@@ -176,10 +177,10 @@ export class BudgetModuleController {
   @ApiOperation({
     summary: 'Xóa một phân bổ ngân sách',
     description:
-      'Thu hồi hoặc xóa bỏ một khoản phân bổ ngân sách. Chỉ dành cho vai trò Tài chính hoặc Quản trị hệ thống.',
+      'Thu hồi hoặc xóa bỏ một khoản phân bổ ngân sách. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
   })
-  async removeAllocation(@Param('id') id: string) {
-    return this.budgetService.removeAllocation(id);
+  async removeAllocation(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
+    return this.budgetService.removeAllocation(id, req.user);
   }
 
   /**

@@ -53,11 +53,10 @@ export class ApprovalModuleController {
     @Body() body: ActionApprovalDto,
     @Req() req: any,
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const userId = req.user.sub || req.user.id;
     return this.approvalService.handleAction(
       workflowId,
-      userId as string,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      req.user,
       body.action,
       body.comment,
     );
