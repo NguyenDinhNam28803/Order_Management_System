@@ -44,7 +44,7 @@ export class PoRepository {
               description: item.notes || 'Product from quotation',
               qty: item.qtyOffered || 0,
               unitPrice: item.unitPrice,
-              total: item.qtyOffered * item.unitPrice,
+              total: Number(item.qtyOffered || 0) * Number(item.unitPrice),
             })),
           },
         },
