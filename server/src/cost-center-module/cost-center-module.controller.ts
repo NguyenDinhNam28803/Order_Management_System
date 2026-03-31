@@ -85,7 +85,8 @@ export class CostCenterModuleController {
   @Get(':id')
   @ApiOperation({
     summary: 'Lấy chi tiết trung tâm chi phí theo ID',
-    description: 'Truy vấn thông tin chi tiết của một trung tâm chi phí theo mã UUID',
+    description:
+      'Truy vấn thông tin chi tiết của một trung tâm chi phí theo mã UUID',
   })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.costCenterService.findOne(id);

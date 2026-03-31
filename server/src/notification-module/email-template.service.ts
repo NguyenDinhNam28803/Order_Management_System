@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export type EmailEventType =
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   | 'USER_LOGIN'

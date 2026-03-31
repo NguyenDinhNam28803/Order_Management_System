@@ -244,18 +244,36 @@ export class AiService implements OnModuleInit {
       // Fallback for AI Quota/Error (Status 429 or others)
       return {
         success: true,
-        summary: "Dịch vụ AI đang tạm thời gián đoạn hạn mức (Quota 429) hoặc gặp lỗi kỹ thuật. Hệ thống đang hiển thị dữ liệu gợi ý mặc định.",
+        summary:
+          'Dịch vụ AI đang tạm thời gián đoạn hạn mức (Quota 429) hoặc gặp lỗi kỹ thuật. Hệ thống đang hiển thị dữ liệu gợi ý mặc định.',
         data: [
-          { name: "Công ty Cổ phần Bán lẻ Kỹ thuật số FPT", trustScore: 98, reason: "Phân phối chính hãng Dell, Logitech uy tín tại Việt Nam." },
-          { name: "Công ty TNHH Thế Giới Di Động", trustScore: 97, reason: "Hệ thống bảo hành và hậu mãi hàng đầu." },
-          { name: "Phong Vũ Computer", trustScore: 95, reason: "Chuyên cung cấp linh kiện và giải pháp IT cho doanh nghiệp." },
-          { name: "Lazada Mal-Logitech", trustScore: 92, reason: "Gian hàng chính hãng, giá cạnh tranh." }
+          {
+            name: 'Công ty Cổ phần Bán lẻ Kỹ thuật số FPT',
+            trustScore: 98,
+            reason: 'Phân phối chính hãng Dell, Logitech uy tín tại Việt Nam.',
+          },
+          {
+            name: 'Công ty TNHH Thế Giới Di Động',
+            trustScore: 97,
+            reason: 'Hệ thống bảo hành và hậu mãi hàng đầu.',
+          },
+          {
+            name: 'Phong Vũ Computer',
+            trustScore: 95,
+            reason:
+              'Chuyên cung cấp linh kiện và giải pháp IT cho doanh nghiệp.',
+          },
+          {
+            name: 'Lazada Mal-Logitech',
+            trustScore: 92,
+            reason: 'Gian hàng chính hãng, giá cạnh tranh.',
+          },
         ],
         total: 4,
-        message: "Fallback data active due to: " + error.message,
+        message: 'Fallback data active due to: ' + error.message,
         length: 4,
         score: 0,
-        cons: []
+        cons: [],
       };
     }
   }

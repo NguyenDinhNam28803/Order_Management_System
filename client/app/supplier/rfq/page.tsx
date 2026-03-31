@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
 import { Inbox, FileText, UploadCloud, Send, MessageSquare, ChevronDown, CheckCircle, Info } from "lucide-react";
 
-import { useProcurement } from "../../context/ProcurementContext";
+import { useProcurement, RFQ, PR, PRItem } from "../../context/ProcurementContext";
 
 export default function SupplierRFQ() {
     const { currentUser, rfqs, prs, createQuote, notify } = useProcurement();
@@ -12,19 +12,19 @@ export default function SupplierRFQ() {
     const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
     
     // Filter RFQs for this supplier and status is SENT (Initial)
-    const openRfqs = rfqs.filter((r: any) => 
+    const openRfqs = rfqs.filter((r: RFQ) =>
         (r.status === "SENT" || r.status === "OPEN") && 
         (r.vendor?.toLowerCase().includes(currentUser?.name?.toLowerCase() || "") || 
          r.vendor?.toLowerCase().includes(currentUser?.fullName?.toLowerCase() || "") ||
          currentUser?.role === "PLATFORM_ADMIN")
     );
     
-    const activeRFQRaw = selectedRfqId ? rfqs.find((r: any) => r.id === selectedRfqId) : (openRfqs.length > 0 ? openRfqs[0] : null);
-    const relatedPR = activeRFQRaw ? prs.find((p: any) => p.id === activeRFQRaw.prId || p.prNumber === activeRFQRaw.prId) : null;
+    const activeRFQRaw = selectedRfqId ? rfqs.find((r: RFQ) => r.id === selectedRfqId) : (openRfqs.length > 0 ? openRfqs[0] : null);
+    const relatedPR = activeRFQRaw ? prs.find((p: PR) => p.id === activeRFQRaw.prId || p.prNumber === activeRFQRaw.prId) : null;
     const activeRFQ = activeRFQRaw ? { 
         ...activeRFQRaw, 
         items: relatedPR?.items && relatedPR.items.length > 0 ? relatedPR.items : (activeRFQRaw.items || []) 
-    } : null;
+    } as RFQ : null;
 
     const [prices, setPrices] = useState<Record<string, string>>({});
     const [leadTime, setLeadTime] = useState("");
@@ -35,10 +35,11 @@ export default function SupplierRFQ() {
         
         let total = 0;
         const pricesObj: Record<string, number> = {};
-        activeRFQ.items.forEach((item: any) => {
+        (activeRFQ.items || []).forEach((item: PRItem) => {
+            if (!item.id) return;
             const val = Number(prices[item.id]) || 0;
             pricesObj[item.id] = val;
-            total += val * item.qty;
+            total += val * (item.qty || item.quantity || 0);
         });
 
         createQuote(activeRFQ.id, {
@@ -99,7 +100,7 @@ export default function SupplierRFQ() {
                                 </div>
                                 <div className="pt-2 mt-2 border-t border-slate-50">
                                     <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Mục đích mua sắm</div>
-                                    <p className="text-xs font-medium text-slate-600 italic">"{activeRFQ?.title || relatedPR?.title || "Mua sắm trang thiết bị định kỳ"}"</p>
+                                    <p className="text-xs font-medium text-slate-600 italic">&quot;{activeRFQ?.title || relatedPR?.title || "Mua sắm trang thiết bị định kỳ"}&quot;</p>
                                 </div>
                             </div>
                         </div>
@@ -115,7 +116,7 @@ export default function SupplierRFQ() {
                             </p>
                             
                             <div className="space-y-3">
-                                {activeRFQ?.attachments?.map((file: any, index: number) => (
+                                {activeRFQ?.attachments?.map((file, index: number) => (
                                     <div key={index} className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center cursor-pointer hover:bg-slate-100 group transition-all">
                                         <div className="flex items-center gap-3">
                                             <div className="p-2 bg-white text-erp-navy rounded shadow-sm group-hover:bg-erp-blue group-hover:text-white transition-colors duration-500"><FileText size={16}/></div>
@@ -139,7 +140,7 @@ export default function SupplierRFQ() {
                                 <span className="bg-slate-100 px-2 py-0.5 rounded text-[10px] text-slate-400">Trực tuyến</span>
                             </h3>
                             <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                                {activeRFQ?.messages?.map((msg: any, index: number) => (
+                                {activeRFQ?.messages?.map((msg, index: number) => (
                                     <div key={index} className={`p-3 rounded-xl border text-xs font-medium ${
                                         msg.senderRole === 'SUPPLIER' 
                                             ? 'bg-slate-50 rounded-tr-none border-slate-200 ml-8 text-slate-600' 
@@ -181,7 +182,7 @@ export default function SupplierRFQ() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {activeRFQ.items.map((item: any, idx: number) => {
+                                    {(activeRFQ.items || []).map((item, idx: number) => {
                                         const itemId = item.id || `item-${idx}`;
                                         const itemName = item.item_name || item.description || "N/A";
                                         const itemCode = item.item_code || "SKU-ANY";
@@ -217,8 +218,9 @@ export default function SupplierRFQ() {
                                         <td colSpan={2} className="text-right font-black text-slate-500 uppercase tracking-widest py-4">Tổng tiền nháp:</td>
                                         <td className="text-right font-black font-mono text-erp-navy text-lg py-4">
                                             {(() => {
-                                                const total = activeRFQ.items.reduce((sum: number, item: any) => {
+                                                const total = (activeRFQ.items || []).reduce((sum: number, item: PRItem) => {
                                                     const itemId = item.id;
+                                                    if (!itemId) return sum;
                                                     const priceVal = Number(prices[itemId]) || 0;
                                                     const quantity = item.quantity || item.qty || 0;
                                                     return sum + (priceVal * quantity);
@@ -293,8 +295,8 @@ export default function SupplierRFQ() {
                         </tr>
                     </thead>
                     <tbody>
-                        {openRfqs.map((r: any) => {
-                            const prDetail = prs.find((p: any) => p.id === r.prId);
+                        {openRfqs.map((r) => {
+                            const prDetail = prs.find((p) => p.id === r.prId);
                             const customerName = prDetail ? (typeof prDetail.department === 'string' ? prDetail.department : prDetail.department?.name) : "ProcurePro Network";
                             
                             return (
@@ -304,7 +306,7 @@ export default function SupplierRFQ() {
                                     <td className="text-slate-500 font-medium">
                                         <div className="flex flex-wrap gap-1">
                                             {prDetail?.items && prDetail.items.length > 0 ? (
-                                                prDetail.items.slice(0, 3).map((item: any, i: number) => (
+                                                prDetail.items.slice(0, 3).map((item, i: number) => (
                                                     <span key={i} className="bg-slate-100 text-[10px] px-2 py-0.5 rounded border border-slate-200">
                                                         {item.item_name || item.description} x{item.quantity || item.qty}
                                                     </span>
@@ -317,7 +319,7 @@ export default function SupplierRFQ() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="font-mono text-slate-400 text-[10px]">{new Date(r.createdAt || Date.now()).toLocaleString()}</td>
+                                    <td className="font-mono text-slate-400 text-[10px]">{r.createdAt ? new Date(r.createdAt).toLocaleString() : 'N/A'}</td>
                                     <td className="text-center">
                                         <span className="bg-red-50 text-red-600 border border-red-100 font-black uppercase text-[9px] px-2 py-1 rounded-lg tracking-widest animate-pulse">20h 15m</span>
                                     </td>

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { UserPlus, Mail, Edit2, Trash2, Search, Building, ShieldCheck, CheckCircle, XCircle, ChevronDown } from "lucide-react";
-import { useProcurement, User, Department, Organization } from "../context/ProcurementContext";
+import { useProcurement, User, Department, Organization, UserRole } from "../context/ProcurementContext";
 
 export default function UsersPage() {
     const { users, departments, organizations, addUser, updateUser } = useProcurement();
@@ -12,12 +12,22 @@ export default function UsersPage() {
     const [selectedDept, setSelectedDept] = useState("all");
     const [selectedOrg, setSelectedOrg] = useState("all");
     const [selectedRole, setSelectedRole] = useState("all");
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        orgId: string;
+        deptId: string;
+        email: string;
+        fullName: string;
+        role: UserRole;
+        jobTitle: string;
+        employeeCode: string;
+        passwordHash: string;
+        isActive: boolean;
+    }>({
         orgId: "",
         deptId: "",
         email: "",
         fullName: "",
-        role: "REQUESTER",
+        role: UserRole.REQUESTER,
         jobTitle: "",
         employeeCode: "",
         passwordHash: "password123",
@@ -25,16 +35,16 @@ export default function UsersPage() {
     });
 
     const ROLE_TITLES: Record<string, string> = {
-        'REQUESTER': 'Nhân viên (Requester)',
-        'DEPT_APPROVER': 'Trưởng phòng (Manager)',
-        'PROCUREMENT': 'Chuyên viên mua hàng',
-        'FINANCE': 'Kế toán trưởng',
-        'WAREHOUSE': 'Thủ kho',
-        'DIRECTOR': 'Giám đốc khối',
-        'CEO': 'Tổng giám đốc',
-        'PLATFORM_ADMIN': 'Quản trị hệ thống',
-        'QA': 'Chuyên viên QA',
-        'SUPPLIER': 'Nhà cung cấp'
+        [UserRole.REQUESTER]: 'Nhân viên (Requester)',
+        [UserRole.DEPT_APPROVER]: 'Trưởng phòng (Manager)',
+        [UserRole.PROCUREMENT]: 'Chuyên viên mua hàng',
+        [UserRole.FINANCE]: 'Kế toán trưởng',
+        [UserRole.WAREHOUSE]: 'Thủ kho',
+        [UserRole.DIRECTOR]: 'Giám đốc khối',
+        [UserRole.CEO]: 'Tổng giám đốc',
+        [UserRole.PLATFORM_ADMIN]: 'Quản trị hệ thống',
+        [UserRole.QA]: 'Chuyên viên QA',
+        [UserRole.SUPPLIER]: 'Nhà cung cấp'
     };
 
     const getJobTitle = (user: User) => {
@@ -50,7 +60,7 @@ export default function UsersPage() {
                 deptId: user.deptId || "",
                 email: user.email,
                 fullName: user.fullName || user.name || "",
-                role: user.role || "REQUESTER",
+                role: (user.role as UserRole) || UserRole.REQUESTER,
                 jobTitle: user.jobTitle || "",
                 employeeCode: user.employeeCode || "",
                 passwordHash: "********", // Hidden for edit
@@ -63,7 +73,7 @@ export default function UsersPage() {
                 deptId: "",
                 email: "",
                 fullName: "",
-                role: "REQUESTER",
+                role: UserRole.REQUESTER,
                 jobTitle: "",
                 employeeCode: "",
                 passwordHash: "password123",
@@ -82,14 +92,14 @@ export default function UsersPage() {
         // Ensure orgId is not empty (fallback to first org if needed)
         const cleanedOrgId = formData.orgId === "" ? (organizations?.[0]?.id || "") : formData.orgId;
 
-        const data = { 
+        const data: Partial<User & { passwordHash?: string }> = {
             ...formData, 
             deptId: cleanedDeptId,
             orgId: cleanedOrgId
         };
 
         if (editingUser) {
-            delete (data as any).passwordHash; // Don't send dummy password on update
+            delete data.passwordHash; // Don't send dummy password on update
             const success = await updateUser(editingUser.id, data);
             if (success) setShowModal(false);
         } else {
@@ -312,17 +322,17 @@ export default function UsersPage() {
                                         <select 
                                             required
                                             value={formData.role}
-                                            onChange={(e) => setFormData({...formData, role: e.target.value})}
+                                            onChange={(e) => setFormData({...formData, role: e.target.value as UserRole})}
                                             className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
                                         >
-                                            <option value="REQUESTER">REQUESTER (Người yêu cầu)</option>
-                                            <option value="DEPT_APPROVER">DEPT_APPROVER (Trưởng bộ phận)</option>
-                                            <option value="PROCUREMENT">PROCUREMENT (Bộ phận Mua hàng)</option>
-                                            <option value="DIRECTOR">DIRECTOR (Giám đốc)</option>
-                                            <option value="CEO">CEO (Tổng giám đốc)</option>
-                                            <option value="FINANCE">FINANCE (Kế toán/Tài chính)</option>
-                                            <option value="WAREHOUSE">WAREHOUSE (Kho vận)</option>
-                                            <option value="PLATFORM_ADMIN">PLATFORM_ADMIN (Quản trị hệ thống)</option>
+                                            <option value={UserRole.REQUESTER}>REQUESTER (Người yêu cầu)</option>
+                                            <option value={UserRole.DEPT_APPROVER}>DEPT_APPROVER (Trưởng bộ phận)</option>
+                                            <option value={UserRole.PROCUREMENT}>PROCUREMENT (Bộ phận Mua hàng)</option>
+                                            <option value={UserRole.DIRECTOR}>DIRECTOR (Giám đốc)</option>
+                                            <option value={UserRole.CEO}>CEO (Tổng giám đốc)</option>
+                                            <option value={UserRole.FINANCE}>FINANCE (Kế toán/Tài chính)</option>
+                                            <option value={UserRole.WAREHOUSE}>WAREHOUSE (Kho vận)</option>
+                                            <option value={UserRole.PLATFORM_ADMIN}>PLATFORM_ADMIN (Quản trị hệ thống)</option>
                                         </select>
                                     </div>
                                     <div className="space-y-2">

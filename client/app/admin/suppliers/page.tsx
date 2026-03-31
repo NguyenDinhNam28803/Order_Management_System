@@ -46,7 +46,7 @@ export default function SupplierManagementPage() {
             name: newSupplier.name!,
             code: newSupplier.code!,
             category: newSupplier.category || "General",
-            status: newSupplier.status as any || 'ACTIVE',
+            status: newSupplier.status || 'ACTIVE',
             rating: newSupplier.rating || 4,
             email: newSupplier.email || "",
             phone: newSupplier.phone || "",

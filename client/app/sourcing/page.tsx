@@ -228,8 +228,12 @@ export default function SourcingPage() {
     );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function TabButton({ active, onClick, label, count }: any) {
+function TabButton({ active, onClick, label, count }: {
+    active: boolean;
+    onClick: () => void;
+    label: string;
+    count?: number;
+}) {
     return (
         <button 
             onClick={onClick}

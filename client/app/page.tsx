@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from "react";
@@ -8,13 +7,13 @@ import {
   ArrowDownRight, Activity, Zap, FileText, ShoppingCart, Eye, Plus, Trash2,
   Clock, CheckCircle, Package, AlertCircle, AlertTriangle, History, Bell, Send
 } from "lucide-react";
-import { useProcurement } from "./context/ProcurementContext";
+import { useProcurement, PR } from "./context/ProcurementContext";
 import { formatVND } from "./utils/formatUtils";
 
 export default function Dashboard() {
-  const { budgets, prs, myPrs, pos, currentUser, loadingMyPrs } = useProcurement();
+  const { budgets, prs, myPrs, currentUser, loadingMyPrs } = useProcurement();
   const availableBudget = (budgets?.allocated || 0) - (budgets?.committed || 0) - (budgets?.spent || 0);
-  const [selectedPRDetails, setSelectedPRDetails] = React.useState<any>(null);
+  const [selectedPRDetails, setSelectedPRDetails] = React.useState<PR | null>(null);
 
   const isRequester = currentUser?.role === "REQUESTER";
   const isApproverGroup = currentUser?.role === "DEPT_APPROVER" || currentUser?.role === "DIRECTOR" || currentUser?.role === "CEO";
@@ -26,8 +25,8 @@ export default function Dashboard() {
   // --- REQUESTER DASHBOARD ---
   if (isRequester) {
       const personalPRs = myPrs || [];
-      const pendingPRs = personalPRs.filter((pr: any) => pr.status.includes("PENDING")).length;
-      const approvedPRs = personalPRs.filter((pr: any) => pr.status === "APPROVED").length;
+      const pendingPRs = personalPRs.filter((pr) => pr.status.includes("PENDING")).length;
+      const approvedPRs = personalPRs.filter((pr) => pr.status === "APPROVED").length;
 
       return (
         <main className="animate-in fade-in duration-500">
@@ -141,7 +140,7 @@ export default function Dashboard() {
                                         </tr>
                                     ))
                                 ) : (
-                                    personalPRs.length > 0 ? personalPRs.slice(0, 5).map((pr: any) => (
+                                    personalPRs.length > 0 ? personalPRs.slice(0, 5).map((pr) => (
                                         <tr key={pr.id} className="hover:bg-slate-50 transition-colors">
                                             <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0, 8)}</td>
                                             <td className="max-w-50 truncate font-medium text-slate-600" title={pr.title}>{pr.title}</td>
@@ -174,7 +173,7 @@ export default function Dashboard() {
                                                     </div>
                                                     <div>
                                                         <h3 className="text-[11px] font-black text-erp-navy uppercase tracking-widest">Bạn chưa tạo yêu cầu mua sắm nào</h3>
-                                                        <p className="text-slate-400 text-[10px] font-bold mt-1 uppercase tracking-tight">Cần vật tư? Hãy nhấn nút &quot;Tạo PR mới&quot; để bắt đầu.</p>
+                                        <p className="text-slate-400 text-[10px] font-bold mt-1 uppercase tracking-tight">Cần vật tư? Hãy nhấn nút &quot;Tạo PR mới&quot; để bắt đầu.</p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -265,7 +264,7 @@ export default function Dashboard() {
 
                             {/* Reasoning */}
                             <div className="space-y-2">
-                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lý do & Mô tả nhu cầu</h3>
+                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lý do &amp; Mô tả nhu cầu</h3>
                                 <div className="p-6 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-medium text-slate-600 italic leading-relaxed">
                                    &quot;{selectedPRDetails.justification || selectedPRDetails.reason || "Không có mô tả chi tiết"}&quot;
                                 </div>
@@ -287,7 +286,7 @@ export default function Dashboard() {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-50">
-                                            {selectedPRDetails.items?.map((item: any, idx: number) => (
+                                            {selectedPRDetails.items?.map((item, idx: number) => (
                                                 <tr key={idx} className="hover:bg-slate-50 transition-colors">
                                                     <td className="p-4">
                                                         <div className="text-xs font-black text-erp-navy">{item.productName || item.description || item.product?.name}</div>
@@ -295,7 +294,7 @@ export default function Dashboard() {
                                                     </td>
                                                     <td className="p-4 text-center text-xs font-black text-erp-blue">{item.qty} {item.unit}</td>
                                                     <td className="p-4 text-right font-mono text-xs font-black text-erp-navy">
-                                                        {formatVND((item.qty || 0) * (item.estimatedPrice || item.price || 0))} ₫
+                                                        {formatVND((Number(item.qty) || 0) * (item.estimatedPrice || item.price || 0))} ₫
                                                     </td>
                                                 </tr>
                                             ))}
@@ -359,8 +358,7 @@ export default function Dashboard() {
 
     // --- PROCUREMENT DASHBOARD ---
     if (isProcurement) {
-        const approvedPRs = (prs || []).filter((pr: any) => pr.status === "APPROVED");
-        const activeRFQs = (pos || []).filter((po: any) => po.status === "PENDING").length; // Mocking RFQ with PO pending
+        const approvedPRs = (prs || []).filter((pr) => pr.status === "APPROVED");
         
         return (
             <main className="animate-in fade-in duration-500">
@@ -417,13 +415,13 @@ export default function Dashboard() {
                                 <Link href="/sourcing" className="text-[10px] font-black uppercase text-erp-blue hover:underline">Đi tới Sourcing →</Link>
                             </div>
                             <div className="p-6 space-y-4">
-                                {approvedPRs.length > 0 ? approvedPRs.map((pr: any) => (
+                                {approvedPRs.length > 0 ? approvedPRs.map((pr) => (
                                     <div key={pr.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100/50 hover:bg-white hover:shadow-lg transition-all">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-black">{pr.prNumber?.substring(3,7) || "PR"}</div>
                                             <div>
                                                 <div className="text-xs font-black text-erp-navy">{pr.title}</div>
-                                                <div className="text-[10px] text-slate-400 font-bold">Người tạo: {pr.requester?.name || "Member"} | {pr.department?.name || "Dept"}</div>
+                                                <div className="text-[10px] text-slate-400 font-bold">Người tạo: {pr.requester?.name || "Member"} | {typeof pr.department === 'object' ? pr.department.name : (pr.department || "Dept")}</div>
                                             </div>
                                         </div>
                                         <div className="text-right flex items-center gap-4">
@@ -471,7 +469,7 @@ export default function Dashboard() {
 
   // --- APPROVER DASHBOARD ---
   if (isApproverGroup) {
-      const myPendingPRs = (prs || []).filter((pr: any) => {
+      const myPendingPRs = (prs || []).filter((pr) => {
           if (!currentUser) return false;
           const status = pr.status;
           // Manager (DEPT_APPROVER) sees all Requester PRs and their own PRs
@@ -483,7 +481,7 @@ export default function Dashboard() {
           return status === "PENDING_APPROVAL" || status === "PENDING";
       });
       const pendingPRCount = myPendingPRs.length;
-      const pendingPRValue = myPendingPRs.reduce((sum: number, pr: any) => sum + (Number(pr.totalEstimate) || 0), 0);
+      const pendingPRValue = myPendingPRs.reduce((sum: number, pr) => sum + (Number(pr.totalEstimate) || 0), 0);
 
       const approvedToday = 12; // Static mock
       const rejectedThisMonth = 2; // Static mock
@@ -568,11 +566,11 @@ export default function Dashboard() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {myPendingPRs.length > 0 ? myPendingPRs.map((pr: any) => {
+                                    {myPendingPRs.length > 0 ? myPendingPRs.map((pr) => {
                                         return (
                                             <tr key={pr.id} className="hover:bg-slate-50 transition-colors">
                                                 <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0,8)}</td>
-                                                <td className="font-bold text-slate-500">{pr.department?.name || "N/A"}</td>
+                                                <td className="font-bold text-slate-500">{typeof pr.department === 'object' ? pr.department.name : (pr.department || "N/A")}</td>
                                                 <td className="max-w-[150px] truncate font-medium" title={pr.title}>{pr.title}</td>
                                                 <td className="font-mono text-right font-black text-erp-blue">{formatVND(pr.totalEstimate)} ₫</td>
                                                 <td className="text-center">
@@ -727,10 +725,10 @@ export default function Dashboard() {
                     </tr>
                 </thead>
                 <tbody>
-                    {(prs || []).slice(0, 5).map((pr: any) => (
+                    {(prs || []).slice(0, 5).map((pr) => (
                     <tr key={pr.id} className="hover:bg-slate-50 transition-colors">
                         <td className="font-bold text-erp-navy">{pr.prNumber || pr.id}</td>
-                        <td className="font-bold text-slate-500">{pr.department?.name || pr.department}</td>
+                        <td className="font-bold text-slate-500">{typeof pr.department === 'object' ? pr.department.name : (pr.department || "Dept")}</td>
                         <td className="text-center">
                             <span className="px-3 py-1 bg-blue-50 text-erp-blue rounded-full font-black text-[10px]">
                                 {pr.items?.length || 0}

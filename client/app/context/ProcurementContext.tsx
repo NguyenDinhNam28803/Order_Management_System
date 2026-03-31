@@ -8,7 +8,16 @@ import {
     Department,
     CurrencyCode,
     CompanyType,
-    KycStatus
+    KycStatus,
+    UserRole,
+    PrStatus,
+    RfqStatus,
+    QuotationStatus,
+    PoStatus,
+    GrnStatus,
+    InvoiceStatus,
+    ApprovalStatus,
+    DocumentType
 } from "../types/api-types";
 
 export type {
@@ -16,13 +25,26 @@ export type {
     CostCenter,
     Department
 };
-export { CurrencyCode, CompanyType, KycStatus };
+export {
+    CurrencyCode,
+    CompanyType,
+    KycStatus,
+    UserRole,
+    PrStatus,
+    RfqStatus,
+    QuotationStatus,
+    PoStatus,
+    GrnStatus,
+    InvoiceStatus,
+    ApprovalStatus,
+    DocumentType
+};
 
 export interface User {
     id: string;
     name?: string;
     email: string;
-    role: string;
+    role: UserRole | string;
     fullName?: string;
     icon?: string;
     avatarUrl?: string;
@@ -47,8 +69,9 @@ export interface Supplier {
 }
 
 export interface PRItem {
-    id: string;
+    id?: string;
     productId?: string;
+    productName?: string;
     description?: string;
     item_name?: string;
     item_code?: string;
@@ -56,6 +79,9 @@ export interface PRItem {
     quantity?: number;
     unit?: string;
     estimatedPrice: number;
+    price?: number;
+    sku?: string;
+    product?: { name: string };
 }
 
 export interface PR {
@@ -65,9 +91,11 @@ export interface PR {
     reason?: string;
     description?: string;
     justification?: string;
-    status: string;
+    requiredDate?: string;
+    status: PrStatus | string;
     priority: number;
     createdAt: string;
+    requesterId?: string;
     updatedAt?: string;
     requester?: {
         id: string;
@@ -79,6 +107,7 @@ export interface PR {
     department?: { name: string } | string;
     deptId?: string;
     costCenterId?: string;
+    costCenterCode?: string;
     costCenter?: { code: string; name?: string };
     procurementId?: string;
     totalEstimate?: number;
@@ -100,7 +129,7 @@ export interface PO {
     id: string;
     vendor: string;
     items: POItem[];
-    status: string;
+    status: PoStatus | string;
     total: number;
     createdAt?: string;
 }
@@ -109,7 +138,7 @@ export interface RFQ {
     id: string;
     prId: string;
     vendor: string;
-    status: string;
+    status: RfqStatus | string;
     title?: string;
     dueDate?: string;
     createdAt?: string;
@@ -130,7 +159,7 @@ export interface Invoice {
     vendor: string;
     poId: string;
     amount: number;
-    status: "PENDING" | "EXCEPTION" | "APPROVED";
+    status: InvoiceStatus | string;
     createdAt: string;
 }
 
@@ -171,6 +200,16 @@ export interface Product {
     unitPriceRef: number;
     unit: string;
     description?: string;
+    categoryId?: string;
+    category?: { id: string; name: string };
+    isActive?: boolean;
+}
+
+export interface ProductCategory {
+    id: string;
+    code: string;
+    name: string;
+    description?: string;
 }
 
 export interface Quote {
@@ -178,16 +217,24 @@ export interface Quote {
     rfqId: string;
     supplierId: string;
     totalPrice: number;
+    price?: number; // legacy/shorthand
+    leadTime?: string;
+    paymentTerms?: string;
+    total?: number;
+    deliveryDate?: string;
+    prices?: Record<string, number>;
     currency: string;
     leadTimeDays: number;
-    status: string;
+    status: QuotationStatus | string;
+    notes?: string;
     createdAt: string;
 }
 
 export interface ApprovalWorkflow {
     id: string;
+    documentType?: DocumentType | string;
     documentId: string;
-    status: string;
+    status: ApprovalStatus | string;
 }
 
 export interface Notification {
@@ -232,7 +279,7 @@ interface ProcurementContextType extends ProcurementState {
     fetchPrDetail: (id: string) => Promise<PR | null>;
     approvePR: (id: string) => Promise<boolean>;
     createRFQ: (prId: string, vendor: string) => Promise<boolean>;
-    createRFQConsolidated: (data: any) => Promise<string>;
+    createRFQConsolidated: (data: Record<string, unknown>) => Promise<string>;
     actionApproval: (workflowId: string, action: string, comment?: string) => Promise<boolean>;
     addDept: (data: Partial<Department>) => Promise<boolean>;
     updateDept: (id: string, data: Partial<Department>) => Promise<boolean>;
@@ -251,18 +298,18 @@ interface ProcurementContextType extends ProcurementState {
     updateCostCenter: (id: string, data: Partial<CostCenter>) => Promise<boolean>;
     removeCostCenter: (id: string) => Promise<boolean>;
     fetchCostCenter: (id: string) => Promise<CostCenter | null>;
-    fetchQuarterlyBudget: (costCenterId: string, fiscalYear: number, quarter: number) => Promise<any>;
+    fetchQuarterlyBudget: (costCenterId: string, fiscalYear: number, quarter: number) => Promise<{ data: BudgetAllocation } | null>;
     addOrganization: (data: Partial<Organization>) => Promise<boolean>;
     updateOrganization: (id: string, data: Partial<Organization>) => Promise<boolean>;
     removeOrganization: (id: string) => Promise<boolean>;
     removeNotification: (id: number) => void;
     notify: (message: string, type?: 'success' | 'error' | 'info' | 'warning', role?: string) => void;
-    register: (data: any) => Promise<boolean>;
+    register: (data: Record<string, unknown>) => Promise<boolean>;
     createQuote: (rfqId: string, quoteData: Partial<Quote>) => Promise<boolean>;
-    createGRN: (data: any) => Promise<boolean>;
+    createGRN: (data: Record<string, unknown>) => Promise<boolean>;
     ackPO: (id: string) => Promise<boolean>;
     shipPO: (id: string) => Promise<boolean>;
-    createInvoice: (data: any) => Promise<boolean>;
+    createInvoice: (data: Record<string, unknown>) => Promise<boolean>;
     payInvoice: (id: string) => Promise<boolean>;
     matchInvoice: (id: string, status?: string) => Promise<boolean>;
 }
@@ -408,10 +455,15 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const token = Cookies.get('accessToken');
-        if (token) {
-            refreshData();
+        if (token && state.currentUser === null) {
+            // Initial load only if logged in but no user data in state
+            const triggerLoad = async () => {
+                await Promise.resolve(); // Defers execution to next tick
+                await refreshData();
+            };
+            void triggerLoad();
         }
-    }, [refreshData]);
+    }, [refreshData, state.currentUser]);
 
     const login = useCallback(async (email: string, password?: string) => {
         const res = await apiFetch('/auth/login', {
@@ -441,7 +493,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         setState(prev => ({ ...prev, currentUser: null, myPrs: [], prs: [] }));
     }, [apiFetch]);
 
-    const register = useCallback(async (data: any) => {
+    const register = useCallback(async (data: Record<string, unknown>) => {
         const res = await apiFetch('/auth/register', {
             method: 'POST',
             body: JSON.stringify(data)
@@ -563,7 +615,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const createRFQConsolidated = useCallback(async (data: any) => {
+    const createRFQConsolidated = useCallback(async (data: Record<string, unknown>) => {
         const res = await apiFetch('/request-for-quotations/consolidate', {
             method: 'POST',
             body: JSON.stringify(data)
@@ -577,13 +629,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return "";
     }, [apiFetch, refreshData, notify]);
 
-    const addDept = useCallback(async (data: any) => {
+    const addDept = useCallback(async (data: Partial<Department>) => {
         const res = await apiFetch('/departments', { method: 'POST', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData]);
 
-    const updateDept = useCallback(async (id: string, data: any) => {
+    const updateDept = useCallback(async (id: string, data: Partial<Department>) => {
         const res = await apiFetch(`/departments/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
@@ -595,25 +647,25 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData]);
 
-    const addUser = useCallback(async (data: any) => {
+    const addUser = useCallback(async (data: Partial<User>) => {
         const res = await apiFetch('/users', { method: 'POST', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData]);
 
-    const updateUser = useCallback(async (id: string, data: any) => {
+    const updateUser = useCallback(async (id: string, data: Partial<User>) => {
         const res = await apiFetch(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData]);
 
-    const addBudgetPeriod = useCallback(async (data: any) => {
+    const addBudgetPeriod = useCallback(async (data: Partial<BudgetPeriod>) => {
         const res = await apiFetch('/budgets/periods', { method: 'POST', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData]);
 
-    const updateBudgetPeriod = useCallback(async (id: string, data: any) => {
+    const updateBudgetPeriod = useCallback(async (id: string, data: Partial<BudgetPeriod>) => {
         const res = await apiFetch(`/budgets/periods/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
@@ -625,13 +677,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData]);
 
-    const addBudgetAllocation = useCallback(async (data: any) => {
+    const addBudgetAllocation = useCallback(async (data: Partial<BudgetAllocation>) => {
         const res = await apiFetch('/budgets/allocations', { method: 'POST', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData]);
 
-    const updateBudgetAllocation = useCallback(async (id: string, data: any) => {
+    const updateBudgetAllocation = useCallback(async (id: string, data: Partial<BudgetAllocation>) => {
         const res = await apiFetch(`/budgets/allocations/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
@@ -643,7 +695,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData]);
 
-    const addBudgetAllocationBundle = useCallback(async (data: any) => {
+    const addBudgetAllocationBundle = useCallback(async (data: { costCenterId: string, fiscalYear: number }) => {
         const res = await apiFetch(`/budgets/distribute-annual/${data.costCenterId}/${data.fiscalYear}`, { method: 'POST' });
         if (res.ok) { refreshData(); return true; }
         return false;
@@ -655,13 +707,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData]);
 
-    const addCostCenter = useCallback(async (data: any) => {
+    const addCostCenter = useCallback(async (data: Partial<CostCenter>) => {
         const res = await apiFetch('/cost-centers', { method: 'POST', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData]);
 
-    const updateCostCenter = useCallback(async (id: string, data: any) => {
+    const updateCostCenter = useCallback(async (id: string, data: Partial<CostCenter>) => {
         const res = await apiFetch(`/cost-centers/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
@@ -685,13 +737,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return null;
     }, [apiFetch]);
 
-    const addOrganization = useCallback(async (data: any) => {
+    const addOrganization = useCallback(async (data: Partial<Organization>) => {
         const res = await apiFetch('/organizations', { method: 'POST', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData]);
 
-    const updateOrganization = useCallback(async (id: string, data: any) => {
+    const updateOrganization = useCallback(async (id: string, data: Partial<Organization>) => {
         const res = await apiFetch(`/organizations/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
         if (res.ok) { refreshData(); return true; }
         return false;
@@ -703,18 +755,21 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData]);
 
-    const createQuote = useCallback(async (rfqId: string, quoteData: any) => {
+    const createQuote = useCallback(async (rfqId: string, quoteData: Partial<Quote>) => {
         const res = await apiFetch('/quotes', { method: 'POST', body: JSON.stringify({ rfqId, ...quoteData }) });
         if (res.ok) { refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData]);
 
-    const createGRN = useCallback(async (data: any) => Promise.resolve(true), []);
+    const createGRN = useCallback(async (data: Record<string, unknown>) => Promise.resolve(true), []);
     const ackPO = useCallback(async (id: string) => Promise.resolve(true), []);
     const shipPO = useCallback(async (id: string) => Promise.resolve(true), []);
-    const createInvoice = useCallback(async (data: any) => Promise.resolve(true), []);
+    const createInvoice = useCallback(async (data: Record<string, unknown>) => Promise.resolve(true), []);
     const payInvoice = useCallback(async (id: string) => Promise.resolve(true), []);
-    const matchInvoice = useCallback(async (id: string, status?: string) => Promise.resolve(true), []);
+    const matchInvoice = useCallback(async (id: string, status?: string) => {
+        console.log("Mock matchInvoice", id, status);
+        return Promise.resolve(true);
+    }, []);
 
     const contextValue = useMemo(() => ({
         ...state,
@@ -760,7 +815,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         notify,
         register,
         createQuote
-    }), [state, login, logout, refreshData, apiFetch, addPR, updatePR, fetchPrDetail, approvePR, createRFQ, createRFQConsolidated, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, reconcileQuarter, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchQuarterlyBudget, addOrganization, updateOrganization, removeOrganization, removeNotification, notify, register, createQuote]);
+    }), [state, login, logout, refreshData, apiFetch, addPR, updatePR, fetchPrDetail, approvePR, createRFQ, createRFQConsolidated, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, reconcileQuarter, createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchQuarterlyBudget, addOrganization, updateOrganization, removeOrganization, removeNotification, notify, register, createQuote]);
 
     return (
         <ProcurementContext.Provider value={contextValue}>

@@ -56,15 +56,13 @@ export default function PRPage() {
         { 
             label: "Phòng ban", 
             key: "department", 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            render: (row: any) => {
+            render: (row: PR) => {
                 // Try to find the department name from various sources
-                let deptName = typeof row.department === 'string' ? row.department : row.department?.name;
+                let deptName = typeof row.department === 'object' ? row.department.name : row.department;
                 
                 // If still missing, cross-reference with costCenters using deptId or costCenterId
                 if (!deptName && costCenters) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const match = costCenters.find((cc: any) => 
+                    const match = costCenters.find((cc) =>
                         cc.deptId === row.deptId || 
                         cc.id === row.costCenterId || 
                         cc.code === row.costCenterCode

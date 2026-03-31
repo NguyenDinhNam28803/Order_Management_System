@@ -93,7 +93,6 @@ export class RfqmoduleController {
     description: 'Cập nhật trạng thái của một yêu cầu báo giá cụ thể',
   })
   async updateStatus(@Param('id') id: string, @Body() body: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.rfqService.updateStatus(id, body.status);
   }
 

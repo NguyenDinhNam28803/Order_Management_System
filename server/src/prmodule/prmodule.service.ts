@@ -138,7 +138,6 @@ export class PrmoduleService {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       pr = await this.repository.findOne(id);
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       pr = await this.prisma.purchaseRequisition.findUnique({
         where: { prNumber: id },
         include: {

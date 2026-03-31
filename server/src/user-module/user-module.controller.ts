@@ -56,7 +56,8 @@ export class UserModuleController {
   @Post('delegations')
   @ApiOperation({
     summary: 'Tạo ủy quyền phê duyệt mới',
-    description: 'Thiết lập một người dùng khác phê duyệt thay thế mình trong một khoảng thời gian nhất định',
+    description:
+      'Thiết lập một người dùng khác phê duyệt thay thế mình trong một khoảng thời gian nhất định',
   })
   async createDelegation(
     @Body() dto: CreateUserDelegationDto,
@@ -156,4 +157,3 @@ export class UserModuleController {
     return this.userModuleService.remove(id);
   }
 }
-

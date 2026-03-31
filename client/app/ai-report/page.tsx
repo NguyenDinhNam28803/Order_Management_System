@@ -43,7 +43,7 @@ export default function AIReportPage() {
                         <Zap className="text-amber-500" size={28} />
                         Báo cáo Khuyến nghị từ AI
                     </h1>
-                    <p className="text-sm text-slate-500 mt-1">Hệ thống đã phân tích 3 nhà cung cấp cho hạng mục "Máy may công nghiệp".</p>
+                    <p className="text-sm text-slate-500 mt-1">Hệ thống đã phân tích 3 nhà cung cấp cho hạng mục &quot;Máy may công nghiệp&quot;.</p>
                 </div>
                 <Link href="/" className="btn-secondary !py-2 text-xs flex items-center gap-2">
                     <ArrowLeft size={16} /> Quay lại
@@ -58,7 +58,7 @@ export default function AIReportPage() {
                     </div>
                     <div>
                         <div className="text-white font-black uppercase tracking-widest text-[10px] mb-0.5">Yêu cầu xác nhận</div>
-                        <div className="text-white font-bold text-sm">AI đã phân tích xong 3 báo giá — Vui lòng xem xét và xác nhận lựa chọn trước ngày 16/03/2026.</div>
+                        <div className="text-white font-bold text-sm">AI đã phân tích xong 3 báo giá &mdash; Vui lòng xem xét và xác nhận lựa chọn trước ngày 16/03/2026.</div>
                     </div>
                 </div>
             </div>

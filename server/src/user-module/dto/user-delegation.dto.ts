@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsBoolean,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { UserRole } from '@prisma/client';
 
 export class CreateUserDelegationDto {
@@ -13,7 +21,9 @@ export class CreateUserDelegationDto {
   @IsNotEmpty()
   role: UserRole;
 
-  @ApiPropertyOptional({ description: 'Phạm vi ủy quyền (ví dụ: PR_ONLY, ALL)' })
+  @ApiPropertyOptional({
+    description: 'Phạm vi ủy quyền (ví dụ: PR_ONLY, ALL)',
+  })
   @IsOptional()
   @IsString()
   scope?: string;
