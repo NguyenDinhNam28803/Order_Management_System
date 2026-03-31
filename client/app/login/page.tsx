@@ -26,11 +26,16 @@ export default function LoginPage() {
         setIsLoading(true);
         setError("");
         
-        const success = await login(email, password);
-        if (success) {
-            router.push("/");
-        } else {
-            setError("Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.");
+        try {
+            const success = await login(email, password);
+            if (success) {
+                router.push("/");
+            } else {
+                setError("Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.");
+                setIsLoading(false);
+            }
+        } catch (err: any) {
+            setError(err.message || "Đã xảy ra lỗi trong quá trình đăng nhập.");
             setIsLoading(false);
         }
     };

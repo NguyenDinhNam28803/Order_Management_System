@@ -6,7 +6,7 @@ import { useProcurement, Notification } from "../context/ProcurementContext";
 import Sidebar from "./Sidebar";
 
 export default function AppContent({ children }: { children: React.ReactNode }) {
-    const { currentUser, notifications } = useProcurement();
+    const { currentUser, notifications, removeNotification } = useProcurement();
     const pathname = usePathname();
     const router = useRouter();
 
@@ -34,12 +34,13 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
                     .map((n: Notification) => (
                     <div 
                         key={n.id}
-                        className={`pointer-events-auto min-w-[320px] p-5 rounded-[24px] shadow-2xl border border-white/20 backdrop-blur-xl animate-in slide-in-from-right-8 duration-500 overflow-hidden flex items-center gap-4 ${
+                        className={`pointer-events-auto min-w-[320px] p-5 rounded-[24px] shadow-2xl border border-white/20 backdrop-blur-xl animate-in slide-in-from-right-8 duration-500 overflow-hidden flex items-center gap-4 cursor-pointer hover:scale-[1.02] transition-transform ${
                             n.type === 'success' ? 'bg-emerald-500/95 text-white shadow-emerald-200/40' :
                             n.type === 'error' ? 'bg-red-500/95 text-white shadow-red-200/40' :
                             n.type === 'warning' ? 'bg-amber-400/95 text-erp-navy shadow-amber-200/40' :
                             'bg-erp-blue/95 text-white shadow-erp-blue/20'
                         }`}
+                        onClick={() => removeNotification(n.id)}
                     >
                         <div className="h-10 w-10 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
                             {n.type === 'success' && <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>}
@@ -49,6 +50,9 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
                         </div>
                         <div className="flex-1 text-sm font-black uppercase tracking-tight leading-tight">
                             {n.message}
+                        </div>
+                        <div className="ml-2 h-6 w-6 rounded-full hover:bg-white/10 flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>
                         </div>
                     </div>
                 ))}

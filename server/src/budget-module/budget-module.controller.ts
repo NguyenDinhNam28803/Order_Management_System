@@ -34,7 +34,7 @@ export class BudgetModuleController {
    * Tạo một chu kỳ ngân sách mới
    */
   @Post('periods')
-  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Tạo mới chu kỳ ngân sách',
     description:
@@ -80,7 +80,7 @@ export class BudgetModuleController {
    * Cập nhật chu kỳ ngân sách
    */
   @Patch('periods/:id')
-  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Cập nhật chu kỳ ngân sách',
     description:
@@ -97,7 +97,7 @@ export class BudgetModuleController {
    * Xóa chu kỳ ngân sách
    */
   @Delete('periods/:id')
-  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Xóa chu kỳ ngân sách',
     description:
@@ -112,7 +112,7 @@ export class BudgetModuleController {
    * Tạo một khoản phân bổ ngân sách mới
    */
   @Post('allocations')
-  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Tạo một phân bổ ngân sách mới',
     description:
@@ -155,7 +155,7 @@ export class BudgetModuleController {
    * Cập nhật thông tin một khoản phân bổ ngân sách theo ID
    */
   @Patch('allocations/:id')
-  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Cập nhật phân bổ ngân sách',
     description:
@@ -172,7 +172,7 @@ export class BudgetModuleController {
    * Xóa một khoản phân bổ ngân sách theo ID
    */
   @Delete('allocations/:id')
-  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Xóa một phân bổ ngân sách',
     description:
@@ -186,7 +186,7 @@ export class BudgetModuleController {
    * Phân bổ ngân sách hàng năm theo quy tắc 20/80
    */
   @Post('distribute-annual/:costCenterId/:fiscalYear')
-  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Phân bổ ngân sách năm (20% Dự phòng, 80% Quý)',
     description:
@@ -208,7 +208,7 @@ export class BudgetModuleController {
    * Kết thúc quý: Chuyển tiền thừa vào quỹ dự phòng
    */
   @Post('reconcile-quarter/:costCenterId/:fiscalYear/:quarter')
-  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Quyết toán quý: Chuyển tiền thừa vào dự phòng',
     description:
@@ -221,6 +221,29 @@ export class BudgetModuleController {
     @Request() req: { user: JwtPayload },
   ) {
     return this.budgetService.reconcileQuarterToReserve(
+      costCenterId,
+      req.user.orgId,
+      parseInt(fiscalYear),
+      parseInt(quarter),
+    );
+  }
+
+  /**
+   * Lấy phân bổ ngân sách theo quý của một trung tâm chi phí
+   */
+  @Get('allocations/quarterly/:costCenterId/:fiscalYear/:quarter')
+  @ApiOperation({
+    summary: 'Lấy phân bổ ngân sách quý',
+    description:
+      'Truy vấn khoản phân bổ ngân sách cụ thể của một trung tâm chi phí cho một quý và năm tài chính xác định.',
+  })
+  async findQuarterlyAllocation(
+    @Param('costCenterId') costCenterId: string,
+    @Param('fiscalYear') fiscalYear: string,
+    @Param('quarter') quarter: string,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetService.findQuarterlyAllocation(
       costCenterId,
       req.user.orgId,
       parseInt(fiscalYear),

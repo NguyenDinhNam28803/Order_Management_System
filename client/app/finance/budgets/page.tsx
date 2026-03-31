@@ -22,6 +22,7 @@ export default function FinanceBudgetsPage() {
         departments, 
         costCenters,
         budgetAllocations,
+        budgetPeriods,
         addBudgetAllocationBundle,
         fiscalYears = [2024, 2025, 2026]
     } = useProcurement();
@@ -29,7 +30,7 @@ export default function FinanceBudgetsPage() {
     const [activeTab, setActiveTab] = useState<'dashboard' | 'tools'>('dashboard');
     
     // TOOL STATE
-    const [selectedDeptId, setSelectedDeptId] = useState("");
+    const [selectedCCId, setSelectedCCId] = useState("");
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [totalAnnualBudget, setTotalAnnualBudget] = useState(0);
     const [buckets, setBuckets] = useState({ q1: 0, q2: 0, q3: 0, q4: 0, reserve: 0 });
@@ -37,6 +38,9 @@ export default function FinanceBudgetsPage() {
     const [saveSuccess, setSaveSuccess] = useState(false);
 
     // DASHBOARD STATE
+    const [dashYear, setDashYear] = useState(new Date().getFullYear());
+    const [dashPeriodType, setDashPeriodType] = useState<'ALL' | 'ANNUAL' | 'QUARTERLY'>('ALL');
+    const [dashQuarter, setDashQuarter] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
 
     // Tool Handlers
@@ -46,13 +50,13 @@ export default function FinanceBudgetsPage() {
         setBuckets({ q1: each, q2: each, q3: each, q4: each, reserve: val - (each * 4) });
     };
 
-    const handleDeptChange = (deptId: string) => {
-        setSelectedDeptId(deptId);
-        if (!deptId) { handleTotalBudgetChange(0); return; }
-        const total = costCenters
-            .filter((cc: CostCenter) => cc.deptId === deptId)
-            .reduce((sum: number, cc: CostCenter) => sum + Number(cc.budgetAnnual), 0);
-        handleTotalBudgetChange(total);
+    const handleCCChange = (ccId: string) => {
+        setSelectedCCId(ccId);
+        if (!ccId) { handleTotalBudgetChange(0); return; }
+        const cc = costCenters.find((c: CostCenter) => c.id === ccId);
+        if (cc) {
+            handleTotalBudgetChange(Number(cc.budgetAnnual));
+        }
     };
 
     const handleBucketEdit = (key: keyof typeof buckets, val: number) => {
@@ -60,17 +64,12 @@ export default function FinanceBudgetsPage() {
     };
 
     const handleSave = async () => {
-        if (!isValid || !selectedDeptId) return;
+        if (!isValid || !selectedCCId) return;
         setIsSaving(true);
         
-        // Simulating API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        const success = await addBudgetAllocationBundle?.({
-            deptId: selectedDeptId,
-            fiscalYear: selectedYear,
-            totalBudget: totalAnnualBudget,
-            splits: buckets
+        const success = await addBudgetAllocationBundle({
+            costCenterId: selectedCCId,
+            fiscalYear: selectedYear
         });
 
         setIsSaving(false);
@@ -84,12 +83,72 @@ export default function FinanceBudgetsPage() {
         }
     };
 
-    // Dashboard Memoized Data
-    const stats = useMemo(() => {
-        const total = budgetAllocations.reduce((sum: number, a: BudgetAllocation) => sum + Number(a.allocatedAmount), 0);
-        const spent = budgetAllocations.reduce((sum: number, a: BudgetAllocation) => sum + Number(a.spentAmount), 0);
+    // Dashboard Filtered & Aggregated Data
+    const dashFiltered = useMemo(() => {
+        let filtered = budgetAllocations.filter(a => {
+            const period = budgetPeriods.find(p => p.id === a.budgetPeriodId);
+            if (!period) return false;
+            
+            const matchYear = period.fiscalYear === dashYear;
+            const matchType = dashPeriodType === 'ALL' || period.periodType === dashPeriodType;
+            const matchQuarter = dashPeriodType !== 'QUARTERLY' || period.periodNumber === dashQuarter;
+            
+            return matchYear && matchType && matchQuarter;
+        });
+
+        if (searchTerm) {
+            filtered = filtered.filter(a => {
+                const cc = costCenters.find(c => c.id === a.costCenterId);
+                return cc?.name.toLowerCase().includes(searchTerm.toLowerCase()) || cc?.code.toLowerCase().includes(searchTerm.toLowerCase());
+            });
+        }
+
+        return filtered;
+    }, [budgetAllocations, budgetPeriods, dashYear, dashPeriodType, dashQuarter, searchTerm, costCenters]);
+
+    const dashStats = useMemo(() => {
+        const total = dashFiltered.reduce((sum, a) => sum + Number(a.allocatedAmount), 0);
+        const spent = dashFiltered.reduce((sum, a) => sum + Number(a.spentAmount), 0);
         return { total, spent, remaining: total - spent, percent: total > 0 ? (spent / total) * 100 : 0 };
-    }, [budgetAllocations]);
+    }, [dashFiltered]);
+
+    const dashGroupedByCC = useMemo(() => {
+        const groups: Record<string, { 
+            costCenterId: string, 
+            allocatedAmount: number, 
+            spentAmount: number,
+            ccCode: string,
+            ccName: string,
+            deptName: string
+        }> = {};
+
+        dashFiltered.forEach(a => {
+            const cc = costCenters.find(c => c.id === a.costCenterId);
+            const dept = departments.find(d => d.id === cc?.deptId);
+            const key = a.costCenterId;
+
+            if (!groups[key]) {
+                groups[key] = {
+                    costCenterId: a.costCenterId,
+                    allocatedAmount: 0,
+                    spentAmount: 0,
+                    ccCode: cc?.code || "N/A",
+                    ccName: cc?.name || "Unknown",
+                    deptName: dept?.name || "Chung"
+                };
+            }
+            groups[key].allocatedAmount += Number(a.allocatedAmount);
+            groups[key].spentAmount += Number(a.spentAmount);
+        });
+
+        return Object.values(groups);
+    }, [dashFiltered, costCenters, departments]);
+
+    const dashLabel = useMemo(() => {
+        if (dashPeriodType === 'QUARTERLY') return `Q${dashQuarter}/${dashYear}`;
+        if (dashPeriodType === 'ANNUAL') return `Năm ${dashYear}`;
+        return `Năm ${dashYear} (Tất cả)`;
+    }, [dashYear, dashPeriodType, dashQuarter]);
 
     const currentSum = useMemo(() => buckets.q1 + buckets.q2 + buckets.q3 + buckets.q4 + buckets.reserve, [buckets]);
     const difference = totalAnnualBudget - currentSum;
@@ -137,11 +196,36 @@ export default function FinanceBudgetsPage() {
 
                 {activeTab === 'dashboard' && (
                     <div className="flex gap-4">
+                        <select 
+                            value={dashYear} 
+                            onChange={e => setDashYear(Number(e.target.value))}
+                            className="bg-white px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-black outline-none"
+                        >
+                            {fiscalYears.map(y => <option key={y} value={y}>Năm {y}</option>)}
+                        </select>
+                        <select 
+                            value={dashPeriodType} 
+                            onChange={e => setDashPeriodType(e.target.value as any)}
+                            className="bg-white px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-black outline-none"
+                        >
+                            <option value="ALL">Tất cả chu kỳ</option>
+                            <option value="ANNUAL">Chỉ Ngân sách Năm</option>
+                            <option value="QUARTERLY">Chỉ Ngân sách Quý</option>
+                        </select>
+                        {dashPeriodType === 'QUARTERLY' && (
+                            <select 
+                                value={dashQuarter} 
+                                onChange={e => setDashQuarter(Number(e.target.value))}
+                                className="bg-white px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-black outline-none"
+                            >
+                                {[1, 2, 3, 4].map(q => <option key={q} value={q}>Quý {q}</option>)}
+                            </select>
+                        )}
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                             <input 
                                 type="text" 
-                                placeholder="Tìm kiếm..."
+                                placeholder="Tìm kiếm Cost Center..."
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                                 className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold w-64 outline-none focus:ring-2 focus:ring-erp-blue/20"
@@ -156,9 +240,9 @@ export default function FinanceBudgetsPage() {
                     {/* Summary Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
-                            { label: 'Tổng Ngân sách cấp', val: stats.total, color: 'text-erp-navy', bg: 'bg-blue-50', icon: Target },
-                            { label: 'Đã giải ngân', val: stats.spent, color: 'text-amber-600', bg: 'bg-amber-50', icon: ArrowUpRight },
-                            { label: 'Số dư khả dụng', val: stats.remaining, color: 'text-green-600', bg: 'bg-green-50', icon: ShieldCheck },
+                            { label: `Ngân sách cấp (${dashLabel})`, val: dashStats.total, color: 'text-erp-navy', bg: 'bg-blue-50', icon: Target },
+                            { label: `Đã giải ngân (${dashLabel})`, val: dashStats.spent, color: 'text-amber-600', bg: 'bg-amber-50', icon: ArrowUpRight },
+                            { label: `Số dư khả dụng (${dashLabel})`, val: dashStats.remaining, color: 'text-green-600', bg: 'bg-green-50', icon: ShieldCheck },
                         ].map((s, idx) => (
                             <div key={idx} className="bg-white p-8 rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 relative overflow-hidden group">
                                 <div className={`absolute top-0 right-0 p-4 ${s.bg} rounded-bl-3xl opacity-50 group-hover:opacity-100 transition-opacity`}>
@@ -167,7 +251,7 @@ export default function FinanceBudgetsPage() {
                                 <div className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] mb-2">{s.label}</div>
                                 <div className={`text-2xl font-black ${s.color}`}>{formatVND(s.val, true)}</div>
                                 <div className="mt-4 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                                    <div className={`h-full ${idx === 1 ? 'bg-amber-500' : 'bg-erp-navy'} transition-all duration-1000`} style={{ width: idx === 0 ? '100%' : `${stats.percent}%` }}></div>
+                                    <div className={`h-full ${idx === 1 ? 'bg-amber-500' : 'bg-erp-navy'} transition-all duration-1000`} style={{ width: idx === 0 ? '100%' : `${dashStats.percent}%` }}></div>
                                 </div>
                             </div>
                         ))}
@@ -192,17 +276,15 @@ export default function FinanceBudgetsPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
-                                    {budgetAllocations.length > 0 ? budgetAllocations.map((a: BudgetAllocation) => {
-                                        const p = (Number(a.spentAmount) / Number(a.allocatedAmount)) * 100;
-                                        const dept = departments.find(d => d.id === a.deptId);
-                                        const cc = costCenters.find(c => c.id === a.costCenterId);
+                                    {dashGroupedByCC.length > 0 ? dashGroupedByCC.map((g) => {
+                                        const p = (g.spentAmount / g.allocatedAmount) * 100;
                                         return (
-                                            <tr key={a.id} className="hover:bg-slate-50/50 transition-colors">
+                                            <tr key={g.costCenterId} className="hover:bg-slate-50/50 transition-colors">
                                                 <td className="px-8 py-6">
-                                                    <div className="font-black text-erp-navy text-sm">{dept?.name || "Chung"}</div>
-                                                    <div className="text-[10px] font-bold text-slate-400 mt-0.5">{cc?.code} - {cc?.name}</div>
+                                                    <div className="font-black text-erp-navy text-sm">{g.deptName}</div>
+                                                    <div className="text-[10px] font-bold text-slate-400 mt-0.5">{g.ccCode} - {g.ccName}</div>
                                                 </td>
-                                                <td className="px-8 py-6 font-black text-slate-600">{formatVND(a.allocatedAmount, true)}</td>
+                                                <td className="px-8 py-6 font-black text-slate-600">{formatVND(g.allocatedAmount, true)}</td>
                                                 <td className="px-8 py-6">
                                                     <div className="flex items-center gap-4">
                                                         <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -211,7 +293,7 @@ export default function FinanceBudgetsPage() {
                                                         <span className="text-[10px] font-black text-erp-navy">{p.toFixed(0)}%</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-6 font-black text-erp-navy">{formatVND(a.allocatedAmount - a.spentAmount, true)}</td>
+                                                <td className="px-8 py-6 font-black text-erp-navy">{formatVND(g.allocatedAmount - g.spentAmount, true)}</td>
                                                 <td className="px-8 py-6">
                                                     <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
                                                         p > 100 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'
@@ -249,12 +331,12 @@ export default function FinanceBudgetsPage() {
                                 </div>
                                 <div className="flex gap-4">
                                     <select 
-                                        className="bg-slate-50 px-4 py-2 rounded-xl text-xs font-black border border-slate-100 outline-none"
-                                        value={selectedDeptId}
-                                        onChange={e => handleDeptChange(e.target.value)}
+                                        className="bg-slate-50 px-4 py-2 rounded-xl text-xs font-black border border-slate-100 outline-none w-64"
+                                        value={selectedCCId}
+                                        onChange={e => handleCCChange(e.target.value)}
                                     >
-                                        <option value="">Chọn Phòng ban</option>
-                                        {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                                        <option value="">Chọn Trung tâm chi phí (Cost Center)</option>
+                                        {costCenters.map(cc => <option key={cc.id} value={cc.id}>{cc.code} - {cc.name}</option>)}
                                     </select>
                                     <select 
                                         className="bg-slate-50 px-4 py-2 rounded-xl text-xs font-black border border-slate-100 outline-none"
@@ -279,7 +361,7 @@ export default function FinanceBudgetsPage() {
                                     />
                                     <div className="absolute right-10 flex flex-col items-end">
                                         <span className="text-[9px] font-black text-erp-blue bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 uppercase tracking-widest">Auto-Synced</span>
-                                        {selectedDeptId && <span className="text-[8px] text-slate-400 mt-2">Dựa trên Cost Centers</span>}
+                                        {selectedCCId && <span className="text-[8px] text-slate-400 mt-2">Dựa trên Cost Centers</span>}
                                     </div>
                                 </div>
                             </div>
@@ -329,10 +411,10 @@ export default function FinanceBudgetsPage() {
                             </p>
                             
                             <button 
-                                disabled={!isValid || !selectedDeptId || isSaving}
+                                disabled={!isValid || !selectedCCId || isSaving}
                                 onClick={handleSave}
                                 className={`w-full py-5 rounded-3xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all ${
-                                    isValid && selectedDeptId 
+                                    isValid && selectedCCId 
                                     ? 'bg-white text-erp-navy hover:scale-[1.02] shadow-xl' 
                                     : 'bg-white/10 text-white/30'
                                 }`}

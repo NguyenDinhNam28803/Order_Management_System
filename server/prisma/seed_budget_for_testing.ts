@@ -1,5 +1,4 @@
-import 'dotenv/config';
-import { PrismaClient, BudgetPeriodType } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
@@ -80,7 +79,7 @@ async function seedBudgetForTesting() {
         orgId_fiscalYear_periodType_periodNumber: {
           orgId,
           fiscalYear,
-          periodType: p.type as BudgetPeriodType,
+          periodType: p.type as any,
           periodNumber: p.num,
         },
       },
@@ -90,7 +89,7 @@ async function seedBudgetForTesting() {
       create: {
         orgId,
         fiscalYear,
-        periodType: p.type as BudgetPeriodType,
+        periodType: p.type as any,
         periodNumber: p.num,
         startDate: new Date(p.start),
         endDate: new Date(p.end),

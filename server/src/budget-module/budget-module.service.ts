@@ -411,4 +411,65 @@ export class BudgetModuleService {
       });
     });
   }
+
+  // Lấy phân bổ ngân sách theo quý
+  async findQuarterlyAllocation(
+    costCenterId: string,
+    orgId: string,
+    fiscalYear: number,
+    quarter: number,
+  ) {
+    const period = await this.prisma.budgetPeriod.findFirst({
+      where: {
+        orgId,
+        fiscalYear,
+        periodType: 'QUARTERLY',
+        periodNumber: quarter,
+      },
+    });
+
+    if (!period) {
+      // Fallback: Nếu chưa có period, ta trích xuất thông tin Cost Center để trả về "Virtual Budget" (20%)
+      const cc = await this.prisma.costCenter.findUnique({ where: { id: costCenterId } });
+      if (!cc || !cc.budgetAnnual) return null;
+      
+      const virtualAlloc = Number(cc.budgetAnnual) * 0.2;
+      return {
+        isVirtual: true,
+        allocatedAmount: virtualAlloc,
+        spentAmount: Number(cc.budgetUsed) * 0.2, // Giả định dùng 20% thực tế
+        committedAmount: 0,
+        currency: cc.currency,
+        notes: `Ngân sách dự kiến Quý ${quarter} (Tính tự động 20% từ tổng năm)`
+      };
+    }
+
+    const alloc = await this.prisma.budgetAllocation.findUnique({
+      where: {
+        budgetPeriodId_costCenterId: {
+          budgetPeriodId: period.id,
+          costCenterId,
+        },
+      },
+      include: {
+        budgetPeriod: true,
+      },
+    });
+
+    if (!alloc) {
+      const cc = await this.prisma.costCenter.findUnique({ where: { id: costCenterId } });
+      if (!cc || !cc.budgetAnnual) return null;
+      const virtualAlloc = Number(cc.budgetAnnual) * 0.2;
+      return {
+        isVirtual: true,
+        allocatedAmount: virtualAlloc,
+        spentAmount: 0,
+        committedAmount: 0,
+        currency: cc.currency,
+        notes: `Ngân sách dự kiến Quý ${quarter} (Tính tự động 20% từ tổng năm)`
+      };
+    }
+
+    return alloc;
+  }
 }

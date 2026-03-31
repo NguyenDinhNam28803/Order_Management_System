@@ -12,7 +12,7 @@ import { useProcurement } from "./context/ProcurementContext";
 import { formatVND } from "./utils/formatUtils";
 
 export default function Dashboard() {
-  const { budgets, prs, pos, currentUser } = useProcurement();
+  const { budgets, prs, myPrs, pos, currentUser, loadingMyPrs } = useProcurement();
   const availableBudget = (budgets?.allocated || 0) - (budgets?.committed || 0) - (budgets?.spent || 0);
   const [selectedPRDetails, setSelectedPRDetails] = React.useState<any>(null);
 
@@ -23,9 +23,9 @@ export default function Dashboard() {
 
   // --- REQUESTER DASHBOARD ---
   if (isRequester) {
-      const myPRs = prs; // In real app, filter by creator/department
-      const pendingPRs = myPRs.filter((pr: any) => pr.status === "PENDING" || pr.status === "PENDING_DIRECTOR").length;
-      const approvedPRs = myPRs.filter((pr: any) => pr.status === "APPROVED").length;
+      const personalPRs = myPrs || [];
+      const pendingPRs = personalPRs.filter((pr: any) => pr.status.includes("PENDING")).length;
+      const approvedPRs = personalPRs.filter((pr: any) => pr.status === "APPROVED").length;
 
       return (
         <main className="animate-in fade-in duration-500">
@@ -126,28 +126,51 @@ export default function Dashboard() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {(myPRs || []).slice(0, 5).map((pr: any) => (
-                                    <tr key={pr.id} className="hover:bg-slate-50 transition-colors">
-                                        <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0, 8)}</td>
-                                        <td className="max-w-50 truncate font-medium text-slate-600" title={pr.title}>{pr.title}</td>
-                                        <td className="text-slate-400">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</td>
-                                        <td className="font-mono text-right font-black text-erp-navy">{formatVND(pr.totalEstimate)} ₫</td>
-                                        <td className="text-center">
-                                            <span className={`status-pill status-${(pr.status || 'DRAFT').toLowerCase()}`}>
-                                                {pr.status}
-                                            </span>
-                                        </td>
-                                        <td className="text-right">
-                                            <button onClick={() => setSelectedPRDetails(pr)} className="px-3 py-1.5 bg-slate-100 hover:bg-erp-navy hover:text-white text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-sm">
-                                                Chi tiết
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {(!myPRs || myPRs.length === 0) && (
-                                    <tr>
-                                        <td colSpan={6} className="py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Chưa có yêu cầu nào</td>
-                                    </tr>
+                                {loadingMyPrs ? (
+                                    // SKELETON LOADING
+                                    [1, 2, 3].map(i => (
+                                        <tr key={i} className="animate-pulse">
+                                            <td className="py-4"><div className="h-4 w-20 bg-slate-100 rounded"></div></td>
+                                            <td className="py-4"><div className="h-4 w-40 bg-slate-100 rounded"></div></td>
+                                            <td className="py-4"><div className="h-4 w-24 bg-slate-100 rounded"></div></td>
+                                            <td className="py-4"><div className="h-4 w-24 bg-slate-100 rounded ml-auto"></div></td>
+                                            <td className="py-4"><div className="h-6 w-16 bg-slate-100 rounded-full mx-auto"></div></td>
+                                            <td className="py-4"><div className="h-8 w-16 bg-slate-100 rounded-lg ml-auto"></div></td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    personalPRs.length > 0 ? personalPRs.slice(0, 5).map((pr: any) => (
+                                        <tr key={pr.id} className="hover:bg-slate-50 transition-colors">
+                                            <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0, 8)}</td>
+                                            <td className="max-w-50 truncate font-medium text-slate-600" title={pr.title}>{pr.title}</td>
+                                            <td className="text-slate-400">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</td>
+                                            <td className="font-mono text-right font-black text-erp-navy">{formatVND(pr.totalEstimate || pr.total)} ₫</td>
+                                            <td className="text-center">
+                                                <span className={`status-pill status-${(pr.status || 'DRAFT').toLowerCase()}`}>
+                                                    {pr.status}
+                                                </span>
+                                            </td>
+                                            <td className="text-right">
+                                                <button onClick={() => setSelectedPRDetails(pr)} className="px-3 py-1.5 bg-slate-100 hover:bg-erp-navy hover:text-white text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-sm">
+                                                    Chi tiết
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan={6} className="py-24 text-center">
+                                                <div className="flex flex-col items-center justify-center space-y-4">
+                                                    <div className="h-16 w-16 rounded-3xl bg-slate-50 flex items-center justify-center text-slate-200">
+                                                        <FileText size={32} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-[11px] font-black text-erp-navy uppercase tracking-widest">Bạn chưa tạo yêu cầu mua sắm nào</h3>
+                                                        <p className="text-slate-400 text-[10px] font-bold mt-1 uppercase tracking-tight">Cần vật tư? Hãy nhấn nút &quot;Tạo PR mới&quot; để bắt đầu.</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
                                 )}
                             </tbody>
                         </table>

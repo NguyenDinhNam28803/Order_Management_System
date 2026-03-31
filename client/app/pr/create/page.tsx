@@ -82,7 +82,8 @@ export default function CreatePRPage() {
         products, 
         notify, 
         budgetAllocations, 
-        budgetPeriods: periods 
+        budgetPeriods: periods,
+        fetchQuarterlyBudget
     } = useProcurement();
 
     const router = useRouter();
@@ -98,6 +99,25 @@ export default function CreatePRPage() {
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [quarterlyAllocation, setQuarterlyAllocation] = useState<any>(null);
+
+    // Calculate current quarter
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentQuarter = Math.floor((today.getMonth() + 3) / 3);
+
+    // Fetch quarterly budget when Cost Center changes
+    useEffect(() => {
+        if (form.costCenterId && isValidUuid(form.costCenterId)) {
+            const getBudget = async () => {
+                const data = await fetchQuarterlyBudget(form.costCenterId, currentYear, currentQuarter);
+                setQuarterlyAllocation(data?.data || null);
+            };
+            getBudget();
+        } else {
+            setQuarterlyAllocation(null);
+        }
+    }, [form.costCenterId, fetchQuarterlyBudget, currentYear, currentQuarter]);
 
     const filteredCostCenters = costCenters.filter((cc: CostCenter) => {
         if (!currentUser) return false;
@@ -109,15 +129,11 @@ export default function CreatePRPage() {
 
     const activeCC = filteredCostCenters.find((cc: CostCenter) => cc.id === form.costCenterId);
     const totalEstimate = form.items.reduce((sum: number, item: PRItem) => sum + (item.qty * item.estimatedPrice), 0);
-    const activePeriod = periods.find(p => p.isActive);
-    const activeAllocation = activeCC ? (budgetAllocations.find(a => a.costCenterId === activeCC.id && (!activePeriod || a.budgetPeriodId === activePeriod.id)) || 
-        (activeCC as any).budgetAllocations?.find((a: any) => !activePeriod || a.budgetPeriodId === activePeriod.id)) : null;
-
-    const remainingBudget = activeAllocation 
-        ? (Number(activeAllocation.allocatedAmount) - Number(activeAllocation.spentAmount) - Number(activeAllocation.committedAmount))
-        : activeCC 
-            ? (Number(activeCC.budgetAnnual) - Number(activeCC.budgetUsed))
-            : 0;
+    
+    // Calculate remaining budget based strictly on Quarterly Allocation
+    const remainingBudget = quarterlyAllocation
+        ? (Number(quarterlyAllocation.allocatedAmount) - Number(quarterlyAllocation.spentAmount || 0) - Number(quarterlyAllocation.committedAmount || 0))
+        : 0;
 
     const isOverBudget = activeCC && (remainingBudget < totalEstimate);
 
@@ -684,32 +700,36 @@ export default function CreatePRPage() {
                             <div className="space-y-5">
                                 <div className="flex justify-between items-end">
                                     <div>
-                                        <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Cấp phát năm nay</div>
-                                        <div className="text-sm font-black text-erp-navy">{formatVND(activeCC.budgetAnnual)} {activeCC.currency}</div>
+                                        <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Cấp phát Quý {currentQuarter}</div>
+                                        <div className="text-sm font-black text-erp-navy">
+                                            {formatVND(quarterlyAllocation ? quarterlyAllocation.allocatedAmount : activeCC.budgetAnnual)} {activeCC.currency}
+                                        </div>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Đã sử dụng</div>
-                                        <div className="text-sm font-black text-slate-600">{formatVND(activeCC.budgetUsed)} {activeCC.currency}</div>
+                                        <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Đã dùng (Q{currentQuarter})</div>
+                                        <div className="text-sm font-black text-slate-600">
+                                            {formatVND(quarterlyAllocation ? (Number(quarterlyAllocation.spentAmount || 0) + Number(quarterlyAllocation.committedAmount || 0)) : activeCC.budgetUsed)} {activeCC.currency}
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-[10px] items-center">
-                                        <span className="font-bold text-slate-400">Tiến độ tiêu thụ</span>
+                                        <span className="font-bold text-slate-400">Tiến độ tiêu thụ Quý</span>
                                         <span className={`font-black ${isOverBudget ? 'text-red-500' : 'text-erp-blue'}`}>
-                                            {activeCC.budgetAnnual > 0 ? Math.round(((Number(activeCC.budgetUsed) + totalEstimate) / Number(activeCC.budgetAnnual)) * 100) : 0}%
+                                            {Math.round(((quarterlyAllocation ? (Number(quarterlyAllocation.spentAmount || 0) + Number(quarterlyAllocation.committedAmount || 0)) : Number(activeCC.budgetUsed)) + totalEstimate) / (quarterlyAllocation ? Number(quarterlyAllocation.allocatedAmount) : (Number(activeCC.budgetAnnual) || 1)) * 100)}%
                                         </span>
                                     </div>
                                     <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden flex shadow-inner border border-slate-50">
                                         {/* Used Budget Segment */}
                                         <div
                                             className="h-full bg-slate-300 transition-all duration-500"
-                                            style={{ width: `${activeCC.budgetAnnual > 0 ? Math.min(100, (Number(activeCC.budgetUsed) / Number(activeCC.budgetAnnual)) * 100) : 0}%` }}
+                                            style={{ width: `${Math.min(100, (quarterlyAllocation ? (Number(quarterlyAllocation.spentAmount || 0) + Number(quarterlyAllocation.committedAmount || 0)) : Number(activeCC.budgetUsed)) / (quarterlyAllocation ? Number(quarterlyAllocation.allocatedAmount) : (Number(activeCC.budgetAnnual) || 1)) * 100)}%` }}
                                         />
                                         {/* Current PR Impact Segment */}
                                         <div
                                             className={`h-full transition-all duration-500 ${isOverBudget ? 'bg-red-500' : 'bg-erp-blue animate-pulse'}`}
-                                            style={{ width: `${activeCC.budgetAnnual > 0 ? Math.min(100 - (Number(activeCC.budgetUsed) / Number(activeCC.budgetAnnual)) * 100, (totalEstimate / Number(activeCC.budgetAnnual)) * 100) : 0}%` }}
+                                            style={{ width: `${Math.min(100 - ((quarterlyAllocation ? (Number(quarterlyAllocation.spentAmount || 0) + Number(quarterlyAllocation.committedAmount || 0)) : Number(activeCC.budgetUsed)) / (quarterlyAllocation ? Number(quarterlyAllocation.allocatedAmount) : (Number(activeCC.budgetAnnual) || 1)) * 100), (totalEstimate / (quarterlyAllocation ? Number(quarterlyAllocation.allocatedAmount) : (Number(activeCC.budgetAnnual) || 1))) * 100)}%` }}
                                         />
                                     </div>
                                     <div className="flex gap-4 mt-2">
@@ -730,9 +750,12 @@ export default function CreatePRPage() {
                                     </span>
                                     <div className="flex justify-between items-baseline">
                                         <span className={`text-xl font-black ${isOverBudget ? 'text-red-600' : 'text-erp-blue'}`}>
-                                            {formatVND(Math.abs(Number(activeCC.budgetAnnual) - Number(activeCC.budgetUsed) - totalEstimate))}
+                                            {formatVND(Math.abs(remainingBudget - totalEstimate))}
                                         </span>
                                         <span className={`text-[10px] font-bold ${isOverBudget ? 'text-red-400' : 'text-erp-blue/50'}`}>{activeCC.currency}</span>
+                                    </div>
+                                    <div className="mt-1 text-[8px] font-bold text-slate-400 italic">
+                                        Dựa trên dữ liệu: Ngân sách Quý {currentQuarter}/{currentYear}
                                     </div>
                                 </div>
 

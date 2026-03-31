@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShieldAlert, Plus, Edit2, Trash2, Search, DollarSign, Building } from "lucide-react";
+import { ShieldAlert, Plus, Edit2, Trash2, Search, DollarSign, Building, Eye } from "lucide-react";
 import { useProcurement, Department } from "../../context/ProcurementContext";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
 import { CostCenter } from "@/app/types/api-types";
 
 export default function CostCentersPage() {
-    const { costCenters, departments, addCostCenter, updateCostCenter, removeCostCenter } = useProcurement();
+    const { costCenters, departments, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, notify } = useProcurement();
     const [showModal, setShowModal] = useState(false);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [viewingCC, setViewingCC] = useState<any | null>(null);
+    const [isLoadingDetail, setIsLoadingDetail] = useState(false);
     const [editingCC, setEditingCC] = useState<CostCenter | null>(null);
     const [formData, setFormData] = useState({
         code: "",
@@ -41,14 +44,32 @@ export default function CostCentersPage() {
         setShowModal(true);
     };
 
+    const handleViewDetail = async (id: string) => {
+        setIsLoadingDetail(true);
+        setShowDetailModal(true);
+        try {
+            const data = await fetchCostCenter(id);
+            setViewingCC(data);
+        } catch (error) {
+            console.error("Lỗi khi tải chi tiết CC:", error);
+        } finally {
+            setIsLoadingDetail(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Sửa kiểu dữ liệu
-        const success = false;
+        
+        if (!formData.code.trim()) {
+            notify("Mã Cost Center không được để trống", "error");
+            return;
+        }
+
+        let success = false;
         if (editingCC) {
-            //success = await updateCostCenter(editingCC.id, formData);
+            success = await updateCostCenter(editingCC.id, formData as any);
         } else {
-            //success = await addCostCenter(formData);
+            success = await addCostCenter(formData as any);
         }
 
         if (success) {
@@ -108,8 +129,8 @@ export default function CostCentersPage() {
                                     <tr key={cc.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
                                         <td className="p-5">
                                             <div className="flex items-center gap-4">
-                                                <div className="h-12 w-12 rounded-2xl bg-slate-100 flex items-center justify-center font-black text-erp-navy shadow-sm transition-transform hover:rotate-12">
-                                                    <ShieldAlert size={20} />
+                                                <div className="h-12 w-12 rounded-2xl bg-erp-blue/5 flex items-center justify-center text-erp-blue shadow-sm transition-transform hover:rotate-12">
+                                                    <Building size={20} />
                                                 </div>
                                                 <div>
                                                     <div className="text-sm font-black text-erp-navy leading-tight">{cc.name}</div>
@@ -152,14 +173,23 @@ export default function CostCentersPage() {
                                         <td className="text-center">
                                             <div className="flex justify-center gap-3">
                                                 <button
+                                                    onClick={() => handleViewDetail(cc.id)}
+                                                    className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-erp-blue hover:border-erp-blue/30 rounded-xl transition-all shadow-sm"
+                                                    title="Xem chi tiết"
+                                                >
+                                                    <Eye size={14} />
+                                                </button>
+                                                <button
                                                     onClick={() => handleOpenModal(cc)}
                                                     className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-erp-blue hover:border-erp-blue/30 rounded-xl transition-all shadow-sm"
+                                                    title="Sửa"
                                                 >
                                                     <Edit2 size={14} />
                                                 </button>
                                                 <button
                                                     onClick={() => removeCostCenter(cc.id)}
                                                     className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 rounded-xl transition-all shadow-sm"
+                                                    title="Xóa"
                                                 >
                                                     <Trash2 size={14} />
                                                 </button>
@@ -186,8 +216,9 @@ export default function CostCentersPage() {
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã Cost Center</label>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã Cost Center <span className="text-red-500">*</span></label>
                                         <input
+                                            required
                                             value={formData.code}
                                             onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                                             type="text"
@@ -263,6 +294,103 @@ export default function CostCentersPage() {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Detail Modal */}
+            {showDetailModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-erp-navy/40 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
+                    <div className="bg-white rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-white/20">
+                        <div className="p-10">
+                            <div className="flex justify-between items-start mb-8">
+                                <div>
+                                    <h2 className="text-2xl font-black text-erp-navy uppercase mb-2 tracking-tight">Chi tiết Cost Center</h2>
+                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">FINANCIAL ANALYTICS & STRUCTURE</p>
+                                </div>
+                                <button onClick={() => setShowDetailModal(false)} className="text-slate-300 hover:text-slate-500 transition-colors">
+                                    <Plus className="rotate-45" size={24} />
+                                </button>
+                            </div>
+
+                            {isLoadingDetail ? (
+                                <div className="py-20 flex flex-col items-center justify-center gap-4">
+                                    <div className="h-10 w-10 border-4 border-erp-blue/20 border-t-erp-blue rounded-full animate-spin"></div>
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Đang tải dữ liệu...</span>
+                                </div>
+                            ) : viewingCC ? (
+                                <div className="space-y-8">
+                                    <div className="grid grid-cols-2 gap-8 ring-1 ring-slate-100 p-8 rounded-3xl bg-slate-50/50">
+                                        <div className="space-y-1">
+                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mã Cost Center</div>
+                                            <div className="text-lg font-black text-erp-navy">{viewingCC.code}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tên Cost Center</div>
+                                            <div className="text-lg font-black text-erp-navy">{viewingCC.name}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phòng ban</div>
+                                            <div className="text-sm font-bold text-erp-blue">{viewingCC.department?.name || "Global"}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Trạng thái</div>
+                                            <div className={`text-[10px] font-black px-2 py-0.5 rounded w-fit ${viewingCC.isActive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                                {viewingCC.isActive ? "ĐANG HOẠT ĐỘNG" : "NGƯNG HOẠT ĐỘNG"}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-end">
+                                            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Hoạt động Ngân sách gần đây</h3>
+                                            <span className="text-[10px] font-black text-erp-blue bg-blue-50 px-3 py-1 rounded-full uppercase">
+                                                {viewingCC.budgetAllocations?.length || 0} Giao dịch
+                                            </span>
+                                        </div>
+                                        
+                                        <div className="max-h-60 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+                                            {viewingCC.budgetAllocations?.length > 0 ? (
+                                                viewingCC.budgetAllocations.map((alloc: any) => (
+                                                    <div key={alloc.id} className="flex justify-between items-center p-4 rounded-2xl bg-white border border-slate-50 hover:border-slate-100 transition-all shadow-sm">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-erp-blue font-black text-[10px]">
+                                                                {alloc.budgetPeriod?.periodNumber ? `Q${alloc.budgetPeriod.periodNumber}` : 'FIX'}
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-xs font-black text-erp-navy">Phân bổ ngân sách {alloc.budgetPeriod?.fiscalYear || ""}</div>
+                                                                <div className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Ngày tạo: {new Date(alloc.createdAt).toLocaleDateString()}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-xs font-black text-erp-navy">{formatVND(alloc.allocatedAmount, true)}</div>
+                                                            <div className="text-[9px] font-bold text-green-500 uppercase">Success</div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="py-10 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-100">
+                                                    <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Chưa có giao dịch nào</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-6">
+                                        <button
+                                            onClick={() => setShowDetailModal(false)}
+                                            className="w-full px-8 py-4 bg-erp-navy text-white rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-erp-navy/20 hover:scale-[1.01] transition-all"
+                                        >
+                                            Đóng chi tiết
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="py-10 text-center">
+                                    <p className="text-red-500 font-bold">Không tìm thấy dữ liệu Trung tâm Chi phí này.</p>
+                                    <button onClick={() => setShowDetailModal(false)} className="mt-4 text-erp-blue font-black text-xs uppercase tracking-widest underline">Quay lại</button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
