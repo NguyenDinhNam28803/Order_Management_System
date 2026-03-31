@@ -34,8 +34,9 @@ export default function LoginPage() {
                 setError("Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.");
                 setIsLoading(false);
             }
-        } catch (err: any) {
-            setError(err.message || "Đã xảy ra lỗi trong quá trình đăng nhập.");
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Đã xảy ra lỗi trong quá trình đăng nhập.";
+            setError(errorMessage);
             setIsLoading(false);
         }
     };
@@ -65,7 +66,7 @@ export default function LoginPage() {
                             <div className="text-[10px] font-black text-blue-500 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">{users?.length || 0} Roles available</div>
                         </div>
                         <div className="grid grid-cols-2 gap-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
-                            {users?.map((u: any) => (
+                            {users?.map((u) => (
                                 <button 
                                     key={u.id}
                                     type="button"

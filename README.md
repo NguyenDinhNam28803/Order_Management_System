@@ -11,14 +11,14 @@ Hệ thống quản trị mua sắm tập trung (**E-Procurement**) và Quản l
 
 ---
 
-## 📑 Mục lục
-1. [🏗️ Kiến trúc Hệ thống](#-kiến-trúc-hệ-thống)
+## 📑 Mục lục (Table of Contents)
+1. [🏗️ Kiến trúc Hệ thống (Architecture)](#-kiến-trúc-hệ-thống)
 2. [🧠 CPO Virtual Assistant (AI Intelligence)](#-cpo-virtual-assistant-ai-intelligence)
 3. [⚙️ Enterprise Automation Engine](#️-enterprise-automation-engine)
-4. [🛡️ Bảo mật & Tuân thủ](#️-bảo-mật--tuân-thủ)
-5. [🧩 Các Module Nghiệp vụ](#-các-module-nghiệp-vụ)
+4. [🛡️ Bảo mật & Tuân thủ (Security)](#️-bảo-mật--tuân-thủ)
+5. [🧩 Các Module Nghiệp vụ (Modules)](#-các-module-nghiệp-vụ)
 6. [🔄 Quy trình Procure-to-Pay (Mermaid)](#-quy-trình-procure-to-pay)
-7. [🛠️ Hướng dẫn Cài đặt](#️-hướng-dẫn-cài-đặt)
+7. [🛠️ Hướng dẫn Cài đặt (Installation)](#️-hướng-dẫn-cài-đặt)
 
 ---
 
@@ -27,20 +27,20 @@ Hệ thống quản trị mua sắm tập trung (**E-Procurement**) và Quản l
 Hệ thống được xây dựng trên mô hình **Separation of Concerns**, đảm bảo tính độc lập và khả năng mở rộng:
 
 *   **Frontend (`/client`)**:
-    *   **Core:** Next.js 16 (React 19) với App Router.
+    *   **Core:** Next.js 15 (React 19) với App Router.
     *   **UI/UX:** Tailwind CSS 4, Lucide Icons, Shadcn-like components.
-    *   **State Management:** React Context API (`ProcurementProvider`) kết hợp kiến trúc tập trung hóa DTOs.
+    *   **State Management:** React Context API (`ProcurementProvider`) kết hợp kiến trúc tập trung hóa DTOs và Type-safety tuyệt đối.
 *   **Backend (`/server`)**:
     *   **Framework:** NestJS (Node.js) - Kiến trúc Module-based.
     *   **ORM:** Prisma với PostgreSQL 16 (Hỗ trợ Transaction, Indexing chuyên sâu).
-    *   **Background Jobs:** Redis + BullMQ xử lý thông báo và tự động hóa chứng từ.
-    *   **Real-time:** Socket.io đồng bộ trạng thái đơn hàng tức thời.
+    *   **Background Jobs:** Redis + BullMQ xử lý thông báo, email và tự động hóa chứng từ.
+    *   **Real-time:** Socket.io đồng bộ trạng thái đơn hàng và thông báo tức thời.
 
 ---
 
 ## 🧠 CPO Virtual Assistant (AI Intelligence)
 
-Tích hợp **Google Gemini Flash**, hệ thống sở hữu một "Giám đốc Thu mua ảo" (CPO) hỗ trợ ra quyết định thông minh:
+Tích hợp **Google Gemini 1.5 Flash**, hệ thống sở hữu một "Giám đốc Thu mua ảo" (CPO) hỗ trợ ra quyết định thông minh:
 
 1.  **AI Function Calling**: AI có khả năng tự truy vấn database (PR, PO, KPI nhà cung cấp) thông qua các công cụ được định nghĩa sẵn để trả lời câu hỏi bằng ngôn ngữ tự nhiên.
 2.  **Quotation Analysis Engine**:
@@ -58,35 +58,35 @@ Quy trình vận hành được tự động hóa thông qua `AutomationService`
 *   **Auto-Trigger**: Khi PR được duyệt hoàn toàn -> Tự động khởi tạo RFQ.
 *   **Supplier Invitation**: Hệ thống tự gửi Email mời thầu tới các nhà cung cấp được AI gợi ý.
 *   **PO Issuance**: Khi chọn báo giá (Awarded) -> Tự động tạo PO & Soft Commit ngân sách.
-*   **GRN Generation**: Sau khi PO được phát hành -> Tự động tạo bản ghi Nhập kho (Draft GRN).
-*   **Budget Integrity**: Tự động cập nhật `Allocated` -> `Committed` -> `Spent` xuyên suốt vòng đời.
+*   **GRN Generation**: Sau khi PO được phát hành -> Tự động tạo bản ghi Nhập kho (Draft GRN) để chuẩn bị đối soát.
+*   **Budget Integrity**: Tự động cập nhật `Allocated` -> `Committed` -> `Spent` xuyên suốt vòng đời chứng từ.
 
 ---
 
 ## 🛡️ Bảo mật & Tuân thủ (Security & Compliance)
 
-*   **Xác thực**: JWT (JSON Web Token) với cơ chế Access/Refresh token.
-*   **Phân quyền (RBAC)**: Hệ thống vai trò phân tầng: `REQUESTER`, `APPROVER`, `PROCUREMENT`, `FINANCE`, `WAREHOUSE`, `CEO`, `PLATFORM_ADMIN`.
+*   **Xác thực**: JWT (JSON Web Token) với cơ chế Access/Refresh token bảo mật cao.
+*   **Phân quyền (RBAC)**: Hệ thống vai trò phân tầng: `REQUESTER`, `DEPT_APPROVER`, `DIRECTOR`, `CEO`, `PROCUREMENT`, `FINANCE`, `WAREHOUSE`, `PLATFORM_ADMIN`.
 *   **Security Middleware**: Helmet.js bảo vệ header, Throttler chống DDoS, và ValidationPipe chuẩn hóa dữ liệu đầu vào.
-*   **Audit Logging**: `audit-module` ghi lại mọi dấu vết (Ai thay đổi? Thay đổi cái gì? Lúc nào?) phục vụ hậu kiểm.
+*   **Audit Logging**: `audit-module` ghi lại mọi dấu vết thay đổi dữ liệu (Ai thay đổi? Lúc nào?) phục vụ hậu kiểm.
 
 ---
 
 ## 🧩 Các Module Nghiệp vụ (Business Domains)
 
 ### 🛒 Thu mua & Sourcing
-*   **`prmodule`**: Quản lý nhu cầu, kiểm soát hạn mức (Ceiling) theo cấp bậc.
+*   **`prmodule`**: Quản lý nhu cầu, kiểm soát hạn mức theo cấp bậc.
 *   **`rfqmodule`**: So sánh giá, đấu thầu minh bạch.
 *   **`supplier-kpimodule`**: Đánh giá OTD (Giao hàng đúng hạn), Quality, và Trust Score.
 
 ### 💰 Tài chính & Kiểm soát
 *   **`budget-module`**: Quản lý ngân sách theo năm/quý/bộ phận.
-*   **`approval-module`**: Ma trận phê duyệt động (Dynamic Approval Matrix) dựa trên ngưỡng giá trị.
+*   **`approval-module`**: Ma trận phê duyệt động (Dynamic Approval Matrix) dựa trên ngưỡng giá trị chứng từ.
 *   **`invoice-module`**: Đối soát 3 bên (3-Way Matching: PO - GRN - Invoice).
 
 ### 📦 Kho & Vận hành
 *   **`grnmodule`**: Quy trình nhận hàng và kiểm soát chất lượng (QC).
-*   **`dispute-module`**: Xử lý sai lệch hàng hóa, hàng lỗi.
+*   **`dispute-module`**: Xử lý sai lệch hàng hóa, hàng lỗi hoặc tranh chấp thanh toán.
 
 ---
 
@@ -103,7 +103,7 @@ sequenceDiagram
     Requester->>Manager: Create PR (Check Budget)
     Manager-->>Requester: Approved PR
     AI_Engine->>AI_Engine: Auto Create RFQ
-    AI_Engine->>Supplier: Invite to Bid (Email)
+    AI_Engine->>Supplier: Invite to Bid (Email/Portal)
     Supplier->>AI_Engine: Submit Quotation
     AI_Engine->>AI_Engine: Score & Compare Quotations
     AI_Engine->>Requester: Recommend Best Option

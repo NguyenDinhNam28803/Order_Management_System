@@ -64,7 +64,7 @@ export default function ProcurementControlPage() {
                 notify("Đã ghi nhận gán PR cho " + currentUser.fullName, "info");
             }
         } catch (err) {
-            console.error(err);
+            console.error("Lỗi khi gán PR:", err instanceof Error ? err.message : err);
         } finally {
             setIsAssigning(null);
         }

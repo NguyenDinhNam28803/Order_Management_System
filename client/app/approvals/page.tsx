@@ -3,16 +3,20 @@
 import React, { useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
 import { CheckSquare, XCircle, CheckCircle2, Eye, FileText, AlertTriangle, History, ArrowLeft, MessageSquareWarning, Paperclip, Check } from "lucide-react";
-import { useProcurement } from "../context/ProcurementContext";
+import { useProcurement, PR } from "../context/ProcurementContext";
 import { formatVND } from "../utils/formatUtils";
 import { useRouter } from "next/navigation";
+
+interface PendingPR extends PR {
+    workflowId: string;
+}
 
 export default function ApprovalsPage() {
     const { prs, approvals, actionApproval, currentUser, notify } = useProcurement();
     const router = useRouter();
 
-    const pendingPRs = (approvals || []).map((app: any) => {
-        const pr = prs.find((p: any) => p.id === app.documentId);
+    const pendingPRs = (approvals || []).map((app) => {
+        const pr = prs.find((p) => p.id === app.documentId);
         if (!pr) return null;
         
         // Filter by policy: 
@@ -23,9 +27,9 @@ export default function ApprovalsPage() {
         if (currentUser?.role === "DIRECTOR" && prTotal < 10000000) return null;
 
         return { ...pr, workflowId: app.id };
-    }).filter(Boolean);
+    }).filter((p): p is PendingPR => p !== null);
 
-    const [selectedPR, setSelectedPR] = useState<any>(null);
+    const [selectedPR, setSelectedPR] = useState<PendingPR | null>(null);
 
     // Action State
     const [actionType, setActionType] = useState<"APPROVE" | "REJECT" | "MORE_INFO" | null>(null);
@@ -43,6 +47,7 @@ export default function ApprovalsPage() {
 
         setIsSubmitting(true);
         try {
+            if (!selectedPR) return;
             const success = await actionApproval(
                 selectedPR.workflowId, 
                 currentAction === "APPROVE" ? "APPROVE" : "REJECT", 
@@ -104,7 +109,7 @@ export default function ApprovalsPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {pendingPRs.length > 0 ? pendingPRs.map((pr: any, idx: number) => (
+                                {pendingPRs.length > 0 ? pendingPRs.map((pr, idx: number) => (
                                     <tr key={pr.id} className="hover:bg-slate-50/50 group">
                                         <td>
                                             <div className="font-bold text-erp-navy flex items-center gap-2">
@@ -113,7 +118,7 @@ export default function ApprovalsPage() {
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="text-sm font-bold text-slate-700">{pr.department?.name || pr.department}</div>
+                                            <div className="text-sm font-bold text-slate-700">{typeof pr.department === 'object' ? pr.department.name : pr.department}</div>
                                             <div className="text-[10px] text-slate-400">ID: {pr.requester?.fullName || pr.requesterId?.substring(0,8)}</div>
                                         </td>
                                         <td className="max-w-[200px]">
@@ -175,28 +180,28 @@ export default function ApprovalsPage() {
                                 <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
                                     <div className="md:col-span-2 flex items-center gap-4 border-b border-slate-100 pb-4 md:border-none md:pb-0">
                                         <div className="w-12 h-12 rounded-full bg-blue-100 text-erp-blue flex items-center justify-center font-black text-xl">
-                                            {(selectedPR.department?.name || selectedPR.department || "PR").substring(0,2).toUpperCase()}
+                                            {(typeof selectedPR.department === 'object' ? selectedPR.department.name : (selectedPR.department || "PR")).substring(0,2).toUpperCase()}
                                         </div>
                                         <div>
                                             <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-0.5">Người tạo</div>
-                                            <div className="text-sm font-black text-erp-navy">{selectedPR.department?.name || selectedPR.department}</div>
+                                            <div className="text-sm font-black text-erp-navy">{typeof selectedPR.department === 'object' ? selectedPR.department.name : selectedPR.department}</div>
                                             <div className="text-[10px] text-slate-500">Gửi lúc: {new Date(selectedPR.createdAt).toLocaleString('vi-VN')}</div>
                                         </div>
                                     </div>
                                     <div>
                                         <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Cost Center</div>
-                                        <div className="text-sm font-bold text-erp-navy bg-slate-50 inline-block px-2 py-1 rounded border border-slate-100">{selectedPR.costCenter?.name || selectedPR.costCenter || 'N/A'}</div>
+                                        <div className="text-sm font-bold text-erp-navy bg-slate-50 inline-block px-2 py-1 rounded border border-slate-100">{typeof selectedPR.costCenter === 'object' ? selectedPR.costCenter.name : (selectedPR.costCenter || 'N/A')}</div>
                                     </div>
                                     <div>
                                         <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Mức độ ưu tiên</div>
-                                        <div className={`text-sm font-black uppercase tracking-wider ${selectedPR.priority === 'High' ? 'text-red-600' : selectedPR.priority === 'Urgent' ? 'text-amber-500' : 'text-emerald-500'}`}>
-                                            {selectedPR.priority || 'Normal'}
+                                        <div className={`text-sm font-black uppercase tracking-wider ${selectedPR.priority.toString() === 'High' ? 'text-red-600' : selectedPR.priority.toString() === 'Urgent' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                            {selectedPR.priority.toString() || 'Normal'}
                                         </div>
                                     </div>
                                     <div className="col-span-2 md:col-span-4 bg-slate-50 p-4 rounded-xl border border-slate-100/50 mt-2">
                                         <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Mô tả / Lý do mua hàng</div>
                                         <div className="text-sm font-black text-erp-navy mb-1">{selectedPR.title}</div>
-                                        <div className="text-sm font-medium text-slate-700 italic leading-relaxed">"{selectedPR.justification}"</div>
+                                        <div className="text-sm font-medium text-slate-700 italic leading-relaxed">&quot;{selectedPR.justification}&quot;</div>
                                     </div>
                                 </div>
                             </div>
@@ -218,8 +223,8 @@ export default function ApprovalsPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {selectedPR.items?.map((item: any, idx: number) => {
-                                            const rowTotal = item.qty * item.estimatedPrice;
+                                        {selectedPR.items?.map((item, idx: number) => {
+                                            const rowTotal = (Number(item.qty) || Number(item.quantity) || 0) * item.estimatedPrice;
                                             const isSuperHigh = rowTotal >= 100000000;
                                             const isHigh = rowTotal >= 30000000 && !isSuperHigh;
                                             
@@ -310,7 +315,7 @@ export default function ApprovalsPage() {
                                                 <div className="text-[9px] text-slate-400 font-bold">14/03 09:30 AM</div>
                                             </div>
                                             <div className="text-xs font-bold text-erp-navy mb-1">Tran Van B (Đã duyệt)</div>
-                                            <div className="text-[10px] italic text-slate-600 bg-emerald-50/50 p-2 rounded">"Đồng ý đề xuất, cần hàng gấp cho dự án."</div>
+                                            <div className="text-[10px] italic text-slate-600 bg-emerald-50/50 p-2 rounded">&quot;Đồng ý đề xuất, cần hàng gấp cho dự án.&quot;</div>
                                         </div>
                                     </div>
                                 </div>

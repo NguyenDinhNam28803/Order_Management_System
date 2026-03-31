@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Sparkles, Star, AlertCircle, Info } from "lucide-react";
-import { useProcurement } from "../context/ProcurementContext";
+import { useProcurement, PRItem } from "../context/ProcurementContext";
 
 interface Suggestion {
   name: string;
@@ -10,8 +10,7 @@ interface Suggestion {
   reason: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function SupplierSuggestionWidget({ items }: { items: any[] }) {
+export default function SupplierSuggestionWidget({ items }: { items: PRItem[] }) {
   const { apiFetch } = useProcurement();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
@@ -24,7 +23,7 @@ export default function SupplierSuggestionWidget({ items }: { items: any[] }) {
 
     const fetchSuggestions = async () => {
       setLoading(true);
-      const productNames = items.map(i => i.productDesc).join(", ");
+      const productNames = items.map(i => i.description || i.item_name).join(", ");
       const prompt = `Dựa trên danh sách sản phẩm: ${productNames}. Hãy gợi ý 5 nhà cung cấp uy tín nhất. Trả về JSON theo định dạng: [{"name": "Tên NCC", "trustScore": 95, "reason": "Lý do ngắn gọn"}].`;
       
       try {

@@ -18,7 +18,7 @@ export default function POPage() {
 
     // Form State for new PO
     const isCreateMode = action === "create" && prId;
-    const relatedPR = prs.find((p: any) => p.id === prId) || prs[0];
+    const relatedPR = prs.find((p) => p.id === prId) || prs[0];
     
     const [poForm, setPoForm] = useState({
         incoterms: "DDP",
@@ -101,12 +101,12 @@ export default function POPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="border-b border-slate-300">
-                                    {relatedPR?.items?.map((item: any, i: number) => (
+                                    {relatedPR?.items?.map((item, i: number) => (
                                         <tr key={i} className="border-b border-slate-100">
-                                            <td className="py-3 px-4">{item.description}</td>
-                                            <td className="py-3 px-4 text-center font-mono">{item.qty}</td>
+                                            <td className="py-3 px-4">{item.description || item.item_name || item.productName}</td>
+                                            <td className="py-3 px-4 text-center font-mono">{item.qty || item.quantity}</td>
                                             <td className="py-3 px-4 text-right font-mono">{item.estimatedPrice.toLocaleString()}</td>
-                                            <td className="py-3 px-4 text-right font-mono font-bold">{(item.qty * item.estimatedPrice).toLocaleString()}</td>
+                                            <td className="py-3 px-4 text-right font-mono font-bold">{(Number(item.qty || item.quantity || 0) * item.estimatedPrice).toLocaleString()}</td>
                                         </tr>
                                     ))}
                                     {(!relatedPR?.items) && (
@@ -296,12 +296,12 @@ export default function POPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {relatedPR?.items?.map((item: any, idx: number) => (
+                                    {relatedPR?.items?.map((item, idx: number) => (
                                         <tr key={idx} className="border-b border-slate-50">
-                                            <td className="font-bold text-erp-navy">{item.description}</td>
-                                            <td className="text-center font-black">{item.qty}</td>
+                                            <td className="font-bold text-erp-navy">{item.description || item.item_name || item.productName}</td>
+                                            <td className="text-center font-black">{item.qty || item.quantity}</td>
                                             <td className="text-right font-mono text-slate-500">{item.estimatedPrice.toLocaleString()}</td>
-                                            <td className="text-right font-mono font-black text-erp-blue">{(item.qty * item.estimatedPrice).toLocaleString()} ₫</td>
+                                            <td className="text-right font-mono font-black text-erp-blue">{(Number(item.qty || item.quantity || 0) * item.estimatedPrice).toLocaleString()} ₫</td>
                                             <td><input type="text" className="erp-input py-1! text-[10px]! w-full bg-slate-50 font-medium" placeholder="Ghi chú item..." /></td>
                                         </tr>
                                     ))}
@@ -399,7 +399,7 @@ export default function POPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {pos.length > 0 ? pos.map((po: any) => (
+                        {pos.length > 0 ? pos.map((po) => (
                             <tr key={po.id} className="hover:bg-slate-50">
                                 <td className="font-bold text-erp-navy flex items-center gap-2"><FileText size={14} className="text-erp-blue"/> {po.id}</td>
                                 <td className="font-bold text-slate-700">{po.vendor}</td>

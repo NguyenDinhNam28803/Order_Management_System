@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { ShieldAlert, Plus, Edit2, Trash2, Search, DollarSign, Building, Eye } from "lucide-react";
-import { useProcurement, Department } from "../../context/ProcurementContext";
+import { useProcurement, Department, CurrencyCode } from "../../context/ProcurementContext";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
 import { CostCenter } from "@/app/types/api-types";
 
@@ -10,15 +10,21 @@ export default function CostCentersPage() {
     const { costCenters, departments, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, notify } = useProcurement();
     const [showModal, setShowModal] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
-    const [viewingCC, setViewingCC] = useState<any | null>(null);
+    const [viewingCC, setViewingCC] = useState<CostCenter | null>(null);
     const [isLoadingDetail, setIsLoadingDetail] = useState(false);
     const [editingCC, setEditingCC] = useState<CostCenter | null>(null);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        code: string;
+        name: string;
+        deptId: string;
+        budgetAnnual: number;
+        currency: CurrencyCode;
+    }>({
         code: "",
         name: "",
         deptId: "",
         budgetAnnual: 0,
-        currency: "VND"
+        currency: CurrencyCode.VND
     });
 
     const handleOpenModal = (cc?: CostCenter) => {
@@ -29,7 +35,7 @@ export default function CostCentersPage() {
                 name: cc.name,
                 deptId: cc.deptId || "",
                 budgetAnnual: Number(cc.budgetAnnual) || 0,
-                currency: cc.currency || "VND"
+                currency: cc.currency || CurrencyCode.VND
             });
         } else {
             setEditingCC(null);
@@ -38,7 +44,7 @@ export default function CostCentersPage() {
                 name: "",
                 deptId: departments?.[0]?.id || "",
                 budgetAnnual: 0,
-                currency: "VND"
+                currency: CurrencyCode.VND
             });
         }
         setShowModal(true);
@@ -67,9 +73,9 @@ export default function CostCentersPage() {
 
         let success = false;
         if (editingCC) {
-            success = await updateCostCenter(editingCC.id, formData as any);
+            success = await updateCostCenter(editingCC.id, formData);
         } else {
-            success = await addCostCenter(formData as any);
+            success = await addCostCenter(formData);
         }
 
         if (success) {
@@ -269,11 +275,11 @@ export default function CostCentersPage() {
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tiền tệ</label>
                                         <select
                                             value={formData.currency}
-                                            onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                                            onChange={(e) => setFormData({ ...formData, currency: e.target.value as CurrencyCode })}
                                             className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
                                         >
-                                            <option value="VND">VND - Việt Nam Đồng</option>
-                                            <option value="USD">USD - Đô la Mỹ</option>
+                                            <option value={CurrencyCode.VND}>VND - Việt Nam Đồng</option>
+                                            <option value={CurrencyCode.USD}>USD - Đô la Mỹ</option>
                                         </select>
                                     </div>
                                 </div>
@@ -350,8 +356,8 @@ export default function CostCentersPage() {
                                         </div>
                                         
                                         <div className="max-h-60 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
-                                            {viewingCC.budgetAllocations?.length > 0 ? (
-                                                viewingCC.budgetAllocations.map((alloc: any) => (
+                                            {viewingCC.budgetAllocations && viewingCC.budgetAllocations.length > 0 ? (
+                                                viewingCC.budgetAllocations.map((alloc) => (
                                                     <div key={alloc.id} className="flex justify-between items-center p-4 rounded-2xl bg-white border border-slate-50 hover:border-slate-100 transition-all shadow-sm">
                                                         <div className="flex items-center gap-4">
                                                             <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-erp-blue font-black text-[10px]">

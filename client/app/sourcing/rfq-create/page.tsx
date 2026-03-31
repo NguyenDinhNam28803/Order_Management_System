@@ -17,12 +17,24 @@ export default function RFQCreatePage() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [form, setForm] = useState({
+    interface RFQItem extends PRItem {
+        prId: string;
+        prNumber: string;
+        selected: boolean;
+    }
+
+    const [form, setForm] = useState<{
+        title: string;
+        description: string;
+        deadline: string;
+        vendor: string;
+        items: RFQItem[];
+    }>({
         title: "",
         description: "",
         deadline: "",
         vendor: "",
-        items: [] as any[]
+        items: []
     });
 
     // Only approved PRs can be sourced
@@ -43,12 +55,12 @@ export default function RFQCreatePage() {
         if (!pr) return;
 
         // Skip if already added
-        if (form.items.some((i: any) => i.prId === prId)) {
+        if (form.items.some((i) => i.prId === prId)) {
             notify("Đã thêm các mặt hàng từ PR này rồi", "info");
             return;
         }
 
-        const newItems = pr.items?.map((item: PRItem) => ({
+        const newItems: RFQItem[] = pr.items?.map((item: PRItem) => ({
             ...item,
             prId: pr.id,
             prNumber: pr.prNumber || pr.id.substring(0, 8),
@@ -83,8 +95,8 @@ export default function RFQCreatePage() {
                 description: form.description,
                 deadline: form.deadline,
                 vendorName: form.vendor,
-                itemIds: form.items.map((i: any) => i.id).filter((id: string) => !!id),
-                prIds: Array.from(new Set(form.items.map((i: any) => i.prId)))
+                itemIds: form.items.map((i) => i.id).filter((id): id is string => !!id),
+                prIds: Array.from(new Set(form.items.map((i) => i.prId)))
             };
 
             const res = await apiFetch("/request-for-quotations", {
@@ -94,7 +106,7 @@ export default function RFQCreatePage() {
 
             if (res.ok) {
                 // Consolidated logic: create ONE RFQ with multiple items
-                const uniquePrIds: string[] = Array.from(new Set(form.items.map((i: any) => i.prId)));
+                const uniquePrIds: string[] = Array.from(new Set(form.items.map((i) => i.prId)));
                 
                 await createRFQConsolidated({
                     title: form.title,
@@ -118,7 +130,7 @@ export default function RFQCreatePage() {
         }
     };
 
-    const totalEstimate = form.items.reduce((sum: number, item: any) => sum + (item.qty * (item.estimatedPrice || 0)), 0);
+    const totalEstimate = form.items.reduce((sum: number, item) => sum + (Number(item.qty || 0) * (item.estimatedPrice || 0)), 0);
 
     return (
         <main className="pt-16 px-8 pb-12 animate-in fade-in duration-500">
@@ -189,11 +201,11 @@ export default function RFQCreatePage() {
                                 </label>
                                 <Select
                                     options={vendors}
-                                    onChange={(opt: any) => setForm({...form, vendor: opt?.value})}
+                                    onChange={(opt) => setForm({...form, vendor: opt?.value || ""})}
                                     placeholder="Chọn nhà cung cấp nhận RFQ..."
                                     className="text-sm"
                                     styles={{
-                                        control: (base: any) => ({
+                                        control: (base) => ({
                                             ...base,
                                             borderRadius: '1rem',
                                             padding: '8px',
@@ -258,10 +270,10 @@ export default function RFQCreatePage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
-                                    {form.items.map((item: any, idx: number) => (
+                                    {form.items.map((item, idx: number) => (
                                         <tr key={idx} className="group hover:bg-erp-blue/5 transition-all">
                                             <td className="px-8 py-5">
-                                                <div className="font-black text-erp-navy text-sm leading-tight mb-1">{item.productDesc || item.name}</div>
+                                                <div className="font-black text-erp-navy text-sm leading-tight mb-1">{item.description || item.item_name || item.productName}</div>
                                                 <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">SKU: {item.sku || "N/A"}</div>
                                             </td>
                                             <td className="px-4 py-5">
@@ -269,9 +281,9 @@ export default function RFQCreatePage() {
                                                     {item.prNumber}
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-5 text-center font-black text-erp-navy text-sm">{item.qty}</td>
+                                            <td className="px-4 py-5 text-center font-black text-erp-navy text-sm">{item.qty || item.quantity || 0}</td>
                                             <td className="px-4 py-5 text-right font-black text-erp-blue text-sm">
-                                                {(item.qty * (item.estimatedPrice || 0)).toLocaleString()} ₫
+                                                {((Number(item.qty) || Number(item.quantity) || 0) * (item.estimatedPrice || 0)).toLocaleString()} ₫
                                             </td>
                                             <td className="px-8 py-5 text-center">
                                                 <button 
@@ -351,7 +363,7 @@ export default function RFQCreatePage() {
                             <div className="space-y-4">
                                 <div className="flex justify-between text-xs">
                                     <span className="text-white/50 font-medium">Số PR kết hợp</span>
-                                    <span className="font-black uppercase tracking-widest">{Array.from(new Set(form.items.map((i: any) => i.prId))).length} PRs</span>
+                                    <span className="font-black uppercase tracking-widest">{Array.from(new Set(form.items.map((i) => i.prId))).length} PRs</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
                                     <span className="text-white/50 font-medium">Tổng số dòng hàng</span>

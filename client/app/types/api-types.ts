@@ -49,7 +49,126 @@ export enum CurrencyCode {
     USD = "USD",
     EUR = "EUR",
     SGD = "SGD",
-    JPY = "JPY"
+    JPY = "JPY",
+    CNY = "CNY",
+    GBP = "GBP",
+    AUD = "AUD"
+}
+
+export enum UserRole {
+    REQUESTER = "REQUESTER",
+    DEPT_APPROVER = "DEPT_APPROVER",
+    DIRECTOR = "DIRECTOR",
+    CEO = "CEO",
+    PROCUREMENT = "PROCUREMENT",
+    WAREHOUSE = "WAREHOUSE",
+    QA = "QA",
+    FINANCE = "FINANCE",
+    SUPPLIER = "SUPPLIER",
+    PLATFORM_ADMIN = "PLATFORM_ADMIN",
+    SYSTEM = "SYSTEM"
+}
+
+export enum PrStatus {
+    DRAFT = "DRAFT",
+    PENDING_APPROVAL = "PENDING_APPROVAL",
+    UNDER_REVIEW = "UNDER_REVIEW",
+    LEVEL2_REVIEW = "LEVEL2_REVIEW",
+    LEVEL3_REVIEW = "LEVEL3_REVIEW",
+    APPROVED = "APPROVED",
+    IN_SOURCING = "IN_SOURCING",
+    PO_CREATED = "PO_CREATED",
+    COMPLETED = "COMPLETED",
+    REJECTED = "REJECTED",
+    CANCELLED = "CANCELLED"
+}
+
+export enum RfqStatus {
+    DRAFT = "DRAFT",
+    SENT = "SENT",
+    SUPPLIER_REVIEWING = "SUPPLIER_REVIEWING",
+    QUOTATION_RECEIVED = "QUOTATION_RECEIVED",
+    AI_ANALYZING = "AI_ANALYZING",
+    AI_RECOMMENDED = "AI_RECOMMENDED",
+    REQUESTER_REVIEW = "REQUESTER_REVIEW",
+    SELECTION_CONFIRMED = "SELECTION_CONFIRMED",
+    NEGOTIATION = "NEGOTIATION",
+    AWARD_PENDING = "AWARD_PENDING",
+    AWARDED = "AWARDED",
+    CLOSED = "CLOSED",
+    CANCELLED = "CANCELLED"
+}
+
+export enum QuotationStatus {
+    DRAFT = "DRAFT",
+    SUBMITTED = "SUBMITTED",
+    UNDER_REVIEW = "UNDER_REVIEW",
+    ACCEPTED = "ACCEPTED",
+    REJECTED = "REJECTED",
+    EXPIRED = "EXPIRED"
+}
+
+export enum PoStatus {
+    DRAFT = "DRAFT",
+    PENDING_APPROVAL = "PENDING_APPROVAL",
+    APPROVED = "APPROVED",
+    ISSUED = "ISSUED",
+    ACKNOWLEDGED = "ACKNOWLEDGED",
+    IN_PROGRESS = "IN_PROGRESS",
+    SHIPPED = "SHIPPED",
+    GRN_CREATED = "GRN_CREATED",
+    INVOICED = "INVOICED",
+    COMPLETED = "COMPLETED",
+    CANCELLED = "CANCELLED",
+    DISPUTED = "DISPUTED",
+    ON_HOLD = "ON_HOLD",
+    CONFIRMED = "CONFIRMED",
+    REJECTED = "REJECTED"
+}
+
+export enum GrnStatus {
+    DRAFT = "DRAFT",
+    COUNTING = "COUNTING",
+    INSPECTING = "INSPECTING",
+    INSPECTION_DONE = "INSPECTION_DONE",
+    UNDER_REVIEW = "UNDER_REVIEW",
+    CONFIRMED = "CONFIRMED",
+    POSTED = "POSTED",
+    DISPUTED = "DISPUTED"
+}
+
+export enum InvoiceStatus {
+    DRAFT = "DRAFT",
+    SUBMITTED = "SUBMITTED",
+    MATCHING = "MATCHING",
+    AUTO_APPROVED = "AUTO_APPROVED",
+    EXCEPTION_REVIEW = "EXCEPTION_REVIEW",
+    PAYMENT_APPROVED = "PAYMENT_APPROVED",
+    PAYMENT_PROCESSING = "PAYMENT_PROCESSING",
+    PAID = "PAID",
+    REJECTED = "REJECTED",
+    CANCELLED = "CANCELLED",
+    DISPUTED = "DISPUTED"
+}
+
+export enum ApprovalStatus {
+    PENDING = "PENDING",
+    APPROVED = "APPROVED",
+    REJECTED = "REJECTED",
+    ESCALATED = "ESCALATED",
+    RECALLED = "RECALLED",
+    EXPIRED = "EXPIRED",
+    DELEGATED = "DELEGATED"
+}
+
+export enum DocumentType {
+    PURCHASE_REQUISITION = "PURCHASE_REQUISITION",
+    PURCHASE_ORDER = "PURCHASE_ORDER",
+    SUPPLIER_INVOICE = "SUPPLIER_INVOICE",
+    SUPPLIER_SELECTION = "SUPPLIER_SELECTION",
+    GRN = "GRN",
+    PAYMENT = "PAYMENT",
+    CONTRACT = "CONTRACT"
 }
 
 /**
@@ -85,7 +204,7 @@ export interface Organization {
     isActive: boolean;
     kycStatus: KycStatus;
     trustScore: number;
-    metadata: Record<string, any>;
+    metadata: Record<string, unknown>;
     createdAt: string;
     updatedAt: string;
 }
@@ -106,6 +225,27 @@ export interface CostCenter {
     fiscalYear?: number;
     isActive: boolean;
     createdAt: string;
+    department?: Department;
+    budgetAllocations?: BudgetAllocation[];
+}
+
+export interface BudgetAllocation {
+    id: string;
+    budgetPeriodId: string;
+    costCenterId: string;
+    orgId: string;
+    deptId?: string;
+    allocatedAmount: number;
+    committedAmount: number;
+    spentAmount: number;
+    currency: string;
+    notes?: string;
+    createdAt: string;
+    budgetPeriod?: {
+        id: string;
+        fiscalYear: number;
+        periodNumber: number;
+    };
 }
 
 // --- ORGANIZATION DTOs ---

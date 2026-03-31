@@ -205,7 +205,7 @@ export default function FinanceBudgetsPage() {
                         </select>
                         <select 
                             value={dashPeriodType} 
-                            onChange={e => setDashPeriodType(e.target.value as any)}
+                            onChange={e => setDashPeriodType(e.target.value as 'ALL' | 'ANNUAL' | 'QUARTERLY')}
                             className="bg-white px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-black outline-none"
                         >
                             <option value="ALL">Tất cả chu kỳ</option>

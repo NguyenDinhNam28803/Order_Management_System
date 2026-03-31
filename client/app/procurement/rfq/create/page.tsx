@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { PR, PRItem, useProcurement } from "../../../context/ProcurementContext";
+import { PR, PRItem, useProcurement, Organization, CompanyType, KycStatus } from "../../../context/ProcurementContext";
 import DashboardHeader from "../../../components/DashboardHeader";
 import { 
     FileText, 
@@ -36,8 +36,7 @@ export default function CreateRFQPage() {
     const prId = params.id as string || searchParams.get("prId");
     const targetPR = prs.find((p: PR) => p.id === prId);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [selectedVendors, setSelectedVendors] = useState<any[]>([]);
+    const [selectedVendors, setSelectedVendors] = useState<Organization[]>([]);
     const [vendorSearch, setVendorSearch] = useState("");
     const [deadline, setDeadline] = useState("");
     const [note, setNote] = useState("");
@@ -46,20 +45,17 @@ export default function CreateRFQPage() {
 
     // Filter organizations to exclude current user's org
     const realVendors = React.useMemo(() => 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (organizations || []).filter((o: any) => o.id !== currentUser?.orgId),
+        (organizations || []).filter((o: Organization) => o.id !== currentUser?.orgId),
     [organizations, currentUser?.orgId]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const filteredVendors = realVendors.filter((v: any) => 
+    const filteredVendors = realVendors.filter((v: Organization) =>
         v.name.toLowerCase().includes(vendorSearch.toLowerCase()) || 
         (v.email && v.email.toLowerCase().includes(vendorSearch.toLowerCase()))
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const addVendor = (v: any) => {
+    const addVendor = (v: Partial<Organization>) => {
         if (!selectedVendors.find(sv => sv.id === v.id)) {
-            setSelectedVendors([...selectedVendors, v]);
+            setSelectedVendors([...selectedVendors, v as Organization]);
         }
         setVendorSearch("");
     };
@@ -102,10 +98,10 @@ export default function CreateRFQPage() {
             setTimeout(() => {
                 router.push("/procurement/prs");
             }, 2000);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (err: any) {
+        } catch (err) {
             console.error(err);
-            alert(`Có lỗi xảy ra khi tạo RFQ: ${err.message}`);
+            const errorMessage = err instanceof Error ? err.message : "Unknown error";
+            alert(`Có lỗi xảy ra khi tạo RFQ: ${errorMessage}`);
         } finally {
             setIsSubmitting(false);
         }
@@ -256,7 +252,20 @@ export default function CreateRFQPage() {
                                         ) : (
                                             <button 
                                                 type="button"
-                                                onClick={() => addVendor({ name: vendorSearch, email: "" })}
+                                                onClick={() => addVendor({
+                                                    id: 'new-' + Date.now(),
+                                                    name: vendorSearch,
+                                                    email: "",
+                                                    code: 'NEW',
+                                                    companyType: CompanyType.SUPPLIER,
+                                                    countryCode: 'VN',
+                                                    isActive: true,
+                                                    kycStatus: KycStatus.PENDING,
+                                                    trustScore: 0,
+                                                    metadata: {},
+                                                    createdAt: new Date().toISOString(),
+                                                    updatedAt: new Date().toISOString()
+                                                })}
                                                 className="w-full text-left p-4 hover:bg-slate-50 flex items-center gap-3"
                                             >
                                                 <Plus size={16} className="text-erp-blue" />

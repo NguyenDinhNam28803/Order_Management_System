@@ -11,6 +11,7 @@ import DashboardHeader from "../../components/DashboardHeader";
 import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
 
 interface PRItem {
+    id?: string;
     productId?: string;
     productDesc: string;
     sku?: string;
@@ -99,7 +100,7 @@ export default function CreatePRPage() {
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [quarterlyAllocation, setQuarterlyAllocation] = useState<any>(null);
+    const [quarterlyAllocation, setQuarterlyAllocation] = useState<BudgetAllocation | null>(null);
 
     // Calculate current quarter
     const today = new Date();
@@ -521,8 +522,7 @@ export default function CreatePRPage() {
                                 className="text-sm font-bold"
                                 placeholder="Nhập tên sản phẩm hoặc mã SKU..."
                                 styles={{
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    control: (base: Record<string, unknown>, state: any) => ({
+                                    control: (base, state) => ({
                                         ...base,
                                         borderRadius: '1rem',
                                         padding: '8px 12px',
@@ -532,8 +532,7 @@ export default function CreatePRPage() {
                                         transition: 'all 0.3s ease',
                                         '&:hover': { borderColor: '#2563eb' }
                                     }),
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    placeholder: (base: any) => ({
+                                    placeholder: (base) => ({
                                         ...base,
                                         color: '#cbd5e1',
                                         fontStyle: 'italic',

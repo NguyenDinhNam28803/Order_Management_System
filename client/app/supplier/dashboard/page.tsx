@@ -2,23 +2,32 @@
 
 import React, { useState } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
-import { Inbox, Package, FileText, CheckCircle2, TrendingUp, AlertTriangle, ChevronRight, Zap } from "lucide-react";
-import { useProcurement } from "../../context/ProcurementContext";
+import { Inbox, Package, FileText, CheckCircle2, TrendingUp, AlertTriangle, Zap } from "lucide-react";
+import { useProcurement, RFQ } from "../../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
+interface MockPO {
+    id: string;
+    item: string;
+    qty: number;
+    dateReq: string;
+    progress: number;
+    status: string;
+}
 
 export default function SupplierDashboard() {
     const { currentUser, rfqs, createQuote, notify } = useProcurement();
     const router = useRouter();
 
     // Filter RFQs for this supplier (simulation: matches name or show all for demo if not specific)
-    const myRfqs = rfqs.filter((r: any) => 
+    const myRfqs = rfqs.filter((r: RFQ) =>
         r.vendor?.toLowerCase().includes(currentUser?.name?.toLowerCase() || "") || 
         r.vendor?.toLowerCase().includes(currentUser?.fullName?.toLowerCase() || "") ||
         currentUser?.role === "PLATFORM_ADMIN" // Admin sees all
     );
 
-    const pos = [
+    const pos: MockPO[] = [
         { id: "PO-2026-001", item: "Vải Cotton 100%", qty: 500, dateReq: "15/04/2026", progress: 60, status: "IN_PRODUCTION" },
         { id: "PO-2026-003", item: "Máy may Juki", qty: 10, dateReq: "20/04/2026", progress: 10, status: "PREPARING" },
     ];
@@ -46,13 +55,13 @@ export default function SupplierDashboard() {
                 <div className="erp-card bg-orange-50 border-orange-200 group">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-3 bg-orange-100 text-orange-600 rounded-xl group-hover:scale-110 transition-transform"><Inbox size={24} /></div>
-                        {myRfqs.filter((r: any) => r.status === 'SENT').length > 0 && (
+                        {myRfqs.filter((r: RFQ) => r.status === 'SENT').length > 0 && (
                             <span className="flex items-center gap-1 text-[10px] font-black uppercase text-white bg-red-500 px-2 py-1 rounded shadow-sm shadow-red-500/20">
                                 <AlertTriangle size={10}/> Mới
                             </span>
                         )}
                     </div>
-                    <div className="text-3xl font-black text-orange-950">{myRfqs.filter((r: any) => r.status === 'SENT').length}</div>
+                    <div className="text-3xl font-black text-orange-950">{myRfqs.filter((r: RFQ) => r.status === 'SENT').length}</div>
                     <div className="text-xs font-bold text-orange-700/60 uppercase tracking-widest mt-1">RFQ Chờ báo giá</div>
                 </div>
                 
@@ -101,7 +110,7 @@ export default function SupplierDashboard() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {myRfqs.map((rfq: any) => (
+                                {myRfqs.map((rfq: RFQ) => (
                                     <tr key={rfq.id} className="hover:bg-slate-50 transition-all border-b border-slate-50 group">
                                         <td className="font-black text-erp-navy px-6 py-5">
                                             {rfq.id.toUpperCase()}
@@ -162,7 +171,7 @@ export default function SupplierDashboard() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {pos.map((po: any) => (
+                                {pos.map((po: MockPO) => (
                                     <tr key={po.id} className="cursor-pointer hover:bg-slate-50 border-b border-slate-50" onClick={() => router.push(`/supplier/po`)}>
                                         <td className="font-bold text-erp-navy"><FileText size={12} className="inline mr-1 text-slate-400"/> {po.id}</td>
                                         <td>
