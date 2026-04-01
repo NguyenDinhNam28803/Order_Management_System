@@ -5,7 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { InvoiceStatus, Prisma } from '@prisma/client';
+import { InvoiceStatus, PoStatus, Prisma } from '@prisma/client';
 import {
   CreateInvoiceModuleDto,
   CreateInvoiceItemDto,
@@ -121,6 +121,12 @@ export class InvoiceModuleService {
 
     // Tự động chạy đối soát sau khi tạo
     void this.runThreeWayMatching(invoice.id);
+
+    // Cập nhật trạng thái PO sang INVOICED (Enum chuẩn trong Schema)
+    await this.prisma.purchaseOrder.update({
+      where: { id: poId },
+      data: { status: PoStatus.INVOICED },
+    });
 
     return invoice;
   }

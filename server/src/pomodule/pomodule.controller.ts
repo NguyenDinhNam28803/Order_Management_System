@@ -14,6 +14,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
 import { UserRole } from '@prisma/client';
+import type { JwtPayload } from 'src/auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('Purchase Order (PO)')
 @Controller('purchase-orders')
@@ -88,6 +89,14 @@ export class PomoduleController {
    * @param req Thông tin người dùng thực hiện yêu cầu
    * @returns Đơn hàng sau khi gửi duyệt
    */
+  @Post('create-from-pr')
+  async createFromPr(
+    @Body() body: { prId: string; supplierId: string },
+    @Request() req: JwtPayload,
+  ) {
+    return this.poService.createFromPr(body.prId, body.supplierId, req);
+  }
+
   @Post(':id/submit')
   @ApiOperation({
     summary: 'Gửi đơn hàng phê duyệt',
@@ -138,6 +147,7 @@ export class PomoduleController {
     description: 'Cập nhật trạng thái của một đơn hàng cụ thể',
   })
   updateStatus(@Param('id') id: string, @Body() body: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.poService.updateStatus(id, body.status);
   }
 }

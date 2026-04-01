@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo, useEffect } from "react";
+import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo, useEffect, useRef } from "react";
 import Cookies from 'js-cookie';
 import {
     Organization,
@@ -54,18 +54,6 @@ export interface User {
     employeeCode?: string;
     isActive?: boolean;
     department?: { id: string; name: string };
-}
-
-export interface Supplier {
-    id: string;
-    name: string;
-    code: string;
-    category: string;
-    status: 'ACTIVE' | 'INACTIVE';
-    rating: number;
-    email: string;
-    phone: string;
-    website?: string;
 }
 
 export interface PRItem {
@@ -127,6 +115,7 @@ export interface POItem {
 
 export interface PO {
     id: string;
+    poNumber: string;
     vendor: string;
     items: POItem[];
     status: PoStatus | string;
@@ -137,6 +126,7 @@ export interface PO {
 export interface RFQ {
     id: string;
     prId: string;
+    rfqNumber: string;
     vendor: string;
     status: RfqStatus | string;
     title?: string;
@@ -149,6 +139,7 @@ export interface RFQ {
 
 export interface GRN {
     id: string;
+    grnNumber: string;
     poId: string;
     receivedItems: Record<string, number>;
     createdAt: string;
@@ -156,6 +147,7 @@ export interface GRN {
 
 export interface Invoice {
     id: string;
+    invoiceNumber: string;
     vendor: string;
     poId: string;
     amount: number;
@@ -205,28 +197,13 @@ export interface Product {
     isActive?: boolean;
 }
 
-export interface ProductCategory {
-    id: string;
-    code: string;
-    name: string;
-    description?: string;
-}
-
 export interface Quote {
     id: string;
     rfqId: string;
     supplierId: string;
     totalPrice: number;
-    price?: number; // legacy/shorthand
-    leadTime?: string;
-    paymentTerms?: string;
-    total?: number;
-    deliveryDate?: string;
-    prices?: Record<string, number>;
-    currency: string;
     leadTimeDays: number;
     status: QuotationStatus | string;
-    notes?: string;
     createdAt: string;
 }
 
@@ -278,7 +255,9 @@ interface ProcurementContextType extends ProcurementState {
     updatePR: (id: string, data: Partial<PR>) => Promise<boolean>;
     fetchPrDetail: (id: string) => Promise<PR | null>;
     approvePR: (id: string) => Promise<boolean>;
+    createPOFromPR: (prId: string, supplierId: string) => Promise<boolean>;
     createRFQ: (prId: string, vendor: string) => Promise<boolean>;
+    awardQuotation: (rfqId: string, quotationId: string) => Promise<boolean>;
     createRFQConsolidated: (data: Record<string, unknown>) => Promise<string>;
     actionApproval: (workflowId: string, action: string, comment?: string) => Promise<boolean>;
     addDept: (data: Partial<Department>) => Promise<boolean>;
@@ -316,15 +295,6 @@ interface ProcurementContextType extends ProcurementState {
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
 
-const DEMO_USERS = [
-    { id: "admin-1", email: "admin@innhub.com", fullName: "System Admin", role: "PLATFORM_ADMIN", icon: "AD" },
-    { id: "manager-1", email: "it.manager@innhub.com", fullName: "IT Manager", role: "DEPT_APPROVER", icon: "MG", deptId: "dept-it" },
-    { id: "proc-1", email: "proc.officer@innhub.com", fullName: "Procurement Officer", role: "PROCUREMENT", icon: "PO" },
-    { id: "director-1", email: "director@innhub.com", fullName: "Director", role: "DIRECTOR", icon: "DR" },
-    { id: "ceo-1", email: "ceo@innhub.com", fullName: "Board CEO", role: "CEO", icon: "CE" },
-    { id: "req-1", email: "it.requester@innhub.com", fullName: "IT Staff 01", role: "REQUESTER", icon: "RQ", deptId: "dept-it" }
-];
-
 const INITIAL_STATE: ProcurementState = {
     currentUser: null,
     prs: [],
@@ -334,7 +304,7 @@ const INITIAL_STATE: ProcurementState = {
     grns: [],
     invoices: [],
     budgets: null,
-    users: DEMO_USERS,
+    users: [],
     departments: [],
     notifications: [],
     approvals: [],
@@ -343,11 +313,7 @@ const INITIAL_STATE: ProcurementState = {
     budgetPeriods: [],
     budgetAllocations: [],
     quotes: [],
-    products: [
-        { id: "p1", name: "Laptop Dell Latitude", sku: "DELL-LAT-5420", unitPriceRef: 25000000, unit: "UNIT" },
-        { id: "p2", name: "Chuột không dây Logitech", sku: "LOGI-M331", unitPriceRef: 350000, unit: "UNIT" },
-        { id: "p3", name: "Màn hình Dell 24 inch", sku: "DELL-U2422H", unitPriceRef: 6500000, unit: "PCS" }
-    ],
+    products: [],
     fiscalYears: [2024, 2025, 2026],
     token: null,
     loadingMyPrs: false,
@@ -356,6 +322,7 @@ const INITIAL_STATE: ProcurementState = {
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<ProcurementState>(INITIAL_STATE);
+    const initialLoadDone = useRef(false);
 
     const notify = useCallback((message: string, type: 'success' | 'error' | 'info' | 'warning' = 'success', role?: string) => {
         const id = Date.now();
@@ -388,21 +355,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
         try {
             const res = await fetch(`http://localhost:5000${url}`, { ...options, credentials: 'include', headers });
-            if (!res.ok) {
-                const contentType = res.headers.get("content-type");
-                let errorData;
-                const clonedRes = res.clone();
-                if (contentType && contentType.includes("application/json")) {
-                    errorData = await clonedRes.json().catch(() => ({}));
-                } else {
-                    errorData = { rawText: await clonedRes.text().catch(() => "N/A") };
-                }
-                console.error(`API Error (${url}) - Status ${res.status}:`, errorData);
-            }
             return res;
         } catch (error) {
             console.error(`API Fetch Network Error (${url}):`, error);
-            return { ok: false, status: 503, json: async () => ({ message: 'Network error', data: [] }) } as Response;
+            return { ok: false, status: 503, json: async () => ({ message: 'Network error' }) } as Response;
         }
     }, []);
 
@@ -412,7 +368,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
         try {
             setState(prev => ({ ...prev, loadingMyPrs: true }));
-            const [ccRes, orgRes, deptRes, allPrRes, myPrRes, pendingApprRes, usersRes, budgetAllocRes, budgetPeriodRes] = await Promise.all([
+            const [ccRes, orgRes, deptRes, allPrRes, myPrRes, pendingApprRes, usersRes, budgetAllocRes, posRes, rfqsRes, invoicesRes] = await Promise.all([
                 apiFetch('/cost-centers'),
                 apiFetch('/organizations'),
                 apiFetch('/departments'),
@@ -421,18 +377,22 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 apiFetch('/approvals/pending'),
                 apiFetch('/users'),
                 apiFetch('/budgets/allocations'),
-                apiFetch('/budgets/periods')
+                apiFetch('/purchase-orders'),
+                apiFetch('/request-for-quotations'),
+                apiFetch('/invoices')
             ]);
  
-            const costCenters = ccRes.ok ? (await ccRes.json()).data : null;
-            const organizations = orgRes.ok ? (await orgRes.json()).data : null;
-            const departments = deptRes.ok ? (await deptRes.json()).data : null;
-            const allPrs = allPrRes.ok ? (await allPrRes.json()).data : null;
-            const myPrs = myPrRes.ok ? (await myPrRes.json()).data : null;
-            const pendingApprovals = pendingApprRes.ok ? (await pendingApprRes.json()).data : null;
-            const fetchedUsers = usersRes.ok ? (await usersRes.json()).data : null;
-            const fetchedBudgetAllocations = budgetAllocRes.ok ? (await budgetAllocRes.json()).data : null;
-            const fetchedBudgetPeriods = budgetPeriodRes.ok ? (await budgetPeriodRes.json()).data : null;
+            const costCenters = ccRes.ok ? (await ccRes.json()).data : [];
+            const organizations = orgRes.ok ? (await orgRes.json()).data : [];
+            const departments = deptRes.ok ? (await deptRes.json()).data : [];
+            const allPrs = allPrRes.ok ? (await allPrRes.json()).data : [];
+            const myPrs = myPrRes.ok ? (await myPrRes.json()).data : [];
+            const pendingApprovals = pendingApprRes.ok ? (await pendingApprRes.json()).data : [];
+            const fetchedUsers = usersRes.ok ? (await usersRes.json()).data : [];
+            const fetchedBudgetAllocations = budgetAllocRes.ok ? (await budgetAllocRes.json()).data : [];
+            const fetchedPos = posRes.ok ? (await posRes.json()).data : [];
+            const fetchedRfqs = rfqsRes.ok ? (await rfqsRes.json()).data : [];
+            const fetchedInvoices = invoicesRes.ok ? (await invoicesRes.json()).data : [];
  
             setState(prev => ({
                 ...prev,
@@ -444,24 +404,26 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 approvals: Array.isArray(pendingApprovals) ? pendingApprovals : prev.approvals,
                 users: Array.isArray(fetchedUsers) ? fetchedUsers : prev.users,
                 budgetAllocations: Array.isArray(fetchedBudgetAllocations) ? fetchedBudgetAllocations : prev.budgetAllocations,
-                budgetPeriods: Array.isArray(fetchedBudgetPeriods) ? fetchedBudgetPeriods : prev.budgetPeriods,
+                pos: Array.isArray(fetchedPos) ? fetchedPos : prev.pos,
+                rfqs: Array.isArray(fetchedRfqs) ? fetchedRfqs : prev.rfqs,
+                invoices: Array.isArray(fetchedInvoices) ? fetchedInvoices : prev.invoices,
                 loadingMyPrs: false
             }));
         } catch (error) {
-            console.error("Error refreshing data from backend:", error);
+            console.error("Error refreshing data:", error);
             setState(prev => ({ ...prev, loadingMyPrs: false }));
         }
     }, [apiFetch]);
 
     useEffect(() => {
         const token = Cookies.get('accessToken');
-        if (token && state.currentUser === null) {
-            // Initial load only if logged in but no user data in state
-            const triggerLoad = async () => {
-                await Promise.resolve(); // Defers execution to next tick
-                await refreshData();
-            };
-            void triggerLoad();
+        if (token && state.currentUser === null && !initialLoadDone.current) {
+            initialLoadDone.current = true;
+            // Trì hoãn thực thi để tránh cảnh báo cascading render của React
+            const timer = setTimeout(() => {
+                void refreshData();
+            }, 0);
+            return () => clearTimeout(timer);
         }
     }, [refreshData, state.currentUser]);
 
@@ -477,128 +439,55 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 Cookies.set('accessToken', data.accessToken, { expires: 7, sameSite: 'Strict' });
             }
             setState(prev => ({ ...prev, currentUser: data.user }));
-            refreshData();
+            void refreshData();
             return true;
         } else {
-            const errorRes = await res.json().catch(() => ({}));
-            notify(errorRes.message || "Email hoặc mật khẩu không chính xác", "error");
+            notify("Đăng nhập thất bại", "error");
             return false;
         }
     }, [apiFetch, notify, refreshData]);
 
     const logout = useCallback(async () => {
-        await apiFetch('/auth/logout', { method: 'POST' }).catch(() => { });
         Cookies.remove('accessToken');
-        Cookies.remove('refreshToken');
-        setState(prev => ({ ...prev, currentUser: null, myPrs: [], prs: [] }));
-    }, [apiFetch]);
+        setState(prev => ({ ...prev, currentUser: null }));
+    }, []);
 
     const register = useCallback(async (data: Record<string, unknown>) => {
-        const res = await apiFetch('/auth/register', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-        if (res.ok) {
-            notify("Đăng ký tài khoản thành công!", "success");
-            return true;
-        }
-        const err = await res.json().catch(() => ({}));
-        notify(err.message || "Không thể đăng ký tài khoản", "error");
+        const res = await apiFetch('/auth/register', { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { notify("Đăng ký thành công!", "success"); return true; }
         return false;
     }, [apiFetch, notify]);
 
     const addPR = useCallback(async (data: Partial<PR>) => {
-        try {
-            const res = await apiFetch('/procurement-requests', {
-                method: 'POST',
-                body: JSON.stringify({
-                    title: data.title,
-                    description: data.description,
-                    justification: data.justification,
-                    priority: data.priority,
-                    costCenterId: data.costCenterId,
-                    items: data.items?.map(item => ({
-                        productId: item.productId,
-                        quantity: Number(item.qty || item.quantity),
-                        estimatedPrice: Number(item.estimatedPrice)
-                    }))
-                })
-            });
-
-            if (res.ok) {
-                const result = await res.json();
-                notify("Tạo yêu cầu mua sắm thành công!", "success");
-                refreshData();
-                return result.data?.id || "success";
-            } else {
-                const err = await res.json().catch(() => ({}));
-                notify(err.message || "Lỗi khi tạo yêu cầu mua sắm", "error");
-                return "";
-            }
-        } catch (error) {
-            console.error(error);
-            notify("Lỗi hệ thống khi tạo PR", "error");
-            return "";
-        }
+        const res = await apiFetch('/procurement-requests', { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { notify("Đã tạo PR", "success"); refreshData(); return "success"; }
+        return "";
     }, [apiFetch, refreshData, notify]);
-
-    const fetchPrDetail = useCallback(async (id: string) => {
-        try {
-            setState(prev => ({ ...prev, loadingMyPrs: true }));
-            const res = await apiFetch(`/procurement-requests/${id}`);
-            if (res.ok) {
-                const result = await res.json();
-                const prDetail = result.data;
-                setState(prev => ({ ...prev, currentPrDetail: prDetail, loadingMyPrs: false }));
-                return prDetail;
-            }
-            setState(prev => ({ ...prev, loadingMyPrs: false }));
-            return null;
-        } catch (error) {
-            console.error(error);
-            setState(prev => ({ ...prev, loadingMyPrs: false }));
-            return null;
-        }
-    }, [apiFetch]);
 
     const updatePR = useCallback(async (id: string, data: Partial<PR>) => {
-        try {
-            const res = await apiFetch(`/procurement-requests/${id}`, {
-                method: 'PATCH',
-                body: JSON.stringify(data)
-            });
-            if (res.ok) {
-                notify("Cập nhật thành công!", "success");
-                refreshData();
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error(error);
-            return false;
-        }
-    }, [apiFetch, refreshData, notify]);
-
-    const approvePR = useCallback(async (id: string) => {
-        const res = await apiFetch(`/procurement-requests/${id}/approve`, { method: 'POST' });
-        if (res.ok) {
-            notify("Đã duyệt PR", "success");
-            refreshData();
-            return true;
-        }
+        const res = await apiFetch(`/procurement-requests/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+        if (res.ok) { notify("Cập nhật PR thành công", "success"); refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const actionApproval = useCallback(async (workflowId: string, action: string, comment?: string) => {
-        const res = await apiFetch(`/approvals/${workflowId}/action`, {
+    const fetchPrDetail = useCallback(async (id: string) => {
+        const res = await apiFetch(`/procurement-requests/${id}`);
+        if (res.ok) return (await res.json()).data;
+        return null;
+    }, [apiFetch]);
+
+    const approvePR = useCallback(async (id: string) => {
+        const res = await apiFetch(`/procurement-requests/${id}/approve`, { method: 'POST' });
+        if (res.ok) { notify("Đã duyệt PR", "success"); refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const createPOFromPR = useCallback(async (prId: string, supplierId: string) => {
+        const res = await apiFetch('/purchase-orders/create-from-pr', {
             method: 'POST',
-            body: JSON.stringify({ action, comment })
+            body: JSON.stringify({ prId, supplierId })
         });
-        if (res.ok) {
-            notify("Đã thực hiện phê duyệt", "success");
-            refreshData();
-            return true;
-        }
+        if (res.ok) { notify("Đã tạo PO thành công", "success"); refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
 
@@ -607,26 +496,66 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             method: 'POST',
             body: JSON.stringify({ prId, vendor })
         });
-        if (res.ok) {
-            notify("Đã tạo RFQ", "success");
-            refreshData();
-            return true;
-        }
+        if (res.ok) { notify("Đã tạo RFQ", "success"); refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const awardQuotation = useCallback(async (rfqId: string, quotationId: string) => {
+        const res = await apiFetch(`/request-for-quotations/${rfqId}/award/${quotationId}`, {
+            method: 'POST'
+        });
+        if (res.ok) { notify("Đã trao thầu thành công. PO đang được tạo.", "success"); refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
 
     const createRFQConsolidated = useCallback(async (data: Record<string, unknown>) => {
-        const res = await apiFetch('/request-for-quotations/consolidate', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-        if (res.ok) {
-            const result = await res.json();
-            notify("Đã tạo RFQ tổng hợp", "success");
-            refreshData();
-            return result.data?.id;
-        }
+        const res = await apiFetch('/request-for-quotations/consolidate', { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { refreshData(); return (await res.json()).data.id; }
         return "";
+    }, [apiFetch, refreshData]);
+
+    const actionApproval = useCallback(async (workflowId: string, action: string, comment?: string) => {
+        const res = await apiFetch(`/approvals/${workflowId}/action`, {
+            method: 'POST',
+            body: JSON.stringify({ action, comment })
+        });
+        if (res.ok) { notify("Thành công", "success"); refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const createGRN = useCallback(async (data: Record<string, unknown>) => {
+        const res = await apiFetch('/grn', { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { notify("Đã nhập kho", "success"); refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const createInvoice = useCallback(async (data: Record<string, unknown>) => {
+        const res = await apiFetch('/invoices', { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { notify("Đã tạo hóa đơn", "success"); refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const payInvoice = useCallback(async (id: string) => {
+        const pRes = await apiFetch(`/payments`);
+        if (!pRes.ok) return false;
+        
+        const paymentsData = await pRes.json();
+        const payments = Array.isArray(paymentsData.data) ? paymentsData.data : [];
+        const payment = payments.find((p: { invoiceId: string; status: string; id: string }) => p.invoiceId === id && p.status === 'PENDING');
+        
+        if (payment) {
+            const res = await apiFetch(`/payments/${payment.id}/complete`, { method: 'POST' });
+            if (res.ok) { notify("Đã xác nhận thanh toán", "success"); refreshData(); return true; }
+        } else {
+            const resCreate = await apiFetch('/payments', { method: 'POST', body: JSON.stringify({ invoiceId: id, method: 'BANK_TRANSFER' }) });
+            if (resCreate.ok) {
+                const createData = await resCreate.json();
+                const newPay = createData.data;
+                const resComp = await apiFetch(`/payments/${newPay.id}/complete`, { method: 'POST' });
+                if (resComp.ok) { notify("Đã tạo và xác nhận thanh toán", "success"); refreshData(); return true; }
+            }
+        }
+        return false;
     }, [apiFetch, refreshData, notify]);
 
     const addDept = useCallback(async (data: Partial<Department>) => {
@@ -727,7 +656,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const fetchCostCenter = useCallback(async (id: string) => {
         const res = await apiFetch(`/cost-centers/${id}`);
-        if (res.ok) { const result = await res.json(); return result.data; }
+        if (res.ok) return (await res.json()).data;
         return null;
     }, [apiFetch]);
 
@@ -761,61 +690,38 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData]);
 
-    const createGRN = useCallback(async (data: Record<string, unknown>) => Promise.resolve(true), []);
-    const ackPO = useCallback(async (id: string) => Promise.resolve(true), []);
-    const shipPO = useCallback(async (id: string) => Promise.resolve(true), []);
-    const createInvoice = useCallback(async (data: Record<string, unknown>) => Promise.resolve(true), []);
-    const payInvoice = useCallback(async (id: string) => Promise.resolve(true), []);
-    const matchInvoice = useCallback(async (id: string, status?: string) => {
-        console.log("Mock matchInvoice", id, status);
-        return Promise.resolve(true);
-    }, []);
+    const matchInvoice = useCallback(async (id: string) => {
+        const res = await apiFetch(`/invoices/${id}/run-matching`, { method: 'POST' });
+        if (res.ok) { notify("Đã chạy đối soát lại", "info"); refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const ackPO = useCallback(async (id: string) => {
+        const res = await apiFetch(`/purchase-orders/${id}/confirm`, { method: 'POST' });
+        if (res.ok) { notify("Đã xác nhận đơn hàng", "success"); refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const shipPO = useCallback(async (id: string) => {
+        const res = await apiFetch(`/purchase-orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status: 'SHIPPED' }) });
+        if (res.ok) { notify("Đang giao hàng", "success"); refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
 
     const contextValue = useMemo(() => ({
         ...state,
-        login,
-        logout,
-        refreshData,
-        apiFetch,
-        addPR,
-        updatePR,
-        fetchPrDetail,
-        approvePR,
-        createRFQ,
-        createRFQConsolidated,
-        actionApproval,
-        addDept,
-        updateDept,
-        removeDept,
-        addUser,
-        updateUser,
-        addBudgetPeriod,
-        updateBudgetPeriod,
-        removeBudgetPeriod,
-        addBudgetAllocation,
-        updateBudgetAllocation,
-        removeBudgetAllocation,
-        addBudgetAllocationBundle,
-        reconcileQuarter,
-        createGRN,
-        ackPO,
-        shipPO,
-        createInvoice,
-        payInvoice,
-        matchInvoice,
-        addCostCenter,
-        updateCostCenter,
-        removeCostCenter,
-        fetchCostCenter,
-        fetchQuarterlyBudget,
-        addOrganization,
-        updateOrganization,
-        removeOrganization,
-        removeNotification,
-        notify,
-        register,
-        createQuote
-    }), [state, login, logout, refreshData, apiFetch, addPR, updatePR, fetchPrDetail, approvePR, createRFQ, createRFQConsolidated, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, reconcileQuarter, createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchQuarterlyBudget, addOrganization, updateOrganization, removeOrganization, removeNotification, notify, register, createQuote]);
+        login, logout, refreshData, apiFetch,
+        addPR, updatePR, fetchPrDetail, approvePR,
+        createPOFromPR, createRFQ, awardQuotation, createRFQConsolidated,
+        actionApproval, addDept, updateDept, removeDept,
+        addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod,
+        addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation,
+        addBudgetAllocationBundle, reconcileQuarter,
+        createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice,
+        addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchQuarterlyBudget,
+        addOrganization, updateOrganization, removeOrganization,
+        removeNotification, notify, register, createQuote
+    }), [state, login, logout, refreshData, apiFetch, addPR, updatePR, fetchPrDetail, approvePR, createPOFromPR, createRFQ, awardQuotation, createRFQConsolidated, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, reconcileQuarter, createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchQuarterlyBudget, addOrganization, updateOrganization, removeOrganization, removeNotification, notify, register, createQuote]);
 
     return (
         <ProcurementContext.Provider value={contextValue}>

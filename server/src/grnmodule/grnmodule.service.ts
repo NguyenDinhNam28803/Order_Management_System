@@ -4,7 +4,6 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { CreateGrnmoduleDto } from './dto/create-grnmodule.dto';
-// import { UpdateGrnmoduleDto } from './dto/update-grnmodule.dto';
 import { GrnRepository } from './grn.repository';
 import { PrismaService } from '../prisma/prisma.service';
 import { GrnStatus, PoStatus } from '@prisma/client';
@@ -31,14 +30,18 @@ export class GrnmoduleService {
       throw new NotFoundException(`Purchase Order with ID ${poId} not found`);
     }
 
-    if (
-      po.status !== PoStatus.ISSUED &&
-      po.status !== PoStatus.IN_PROGRESS &&
-      //po.status !== PoStatus.PARTIALLY_RECEIVED &&
-      po.status !== PoStatus.ACKNOWLEDGED
-    ) {
+    // Kiểm tra trạng thái PO cho phép nhập kho (Dựa trên Enum thực tế trong Schema)
+    const allowedPoStatuses: PoStatus[] = [
+      PoStatus.ISSUED,
+      PoStatus.ACKNOWLEDGED,
+      PoStatus.IN_PROGRESS,
+      PoStatus.SHIPPED,
+      PoStatus.GRN_CREATED,
+    ];
+
+    if (!allowedPoStatuses.includes(po.status)) {
       throw new BadRequestException(
-        `PO must be in ISSUED, ACKNOWLEDGED, or IN_PROGRESS state to receive goods. Current: ${po.status}`,
+        `PO must be in active state to receive goods. Current: ${po.status}`,
       );
     }
 
@@ -52,7 +55,30 @@ export class GrnmoduleService {
       }
     }
 
-    // 3. Create GRN
+    // 3. Validate Quantity (Received vs PO)
+    for (const item of items) {
+      const poItem = po.items.find((i) => i.id === item.poItemId);
+      if (!poItem) continue;
+
+      const previouslyReceived = await this.prisma.grnItem.aggregate({
+        where: {
+          poItemId: item.poItemId,
+          grn: { status: { not: GrnStatus.DISPUTED } },
+        },
+        _sum: { receivedQty: true },
+      });
+
+      const totalReceived =
+        (Number(previouslyReceived._sum.receivedQty) || 0) +
+        Number(item.receivedQty);
+      if (totalReceived > Number(poItem.qty)) {
+        throw new BadRequestException(
+          `Tổng số lượng nhận (${totalReceived}) vượt quá số lượng đặt hàng (${poItem.qty.toString()}) cho item ${poItem.sku}`,
+        );
+      }
+    }
+
+    // 4. Create GRN
     const grnNumber = `GRN-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
     const grn = await this.repository.create(
       createGrnDto,
@@ -61,11 +87,10 @@ export class GrnmoduleService {
       user.sub,
     );
 
-    // 4. Update PO Status
-    // TODO: Calculate if fully received or partially
+    // 5. Update PO Status sang IN_PROGRESS (Enum chuẩn)
     await this.prisma.purchaseOrder.update({
       where: { id: poId },
-      data: { status: PoStatus.GRN_CREATED }, // Or PARTIALLY_RECEIVED
+      data: { status: PoStatus.IN_PROGRESS },
     });
 
     return grn;
@@ -81,11 +106,6 @@ export class GrnmoduleService {
     return grn;
   }
 
-  // async update(id: string, updateGrnDto: UpdateGrnmoduleDto) {
-  //   // Basic update logic if needed
-  //   return `This action updates a #${id} grnmodule`;
-  // }
-
   async updateStatus(id: string, status: GrnStatus, userId: string) {
     const grn = await this.repository.findOne(id);
     if (!grn) throw new NotFoundException(`GRN with ID ${id} not found`);
@@ -98,7 +118,6 @@ export class GrnmoduleService {
     itemId: string,
     dto: UpdateGrnItemQcResultDto,
   ) {
-    // Verify item belongs to GRN
     const grn = await this.repository.findOne(id);
     if (!grn) throw new NotFoundException(`GRN with ID ${id} not found`);
 
@@ -110,12 +129,44 @@ export class GrnmoduleService {
     return this.repository.updateItemQc(itemId, dto);
   }
 
-  async confirmGrn(id: string, userId: string) {
-    return this.updateStatus(id, GrnStatus.CONFIRMED, userId);
-  }
+  async confirmGrn(id: string, user: JwtPayload) {
+    const grn = await this.repository.findOne(id);
+    if (!grn) throw new NotFoundException(`GRN with ID ${id} not found`);
 
-  // async remove(id: number) {
-  //   // Only allow delete if DRAFT
-  //   return `This action removes a #${id} grnmodule`;
-  // }
+    const result = await this.repository.updateStatus(
+      id,
+      GrnStatus.CONFIRMED,
+      user.sub,
+    );
+
+    // Kiểm tra xem PO đã nhận hết hàng chưa
+    const po = await this.prisma.purchaseOrder.findUnique({
+      where: { id: grn.poId },
+      include: { items: true },
+    });
+
+    if (po) {
+      let allReceived = true;
+      for (const poItem of po.items) {
+        const received = await this.prisma.grnItem.aggregate({
+          where: { poItemId: poItem.id, grn: { status: GrnStatus.CONFIRMED } },
+          _sum: { acceptedQty: true },
+        });
+        if ((Number(received._sum.acceptedQty) || 0) < Number(poItem.qty)) {
+          allReceived = false;
+          break;
+        }
+      }
+
+      // Nếu đã nhận đủ, chuyển PO sang trạng thái COMPLETED hoặc GRN_CREATED (Dựa trên Enum)
+      if (allReceived) {
+        await this.prisma.purchaseOrder.update({
+          where: { id: po.id },
+          data: { status: PoStatus.GRN_CREATED },
+        });
+      }
+    }
+
+    return result;
+  }
 }

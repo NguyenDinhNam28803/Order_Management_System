@@ -12,11 +12,16 @@ import Link from "next/link";
 import { RFQ } from "../context/ProcurementContext";
 
 export default function SourcingPage() {
-    const { prs, rfqs, currentUser, apiFetch, refreshData, notify, createRFQ } = useProcurement();
+    const { prs, rfqs, currentUser, refreshData, notify, createRFQ, createPOFromPR, organizations } = useProcurement();
     const [activeTab, setActiveTab] = useState("approved-prs");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
+
+    // Filter organizations to get only suppliers
+    const suppliersList = (organizations || []).filter(org => 
+        org.companyType === 'SUPPLIER' || org.companyType === 'BOTH'
+    );
 
     // 1. Get Approved PRs that need sourcing (not already in an RFQ)
     const rfqsPrIds = (rfqs || []).map((r: RFQ) => r.prId);
@@ -32,22 +37,36 @@ export default function SourcingPage() {
     const handleCreateRFQ = async (prId: string) => {
         setIsProcessing(true);
         try {
-            const res = await apiFetch("/request-for-quotations", {
-                method: "POST",
-                body: JSON.stringify({
-                    prId,
-                    vendor: "Default Vendor", // This should be selected or suggested by AI
-                })
-            });
-            if (res.ok) {
-                // Call context-level local createRFQ for local storage/demo state
-                await createRFQ(prId, "Thiên Long Digital");
-                notify("Đã khởi tạo RFQ thành công cho đơn " + prId, "success");
+            const success = await createRFQ(prId, "Thiên Long Digital");
+            if (success) {
+                notify("Đã khởi tạo RFQ thành công", "success");
                 refreshData();
             }
         } catch (err) {
             console.error(err);
             notify("Lỗi khi khởi tạo RFQ", "error");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const handleQuickPO = async (prId: string) => {
+        if (!suppliersList || suppliersList.length === 0) {
+            notify("Không có nhà cung cấp nào khả dụng để tạo PO nhanh", "warning");
+            return;
+        }
+        
+        setIsProcessing(true);
+        try {
+            // Pick the first available supplier for the demo
+            const targetSupplier = suppliersList[0];
+            const success = await createPOFromPR(prId, targetSupplier.id);
+            if (success) {
+                notify(`Đã tạo PO nhanh cho NCC ${targetSupplier.name}`, "success");
+                refreshData();
+            }
+        } catch (err) {
+            console.error(err);
         } finally {
             setIsProcessing(false);
         }
@@ -145,13 +164,23 @@ export default function SourcingPage() {
                                                 {(Number(pr.totalEstimate) || 0).toLocaleString()} \u20ab
                                             </td>
                                             <td className="px-6 py-5 text-center">
-                                                <button 
-                                                    onClick={() => handleCreateRFQ(pr.id)}
-                                                    className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all transform active:scale-95"
-                                                    disabled={isProcessing}
-                                                >
-                                                    {isProcessing ? "Đang xử lý..." : "Khởi tạo RFQ"} <ArrowRight size={14} />
-                                                </button>
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <button 
+                                                        onClick={() => handleCreateRFQ(pr.id)}
+                                                        className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all transform active:scale-95"
+                                                        disabled={isProcessing}
+                                                    >
+                                                        Khởi tạo RFQ
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleQuickPO(pr.id)}
+                                                        className="inline-flex items-center gap-2 bg-erp-navy text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all transform active:scale-95 shadow-lg shadow-erp-navy/20"
+                                                        disabled={isProcessing}
+                                                        title="Tạo PO trực tiếp cho nhà cung cấp mặc định"
+                                                    >
+                                                        Tạo PO nhanh <ArrowRight size={14} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )) : (
@@ -205,7 +234,7 @@ export default function SourcingPage() {
                 </div>
             </div>
 
-            <div className="mt-10 bg-gradient-to-br from-erp-navy to-erp-blue p-8 rounded-[40px] text-white overflow-hidden relative shadow-2xl shadow-erp-navy/30">
+            <div className="mt-10 bg-linear-to-br from-erp-navy to-erp-blue p-8 rounded-[40px] text-white overflow-hidden relative shadow-2xl shadow-erp-navy/30">
                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="max-w-xl">
                         <div className="flex items-center gap-3 mb-4">
@@ -217,7 +246,7 @@ export default function SourcingPage() {
                         <h2 className="text-3xl font-black tracking-tight mb-4">AI đang gợi ý 5 nguồn hàng chuẩn nhất cho bạn</h2>
                         <p className="text-white/70 text-sm font-medium leading-relaxed">Dựa trên dữ liệu mạng lưới nhà cung cấp, chúng tôi tìm thấy danh sách phối hợp báo giá nhanh nhất.</p>
                     </div>
-                    <button className="bg-white text-erp-navy px-10 py-5 rounded-3xl font-black text-xs uppercase tracking-[0.1em] hover:bg-emerald-400 hover:text-white transition-all shrink-0 shadow-lg active:scale-95">
+                    <button className="bg-white text-erp-navy px-10 py-5 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-emerald-400 hover:text-white transition-all shrink-0 shadow-lg active:scale-95">
                         Xem đề xuất ngay
                     </button>
                 </div>

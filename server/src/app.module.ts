@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { CacheModule } from '@nestjs/cache-manager';
-import * as redisStore from 'cache-manager-ioredis-yet';
+// import * as redisStore from 'cache-manager-ioredis-yet';
 import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -33,6 +33,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { CostCenterModuleModule } from './cost-center-module/cost-center-module.module';
 import { OrganizationModuleModule } from './organization-module/organization-module.module';
 import { AutomationModule } from './common/automation/automation.module';
+import { RagController } from './rag/rag.controller';
+import { RagModule } from './rag/rag.module';
 
 @Module({
   imports: [
@@ -51,11 +53,11 @@ import { AutomationModule } from './common/automation/automation.module';
         },
       }),
     }),
-    // CacheModule.register({
-    //   isGlobal: true,
-    //   ttl: 600,
-    //   max: 1000,
-    // }),
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 600,
+      max: 1000,
+    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
@@ -102,8 +104,10 @@ import { AutomationModule } from './common/automation/automation.module';
     CostCenterModuleModule,
     OrganizationModuleModule,
     AutomationModule,
+    RagModule,
+    RagModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, RagController],
   providers: [
     AppService,
     HashPasswordService,

@@ -14,6 +14,8 @@ import { CreateInvoiceModuleDto } from './dto/create-invoice-module.dto';
 import { UpdateInvoiceModuleDto } from './dto/update-invoice-module.dto';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { UserRole } from '@prisma/client';
+import { Roles } from 'src/common/roles.guard';
 
 @ApiTags('Invoice Management')
 @ApiBearerAuth('JWT-auth')
@@ -51,9 +53,23 @@ export class InvoiceModuleController {
    * @returns Chi tiết hóa đơn
    */
   @Get(':id')
-  @ApiOperation({ summary: 'Lấy chi tiết hóa đơn theo ID' })
+  @ApiOperation({ summary: 'Chi tiết hóa đơn' })
   findOne(@Param('id') id: string) {
     return this.invoiceModuleService.findOne(id);
+  }
+
+  @Post(':id/pay')
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Xác nhận thanh toán hóa đơn' })
+  payInvoice(@Param('id') id: string) {
+    return this.invoiceModuleService.markAsPaid(id);
+  }
+
+  @Post(':id/run-matching')
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Chạy lại đối soát 3 bên' })
+  runMatching(@Param('id') id: string) {
+    return this.invoiceModuleService.runThreeWayMatching(id);
   }
 
   /**
