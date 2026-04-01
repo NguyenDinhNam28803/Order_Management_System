@@ -4,9 +4,10 @@ const prisma = new PrismaClient();
 
 async function main() {
   const org = await prisma.organization.findFirst();
-  const cc = await prisma.costCenter.findFirst({
-    where: { code: 'cc-it-1' }
-  }) || await prisma.costCenter.findFirst();
+  const cc =
+    (await prisma.costCenter.findFirst({
+      where: { code: 'cc-it-1' },
+    })) || (await prisma.costCenter.findFirst());
 
   console.log('--- DATA FOR SEEDING ---');
   console.log('ORG_ID:', org?.id);

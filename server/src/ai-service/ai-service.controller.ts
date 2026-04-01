@@ -26,14 +26,4 @@ export class AiController {
     const answer = await this.aiService.askAiAboutDatabase(prompt);
     return { answer };
   }
-
-  /**
-   * Kiểm tra khả năng kết nối và phản hồi của dịch vụ AI
-   * @returns Kết quả test AI query
-   */
-  @Get('test')
-  @ApiOperation({ summary: 'Kiểm tra truy vấn AI' })
-  async testAi() {
-    return this.aiService.responsetest();
-  }
 }

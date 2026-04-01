@@ -9,6 +9,7 @@ import { CreatePoDto } from './dto/create-po.dto';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { PoStatus, CurrencyCode, DocumentType } from '@prisma/client';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
+import { SupplierKpimoduleService } from '../supplier-kpimodule/supplier-kpimodule.service';
 
 @Injectable()
 export class PomoduleService {
@@ -16,6 +17,7 @@ export class PomoduleService {
     private readonly repository: PoRepository,
     private readonly prisma: PrismaService,
     private readonly approvalService: ApprovalModuleService,
+    private readonly supplierKpiService: SupplierKpimoduleService,
   ) {}
 
   async create(createPoDto: CreatePoDto, user: JwtPayload) {
@@ -77,12 +79,40 @@ export class PomoduleService {
     return this.repository.resetPoStatus(poId);
   }
 
+  /**
+   * Nhà cung cấp chấp nhận PO
+   * Kích hoạt đánh giá AI và chuẩn bị luồng nhận hàng
+   */
   async confirmPo(poId: string) {
     const po = await this.prisma.purchaseOrder.findUnique({
       where: { id: poId },
     });
     if (!po) throw new NotFoundException('PO not found');
-    return this.repository.confirmPoFromSupplier(poId);
+
+    // 1. Cập nhật trạng thái PO sang CONFIRMED
+    const updatedPo = await this.repository.confirmPoFromSupplier(poId);
+
+    // 2. Tích hợp AI: Tự động đánh giá hiệu năng/rủi ro nhà cung cấp ngay khi họ chấp nhận đơn
+    // (Giúp Buyer biết được mức độ tin cậy thực tế dựa trên các đơn hàng trước đó)
+    try {
+      await this.supplierKpiService.evaluateSupplierPerformance(
+        po.supplierId,
+        po.orgId,
+      );
+      console.log(`AI Evaluation completed for supplier ${po.supplierId}`);
+    } catch (aiError) {
+      console.error('AI Evaluation failed, continuing flow:', aiError);
+    }
+
+    // 3. (Optional) Tự động cập nhật trạng thái PR liên quan nếu cần
+    if (po.prId) {
+      await this.prisma.purchaseRequisition.update({
+        where: { id: po.prId },
+        data: { status: 'PO_CREATED' },
+      });
+    }
+
+    return updatedPo;
   }
 
   async rejectPo(poId: string) {

@@ -2,12 +2,12 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
-
 import { PrismaService } from '../prisma/prisma.service';
 
+// --- INTERFACES ---
 export interface AiDatabaseResponse<T = unknown> {
   length?: number;
-  cons?: any;
+  cons?: string[];
   score?: number;
   success: boolean;
   summary: string;
@@ -16,10 +16,24 @@ export interface AiDatabaseResponse<T = unknown> {
   message?: string;
 }
 
-export interface AiResponseSupplier {
-  rfqId: string;
-  supplierId: string;
-  isRecommended: boolean;
+export interface AiSupplierEvaluation {
+  overallScore: number;
+  otdScore: number;
+  qualityScore: number;
+  priceScore: number;
+  tierRecommendation: string;
+  analysis: string;
+  improvementPlan: string;
+  pros: string[];
+  cons: string[];
+}
+
+export interface AiQuotationAnalysis {
+  score: number;
+  assessment: string;
+  pros: string[];
+  cons: string[];
+  recommendation: 'RECOMMEND' | 'CONSIDER' | 'REJECT';
 }
 
 @Injectable()
@@ -41,124 +55,97 @@ export class AiService implements OnModuleInit {
 
   async onModuleInit() {
     await this.listModels();
-    // await this.responsetest();
   }
 
   /**
    * Phân tích và chấm điểm báo giá dựa trên yêu cầu của RFQ
    */
-  async analyzeQuotation(rfqData: any, quotationData: any, supplierData: any) {
+  async analyzeQuotation(
+    rfqData: any,
+    quotationData: any,
+    supplierData: any,
+  ): Promise<AiQuotationAnalysis> {
     const prompt = `
       Đóng vai một chuyên gia mua sắm (Procurement Expert). Hãy phân tích báo giá sau:
+      1. YÊU CẦU (RFQ): ${JSON.stringify(rfqData.items)}
+      2. BÁO GIÁ (Quotation): ${quotationData.totalPrice}
+      3. NHÀ CUNG CẤP: ${supplierData.name}
 
-      1. YÊU CẦU (RFQ):
-      - Mặt hàng: ${JSON.stringify(rfqData.items)}
-      - Tổng ngân sách dự kiến: ${rfqData.totalEstimate || 'Không rõ'}
-      - Hạn chót cần hàng: ${rfqData.deadline}
-
-      2. BÁO GIÁ CỦA NHÀ CUNG CẤP (Quotation):
-      - Tổng tiền: ${quotationData.totalPrice}
-      - Thời gian giao hàng: ${quotationData.leadTimeDays} ngày
-      - Điều khoản thanh toán: ${quotationData.paymentTerms}
-
-      3. THÔNG TIN NHÀ CUNG CẤP:
-      - Tên: ${supplierData.name}
-      - Điểm tin cậy (Trust Score): ${supplierData.trustScore}/100
-      - Xếp hạng: ${supplierData.tier}
-
-      NHIỆM VỤ:
-      Hãy đánh giá báo giá này trên thang điểm 100 dựa trên các tiêu chí: Giá cả (40%), Thời gian (30%), Uy tín (30%).
-      
-      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT (Không markdown):
+      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT:
       {
-        "score": number, // Điểm số 0-100
-        "assessment": "Nhận xét tổng quan ngắn gọn",
-        "pros": ["Điểm mạnh 1", "Điểm mạnh 2"],
-        "cons": ["Rủi ro/Điểm yếu 1"],
+        "score": number,
+        "assessment": "string",
+        "pros": ["string"],
+        "cons": ["string"],
         "recommendation": "RECOMMEND" | "CONSIDER" | "REJECT"
       }
     `;
 
-    // Gọi Gemini (không dùng function calling, chỉ text generation thuần túy để nhanh hơn)
     const result = await this.client.models.generateContent({
-      model: 'gemini-1.5-flash', // Model nhanh và rẻ cho task phân tích text
+      model: 'gemini-1.5-flash',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
-    const responseText = result.text;
-    return this.parseJsonResponse(responseText ?? ''); // Tận dụng hàm parse có sẵn
+    return this.parseSpecificJson<AiQuotationAnalysis>(result.text ?? '');
   }
 
   /**
-   * Phương thức chính để AI tương tác với database qua Prisma
+   * Phân tích hiệu năng nhà cung cấp
+   */
+  async analyzeSupplierPerformance(
+    supplierData: any,
+    performanceData: any,
+  ): Promise<AiSupplierEvaluation> {
+    const prompt = `
+      Đóng vai chuyên gia Quản lý Nhà cung cấp. Phân tích hiệu năng: ${supplierData.name}. 
+      Dữ liệu hiệu năng: ${JSON.stringify(performanceData)}.
+      
+      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT:
+      {
+        "overallScore": number,
+        "otdScore": number,
+        "qualityScore": number,
+        "priceScore": number,
+        "tierRecommendation": "STRATEGIC" | "PREFERRED" | "APPROVED" | "CONDITIONAL" | "DISQUALIFIED",
+        "analysis": "string",
+        "improvementPlan": "string",
+        "pros": ["string"],
+        "cons": ["string"]
+      }
+    `;
+
+    const result = await this.client.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+
+    return this.parseSpecificJson<AiSupplierEvaluation>(result.text ?? '');
+  }
+
+  /**
+   * Phương thức chính để AI tương tác với database qua Prisma (Full logic)
    */
   async askAiAboutDatabase(userPrompt: string): Promise<AiDatabaseResponse> {
     try {
-      // Hướng dẫn chi tiết cho AI về cách sử dụng công cụ và cấu trúc database
       const systemInstruction = `
-        # ROLE
-        Bạn là Giám đốc Sách lược Mua sắm (Chief Procurement Officer - CPO) tại hệ thống OMS này. Mục tiêu của bạn là tối ưu hóa chi phí, giảm thiểu rủi ro chuỗi cung ứng và đảm bảo tính minh bạch.
-
-        # CONTEXT
-        Bạn có quyền truy cập vào database của hệ thống thông qua công cụ 'query_database'.
-        Cấu trúc database (Prisma models):
-        - organization: Thông tin công ty, nhà cung cấp, khách hàng.
-        - purchaseRequisition (PR): Yêu cầu mua hàng.
-        - purchaseOrder (PO): Đơn mua hàng.
-        - rfqRequest (RFQ): Yêu cầu báo giá.
-        - supplierKpiScore (KPI): Chỉ số KPI nhà cung cấp (KHÔNG CÓ trường 'overallScore').
-        - supplierManualReview (ManualReview): Đánh giá thủ công (CÓ trường 'overallScore').
-
-        # OPERATING PRINCIPLES
-        1. Dữ liệu là ưu tiên: Mọi đánh giá phải dựa trên chỉ số (TrustScore, LeadTime, Giá, Chất lượng).
-        2. Tối ưu chi phí: Luôn tìm phương án cân bằng giữa giá thành và thời gian giao hàng.
-        3. Kiểm tra Schema: TRƯỚC KHI truy vấn 'orderBy' hoặc 'select', hãy kiểm tra xem trường đó có tồn tại trong model không.
-           - Ví dụ: Không dùng 'overallScore' để sắp xếp model 'SupplierKpiScore'. Nếu cần sắp xếp theo điểm, hãy chọn các trường hợp lệ như 'otdScore' hoặc 'priceScore'.
-        4. Minh bạch: Mọi gợi ý phải tuân thủ ma trận phê duyệt.
-
-        # QUY TẮC TƯƠNG TÁC
-        1. LUÔN LUÔN sử dụng công cụ 'query_database' khi người dùng hỏi về dữ liệu thực tế.
-        2. Đối với 'findMany', sử dụng 'take: 10' để tránh quá tải dữ liệu.
-        3. Kết hợp dữ liệu cứng (KPI/Đơn hàng) và dữ liệu mềm (phản hồi trong Dispute) khi phân tích nhà cung cấp.
-
-        ===== ĐỊNH DẠNG ĐẦU RA BẮT BUỘC =====
-        Bạn PHẢI trả về JSON hợp lệ:
-        {
-          "success": true,
-          "summary": "Mô tả ngắn gọn kết quả bằng tiếng Việt (giọng điệu CPO chuyên nghiệp)",
-          "data": <mảng hoặc object dữ liệu thực tế>,
-          "total": <số lượng bản ghi>,
-          "message": "Thông báo bổ sung nếu cần"
-        }
-        TUYỆT ĐỐI không thêm markdown, chỉ JSON thuần túy.
+        # ROLE: Bạn là Giám đốc Sách lược Mua sắm (CPO).
+        # CONTEXT: Bạn có quyền truy cập vào database qua 'query_database'.
+        # MODELS: organization, purchaseRequisition, purchaseOrder, rfqRequest, supplierKpiScore.
+        # OUTPUT: Phải trả về JSON đúng cấu trúc AiDatabaseResponse.
       `;
 
-      // Định nghĩa công cụ cho Function Calling
       const tools: any = [
         {
           functionDeclarations: [
             {
               name: 'query_database',
-              description:
-                'Truy vấn và quản lý dữ liệu từ database thông qua Prisma.',
+              description: 'Truy vấn dữ liệu từ database thông qua Prisma.',
               parameters: {
                 type: 'OBJECT',
                 properties: {
-                  modelName: {
-                    type: 'STRING',
-                    description:
-                      'Tên của model (ví dụ: organization, user, purchaseOrder).',
-                  },
-                  action: {
-                    type: 'STRING',
-                    description:
-                      'Hành động: findMany, findUnique, findFirst, count, create, update, delete.',
-                  },
-                  queryArgs: {
-                    type: 'OBJECT',
-                    description:
-                      'Đối số Prisma (where, include, take, skip, orderBy).',
-                  },
+                  modelName: { type: 'STRING' },
+                  action: { type: 'STRING' },
+                  queryArgs: { type: 'OBJECT' },
                 },
                 required: ['modelName', 'action'],
               },
@@ -167,16 +154,11 @@ export class AiService implements OnModuleInit {
         },
       ];
 
-      // Request đầu tiên
       let response = await this.client.models.generateContent({
         model: 'gemini-1.5-flash',
         config: {
-          systemInstruction: {
-            parts: [{ text: systemInstruction }],
-          },
-          thinkingConfig: {
-            thinkingLevel: ThinkingLevel.HIGH,
-          },
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
           tools: tools,
         },
         contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
@@ -186,11 +168,6 @@ export class AiService implements OnModuleInit {
         { role: 'user', parts: [{ text: userPrompt }] },
       ];
 
-      // Vòng lặp xử lý Function Calling
-      /**
-       * Vòng lặp này sẽ tiếp tục cho đến khi AI không còn yêu cầu gọi hàm nào nữa. Mỗi lần AI yêu cầu gọi hàm, chúng ta sẽ thực thi hàm đó, thêm kết quả vào lịch sử trò chuyện, và gửi lại toàn bộ lịch sử để AI có thể đưa ra câu trả lời cuối cùng dựa trên dữ liệu mới nhất.
-       * Điều này cho phép AI có thể thực hiện nhiều truy vấn liên tiếp nếu cần thiết để trả lời câu hỏi của người dùng một cách chính xác và đầy đủ nhất.
-       */
       while (
         response.candidates?.[0]?.content?.parts?.some(
           (part) => part.functionCall,
@@ -200,7 +177,6 @@ export class AiService implements OnModuleInit {
         chatHistory.push({ role: 'model', parts: parts });
 
         const functionResponses: any[] = [];
-
         for (const part of parts) {
           if (part.functionCall) {
             const { name, args } = part.functionCall;
@@ -224,112 +200,36 @@ export class AiService implements OnModuleInit {
         }
 
         chatHistory.push({ role: 'function', parts: functionResponses });
-
-        // Gửi lại lịch sử kèm kết quả hàm
         response = await this.client.models.generateContent({
           model: 'gemini-1.5-flash',
-          config: {
-            systemInstruction: {
-              parts: [{ text: systemInstruction }],
-            },
-            tools: tools,
-          },
+          config: { tools: tools },
           contents: chatHistory,
         });
       }
 
-      return this.parseJsonResponse(response.text ?? '');
+      return this.parseSpecificJson<AiDatabaseResponse>(response.text ?? '');
     } catch (error) {
       console.error('Error in askAiAboutDatabase:', error);
-      // Fallback for AI Quota/Error (Status 429 or others)
       return {
-        success: true,
-        summary:
-          'Dịch vụ AI đang tạm thời gián đoạn hạn mức (Quota 429) hoặc gặp lỗi kỹ thuật. Hệ thống đang hiển thị dữ liệu gợi ý mặc định.',
-        data: [
-          {
-            name: 'Công ty Cổ phần Bán lẻ Kỹ thuật số FPT',
-            trustScore: 98,
-            reason: 'Phân phối chính hãng Dell, Logitech uy tín tại Việt Nam.',
-          },
-          {
-            name: 'Công ty TNHH Thế Giới Di Động',
-            trustScore: 97,
-            reason: 'Hệ thống bảo hành và hậu mãi hàng đầu.',
-          },
-          {
-            name: 'Phong Vũ Computer',
-            trustScore: 95,
-            reason:
-              'Chuyên cung cấp linh kiện và giải pháp IT cho doanh nghiệp.',
-          },
-          {
-            name: 'Lazada Mal-Logitech',
-            trustScore: 92,
-            reason: 'Gian hàng chính hãng, giá cạnh tranh.',
-          },
-        ],
-        total: 4,
-        message: 'Fallback data active due to: ' + error.message,
-        length: 4,
-        score: 0,
-        cons: [],
-      };
-    }
-  }
-
-  /**
-   * Parse JSON an toàn từ response text của AI
-   */
-  private parseJsonResponse(text: string): AiDatabaseResponse {
-    const cleaned = text
-      .replace(/^```json\s*/i, '')
-      .replace(/^```\s*/i, '')
-      .replace(/```$/, '')
-      .trim();
-
-    try {
-      return JSON.parse(cleaned) as AiDatabaseResponse;
-    } catch {
-      // AI không tuân thủ format JSON — wrap lại
-      console.warn(
-        'AI response is not valid JSON, wrapping as text:',
-        cleaned.slice(0, 100),
-      );
-      return {
-        success: true,
-        summary: cleaned,
+        success: false,
+        summary: 'Lỗi hệ thống AI.',
         data: [],
         total: 0,
-        message: 'Response không phải JSON chuẩn, đây là text gốc.',
-        cons: undefined,
-        score: 0,
-        length: 0,
+        message: error.message,
       };
     }
   }
 
-  /**
-   * Thực thi truy vấn Prisma một cách an toàn
-   */
   private async executePrismaQuery(
     modelName: string,
     action: string,
     queryArgs: any,
   ) {
     try {
-      if (!(modelName in this.prisma)) {
-        return { error: `Model '${modelName}' không tồn tại.` };
+      const model = (this.prisma as any)[modelName];
+      if (!model || typeof model[action] !== 'function') {
+        return { error: `Model hoặc Action không hợp lệ.` };
       }
-
-      const model = this.prisma[modelName];
-      if (typeof model[action] !== 'function') {
-        return {
-          error: `Hành động '${action}' không hợp lệ cho ${modelName}.`,
-        };
-      }
-
-      // Giới hạn dữ liệu trả về
       const args = queryArgs || {};
       if (
         (action === 'findMany' || action === 'findFirst') &&
@@ -337,70 +237,45 @@ export class AiService implements OnModuleInit {
       ) {
         args.take = 10;
       }
-
-      console.log(
-        `AI Query: prisma.${modelName}.${action}(${JSON.stringify(args)})`,
-      );
       const result = await model[action](args);
-
       return JSON.parse(
-        JSON.stringify(result, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value,
+        JSON.stringify(result, (_, v) =>
+          typeof v === 'bigint' ? v.toString() : v,
         ),
       );
     } catch (error) {
-      console.error('Prisma AI Query Error:', error);
       return { error: error.message };
     }
   }
 
-  async listModels() {
+  private parseSpecificJson<T>(text: string): T {
+    const cleaned = text
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/```$/, '')
+      .trim();
     try {
-      const response = await this.client.models.list();
-      return response;
-    } catch (error) {
-      console.error('Không thể lấy danh sách model:', error);
-      return [];
+      return JSON.parse(cleaned) as T;
+    } catch {
+      // Trả về object rỗng nếu không parse được thay vì throw để app không crash
+      console.error('AI response parse failed:', cleaned);
+      return {} as T;
     }
-  }
-
-  async responsetest() {
-    return this.askAiAboutDatabase('Liệt kê 3 tổ chức đầu tiên');
   }
 
   async getCompanySuggestion(items: any[]) {
     const itemDescriptions = items
-      .map(
-        (item) =>
-          `${item.productName || item.productDesc || 'Sản phẩm'} (số lượng: ${item.qty})`,
-      )
+      .map((i) => i.productDesc || 'Sản phẩm')
       .join(', ');
-
-    const userPrompt = `
-      Với tư cách là CPO, hãy thực hiện phân tích chuyên sâu để gợi ý nhà cung cấp cho yêu cầu mua hàng (PR) sau: [${itemDescriptions}].
-
-      QUY TRÌNH PHÂN TÍCH:
-      1. TRA CỨU NỘI BỘ (Database):
-         - Tìm các nhà cung cấp (Organization.companyType='SUPPLIER') có 'industry' hoặc 'metadata' phù hợp với loại mặt hàng trên.
-         - Sử dụng 'supplierKpiScore' để đánh giá hiệu suất thực tế (OTD, chất lượng) của họ trong quá khứ.
-      
-      2. TRA CỨU BỔ SUNG (Internet):
-         - Nếu dữ liệu nội bộ không đủ hoặc muốn mở rộng lựa chọn, hãy tìm kiếm các nhà cung cấp uy tín hàng đầu trong ngành hàng tương ứng tại Việt Nam.
-
-      3. TỔNG HỢP & GỢI Ý (Ranking):
-         - Trả về danh sách TỐI ĐA 5 nhà cung cấp tốt nhất theo dạng Array
-            [
-                ( Danh sách ID của các nhà cung cấp )
-            ] và Mảng Json các thông tin của nhà cung cấp.
-         - Sắp xếp dựa trên điểm tổng hợp (kết hợp TrustScore, độ phù hợp ngành hàng, và khả năng cung ứng).
-         - Với mỗi nhà cung cấp, hãy cung cấp "Bản tóm tắt CPO":
-            - Lý do lựa chọn (Thế mạnh).
-            - Mức độ tin cậy (TrustScore).
-            - Cảnh báo rủi ro (nếu có lịch sử tranh chấp/trễ hàng).
-
-      LƯU Ý: Nếu nhà cung cấp đã có sẵn trong database, hãy ưu tiên đưa họ lên đầu danh sách.
-    `;
-
+    const userPrompt = `Gợi ý nhà cung cấp cho: [${itemDescriptions}]`;
     return this.askAiAboutDatabase(userPrompt);
+  }
+
+  async listModels() {
+    try {
+      return await this.client.models.list();
+    } catch {
+      return [];
+    }
   }
 }

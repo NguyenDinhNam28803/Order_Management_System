@@ -161,18 +161,16 @@ export class RfqmoduleService {
     );
 
     // 4. Lưu kết quả vào DB (Update Quotation)
-    if (aiResult.success !== false) {
-      await this.prisma.rfqQuotation.update({
-        where: { id: quotationId },
-        data: {
-          aiScore: aiResult.score,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          aiBreakdown: aiResult as any, // Lưu full JSON kết quả
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          aiFlags: aiResult.cons, // Lưu rủi ro vào flags
-        },
-      });
-    }
+    // AI Service đã parse thành công thì aiResult sẽ có dữ liệu
+    await this.prisma.rfqQuotation.update({
+      where: { id: quotationId },
+      data: {
+        aiScore: aiResult.score,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        aiBreakdown: aiResult as any, // Lưu full JSON kết quả
+        aiFlags: aiResult.cons, // Lưu rủi ro vào flags
+      },
+    });
 
     return aiResult;
   }
