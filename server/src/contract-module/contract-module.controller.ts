@@ -95,6 +95,46 @@ export class ContractModuleController {
   }
 
   /**
+   * Ký hợp đồng
+   * @param id ID của hợp đồng
+   * @param req Thông tin người dùng
+   * @param body Thông tin ký (isBuyer)
+   */
+  @Post(':id/sign')
+  @ApiOperation({ summary: 'Ký hợp đồng' })
+  sign(
+    @Param('id') id: string,
+    @Request() req: { user: JwtPayload },
+    @Body('isBuyer') isBuyer: boolean,
+  ) {
+    return this.contractModuleService.signContract(id, req.user.sub, isBuyer);
+  }
+
+  /**
+   * Cập nhật trạng thái milestone của hợp đồng
+   * @param milestoneId ID của milestone
+   * @param body Dữ liệu cập nhật milestone
+   */
+  @Patch('milestones/:milestoneId')
+  @ApiOperation({ summary: 'Cập nhật milestone hợp đồng' })
+  updateMilestone(
+    @Param('milestoneId') milestoneId: string,
+    @Body() body: { status: string; completionDate?: Date },
+  ) {
+    return this.contractModuleService.updateMilestone(milestoneId, body);
+  }
+
+  /**
+   * Lấy danh sách hợp đồng theo nhà cung cấp
+   * @param supplierId ID của nhà cung cấp
+   */
+  @Get('supplier/:supplierId')
+  @ApiOperation({ summary: 'Lấy hợp đồng theo nhà cung cấp' })
+  findBySupplier(@Param('supplierId') supplierId: string) {
+    return this.contractModuleService.findBySupplier(supplierId);
+  }
+
+  /**
    * Xóa một hợp đồng theo ID
    * @param id ID của hợp đồng cần xóa
    * @returns Kết quả xóa

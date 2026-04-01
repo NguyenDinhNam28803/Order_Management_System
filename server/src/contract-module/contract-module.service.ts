@@ -115,6 +115,59 @@ export class ContractModuleService {
     });
   }
 
+  async signContract(id: string, userId: string, isBuyer: boolean) {
+    const contract = await this.prisma.contract.findUnique({ where: { id } });
+    if (!contract) throw new NotFoundException('Hợp đồng không tồn tại');
+
+    const updateData: any = {};
+    if (isBuyer) {
+      updateData.signedByBuyerId = userId;
+    } else {
+      updateData.signedBySupplierId = userId;
+    }
+
+    // Nếu cả hai bên đã ký, chuyển trạng thái sang ACTIVE
+    const updatedContract = await this.prisma.contract.update({
+      where: { id },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      data: updateData,
+    });
+
+    if (updatedContract.signedByBuyerId && updatedContract.signedBySupplierId) {
+      return this.prisma.contract.update({
+        where: { id },
+        data: {
+          status: ContractStatus.ACTIVE,
+          signedAt: new Date(),
+        },
+      });
+    }
+
+    return updatedContract;
+  }
+
+  async updateMilestone(
+    milestoneId: string,
+    data: { status: string; completionDate?: Date },
+  ) {
+    return this.prisma.contractMilestone.update({
+      where: { id: milestoneId },
+      data: {
+        status: data.status,
+        completionDate: data.completionDate
+          ? new Date(data.completionDate)
+          : undefined,
+      },
+    });
+  }
+
+  async findBySupplier(supplierId: string) {
+    return this.prisma.contract.findMany({
+      where: { supplierId },
+      include: { milestones: true, buyerOrg: true },
+    });
+  }
+
   async remove(id: string) {
     // Prisma sẽ tự động xóa milestones nếu bạn cấu hình onDelete: Cascade trong schema
     // Nếu không, hãy xóa thủ công trong transaction

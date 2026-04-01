@@ -3,75 +3,74 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ReviewModuleService } from './review-module.service';
-import { CreateReviewModuleDto } from './dto/create-review-module.dto';
-import { UpdateReviewModuleDto } from './dto/update-review-module.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  CreateBuyerRatingDto,
+  CreateSupplierManualReviewDto,
+} from './dto/review.dto';
+import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
-@ApiTags('Review Management')
+@ApiTags('Review & Rating Management')
+@ApiBearerAuth('JWT-auth')
 @Controller('reviews')
+@UseGuards(JwtAuthGuard)
 export class ReviewModuleController {
   constructor(private readonly reviewModuleService: ReviewModuleService) {}
 
   /**
-   * Tạo một đánh giá hoặc nhận xét mới
-   * @param createReviewModuleDto Dữ liệu tạo đánh giá
-   * @returns Đánh giá vừa tạo
+   * Nhà cung cấp đánh giá người mua
    */
-  @Post()
-  @ApiOperation({ summary: 'Tạo đánh giá mới' })
-  create(@Body() createReviewModuleDto: CreateReviewModuleDto) {
-    return this.reviewModuleService.create(createReviewModuleDto);
-  }
-
-  /**
-   * Lấy danh sách tất cả các đánh giá hiện có
-   * @returns Danh sách đánh giá
-   */
-  @Get()
-  @ApiOperation({ summary: 'Lấy tất cả đánh giá' })
-  findAll() {
-    return this.reviewModuleService.findAll();
-  }
-
-  /**
-   * Lấy thông tin chi tiết của một đánh giá cụ thể theo ID
-   * @param id ID của đánh giá
-   * @returns Chi tiết đánh giá
-   */
-  @Get(':id')
-  @ApiOperation({ summary: 'Lấy chi tiết đánh giá theo ID' })
-  findOne(@Param('id') id: string) {
-    return this.reviewModuleService.findOne(+id);
-  }
-
-  /**
-   * Cập nhật nội dung hoặc trạng thái của một đánh giá theo ID
-   * @param id ID của đánh giá
-   * @param updateReviewModuleDto Dữ liệu cập nhật
-   * @returns Đánh giá sau khi cập nhật
-   */
-  @Patch(':id')
-  @ApiOperation({ summary: 'Cập nhật đánh giá theo ID' })
-  update(
-    @Param('id') id: string,
-    @Body() updateReviewModuleDto: UpdateReviewModuleDto,
+  @Post('buyer-rating')
+  @ApiOperation({ summary: 'Nhà cung cấp đánh giá người mua' })
+  createBuyerRating(
+    @Body() dto: CreateBuyerRatingDto,
+    @Request() req: { user: JwtPayload },
   ) {
-    return this.reviewModuleService.update(+id, updateReviewModuleDto);
+    return this.reviewModuleService.createBuyerRating(
+      dto,
+      req.user.sub,
+      req.user.orgId,
+    );
   }
 
   /**
-   * Xóa một đánh giá khỏi hệ thống theo ID
-   * @param id ID của đánh giá cần xóa
-   * @returns Kết quả xóa
+   * Người mua đánh giá thủ công nhà cung cấp
    */
-  @Delete(':id')
-  @ApiOperation({ summary: 'Xóa đánh giá theo ID' })
-  remove(@Param('id') id: string) {
-    return this.reviewModuleService.remove(+id);
+  @Post('supplier-review')
+  @ApiOperation({ summary: 'Người mua đánh giá thủ công nhà cung cấp' })
+  createSupplierManualReview(
+    @Body() dto: CreateSupplierManualReviewDto,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.reviewModuleService.createSupplierManualReview(
+      dto,
+      req.user.sub,
+    );
+  }
+
+  /**
+   * Lấy danh sách đánh giá của nhà cung cấp
+   */
+  @Get('supplier/:supplierId')
+  @ApiOperation({ summary: 'Lấy danh sách đánh giá của nhà cung cấp' })
+  getSupplierReviews(@Param('supplierId') supplierId: string) {
+    return this.reviewModuleService.getSupplierReviews(supplierId);
+  }
+
+  /**
+   * Lấy danh sách đánh giá của người mua (tổ chức hiện tại)
+   */
+  @Get('buyer-ratings')
+  @ApiOperation({
+    summary: 'Lấy danh sách đánh giá của người mua (tổ chức hiện tại)',
+  })
+  getBuyerRatings(@Request() req: { user: JwtPayload }) {
+    return this.reviewModuleService.getBuyerRatings(req.user.orgId);
   }
 }
