@@ -15,7 +15,7 @@ import { UpdateInvoiceModuleDto } from './dto/update-invoice-module.dto';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
-import { Roles } from 'src/common/roles.guard';
+import { Roles } from '../common/roles.guard';
 
 @ApiTags('Invoice Management')
 @ApiBearerAuth('JWT-auth')

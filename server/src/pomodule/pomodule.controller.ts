@@ -14,7 +14,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
 import { UserRole } from '@prisma/client';
-import type { JwtPayload } from 'src/auth-module/interfaces/jwt-payload.interface';
+import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('Purchase Order (PO)')
 @Controller('purchase-orders')

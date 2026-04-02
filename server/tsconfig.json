@@ -13,8 +13,6 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    "ignoreDeprecations": "6.0",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
@@ -22,8 +20,11 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
+    "types": ["node", "jest"],
     "paths": {
-      "generated/*": ["generated/*"]
+      "@app/*": ["./src/app/*"],
+      "@common/*": ["./src/common/*"],
+      "generated/*": ["./generated/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

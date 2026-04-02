@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrDto } from './dto/create-pr.dto';
 import { PrStatus, PurchaseRequisition } from '@prisma/client';
-import { AiService } from 'src/ai-service/ai-service.service';
+import { AiService } from '../ai-service/ai-service.service';
 
 @Injectable()
 export class PrRepository {

@@ -14,12 +14,24 @@ export class RagSyncProcessor {
   @Process('sync-all')
   async handleSyncAll(job: Job) {
     this.logger.log('Starting full RAG sync...');
-    const tables = ['customers', 'products'] as const;
-    // , 'orders', 'documents'
+    const tables = [
+      'customers',
+      'products',
+      'purchase_requisitions',
+      'rfq_requests',
+      'rfq_quotations',
+      'purchase_orders',
+      'goods_receipts',
+      'supplier_invoices',
+      'payments',
+      'contracts',
+      'supplier_kpi_scores',
+    ] as const;
+
     for (const table of tables) {
       const result = await this.ingest.ingestTable(table);
       this.logger.log(`[${table}] ${result.inserted} chunks synced`);
-      await job.progress((tables.indexOf(table) + 1) * 25);
+      await job.progress((tables.indexOf(table) + 1) * (100 / tables.length));
     }
   }
 

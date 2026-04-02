@@ -3,7 +3,18 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CompanyType } from '@prisma/client';
 import { EmbeddingService } from './embedding.service';
 
-type SourceTable = 'customers' | 'products'; // | 'contracts' | 'documents';
+type SourceTable =
+  | 'customers'
+  | 'products'
+  | 'purchase_requisitions'
+  | 'rfq_requests'
+  | 'rfq_quotations'
+  | 'purchase_orders'
+  | 'goods_receipts'
+  | 'supplier_invoices'
+  | 'payments'
+  | 'contracts'
+  | 'supplier_kpi_scores';
 
 @Injectable()
 export class RagIngestService {
@@ -127,13 +138,77 @@ export class RagIngestService {
         return this.prisma.product.findMany({
           include: {
             category: true,
-            _count: true,
           },
         });
-      //   case 'contracts':
-      //     return this.prisma.order.findMany({ include: { customer: true } });
-      //   case 'documents':
-      //     return this.prisma.document.findMany();
+      case 'purchase_requisitions':
+        return this.prisma.purchaseRequisition.findMany({
+          include: {
+            requester: true,
+            department: true,
+            items: true,
+          },
+        });
+      case 'rfq_requests':
+        return this.prisma.rfqRequest.findMany({
+          include: {
+            organization: true,
+            pr: true,
+            createdBy: true,
+          },
+        });
+      case 'rfq_quotations':
+        return this.prisma.rfqQuotation.findMany({
+          include: {
+            rfq: true,
+            reviewedBy: true,
+          },
+        });
+      case 'purchase_orders':
+        return this.prisma.purchaseOrder.findMany({
+          include: {
+            buyerOrg: true,
+            supplier: true,
+            buyer: true,
+            items: true,
+          },
+        });
+      case 'goods_receipts':
+        return this.prisma.goodsReceipt.findMany({
+          include: {
+            po: true,
+            receivedBy: true,
+            items: true,
+          },
+        });
+      case 'supplier_invoices':
+        return this.prisma.supplierInvoice.findMany({
+          include: {
+            po: true,
+            supplier: true,
+            buyerOrg: true,
+          },
+        });
+      case 'payments':
+        return this.prisma.payment.findMany({
+          include: {
+            invoice: true,
+            po: true,
+          },
+        });
+      case 'contracts':
+        return this.prisma.contract.findMany({
+          include: {
+            buyerOrg: true,
+            supplierOrg: true,
+          },
+        });
+      case 'supplier_kpi_scores':
+        return this.prisma.supplierKpiScore.findMany({
+          include: {
+            supplier: true,
+            buyerOrg: true,
+          },
+        });
     }
   }
 
@@ -151,7 +226,7 @@ export class RagIngestService {
           `Mã KH: ${record.code}`,
           `Email: ${record.email}`,
           `Địa chỉ: ${record.address}`,
-          `Trạng thái: ${record.status}`,
+          `Trạng thái: ${record.isActive ? 'Hoạt động' : 'Ngưng'}`,
           `Ngành nghề: ${record.industry ?? 'N/A'}`,
         ].join('. ');
 
@@ -159,22 +234,114 @@ export class RagIngestService {
         return [
           `Sản phẩm: ${record.name}`,
           `Danh mục: ${record.category?.name}`,
-          `Giá: ${record.price?.toLocaleString('vi-VN')} VND`,
+          `Giá tham khảo: ${record.unitPriceRef?.toLocaleString('vi-VN')} VND`,
           `Mô tả: ${record.description ?? ''}`,
-          `Tồn kho: ${record.stock} đơn vị`,
+          `Đơn vị: ${record.unit}`,
         ].join('. ');
 
-      //   case 'orders':
-      //     return [
-      //       `Đơn hàng: #${record.orderNumber}`,
-      //       `Khách hàng: ${record.customer?.name}`,
-      //       `Tổng tiền: ${record.totalAmount?.toLocaleString('vi-VN')} VND`,
-      //       `Trạng thái: ${record.status}`,
-      //       `Ngày tạo: ${record.createdAt?.toLocaleDateString('vi-VN')}`,
-      //     ].join('. ');
+      case 'purchase_requisitions':
+        return [
+          `Yêu cầu mua sắm (PR): ${record.prNumber}`,
+          `Tiêu đề: ${record.title}`,
+          `Người yêu cầu: ${record.requester?.fullName}`,
+          `Phòng ban: ${record.department?.name}`,
+          `Trạng thái: ${record.status}`,
+          `Tổng ước tính: ${record.totalEstimate?.toLocaleString('vi-VN')} ${record.currency}`,
+          `Ngày cần hàng: ${record.requiredDate?.toLocaleDateString('vi-VN')}`,
+          `Lý do: ${record.justification ?? ''}`,
+          `Nội dung: ${record.description ?? ''}`,
+          `Các mặt hàng: ${record.items?.map((i: any) => i.productDesc).join(', ')}`,
+        ].join('. ');
 
-      //   case 'documents':
-      //     return `${record.title}: ${record.content}`;
+      case 'rfq_requests':
+        return [
+          `Yêu cầu báo giá (RFQ): ${record.rfqNumber}`,
+          `Tiêu đề: ${record.title}`,
+          `Dựa trên PR: ${record.pr?.prNumber}`,
+          `Trạng thái: ${record.status}`,
+          `Hạn chót: ${record.deadline?.toLocaleDateString('vi-VN')}`,
+          `Mô tả: ${record.description ?? ''}`,
+          `Yêu cầu kỹ thuật: ${record.technicalSpec ?? ''}`,
+        ].join('. ');
+
+      case 'rfq_quotations':
+        return [
+          `Báo giá: ${record.quotationNumber}`,
+          `Từ RFQ: ${record.rfq?.rfqNumber}`,
+          `Tổng giá: ${record.totalPrice?.toLocaleString('vi-VN')} ${record.currency}`,
+          `Thời gian giao hàng: ${record.leadTimeDays} ngày`,
+          `Trạng thái: ${record.status}`,
+          `Ghi chú: ${record.notes ?? ''}`,
+        ].join('. ');
+
+      case 'purchase_orders':
+        return [
+          `Đơn mua hàng (PO): ${record.poNumber}`,
+          `Nhà cung cấp: ${record.supplier?.name}`,
+          `Người mua: ${record.buyer?.fullName}`,
+          `Tổng tiền: ${record.totalAmount?.toLocaleString('vi-VN')} ${record.currency}`,
+          `Trạng thái: ${record.status}`,
+          `Ngày giao hàng: ${record.deliveryDate?.toLocaleDateString('vi-VN')}`,
+          `Điều khoản thanh toán: ${record.paymentTerms ?? ''}`,
+        ].join('. ');
+
+      case 'goods_receipts':
+        return [
+          `Phiếu nhập kho (GRN): ${record.grnNumber}`,
+          `Từ PO: ${record.po?.poNumber}`,
+          `Người nhận: ${record.receivedBy?.fullName}`,
+          `Trạng thái: ${record.status}`,
+          `Ngày nhận: ${record.receivedAt?.toLocaleDateString('vi-VN')}`,
+          `Ghi chú: ${record.notes ?? ''}`,
+        ].join('. ');
+
+      case 'supplier_invoices':
+        return [
+          `Hóa đơn: ${record.invoiceNumber}`,
+          `Từ PO: ${record.po?.poNumber}`,
+          `Nhà cung cấp: ${record.supplier?.name}`,
+          `Tổng tiền: ${record.totalAmount?.toLocaleString('vi-VN')} ${record.currency}`,
+          `Trạng thái: ${record.status}`,
+          `Ngày hóa đơn: ${record.invoiceDate?.toLocaleDateString('vi-VN')}`,
+          `Hạn thanh toán: ${record.dueDate?.toLocaleDateString('vi-VN')}`,
+        ].join('. ');
+
+      case 'payments':
+        return [
+          `Thanh toán: ${record.paymentNumber}`,
+          `Hóa đơn: ${record.invoice?.invoiceNumber}`,
+          `Đơn hàng: ${record.po?.poNumber}`,
+          `Số tiền: ${record.amount?.toLocaleString('vi-VN')} ${record.currency}`,
+          `Phương thức: ${record.method}`,
+          `Trạng thái: ${record.status}`,
+          `Ngày thanh toán: ${record.paymentDate?.toLocaleDateString('vi-VN')}`,
+        ].join('. ');
+
+      case 'contracts':
+        return [
+          `Hợp đồng: ${record.contractNumber}`,
+          `Tiêu đề: ${record.title}`,
+          `Đối tác: ${record.supplierOrg?.name}`,
+          `Giá trị: ${record.value?.toLocaleString('vi-VN')} ${record.currency}`,
+          `Trạng thái: ${record.status}`,
+          `Ngày bắt đầu: ${record.startDate?.toLocaleDateString('vi-VN')}`,
+          `Ngày kết thúc: ${record.endDate?.toLocaleDateString('vi-VN')}`,
+        ].join('. ');
+
+      case 'supplier_kpi_scores':
+        return [
+          `Đánh giá nhà cung cấp: ${record.supplier?.name}`,
+          `Giai đoạn: Quý ${record.periodQuarter}/${record.periodYear}`,
+          `Điểm OTD: ${record.otdScore}`,
+          `Điểm chất lượng: ${record.qualityScore}`,
+          `Điểm giá: ${record.priceScore}`,
+          `Tỉ lệ hoàn thành: ${record.fulfillmentRate}`,
+          `Phân hạng: ${record.tier}`,
+          `Ghi chú: ${record.notes ?? ''}`,
+        ].join('. ');
+
+      default:
+        return '';
     }
   }
 
@@ -197,7 +364,18 @@ export class RagIngestService {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       id: record.id,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      name: record.name ?? record.title ?? record.orderNumber,
+      name:
+        record.name ??
+        record.title ??
+        record.prNumber ??
+        record.rfqNumber ??
+        record.quotationNumber ??
+        record.poNumber ??
+        record.grnNumber ??
+        record.invoiceNumber ??
+        record.paymentNumber ??
+        record.contractNumber ??
+        `Record ${record.id}`,
     };
   }
 

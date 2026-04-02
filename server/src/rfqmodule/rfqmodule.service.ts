@@ -13,19 +13,19 @@ import { RfqRepository } from './rfq.repository';
 import { RfqStatus, QuotationStatus } from '@prisma/client';
 import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { NotificationModuleService } from 'src/notification-module/notification-module.service';
-import { AutomationService } from 'src/common/automation/automation.service';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
+import { AutomationService } from '../common/automation/automation.service';
 
 export class RfqSupplierCreateManyInput {
-  rfqId: string;
-  supplierId: string;
-  isRecommended: boolean;
+  rfqId!: string;
+  supplierId!: string;
+  isRecommended!: boolean;
 }
 
 export class RFQItem {
-  name: string;
-  description: string;
-  qty: number;
+  name!: string;
+  description!: string;
+  qty!: number;
 }
 
 @Injectable()

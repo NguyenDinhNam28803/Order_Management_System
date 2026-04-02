@@ -4,8 +4,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EmbeddingService } from './embedding.service';
 
 export interface RagResult {
-  answer: string;
-  sources: { table: string; id: string; content: string; similarity: number }[];
+  answer: any;
+  sources: {
+    table: string;
+    id: string;
+    content: string;
+    metadata: any;
+    similarity: number;
+  }[];
 }
 
 @Injectable()
@@ -37,23 +43,60 @@ export class RagQueryService {
     );
 
     if (!chunks.length) {
-      return { answer: 'Không tìm thấy dữ liệu liên quan.', sources: [] };
+      return {
+        answer: {
+          summary: 'Không tìm thấy dữ liệu liên quan.',
+          data: [],
+          found: false,
+        },
+        sources: [],
+      };
     }
 
     const context = chunks
-      .map((c, i) => `[${i + 1}] [${c.source_table}] ${c.content}`)
-      .join('\n\n');
+      .map((c, i) => {
+        const meta = JSON.stringify(c.metadata);
+        return `[Tài liệu ${i + 1}]
+                Bảng: ${c.source_table}
+                ID: ${c.source_id}
+                Metadata: ${meta}
+                Nội dung: ${c.content}`;
+      })
+      .join('\n\n---\n\n');
 
-    const answer = await this.callFptLlm(question, context);
+    const rawAnswer = await this.callFptLlm(question, context);
+
+    let parsedAnswer: any;
+    try {
+      // Thử parse JSON nếu LLM trả về đúng định dạng
+      // Đôi khi LLM bọc trong ```json ... ```
+      const jsonMatch =
+        rawAnswer.match(/```json\s*([\s\S]*?)\s*```/) ||
+        rawAnswer.match(/\{[\s\S]*\}/);
+      const jsonStr = jsonMatch ? jsonMatch[0] : rawAnswer;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      parsedAnswer = JSON.parse(jsonStr.replace(/```json|```/g, '').trim());
+    } catch {
+      parsedAnswer = {
+        summary: rawAnswer,
+        data: [],
+        found: true,
+        parseError: 'Could not parse JSON from LLM',
+      };
+    }
 
     return {
-      answer,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      answer: parsedAnswer,
       sources: chunks.map((c) => ({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         table: c.source_table,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         id: c.source_id,
-        content: c.content.slice(0, 120) + '...',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        content: c.content,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        metadata: c.metadata,
         similarity: parseFloat(Number(c.similarity).toFixed(3)),
       })),
     };
@@ -79,16 +122,26 @@ export class RagQueryService {
                 Nguyên tắc bắt buộc:
                 - Chỉ trả lời dựa trên thông tin có trong CONTEXT.
                 - Không suy luận vượt ngoài dữ liệu.
-                - Không tự tạo thông tin mới.
-                - Nếu không tìm thấy thông tin liên quan trong CONTEXT, trả lời:
-                  "Không tìm thấy thông tin phù hợp trong dữ liệu hiện có."
-                - Nếu câu hỏi không rõ ràng, hãy yêu cầu người dùng cung cấp thêm thông tin.
+                - Nếu không tìm thấy thông tin phù hợp trong CONTEXT, trả về JSON với found: false.
 
-                Hướng dẫn trả lời:
-                - Ưu tiên thuật ngữ nghiệp vụ đúng theo CONTEXT.
-                - Trả lời ngắn gọn, chính xác, đúng trọng tâm.
-                - Có thể trình bày dạng bullet points nếu phù hợp.
-                - Nếu CONTEXT chứa nhiều đoạn liên quan, hãy tổng hợp lại logic.
+                QUY ĐỊNH ĐỊNH DẠNG TRẢ LỜI:
+                - BẮT BUỘC trả về định dạng JSON thuần túy, không kèm văn bản giải thích ngoài JSON.
+                - Trường dữ liệu details được chuyển đổi thành JSON từ text được truy vấn
+                - Cấu trúc JSON mong muốn:
+                  {
+                    "summary": "Tóm tắt câu trả lời một cách tự nhiên",
+                    "data": [
+                      {
+                        "id": "ID bản ghi",
+                        "table": "Tên bảng",
+                        "name": "Tên hoặc Số hiệu bản ghi (từ metadata)",
+                        "details": "Các thông tin chi tiết trích xuất được từ nội dung" (Chuyển đổi sang định dạng JSON),
+                        "status": "Trạng thái (nếu có)",
+                        "amount": "Số tiền/Giá trị (nếu có)"
+                      }
+                    ],
+                    "found": true
+                  }
 
                 CONTEXT:
                 ${context}
@@ -96,13 +149,10 @@ export class RagQueryService {
             },
             { role: 'user', content: question },
           ],
-          streaming: false, // ← FPT dùng "streaming" không phải "stream"
-          temperature: 0.2,
-          max_tokens: 1024,
+          streaming: false,
+          temperature: 0.1, // Thấp hơn để output JSON ổn định hơn
+          max_tokens: 2048,
           top_p: 1,
-          top_k: 40,
-          presence_penalty: 0,
-          frequency_penalty: 0,
         }),
       },
     );
