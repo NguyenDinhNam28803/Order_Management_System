@@ -16,32 +16,34 @@ export class RagQueryService {
   ) {}
 
   async query(question: string, topK = 5): Promise<RagResult> {
-    // 1. Embed câu hỏi
     const queryVector = await this.embedding.embed(question);
     const vectorStr = `[${queryVector.join(',')}]`;
 
-    // 2. Semantic search
-    const chunks = await this.prisma.$queryRaw<any[]>`
-      SELECT
-        content,
-        source_table,
-        source_id,
-        1 - (embedding <=> ${vectorStr}::vector) AS similarity
-      FROM document_embeddings
-      ORDER BY embedding <=> ${vectorStr}::vector
-      LIMIT ${topK}
-    `;
+    // Dùng $queryRawUnsafe thay vì $queryRaw
+    const chunks = await this.prisma.$queryRawUnsafe<any[]>(
+      `
+    SELECT
+      content,
+      source_table,
+      source_id,
+      metadata,
+      1 - (embedding <=> $1::vector) AS similarity
+    FROM document_embeddings
+    ORDER BY embedding <=> $1::vector
+    LIMIT $2
+    `,
+      vectorStr,
+      topK,
+    );
 
     if (!chunks.length) {
       return { answer: 'Không tìm thấy dữ liệu liên quan.', sources: [] };
     }
 
-    // 3. Build context
     const context = chunks
       .map((c, i) => `[${i + 1}] [${c.source_table}] ${c.content}`)
       .join('\n\n');
 
-    // 4. Gọi FPT LLM — dùng fetch thay vì openai SDK
     const answer = await this.callFptLlm(question, context);
 
     return {
@@ -71,13 +73,26 @@ export class RagQueryService {
           messages: [
             {
               role: 'system',
-              content: `Bạn là trợ lý AI hỗ trợ nghiệp vụ nội bộ.
-                Dựa VÀO DỮ LIỆU ĐƯỢC CUNG CẤP để trả lời câu hỏi.
-                Nếu dữ liệu không đủ, hãy nói rõ và KHÔNG bịa thêm thông tin.
-                Trả lời bằng tiếng Việt, ngắn gọn, chính xác.
+              content: `
+                Bạn là AI Assistant hỗ trợ nghiệp vụ nội bộ doanh nghiệp (ERP, EIP, Workflow, PO, PR, Invoice,...).
 
-                DỮ LIỆU:
-                ${context}`,
+                Nguyên tắc bắt buộc:
+                - Chỉ trả lời dựa trên thông tin có trong CONTEXT.
+                - Không suy luận vượt ngoài dữ liệu.
+                - Không tự tạo thông tin mới.
+                - Nếu không tìm thấy thông tin liên quan trong CONTEXT, trả lời:
+                  "Không tìm thấy thông tin phù hợp trong dữ liệu hiện có."
+                - Nếu câu hỏi không rõ ràng, hãy yêu cầu người dùng cung cấp thêm thông tin.
+
+                Hướng dẫn trả lời:
+                - Ưu tiên thuật ngữ nghiệp vụ đúng theo CONTEXT.
+                - Trả lời ngắn gọn, chính xác, đúng trọng tâm.
+                - Có thể trình bày dạng bullet points nếu phù hợp.
+                - Nếu CONTEXT chứa nhiều đoạn liên quan, hãy tổng hợp lại logic.
+
+                CONTEXT:
+                ${context}
+                `,
             },
             { role: 'user', content: question },
           ],
