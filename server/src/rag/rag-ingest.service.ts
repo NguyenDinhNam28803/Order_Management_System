@@ -18,24 +18,99 @@ export class RagIngestService {
     const records = await this.fetchRecords(table);
     let inserted = 0;
 
-    for (const record of records) {
-      const chunks = this.toChunks(record, table);
-      const vectors = await this.embedding.embedBatch(chunks);
+    // Xử lý từng batch 10 records thay vì từng record
+    const RECORD_BATCH = 10;
 
-      for (let i = 0; i < chunks.length; i++) {
-        await this.upsertEmbedding({
-          content: chunks[i],
-          vector: vectors[i],
-          sourceTable: table,
-          sourceId: String(record.id),
-          metadata: this.buildMetadata(record, table),
-        });
-        inserted++;
+    for (let i = 0; i < records.length; i += RECORD_BATCH) {
+      const batch = records.slice(i, i + RECORD_BATCH);
+
+      // 1. Chuẩn bị tất cả chunks của batch
+      const allRows: {
+        content: string;
+        sourceId: string;
+        metadata: object;
+      }[] = [];
+
+      for (const record of batch) {
+        const chunks = this.toChunks(record, table);
+        for (const chunk of chunks) {
+          allRows.push({
+            content: chunk,
+            sourceId: String(record.id),
+            metadata: this.buildMetadata(record, table),
+          });
+        }
       }
+
+      // 2. Embed tất cả cùng lúc (1 lần gọi API)
+      const vectors = await this.embedding.embedBatch(
+        allRows.map((r) => r.content),
+      );
+
+      // 3. Batch insert 1 query duy nhất thay vì N queries
+      await this.batchUpsert(
+        allRows.map((row, idx) => ({
+          ...row,
+          vector: vectors[idx],
+          sourceTable: table,
+        })),
+      );
+
+      inserted += allRows.length;
+      this.logger.log(
+        `[${table}] ${Math.min(i + RECORD_BATCH, records.length)}/${records.length} records processed`,
+      );
     }
 
-    this.logger.log(`[${table}] Ingested ${inserted} chunks`);
+    this.logger.log(`[${table}] Done — ${inserted} chunks total`);
     return { inserted };
+  }
+
+  private async batchUpsert(
+    rows: {
+      content: string;
+      vector: number[];
+      sourceTable: string;
+      sourceId: string;
+      metadata: object;
+    }[],
+  ) {
+    if (!rows.length) return;
+
+    // Lấy danh sách sourceId của batch này
+    const sourceIds = [...new Set(rows.map((r) => r.sourceId))];
+    const sourceTable = rows[0].sourceTable;
+
+    // Xóa chunks cũ của các record này
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM document_embeddings 
+     WHERE source_table = $1 
+     AND source_id = ANY($2::text[])`,
+      sourceTable,
+      sourceIds,
+    );
+
+    // Insert mới
+    const values: any[] = [];
+    const placeholders = rows.map((row, i) => {
+      const base = i * 5;
+      values.push(
+        row.content,
+        `[${row.vector.join(',')}]`,
+        row.sourceTable,
+        row.sourceId,
+        JSON.stringify(row.metadata),
+      );
+      return `($${base + 1}, $${base + 2}::vector, $${base + 3}, $${base + 4}, $${base + 5}::jsonb)`;
+    });
+
+    await this.prisma.$executeRawUnsafe(
+      `INSERT INTO document_embeddings
+       (content, embedding, source_table, source_id, metadata)
+     VALUES ${placeholders.join(', ')}`,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      ...values,
+    );
   }
 
   // ----- Private helpers -----
@@ -134,13 +209,28 @@ export class RagIngestService {
     metadata: object;
   }) {
     const { content, vector, sourceTable, sourceId, metadata } = params;
-    const vectorStr = `[${vector.join(',')}]`;
 
-    await this.prisma.$executeRaw`
-      INSERT INTO document_embeddings (content, embedding, source_table, source_id, metadata)
-      VALUES (${content}, ${vectorStr}::vector, ${sourceTable}, ${sourceId}, ${metadata}::jsonb)
-      ON CONFLICT (source_table, source_id, content)
-      DO UPDATE SET embedding = ${vectorStr}::vector, metadata = ${metadata}::jsonb
-    `;
+    // Prisma $executeRaw không nhận template literal tốt với vector cast
+    // Dùng $executeRawUnsafe để control string hoàn toàn
+    const vectorStr = `[${vector.join(',')}]`;
+    const metadataStr = JSON.stringify(metadata);
+
+    await this.prisma.$executeRawUnsafe(
+      `
+    INSERT INTO document_embeddings 
+      (content, embedding, source_table, source_id, metadata)
+    VALUES 
+      ($1, $2::vector, $3, $4, $5::jsonb)
+    ON CONFLICT (source_table, source_id, content)
+    DO UPDATE SET 
+      embedding = EXCLUDED.embedding,
+      metadata  = EXCLUDED.metadata
+    `,
+      content,
+      vectorStr,
+      sourceTable,
+      sourceId,
+      metadataStr,
+    );
   }
 }

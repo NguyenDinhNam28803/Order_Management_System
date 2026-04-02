@@ -1303,6 +1303,17 @@ model OrgBudget {
   @@map("org_budgets")
 }
 
+model DocumentEmbedding {
+  id          Int      @id @default(autoincrement())
+  content     String
+  sourceTable String   @map("source_table")
+  sourceId    String   @map("source_id")
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("document_embeddings")
+}
+
 enum BudgetPeriodType {
   MONTHLY
   QUARTERLY

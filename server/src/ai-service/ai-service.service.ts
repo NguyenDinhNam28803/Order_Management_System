@@ -82,7 +82,7 @@ export class AiService implements OnModuleInit {
     `;
 
     const result = await this.client.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-3.1-flash-lite-preview',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
@@ -115,7 +115,7 @@ export class AiService implements OnModuleInit {
     `;
 
     const result = await this.client.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-3.1-flash-lite-preview',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
@@ -155,7 +155,7 @@ export class AiService implements OnModuleInit {
       ];
 
       let response = await this.client.models.generateContent({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-3.1-flash-lite-preview',
         config: {
           systemInstruction: { parts: [{ text: systemInstruction }] },
           thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
@@ -201,7 +201,7 @@ export class AiService implements OnModuleInit {
 
         chatHistory.push({ role: 'function', parts: functionResponses });
         response = await this.client.models.generateContent({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-3.1-flash-lite-preview',
           config: { tools: tools },
           contents: chatHistory,
         });
@@ -249,17 +249,26 @@ export class AiService implements OnModuleInit {
   }
 
   private parseSpecificJson<T>(text: string): T {
-    const cleaned = text
-      .replace(/^```json\s*/i, '')
-      .replace(/^```\s*/i, '')
-      .replace(/```$/, '')
-      .trim();
+    // 1. Thử tìm JSON trong các khối code block markdown
+    const match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    let cleaned = match ? match[1].trim() : text.trim();
+
     try {
       return JSON.parse(cleaned) as T;
     } catch {
-      // Trả về object rỗng nếu không parse được thay vì throw để app không crash
-      console.error('AI response parse failed:', cleaned);
-      return {} as T;
+      // 2. Nếu parse thất bại, thử tìm JSON object bằng cách tìm dấu { và }
+      const start = cleaned.indexOf('{');
+      const end = cleaned.lastIndexOf('}');
+      if (start !== -1 && end !== -1 && end > start) {
+        cleaned = cleaned.substring(start, end + 1);
+      }
+      try {
+        return JSON.parse(cleaned) as T;
+      } catch {
+        // Trả về object rỗng nếu không parse được thay vì throw để app không crash
+        console.error('AI response parse failed:', text);
+        return {} as T;
+      }
     }
   }
 
