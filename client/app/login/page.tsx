@@ -65,10 +65,17 @@ export default function LoginPage() {
                             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Tài khoản Demo (Quick Login):</div>
                             <div className="text-[10px] font-black text-blue-500 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">{users?.length || 0} Roles available</div>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
-                            {users?.map((u) => (
+                        <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            {[
+                                { name: "IT Requester", email: "it.requester@innhub.com", role: "REQUESTER" },
+                                { name: "Dept Approver", email: "it.manager@innhub.com", role: "DEPT_APPROVER" },
+                                { name: "Director", email: "director@innhub.com", role: "DIRECTOR" },
+                                { name: "CEO", email: "ceo@innhub.com", role: "CEO" },
+                                { name: "CFO (Finance)", email: "cfo@innhub.com", role: "FINANCE" },
+                                { name: "System Admin", email: "admin@innhub.com", role: "ADMIN" }
+                            ].map((u, idx) => (
                                 <button 
-                                    key={u.id}
+                                    key={idx}
                                     type="button"
                                     onClick={() => { setEmail(u.email); setPassword("password123"); }}
                                     className="bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/40 p-4 rounded-2xl text-left transition-all group relative overflow-hidden active:scale-95"
@@ -76,8 +83,9 @@ export default function LoginPage() {
                                     <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-100 transition-opacity">
                                         <Zap size={12} className="text-blue-400" />
                                     </div>
-                                    <div className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1 truncate">{u.role?.replace('_', ' ')}</div>
-                                    <div className="text-sm font-black text-white group-hover:text-blue-100 truncate">{u.name || u.fullName}</div>
+                                    <div className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1 truncate">{u.role}</div>
+                                    <div className="text-sm font-black text-white group-hover:text-blue-100 truncate">{u.name}</div>
+                                    <div className="text-[10px] text-slate-500 truncate mt-1">{u.email}</div>
                                 </button>
                             ))}
                         </div>

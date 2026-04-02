@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import { Building2, Plus, Edit2, Trash2, Users, Search } from "lucide-react";
 import { useProcurement, Department, User } from "../../context/ProcurementContext";
-import { Organization } from "@/app/types/api-types";
+import { Organization, CreateDepartmentPayload, UpdateDepartmentPayload } from "@/app/types/api-types";
 
 export default function DepartmentsPage() {
     const { departments, users, addDept, updateDept, removeDept, organizations } = useProcurement();
     const [showModal, setShowModal] = useState(false);
     const [editingDept, setEditingDept] = useState<Department | null>(null);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<CreateDepartmentPayload>({
         orgId: "",
         code: "",
         name: "",

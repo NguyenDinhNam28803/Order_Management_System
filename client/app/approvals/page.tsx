@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
-import { CheckSquare, XCircle, CheckCircle2, Eye, FileText, AlertTriangle, History, ArrowLeft, MessageSquareWarning, Paperclip, Check } from "lucide-react";
+import { CheckSquare, XCircle, CheckCircle2, Eye, FileText, AlertTriangle, History, ArrowLeft, MessageSquareWarning, Paperclip, Check, Loader2 } from "lucide-react";
 import { useProcurement, PR } from "../context/ProcurementContext";
 import { formatVND } from "../utils/formatUtils";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ interface PendingPR extends PR {
 }
 
 export default function ApprovalsPage() {
-    const { prs, approvals, actionApproval, currentUser, notify } = useProcurement();
+    const { prs, approvals, actionApproval, currentUser, notify, refreshData } = useProcurement();
     const router = useRouter();
 
     const pendingPRs = (approvals || []).map((app) => {
@@ -57,8 +57,12 @@ export default function ApprovalsPage() {
             if (success) {
                 setIsSuccess(true);
                 notify("Thao tác thành công!", "success");
+                await refreshData();
                 setTimeout(() => {
-                    router.push("/");
+                    setSelectedPR(null);
+                    setIsSuccess(false);
+                    setMemo("");
+                    setActionType(null);
                 }, 2000);
             } else {
                 notify("Không thể thực hiện phê duyệt. Vui lòng kiểm tra lại quyền hạn.", "error");
@@ -86,68 +90,87 @@ export default function ApprovalsPage() {
     }
 
     return (
-        <main className="pt-16 px-8 pb-12">
+        <main className="pt-16 px-8 pb-12 animate-in fade-in duration-500">
             <DashboardHeader breadcrumbs={["Hệ thống", "Phê duyệt"]} />
 
             {!selectedPR ? (
                 <>
-                    <div className="mt-8 mb-8">
-                        <h1 className="text-3xl font-black text-erp-navy tracking-tight">Danh sách cần phê duyệt</h1>
-                        <p className="text-sm text-slate-500 mt-1">Bạn đang có {pendingPRs.length} yêu cầu cần xử lý theo đúng SLA.</p>
+                    <div className="mt-12 mb-8">
+                        <h1 className="text-4xl font-black text-erp-navy tracking-tight">Danh sách phê duyệt</h1>
+                        <p className="text-sm font-bold text-slate-400 mt-2">Bạn đang có {pendingPRs.length} yêu cầu cần xử lý theo đúng SLA.</p>
                     </div>
 
-                    <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-erp-navy/5">
-                        <table className="erp-table">
+                    <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-erp-navy/5 border-none">
+                        <table className="erp-table !border-none">
                             <thead>
-                                <tr className="bg-slate-50 border-b border-slate-100">
-                                    <th className="font-black">Loại/Mã</th>
-                                    <th className="font-black">Người tạo</th>
-                                    <th className="font-black w-1/3">Tiêu đề (Lý do)</th>
-                                    <th className="font-black text-right">Tổng giá trị</th>
-                                    <th className="font-black text-center">Thời gian chờ</th>
-                                    <th className="font-black text-right">Thao tác</th>
+                                <tr className="bg-slate-50/50 border-b border-slate-100">
+                                    <th className="font-black text-[10px] uppercase tracking-widest px-8">Mã định danh</th>
+                                    <th className="font-black text-[10px] uppercase tracking-widest px-4">Người đề xuất</th>
+                                    <th className="font-black text-[10px] uppercase tracking-widest px-4 w-1/3">Tiêu đề & Giải trình</th>
+                                    <th className="font-black text-[10px] uppercase tracking-widest px-4 text-right">Tổng giá trị (VND)</th>
+                                    <th className="font-black text-[10px] uppercase tracking-widest px-4 text-center">Thời gian chờ</th>
+                                    <th className="font-black text-[10px] uppercase tracking-widest px-8 text-right">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-slate-50">
                                 {pendingPRs.length > 0 ? pendingPRs.map((pr, idx: number) => (
-                                    <tr key={pr.id} className="hover:bg-slate-50/50 group">
-                                        <td>
-                                            <div className="font-bold text-erp-navy flex items-center gap-2">
-                                                <div className="p-1.5 bg-blue-50 text-erp-blue rounded-lg"><FileText size={14} /></div>
-                                                {pr.prNumber || pr.id.substring(0,8)}
+                                    <tr key={pr.id} className="hover:bg-erp-blue/[0.02] group transition-all duration-300">
+                                        <td className="px-8 py-6">
+                                            <div className="font-black text-erp-navy flex items-center gap-3">
+                                                <div className="p-2.5 bg-erp-blue/5 text-erp-blue rounded-xl border border-erp-blue/5"><FileText size={16} /></div>
+                                                <span className="tracking-tight text-[15px]">{pr.prNumber || pr.id.substring(0,8)}</span>
                                             </div>
                                         </td>
-                                        <td>
-                                            <div className="text-sm font-bold text-slate-700">{typeof pr.department === 'object' ? pr.department.name : pr.department}</div>
-                                            <div className="text-[10px] text-slate-400">ID: {pr.requester?.fullName || pr.requesterId?.substring(0,8)}</div>
+                                        <td className="px-4 py-6">
+                                            <div className="text-[13px] font-black text-slate-700 uppercase tracking-tight mb-1">{typeof pr.department === 'object' ? pr.department.name : pr.department}</div>
+                                            <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter flex items-center gap-2">
+                                                <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                                Requester: {pr.requester?.fullName || pr.requesterId?.substring(0,8)}
+                                            </div>
                                         </td>
-                                        <td className="max-w-[200px]">
-                                            <div className="font-bold text-erp-navy truncate" title={pr.title}>{pr.title}</div>
-                                            <div className="text-xs text-slate-500 truncate" title={pr.justification}>{pr.justification}</div>
+                                        <td className="px-4 py-6 max-w-[200px]">
+                                            <div className="font-black text-erp-navy text-[14px] truncate mb-1" title={pr.title}>{pr.title}</div>
+                                            <div className="text-[11px] text-slate-500 font-medium truncate italic" title={pr.justification}>{pr.justification}</div>
                                         </td>
-                                        <td className="font-mono text-right font-black text-erp-blue text-lg">{formatVND(pr.totalEstimate)} ₫</td>
-                                        <td className="text-center">
+                                        <td className="px-4 py-6 text-right">
+                                            <div className="font-mono font-black text-erp-blue text-xl tracking-tighter">{formatVND(pr.totalEstimate)}</div>
+                                            <div className="text-[9px] font-black text-slate-300 uppercase tracking-widest mt-1">Estimations</div>
+                                        </td>
+                                        <td className="px-4 py-6 text-center">
                                             {idx === 0 ? (
-                                                <span className="text-[10px] font-black text-red-500 bg-red-50 px-2 py-1 rounded inline-flex items-center gap-1 border border-red-100"><AlertTriangle size={10} /> 26h (Quá SLA)</span>
+                                                <div className="inline-flex flex-col items-center gap-1">
+                                                    <span className="text-[10px] font-black text-rose-500 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-100 flex items-center gap-1.5 animate-pulse uppercase tracking-tight">
+                                                        <AlertTriangle size={11} /> 26h Wait
+                                                    </span>
+                                                    <span className="text-[8px] font-bold text-rose-300 uppercase">Critical SLA</span>
+                                                </div>
                                             ) : (
-                                                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">4h</span>
+                                                <div className="inline-flex flex-col items-center gap-1">
+                                                    <span className="text-[10px] font-black text-slate-500 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 uppercase tracking-tight">4h Wait</span>
+                                                    <span className="text-[8px] font-bold text-slate-300 uppercase">On Track</span>
+                                                </div>
                                             )}
                                         </td>
-                                        <td className="text-right">
+                                        <td className="px-8 py-6 text-right">
                                             <button
                                                 onClick={() => setSelectedPR(pr)}
-                                                className="px-4 py-2 bg-slate-100 text-erp-navy hover:bg-erp-blue hover:text-white rounded-lg text-xs font-black uppercase tracking-widest transition-all shadow-sm group-hover:shadow"
+                                                className="px-6 py-3 bg-white text-erp-navy hover:bg-erp-navy hover:text-white border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm hover:shadow-xl hover:scale-105 active:scale-95"
                                             >
-                                                Xem xét
+                                                Kiểm soát
                                             </button>
                                         </td>
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan={6} className="py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-sm">
-                                            <div className="flex flex-col items-center justify-center">
-                                                <CheckSquare size={48} className="opacity-20 mb-4" />
-                                                Không có yêu cầu nào chờ duyệt
+                                        <td colSpan={6} className="py-32 text-center">
+                                            <div className="flex flex-col items-center justify-center gap-4">
+                                                <div className="w-20 h-20 rounded-[32px] bg-slate-50 flex items-center justify-center border-2 border-dashed border-slate-200">
+                                                    <CheckSquare size={32} className="text-slate-200" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">Hệ thống sạch</h4>
+                                                    <p className="text-[10px] text-slate-300 font-bold uppercase tracking-tighter mt-1">Không có yêu cầu nào cần bạn xử lý lúc này.</p>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -157,91 +180,94 @@ export default function ApprovalsPage() {
                     </div>
                 </>
             ) : (
-                <div className="animate-in fade-in slide-in-from-right-8 duration-300">
-                    <div className="mt-8 flex justify-between items-end mb-6 border-b border-slate-200 pb-4">
-                        <div className="flex items-center gap-4">
-                            <button onClick={() => setSelectedPR(null)} className="p-2 bg-white border border-slate-200 text-slate-500 hover:bg-slate-100 rounded-xl transition-all shadow-sm">
-                                <ArrowLeft size={20} />
+                <div className="animate-in fade-in slide-in-from-right-12 duration-500">
+                    <div className="mt-12 flex justify-between items-end mb-10 pb-6 border-b border-slate-100">
+                        <div className="flex items-center gap-6">
+                            <button onClick={() => setSelectedPR(null)} className="h-14 w-14 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-erp-navy hover:border-erp-navy rounded-[20px] transition-all shadow-sm hover:shadow-xl hover:scale-110">
+                                <ArrowLeft size={24} />
                             </button>
                             <div>
-                                <h1 className="text-3xl font-black text-erp-navy tracking-tight flex items-center gap-2">Phê duyệt: {selectedPR.id}</h1>
-                                <p className="text-sm text-slate-500 mt-1">Kiểm tra thông tin chi tiết trước khi ra quyết định.</p>
+                                <div className="flex items-center gap-3 mb-1">
+                                    <span className="bg-erp-blue text-white text-[9px] font-black uppercase px-2 py-0.5 rounded tracking-[0.2em]">Pending Review</span>
+                                    <h1 className="text-4xl font-black text-erp-navy tracking-tight">Chi tiết phê duyệt #{selectedPR.prNumber || selectedPR.id.substring(0,8)}</h1>
+                                </div>
+                                <p className="text-sm font-bold text-slate-400">Kiểm tra thông tin chi tiết và lịch sử trước khi ra quyết định.</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                        <div className="xl:col-span-2 space-y-8">
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+                        <div className="xl:col-span-2 space-y-10">
                             {/* Card Thông tin tổng hợp */}
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                                <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                                    <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy">Thông tin tổng hợp</h3>
+                            <div className="bg-white rounded-[32px] shadow-2xl shadow-erp-navy/5 border border-slate-100 overflow-hidden">
+                                <div className="bg-slate-50/50 px-8 py-5 border-b border-slate-100 flex items-center justify-between">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-erp-navy">Thông tin hồ sơ gốc</h3>
                                 </div>
-                                <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
-                                    <div className="md:col-span-2 flex items-center gap-4 border-b border-slate-100 pb-4 md:border-none md:pb-0">
-                                        <div className="w-12 h-12 rounded-full bg-blue-100 text-erp-blue flex items-center justify-center font-black text-xl">
+                                <div className="p-10 grid grid-cols-2 md:grid-cols-4 gap-10">
+                                    <div className="md:col-span-2 flex items-center gap-6">
+                                        <div className="w-16 h-16 rounded-[24px] bg-erp-blue/10 text-erp-blue flex items-center justify-center font-black text-2xl shadow-inner border border-erp-blue/5">
                                             {(typeof selectedPR.department === 'object' ? selectedPR.department.name : (selectedPR.department || "PR")).substring(0,2).toUpperCase()}
                                         </div>
                                         <div>
-                                            <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-0.5">Người tạo</div>
-                                            <div className="text-sm font-black text-erp-navy">{typeof selectedPR.department === 'object' ? selectedPR.department.name : selectedPR.department}</div>
-                                            <div className="text-[10px] text-slate-500">Gửi lúc: {new Date(selectedPR.createdAt).toLocaleString('vi-VN')}</div>
+                                            <div className="text-[10px] uppercase font-black tracking-widest text-slate-300 mb-1">Đơn vị đề xuất</div>
+                                            <div className="text-lg font-black text-erp-navy">{typeof selectedPR.department === 'object' ? selectedPR.department.name : selectedPR.department}</div>
+                                            <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-0.5">{new Date(selectedPR.createdAt).toLocaleString('vi-VN')}</div>
                                         </div>
                                     </div>
                                     <div>
-                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Cost Center</div>
-                                        <div className="text-sm font-bold text-erp-navy bg-slate-50 inline-block px-2 py-1 rounded border border-slate-100">{typeof selectedPR.costCenter === 'object' ? selectedPR.costCenter.name : (selectedPR.costCenter || 'N/A')}</div>
+                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-300 mb-2">Cost Center</div>
+                                        <div className="text-sm font-black text-erp-navy bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 inline-block">{typeof selectedPR.costCenter === 'object' ? selectedPR.costCenter.name : (selectedPR.costCenter || 'N/A')}</div>
                                     </div>
                                     <div>
-                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Mức độ ưu tiên</div>
-                                        <div className={`text-sm font-black uppercase tracking-wider ${selectedPR.priority.toString() === 'High' ? 'text-red-600' : selectedPR.priority.toString() === 'Urgent' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-300 mb-2">Độ ưu tiên</div>
+                                        <div className={`text-sm font-black uppercase tracking-tight flex items-center gap-2 ${selectedPR.priority.toString() === 'High' ? 'text-rose-500' : selectedPR.priority.toString() === 'Urgent' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                            <div className={`h-2 w-2 rounded-full ${selectedPR.priority.toString() === 'High' ? 'bg-rose-500 animate-pulse' : 'bg-current'}`} />
                                             {selectedPR.priority.toString() || 'Normal'}
                                         </div>
                                     </div>
-                                    <div className="col-span-2 md:col-span-4 bg-slate-50 p-4 rounded-xl border border-slate-100/50 mt-2">
-                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Mô tả / Lý do mua hàng</div>
-                                        <div className="text-sm font-black text-erp-navy mb-1">{selectedPR.title}</div>
-                                        <div className="text-sm font-medium text-slate-700 italic leading-relaxed">&quot;{selectedPR.justification}&quot;</div>
+                                    <div className="col-span-2 md:col-span-4 bg-slate-50/50 p-8 rounded-[24px] border-2 border-dashed border-slate-100 mt-2">
+                                        <div className="text-[10px] uppercase font-black tracking-widest text-slate-300 mb-3">Nội dung đề xuất & Mục đích</div>
+                                        <div className="text-lg font-black text-erp-navy mb-3 leading-tight tracking-tight">{selectedPR.title}</div>
+                                        <div className="text-[15px] font-medium text-slate-600 italic leading-relaxed bg-white/50 p-4 rounded-xl">&quot;{selectedPR.justification}&quot;</div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Danh sách hàng */}
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                                <div className="bg-slate-50 px-6 py-4 border-b border-slate-100">
-                                    <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy">Danh sách mặt hàng chuẩn bị mua</h3>
+                            <div className="bg-white rounded-[32px] shadow-2xl shadow-erp-navy/5 border border-slate-100 overflow-hidden">
+                                <div className="bg-erp-navy px-8 py-5 flex items-center justify-between">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Danh mục hàng hóa chuẩn bị mua</h3>
+                                    <div className="text-[10px] font-black text-white px-3 py-1 bg-white/10 rounded-full border border-white/10 uppercase tracking-widest">SL: {selectedPR.items?.length || 0}</div>
                                 </div>
                                 <table className="erp-table !shadow-none !border-none m-0">
                                     <thead>
-                                        <tr className="bg-white border-b border-slate-200">
-                                            <th className="w-12 text-center text-[10px]">STT</th>
-                                            <th className="text-[10px]">Mô tả hàng hóa</th>
-                                            <th className="text-[10px] text-center w-20">SL</th>
-                                            <th className="text-[10px] text-center w-20">ĐVT</th>
-                                            <th className="text-[10px] text-right w-32">Đơn giá</th>
-                                            <th className="text-[10px] text-right w-32">Thành tiền</th>
+                                        <tr className="bg-slate-50 border-b border-slate-100">
+                                            <th className="w-16 text-center text-[9px] font-black uppercase tracking-widest text-slate-400">STT</th>
+                                            <th className="text-[9px] font-black uppercase tracking-widest text-slate-400">Mô tả chi tiết hàng hóa</th>
+                                            <th className="text-[9px] font-black uppercase tracking-widest text-slate-400 text-center w-24">Số lượng</th>
+                                            <th className="text-[9px] font-black uppercase tracking-widest text-slate-400 text-right w-40">Đơn giá dự kiến</th>
+                                            <th className="text-[9px] font-black uppercase tracking-widest text-slate-400 text-right w-40 px-8">Thành tiền</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="divide-y divide-slate-50">
                                         {selectedPR.items?.map((item, idx: number) => {
                                             const rowTotal = (Number(item.qty) || Number(item.quantity) || 0) * item.estimatedPrice;
                                             const isSuperHigh = rowTotal >= 100000000;
                                             const isHigh = rowTotal >= 30000000 && !isSuperHigh;
                                             
-                                            // Theo mockup 4.2:
-                                            // Item >= 30tr tô cam
-                                            // Item >= 100tr tô đỏ nhạt + badge 'Cần TGĐ duyệt'
                                             return (
-                                                <tr key={idx} className={`border-b border-slate-100 ${isSuperHigh ? 'bg-red-50/70 border-l-4 border-red-500' : isHigh ? 'bg-orange-50/50 border-l-4 border-orange-400' : ''}`}>
-                                                    <td className="text-center font-bold text-slate-400">{idx + 1}</td>
-                                                    <td className="font-bold text-erp-navy">
-                                                        {item.description}
-                                                        {isSuperHigh && <span className="ml-2 inline-flex items-center gap-1 text-[9px] font-black uppercase text-red-600 bg-red-100 px-1.5 py-0.5 rounded tracking-tighter"><AlertTriangle size={10} /> Cần TGĐ Duyệt</span>}
+                                                <tr key={idx} className={`group transition-colors ${isSuperHigh ? 'bg-rose-50/30' : isHigh ? 'bg-amber-50/20' : 'hover:bg-slate-50/50'}`}>
+                                                    <td className="text-center font-black text-slate-300 py-6">{idx + 1}</td>
+                                                    <td className="py-6">
+                                                        <div className="font-black text-erp-navy text-[14px] leading-tight mb-1">{item.description}</div>
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter bg-slate-100/50 px-2 py-0.5 rounded-lg border border-slate-100">{item.unit || 'Cái'}</span>
+                                                            {isSuperHigh && <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase text-rose-600 bg-rose-50 px-2 py-1 rounded-xl tracking-tighter border border-rose-100 animate-pulse"><AlertTriangle size={12} /> Phê duyệt TGĐ</span>}
+                                                        </div>
                                                     </td>
-                                                    <td className="text-center font-black text-erp-blue">{item.qty}</td>
-                                                    <td className="text-center font-bold text-slate-500">{item.unit || 'Cái'}</td>
-                                                    <td className="text-right font-mono text-slate-500">{formatVND(item.estimatedPrice)}</td>
-                                                    <td className={`text-right font-mono font-black ${isSuperHigh ? 'text-red-600' : isHigh ? 'text-orange-600' : 'text-erp-navy'}`}>
+                                                    <td className="text-center font-black text-erp-blue text-lg py-6">{item.qty}</td>
+                                                    <td className="text-right font-mono font-bold text-slate-400 py-6">{formatVND(item.estimatedPrice)}</td>
+                                                    <td className={`text-right font-mono font-black py-6 px-8 text-lg ${isSuperHigh ? 'text-rose-600' : isHigh ? 'text-amber-600' : 'text-erp-navy'}`}>
                                                         {formatVND(rowTotal)}
                                                     </td>
                                                 </tr>
@@ -249,15 +275,17 @@ export default function ApprovalsPage() {
                                         })}
                                     </tbody>
                                     <tfoot>
-                                        <tr className="bg-slate-50">
-                                            <td colSpan={5} className="text-right py-4 cursor-default">
-                                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tổng cộng giá trị PR</div>
-                                                <div className="text-[9px] uppercase font-bold text-amber-600 flex justify-end gap-1 mt-1">
-                                                    Approval Chain: Trưởng phòng → Giám đốc {Number(selectedPR.totalEstimate) >= 100000000 ? '→ Tổng Giám Đốc' : ''}
+                                        <tr className="bg-slate-50/50">
+                                            <td colSpan={4} className="text-right py-10 px-6">
+                                                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 mb-2">Tổng giá trị quyết toán (PR Total)</div>
+                                                <div className="text-[10px] font-black text-erp-blue uppercase tracking-tighter flex justify-end items-center gap-2">
+                                                    <History size={12} /> 
+                                                    Quy trình: Trưởng bộ phận → Giám đốc {Number(selectedPR.totalEstimate) >= 100000000 ? '→ Tổng Giám Đốc' : ''}
                                                 </div>
                                             </td>
-                                            <td className="text-right font-mono font-black text-2xl text-erp-navy py-4 pr-3">
-                                                {formatVND(Number(selectedPR.totalEstimate) || 0)} ₫
+                                            <td className="text-right py-10 px-8">
+                                                <div className="text-3xl font-black text-erp-navy font-mono tracking-tighter">{formatVND(Number(selectedPR.totalEstimate) || 0)}</div>
+                                                <div className="text-[10px] font-black text-slate-400 tracking-[0.2em] mt-1">CURRENCY: VND</div>
                                             </td>
                                         </tr>
                                     </tfoot>
@@ -266,56 +294,48 @@ export default function ApprovalsPage() {
                         </div>
 
                         {/* Cột phải: Lịch sử & Đính kèm */}
-                        <div className="space-y-8">
+                        <div className="space-y-10">
                             {/* Tài liệu đính kèm */}
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 flex items-center gap-2">
-                                    <Paperclip size={16} /> Tài liệu đính kèm
+                            <div className="bg-white rounded-[32px] shadow-2xl shadow-erp-navy/5 border border-slate-100 p-8">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-erp-navy mb-6 flex items-center gap-3">
+                                    <Paperclip size={18} className="text-erp-blue" /> Hồ sơ đính kèm
                                 </h3>
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between p-3 border border-slate-100 rounded-lg hover:border-erp-blue/30 transition-colors group cursor-pointer">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 bg-blue-50 text-erp-blue rounded flex items-center justify-center shrink-0">
-                                                <FileText size={14} />
+                                <div className="space-y-4">
+                                    {[
+                                        { name: "Bao_gia_ncc_A.pdf", size: "1.2 MB" },
+                                        { name: "De_xuat_mua.docx", size: "450 KB" }
+                                    ].map((doc, i) => (
+                                        <div key={i} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl hover:border-erp-blue/20 transition-all group cursor-pointer hover:bg-white hover:shadow-xl hover:shadow-erp-blue/5">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 bg-white text-erp-blue rounded-xl flex items-center justify-center shrink-0 shadow-sm border border-slate-100 group-hover:scale-110 transition-transform">
+                                                    <FileText size={20} />
+                                                </div>
+                                                <div>
+                                                    <div className="text-[13px] font-black text-erp-navy group-hover:text-erp-blue transition-colors line-clamp-1">{doc.name}</div>
+                                                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{doc.size}</div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <div className="text-xs font-bold text-erp-navy group-hover:text-erp-blue transition-colors">Bao_gia_ncc_A.pdf</div>
-                                                <div className="text-[10px] text-slate-400">1.2 MB</div>
-                                            </div>
+                                            <Eye size={18} className="text-slate-200 group-hover:text-erp-blue" />
                                         </div>
-                                        <Eye size={16} className="text-slate-300 group-hover:text-erp-blue" />
-                                    </div>
-                                    <div className="flex items-center justify-between p-3 border border-slate-100 rounded-lg hover:border-erp-blue/30 transition-colors group cursor-pointer">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 bg-blue-50 text-erp-blue rounded flex items-center justify-center shrink-0">
-                                                <FileText size={14} />
-                                            </div>
-                                            <div>
-                                                <div className="text-xs font-bold text-erp-navy group-hover:text-erp-blue transition-colors">De_xuat_mua.docx</div>
-                                                <div className="text-[10px] text-slate-400">450 KB</div>
-                                            </div>
-                                        </div>
-                                        <Eye size={16} className="text-slate-300 group-hover:text-erp-blue" />
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
 
                             {/* Lịch sử duyệt */}
-                            <div className="bg-slate-50 rounded-xl shadow-sm border border-slate-200 p-6 relative">
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
-                                    <History size={14} /> Lịch sử duyệt trước đó
+                            <div className="bg-slate-50/50 rounded-[32px] shadow-2xl shadow-erp-navy/5 border border-slate-100 p-8 relative">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8 flex items-center gap-2">
+                                    <History size={16} /> Workflow Timeline
                                 </h3>
-                                <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 md:before:left-2 md:-left-2 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-emerald-400 before:via-slate-200 before:to-transparent">
-                                    
+                                <div className="space-y-8 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-emerald-400 before:via-slate-200 before:to-transparent">
                                     <div className="relative flex items-center group">
-                                        <div className="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-sm shrink-0 z-10 mr-4"></div>
-                                        <div className="bg-white p-3 rounded-xl border border-emerald-100 shadow-sm w-full">
-                                            <div className="flex justify-between items-start mb-1">
-                                                <div className="text-[10px] font-black uppercase text-emerald-600">Phó Quản đốc</div>
-                                                <div className="text-[9px] text-slate-400 font-bold">14/03 09:30 AM</div>
+                                        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 border-4 border-white shadow-lg shrink-0 z-10 mr-5 group-hover:scale-125 transition-transform"></div>
+                                        <div className="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm w-full group-hover:shadow-md transition-shadow">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="text-[9px] font-black uppercase text-emerald-600 tracking-widest">Phó Quản đốc</div>
+                                                <div className="text-[9px] text-slate-300 font-bold">14/03 09:30 AM</div>
                                             </div>
-                                            <div className="text-xs font-bold text-erp-navy mb-1">Tran Van B (Đã duyệt)</div>
-                                            <div className="text-[10px] italic text-slate-600 bg-emerald-50/50 p-2 rounded">&quot;Đồng ý đề xuất, cần hàng gấp cho dự án.&quot;</div>
+                                            <div className="text-sm font-black text-erp-navy mb-2">Tran Van B (Đã duyệt)</div>
+                                            <div className="text-xs italic text-slate-500 bg-emerald-50/30 p-3 rounded-xl border border-emerald-50">&quot;Đồng ý đề xuất, cần hàng gấp cho dự án.&quot;</div>
                                         </div>
                                     </div>
                                 </div>
@@ -323,62 +343,110 @@ export default function ApprovalsPage() {
                         </div>
                     </div>
 
-                    {/* Khu vực Action (Floating Bottom or Static Bottom) */}
-                    <div className="mt-8 bg-white border border-slate-200 rounded-2xl shadow-xl shadow-erp-navy/5 p-6 md:flex gap-8">
-                        <div className="flex-1 space-y-3 mb-6 md:mb-0">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ghi chú phê duyệt (Tùy chọn cho Approve, Bắt buộc cho Reject)</label>
-                            <textarea 
-                                className="erp-input w-full h-24 resize-none leading-relaxed text-sm bg-slate-50 focus:bg-white"
-                                placeholder="Nhập lý do, ý kiến bảo lưu hoặc ghi chú bổ sung..."
-                                value={memo}
-                                onChange={e => setMemo(e.target.value)}
-                            />
-                        </div>
-                        
-                        <div className="flex-1 flex flex-col justify-end gap-3 md:max-w-xs">
-                            {actionType && actionType !== "APPROVE" ? (
-                                <div className="animate-in fade-in slide-in-from-right-4">
-                                    <div className="mb-3 text-xs font-bold text-slate-600 text-center">
-                                        Bạn đang chọn: <span className={actionType === 'REJECT' ? 'text-red-600 font-black' : 'text-amber-600 font-black'}>{actionType === 'REJECT' ? 'TỪ CHỐI' : 'YÊU CẦU BỔ SUNG'}</span>
-                                    </div>
-                                    <button 
-                                        onClick={() => handleAction()} 
-                                        disabled={isSubmitting}
-                                        className={`w-full py-3.5 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 text-white shadow-lg transition-all ${
-                                            actionType === 'REJECT' 
-                                            ? 'bg-red-600 hover:bg-red-700 shadow-red-600/30' 
-                                            : 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/30'
-                                        }`}
-                                    >
-                                        {isSubmitting ? 'Đang xử lý...' : 'Xác nhận Thao tác'}
-                                    </button>
-                                    <button onClick={() => setActionType(null)} className="w-full mt-2 py-2 text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 underline">Hủy thay đổi</button>
+                    {/* Khu vực Action Command Center */}
+                    <div className="mt-12 erp-card shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] overflow-hidden p-0 border-none animate-in slide-in-from-bottom-8 duration-700">
+                        <div className="bg-erp-navy p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-5">
+                                <div className="p-4 bg-white/10 rounded-[28px] backdrop-blur-xl border border-white/10 shadow-2xl">
+                                    <CheckSquare size={28} className="text-white" />
                                 </div>
-                            ) : (
-                                <>
-                                    <button 
-                                        onClick={() => handleAction("APPROVE")}
-                                        disabled={isSubmitting}
-                                        className="w-full py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 text-white bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/30 transition-all"
-                                    >
-                                        <Check size={18} /> Phê Duyệt Ngay
-                                    </button>
-                                    <div className="flex gap-3">
+                                <div>
+                                    <h3 className="text-base font-black uppercase tracking-[0.3em] text-white">Action Command Center</h3>
+                                    <p className="text-[11px] font-bold text-white/50 uppercase tracking-tight mt-1">Ra quyết định thực thi cho PR #{selectedPR.prNumber || selectedPR.id.substring(0,8)}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4 bg-white/5 p-3 rounded-2xl border border-white/5">
+                                <div className="text-right px-6 py-1">
+                                    <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Decision Value</div>
+                                    <div className="text-2xl font-black text-white font-mono tracking-tighter">{formatVND(selectedPR.totalEstimate)} ₫</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-10 md:flex gap-16 bg-white">
+                            <div className="flex-1 space-y-6 mb-10 md:mb-0">
+                                <div className="flex justify-between items-center px-2">
+                                    <label className="text-[11px] font-black uppercase tracking-[0.1em] text-slate-400">Ghi chú & Chỉ thị phê duyệt</label>
+                                    {actionType === 'REJECT' && <span className="text-[10px] font-black text-rose-500 uppercase flex items-center gap-1.5 animate-pulse"><AlertTriangle size={12} /> Bắt buộc lý do</span>}
+                                </div>
+                                <textarea 
+                                    className="w-full h-36 p-8 rounded-[32px] bg-slate-50 border-2 border-transparent focus:border-erp-blue/20 focus:bg-white text-[15px] font-medium text-slate-700 outline-none transition-all resize-none shadow-inner"
+                                    placeholder="Nội dung phê duyệt, chỉ thị bổ sung hoặc lý do từ chối cụ thể..."
+                                    value={memo}
+                                    onChange={e => setMemo(e.target.value)}
+                                />
+                                <div className="flex flex-wrap gap-3 pt-2 px-2">
+                                    {["Tài liệu đầy đủ", "Đơn giá tốt", "Cần thêm báo giá", "Vượt ngân sách", "Không khẩn cấp"].map(tag => (
                                         <button 
-                                            onClick={() => setActionType("MORE_INFO")}
-                                            className="flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-1.5 text-amber-600 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-all"
+                                            key={tag}
+                                            onClick={() => setMemo(prev => prev ? `${prev}. ${tag}` : tag)}
+                                            className="px-4 py-2 rounded-2xl border border-slate-100 text-[10px] font-black text-slate-400 hover:bg-erp-blue hover:text-white hover:border-erp-blue transition-all uppercase tracking-tight shadow-sm"
                                         >
-                                            <MessageSquareWarning size={14} /> Bổ sung
+                                            + {tag}
                                         </button>
-                                        <button 
-                                            onClick={() => setActionType("REJECT")}
-                                            className="flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-1.5 text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 transition-all"
-                                        >
-                                            <XCircle size={14} /> Từ chối
-                                        </button>
-                                    </div>
-                                </>
-                            )}
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <div className="w-full md:w-[400px] flex flex-col justify-center">
+                                <div className="p-8 rounded-[40px] bg-slate-50/70 border border-slate-100 flex flex-col gap-6 shadow-sm">
+                                    {actionType && actionType !== "APPROVE" ? (
+                                        <div className="animate-in fade-in slide-in-from-right-8 duration-500">
+                                            <div className="mb-6 text-center">
+                                                <div className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Confirm Decision</div>
+                                                <div className={`text-[15px] font-black uppercase tracking-tight py-3 px-6 rounded-2xl inline-block shadow-sm ${actionType === 'REJECT' ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-amber-50 text-amber-600 border border-amber-100'}`}>
+                                                    {actionType === 'REJECT' ? 'Từ chối toàn phần' : 'Yêu cầu làm rõ thông tin'}
+                                                </div>
+                                            </div>
+                                            <button 
+                                                onClick={() => handleAction()} 
+                                                disabled={isSubmitting}
+                                                className={`w-full py-5 rounded-[24px] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 text-white shadow-2xl transition-all hover:scale-[1.02] active:scale-95 ${
+                                                    actionType === 'REJECT' 
+                                                    ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/40' 
+                                                    : 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/40'
+                                                }`}
+                                            >
+                                                {isSubmitting ? (
+                                                    <Loader2 className="animate-spin" size={20} />
+                                                ) : (
+                                                    <CheckSquare size={20} />
+                                                )}
+                                                Xác nhận Action
+                                            </button>
+                                            <button onClick={() => setActionType(null)} className="w-full mt-5 py-2 text-[11px] font-black uppercase text-slate-300 hover:text-slate-500 transition-colors tracking-[0.2em]">Hủy & Quay lại</button>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-5">
+                                            <button 
+                                                onClick={() => handleAction("APPROVE")}
+                                                disabled={isSubmitting}
+                                                className="w-full py-6 rounded-[32px] font-black uppercase tracking-widest text-xs flex flex-col items-center justify-center gap-2 text-white bg-emerald-500 hover:bg-emerald-600 shadow-[0_20px_50px_-10px_rgba(16,185,129,0.4)] transition-all hover:scale-[1.02] active:scale-95 group"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <Check size={24} className="group-hover:scale-125 transition-transform" /> 
+                                                    <span className="text-base tracking-widest">Phê Duyệt PR</span>
+                                                </div>
+                                                <span className="text-[9px] opacity-60 tracking-[0.3em] font-bold">DIGITAL SIGNATURE REQUIRED</span>
+                                            </button>
+                                            <div className="grid grid-cols-2 gap-4 pt-2">
+                                                <button 
+                                                    onClick={() => setActionType("MORE_INFO")}
+                                                    className="py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 text-amber-600 bg-white border-2 border-amber-500/10 hover:bg-amber-50 hover:border-amber-500/30 transition-all active:scale-95 shadow-sm"
+                                                >
+                                                    <MessageSquareWarning size={16} /> Clarify
+                                                </button>
+                                                <button 
+                                                    onClick={() => setActionType("REJECT")}
+                                                    className="py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 text-rose-600 bg-white border-2 border-rose-500/10 hover:bg-rose-50 hover:border-rose-500/30 transition-all active:scale-95 shadow-sm"
+                                                >
+                                                    <XCircle size={16} /> Decline
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -386,3 +454,4 @@ export default function ApprovalsPage() {
         </main>
     );
 }
+

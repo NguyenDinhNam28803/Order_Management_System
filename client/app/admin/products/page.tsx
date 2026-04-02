@@ -9,7 +9,7 @@ import {
     Package, Layers, Tag} from "lucide-react";
 
 export default function ProductAdminPage() {
-    const { apiFetch } = useProcurement();
+    const { apiFetch, notify } = useProcurement();
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<ProductCategory[]>([]);
     const [loading, setLoading] = useState(true);
@@ -42,6 +42,7 @@ export default function ProductAdminPage() {
             }
         } catch (error) {
             console.error("Failed to fetch products/categories", error);
+            notify("Không thể tải danh sách sản phẩm", "error");
         } finally {
             setLoading(false);
         }
@@ -53,9 +54,13 @@ export default function ProductAdminPage() {
             const res = await apiFetch(`/products/${id}`, { method: 'DELETE' });
             if (res.ok) {
                 setProducts(products.filter(p => p.id !== id));
+                notify("Đã xóa sản phẩm thành công", "success");
+            } else {
+                notify("Xóa sản phẩm thất bại", "error");
             }
         } catch (error) {
             console.error("Delete failed", error);
+            notify("Đã xảy ra lỗi khi xóa sản phẩm", "error");
         }
     };
 
@@ -332,7 +337,7 @@ export default function ProductAdminPage() {
                             <button 
                                 className="btn-primary py-4 px-12 shadow-xl shadow-erp-navy/30"
                                 onClick={() => {
-                                    alert("Đã lưu thông tin sản phẩm (Demo)");
+                                    notify("Đã lưu thông tin sản phẩm (Demo Mode)", "success");
                                     setIsProductModalOpen(false);
                                 }}
                             >

@@ -119,19 +119,17 @@ export default function Sidebar() {
                             <h3 className="mb-2 px-4 text-[9px] font-black uppercase tracking-widest text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                                 {group.group}
                             </h3>
-                            <div className="space-y-1">
+                            <div className="space-y-1.5 ml-1">
                                 {visibleItems.map((item) => {
                                     const isActive = pathname === item.path;
                                     return (
                                         <Link
                                             key={item.name}
                                             href={item.path}
-                                            className={`flex items-center p-3 rounded-xl transition-all group/item ${
-                                                isActive ? "bg-erp-navy text-white shadow-lg shadow-erp-navy/20" : "text-slate-400 hover:bg-slate-50 hover:text-erp-navy"
-                                            }`}
+                                            className={`sidebar-item ${isActive ? "active" : ""}`}
                                         >
-                                            <item.icon size={20} className="shrink-0" />
-                                            <span className="ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold text-sm">
+                                            <item.icon size={18} className={`shrink-0 transition-colors ${isActive ? "text-white" : "text-slate-400 group-hover/item:text-erp-navy"}`} />
+                                            <span className="ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold text-sm tracking-tight">
                                                 {item.name}
                                             </span>
                                             {isActive && <ChevronRight size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />}
@@ -147,14 +145,14 @@ export default function Sidebar() {
             {/* Logout / User Info Footer */}
             <div className="absolute bottom-0 w-full border-t border-slate-100 bg-slate-50 p-3">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="h-10 w-10 rounded-xl bg-erp-navy flex items-center justify-center font-black text-white text-xs shrink-0 shadow-lg shadow-erp-navy/20">
+                    <div className="h-10 w-10 rounded-xl bg-erp-navy flex items-center justify-center font-black text-white text-xs shrink-0 shadow-lg shadow-erp-navy/30 border border-white/10">
                         {currentUser?.icon || currentUser?.fullName?.substring(0, 2).toUpperCase() || "GU"}
                     </div>
                     <div className="flex flex-col opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden">
-                        <span className="text-xs font-black truncate text-slate-700">{currentUser?.name || currentUser?.fullName || "Jonathan Doe"}</span>
+                        <span className="text-xs font-black truncate text-slate-700 leading-none mb-1">{currentUser?.name || currentUser?.fullName || "Jonathan Doe"}</span>
                         <div className="flex">
-                            <span className={`inline-block px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider text-white ${roleInfo?.class ?? "bg-slate-400"}`}>
-                                ROLE: {currentUser?.role === "DEPT_APPROVER" ? "MANAGER" : (currentUser?.role === "DIRECTOR" ? "DIRECTOR" : (currentUser?.role || "GUEST"))}
+                            <span className={`role-badge ${roleInfo?.class ?? "bg-slate-400"}`}>
+                                {currentUser?.role === "DEPT_APPROVER" ? "MANAGER" : (currentUser?.role === "DIRECTOR" ? "DIRECTOR" : (currentUser?.role || "GUEST"))}
                             </span>
                         </div>
                     </div>

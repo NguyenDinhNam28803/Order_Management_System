@@ -19,12 +19,12 @@ export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phả
     return (
         <header className="fixed top-0 right-0 z-30 flex h-16 w-[calc(100%-16rem)] items-center justify-between border-b border-slate-200 bg-white/80 px-8 backdrop-blur-md">
             {/* Breadcrumbs */}
-            <div className="flex items-center gap-2 text-xs font-medium">
-                <Home size={14} className="text-slate-400" />
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <Home size={14} className="text-slate-300" />
                 {breadcrumbs.map((item, index) => (
                     <React.Fragment key={item}>
-                        <ChevronRight size={14} className="text-slate-300" />
-                        <span className={index === breadcrumbs.length - 1 ? "text-erp-navy font-bold" : "text-slate-500"}>
+                        <ChevronRight size={12} className="text-slate-300" />
+                        <span className={index === breadcrumbs.length - 1 ? "text-erp-navy font-black" : "text-slate-400"}>
                             {item}
                         </span>
                     </React.Fragment>

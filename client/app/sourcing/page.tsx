@@ -37,10 +37,21 @@ export default function SourcingPage() {
     const handleCreateRFQ = async (prId: string) => {
         setIsProcessing(true);
         try {
-            const success = await createRFQ(prId, "Thiên Long Digital");
+            const pr = prs.find(p => p.id === prId);
+            const targetSupplier = suppliersList[0];
+            
+            // Theo đúng schema CreateRfqDto
+            const success = await createRFQ({
+                prId,
+                title: pr?.title ? `RFQ: ${pr.title}` : `RFQ cho PR ${pr?.prNumber || prId.substring(0,8)}`,
+                description: pr?.description || pr?.justification || "Yêu cầu báo giá tự động từ hệ thống Sourcing",
+                supplierIds: targetSupplier ? [targetSupplier.id] : [],
+                deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days from now
+            });
+            
             if (success) {
                 notify("Đã khởi tạo RFQ thành công", "success");
-                refreshData();
+                await refreshData();
             }
         } catch (err) {
             console.error(err);
@@ -107,15 +118,15 @@ export default function SourcingPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 {stats.map((stat) => (
-                    <div key={stat.label} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/20 flex items-center gap-4">
-                        <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center shrink-0`}>
-                            <stat.icon size={24} />
+                    <div key={stat.label} className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-2xl shadow-erp-navy/[0.03] flex items-center gap-6 group hover:border-erp-blue/20 hover:shadow-erp-blue/[0.04] transition-all duration-500">
+                        <div className={`w-16 h-16 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500`}>
+                            <stat.icon size={28} />
                         </div>
                         <div>
-                            <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">{stat.label}</div>
-                            <div className="text-2xl font-black text-erp-navy">{stat.value}</div>
+                            <div className="text-[10px] uppercase font-black tracking-[0.2em] text-slate-400 mb-1.5">{stat.label}</div>
+                            <div className="text-3xl font-black text-erp-navy tracking-tight">{stat.value}</div>
                         </div>
                     </div>
                 ))}
@@ -234,24 +245,35 @@ export default function SourcingPage() {
                 </div>
             </div>
 
-            <div className="mt-10 bg-linear-to-br from-erp-navy to-erp-blue p-8 rounded-[40px] text-white overflow-hidden relative shadow-2xl shadow-erp-navy/30">
-                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="max-w-xl">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 bg-white/20 backdrop-blur-md rounded-xl">
-                                <Zap size={20} className="text-amber-300" />
+            <div className="mt-12 erp-card bg-gradient-to-br from-erp-navy via-erp-navy to-erp-blue p-12 text-white overflow-hidden relative shadow-[0_30px_70px_-15px_rgba(10,25,47,0.4)] border-none animate-in slide-in-from-bottom-12 duration-1000 group">
+                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+                    <div className="max-w-2xl">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="p-3 bg-white/10 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-2xl group-hover:rotate-12 transition-transform duration-700">
+                                <Zap size={28} className="text-amber-300 fill-amber-300/20" />
                             </div>
-                            <span className="text-xs font-black uppercase tracking-[0.2em] text-white/70">Intelligence Sourcing</span>
+                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50">Next-Gen Sourcing Intelligence</span>
                         </div>
-                        <h2 className="text-3xl font-black tracking-tight mb-4">AI đang gợi ý 5 nguồn hàng chuẩn nhất cho bạn</h2>
-                        <p className="text-white/70 text-sm font-medium leading-relaxed">Dựa trên dữ liệu mạng lưới nhà cung cấp, chúng tôi tìm thấy danh sách phối hợp báo giá nhanh nhất.</p>
+                        <h2 className="text-4xl font-black tracking-tight mb-6 leading-tight">AI đang phân tích & gợi ý 5 nguồn hàng tối ưu nhất cho bạn</h2>
+                        <p className="text-white/60 text-lg font-medium leading-relaxed mb-4">Dựa trên dữ liệu mạng lưới hơn 5,000 nhà cung cấp toàn cầu, hệ thống đã lọc ra các đối tác có năng lực cung ứng kịp thời nhất.</p>
+                        <div className="flex items-center gap-6 mt-8">
+                            <div className="flex -space-x-4">
+                                {[1,2,3,4].map(i => (
+                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-erp-navy bg-slate-800 flex items-center justify-center text-[10px] font-black shadow-xl">S{i}</div>
+                                ))}
+                            </div>
+                            <span className="text-xs font-bold text-white/40 uppercase tracking-widest">+ 48 Verified Sources</span>
+                        </div>
                     </div>
-                    <button className="bg-white text-erp-navy px-10 py-5 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-emerald-400 hover:text-white transition-all shrink-0 shadow-lg active:scale-95">
-                        Xem đề xuất ngay
+                    <button className="bg-white text-erp-navy px-12 py-6 rounded-[32px] font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_20px_40px_-5px_rgba(255,255,255,0.2)] hover:bg-emerald-400 hover:text-white hover:scale-105 active:scale-95 transition-all duration-500 shrink-0">
+                        Phân tích nguồn hàng ngay
                     </button>
                 </div>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/[0.02] rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-erp-blue/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl pointer-events-none"></div>
+                <div className="absolute top-1/4 right-1/4 w-2 h-2 bg-amber-300 rounded-full animate-pulse"></div>
+                <div className="absolute bottom-1/3 left-1/3 w-1 h-1 bg-white/20 rounded-full animate-ping"></div>
             </div>
         </main>
     );

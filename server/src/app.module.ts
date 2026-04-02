@@ -33,7 +33,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { CostCenterModuleModule } from './cost-center-module/cost-center-module.module';
 import { OrganizationModuleModule } from './organization-module/organization-module.module';
 import { AutomationModule } from './common/automation/automation.module';
-import { RagController } from './rag/rag.controller';
 import { RagModule } from './rag/rag.module';
 
 @Module({
@@ -105,9 +104,8 @@ import { RagModule } from './rag/rag.module';
     OrganizationModuleModule,
     AutomationModule,
     RagModule,
-    RagModule,
   ],
-  controllers: [AppController, RagController],
+  controllers: [AppController],
   providers: [
     AppService,
     HashPasswordService,

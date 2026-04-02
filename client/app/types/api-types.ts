@@ -1,4 +1,13 @@
 /**
+ * Generic API response wrapper matching the backend structure
+ */
+export interface ApiResponse<T> {
+    data: T;
+    message?: string;
+    statusCode?: number;
+}
+
+/**
  * Trạng thái xác thực doanh nghiệp (KYC)
  */
 export enum KycStatus {
@@ -297,3 +306,107 @@ export type CreateDepartmentPayload = Omit<
 export type UpdateDepartmentPayload = Partial<
     Omit<Department, 'id' | 'orgId' | 'createdAt' | 'updatedAt'>
 >;
+
+// --- AUTH DTOs ---
+
+export interface LoginPayload {
+    email: string;
+    password?: string;
+}
+
+export interface LoginResponse {
+    accessToken: string;
+    user: {
+        id: string;
+        email: string;
+        role: string;
+        name?: string;
+        fullName?: string;
+        deptId?: string;
+        orgId?: string;
+    };
+}
+
+export interface RegisterPayload extends Record<string, unknown> {
+    email: string;
+    password?: string;
+    name?: string;
+    role?: string;
+}
+
+// --- PR DTOs ---
+
+export interface CreatePrItemDto {
+    productId?: string;
+    productDesc: string;
+    sku?: string;
+    categoryId?: string;
+    qty: number;
+    unit?: string;
+    estimatedPrice: number;
+    currency?: CurrencyCode;
+    specNote?: string;
+}
+
+export interface CreatePrDto {
+    title: string;
+    description?: string;
+    justification?: string;
+    requiredDate?: string;
+    priority?: number;
+    currency?: CurrencyCode;
+    costCenterId?: string;
+    items: CreatePrItemDto[];
+}
+
+export interface UpdatePrDto extends Partial<CreatePrDto> {}
+
+// --- RFQ DTOs ---
+
+export interface CreateRfqDto {
+    prId: string;
+    title: string;
+    description?: string;
+    deadline?: string;
+    minSuppliers?: number;
+    supplierIds: string[];
+}
+
+export interface ConsolidateRfqDto {
+    prIds: string[];
+    title: string;
+    description?: string;
+    deadline?: string;
+    supplierIds: string[];
+}
+
+export interface AwardRfqDto {
+    quotationId: string;
+}
+
+// --- OTHER TRANSACTION DTOs ---
+
+export interface CreateGrnDto extends Record<string, unknown> {
+    poId: string;
+    receivedItems: Record<string, number>;
+}
+
+export interface CreateInvoiceDto extends Record<string, unknown> {
+    poId: string;
+    invoiceNumber: string;
+    amount: number;
+    vendor: string;
+}
+
+export interface CreateQuoteDto {
+    rfqId: string;
+    supplierId: string;
+    totalPrice: number;
+    leadTimeDays: number;
+    notes?: string;
+    items?: Array<{
+        prItemId: string;
+        unitPrice: number;
+        quantity: number;
+    }>;
+}

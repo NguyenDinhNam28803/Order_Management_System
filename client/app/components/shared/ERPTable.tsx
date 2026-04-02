@@ -11,33 +11,46 @@ export interface ERPTableColumn<T> {
 
 export default function ERPTable<T>({ columns, data }: { columns: ERPTableColumn<T>[], data: T[] }) {
     return (
-        <div className="erp-card p-0 overflow-hidden">
-            <table className="erp-table">
-                <thead>
-                    <tr>
-                        {columns.map((col, i) => (
-                            <th key={i}>{col.label}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.length === 0 ? (
+        <div className="erp-card p-0 overflow-hidden relative border-none shadow-sm">
+            <div className="overflow-x-auto w-full scrollbar-thin scrollbar-thumb-slate-200">
+                <table className="erp-table">
+                    <thead>
                         <tr>
-                            <td colSpan={columns.length} className="text-center py-10 text-slate-400 italic">Không có dữ liệu.</td>
+                            {columns.map((col, i) => (
+                                <th key={i}>{col.label}</th>
+                            ))}
                         </tr>
-                    ) : (
-                        data.map((row, i) => (
-                            <tr key={i}>
-                                {columns.map((col, j) => (
-                                    <td key={j}>
-                                        {col.render ? col.render(row) : (col.key ? (row[col.key] as React.ReactNode) : null)}
-                                    </td>
-                                ))}
+                    </thead>
+                    <tbody>
+                        {data.length === 0 ? (
+                            <tr>
+                                <td colSpan={columns.length} className="text-center py-20">
+                                    <div className="flex flex-col items-center gap-3 opacity-30">
+                                        <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+                                            <Plus className="rotate-45" size={24} />
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Dữ liệu trống</span>
+                                    </div>
+                                </td>
                             </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+                        ) : (
+                            data.map((row, i) => (
+                                <tr key={i} className="group">
+                                    {columns.map((col, j) => (
+                                        <td key={j} className="group-hover:bg-erp-blue/5">
+                                            <div className="text-sm font-semibold text-slate-700 transition-colors">
+                                                {col.render ? col.render(row) : (col.key ? (row[col.key] as React.ReactNode) : null)}
+                                            </div>
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+            {/* Visual Indicator for more columns if data exists */}
+            {data.length > 0 && <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white/50 to-transparent pointer-events-none lg:hidden" />}
         </div>
     );
 }

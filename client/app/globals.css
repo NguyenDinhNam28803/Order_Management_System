@@ -1,20 +1,42 @@
 @import "tailwindcss";
 
 @theme inline {
+  /* Brand Identity */
   --color-erp-navy: #001f3f;
   --color-erp-blue: #2563eb;
-  --color-erp-green: #10b981;
-  --color-erp-red: #ef4444;
-  --color-erp-orange: #f59e0b;
-  --color-erp-gray: #64748b;
-  --color-erp-border: #e2e8f0;
+  
+  /* Semantic Colors */
+  --color-erp-success: #10b981;
+  --color-erp-error: #f43f5e;
+  --color-erp-warning: #f59e0b;
+  --color-erp-info: #3b82f6;
+  
+  /* Neutral Shades */
+  --color-erp-gray-50: #f8fafc;
+  --color-erp-gray-100: #f1f5f9;
+  --color-erp-gray-200: #e2e8f0;
+  --color-erp-gray-300: #cbd5e1;
+  --color-erp-gray-400: #94a3b8;
+  --color-erp-gray-500: #64748b;
+  --color-erp-gray-900: #0f172a;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui;
+  
+  /* Standardized Transitions */
+  --transition-erp: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  --animate-fade-in: fade-in 0.4s ease-out forwards;
 }
 
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
+  --surface: #ffffff;
 }
 
 body {
@@ -24,9 +46,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar Styles */
+/* Scrollbar Reconstruction */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -34,182 +57,164 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 10px;
+  @apply bg-slate-200 rounded-full transition-colors hover:bg-slate-300;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
-}
+/* --- GLOBAL ERP COMPONENTS --- */
 
-/* ERP Table Styles */
+/* Professional Table Design */
 .erp-table {
-  @apply w-full border-collapse bg-white text-sm;
+  @apply w-full border-collapse bg-white text-sm text-left;
 }
 
 .erp-table thead {
-  @apply sticky top-0 z-10 bg-slate-50 text-slate-500 border-b border-slate-200;
+  @apply sticky top-0 z-10 bg-slate-50/80 backdrop-blur-md text-slate-500 border-b border-slate-200;
 }
 
 .erp-table th {
-  @apply px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest border-b border-slate-100;
+  @apply px-6 py-4 text-[10px] font-black uppercase tracking-widest border-b border-slate-100;
 }
 
 .erp-table td {
-  @apply px-6 py-4 border-b border-slate-50 transition-colors;
+  @apply px-6 py-4 border-b border-slate-50 transition-all duration-200;
 }
 
-.erp-table tr:hover {
-  @apply bg-blue-50/30;
+.erp-table tr:hover td {
+  @apply bg-erp-blue/5;
 }
 
-/* Status Badges - Pill Shape */
+/* Elevation (Shadows) */
+.erp-shadow-soft {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+}
+
+.erp-shadow-md {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+
+.erp-shadow-lg {
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.03), 0 8px 10px -6px rgb(0 0 0 / 0.03);
+}
+
+/* Refined ERP Card */
+.erp-card {
+  @apply bg-white rounded-2xl border border-slate-100 p-8 transition-all duration-300;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.02), 0 4px 6px -4px rgb(0 0 0 / 0.02);
+}
+
+.erp-card:hover {
+  @apply border-slate-200;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+}
+
+/* Modernized Status Pills */
 .status-pill {
-  @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider;
+  @apply inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-all border;
 }
 
 .status-draft {
-  @apply bg-slate-100 text-slate-500;
+  @apply bg-slate-50 text-slate-500 border-slate-100;
 }
 
 .status-approved {
-  @apply bg-emerald-50 text-emerald-600 border border-emerald-100;
+  @apply bg-emerald-50 text-emerald-600 border-emerald-100;
 }
 
 .status-rejected {
-  @apply bg-red-50 text-red-600 border border-red-100;
+  @apply bg-rose-50 text-rose-600 border-rose-100;
 }
 
 .status-pending {
-  @apply bg-amber-50 text-amber-600 border border-amber-100;
+  @apply bg-amber-50 text-amber-600 border-amber-100;
 }
 
-/* Role Badges */
+/* Role Badges (Mini) */
 .role-badge {
-  @apply px-2 py-1 rounded-md text-[9px] font-black uppercase text-white shadow-sm;
+  @apply inline-flex px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-tight text-white shadow-sm;
 }
 
-.role-requester {
-  @apply bg-blue-500;
+.role-requester { @apply bg-blue-500; }
+.role-approver { @apply bg-emerald-500; }
+.role-finance { @apply bg-erp-navy; }
+.role-procurement { @apply bg-indigo-500; }
+.role-supplier { @apply bg-orange-500; }
+.role-admin { @apply bg-slate-800; }
+
+/* Interactive Input Elements */
+.erp-input {
+  @apply w-full rounded-xl border border-slate-100 bg-slate-50/50 px-5 py-3 text-sm font-semibold text-erp-navy outline-none transition-all duration-300;
 }
 
-.role-approver {
-  @apply bg-emerald-500;
+.erp-input:focus {
+  @apply bg-white border-erp-blue ring-4 ring-erp-blue/5;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
 }
 
-.role-finance {
-  @apply bg-erp-navy;
+.erp-input::placeholder {
+  @apply text-slate-300 font-medium italic opacity-70;
 }
 
-.role-procurement {
-  @apply bg-indigo-500;
+.erp-input:disabled {
+  @apply bg-slate-100/50 text-slate-300 cursor-not-allowed opacity-60;
 }
 
-.role-supplier {
-  @apply bg-orange-500;
+.erp-label {
+  @apply mb-2 block text-[10px] font-black uppercase tracking-widest text-slate-400 group-focus-within:text-erp-blue transition-colors;
 }
 
-.role-warehouse {
-  @apply bg-amber-500;
+/* High-Performance Buttons */
+.btn-primary {
+  @apply relative overflow-hidden flex items-center justify-center gap-2 bg-erp-navy text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest transition-all duration-300;
+  @apply hover:bg-slate-800 hover:shadow-xl hover:shadow-erp-navy/10 active:scale-95;
 }
 
-.role-admin {
-  @apply bg-slate-800;
+.btn-secondary {
+  @apply flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-bold transition-all;
+  @apply hover:bg-slate-50 hover:border-slate-300 hover:text-erp-navy active:scale-95;
 }
 
-/* Sidebar Component */
+/* Sidebar Navigation */
 .sidebar-item {
-  @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 text-slate-500 hover:bg-slate-50 hover:text-erp-navy;
+  @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:bg-slate-50 hover:text-erp-navy;
 }
 
 .sidebar-item.active {
-  @apply bg-erp-navy text-white shadow-lg shadow-erp-navy/20;
+  @apply bg-erp-navy text-white shadow-lg shadow-erp-navy/20 active:scale-95;
 }
 
 .sidebar-item.active .lucide {
   @apply text-white;
 }
 
-/* Budget Visualization */
-.budget-card {
-  @apply rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md transition-shadow;
-}
-
+/* Visual Progress & Gauges */
 .budget-meter {
-  @apply h-1.5 w-full bg-slate-100 rounded-full overflow-hidden flex;
+  @apply h-2 w-full bg-slate-100 rounded-full overflow-hidden flex shadow-inner;
 }
 
-.meter-spent {
-  @apply bg-erp-navy h-full;
-}
+.meter-spent { @apply bg-erp-navy h-full transition-all duration-1000; }
+.meter-committed { @apply bg-erp-blue h-full transition-all duration-700; }
+.meter-available { @apply bg-emerald-400 h-full transition-all duration-500; }
 
-.meter-committed {
-  @apply bg-erp-blue h-full;
-}
-
-.meter-available {
-  @apply bg-emerald-400 h-full;
-}
-
-/* AI Analysis Styles */
+/* AI Analysis Elements */
 .ai-badge {
-  @apply inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-white shadow-lg shadow-indigo-200;
+  @apply inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-white shadow-xl shadow-indigo-100 animate-fade-in;
 }
 
-.score-circle {
-  @apply flex h-14 w-14 items-center justify-center rounded-full border-4 font-black text-lg;
+.ai-glow {
+  @apply absolute inset-0 bg-indigo-400/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity;
 }
 
-/* ERP Form Elements */
-.erp-input {
-  @apply w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-erp-navy outline-none transition-all duration-300 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)];
-  @apply focus:ring-8 focus:ring-erp-blue/5 focus:border-erp-blue focus:bg-white focus:shadow-sm;
+/* Modern Section Headers */
+.section-title {
+  @apply text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-3;
 }
 
-.erp-input::placeholder {
-  @apply text-slate-300 font-medium italic;
+.section-title::after {
+  content: '';
+  @apply h-px flex-1 bg-slate-100;
 }
 
-.erp-input:disabled {
-  @apply bg-slate-100/50 text-slate-300 border-slate-50 cursor-not-allowed shadow-none;
-}
-
-.erp-input-sm {
-  @apply px-2 py-1.5 rounded-lg text-xs font-bold border-slate-200 outline-none transition-all;
-  @apply focus:ring-2 focus:ring-erp-blue/10 focus:border-erp-blue;
-}
-
-.erp-label {
-  @apply mb-2 block text-[11px] font-black uppercase tracking-widest text-slate-400;
-}
-
-/* Card Style */
-.erp-card {
-  @apply bg-white rounded-3xl border border-slate-100 p-8 shadow-sm;
-}
-
-/* Buttons */
-.btn-primary {
-  @apply flex items-center justify-center gap-2 bg-erp-navy text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest transition-all duration-200 shadow-xl shadow-erp-navy/20 hover:scale-[1.02] active:scale-[0.98];
-}
-
-.btn-secondary {
-  @apply flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-bold transition-all hover:bg-slate-50;
-}
-
-/* Step Indicator */
-.step-dot {
-  @apply h-10 w-10 rounded-full flex items-center justify-center text-sm font-black border-2 transition-all duration-300 shadow-sm;
-}
-
-.step-dot-active {
-  @apply bg-erp-navy border-erp-navy text-white shadow-xl shadow-erp-navy/20 ring-8 ring-erp-navy/5 scale-110;
-}
-
-.step-dot-done {
-  @apply bg-emerald-500 border-emerald-500 text-white;
-}
-
-.step-dot-todo {
-  @apply bg-white border-slate-100 text-slate-300;
+/* Form Group Container */
+.form-group {
+  @apply space-y-2;
 }

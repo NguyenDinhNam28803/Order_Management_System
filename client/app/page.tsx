@@ -141,11 +141,11 @@ export default function Dashboard() {
                                     ))
                                 ) : (
                                     personalPRs.length > 0 ? personalPRs.slice(0, 5).map((pr) => (
-                                        <tr key={pr.id} className="hover:bg-slate-50 transition-colors">
-                                            <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0, 8)}</td>
-                                            <td className="max-w-50 truncate font-medium text-slate-600" title={pr.title}>{pr.title}</td>
-                                            <td className="text-slate-400">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</td>
-                                            <td className="font-mono text-right font-black text-erp-navy">{formatVND(pr.totalEstimate || pr.total)} ₫</td>
+                                        <tr key={pr.id} className="group hover:bg-erp-blue/[0.02] transition-colors relative">
+                                            <td className="font-bold text-erp-navy group-hover:text-erp-blue transition-colors">{pr.prNumber || pr.id.substring(0, 8)}</td>
+                                            <td className="max-w-50 truncate font-semibold text-slate-600" title={pr.title}>{pr.title}</td>
+                                            <td className="text-slate-400 font-medium">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</td>
+                                            <td className="font-mono text-right font-black text-erp-navy tracking-tight">{formatVND(pr.totalEstimate || pr.total)} ₫</td>
                                             <td className="text-center">
                                                 <span className={`status-pill status-${(pr.status || 'DRAFT').toLowerCase()}`}>
                                                     {pr.status}
@@ -154,12 +154,12 @@ export default function Dashboard() {
                                             <td className="text-right">
                                                 <div className="flex justify-end gap-2">
                                                     {pr.status === "DRAFT" && (
-                                                        <Link href={`/pr/edit/${pr.id}`} className="px-3 py-1.5 bg-erp-blue/10 hover:bg-erp-blue hover:text-white text-erp-blue text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-sm">
+                                                        <Link href={`/pr/edit/${pr.id}`} className="px-3 py-2 bg-erp-blue/10 hover:bg-erp-blue hover:text-white text-erp-blue text-[9px] font-black uppercase tracking-widest rounded-xl transition-all shadow-sm">
                                                             Sửa
                                                         </Link>
                                                     )}
-                                                    <button onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="px-3 py-1.5 bg-slate-100 hover:bg-erp-navy hover:text-white text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-sm">
-                                                        {loadingMyPrs && selectedPRDetails?.id === pr.id ? 'Loading...' : 'Chi tiết'}
+                                                    <button onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="px-3 py-2 bg-slate-100 hover:bg-erp-navy hover:text-white text-slate-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all shadow-sm">
+                                                        {loadingMyPrs && selectedPRDetails?.id === pr.id ? '...' : 'Chi tiết'}
                                                     </button>
                                                 </div>
                                             </td>
@@ -726,15 +726,15 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                     {(prs || []).slice(0, 5).map((pr) => (
-                    <tr key={pr.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="font-bold text-erp-navy">{pr.prNumber || pr.id}</td>
-                        <td className="font-bold text-slate-500">{typeof pr.department === 'object' ? pr.department.name : (pr.department || "Dept")}</td>
+                    <tr key={pr.id} className="group hover:bg-erp-blue/[0.02] transition-colors relative">
+                        <td className="font-bold text-erp-navy group-hover:text-erp-blue transition-colors">{pr.prNumber || pr.id.substring(0,8)}</td>
+                        <td className="font-bold text-slate-500 tracking-tight">{typeof pr.department === 'object' ? pr.department.name : (pr.department || "Dept")}</td>
                         <td className="text-center">
-                            <span className="px-3 py-1 bg-blue-50 text-erp-blue rounded-full font-black text-[10px]">
-                                {pr.items?.length || 0}
+                            <span className="px-3 py-1 bg-blue-50 text-erp-blue rounded-lg font-black text-[9px] uppercase shadow-sm">
+                                {pr.items?.length || 0} ITEMS
                             </span>
                         </td>
-                        <td className="font-mono text-right font-black text-erp-navy">{formatVND(pr.total || pr.totalEstimate || 0)} ₫</td>
+                        <td className="font-mono text-right font-black text-erp-navy tracking-tighter">{formatVND(pr.total || pr.totalEstimate || 0)} ₫</td>
                         <td className="text-center">
                             <span className={`status-pill status-${(pr.status || 'draft').toLowerCase()}`}>
                                 {pr.status}
@@ -742,10 +742,10 @@ export default function Dashboard() {
                         </td>
                         <td className="text-right">
                             <div className="flex justify-end gap-2">
-                                <button onClick={() => setSelectedPRDetails(pr)} className="p-2 text-slate-400 hover:text-erp-navy hover:bg-slate-100 rounded-xl transition-all shadow-sm bg-white border border-slate-100" title="Xem chi tiết">
+                                <button onClick={() => setSelectedPRDetails(pr)} className="p-2 text-slate-400 hover:text-white hover:bg-erp-navy rounded-xl transition-all shadow-sm bg-white border border-slate-100" title="Xem chi tiết">
                                     <Eye size={16} />
                                 </button>
-                                <button className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shadow-sm bg-white border border-slate-100" title="Hủy phiếu">
+                                <button className="p-2 text-slate-400 hover:text-white hover:bg-rose-500 rounded-xl transition-all shadow-sm bg-white border border-slate-100" title="Hủy phiếu">
                                     <Trash2 size={16} />
                                 </button>
                             </div>

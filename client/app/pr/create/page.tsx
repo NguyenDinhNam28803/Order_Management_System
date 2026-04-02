@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
 import { formatVND } from "../../utils/formatUtils";
-import { useProcurement, Product, BudgetAllocation, BudgetPeriod } from "../../context/ProcurementContext";
-import { CostCenter } from "@/app/types/api-types";
+import { useProcurement, Product, BudgetAllocation, BudgetPeriod, PR } from "../../context/ProcurementContext";
+import { CostCenter, CreatePrDto, CreatePrItemDto } from "@/app/types/api-types";
 import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
@@ -39,35 +39,7 @@ interface PRForm {
 }
 
 /**
- * STRICT INTERFACES FOR API PAYLOAD
- * As per PRModule DTOs (create-pr.dto.ts)
- */
-interface PRItemPayload {
-  productId?: string;
-  productDesc: string;
-  sku?: string;
-  categoryId?: string;
-  qty: number;
-  unit?: string;
-  estimatedPrice: number;
-  currency?: string;
-  specNote?: string;
-}
-
-interface PRPayload {
-  title: string;
-  description?: string;
-  justification?: string;
-  requiredDate?: string;
-  priority?: number;
-  currency?: string;
-  costCenterId?: string;
-  items: PRItemPayload[];
-}
-
-/**
  * UTILITY: Check if string is a valid UUID
- * To prevent 400 Bad Request from dummy data like "p1"
  */
 const isValidUuid = (id: string | undefined): boolean => {
     if (!id) return false;
@@ -77,7 +49,8 @@ const isValidUuid = (id: string | undefined): boolean => {
 
 export default function CreatePRPage() {
     const { 
-        apiFetch, 
+        addPR,
+        submitPR,
         costCenters, 
         currentUser, 
         products, 
@@ -127,6 +100,14 @@ export default function CreatePRPage() {
         // Requesters and Managers only see their own department's cost centers
         return !currentUser.deptId || !cc.deptId || cc.deptId === currentUser.deptId;
     });
+
+    // Auto-assign Cost Center based on department
+    useEffect(() => {
+        if (!form.costCenterId && filteredCostCenters.length > 0) {
+            // Auto-select the first available CC for the user's department
+            setForm(prev => ({ ...prev, costCenterId: filteredCostCenters[0].id }));
+        }
+    }, [filteredCostCenters, form.costCenterId]);
 
     const activeCC = filteredCostCenters.find((cc: CostCenter) => cc.id === form.costCenterId);
     const totalEstimate = form.items.reduce((sum: number, item: PRItem) => sum + (item.qty * item.estimatedPrice), 0);
@@ -199,18 +180,13 @@ export default function CreatePRPage() {
             return;
         }
 
-        /**
-         * STEP 0: Prepare Payload with strict data binding
-         * Grouping item details and ensuring default values for mandatory fields
-         */
-        const payload: PRPayload = {
+        const payload: CreatePrDto = {
             title: form.title.trim(),
             description: form.description?.trim() || undefined,
             justification: form.justification?.trim() || undefined,
-            // Convert to ISO string or undefined if empty
             requiredDate: form.requiredDate ? new Date(form.requiredDate).toISOString() : undefined,
-            priority: Number(form.priority) || 2, // Default: Medium (2)
-            currency: form.currency || "VND",    // Default: VND
+            priority: Number(form.priority) || 2, 
+            currency: form.currency as any,    
             costCenterId: isValidUuid(form.costCenterId) ? form.costCenterId : undefined,
             items: form.items.map((i: PRItem) => ({
                 productId: isValidUuid(i.productId) ? i.productId : undefined,
@@ -218,9 +194,9 @@ export default function CreatePRPage() {
                 sku: i.sku || undefined,
                 categoryId: isValidUuid(i.categoryId) ? i.categoryId : undefined,
                 qty: Number(i.qty),
-                unit: i.unit || "PCS",           // Default unit
+                unit: i.unit || "PCS",           
                 estimatedPrice: Number(i.estimatedPrice),
-                currency: i.currency || form.currency || "VND",
+                currency: (i.currency || form.currency) as any,
                 specNote: i.specNote?.trim() || undefined
             }))
         };
@@ -229,55 +205,28 @@ export default function CreatePRPage() {
         setIsSubmitting(true);
 
         try {
-            /**
-             * STEP 1: CREATE DRAFT PR
-             * POST /procurement-requests
-             */
-            const createRes = await apiFetch('/procurement-requests', {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            });
-            const createData = await createRes.json();
+            // STEP 1: CREATE DRAFT PR via Context Service
+            const createdPR = await addPR(payload);
 
-            // Check if Step 1 succeeded and we have a valid ID (inside data wrapper)
-            if (createRes.ok && createData.data?.id) {
-                // EXCEPTIONALLY IMPORTANT: Extract the exact ID string and REMOVE any 'pr-' prefix
-                // to match backend requirements: /procurement-requests/{id}/submit
-                const prId = String(createData.data.id).replace('pr-', ''); 
+            if (createdPR && createdPR.id) {
+                // STEP 2: SUBMIT FOR APPROVAL via Context Service
+                const success = await submitPR(createdPR.id);
 
-                /**
-                 * STEP 2: SUBMIT FOR APPROVAL (CHAINING)
-                 * POST /procurement-requests/{id}/submit
-                 * Using exact ID without any prefixes to prevent 404
-                 */
-                const submitRes = await apiFetch(`/procurement-requests/${prId}/submit`, {
-                    method: 'POST'
-                });
-
-                if (submitRes.ok) {
+                if (success) {
                     setSubmissionStatus('success');
-                    // Notification of success
-                    notify("Gửi yêu cầu mua hàng thành công!", "success");
-                    // Redirect after a short delay
                     setTimeout(() => router.push("/pr"), 2000);
                 } else {
-                    // Step 1 success, Step 2 failed
-                    const errData = await submitRes.json().catch(() => ({}));
-                    setErrorMessage(errData.message || "Đã tạo nháp PR nhưng không thể gửi phê duyệt tự động");
+                    setErrorMessage("Đã tạo nháp PR nhưng không thể gửi phê duyệt tự động");
                     setSubmissionStatus('error');
-                    notify("PR đã được lưu nháp nhưng chưa gửi duyệt được", "warning");
                 }
             } else {
-                // Step 1 failed
-                setErrorMessage(createData.message || "Tạo thất bại. Vui lòng kiểm tra lại dữ liệu.");
+                setErrorMessage("Không thể tạo yêu cầu mua hàng. Vui lòng kiểm tra lại kết nối.");
                 setSubmissionStatus('error');
-                notify("Không thể tạo yêu cầu mua hàng", "error");
             }
         } catch (err) {
             console.error("PR Submission Error:", err);
-            setErrorMessage("Lỗi kết nối máy chủ. Vui lòng thử lại sau.");
+            setErrorMessage("Lỗi hệ thống khi gửi PR");
             setSubmissionStatus('error');
-            notify("Lỗi hệ thống khi gửi PR", "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -287,16 +236,20 @@ export default function CreatePRPage() {
         <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300">
             <DashboardHeader breadcrumbs={["Nghiệp vụ", "Yêu cầu mua sắm", "Tạo mới PR"]} />
 
-            <div className="mt-8 flex justify-between items-end mb-8 border-b border-slate-200 pb-4">
+            <div className="mt-12 flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight flex items-center gap-3">
-                        Tạo Yêu Cầu Mua Hàng (PR)
+                    <h1 className="text-4xl font-black text-erp-navy tracking-tight flex items-center gap-4">
+                        <div className="h-12 w-2 bg-erp-blue rounded-full" />
+                        Tạo Phiếu Yêu Cầu (PR)
                     </h1>
-                    <p className="text-sm text-slate-500 mt-1">Khởi tạo quy trình mua sắm mới cho bộ phận của bạn.</p>
+                    <p className="text-sm font-bold text-slate-400 mt-2 flex items-center gap-2">
+                        <Info size={16} className="text-erp-blue" />
+                        Mã định danh hệ thống sẽ được cấp sau khi gửi thành công.
+                    </p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4 w-full md:w-auto">
                     <button 
-                        className="px-6 py-3 font-black text-blue-600 hover:bg-blue-50 border border-blue-200 rounded-xl text-xs uppercase tracking-widest transition-colors"
+                        className="flex-1 md:flex-none px-6 py-3.5 font-black text-erp-blue hover:bg-erp-blue/5 border-2 border-erp-blue/10 rounded-2xl text-[10px] uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         onClick={() => {
                             if (products.length > 0 && filteredCostCenters.length > 0) {
                                 const cc = filteredCostCenters.find((c: CostCenter) => c.code === 'CC_IT_OPS') || filteredCostCenters[0];
@@ -326,15 +279,15 @@ export default function CreatePRPage() {
                                     }))
                                 });
                             } else {
-                                alert("Đang tải dữ liệu sản phẩm, vui lòng đợi trong giây lát...");
+                                notify("Đang tải dữ liệu sản phẩm...", "info");
                             }
                         }}
                     >
-                        Dữ liệu mẫu
+                        Tải dữ liệu mẫu
                     </button>
-                    <button className="px-6 py-3 font-black text-slate-500 hover:bg-slate-100 rounded-xl text-xs uppercase tracking-widest transition-colors" onClick={() => router.back()}>Hủy bỏ</button>
-                    <button className="btn-primary shadow-xl shadow-erp-navy/30 py-4 px-8" onClick={handleSubmit} disabled={isSubmitting}>
-                        {isSubmitting ? "Đang gửi..." : "Gửi Phê Duyệt PR"}
+                    <button className="flex-1 md:flex-none px-6 py-3.5 font-black text-slate-500 hover:bg-slate-100 rounded-2xl text-[10px] uppercase tracking-widest transition-all" onClick={() => router.back()}>Hủy bỏ</button>
+                    <button className="flex-1 md:flex-none btn-primary shadow-2xl shadow-erp-navy/40 py-4 px-10 text-[11px] hover:scale-105 active:scale-95" onClick={handleSubmit} disabled={isSubmitting}>
+                        {isSubmitting ? "Đang xử lý..." : "Gửi Phê Duyệt Hệ Thống"}
                     </button>
                 </div>
             </div>
@@ -385,55 +338,56 @@ export default function CreatePRPage() {
                                     ))}
                                 </select>
                                 {activeCC && (
-                                    <div className="mt-6 animate-in fade-in slide-in-from-top-4 duration-500 overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-xl">
-                                        <div className={`p-4 flex items-center justify-between ${isOverBudget ? 'bg-red-500 text-white' : 'bg-erp-blue text-white'}`}>
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
-                                                    {isOverBudget ? <AlertCircle size={20} /> : <Sparkles size={20} className="fill-white" />}
+                                    <div className="mt-8 animate-in fade-in slide-in-from-top-6 duration-700 overflow-hidden rounded-[32px] border border-slate-100 bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.12)]">
+                                        <div className={`p-6 flex items-center justify-between transition-colors ${isOverBudget ? 'bg-rose-500 text-white shadow-lg shadow-rose-200' : 'bg-erp-navy text-white'}`}>
+                                            <div className="flex items-center gap-4">
+                                                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-xl border border-white/20">
+                                                    {isOverBudget ? <AlertCircle size={24} /> : <Sparkles size={24} className="fill-white" />}
                                                 </div>
                                                 <div>
-                                                    <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">Trạng thái ngân sách</div>
-                                                    <div className="text-sm font-black uppercase tracking-tighter">
-                                                        {isOverBudget ? '⚠️ Vượt hạn mức dự toán' : '✅ Đủ điều kiện cấp vốn'}
+                                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60 mb-0.5">Phân tích dự toán</div>
+                                                    <div className="text-base font-black uppercase tracking-tight">
+                                                        {isOverBudget ? 'Vượt hạn mức ngân sách' : 'Nguồn vốn khả dụng'}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-[10px] font-black uppercase opacity-70">Mã CC</div>
-                                                <div className="text-sm font-black">{activeCC.code}</div>
+                                                <div className="text-[10px] font-black uppercase opacity-60 tracking-widest mb-0.5">Cost Center</div>
+                                                <div className="text-lg font-black font-mono">{activeCC.code}</div>
                                             </div>
                                         </div>
                                         
-                                        <div className="p-6 grid grid-cols-2 gap-6 bg-white">
-                                            <div className="space-y-1">
-                                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ngân sách khả dụng</div>
-                                                <div className="text-xl font-black text-erp-navy tracking-tight">
-                                                    {formatVND(remainingBudget)} ₫
+                                        <div className="p-8 grid grid-cols-2 gap-8 bg-white relative">
+                                            <div className="absolute top-0 left-1/2 -translate-x-px w-px h-full bg-slate-50" />
+                                            <div className="space-y-2">
+                                                <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.1em]">Ngân sách Quý {currentQuarter}</div>
+                                                <div className="text-2xl font-black text-erp-navy tracking-tighter">
+                                                    {formatVND(remainingBudget)} <span className="text-xs text-slate-300 ml-1">VND</span>
                                                 </div>
                                             </div>
-                                            <div className="space-y-1">
-                                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Chi phí dự kiến</div>
-                                                <div className={`text-xl font-black tracking-tight ${isOverBudget ? 'text-red-500' : 'text-emerald-500'}`}>
-                                                    {formatVND(totalEstimate)} ₫
+                                            <div className="space-y-2 text-right">
+                                                <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.1em]">Tác động của PR</div>
+                                                <div className={`text-2xl font-black tracking-tighter ${isOverBudget ? 'text-rose-500' : 'text-emerald-500'}`}>
+                                                    -{formatVND(totalEstimate)} <span className="text-xs opacity-50 ml-1">VND</span>
                                                 </div>
                                             </div>
                                             
-                                            <div className="col-span-2 pt-4 border-t border-slate-50">
-                                                <div className="flex justify-between items-center mb-2">
-                                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hiệu suất sử dụng (Impact)</span>
-                                                    <span className="text-[10px] font-black text-erp-navy uppercase">
-                                                        {remainingBudget > 0 ? ((totalEstimate / remainingBudget) * 100).toFixed(1) : 100}%
+                                            <div className="col-span-2 pt-6 border-t border-slate-50">
+                                                <div className="flex justify-between items-center mb-3 px-1">
+                                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tỉ lệ chiếm dụng nguồn vốn</span>
+                                                    <span className={`text-[11px] font-black uppercase ${isOverBudget ? 'text-rose-500' : 'text-erp-blue'}`}>
+                                                        {remainingBudget > 0 ? ((totalEstimate / remainingBudget) * 100).toFixed(1) : 100}% DỰ TOÁN
                                                     </span>
                                                 </div>
-                                                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                                                <div className="h-4 w-full bg-slate-50 rounded-full p-1 border border-slate-100/50 shadow-inner overflow-hidden">
                                                     <div 
-                                                        className={`h-full transition-all duration-1000 ease-out rounded-full ${isOverBudget ? 'bg-red-500' : 'bg-erp-blue'}`}
+                                                        className={`h-full transition-all duration-1000 ease-out rounded-full shadow-lg ${isOverBudget ? 'bg-gradient-to-r from-rose-500 to-red-400' : 'bg-gradient-to-r from-erp-blue to-blue-400'}`}
                                                         style={{ width: `${Math.min(100, (totalEstimate / (remainingBudget || 1)) * 100)}%` }}
                                                     />
                                                 </div>
                                                 {isOverBudget && (
-                                                    <div className="mt-3 text-[10px] font-bold text-red-500 flex items-center gap-1.5 animate-pulse uppercase tracking-wider">
-                                                        <AlertCircle size={12} /> Cần phê duyệt vượt mức từ Giám đốc Tài chính
+                                                    <div className="mt-5 p-4 bg-rose-50 rounded-2xl border border-rose-100 border-dashed flex items-center gap-3 text-[11px] font-bold text-rose-600 animate-pulse uppercase tracking-tight">
+                                                        <AlertCircle size={18} /> Cần phê duyệt đặc biệt (Over-budget Policy)
                                                     </div>
                                                 )}
                                             </div>
@@ -556,41 +510,41 @@ export default function CreatePRPage() {
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
                                     {form.items.map((item: PRItem, i: number) => (
-                                        <tr key={i} className="group hover:bg-erp-blue/5 transition-all duration-300">
-                                            <td className="px-8 py-5">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shrink-0 border border-slate-100 shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all">
-                                                        <ShoppingBag size={20} className="text-slate-400 group-hover:text-erp-blue" />
+                                        <tr key={i} className="group hover:bg-erp-blue/[0.04] transition-all duration-300">
+                                            <td className="px-8 py-6">
+                                                <div className="flex items-center gap-5">
+                                                    <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shrink-0 border border-slate-100 shadow-sm group-hover:scale-110 group-hover:shadow-erp-blue/10 group-hover:border-erp-blue/20 transition-all duration-500">
+                                                        <ShoppingBag size={22} className="text-slate-400 group-hover:text-erp-blue" />
                                                     </div>
                                                     <div>
-                                                        <div className="font-black text-erp-navy text-sm leading-tight mb-1">{item.productDesc}</div>
-                                                        <div className="text-[10px] text-slate-400 font-bold tracking-tighter uppercase flex items-center gap-2">
-                                                            <span className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">{item.sku}</span>
-                                                            <span>•</span>
-                                                            <span>{item.unit || 'PCS'}</span>
+                                                        <div className="font-black text-erp-navy text-[15px] leading-tight mb-1.5">{item.productDesc}</div>
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="bg-slate-100 px-2.5 py-1 rounded-lg text-[9px] text-slate-500 font-black tracking-widest uppercase">SKU: {item.sku}</span>
+                                                            <span className="w-1 h-1 rounded-full bg-slate-200" />
+                                                            <span className="text-[10px] text-slate-400 font-bold uppercase">{item.unit || 'PCS'}</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-5">
-                                                <div className="flex flex-col gap-2">
-                                                    <span className="inline-block px-3 py-1 rounded-xl bg-white text-erp-navy text-[10px] font-black uppercase tracking-widest border border-slate-100 shadow-sm w-fit group-hover:border-erp-blue/20">
+                                            <td className="px-4 py-6">
+                                                <div className="flex flex-col gap-2.5">
+                                                    <span className="inline-block px-3 py-1.5 rounded-xl bg-white text-erp-navy text-[10px] font-black uppercase tracking-widest border border-slate-100 shadow-sm w-fit group-hover:border-erp-blue/30 group-hover:shadow-erp-blue/5 transition-all">
                                                         {item.supplierName || 'Thị trường'}
                                                     </span>
                                                     {item.aiStatus && (
-                                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-400 text-white border border-amber-500 w-fit shadow-lg shadow-amber-200 animate-in fade-in zoom-in">
-                                                            <Sparkles size={10} className="fill-white" />
-                                                            <span className="text-[8px] font-black uppercase tracking-tighter">{item.aiLabel}</span>
+                                                        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-amber-400 text-white border border-amber-500/50 w-fit shadow-lg shadow-amber-200 transition-transform group-hover:scale-105">
+                                                            <Sparkles size={12} className="fill-white" />
+                                                            <span className="text-[9px] font-black uppercase tracking-tight">{item.aiLabel}</span>
                                                         </div>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-5">
-                                                <div className="flex items-center bg-slate-100/50 rounded-xl p-1 gap-1 border border-slate-100 group-hover:bg-white transition-colors">
+                                            <td className="px-4 py-6">
+                                                <div className="flex items-center bg-slate-100/50 rounded-2xl p-1.5 gap-1 border border-slate-100 group-hover:bg-white group-hover:border-erp-blue/20 group-hover:shadow-inner transition-all w-24 mx-auto">
                                                     <input
                                                         type="number"
                                                         min="1"
-                                                        className="w-full bg-transparent text-center text-sm font-black text-erp-navy outline-none"
+                                                        className="w-full bg-transparent text-center text-[15px] font-black text-erp-navy outline-none"
                                                         value={item.qty}
                                                         onChange={e => {
                                                             const val = parseInt(e.target.value);
@@ -601,16 +555,16 @@ export default function CreatePRPage() {
                                                     />
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-5 text-right">
-                                                <div className="font-black text-erp-blue text-sm">{formatVND(item.qty * item.estimatedPrice)}</div>
-                                                <div className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">VND / Total</div>
+                                            <td className="px-4 py-6 text-right">
+                                                <div className="font-black text-erp-blue text-lg tracking-tighter">{formatVND(item.qty * item.estimatedPrice)}</div>
+                                                <div className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mt-1">VND Subtotal</div>
                                             </td>
-                                            <td className="px-4 py-5">
+                                            <td className="px-4 py-6">
                                                 <div className="relative group/input">
-                                                    <Info size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-erp-blue" />
+                                                    <Info size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-erp-blue transition-colors" />
                                                     <input
-                                                        className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-transparent rounded-xl text-[11px] font-medium outline-none transition-all focus:bg-white focus:border-erp-blue/30 focus:ring-4 focus:ring-erp-blue/5"
-                                                        placeholder="Cấu hình, kích thước..."
+                                                        className="w-full pl-12 pr-5 py-3.5 bg-slate-50 border border-transparent rounded-[20px] text-xs font-semibold text-slate-600 outline-none transition-all focus:bg-white focus:border-erp-blue/30 focus:shadow-[0_10px_25px_-5px_rgba(37,99,235,0.08)]"
+                                                        placeholder="Màu sắc, kích thước, quy cách..."
                                                         value={item.specNote}
                                                         onChange={e => {
                                                             const items = [...form.items];
@@ -620,14 +574,14 @@ export default function CreatePRPage() {
                                                     />
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-5 text-center">
+                                            <td className="px-8 py-6 text-center">
                                                 <button
-                                                    className="w-10 h-10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-red-500 rounded-2xl transition-all shadow-sm hover:shadow-lg hover:shadow-red-200"
+                                                    className="w-12 h-12 flex items-center justify-center text-slate-300 hover:text-white hover:bg-rose-500 rounded-[20px] transition-all shadow-sm hover:shadow-xl hover:shadow-rose-200 active:scale-90"
                                                     onClick={() => {
                                                         setForm({ ...form, items: form.items.filter((_: PRItem, idx: number) => idx !== i) });
                                                     }}
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </td>
                                         </tr>
@@ -835,9 +789,10 @@ export default function CreatePRPage() {
                         <div className="p-10 text-center">
                             {submissionStatus === 'loading' && (
                                 <div className="flex flex-col items-center gap-6 py-4">
-                                    <div className="relative">
-                                        <div className="w-16 h-16 rounded-full border-4 border-slate-100 border-t-erp-blue animate-spin" />
-                                        <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-erp-blue animate-pulse" size={24} />
+                                    <div className="relative flex items-center justify-center h-20 w-20">
+                                        <div className="absolute inset-0 rounded-full border-4 border-slate-100 border-t-erp-blue animate-spin" />
+                                        <div className="absolute inset-2 rounded-full border-2 border-slate-50 border-b-erp-blue/30 animate-spin [animation-duration:3s]" />
+                                        <Loader2 className="text-erp-blue animate-spin" size={28} />
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-black text-erp-navy uppercase tracking-tight mb-2">Đang xử lý...</h3>
