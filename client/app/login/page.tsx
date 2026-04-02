@@ -16,7 +16,7 @@ export default function LoginPage() {
     const [error, setError] = useState("");
 
     const token = Cookies.get('accessToken');
-    if(token) {
+    if (token) {
         // We could redirect here, but usually it's handled in a layout or middleware
         // console.log("User already logged in");
     }
@@ -25,7 +25,7 @@ export default function LoginPage() {
         e.preventDefault();
         setIsLoading(true);
         setError("");
-        
+
         try {
             const success = await login(email, password);
             if (success) {
@@ -59,7 +59,7 @@ export default function LoginPage() {
                     <p className="text-slate-400 text-lg font-medium mb-12 max-w-md">
                         Hệ thống Quản trị Mua sắm & Chuỗi cung ứng tập trung dành cho doanh nghiệp Enterprise.
                     </p>
-                    
+
                     <div className="space-y-4">
                         <div className="flex items-center justify-between mb-4">
                             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Tài khoản Demo (Quick Login):</div>
@@ -72,9 +72,10 @@ export default function LoginPage() {
                                 { name: "Director", email: "director@innhub.com", role: "DIRECTOR" },
                                 { name: "CEO", email: "ceo@innhub.com", role: "CEO" },
                                 { name: "CFO (Finance)", email: "cfo@innhub.com", role: "FINANCE" },
-                                { name: "System Admin", email: "admin@innhub.com", role: "ADMIN" }
+                                { name: "System Admin", email: "admin@innhub.com", role: "ADMIN" },
+                                { name: "Procurement", email: "proc.officer@innhub.com", role: "PROCUREMENT" }
                             ].map((u, idx) => (
-                                <button 
+                                <button
                                     key={idx}
                                     type="button"
                                     onClick={() => { setEmail(u.email); setPassword("password123"); }}
@@ -95,13 +96,13 @@ export default function LoginPage() {
                 {/* Login Form Section */}
                 <div className="w-full max-w-md mx-auto animate-in fade-in slide-in-from-right-12 duration-700">
                     <div className="md:hidden text-center mb-10">
-                         <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">PROCURE<span className="text-blue-500">PRO</span></h1>
-                         <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Enterprise ERP System</p>
+                        <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">PROCURE<span className="text-blue-500">PRO</span></h1>
+                        <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Enterprise ERP System</p>
                     </div>
 
                     <div className="bg-[#0f1525] border border-white/10 rounded-[40px] p-10 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                        
+
                         <div className="mb-10">
                             <h2 className="text-xl font-black text-white uppercase tracking-widest mb-2">Đăng nhập</h2>
                             <p className="text-slate-500 text-xs font-bold">Vui lòng nhập thông tin xác thực doanh nghiệp.</p>
@@ -113,7 +114,7 @@ export default function LoginPage() {
                                     {error}
                                 </div>
                             )}
-                            
+
                             <div className="space-y-2">
                                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Email Công ty</label>
                                 <div className="relative group">

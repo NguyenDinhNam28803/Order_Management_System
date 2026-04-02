@@ -34,13 +34,21 @@ import {
     CreateCostCenterPayload,
     UpdateCostCenterPayload,
     CreateDepartmentPayload,
-    UpdateDepartmentPayload
+    UpdateDepartmentPayload,
+    Product,
+    ProductCategory,
+    CreateProductDtoShort,
+    UpdateProductDtoShort,
+    CreateCategoryDto,
+    UpdateCategoryDto
 } from "../types/api-types";
 
 export type {
     Organization,
     CostCenter,
-    Department
+    Department,
+    Product,
+    ProductCategory
 };
 export {
     CurrencyCode,
@@ -202,25 +210,6 @@ export interface BudgetAllocation {
     notes?: string;
 }
 
-export interface Product {
-    id: string;
-    name: string;
-    sku: string;
-    unitPriceRef: number;
-    unit: string;
-    description?: string;
-    categoryId?: string;
-    category?: { id: string; name: string };
-    isActive?: boolean;
-}
-
-export interface ProductCategory {
-    id: string;
-    name: string;
-    code: string;
-    description?: string;
-}
-
 export interface Quote {
     id: string;
     rfqId: string;
@@ -263,6 +252,7 @@ export interface ProcurementState {
     notifications: Notification[];
     quotes: Quote[];
     products: Product[];
+    categories: ProductCategory[];
     approvals: ApprovalWorkflow[];
     fiscalYears: number[];
     token: string | null;
@@ -306,6 +296,13 @@ interface ProcurementContextType extends ProcurementState {
     addOrganization: (data: CreateOrganizationPayload) => Promise<boolean>;
     updateOrganization: (id: string, data: UpdateOrganizationPayload) => Promise<boolean>;
     removeOrganization: (id: string) => Promise<boolean>;
+    // Product Management
+    addProduct: (data: CreateProductDtoShort) => Promise<boolean>;
+    updateProduct: (id: string, data: UpdateProductDtoShort) => Promise<boolean>;
+    removeProduct: (id: string) => Promise<boolean>;
+    addCategory: (data: CreateCategoryDto) => Promise<boolean>;
+    updateCategory: (id: string, data: UpdateCategoryDto) => Promise<boolean>;
+    removeCategory: (id: string) => Promise<boolean>;
     removeNotification: (id: number) => void;
     notify: (message: string, type?: 'success' | 'error' | 'info' | 'warning', role?: string) => void;
     register: (data: RegisterPayload) => Promise<boolean>;
@@ -339,6 +336,7 @@ const INITIAL_STATE: ProcurementState = {
     budgetAllocations: [],
     quotes: [],
     products: [],
+    categories: [],
     fiscalYears: [2024, 2025, 2026],
     token: null,
     loadingMyPrs: false,
@@ -393,7 +391,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
         try {
             setState(prev => ({ ...prev, loadingMyPrs: true }));
-            const [ccRes, orgRes, deptRes, allPrRes, myPrRes, pendingApprRes, usersRes, budgetAllocRes, posRes, rfqsRes, invoicesRes, prodRes] = await Promise.all([
+            const [ccRes, orgRes, deptRes, allPrRes, myPrRes, pendingApprRes, usersRes, budgetAllocRes, budgetPeriodsRes, posRes, rfqsRes, invoicesRes, prodRes, catRes] = await Promise.all([
                 apiFetch('/cost-centers'),
                 apiFetch('/organizations'),
                 apiFetch('/departments'),
@@ -402,10 +400,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 apiFetch('/approvals/pending'),
                 apiFetch('/users'),
                 apiFetch('/budgets/allocations'),
+                apiFetch('/budgets/periods'),
                 apiFetch('/purchase-orders'),
                 apiFetch('/request-for-quotations'),
                 apiFetch('/invoices'),
-                apiFetch('/products')
+                apiFetch('/products'),
+                apiFetch('/products/categories')
             ]);
  
             const costCentersRes = ccRes.ok ? (await ccRes.json() as ApiResponse<CostCenter[]>).data : [];
@@ -416,11 +416,14 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             const pendingApprovals = pendingApprRes.ok ? (await pendingApprRes.json() as ApiResponse<ApprovalWorkflow[]>).data : [];
             const fetchedUsers = usersRes.ok ? (await usersRes.json() as ApiResponse<User[]>).data : [];
             const fetchedBudgetAllocations = budgetAllocRes.ok ? (await budgetAllocRes.json() as ApiResponse<BudgetAllocation[]>).data : [];
+            const fetchedBudgetPeriods = budgetPeriodsRes.ok ? (await budgetPeriodsRes.json() as ApiResponse<BudgetPeriod[]>).data : [];
             const fetchedPos = posRes.ok ? (await posRes.json() as ApiResponse<PO[]>).data : [];
             const fetchedRfqs = rfqsRes.ok ? (await rfqsRes.json() as ApiResponse<RFQ[]>).data : [];
             const fetchedInvoices = invoicesRes.ok ? (await invoicesRes.json() as ApiResponse<Invoice[]>).data : [];
             const fetchedProducts = prodRes.ok ? (await prodRes.json() as ApiResponse<Product[]>).data : [];
-
+            // @ts-ignore - Handle possible path error in catRes
+            const fetchedCategories = catRes && catRes.ok ? (await catRes.json() as ApiResponse<ProductCategory[]>).data : [];
+ 
             setState(prev => ({
                 ...prev,
                 costCenters: Array.isArray(costCentersRes) ? costCentersRes : prev.costCenters,
@@ -431,10 +434,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 approvals: Array.isArray(pendingApprovals) ? pendingApprovals : prev.approvals,
                 users: Array.isArray(fetchedUsers) ? fetchedUsers : prev.users,
                 budgetAllocations: Array.isArray(fetchedBudgetAllocations) ? fetchedBudgetAllocations : prev.budgetAllocations,
+                budgetPeriods: Array.isArray(fetchedBudgetPeriods) ? fetchedBudgetPeriods : prev.budgetPeriods,
                 pos: Array.isArray(fetchedPos) ? fetchedPos : prev.pos,
                 rfqs: Array.isArray(fetchedRfqs) ? fetchedRfqs : prev.rfqs,
                 invoices: Array.isArray(fetchedInvoices) ? fetchedInvoices : prev.invoices,
                 products: Array.isArray(fetchedProducts) ? fetchedProducts : prev.products,
+                categories: Array.isArray(fetchedCategories) ? fetchedCategories : prev.categories,
                 loadingMyPrs: false
             }));
         } catch (error) {
@@ -781,6 +786,43 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
+    // Product Management APIs
+    const addProduct = useCallback(async (data: CreateProductDtoShort) => {
+        const res = await apiFetch('/products', { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { notify("Đã thêm sản phẩm", "success"); refreshData(); return true; }
+        notify("Lỗi khi thêm sản phẩm", "error"); return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const updateProduct = useCallback(async (id: string, data: UpdateProductDtoShort) => {
+        const res = await apiFetch(`/products/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+        if (res.ok) { notify("Đã cập nhật sản phẩm", "success"); refreshData(); return true; }
+        notify("Lỗi khi cập nhật sản phẩm", "error"); return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const removeProduct = useCallback(async (id: string) => {
+        const res = await apiFetch(`/products/${id}`, { method: 'DELETE' });
+        if (res.ok) { notify("Đã xóa sản phẩm", "success"); refreshData(); return true; }
+        notify("Lỗi khi xóa sản phẩm", "error"); return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const addCategory = useCallback(async (data: CreateCategoryDto) => {
+        const res = await apiFetch('/products/categories', { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { notify("Đã thêm danh mục", "success"); refreshData(); return true; }
+        notify("Lỗi khi thêm danh mục", "error"); return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const updateCategory = useCallback(async (id: string, data: UpdateCategoryDto) => {
+        const res = await apiFetch(`/products/categories/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+        if (res.ok) { notify("Đã cập nhật danh mục", "success"); refreshData(); return true; }
+        notify("Lỗi khi cập nhật danh mục", "error"); return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const removeCategory = useCallback(async (id: string) => {
+        const res = await apiFetch(`/products/categories/${id}`, { method: 'DELETE' });
+        if (res.ok) { notify("Đã xóa danh mục", "success"); refreshData(); return true; }
+        notify("Lỗi khi xóa danh mục", "error"); return false;
+    }, [apiFetch, refreshData, notify]);
+
     const contextValue = useMemo(() => ({
         ...state,
         login, logout, refreshData, apiFetch,
@@ -793,8 +835,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice,
         addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchQuarterlyBudget,
         addOrganization, updateOrganization, removeOrganization,
+        addProduct, updateProduct, removeProduct, addCategory, updateCategory, removeCategory,
         removeNotification, notify, register, createQuote
-    }), [state, login, logout, refreshData, apiFetch, addPR, submitPR, updatePR, fetchPrDetail, approvePR, createPOFromPR, createRFQ, awardQuotation, createRFQConsolidated, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, reconcileQuarter, createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchQuarterlyBudget, addOrganization, updateOrganization, removeOrganization, removeNotification, notify, register, createQuote]);
+    }), [state, login, logout, refreshData, apiFetch, addPR, submitPR, updatePR, fetchPrDetail, approvePR, createPOFromPR, createRFQ, awardQuotation, createRFQConsolidated, actionApproval, addDept, updateDept, removeDept, addUser, updateUser, addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod, addBudgetAllocation, updateBudgetAllocation, removeBudgetAllocation, addBudgetAllocationBundle, reconcileQuarter, createGRN, ackPO, shipPO, createInvoice, payInvoice, matchInvoice, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchQuarterlyBudget, addOrganization, updateOrganization, removeOrganization, addProduct, updateProduct, removeProduct, addCategory, updateCategory, removeCategory, removeNotification, notify, register, createQuote]);
 
     return (
         <ProcurementContext.Provider value={contextValue}>

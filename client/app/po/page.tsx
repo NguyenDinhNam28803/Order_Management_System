@@ -404,7 +404,7 @@ export default function POPage() {
                                 <td className="font-bold text-erp-navy flex items-center gap-2"><FileText size={14} className="text-erp-blue"/> {po.id}</td>
                                 <td className="font-bold text-slate-700">{po.vendor}</td>
                                 <td className="font-mono font-black text-right text-erp-blue text-sm">{po.total.toLocaleString()} ₫</td>
-                                <td className="text-slate-500 text-xs text-center">{po.createdAt}</td>
+                                <td className="text-slate-500 text-xs text-center">{po.createdAt ? new Date(po.createdAt!).toLocaleDateString('vi-VN') : 'N/A'}</td>
                                 <td className="text-center">
                                     <div className="inline-flex items-center gap-1 text-[10px] font-black text-erp-navy bg-slate-100 px-2 py-1 rounded uppercase tracking-tighter">
                                         <Lock size={10} /> Committed

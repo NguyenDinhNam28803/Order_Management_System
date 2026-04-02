@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
 import { formatVND } from "../../utils/formatUtils";
 import { useProcurement, Product, BudgetAllocation, BudgetPeriod, PR } from "../../context/ProcurementContext";
-import { CostCenter, CreatePrDto, CreatePrItemDto } from "@/app/types/api-types";
-import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { CostCenter, CreatePrDto, CreatePrItemDto, CurrencyCode } from "@/app/types/api-types";
+import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle, Calendar } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
 
@@ -24,7 +24,7 @@ interface PRItem {
     aiStatus: boolean;
     aiLabel: string;
     specNote: string;
-    currency?: string;
+    currency?: CurrencyCode;
 }
 
 interface PRForm {
@@ -33,7 +33,7 @@ interface PRForm {
     justification: string;
     requiredDate: string;
     priority: number;
-    currency: "VND" | "USD" | "EUR" | "SGD" | "JPY" | "CNY" | "GBP" | "AUD";
+    currency: CurrencyCode;
     costCenterId: string;
     items: PRItem[];
 }
@@ -48,6 +48,7 @@ const isValidUuid = (id: string | undefined): boolean => {
 };
 
 export default function CreatePRPage() {
+    const dateInputRef = useRef<HTMLInputElement>(null);
     const { 
         addPR,
         submitPR,
@@ -67,7 +68,7 @@ export default function CreatePRPage() {
         justification: "",
         requiredDate: "",
         priority: 2,
-        currency: "VND",
+        currency: CurrencyCode.VND,
         costCenterId: "",
         items: []
     });
@@ -184,9 +185,14 @@ export default function CreatePRPage() {
             title: form.title.trim(),
             description: form.description?.trim() || undefined,
             justification: form.justification?.trim() || undefined,
-            requiredDate: form.requiredDate ? new Date(form.requiredDate).toISOString() : undefined,
+            requiredDate: (() => {
+                if (!form.requiredDate || form.requiredDate.length < 10) return undefined;
+                const [d, m, y] = form.requiredDate.split('-');
+                const dObj = new Date(`${y}-${m}-${d}`);
+                return isNaN(dObj.getTime()) ? undefined : dObj.toISOString();
+            })(),
             priority: Number(form.priority) || 2, 
-            currency: form.currency as any,    
+            currency: form.currency,    
             costCenterId: isValidUuid(form.costCenterId) ? form.costCenterId : undefined,
             items: form.items.map((i: PRItem) => ({
                 productId: isValidUuid(i.productId) ? i.productId : undefined,
@@ -196,7 +202,7 @@ export default function CreatePRPage() {
                 qty: Number(i.qty),
                 unit: i.unit || "PCS",           
                 estimatedPrice: Number(i.estimatedPrice),
-                currency: (i.currency || form.currency) as any,
+                currency: i.currency || form.currency,
                 specNote: i.specNote?.trim() || undefined
             }))
         };
@@ -429,12 +435,33 @@ export default function CreatePRPage() {
                                     <div className="w-1 h-3 bg-indigo-400/30 rounded-full" />
                                     Ngày cần hàng
                                 </label>
-                                <input
-                                    type="date"
-                                    className="erp-input font-mono"
-                                    value={form.requiredDate}
-                                    onChange={e => setForm({ ...form, requiredDate: e.target.value })}
-                                />
+                                <div className="relative max-w-[260px]">
+                                    {/* HIDDEN DATE INPUT FOR PICKER */}
+                                    <input
+                                        type="date"
+                                        ref={dateInputRef}
+                                        className="absolute inset-0 opacity-0 -z-10 pointer-events-none"
+                                        onChange={e => {
+                                            const val = e.target.value; // YYYY-MM-DD
+                                            if (!val) return;
+                                            const [y, m, d] = val.split('-');
+                                            setForm({ ...form, requiredDate: `${d}-${m}-${y}` });
+                                        }}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Chọn ngày"
+                                        className="erp-input !h-11 font-mono pr-10 text-xs tracking-tight cursor-pointer"
+                                        value={form.requiredDate}
+                                        readOnly
+                                        onClick={() => dateInputRef.current?.showPicker()}
+                                    />
+                                    <div 
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                                    >
+                                        <Calendar size={14} />
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="col-span-2 group">

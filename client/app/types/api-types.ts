@@ -410,3 +410,45 @@ export interface CreateQuoteDto {
         quantity: number;
     }>;
 }
+// --- PRODUCT DTOs ---
+
+/**
+ * Thực thể Danh mục sản phẩm (Product Category)
+ */
+export interface ProductCategory {
+    id: string;
+    orgId: string;
+    code: string;
+    name: string;
+    description?: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+/**
+ * Thực thể Sản phẩm (Product)
+ */
+export interface Product {
+    id: string;
+    orgId: string;
+    categoryId: string;
+    sku: string;
+    name: string;
+    description?: string;
+    unit: string;
+    unitPriceRef: number;
+    currency: CurrencyCode;
+    isActive: boolean;
+    metadata: Record<string, unknown>;
+    createdAt: string;
+    updatedAt: string;
+    // Relationships
+    category?: ProductCategory;
+}
+
+export type CreateCategoryDto = Omit<ProductCategory, 'id' | 'orgId' | 'createdAt' | 'updatedAt' | 'isActive'>;
+export type UpdateCategoryDto = Partial<CreateCategoryDto>;
+
+export type CreateProductDtoShort = Omit<Product, 'id' | 'orgId' | 'createdAt' | 'updatedAt' | 'isActive' | 'category' | 'unitPriceRef'>;
+export type UpdateProductDtoShort = Partial<CreateProductDtoShort>;

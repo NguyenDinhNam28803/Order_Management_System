@@ -27,35 +27,42 @@ const roleMapping: Record<string, { label: string, class: string }> = {
 const navigation = [
     {
         group: "Menu chính", 
-        roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "CEO", "FINANCE"],
+        roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "CEO", "FINANCE"],
         items: [
-            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
-            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
+            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
             { name: "Kiểm soát PR", icon: ClipboardCheck, path: "/procurement/prs", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
-            { name: "Phê duyệt", icon: CheckSquare, path: "/approvals", roles: ["DEPT_APPROVER", "DIRECTOR", "PLATFORM_ADMIN", "CEO"] },
             { name: "Nguồn hàng & Báo giá", icon: Search, path: "/sourcing", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
         ]
     },
     {
-        group: "Nghiệp vụ Mua hàng & Kho", 
-        roles: ["PROCUREMENT", "WAREHOUSE", "PLATFORM_ADMIN", "FINANCE"],
+        group: "Trung tâm Phê duyệt", 
+        roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO", "PLATFORM_ADMIN"],
         items: [
-            { name: "Đơn mua hàng (PO)", icon: ShoppingCart, path: "/po", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
-            { name: "Nhập kho (GRN)", icon: Truck, path: "/grn", roles: ["WAREHOUSE", "PLATFORM_ADMIN"] },
+            { name: "Phê duyệt PR", icon: CheckSquare, path: "/approvals", roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO"] },
+            { name: "Phê duyệt PO", icon: ShoppingCart, path: "/po", roles: ["FINANCE", "DIRECTOR"] },
+            { name: "Phê duyệt Thanh toán", icon: FileCheck, path: "/payments", roles: ["FINANCE", "DIRECTOR"] },
         ]
     },
     {
-        group: "Kế toán (Finance)", 
-        roles: ["FINANCE", "PLATFORM_ADMIN"],
+        group: "Quản lý Tài chính", 
+        roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN", "DIRECTOR"],
         items: [
-            { name: "Bàn làm việc Kế toán", icon: LayoutDashboard, path: "/finance/dashboard", roles: ["FINANCE"] },
-            { name: "Xử lý Invoice & Matching", icon: ShieldAlert, path: "/finance/matching", roles: ["FINANCE"] },
-            { name: "Lệnh thanh toán", icon: FileCheck, path: "/payments", roles: ["FINANCE"] },
+            { name: "Quản lý Ngân sách", icon: DollarSign, path: "/finance/budgets", roles: ["FINANCE", "PLATFORM_ADMIN"] },
+            { name: "Tra cứu Chứng từ", icon: Search, path: "/finance/matching", roles: ["FINANCE", "DIRECTOR"] },
+        ]
+    },
+    {
+        group: "Báo cáo", 
+        roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "PLATFORM_ADMIN", "CEO"],
+        items: [
+            { name: "Báo cáo Chi phí", icon: ClipboardCheck, path: "/reports/spend", roles: ["FINANCE", "DIRECTOR"] },
+            { name: "Báo cáo Công nợ", icon: FolderTree, path: "/reports/ap", roles: ["FINANCE", "DIRECTOR"] },
         ]
     },
     {
         group: "Hệ thống", 
-        roles: ["PLATFORM_ADMIN", "FINANCE"],
+        roles: ["PLATFORM_ADMIN"],
         items: [
             { name: "Quản lý Nhà cung cấp", icon: Truck, path: "/admin/suppliers", roles: ["PLATFORM_ADMIN"] },
             { name: "Danh mục sản phẩm", icon: ShoppingBag, path: "/admin/products", roles: ["PLATFORM_ADMIN"] },
@@ -63,7 +70,6 @@ const navigation = [
             { name: "Quản lý Tổ chức", icon: LayoutDashboard, path: "/admin/organizations", roles: ["PLATFORM_ADMIN"] },
             { name: "Quản lý Phòng ban", icon: Building, path: "/admin/departments", roles: ["PLATFORM_ADMIN"] },
             { name: "Quản lý Cost Center", icon: ShieldAlert, path: "/admin/cost-centers", roles: ["PLATFORM_ADMIN"] },
-            { name: "Quản lý Ngân sách", icon: DollarSign, path: "/finance/budgets", roles: ["PLATFORM_ADMIN", "FINANCE"] },
             { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["PLATFORM_ADMIN"] },
         ]
     },

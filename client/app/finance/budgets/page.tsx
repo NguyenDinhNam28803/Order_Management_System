@@ -39,7 +39,7 @@ export default function FinanceBudgetsPage() {
 
     // DASHBOARD STATE
     const [dashYear, setDashYear] = useState(new Date().getFullYear());
-    const [dashPeriodType, setDashPeriodType] = useState<'ALL' | 'ANNUAL' | 'QUARTERLY'>('ALL');
+    const [dashPeriodType, setDashPeriodType] = useState<'ALL' | 'ANNUAL' | 'QUARTERLY' | 'RESERVE'>('ALL');
     const [dashQuarter, setDashQuarter] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -147,6 +147,7 @@ export default function FinanceBudgetsPage() {
     const dashLabel = useMemo(() => {
         if (dashPeriodType === 'QUARTERLY') return `Q${dashQuarter}/${dashYear}`;
         if (dashPeriodType === 'ANNUAL') return `Năm ${dashYear}`;
+        if (dashPeriodType === 'RESERVE') return `Quỹ dự phòng ${dashYear}`;
         return `Năm ${dashYear} (Tất cả)`;
     }, [dashYear, dashPeriodType, dashQuarter]);
 
@@ -205,12 +206,13 @@ export default function FinanceBudgetsPage() {
                         </select>
                         <select 
                             value={dashPeriodType} 
-                            onChange={e => setDashPeriodType(e.target.value as 'ALL' | 'ANNUAL' | 'QUARTERLY')}
+                            onChange={e => setDashPeriodType(e.target.value as any)}
                             className="bg-white px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-black outline-none"
                         >
                             <option value="ALL">Tất cả chu kỳ</option>
                             <option value="ANNUAL">Chỉ Ngân sách Năm</option>
                             <option value="QUARTERLY">Chỉ Ngân sách Quý</option>
+                            <option value="RESERVE">Quỹ dự phòng các phòng ban</option>
                         </select>
                         {dashPeriodType === 'QUARTERLY' && (
                             <select 

@@ -12,8 +12,13 @@ interface PendingPR extends PR {
 }
 
 export default function ApprovalsPage() {
-    const { prs, approvals, actionApproval, currentUser, notify, refreshData } = useProcurement();
+    const { prs, costCenters, departments, approvals, actionApproval, currentUser, notify, refreshData, budgetAllocations, budgetPeriods } = useProcurement();
     const router = useRouter();
+
+    // Tính quý hiện tại
+    const now = new Date();
+    const currentQuarter = Math.ceil((now.getMonth() + 1) / 3);
+    const currentYear = now.getFullYear();
 
     const pendingPRs = (approvals || []).map((app) => {
         const pr = prs.find((p) => p.id === app.documentId);
@@ -23,8 +28,11 @@ export default function ApprovalsPage() {
         // Manager only handles < 10,000,000 VND
         // Director handles all >= 10,000,000 VND
         const prTotal = Number(pr.totalEstimate) || 0;
-        if (currentUser?.role === "MANAGER" && prTotal >= 10000000) return null;
-        if (currentUser?.role === "DIRECTOR" && prTotal < 10000000) return null;
+        const isManager = currentUser?.role === "MANAGER" || currentUser?.role === "DEPT_APPROVER";
+        const isDirector = currentUser?.role === "DIRECTOR";
+        
+        if (isManager && prTotal >= 10000000) return null;
+        if (isDirector && prTotal < 10000000) return null;
 
         return { ...pr, workflowId: app.id };
     }).filter((p): p is PendingPR => p !== null);
@@ -74,6 +82,24 @@ export default function ApprovalsPage() {
             setIsSubmitting(false);
         }
     };
+
+    // Tìm budget cho quý hiện tại (Current Quarter Budget)
+    const quarterAlloc = selectedPR && budgetAllocations ? budgetAllocations.find(alloc => {
+        const period = budgetPeriods.find(p => p.id === alloc.budgetPeriodId);
+        return (alloc.costCenterId === selectedPR.costCenterId || (typeof selectedPR.costCenter === 'string' && alloc.costCenterId === selectedPR.costCenter)) &&
+               period?.fiscalYear === currentYear &&
+               period?.periodNumber === currentQuarter;
+    }) : null;
+
+    const currentBudget = quarterAlloc 
+        ? (Number(quarterAlloc.allocatedAmount) - Number(quarterAlloc.committedAmount || 0) - Number(quarterAlloc.spentAmount || 0)) 
+        : 0;
+    
+    // Nếu không tìm thấy quý, fallback về ngân sách năm cũ
+    const prCostCenter = !quarterAlloc && selectedPR ? costCenters.find(cc => cc.id === selectedPR.costCenterId || (typeof selectedPR.costCenter === 'string' && cc.id === selectedPR.costCenter)) : null;
+    const finalBudget = quarterAlloc ? currentBudget : (prCostCenter ? (Number(prCostCenter.budgetAnnual) - Number(prCostCenter.budgetUsed)) : 0);
+
+    const projectedRemaining = selectedPR ? (finalBudget - (Number(selectedPR.totalEstimate) || 0)) : 0;
 
     if (isSuccess) {
         return (
@@ -210,13 +236,21 @@ export default function ApprovalsPage() {
                                         </div>
                                         <div>
                                             <div className="text-[10px] uppercase font-black tracking-widest text-slate-300 mb-1">Đơn vị đề xuất</div>
-                                            <div className="text-lg font-black text-erp-navy">{typeof selectedPR.department === 'object' ? selectedPR.department.name : selectedPR.department}</div>
+                                            <div className="text-lg font-black text-erp-navy">
+                                                {typeof selectedPR.department === 'object' ? selectedPR.department.name : 
+                                                 departments.find(d => d.id === selectedPR.deptId || d.id === selectedPR.department)?.name || selectedPR.department || "N/A"}
+                                            </div>
                                             <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-0.5">{new Date(selectedPR.createdAt).toLocaleString('vi-VN')}</div>
                                         </div>
                                     </div>
                                     <div>
                                         <div className="text-[10px] uppercase font-black tracking-widest text-slate-300 mb-2">Cost Center</div>
-                                        <div className="text-sm font-black text-erp-navy bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 inline-block">{typeof selectedPR.costCenter === 'object' ? selectedPR.costCenter.name : (selectedPR.costCenter || 'N/A')}</div>
+                                        <div className="text-sm font-black text-erp-navy bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 inline-block uppercase">
+                                            {typeof selectedPR.costCenter === 'object' ? selectedPR.costCenter.name : 
+                                             (costCenters.find(cc => cc.id === selectedPR.costCenterId || (typeof selectedPR.costCenter === 'string' && cc.id === selectedPR.costCenter))?.name || 
+                                              selectedPR.costCenterCode || 
+                                              (typeof selectedPR.costCenter === 'string' ? selectedPR.costCenter : 'N/A'))}
+                                        </div>
                                     </div>
                                     <div>
                                         <div className="text-[10px] uppercase font-black tracking-widest text-slate-300 mb-2">Độ ưu tiên</div>
@@ -390,6 +424,31 @@ export default function ApprovalsPage() {
                             
                             <div className="w-full md:w-[400px] flex flex-col justify-center">
                                 <div className="p-8 rounded-[40px] bg-slate-50/70 border border-slate-100 flex flex-col gap-6 shadow-sm">
+                                    {/* Projected Budget Sanity Check */}
+                                    {selectedPR && (currentUser?.role === "MANAGER" || currentUser?.role === "DIRECTOR" || currentUser?.role === "CEO" || currentUser?.role === "PLATFORM_ADMIN") && (
+                                        <div className={`p-6 rounded-[32px] border-2 border-dashed ${projectedRemaining < 0 ? 'bg-rose-50 border-rose-200 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.1)]' : 'bg-emerald-50/50 border-emerald-100'} transition-all duration-500`}>
+                                            <div className="flex justify-between items-center mb-3">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ngân sách còn lại dự kiến</span>
+                                                {projectedRemaining < 0 && (
+                                                    <div className="flex items-center gap-1.5 text-[9px] font-black text-rose-600 bg-white px-2 py-0.5 rounded-full border border-rose-100 animate-pulse">
+                                                        <AlertTriangle size={12} /> OVER BUDGET
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex justify-between items-baseline gap-2">
+                                                <div className={`text-2xl font-black font-mono tracking-tighter ${projectedRemaining < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                                                    {formatVND(projectedRemaining)} ₫
+                                                </div>
+                                                <div className="text-[9px] font-bold text-slate-400 italic truncate max-w-[120px]">
+                                                    {prCostCenter?.name || "Cost Center"}
+                                                </div>
+                                            </div>
+                                            <p className="mt-3 text-[9px] text-slate-400 font-medium leading-relaxed">
+                                                Dựa trên ngân sách thực tế tại Cost Center trừ đi giá trị PR hiện tại.
+                                            </p>
+                                        </div>
+                                    )}
+
                                     {actionType && actionType !== "APPROVE" ? (
                                         <div className="animate-in fade-in slide-in-from-right-8 duration-500">
                                             <div className="mb-6 text-center">
@@ -454,4 +513,3 @@ export default function ApprovalsPage() {
         </main>
     );
 }
-

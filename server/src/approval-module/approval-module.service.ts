@@ -58,6 +58,7 @@ export class ApprovalModuleService {
     }
 
     const workflowData: any[] = [];
+    let allAutoApproved = true;
 
     for (const rule of rules) {
       const originalApproverId = await this.resolveApproverId(
@@ -77,13 +78,21 @@ export class ApprovalModuleService {
       const approverId = delegateId ? delegateId : originalApproverId;
       const delegatedFromId = delegateId ? originalApproverId : null;
 
+      // Tự động duyệt nếu người yêu cầu chính là người duyệt
+      const isAutoApproved = approverId === requesterId;
+      if (!isAutoApproved) {
+        allAutoApproved = false;
+      }
+
       workflowData.push({
         documentType: docType,
         documentId: docId,
         step: rule.level,
         approverId: approverId,
         delegatedFromId: delegatedFromId,
-        status: ApprovalStatus.PENDING,
+        status: isAutoApproved ? ApprovalStatus.APPROVED : ApprovalStatus.PENDING,
+        actionedAt: isAutoApproved ? new Date() : null,
+        comment: isAutoApproved ? 'Hệ thống tự động duyệt (Người yêu cầu là người duyệt)' : null,
         dueAt: new Date(Date.now() + rule.slaHours * 60 * 60 * 1000),
       });
     }
@@ -92,16 +101,18 @@ export class ApprovalModuleService {
       data: workflowData,
     });
 
+    const finalStatus = allAutoApproved ? 'APPROVED' : 'PENDING_APPROVAL';
     await this.updateSourceDocumentStatus(
       docType,
       docId,
-      'PENDING_APPROVAL',
+      finalStatus,
       user,
     );
 
     return {
-      message: 'Workflow initiated successfully',
+      message: allAutoApproved ? 'Workflow auto-approved' : 'Workflow initiated successfully',
       stepsCreated: workflowData.length,
+      allAutoApproved,
     };
   }
 
