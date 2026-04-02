@@ -417,7 +417,7 @@ export interface CreateQuoteDto {
  */
 export interface ProductCategory {
     id: string;
-    orgId: string;
+    orgId?: string;
     code: string;
     name: string;
     description?: string;
@@ -431,8 +431,8 @@ export interface ProductCategory {
  */
 export interface Product {
     id: string;
-    orgId: string;
-    categoryId: string;
+    orgId?: string;
+    categoryId?: string;
     sku: string;
     name: string;
     description?: string;
@@ -440,15 +440,15 @@ export interface Product {
     unitPriceRef: number;
     currency: CurrencyCode;
     isActive: boolean;
-    metadata: Record<string, unknown>;
+    attributes: Record<string, unknown>;
     createdAt: string;
     updatedAt: string;
     // Relationships
     category?: ProductCategory;
 }
 
-export type CreateCategoryDto = Omit<ProductCategory, 'id' | 'orgId' | 'createdAt' | 'updatedAt' | 'isActive'>;
+export type CreateCategoryDto = Omit<ProductCategory, 'id' | 'createdAt' | 'updatedAt'>;
 export type UpdateCategoryDto = Partial<CreateCategoryDto>;
 
-export type CreateProductDtoShort = Omit<Product, 'id' | 'orgId' | 'createdAt' | 'updatedAt' | 'isActive' | 'category' | 'unitPriceRef'>;
+export type CreateProductDtoShort = Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'category'>;
 export type UpdateProductDtoShort = Partial<CreateProductDtoShort>;
