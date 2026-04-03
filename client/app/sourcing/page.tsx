@@ -12,8 +12,9 @@ import Link from "next/link";
 import { RFQ } from "../context/ProcurementContext";
 
 export default function SourcingPage() {
-    const { prs, rfqs, currentUser, refreshData, notify, createRFQ, createPOFromPR, organizations } = useProcurement();
-    const [activeTab, setActiveTab] = useState("approved-prs");
+    const { prs, rfqs, currentUser, refreshData, notify, createRFQ, createPOFromPR, organizations, quoteRequests, updateQuoteRequest, submitQuoteRequest } = useProcurement();
+    const [activeTab, setActiveTab] = useState("quote-requests");
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -134,13 +135,25 @@ export default function SourcingPage() {
 
             <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
                 <div className="flex bg-slate-50/50 border-b border-slate-100 p-2 gap-2">
+                    <TabButton active={activeTab === "quote-requests"} onClick={() => setActiveTab("quote-requests")} label="Yêu cầu Báo giá" count={quoteRequests.filter(q => q.status !== 'DRAFT').length} />
                     <TabButton active={activeTab === "approved-prs"} onClick={() => setActiveTab("approved-prs")} label="PR Đã Phê Duyệt" count={approvedPRs.length} />
                     <TabButton active={activeTab === "active-rfqs"} onClick={() => setActiveTab("active-rfqs")} label="RFQ Đang Triển Khai" count={activeRFQs.length} />
                     <TabButton active={activeTab === "suppliers"} onClick={() => setActiveTab("suppliers")} label="Danh sách NCC gợi ý" />
+
                 </div>
 
                 <div className="p-0">
+                    {activeTab === "quote-requests" && (
+                        <QuoteRequestProcessing 
+                            quoteRequests={quoteRequests.filter(q => q.status !== 'DRAFT')} 
+                            suppliers={suppliersList}
+                            onUpdate={updateQuoteRequest}
+                            notify={notify}
+                        />
+                    )}
+
                     {activeTab === "approved-prs" && (
+
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse text-sm">
                                 <thead>
@@ -304,6 +317,158 @@ function TabButton({ active, onClick, label, count }: {
     );
 }
 
+
+function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: any) {
+    const [processingId, setProcessingId] = useState<string | null>(null);
+    const [editData, setEditData] = useState<any>(null);
+
+    const handleStartProcessing = (qr: any) => {
+        onUpdate(qr.id, { status: 'PROCESSING' });
+    };
+
+    const handleOpenEdit = (qr: any) => {
+        setProcessingId(qr.id);
+        setEditData(JSON.parse(JSON.stringify(qr))); // Deep clone for editing
+    };
+
+    const handleUpdateItem = (idx: number, field: string, value: any) => {
+        const newItems = [...editData.items];
+        newItems[idx] = { ...newItems[idx], [field]: value };
+        setEditData({ ...editData, items: newItems });
+    };
+
+    const handleComplete = async () => {
+        // Validate
+        const allSet = editData.items.every((it: any) => it.unitPrice && it.supplierName);
+        if (!allSet) {
+            notify("Vui lòng nhập đầy đủ Nhà cung cấp và Đơn giá cho tất cả các mặt hàng", "warning");
+            return;
+        }
+
+        await onUpdate(editData.id, { 
+            status: 'COMPLETED',
+            items: editData.items 
+        });
+        setProcessingId(null);
+        notify("Đã hoàn tất báo giá và gửi kết quả cho Requester", "success");
+    };
+
+    return (
+        <div className="p-6">
+            {!processingId ? (
+                <div className="space-y-4">
+                    {quoteRequests.map((qr: any) => (
+                        <div key={qr.id} className="bg-white border border-slate-100 rounded-2xl p-6 flex justify-between items-center shadow-sm">
+                            <div className="flex gap-6 items-center">
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black ${qr.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-600' : (qr.status === 'PROCESSING' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600')}`}>
+                                    {qr.qrNumber.split('-').pop()}
+                                </div>
+                                <div className="space-y-1">
+                                    <h4 className="font-black text-erp-navy">{qr.title}</h4>
+                                    <div className="flex gap-3 text-[10px] items-center">
+                                        <span className="font-black text-slate-400 uppercase tracking-widest">{qr.qrNumber}</span>
+                                        <span className="w-1 h-1 rounded-full bg-slate-200"></span>
+                                        <span className={`font-black uppercase tracking-tighter ${qr.status === 'COMPLETED' ? 'text-emerald-500' : (qr.status === 'PROCESSING' ? 'text-orange-500' : 'text-blue-500')}`}>
+                                            {qr.status === 'COMPLETED' ? 'Đã hoàn tất' : (qr.status === 'PROCESSING' ? 'Đang xử lý' : 'Chờ tiếp nhận')}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                {qr.status === 'SUBMITTED' && (
+                                    <button 
+                                        onClick={() => handleStartProcessing(qr)}
+                                        className="bg-erp-navy text-white px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-erp-blue transition-all"
+                                    >
+                                        Tiếp nhận xử lý
+                                    </button>
+                                )}
+                                {qr.status === 'PROCESSING' && (
+                                    <button 
+                                        onClick={() => handleOpenEdit(qr)}
+                                        className="bg-orange-500 text-white px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
+                                    >
+                                        Nhập báo giá
+                                    </button>
+                                )}
+                                {qr.status === 'COMPLETED' && (
+                                    <span className="text-emerald-500 text-[10px] font-black uppercase tracking-widest bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100 italic">
+                                        Quotation Sent
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200 animate-in fade-in zoom-in-95 duration-300">
+                    <div className="flex justify-between items-start mb-8">
+                        <div>
+                            <h3 className="text-xl font-black text-erp-navy uppercase">{editData.title}</h3>
+                            <p className="text-xs text-slate-400 font-bold tracking-widest mt-1">{editData.qrNumber} | NHẬP DỮ LIỆU RFQ</p>
+                        </div>
+                        <button onClick={() => setProcessingId(null)} className="text-slate-400 text-xs font-black uppercase tracking-widest hover:text-red-500">Hủy bỏ</button>
+                    </div>
+
+                    <div className="space-y-4">
+                        {editData.items.map((item: any, idx: number) => (
+                            <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm grid grid-cols-12 gap-6 items-end">
+                                <div className="col-span-12 lg:col-span-4">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest block mb-2">Mặt hàng yêu cầu</label>
+                                    <div className="font-bold text-erp-navy text-sm p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                        {item.productName}
+                                        <span className="ml-2 text-[10px] text-slate-400 font-medium">({item.qty} {item.unit})</span>
+                                    </div>
+                                </div>
+                                
+                                <div className="col-span-12 lg:col-span-4">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest block mb-2">Chọn nhà cung cấp</label>
+                                    <select 
+                                        className="w-full p-3 bg-white border border-slate-200 rounded-lg text-sm font-bold focus:ring-2 focus:ring-erp-blue"
+                                        value={item.supplierName || ""}
+                                        onChange={(e) => handleUpdateItem(idx, 'supplierName', e.target.value)}
+                                    >
+                                        <option value="">-- Chọn NCC --</option>
+                                        {suppliers.map((s: any) => <option key={s.id} value={s.name}>{s.name}</option>)}
+                                    </select>
+                                </div>
+
+                                <div className="col-span-12 lg:col-span-4">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest block mb-2">Đơn giá báo về (VNĐ)</label>
+                                    <input 
+                                        type="number"
+                                        className="w-full p-3 bg-white border border-slate-200 rounded-lg text-sm font-bold focus:ring-2 focus:ring-erp-blue"
+                                        placeholder="0"
+                                        value={item.unitPrice || ""}
+                                        onChange={(e) => handleUpdateItem(idx, 'unitPrice', Number(e.target.value))}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-8 pt-8 border-t border-slate-200 flex justify-between items-center">
+                        <div className="bg-erp-navy text-white px-8 py-4 rounded-2xl">
+                            <span className="text-[10px] uppercase font-black tracking-[0.2em] text-white/50 block mb-1">Tổng tiền tạm tính</span>
+                            <span className="text-2xl font-black">
+                                {editData.items.reduce((sum: number, it: any) => sum + ((it.unitPrice || 0) * (it.qty || 0)), 0).toLocaleString()} VNĐ
+                            </span>
+                        </div>
+                        <button 
+                            onClick={handleComplete}
+                            className="bg-emerald-500 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all"
+                        >
+                            Gửi báo giá cho Requester
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+
 function PlusIcon({ size }: { size: number }) {
     return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
 }
+
