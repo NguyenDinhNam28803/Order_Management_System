@@ -69,7 +69,47 @@ export class SupplierKpimoduleService {
         ? (totalItemsAccepted / totalItemsReceived) * 100
         : 100;
 
-    // 4. Lấy số lượng tranh chấp (Disputes)
+    // 4. Lấy các đánh giá thủ công (Manual Reviews & Buyer Ratings)
+    const manualReviews = await this.prisma.supplierManualReview.findMany({
+      where: {
+        po: { supplierId, orgId: buyerOrgId },
+        reviewedAt: { gte: sixMonthsAgo },
+      },
+    });
+
+    const buyerRatings = await this.prisma.buyerRating.findMany({
+      where: {
+        supplierId,
+        buyerOrgId,
+        ratedAt: { gte: sixMonthsAgo },
+      },
+    });
+
+    let totalManualScore = 0;
+    let manualReviewCount = 0;
+
+    manualReviews.forEach((review) => {
+      totalManualScore += Number(review.overallScore);
+      manualReviewCount++;
+    });
+
+    buyerRatings.forEach((rating) => {
+      // Tính trung bình các tiêu chí trong BuyerRating (thang điểm 1-5 hoặc 1-10 tùy config, giả định là thang điểm đã chuẩn hóa)
+      const avgRating =
+        (rating.paymentTimelinessScore +
+          rating.specClarityScore +
+          rating.communicationScore +
+          rating.processComplianceScore +
+          rating.disputeFairnessScore) /
+        5;
+      totalManualScore += avgRating * 20; // Giả sử chuẩn hóa lên thang 100
+      manualReviewCount++;
+    });
+
+    const manualScore =
+      manualReviewCount > 0 ? totalManualScore / manualReviewCount : 100;
+
+    // 5. Lấy số lượng tranh chấp (Disputes)
     const disputeCount = await this.prisma.dispute.count({
       where: {
         againstOrgId: supplierId,
@@ -78,22 +118,23 @@ export class SupplierKpimoduleService {
       },
     });
 
-    // 5. Chuẩn bị dữ liệu cho AI
+    // 6. Chuẩn bị dữ liệu cho AI
     const performanceMetrics = {
       otdScore: otdScore.toFixed(2),
       qualityScore: qualityScore.toFixed(2),
+      manualScore: manualScore.toFixed(2),
       poCount: totalPos,
       disputeCount: disputeCount,
     };
 
-    // 6. Gọi AI đánh giá với Kiểu dữ liệu RÕ RÀNG
+    // 7. Gọi AI đánh giá với Kiểu dữ liệu RÕ RÀNG
     const aiEvaluation: AiSupplierEvaluation =
       await this.aiService.analyzeSupplierPerformance(
         supplier,
         performanceMetrics,
       );
 
-    // 7. Lưu hoặc cập nhật kết quả vào database
+    // 8. Lưu hoặc cập nhật kết quả vào database
     const currentYear = new Date().getFullYear();
     const currentQuarter = Math.floor(new Date().getMonth() / 3) + 1;
 
@@ -109,6 +150,7 @@ export class SupplierKpimoduleService {
       update: {
         otdScore: otdScore,
         qualityScore: qualityScore,
+        manualScore: manualScore,
         priceScore: aiEvaluation.priceScore,
         tier: aiEvaluation.tierRecommendation as SupplierTier,
         poCount: totalPos,
@@ -124,6 +166,7 @@ export class SupplierKpimoduleService {
         periodQuarter: currentQuarter,
         otdScore: otdScore,
         qualityScore: qualityScore,
+        manualScore: manualScore,
         priceScore: aiEvaluation.priceScore,
         tier: aiEvaluation.tierRecommendation as SupplierTier,
         poCount: totalPos,

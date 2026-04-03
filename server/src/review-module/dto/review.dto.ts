@@ -28,7 +28,10 @@ export class CreateBuyerRatingDto {
   @IsNotEmpty()
   paymentTimelinessScore: number;
 
-  @ApiProperty({ example: 5, description: 'Điểm rõ ràng đặc tính kỹ thuật (1-5)' })
+  @ApiProperty({
+    example: 5,
+    description: 'Điểm rõ ràng đặc tính kỹ thuật (1-5)',
+  })
   @IsInt()
   @Min(1)
   @Max(5)

@@ -51,10 +51,18 @@ export default function OrganizationsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         let success = false;
+
+        const payload = {
+            ...formData,
+            companyType: "BUYER",
+            countryCode: "VN",
+            metadata: {}
+        };
+
         if (editingOrg) {
-            success = await updateOrganization(editingOrg.id, formData);
+            success = await updateOrganization(editingOrg.id, payload as any);
         } else {
-            success = await addOrganization(formData);
+            success = await addOrganization(payload as any);
         }
 
         if (success) {

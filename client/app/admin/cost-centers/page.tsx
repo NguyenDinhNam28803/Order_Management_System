@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShieldAlert, Plus, Edit2, Trash2, Search, DollarSign, Building, Eye } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, DollarSign, Building, Eye } from "lucide-react";
 import { useProcurement, Department, CurrencyCode } from "../../context/ProcurementContext";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
 import { CostCenter } from "@/app/types/api-types";
 
 export default function CostCentersPage() {
-    const { costCenters, departments, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, notify } = useProcurement();
+    const { costCenters, departments, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, notify, currentUser } = useProcurement();
     const [showModal, setShowModal] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [viewingCC, setViewingCC] = useState<CostCenter | null>(null);
@@ -71,11 +71,21 @@ export default function CostCentersPage() {
             return;
         }
 
+        if (!currentUser?.orgId) {
+            notify("Không tìm thấy thông tin tổ chức. Vui lòng đăng nhập lại.", "error");
+            return;
+        }
+
+        const payload = {
+            ...formData,
+            orgId: currentUser.orgId
+        };
+
         let success = false;
         if (editingCC) {
-            success = await updateCostCenter(editingCC.id, formData);
+            success = await updateCostCenter(editingCC.id, payload);
         } else {
-            success = await addCostCenter(formData);
+            success = await addCostCenter(payload);
         }
 
         if (success) {

@@ -90,9 +90,13 @@ export class ApprovalModuleService {
         step: rule.level,
         approverId: approverId,
         delegatedFromId: delegatedFromId,
-        status: isAutoApproved ? ApprovalStatus.APPROVED : ApprovalStatus.PENDING,
+        status: isAutoApproved
+          ? ApprovalStatus.APPROVED
+          : ApprovalStatus.PENDING,
         actionedAt: isAutoApproved ? new Date() : null,
-        comment: isAutoApproved ? 'Hệ thống tự động duyệt (Người yêu cầu là người duyệt)' : null,
+        comment: isAutoApproved
+          ? 'Hệ thống tự động duyệt (Người yêu cầu là người duyệt)'
+          : null,
         dueAt: new Date(Date.now() + rule.slaHours * 60 * 60 * 1000),
       });
     }
@@ -102,15 +106,12 @@ export class ApprovalModuleService {
     });
 
     const finalStatus = allAutoApproved ? 'APPROVED' : 'PENDING_APPROVAL';
-    await this.updateSourceDocumentStatus(
-      docType,
-      docId,
-      finalStatus,
-      user,
-    );
+    await this.updateSourceDocumentStatus(docType, docId, finalStatus, user);
 
     return {
-      message: allAutoApproved ? 'Workflow auto-approved' : 'Workflow initiated successfully',
+      message: allAutoApproved
+        ? 'Workflow auto-approved'
+        : 'Workflow initiated successfully',
       stepsCreated: workflowData.length,
       allAutoApproved,
     };

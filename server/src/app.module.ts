@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ScheduleModule } from '@nestjs/schedule';
 // import * as redisStore from 'cache-manager-ioredis-yet';
 import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
@@ -57,6 +58,7 @@ import { RagModule } from './rag/rag.module';
       ttl: 600,
       max: 1000,
     }),
+    ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

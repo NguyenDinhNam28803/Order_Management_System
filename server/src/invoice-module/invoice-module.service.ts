@@ -132,7 +132,7 @@ export class InvoiceModuleService {
   }
 
   /**
-   * Logic Đối soát 3 bên (3-Way Matching)
+   * Logic Đối soát 3 bên (3-Way Matching) với cơ chế Tolerance (Dung sai)
    * So khớp: Purchase Order (PO) - Goods Receipt (GRN) - Supplier Invoice
    */
   async runThreeWayMatching(invoiceId: string) {
@@ -149,7 +149,12 @@ export class InvoiceModuleService {
 
     if (!invoice) return;
 
+    // Cấu hình dung sai (Có thể chuyển sang SystemConfig sau này)
+    const QTY_TOLERANCE_PCT = 0.02; // 2% cho số lượng
+    const PRICE_TOLERANCE_PCT = 0.01; // 1% cho đơn giá
+
     let matchFailed = false;
+    let exceptionReason = '';
     const results: MatchingItemResult[] = [];
 
     for (const invItem of invoice.items) {
@@ -163,17 +168,31 @@ export class InvoiceModuleService {
         variance: 0,
       };
 
-      // 1. Kiểm tra số lượng: Invoice Qty <= GRN Received Qty
+      // 1. Kiểm tra số lượng: Invoice Qty <= GRN Received Qty * (1 + Tolerance)
       if (grnItem) {
-        itemMatch.qtyMatch = Number(invItem.qty) <= Number(grnItem.receivedQty);
+        const invQty = Number(invItem.qty);
+        const receivedQty = Number(grnItem.receivedQty);
+        const maxAllowedQty = receivedQty * (1 + QTY_TOLERANCE_PCT);
+
+        itemMatch.qtyMatch = invQty <= maxAllowedQty;
+        if (!itemMatch.qtyMatch) {
+          exceptionReason += `Dòng ${invItem.poItemId}: Số lượng hóa đơn (${invQty}) vượt quá nhận kho (${receivedQty}) quá mức cho phép. `;
+        }
       } else {
         itemMatch.qtyMatch = false;
+        exceptionReason += `Dòng ${invItem.poItemId}: Không tìm thấy thông tin nhận kho (GRN). `;
       }
 
-      // 2. Kiểm tra đơn giá: Invoice Price <= PO Price
+      // 2. Kiểm tra đơn giá: Invoice Price <= PO Price * (1 + Tolerance)
       if (poItem) {
-        itemMatch.priceMatch =
-          Number(invItem.unitPrice) <= Number(poItem.unitPrice);
+        const invPrice = Number(invItem.unitPrice);
+        const poPrice = Number(poItem.unitPrice);
+        const maxAllowedPrice = poPrice * (1 + PRICE_TOLERANCE_PCT);
+
+        itemMatch.priceMatch = invPrice <= maxAllowedPrice;
+        if (!itemMatch.priceMatch) {
+          exceptionReason += `Dòng ${invItem.poItemId}: Đơn giá hóa đơn (${invPrice}) vượt quá đơn giá PO (${poPrice}) quá mức cho phép. `;
+        }
       }
 
       if (!itemMatch.qtyMatch || !itemMatch.priceMatch) {
@@ -192,6 +211,7 @@ export class InvoiceModuleService {
       where: { id: invoiceId },
       data: {
         status: finalStatus,
+        exceptionReason: matchFailed ? exceptionReason : null,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         matchingResult: results as any,
         matchedAt: new Date(),

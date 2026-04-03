@@ -68,7 +68,7 @@ export default function ProductAdminPage() {
                 code: "",
                 description: "",
                 isActive: true,
-                orgId: organizations[0]?.id || ""
+                orgId: currentUser?.orgId || organizations[0]?.id || ""
             });
         }
     }, [editingCategory, organizations]);

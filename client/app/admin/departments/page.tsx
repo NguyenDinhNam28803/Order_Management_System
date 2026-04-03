@@ -6,7 +6,7 @@ import { useProcurement, Department, User } from "../../context/ProcurementConte
 import { Organization, CreateDepartmentPayload, UpdateDepartmentPayload } from "@/app/types/api-types";
 
 export default function DepartmentsPage() {
-    const { departments, users, addDept, updateDept, removeDept, organizations } = useProcurement();
+    const { departments, users, addDept, updateDept, removeDept, organizations, currentUser } = useProcurement();
     const [showModal, setShowModal] = useState(false);
     const [editingDept, setEditingDept] = useState<Department | null>(null);
     const [formData, setFormData] = useState<CreateDepartmentPayload>({
@@ -41,7 +41,7 @@ export default function DepartmentsPage() {
         } else {
             setEditingDept(null);
             setFormData({
-                orgId: organizations?.[0]?.id || "",
+                orgId: currentUser?.orgId || organizations?.[0]?.id || "",
                 code: "",
                 name: "",
                 headUserId: "",
