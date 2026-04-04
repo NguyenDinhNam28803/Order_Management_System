@@ -62,6 +62,38 @@ export class PrmoduleService {
           }
         }
       }
+
+      // 2.1 Kiểm tra Budget by Category (nếu item có categoryId)
+      if (item.categoryId && createPrDto.costCenterId) {
+        const itemCost = item.estimatedPrice * item.qty;
+
+        const budgetAlloc = await this.prisma.budgetAllocation.findFirst({
+          where: {
+            costCenterId: createPrDto.costCenterId,
+            categoryId: item.categoryId,
+            orgId: user.orgId,
+            status: 'APPROVED',
+          },
+        });
+
+        if (!budgetAlloc) {
+          throw new BadRequestException(
+            `Chưa có cấp phát ngân sách cho danh mục này trong phòng ban. Vui lòng liên hệ kế toán.`,
+          );
+        }
+
+        // Tính available balance
+        const allocated = Number(budgetAlloc.allocatedAmount);
+        const committed = Number(budgetAlloc.committedAmount);
+        const spent = Number(budgetAlloc.spentAmount);
+        const availableBudget = allocated - committed - spent;
+
+        if (itemCost > availableBudget) {
+          throw new BadRequestException(
+            `Ngân sách cho danh mục này không đủ. Yêu cầu: ${itemCost.toLocaleString('vi-VN')} VND, Khả dụng: ${availableBudget.toLocaleString('vi-VN')} VND. Vui lòng xin phê duyệt vượt ngân sách hoặc giảm số lượng.`,
+          );
+        }
+      }
     }
 
     // 3. Kiểm tra Quyền khởi tạo PR theo Hạn mức trần (Hierarchical Ceiling)
