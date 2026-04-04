@@ -21,6 +21,7 @@ export class CostCenterModuleService {
       ...cc,
       budgetAnnual: Number(cc.budgetAnnual || 0),
       budgetUsed: Number(cc.budgetUsed || 0),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       budgetAllocations: (cc.budgetAllocations || []).map((alloc: any) => ({
         ...alloc,
         allocatedAmount: Number(alloc.allocatedAmount || 0),

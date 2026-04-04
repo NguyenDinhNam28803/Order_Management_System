@@ -78,9 +78,4 @@ export class ProductModuleService {
   // async smartSearchProducts(text: string) {
   //   return this.repository.smartSearchProducts(text);
   // }
-
-  // --- AI Service Test Method ---
-  async responsetest() {
-    return this.repository.responsetest();
-  }
 }

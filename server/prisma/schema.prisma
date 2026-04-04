@@ -60,6 +60,8 @@ model Organization {
   invoicesAsSupplier       SupplierInvoice[]        @relation("InvoiceSupplierOrg")
   kpiScoresAsBuyer         SupplierKpiScore[]       @relation("KpiBuyerOrg")
   kpiScoresAsSupplier      SupplierKpiScore[]       @relation("KpiSupplier")
+  supplierCategories       SupplierCategory[]
+  supplierProductPrices    SupplierProductPrice[]
   systemConfigs            SystemConfig[]
   users                    User[]
   webhookConfigs           WebhookConfig[]
@@ -202,6 +204,9 @@ model User {
   invoicesApproved         SupplierInvoice[]      @relation("InvoiceApprover")
   manualReviews            SupplierManualReview[]
   systemConfigUpdates      SystemConfig[]
+  quotationRequests        QuotationRequest[]
+  budgetOverridesReq       BudgetOverrideRequest[] @relation("BudgetOverrideRequester")
+  budgetOverridesApprv     BudgetOverrideRequest[] @relation("BudgetOverrideApprover")
   delegatesReceived        UserDelegate[]         @relation("Delegate")
   delegatesGiven           UserDelegate[]         @relation("Delegator")
   department               Department?            @relation(fields: [deptId], references: [id])
@@ -295,6 +300,8 @@ model ProductCategory {
   prItems           PrItem[]
   parent            ProductCategory?   @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children          ProductCategory[]  @relation("CategoryHierarchy")
+  supplierCategories SupplierCategory[]
+  quotationRequests QuotationRequest[]
   products          Product[]
   rfqItems          RfqItem[]
 
@@ -320,6 +327,7 @@ model Product {
   createdAt    DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
   prItems      PrItem[]
+  supplierPrices SupplierProductPrice[]
   category     ProductCategory? @relation(fields: [categoryId], references: [id])
 
   @@map("products")
@@ -360,6 +368,8 @@ model PurchaseRequisition {
   procurement    User?           @relation("PrProcurement", fields: [procurementId], references: [id])
   requester      User            @relation("PrRequester", fields: [requesterId], references: [id])
   rfqRequests    RfqRequest[]
+  quotationRequests    QuotationRequest[]
+  budgetOverrides      BudgetOverrideRequest[]
 
   @@index([orgId, status])
   @@index([requesterId])
@@ -433,6 +443,7 @@ model RfqRequest {
   items                  RfqItem[]
   qaThreads              RfqQaThread[]
   quotations             RfqQuotation[]
+  quotationRequests      QuotationRequest[]
   awardedSupplier        Organization?       @relation("RfqAwardedSupplier", fields: [awardedSupplierId], references: [id])
   createdBy              User                @relation(fields: [createdById], references: [id])
   organization           Organization        @relation(fields: [orgId], references: [id])
@@ -1224,6 +1235,10 @@ model BudgetAllocation {
   spentAmount     Decimal          @default(0) @map("spent_amount") @db.Decimal(18, 2)
   currency        CurrencyCode     @default(VND)
   notes           String?
+  status          BudgetAllocationStatus    @default(DRAFT)
+  approvedById    String?                   @map("approved_by") @db.Uuid
+  approvedAt      DateTime?                 @map("approved_at") @db.Timestamptz(6)
+  rejectedReason  String?                   @map("rejected_reason")
   createdById     String?          @map("created_by") @db.Uuid
   createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -1233,6 +1248,7 @@ model BudgetAllocation {
   createdBy       User?            @relation(fields: [createdById], references: [id])
   department      Department?      @relation(fields: [deptId], references: [id])
   org             Organization     @relation("BudgetAllocOrg", fields: [orgId], references: [id])
+  overrideRequests BudgetOverrideRequest[]
 
   @@unique([budgetPeriodId, costCenterId])
   @@map("budget_allocations")
@@ -1320,6 +1336,108 @@ model DocumentEmbedding {
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("document_embeddings")
+}
+
+// Sửa thêm bảng
+
+model QuotationRequest {
+  id            String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  prId          String   @map("pr_id") @db.Uuid
+  requesterId   String   @map("requester_id") @db.Uuid
+  categoryId    String?  @map("category_id") @db.Uuid
+  description   String
+  estimatedBudget Decimal? @map("estimated_budget") @db.Decimal(18, 2)
+  status        QuotationRequestStatus @default(PENDING)
+  // PENDING → ACKNOWLEDGED → RFQ_CREATED → PRICE_RETURNED → COMPLETED
+  rfqId         String?  @map("rfq_id") @db.Uuid  // sau khi thu mua tạo RFQ
+  returnedPrice Decimal? @map("returned_price") @db.Decimal(18, 2)
+  note          String?
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  pr        PurchaseRequisition @relation(fields: [prId], references: [id])
+  requester User                @relation(fields: [requesterId], references: [id])
+  rfq       RfqRequest?         @relation(fields: [rfqId], references: [id])
+  category  ProductCategory? @relation(fields: [categoryId], references: [id])
+
+  @@map("quotation_requests")
+}
+
+model SupplierCategory {
+  id         String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  supplierId String          @map("supplier_id") @db.Uuid
+  categoryId String          @map("category_id") @db.Uuid
+  isPrimary  Boolean         @default(false) @map("is_primary")
+  createdAt  DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  supplier   Organization    @relation(fields: [supplierId], references: [id])
+  category   ProductCategory @relation(fields: [categoryId], references: [id])
+
+  @@unique([supplierId, categoryId])
+  @@map("supplier_categories")
+}
+
+model SupplierProductPrice {
+  id          String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  supplierId  String       @map("supplier_id") @db.Uuid
+  productId   String       @map("product_id") @db.Uuid
+  unitPrice   Decimal      @map("unit_price") @db.Decimal(18, 2)
+  currency    CurrencyCode @default(VND)
+  minQty      Decimal?     @map("min_qty") @db.Decimal(12, 3)
+  effectiveFrom DateTime   @map("effective_from") @db.Date
+  effectiveUntil DateTime? @map("effective_until") @db.Date
+  isActive    Boolean      @default(true) @map("is_active")
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  supplier    Organization @relation(fields: [supplierId], references: [id])
+  product     Product      @relation(fields: [productId], references: [id])
+
+  @@unique([supplierId, productId, effectiveFrom])
+  @@map("supplier_product_prices")
+}
+
+model BudgetOverrideRequest {
+  id               String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  budgetAllocId    String       @map("budget_alloc_id") @db.Uuid
+  prId             String       @map("pr_id") @db.Uuid
+  requestedById    String       @map("requested_by") @db.Uuid
+  overrideAmount   Decimal      @map("override_amount") @db.Decimal(18, 2)
+  reason           String
+  status           BudgetOverrideStatus @default(PENDING)
+  approvedById     String?      @map("approved_by") @db.Uuid
+  approvedAt       DateTime?    @map("approved_at") @db.Timestamptz(6)
+  rejectedReason   String?      @map("rejected_reason")
+  createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  budgetAlloc   BudgetAllocation    @relation(fields: [budgetAllocId], references: [id])
+  pr            PurchaseRequisition @relation(fields: [prId], references: [id])
+  requestedBy   User   @relation("BudgetOverrideRequester", fields: [requestedById], references: [id])
+  approvedBy    User?  @relation("BudgetOverrideApprover", fields: [approvedById], references: [id])
+
+  @@map("budget_override_requests")
+}
+
+enum BudgetOverrideStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BudgetAllocationStatus {
+  DRAFT         // Trưởng phòng đang soạn
+  SUBMITTED     // Đã gửi lên kế toán
+  APPROVED      // Kế toán duyệt → mới được dùng
+  REJECTED      // Bị từ chối
+  CLOSED        // Hết kỳ
+}
+
+enum QuotationRequestStatus {
+  PENDING
+  ACKNOWLEDGED
+  RFQ_CREATED
+  PRICE_RETURNED
+  COMPLETED
+  CANCELLED
 }
 
 enum BudgetPeriodType {

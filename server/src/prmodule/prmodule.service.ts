@@ -10,6 +10,7 @@ import {
   PurchaseRequisition,
   DocumentType,
   UserRole,
+  ProductType,
 } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { PrismaService } from '../prisma/prisma.service';
@@ -41,7 +42,27 @@ export class PrmoduleService {
       throw new BadRequestException('Giá trị PR phải lớn hơn 0.');
     }
 
-    // 2. Kiểm tra Quyền khởi tạo PR theo Hạn mức trần (Hierarchical Ceiling)
+    // 2. Kiểm tra tính hợp lệ của giá đối với hàng NON_CATALOG
+    for (const item of createPrDto.items) {
+      if (item.productId) {
+        const product = await this.prisma.product.findUnique({
+          where: { id: item.productId },
+        });
+
+        if (product && product.type === ProductType.NON_CATALOG) {
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+          if (!product.lastPriceAt || product.lastPriceAt < thirtyDaysAgo) {
+            throw new BadRequestException(
+              `Sản phẩm "${product.name}" là hàng phi tiêu chuẩn và giá đã quá hạn (30 ngày). Vui lòng thực hiện quy trình báo giá (RFQ) trước khi tạo PR.`,
+            );
+          }
+        }
+      }
+    }
+
+    // 3. Kiểm tra Quyền khởi tạo PR theo Hạn mức trần (Hierarchical Ceiling)
     const role = user.role as UserRole;
     const isPlatformAdmin = role === UserRole.PLATFORM_ADMIN;
 
@@ -219,7 +240,7 @@ export class PrmoduleService {
         throw error;
       }
       throw new BadRequestException(
-        `Không thể gửi duyệt PR: ${error.message || 'Lỗi không xác định'}`,
+        `Không thể gửi duyệt PR: ${error || 'Lỗi không xác định'}`,
       );
     }
   }

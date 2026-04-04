@@ -32,7 +32,7 @@ export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(255)
-  name: string;
+  name!: string;
 
   @ApiPropertyOptional({ example: 'A high-end laptop for developers' })
   @IsString()

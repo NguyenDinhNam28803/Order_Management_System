@@ -198,7 +198,31 @@ export class AutomationService {
           },
         });
 
-        // 4. Cập nhật cam kết ngân sách (Budget Commitment)
+        // 4. Cập nhật thông tin giá cho Product
+        for (const qItem of quotation.items) {
+          const rfqItem = rfq.items.find((i) => i.id === qItem.rfqItemId);
+          // Tìm prItem gốc để lấy productId
+          const prItem = rfqItem
+            ? await tx.prItem.findUnique({
+                where: { id: rfqItem.prItemId || '' },
+              })
+            : null;
+
+          if (prItem?.productId) {
+            await tx.product.update({
+              where: { id: prItem.productId },
+              data: {
+                unitPriceRef: qItem.unitPrice,
+                lastPriceAt: new Date(),
+              },
+            });
+            this.logger.log(
+              `Updated price for product ${prItem.productId} to ${Number(qItem.unitPrice)}`,
+            );
+          }
+        }
+
+        // 5. Cập nhật cam kết ngân sách (Budget Commitment)
         if (rfq.pr?.costCenterId && rfq.pr?.deptId) {
           const budget = await tx.budgetAllocation.findFirst({
             where: {
