@@ -1218,33 +1218,34 @@ model BudgetPeriod {
 }
 
 model BudgetAllocation {
-  id               String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  budgetPeriodId   String                  @map("budget_period_id") @db.Uuid
-  costCenterId     String                  @map("cost_center_id") @db.Uuid
-  orgId            String                  @map("org_id") @db.Uuid
-  deptId           String?                 @map("dept_id") @db.Uuid
-  categoryId       String?                 @map("category_id") @db.Uuid
-  allocatedAmount  Decimal                 @map("allocated_amount") @db.Decimal(18, 2)
-  committedAmount  Decimal                 @default(0) @map("committed_amount") @db.Decimal(18, 2)
-  spentAmount      Decimal                 @default(0) @map("spent_amount") @db.Decimal(18, 2)
-  currency         CurrencyCode            @default(VND)
-  notes            String?
-  createdById      String?                 @map("created_by") @db.Uuid
-  createdAt        DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
-  approvedAt       DateTime?               @map("approved_at") @db.Timestamptz(6)
-  approvedById     String?                 @map("approved_by") @db.Uuid
-  rejectedReason   String?                 @map("rejected_reason")
-  status           BudgetAllocationStatus  @default(DRAFT)
-  budgetPeriod     BudgetPeriod            @relation(fields: [budgetPeriodId], references: [id])
-  category         ProductCategory?        @relation(fields: [categoryId], references: [id])
-  costCenter       CostCenter              @relation(fields: [costCenterId], references: [id])
-  createdBy        User?                   @relation(fields: [createdById], references: [id])
-  department       Department?             @relation(fields: [deptId], references: [id])
-  org              Organization            @relation("BudgetAllocOrg", fields: [orgId], references: [id])
+  id              String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  budgetPeriodId  String           @map("budget_period_id") @db.Uuid
+  costCenterId    String           @map("cost_center_id") @db.Uuid
+  orgId           String           @map("org_id") @db.Uuid
+  deptId          String?          @map("dept_id") @db.Uuid
+  categoryId      String?          @map("category_id") @db.Uuid
+  allocatedAmount Decimal          @map("allocated_amount") @db.Decimal(18, 2)
+  committedAmount Decimal          @default(0) @map("committed_amount") @db.Decimal(18, 2)
+  spentAmount     Decimal          @default(0) @map("spent_amount") @db.Decimal(18, 2)
+  currency        CurrencyCode     @default(VND)
+  notes           String?
+  status          BudgetAllocationStatus    @default(DRAFT)
+  approvedById    String?                   @map("approved_by") @db.Uuid
+  approvedAt      DateTime?                 @map("approved_at") @db.Timestamptz(6)
+  rejectedReason  String?                   @map("rejected_reason")
+  createdById     String?          @map("created_by") @db.Uuid
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  budgetCode      String?          @unique @map("budget_code") @db.VarChar(50)
+  budgetPeriod    BudgetPeriod     @relation(fields: [budgetPeriodId], references: [id])
+  category        ProductCategory? @relation(fields: [categoryId], references: [id])
+  costCenter      CostCenter       @relation(fields: [costCenterId], references: [id])
+  createdBy       User?            @relation(fields: [createdById], references: [id])
+  department      Department?      @relation(fields: [deptId], references: [id])
+  org             Organization     @relation("BudgetAllocOrg", fields: [orgId], references: [id])
   overrideRequests BudgetOverrideRequest[]
 
-  @@unique([budgetPeriodId, costCenterId])
+  @@unique([budgetPeriodId, costCenterId, categoryId])
   @@map("budget_allocations")
 }
 
@@ -1626,6 +1627,7 @@ enum DocumentType {
   GRN
   PAYMENT
   CONTRACT
+  BUDGET_ALLOCATION
 }
 
 enum NotificationChannel {

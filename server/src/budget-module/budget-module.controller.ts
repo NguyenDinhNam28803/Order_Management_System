@@ -165,7 +165,11 @@ export class BudgetModuleController {
 
   // Budget Allocations
   /**
-   * Tạo một khoản phân bổ ngân sách mới
+   * WORKFLOW QUY TRÌ DUYỆT NGÂN SÁCH:
+   * 1. DEPT_APPROVER (Trưởng phòng) tạo & gửi yêu cầu phân bổ ngân sách
+   * 2. FINANCE (Trưởng phòng Tài chính) duyệt (Level 1: 0 - 500M VND)
+   * 3. DIRECTOR (Giám đốc) duyệt nếu vượt 500M (Level 2: 500M - 1B VND)
+   * 4. CEO duyệt nếu vượt 1B (Level 3: > 1B VND)
    */
   @Post('allocations')
   @Roles(
@@ -176,9 +180,9 @@ export class BudgetModuleController {
     UserRole.DEPT_APPROVER,
   )
   @ApiOperation({
-    summary: 'Tạo một phân bổ ngân sách mới',
+    summary: 'Trưởng phòng tạo yêu cầu phân bổ ngân sách',
     description:
-      'Cấp ngân sách cho một trung tâm chi phí cụ thể trong một chu kỳ ngân sách nhất định. Dành cho vai trò Tài chính, Giám đốc hoặc Trưởng phòng.',
+      'Trưởng phòng tạo yêu cầu phân bổ ngân sách chi tiết. Sau khi hoàn thành, dùng endpoint submit để gửi duyệt tới phòng Tài chính.',
   })
   async createAllocation(
     @Body() dto: CreateBudgetAllocationDto,
@@ -196,7 +200,11 @@ export class BudgetModuleController {
 
   @Patch('allocations/:id/submit')
   @Roles(UserRole.DEPT_APPROVER)
-  @ApiOperation({ summary: 'Gửi ngân sách để duyệt' })
+  @ApiOperation({
+    summary: 'Trưởng phòng gửi duyệt ngân sách',
+    description:
+      'Trưởng phòng gửi yêu cầu phân bổ ngân sách chi tiết đến phòng Tài chính để duyệt. Sau khi duyệt, ngân sách sẽ được cấp phát chính thức.',
+  })
   async submitAllocation(
     @Param('id') id: string,
     @Request() req: { user: JwtPayload },
@@ -206,7 +214,11 @@ export class BudgetModuleController {
 
   @Patch('allocations/:id/approve')
   @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
-  @ApiOperation({ summary: 'Duyệt ngân sách' })
+  @ApiOperation({
+    summary: 'Duyệt yêu cầu phân bổ ngân sách',
+    description:
+      'Phòng Tài chính duyệt yêu cầu từ các phòng ban. Nếu vượt mức 500M, sẽ tự động escalate Giám đốc. Nếu vượt 1B, escalate CEO.',
+  })
   async approveAllocation(
     @Param('id') id: string,
     @Request() req: { user: JwtPayload },
@@ -216,7 +228,11 @@ export class BudgetModuleController {
 
   @Patch('allocations/:id/reject')
   @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
-  @ApiOperation({ summary: 'Từ chối ngân sách' })
+  @ApiOperation({
+    summary: 'Từ chối yêu cầu phân bổ ngân sách',
+    description:
+      'Duyệt viên từ chối yêu cầu với lý do cụ thể. Trưởng phòng có thể sửa lại và gửi lại sau đó.',
+  })
   async rejectAllocation(
     @Param('id') id: string,
     @Body() dto: RejectBudgetAllocationDto,
