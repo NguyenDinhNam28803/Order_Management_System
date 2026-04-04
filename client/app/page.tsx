@@ -8,7 +8,7 @@ import {
     Clock, CheckCircle, Package, AlertCircle, AlertTriangle, History, Bell, Send, Loader2,
     Search, ChevronDown, XCircle, RotateCcw, ArrowRight, ClipboardList, Edit3, Calendar
 } from "lucide-react";
-import { useProcurement, PR } from "./context/ProcurementContext";
+import { useProcurement, PR, Organization, QuoteRequest } from "./context/ProcurementContext";
 import { formatVND } from "./utils/formatUtils";
 
 export default function Dashboard() {
@@ -16,7 +16,7 @@ export default function Dashboard() {
     const availableBudget = (budgets?.allocated || 0) - (budgets?.committed || 0) - (budgets?.spent || 0);
 
     // Calculate Dynamic Quarterly Remaining Budget for the Department
-    const departmentId = currentUser?.deptId || (currentUser?.department as any)?.id;
+    const departmentId = currentUser?.deptId || (currentUser?.department as { id: string })?.id;
     const activeQuarterPeriod = (budgetPeriods || []).find(p => p.isActive && p.periodType === "QUARTER");
     const deptAllocation = activeQuarterPeriod && departmentId
         ? (budgetAllocations || []).find(a => a.budgetPeriodId === activeQuarterPeriod.id && a.deptId === departmentId)
@@ -75,8 +75,8 @@ export default function Dashboard() {
 
     const renderRequesterDashboard = () => {
         const personalPRs = myPrs || [];
-        const pendingPRsCount = personalPRs.filter((pr) => pr.status.includes("PENDING") || pr.status === "SUBMITTED").length;
-        const approvedPRsCount = personalPRs.filter((pr) => pr.status === "APPROVED").length;
+        const pendingPRsCount = personalPRs.filter((pr) => pr.status === 'PENDING_APPROVAL' || pr.status === 'SUBMITTED' || pr.status === 'UNDER_REVIEW').length;
+        const approvedPRsCount = personalPRs.filter((pr) => pr.status === 'APPROVED' || pr.status === 'PO_CREATED' || pr.status === 'COMPLETED').length;
         const [isSimDropdownOpen, setIsSimDropdownOpen] = React.useState(false);
 
         const notifications = [
@@ -150,7 +150,13 @@ export default function Dashboard() {
                 </div>
 
                 {/* HÀNG 2 — Action Required (Condition-based) */}
-                <ActionRequired items={quoteRequests.filter(q => q.status === 'COMPLETED')} onConvert={createPRFromQuoteRequest} />
+                <ActionRequired 
+                    items={(quoteRequests || []).filter(q => q.status === 'QUOTED')} 
+                    onConvert={async (id) => {
+                        const success = await createPRFromQuoteRequest(id);
+                        if (success) await refreshData();
+                    }} 
+                />
 
                 {/* HÀNG 3 — Split Dashboard */}
                 <div className="grid grid-cols-1 xl:grid-cols-10 gap-10">
@@ -197,9 +203,10 @@ export default function Dashboard() {
                                                              pr.status === "APPROVED" ? "bg-emerald-50 text-emerald-500 border-emerald-100" : 
                                                              pr.status === "REJECTED" ? "bg-rose-50 text-rose-500 border-rose-100" :
                                                              pr.status === "DRAFT" ? "bg-slate-100 text-slate-400 border-slate-200" :
+                                                             pr.status.includes("PENDING") || pr.status === "SUBMITTED" ? "bg-amber-50 text-amber-500 border-amber-100" :
                                                              "bg-blue-50 text-erp-blue border-blue-100"
                                                          }`}>
-                                                             {pr.status}
+                                                             {pr.status.replace(/_/g, " ")}
                                                          </span>
                                                      </td>
                                                      <td className="px-8 py-6 text-right">
@@ -247,7 +254,15 @@ export default function Dashboard() {
                                                  <span className="text-[9px] font-bold text-slate-400 truncate max-w-[120px]">{qr.title}</span>
                                              </div>
                                              {qr.status === "QUOTED" ? (
-                                                  <button onClick={() => createPRFromQuoteRequest(qr.id)} className="px-4 py-2 bg-erp-navy text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-erp-navy/10">CHUYỂN SANG PR</button>
+                                                  <button 
+                                                    onClick={async () => {
+                                                        const success = await createPRFromQuoteRequest(qr.id);
+                                                        if (success) await refreshData();
+                                                    }} 
+                                                    className="px-4 py-2 bg-erp-navy text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-erp-navy/10"
+                                                  >
+                                                    CHUYỂN SANG PR
+                                                  </button>
                                              ) : (
                                                   <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest px-4">Đang xử lý...</span>
                                              )}
@@ -288,7 +303,7 @@ export default function Dashboard() {
         );
     };
 
-    function MetricCard({ title, value, icon, color }: any) {
+    function MetricCard({ title, value, icon, color }: { title: string; value: string | number; icon: React.ReactNode; color: string }) {
         return (
             <div className={`erp-card p-8! border-none shadow-xl shadow-erp-navy/5 relative overflow-hidden group hover:translate-y-[-4px] transition-all duration-300`}>
                 <div className={`absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 rounded-full opacity-5 group-hover:opacity-10 transition-opacity ${color}`}></div>
@@ -303,7 +318,7 @@ export default function Dashboard() {
         );
     }
 
-    function ActionRequired({ items, onConvert }: any) {
+    function ActionRequired({ items, onConvert }: { items: QuoteRequest[]; onConvert: (id: string) => Promise<void> }) {
         if (items.length === 0) return null;
         return (
             <div className="bg-amber-50 rounded-[40px] p-10 border border-amber-100 mb-12 shadow-inner">
@@ -312,21 +327,42 @@ export default function Dashboard() {
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-800 leading-none">CẦN HÀNH ĐỘNG NGAY ({items.length})</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {items.map((qr: any) => (
-                        <div key={qr.id} className="bg-white p-6 rounded-[32px] border border-amber-200 flex items-center justify-between shadow-xl shadow-amber-900/5 hover:-translate-y-1 transition-all duration-300 group">
-                            <div className="flex items-center gap-4">
-                                <div className="p-4 bg-amber-50 text-amber-500 rounded-[20px] group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
-                                <div>
-                                    <h4 className="text-xs font-black text-erp-navy uppercase mb-1">{qr.qrNumber} ĐÃ CÓ BÁO GIÁ</h4>
-                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight opacity-70">Nhà cung cấp đã nộp giá. Chuyển sang PR để duyệt mua hàng.</p>
-                                </div>
-                            </div>
-                            <button onClick={() => onConvert(qr.id)} className="px-8 py-4 bg-erp-navy hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-[0.1em] rounded-2xl shadow-xl shadow-erp-navy/20 transition-all flex items-center gap-2">
-                                Chuyển sang PR <ArrowRight size={14} />
-                            </button>
-                        </div>
+                    {items.map((qr) => (
+                        <ActionItem key={qr.id} qr={qr} onConvert={onConvert} />
                     ))}
                 </div>
+            </div>
+        );
+    }
+
+    function ActionItem({ qr, onConvert }: { qr: QuoteRequest; onConvert: (id: string) => Promise<void> }) {
+        const [isConverting, setIsConverting] = React.useState(false);
+
+        const handleConvert = async () => {
+            setIsConverting(true);
+            try {
+                await onConvert(qr.id);
+            } finally {
+                setIsConverting(false);
+            }
+        };
+
+        return (
+            <div className="bg-white p-6 rounded-[32px] border border-amber-200 flex items-center justify-between shadow-xl shadow-amber-900/5 hover:-translate-y-1 transition-all duration-300 group">
+                <div className="flex items-center gap-4">
+                    <div className="p-4 bg-amber-50 text-amber-500 rounded-[20px] group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
+                    <div>
+                        <h4 className="text-xs font-black text-erp-navy uppercase mb-1">{qr.qrNumber} ĐÃ CÓ BÁO GIÁ</h4>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight opacity-70">Nhà cung cấp đã nộp giá. Chuyển sang PR để duyệt mua hàng.</p>
+                    </div>
+                </div>
+                <button 
+                    onClick={handleConvert} 
+                    disabled={isConverting}
+                    className="px-8 py-4 bg-erp-navy hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-[0.1em] rounded-2xl shadow-xl shadow-erp-navy/20 transition-all flex items-center gap-2 disabled:opacity-50"
+                >
+                    {isConverting ? <Loader2 className="animate-spin" size={14} /> : <>Chuyển sang PR <ArrowRight size={14} /></>}
+                </button>
             </div>
         );
     }
@@ -634,7 +670,7 @@ export default function Dashboard() {
                                             return (
                                                 <tr key={po.id} className="hover:bg-slate-50 transition-colors group">
                                                     <td className="font-bold text-erp-navy">{po.poNumber || po.id.substring(0, 8)}</td>
-                                                    <td className="font-semibold text-slate-600 truncate max-w-[120px]">{typeof po.vendor === 'string' ? po.vendor : (po.vendor as any)?.name || "Vendor"}</td>
+                                                    <td className="font-semibold text-slate-600 truncate max-w-[120px]">{typeof po.vendor === 'string' ? po.vendor : (po.vendor as Organization)?.name || "Vendor"}</td>
                                                     <td>
                                                         <div className="flex items-center gap-3">
                                                             <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -701,7 +737,7 @@ export default function Dashboard() {
                     </div>
 
                     <div className="erp-card !p-8 border-l-4 border-emerald-500 bg-white shadow-sm flex flex-col justify-between">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Ngân sách {typeof currentUser?.department === 'object' ? (currentUser.department as any)?.name : (currentUser?.department || 'Phòng ban')} còn lại</div>
+                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Ngân sách {typeof currentUser?.department === 'object' ? (currentUser.department as { name: string })?.name : (currentUser?.department || 'Phòng ban')} còn lại</div>
                         <div>
                             <div className="text-3xl font-black text-emerald-500 font-mono mb-2">{formatVND(quarterlyRemainingBudget)} ₫</div>
                             <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest pt-3 border-t border-slate-100">Trong {activeQuarterPeriod ? `Q${activeQuarterPeriod.periodNumber} / ${activeQuarterPeriod.fiscalYear}` : 'Tháng / Quý'}</div>
@@ -848,7 +884,7 @@ export default function Dashboard() {
                                             </td>
                                             <td className="text-center">
                                                 <span className="px-2.5 py-1 bg-white border border-slate-200 text-slate-500 rounded-lg font-bold text-[9px] uppercase">
-                                                    {(pr as any).type || "Opex"}
+                                                    {pr.type || "Opex"}
                                                 </span>
                                             </td>
                                             <td className="max-w-[200px] truncate font-medium text-slate-600">{pr.title}</td>
@@ -907,7 +943,7 @@ export default function Dashboard() {
                         {(prs || []).slice(0, 5).map(pr => (
                             <tr key={pr.id}>
                                 <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0, 8)}</td>
-                                <td className="font-semibold text-slate-500">{typeof pr.department === 'object' ? (pr.department as any)?.name : (pr.department || "N/A")}</td>
+                                <td className="font-semibold text-slate-500">{typeof pr.department === 'object' ? pr.department?.name : (pr.department || "N/A")}</td>
                                 <td className="font-mono text-right font-black text-erp-navy">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                 <td className="text-right text-slate-400"><button onClick={() => setSelectedPRDetails(pr)} className="p-2 hover:bg-slate-100 rounded-xl"><Eye size={16} /></button></td>
                             </tr>
@@ -997,9 +1033,9 @@ export default function Dashboard() {
                                 </div>
 
                                 <div className="pt-8 space-y-3">
-                                    {isApproverGroup && (selectedPRDetails as any).workflowId && (
+                                    {isApproverGroup && (selectedPRDetails as PR & { workflowId?: string }).workflowId && (
                                         <button
-                                            onClick={() => handleQuickApprove((selectedPRDetails as any).workflowId)}
+                                            onClick={() => handleQuickApprove((selectedPRDetails as PR & { workflowId: string }).workflowId)}
                                             disabled={isSubmitting}
                                             className="w-full h-14 bg-emerald-500 text-white rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-emerald-500/20 flex flex-col items-center justify-center hover:bg-emerald-600 transition-all"
                                         >

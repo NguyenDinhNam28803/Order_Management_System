@@ -34,7 +34,7 @@ export default function CreateQuoteRequestPage() {
         setItems(prev => prev.filter((_, i) => i !== idx));
     }, [items]);
 
-    const updateItem = useCallback((idx: number, field: keyof QuoteRequestItem, value: any) => {
+    const updateItem = useCallback((idx: number, field: keyof QuoteRequestItem, value: string | number) => {
         setItems(prev => prev.map((it, i) => i === idx ? { ...it, [field]: value } : it));
     }, []);
 
@@ -114,7 +114,7 @@ export default function CreateQuoteRequestPage() {
                                                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                                                 value={formData.requiredDate}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, requiredDate: e.target.value }))}
-                                                onClick={(e) => (e.currentTarget as any).showPicker?.()}
+                                                onClick={(e) => (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.()}
                                             />
                                         </div>
                                         <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300">

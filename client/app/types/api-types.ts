@@ -78,6 +78,26 @@ export enum UserRole {
     SYSTEM = "SYSTEM"
 }
 
+export enum BudgetAllocationStatus {
+    DRAFT = "DRAFT",
+    SUBMITTED = "SUBMITTED",
+    APPROVED = "APPROVED",
+    REJECTED = "REJECTED"
+}
+
+export enum BudgetOverrideStatus {
+    PENDING = "PENDING",
+    APPROVED = "APPROVED",
+    REJECTED = "REJECTED"
+}
+
+export enum BudgetPeriodType {
+    ANNUAL = "ANNUAL",
+    QUARTERLY = "QUARTERLY",
+    MONTHLY = "MONTHLY",
+    RESERVE = "RESERVE"
+}
+
 export enum PrStatus {
     DRAFT = "DRAFT",
     PENDING_APPROVAL = "PENDING_APPROVAL",
@@ -117,6 +137,19 @@ export enum QuotationStatus {
     EXPIRED = "EXPIRED"
 }
 
+export enum PrType {
+    CATALOG = "CATALOG",
+    NON_CATALOG = "NON_CATALOG"
+}
+
+export enum QuoteRequestStatus {
+    DRAFT = "DRAFT",
+    SUBMITTED = "SUBMITTED",
+    PROCESSING = "PROCESSING",
+    QUOTED = "QUOTED",
+    COMPLETED = "COMPLETED"
+}
+
 export enum PoStatus {
     DRAFT = "DRAFT",
     PENDING_APPROVAL = "PENDING_APPROVAL",
@@ -144,13 +177,6 @@ export enum GrnStatus {
     CONFIRMED = "CONFIRMED",
     POSTED = "POSTED",
     DISPUTED = "DISPUTED"
-}
-
-export enum BudgetAllocationStatus {
-    DRAFT = "DRAFT",
-    SUBMITTED = "SUBMITTED",
-    APPROVED = "APPROVED",
-    REJECTED = "REJECTED"
 }
 
 export enum InvoiceStatus {
@@ -197,6 +223,74 @@ export enum SupplierTier {
     CONDITIONAL = "CONDITIONAL",
     DISQUALIFIED = "DISQUALIFIED",
     PENDING = "PENDING"
+}
+
+export interface PRItem {
+    id: string;
+    productName: string;
+    qty: number;
+    unit: string;
+    estimatedPrice: number; 
+    description?: string;
+    lineItem?: number;
+    productDesc?: string;
+    sku?: string;
+    productId?: string;
+}
+
+export interface PR {
+    id: string;
+    prNumber?: string;
+    title: string;
+    description?: string;
+    justification?: string;
+    requiredDate?: string;
+    status: PrStatus | string;
+    priority: number;
+    currency?: CurrencyCode;
+    createdAt: string; 
+    requester: {
+        id: string;
+        fullName?: string;
+        name?: string;
+        role?: string;
+        email?: string;
+    };
+    department?: { name: string } | string;
+    deptId?: string;
+    costCenterId?: string; 
+    totalEstimate?: number;
+    items?: PRItem[];
+    type: PrType;
+    preferredSupplierId?: string;
+}
+
+export interface QuoteRequestItem {
+    id: string;
+    productName: string;
+    description: string;
+    qty: number;
+    unit: string; 
+    unitPrice?: number;
+    supplierName?: string;
+    supplierId?: string;
+}
+
+export interface QuoteRequest {
+    id: string;
+    qrNumber: string;
+    title: string;
+    description: string; 
+    status: QuoteRequestStatus;
+    createdAt: string;
+    items: QuoteRequestItem[];
+    supplierIds?: string[];
+    requiredDate?: string;
+    quote?: {
+        price: number;
+        supplier: string;
+        deliveryDate: string;
+    };
 }
 
 /**
@@ -261,60 +355,49 @@ export interface BudgetAllocation {
         id: string;
         fiscalYear: number;
         periodNumber: number;
+        periodType: BudgetPeriodType;
     };
+    status: BudgetAllocationStatus;
 }
 
-// --- ORGANIZATION DTOs ---
+export interface BudgetOverride {
+    id: string;
+    budgetAllocId: string;
+    prId: string;
+    requestedById: string;
+    overrideAmount: number;
+    reason: string;
+    status: BudgetOverrideStatus;
+    approvedById?: string;
+    approvedAt?: string;
+    rejectedReason?: string;
+    createdAt: string;
+    // Relations
+    budgetAlloc?: BudgetAllocation;
+    pr?: PR;
+    requestedBy?: User;
+}
 
 /**
- * Payload cho method POST /organizations (Tạo mới tổ chức)
+ * Thực thể Người dùng (User)
  */
-export type CreateOrganizationPayload = Omit<
-    Organization, 
-    'id' | 'createdAt' | 'updatedAt' | 'kycStatus' | 'trustScore' | 'isActive'
->;
+export interface User {
+    id: string;
+    email: string;
+    name?: string;
+    fullName?: string;
+    role: UserRole | string;
+    department?: string | { id: string; name: string };
+    deptId?: string;
+    orgId?: string;
+    jobTitle?: string;
+    employeeCode?: string;
+    isActive?: boolean;
+    avatarUrl?: string;
+    icon?: string;
+}
 
-/**
- * Payload cho method PATCH /organizations/:id (Cập nhật tổ chức)
- */
-export type UpdateOrganizationPayload = Partial<Omit<Organization, 'id' | 'createdAt' | 'updatedAt'>>;
-
-
-// --- COST CENTER DTOs ---
-
-/**
- * Payload cho method POST /cost-centers (Tạo trung tâm chi phí)
- */
-export type CreateCostCenterPayload = Omit<
-    CostCenter, 
-    'id' | 'createdAt' | 'budgetUsed' | 'isActive'
->;
-
-/**
- * Payload cho method PATCH /cost-centers/:id (Cập nhật trung tâm chi phí)
- */
-export type UpdateCostCenterPayload = Partial<
-    Omit<CostCenter, 'id' | 'orgId' | 'createdAt'>
->;
-
-// --- DEPARTMENT DTOs ---
-
-/**
- * Payload cho method POST /departments (Tạo mới phòng ban)
- */
-export type CreateDepartmentPayload = Omit<
-    Department, 
-    'id' | 'createdAt' | 'updatedAt' | 'budgetUsed' | 'isActive'
->;
-
-/**
- * Payload cho method PATCH /departments/:id (Cập nhật phòng ban)
- */
-export type UpdateDepartmentPayload = Partial<
-    Omit<Department, 'id' | 'orgId' | 'createdAt' | 'updatedAt'>
->;
-
-// --- AUTH DTOs ---
+// --- DTOs ---
 
 export interface LoginPayload {
     email: string;
@@ -323,15 +406,7 @@ export interface LoginPayload {
 
 export interface LoginResponse {
     accessToken: string;
-    user: {
-        id: string;
-        email: string;
-        role: string;
-        name?: string;
-        fullName?: string;
-        deptId?: string;
-        orgId?: string;
-    };
+    user: User;
 }
 
 export interface RegisterPayload extends Record<string, unknown> {
@@ -341,7 +416,8 @@ export interface RegisterPayload extends Record<string, unknown> {
     role?: string;
 }
 
-// --- PR DTOs ---
+export type CreateUserPayload = Omit<User, 'id' | 'isActive'> & { passwordHash?: string };
+export type UpdateUserPayload = Partial<Omit<User, 'id'>>;
 
 export interface CreatePrItemDto {
     productId?: string;
@@ -366,9 +442,7 @@ export interface CreatePrDto {
     items: CreatePrItemDto[];
 }
 
-export type UpdatePrDto = Partial<CreatePrDto>
-
-// --- RFQ DTOs ---
+export type UpdatePrDto = Partial<CreatePrDto>;
 
 export interface CreateRfqDto {
     prId: string;
@@ -387,11 +461,18 @@ export interface ConsolidateRfqDto {
     supplierIds: string[];
 }
 
-export interface AwardRfqDto {
-    quotationId: string;
+export interface CreateQuoteDto {
+    rfqId: string;
+    supplierId: string;
+    totalPrice: number;
+    leadTimeDays: number;
+    notes?: string;
+    items?: Array<{
+        prItemId: string;
+        unitPrice: number;
+        quantity: number;
+    }>;
 }
-
-// --- OTHER TRANSACTION DTOs ---
 
 export interface CreateGrnDto extends Record<string, unknown> {
     poId: string;
@@ -405,42 +486,36 @@ export interface CreateInvoiceDto extends Record<string, unknown> {
     vendor: string;
 }
 
-export interface CreateQuoteDto {
-    rfqId: string;
-    supplierId: string;
-    totalPrice: number;
-    leadTimeDays: number;
-    notes?: string;
-    items?: Array<{
-        prItemId: string;
-        unitPrice: number;
-        quantity: number;
-    }>;
-}
-// --- PRODUCT DTOs ---
+export type CreateOrganizationPayload = Omit<
+    Organization, 
+    'id' | 'createdAt' | 'updatedAt' | 'kycStatus' | 'trustScore' | 'isActive'
+>;
 
-/**
- * Thực thể Danh mục sản phẩm (Product Category)
- */
-export interface ProductCategory {
-    id: string;
-    orgId?: string;
-    code: string;
-    name: string;
-    description?: string;
-    isActive: boolean;
-    createdAt: string;
-    updatedAt: string;
-}
+export type UpdateOrganizationPayload = Partial<Omit<Organization, 'id' | 'createdAt' | 'updatedAt'>>;
+
+export type CreateCostCenterPayload = Omit<
+    CostCenter, 
+    'id' | 'createdAt' | 'budgetUsed' | 'isActive'
+>;
+
+export type UpdateCostCenterPayload = Partial<
+    Omit<CostCenter, 'id' | 'orgId' | 'createdAt'>
+>;
+
+export type CreateDepartmentPayload = Omit<
+    Department, 
+    'id' | 'createdAt' | 'updatedAt' | 'budgetUsed' | 'isActive'
+>;
+
+export type UpdateDepartmentPayload = Partial<
+    Omit<Department, 'id' | 'orgId' | 'createdAt' | 'updatedAt'>
+>;
 
 export enum ProductType {
     CATALOG = "CATALOG",
     NON_CATALOG = "NON_CATALOG"
 }
 
-/**
- * Thực thể Sản phẩm (Product)
- */
 export interface Product {
     id: string;
     orgId?: string;
@@ -452,13 +527,22 @@ export interface Product {
     unitPriceRef: number;
     currency: CurrencyCode;
     type: ProductType;
-    lastPriceAt?: string;
     isActive: boolean;
     attributes: Record<string, unknown>;
     createdAt: string;
     updatedAt: string;
-    // Relationships
     category?: ProductCategory;
+}
+
+export interface ProductCategory {
+    id: string;
+    orgId?: string;
+    code: string;
+    name: string;
+    description?: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export type CreateCategoryDto = Omit<ProductCategory, 'id' | 'createdAt' | 'updatedAt'>;
@@ -466,3 +550,36 @@ export type UpdateCategoryDto = Partial<CreateCategoryDto>;
 
 export type CreateProductDtoShort = Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'category'>;
 export type UpdateProductDtoShort = Partial<CreateProductDtoShort>;
+
+export interface BudgetPeriod {
+    id: string;
+    orgId: string;
+    fiscalYear: number;
+    periodType: string;
+    periodNumber: number;
+    startDate: string;
+    endDate: string;
+    isActive: boolean;
+}
+
+export type CreateBudgetPeriodPayload = Omit<BudgetPeriod, 'id' | 'isActive'>;
+export type UpdateBudgetPeriodPayload = Partial<Omit<BudgetPeriod, 'id'>>;
+
+export type CreateBudgetAllocationPayload = Omit<
+    BudgetAllocation, 
+    'id' | 'createdAt' | 'committedAmount' | 'spentAmount'
+> & { status?: BudgetAllocationStatus };
+
+export type UpdateBudgetAllocationPayload = Partial<
+    Omit<BudgetAllocation, 'id' | 'orgId' | 'createdAt'>
+>;
+
+export interface CreatePoDto {
+    vendor?: string;
+    total?: number;
+    items?: Array<{
+        description: string;
+        qty: number;
+        estimatedPrice: number;
+    }>;
+}

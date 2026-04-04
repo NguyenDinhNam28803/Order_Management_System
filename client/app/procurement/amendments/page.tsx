@@ -138,7 +138,7 @@ export default function AmendmentsPage() {
                 ) : (
                     <AmendmentForm 
                         onCancel={() => setView("list")} 
-                        onSave={(data: any) => { setAmendments([...amendments, data]); setView("list"); }}
+                        onSave={(data: AmendmentMock) => { setAmendments([...amendments, data]); setView("list"); }}
                     />
                 )}
             </div>
@@ -146,10 +146,10 @@ export default function AmendmentsPage() {
     );
 }
 
-function AmendmentForm({ onCancel, onSave }: any) {
+function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (data: AmendmentMock) => void }) {
     const [formData, setFormData] = useState({
         poNumber: "PO-2026-001",
-        changeType: "QUANTITY",
+        changeType: "QUANTITY" as AmendmentMock["changeType"],
         originalValue: "100 units",
         newValue: "",
         reason: ""
@@ -254,7 +254,7 @@ function AmendmentForm({ onCancel, onSave }: any) {
     );
 }
 
-function AmendmentHistoryTimeline({ poNumber, history, onClose, getBadgeColor }: any) {
+function AmendmentHistoryTimeline({ poNumber, history, onClose, getBadgeColor }: { poNumber: string, history: AmendmentMock[], onClose: () => void, getBadgeColor: (type: string) => string }) {
     return (
         <div className="fixed inset-0 z-50 flex justify-end">
             <div className="absolute inset-0 bg-erp-navy/40 backdrop-blur-sm animate-in fade-in" onClick={onClose}></div>
@@ -273,7 +273,7 @@ function AmendmentHistoryTimeline({ poNumber, history, onClose, getBadgeColor }:
                      {history.length > 0 ? (
                          <div className="relative space-y-12">
                              <div className="absolute left-[19px] top-4 bottom-4 w-1 bg-slate-100 rounded-full" />
-                             {history.map((am: any, idx: number) => (
+                             {history.map((am, idx: number) => (
                                  <div key={am.id} className="relative flex items-start gap-8 z-10">
                                      <div className="w-10 h-10 rounded-2xl bg-white border-4 border-slate-50 shadow-xl flex items-center justify-center text-erp-navy shrink-0 font-black text-xs">
                                          {am.amendmentNumber}

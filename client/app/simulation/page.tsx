@@ -53,7 +53,16 @@ interface EntityState {
     id: string;
     status: string;
     total: number;
-    [key: string]: any;
+    supplier?: string;
+    title?: string;
+}
+
+interface Quotation {
+    id: string;
+    supplier: string;
+    price: number;
+    aiScore: number;
+    aiRec: string;
 }
 
 export default function SimulationPage() {
@@ -66,7 +75,7 @@ export default function SimulationPage() {
     const [po, setPo] = useState<EntityState | null>(null);
     const [grn, setGrn] = useState<EntityState | null>(null);
     const [invoice, setInvoice] = useState<EntityState | null>(null);
-    const [quotations, setQuotations] = useState<any[]>([]);
+    const [quotations, setQuotations] = useState<Quotation[]>([]);
 
     const steps = activeWorkflow === "CATALOG" ? W1_STEPS : W2_STEPS;
     const currentStepData = steps[currentStep - 1];

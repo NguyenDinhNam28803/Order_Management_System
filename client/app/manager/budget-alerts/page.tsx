@@ -1,30 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShieldAlert, CheckCircle, ArrowRight, DollarSign, List, Calculator, AlertTriangle, AlertCircle } from "lucide-react";
+import { ShieldAlert, CheckCircle, ArrowRight, DollarSign, List, Calculator, AlertTriangle, AlertCircle, Loader2 } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
+import { BudgetOverrideStatus } from "../../types/api-types";
 
 export default function BudgetAlertsPage() {
-    // Mocking alerts
-    const alerts = [
-        { 
-            id: "PR-2026-X702", 
-            type: "PR", 
-            amount: 2500000000, 
-            remaining: 500000000, 
-            severity: "CRITICAL",
-            pct: 83
-        },
-        { 
-            id: "PO-2026-W004", 
-            type: "PO", 
-            amount: 180000000, 
-            remaining: 10000000, 
-            severity: "EXCEEDED",
-            pct: 105
-        }
-    ];
+    const { budgetOverrides, approveOverride, rejectOverride } = useProcurement();
+    const [loadingId, setLoadingId] = useState<string | null>(null);
 
     const getSeverityStyles = (severity: string) => {
         switch(severity) {
@@ -44,62 +28,103 @@ export default function BudgetAlertsPage() {
         }
     };
 
+    const handleApprove = async (id: string) => {
+        setLoadingId(id);
+        await approveOverride(id);
+        setLoadingId(null);
+    };
+
+    const handleReject = async (id: string) => {
+        const reason = prompt("Lý do từ chối vượt định mức:");
+        if (reason) {
+            setLoadingId(id);
+            await rejectOverride(id, reason);
+            setLoadingId(null);
+        }
+    };
+
+    // Filter only pending overrides
+    const pendingOverrides = budgetOverrides.filter(o => o.status === BudgetOverrideStatus.PENDING);
+
     return (
-        <main className="animate-in fade-in duration-500 pb-20">
+        <main className="animate-in fade-in duration-500 pb-20 p-8">
             <header className="mb-10">
                 <h1 className="text-2xl font-black tracking-tight text-erp-navy mb-2 uppercase">CẢNH BÁO VƯỢT NGÂN SÁCH</h1>
                 <p className="text-slate-500 font-medium italic">Danh sách các yêu cầu có nguy cơ hoặc đã vượt ngưỡng ngân sách được duyệt</p>
             </header>
 
-            {alerts.length > 0 ? (
+            {pendingOverrides.length > 0 ? (
                 <div className="grid gap-6">
-                    {alerts.map((alert) => (
-                        <div key={alert.id} className={`p-8 rounded-[2.5rem] border list-item-card transition-all flex flex-col md:flex-row items-center justify-between gap-8 ${getSeverityStyles(alert.severity)}`}>
-                            <div className="flex items-center gap-6">
-                                <div className={`h-16 w-16 rounded-2xl flex items-center justify-center border ${
-                                    alert.severity === 'EXCEEDED' ? 'bg-white/20 border-white/30' : 'bg-white border-slate-100'
-                                }`}>
-                                    {alert.severity === 'EXCEEDED' ? <ShieldAlert size={32} /> : <AlertTriangle size={32} />}
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-3 mb-1">
-                                        <h3 className={`text-xl font-black tracking-tight ${alert.severity === 'EXCEEDED' ? 'text-white' : 'text-erp-navy'}`}>{alert.id}</h3>
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${
-                                            alert.severity === 'EXCEEDED' ? 'bg-white/20' : 'bg-slate-100 text-slate-500 font-bold'
-                                        }`}>
-                                            {alert.type}
-                                        </span>
-                                    </div>
-                                    <div className={`flex items-center gap-4 text-xs font-bold ${alert.severity === 'EXCEEDED' ? 'text-white/70' : 'text-slate-400'}`}>
-                                        <div className="flex items-center gap-1"><DollarSign size={14} /> {formatVND(alert.amount)}</div>
-                                        <div className="flex items-center gap-1"><Calculator size={14} /> Còn lại: {formatVND(alert.remaining)}</div>
-                                    </div>
-                                </div>
-                            </div>
+                    {pendingOverrides.map((alert) => {
+                        // Estimate severity based on current vs override
+                        const severity = alert.overrideAmount > 100000000 ? "EXCEEDED" : "CRITICAL";
+                        const pct = 100 + Math.floor((Number(alert.overrideAmount) / 1000000) * 0.1); // Simplified mock pct
 
-                            <div className="flex flex-col items-end gap-2 min-w-[200px]">
-                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${getSeverityBadgeStyles(alert.severity)} text-center w-full`}>
-                                    {alert.severity} • {alert.pct}%
-                                </span>
-                                <div className="w-full h-2 bg-black/10 rounded-full overflow-hidden">
-                                    <div className={`h-full rounded-full ${alert.severity === 'EXCEEDED' ? 'bg-white' : 'bg-current'}`} style={{width: `${Math.min(alert.pct, 100)}%`}} />
+                        return (
+                            <div key={alert.id} className={`p-8 rounded-[2.5rem] border list-item-card transition-all flex flex-col md:flex-row items-center justify-between gap-8 ${getSeverityStyles(severity)}`}>
+                                <div className="flex items-center gap-6">
+                                    <div className={`h-16 w-16 rounded-2xl flex items-center justify-center border ${
+                                        severity === 'EXCEEDED' ? 'bg-white/20 border-white/30' : 'bg-white border-slate-100'
+                                    }`}>
+                                        {severity === 'EXCEEDED' ? <ShieldAlert size={32} /> : <AlertTriangle size={32} />}
+                                    </div>
+                                    <div className="flex-1 min-w-[300px]">
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <h3 className={`text-xl font-black tracking-tight ${severity === 'EXCEEDED' ? 'text-white' : 'text-erp-navy'}`}>
+                                                {alert.pr?.prNumber || "PR-PENDING"}
+                                            </h3>
+                                            <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${
+                                                severity === 'EXCEEDED' ? 'bg-white/20' : 'bg-slate-100 text-slate-500 font-bold'
+                                            }`}>
+                                                OVERRIDE REQUEST
+                                            </span>
+                                        </div>
+                                        <p className={`text-sm font-bold mb-2 ${severity === 'EXCEEDED' ? 'text-white/90' : 'text-slate-600'}`}>
+                                            Lý do: {alert.reason}
+                                        </p>
+                                        <div className={`flex items-center gap-4 text-xs font-bold ${severity === 'EXCEEDED' ? 'text-white/70' : 'text-slate-400'}`}>
+                                            <div className="flex items-center gap-1">
+                                                <DollarSign size={14} /> Số tiền vượt: {formatVND(Number(alert.overrideAmount))}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Calculator size={14} /> Người yêu cầu: {alert.requestedBy?.fullName || "N/A"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col items-end gap-2 min-w-[200px]">
+                                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${getSeverityBadgeStyles(severity)} text-center w-full`}>
+                                        {severity} • ~{pct}%
+                                    </span>
+                                    <div className="w-full h-2 bg-black/10 rounded-full overflow-hidden">
+                                        <div className={`h-full rounded-full ${severity === 'EXCEEDED' ? 'bg-white' : 'bg-current'}`} style={{width: `${Math.min(pct, 100)}%`}} />
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button 
+                                        onClick={() => handleApprove(alert.id)}
+                                        disabled={loadingId === alert.id}
+                                        className={`px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transform hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${
+                                            severity === 'EXCEEDED' ? 'bg-white text-red-600' : 'bg-erp-navy text-white'
+                                        }`}
+                                    >
+                                        {loadingId === alert.id ? <Loader2 size={16} className="animate-spin" /> : "PHÊ DUYỆT VƯỢT MỨC"}
+                                    </button>
+                                    <button 
+                                        onClick={() => handleReject(alert.id)}
+                                        disabled={loadingId === alert.id}
+                                        className={`px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transform hover:scale-[1.02] active:scale-[0.98] transition-all border-2 flex items-center justify-center gap-2 ${
+                                            severity === 'EXCEEDED' ? 'border-white/40 text-white' : 'border-slate-200 text-slate-400'
+                                        }`}
+                                    >
+                                        TỪ CHỐI
+                                    </button>
                                 </div>
                             </div>
-
-                            <div className="flex gap-3">
-                                <button className={`px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transform hover:scale-[1.02] active:scale-[0.98] transition-all ${
-                                    alert.severity === 'EXCEEDED' ? 'bg-white text-red-600' : 'bg-erp-navy text-white'
-                                }`}>
-                                    Xem chi tiết
-                                </button>
-                                <button className={`px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transform hover:scale-[1.02] active:scale-[0.98] transition-all border-2 ${
-                                    alert.severity === 'EXCEEDED' ? 'border-white/40 text-white' : 'border-slate-200 text-slate-400'
-                                }`}>
-                                    Yêu cầu bổ sung ngân sách
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             ) : (
                 <div className="bg-white rounded-[3rem] p-32 border-2 border-dashed border-slate-100 flex flex-col items-center justify-center opacity-40">
@@ -107,7 +132,7 @@ export default function BudgetAlertsPage() {
                         <CheckCircle size={64} />
                     </div>
                     <h3 className="text-2xl font-black text-erp-navy mb-4 tracking-tight uppercase">Hệ thống an toàn</h3>
-                    <p className="font-bold text-slate-400 tracking-widest uppercase text-xs">Ngân sách đang trong ngưỡng an toàn</p>
+                    <p className="font-bold text-slate-400 tracking-widest uppercase text-xs">Không có yêu cầu vượt định mức nào cần xử lý</p>
                 </div>
             )}
         </main>

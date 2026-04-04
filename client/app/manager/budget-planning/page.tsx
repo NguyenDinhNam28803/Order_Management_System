@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Plus, Send, Save, X, Calculator, Building, PieChart, Layers, DollarSign, Calendar, Loader2 } from "lucide-react";
-import { useProcurement } from "../../context/ProcurementContext";
+import { useProcurement, BudgetAllocationStatus, BudgetPeriod } from "../../context/ProcurementContext";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
 
 export default function BudgetPlanningPage() {
@@ -22,7 +22,7 @@ export default function BudgetPlanningPage() {
 
     // Initial state from real context
     const myAllocations = useMemo(() => {
-        return budgetAllocations.filter(a => a.deptId === currentUser?.deptId || a.createdById === currentUser?.id);
+        return budgetAllocations.filter(a => a.deptId === currentUser?.deptId);
     }, [budgetAllocations, currentUser]);
 
     const [formData, setFormData] = useState({
@@ -76,7 +76,9 @@ export default function BudgetPlanningPage() {
             const success = await addBudgetAllocation({
                 ...formData,
                 allocatedAmount: amount,
-                deptId: currentUser?.deptId
+                deptId: currentUser?.deptId,
+                orgId: currentUser?.orgId || "",
+                status: type === "SUBMIT" ? BudgetAllocationStatus.SUBMITTED : BudgetAllocationStatus.DRAFT
             });
 
             if (success) {
@@ -147,6 +149,7 @@ export default function BudgetPlanningPage() {
                             <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Số tiền</th>
                             <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Trạng thái</th>
                             <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Ngày tạo</th>
+                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -181,6 +184,18 @@ export default function BudgetPlanningPage() {
                                     </td>
                                     <td className="px-6 py-5 text-[11px] font-bold text-slate-400 text-center">
                                         {alloc.createdAt ? new Date(alloc.createdAt).toLocaleDateString("vi-VN") : "--"}
+                                    </td>
+                                    <td className="px-6 py-5 text-center">
+                                        <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {alloc.status === 'DRAFT' && (
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); submitAllocation(alloc.id); }}
+                                                    className="p-3 bg-erp-navy text-white rounded-xl hover:scale-105 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest"
+                                                >
+                                                    GỬI DUYỆT
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             );

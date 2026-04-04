@@ -9,7 +9,7 @@ import {
     Trash, PlusCircle, MinusCircle, Clock
 } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
-import { useProcurement, PoStatus, Organization, PR, RFQ, PO } from "../../context/ProcurementContext";
+import { useProcurement, PoStatus, Organization, PR, RFQ, PO, POItem } from "../../context/ProcurementContext";
 
 // --- Mock Data ---
 interface POMockData extends PO {
@@ -70,9 +70,9 @@ export default function POManagementPage() {
                 ...p, 
                 vendorId: p.vendor,
                 vendorName: org?.name || p.vendor || "Unknown Vendor",
-                prId: (p as any).prId || "PR-SIM",
-                rfqId: (p as any).rfqId || "RFQ-SIM",
-                escrowLocked: (p as any).escrowLocked || false,
+                prId: (p as POMockData).prId || "PR-SIM",
+                rfqId: (p as POMockData).rfqId || "RFQ-SIM",
+                escrowLocked: (p as POMockData).escrowLocked || false,
                 items: p.items || []
             } as POMockData;
         });
@@ -241,7 +241,11 @@ export default function POManagementPage() {
 }
 
 // --- PO Form Component ---
-function POForm({ onCancel, notify, prs, rfqs, organizations }: any) {
+function POForm({ onCancel, notify, prs, rfqs, organizations }: { 
+    onCancel: () => void, 
+    notify: (m: string, t?: 'success' | 'error' | 'info' | 'warning', r?: string) => void, 
+    prs: PR[], rfqs: RFQ[], organizations: Organization[] 
+}) {
     const [formData, setFormData] = useState({
         prId: "",
         rfqId: "",
@@ -251,8 +255,8 @@ function POForm({ onCancel, notify, prs, rfqs, organizations }: any) {
         items: [{ id: "new-1", productName: "", qty: 1, unitPrice: 0, total: 0 }]
     });
 
-    const selectedVendor = organizations.find((o: any) => o.id === formData.vendorId);
-    const filteredRFQs = rfqs.filter((r: any) => r.prId === formData.prId);
+    const selectedVendor = organizations.find((o: Organization) => o.id === formData.vendorId);
+    const filteredRFQs = rfqs.filter((r: RFQ) => r.prId === formData.prId);
 
     const handleAddItem = () => {
         setFormData({
@@ -267,7 +271,7 @@ function POForm({ onCancel, notify, prs, rfqs, organizations }: any) {
         setFormData({ ...formData, items: newItems });
     };
 
-    const handleUpdateItem = (idx: number, field: string, value: any) => {
+    const handleUpdateItem = (idx: number, field: string, value: string | number) => {
         const newItems = [...formData.items];
         const item = { ...newItems[idx], [field]: value };
         if (field === "qty" || field === "unitPrice") {
@@ -323,7 +327,7 @@ function POForm({ onCancel, notify, prs, rfqs, organizations }: any) {
                                 <option value="">-- Chọn PR --</option>
                                 <option value="PR-2026-003">PR-2026-003 (Thiết bị IT định kỳ)</option>
                                 <option value="PR-2026-004">PR-2026-004 (Vật tư văn phòng)</option>
-                                {prs.filter((p: any) => p.status === 'APPROVED').map((p: any) => (
+                                {prs.filter((p: PR) => p.status === 'APPROVED').map((p: PR) => (
                                     <option key={p.id} value={p.prNumber}>{p.prNumber} - {p.title}</option>
                                 ))}
                             </select>
@@ -337,8 +341,8 @@ function POForm({ onCancel, notify, prs, rfqs, organizations }: any) {
                                 onChange={(e) => setFormData({ ...formData, rfqId: e.target.value })}
                             >
                                 <option value="">-- Chọn RFQ --</option>
-                                {filteredRFQs.map((r: any) => (
-                                    <option key={r.id} value={r.rfqNumber || r.qrNumber}>{r.rfqNumber || r.qrNumber} ({r.title})</option>
+                                {filteredRFQs.map((r: RFQ) => (
+                                    <option key={r.id} value={r.rfqNumber}>{r.rfqNumber} ({r.title})</option>
                                 ))}
                             </select>
                         </div>
@@ -353,7 +357,7 @@ function POForm({ onCancel, notify, prs, rfqs, organizations }: any) {
                                 <option value="v-1">Hanoi Hardware</option>
                                 <option value="6c7f4a14-9238-419c-ba0f-fa8da8eb0253">ABC Supplier</option>
                                 <option value="v-3">Saigon Tech</option>
-                                {organizations.filter((o: any) => o.companyType === 'SUPPLIER').map((o: Organization) => (
+                                {organizations.filter((o: Organization) => o.companyType === 'SUPPLIER').map((o: Organization) => (
                                     <option key={o.id} value={o.id}>{o.name}</option>
                                 ))}
                             </select>
@@ -540,11 +544,11 @@ function PODetailDrawer({ po, onClose }: { po: POMockData, onClose: () => void }
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
-                                    {po.items.map((item: any) => (
+                                    {po.items.map((item: POItem) => (
                                         <tr key={item.id} className="hover:bg-slate-50 transition-colors">
                                             <td className="px-5 py-4 font-bold text-erp-navy">{item.description}</td>
                                             <td className="px-5 py-4 text-center font-black text-slate-400">{item.qty}</td>
-                                            <td className="px-5 py-4 text-right font-black text-slate-700">{item.estimatedPrice.toLocaleString()} ₫</td>
+                                            <td className="px-5 py-4 text-right font-black text-slate-700">{(item as any).estimatedPrice?.toLocaleString() || 0} ₫</td>
                                         </tr>
                                     ))}
                                 </tbody>

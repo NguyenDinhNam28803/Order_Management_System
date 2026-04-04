@@ -113,29 +113,29 @@ export default function SupplierDashboard() {
         status: isCatalog ? "CatalogConfirmation" : (cr.status === "SENT" ? "Pending" : (cr.status === "QUOTATION_RECEIVED" ? "Quoted" : "Pending")),
         createdAt: cr.createdAt ? new Date(cr.createdAt).toLocaleDateString() : "Vừa xong",
         type: cr.type,
-        items: cr.items?.map((item: any) => ({
+        items: cr.items?.map((item) => ({
           id: item.id || "ITM-" + Math.random().toString(36).substring(7),
-          name: item.productName || item.sku || "Sản phẩm",
-          quantity: item.qty || item.quantity || 1
+          name: item.productName || item.productDesc || "Sản phẩm",
+          quantity: item.qty || 1
         })) || []
-      } as any;
+      } as RFQ;
     });
 
     // 2. Get QuoteRequests from context
-    const relevantContextQRs = (contextQRs || []).filter((qr: any) => 
+    const relevantContextQRs = (contextQRs || []).filter((qr) => 
       qr.supplierIds?.includes(currentUser?.orgId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253")
-    ).map((qr: any) => {
+    ).map((qr) => {
       return {
         rfqId: qr.qrNumber,
         projectName: qr.title || "Yêu cầu báo giá nhanh",
         status: qr.status === "PROCESSING" ? "Pending" : (qr.status === "COMPLETED" ? "Quoted" : "Pending"),
         createdAt: qr.createdAt ? new Date(qr.createdAt).toLocaleDateString() : "Vừa xong",
-        items: qr.items?.map((item: any) => ({
+        items: qr.items?.map((item) => ({
           id: item.id || "ITM-" + Math.random().toString(36).substring(7),
-          name: item.productName || item.sku || "Sản phẩm",
+          name: item.productName || "Sản phẩm",
           quantity: item.qty || 1
         })) || []
-      } as any;
+      } as RFQ;
     });
 
     const combined = [...relevantContextQRs, ...relevantContextRfqs, ...localRfqs];

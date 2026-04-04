@@ -8,7 +8,7 @@ import Link from "next/link";
 import { ApprovalWorkflow } from "../context/ProcurementContext";
 
 export default function PRPage() {
-    const { prs, myPrs, approvePR, currentUser, actionApproval, costCenters, approvals } = useProcurement();
+    const { prs, myPrs, approvePR, currentUser, actionApproval, costCenters, approvals, submitPR } = useProcurement();
     const [activeTab, setActiveTab] = React.useState("Tất cả");
 
     const formatDate = (ds?: string) => {
@@ -171,7 +171,7 @@ export default function PRPage() {
                             <>
                                 {row.status === 'DRAFT' && (
                                     <button 
-                                        onClick={() => approvePR(row.id)}
+                                        onClick={() => submitPR(row.id)}
                                         className="inline-flex items-center gap-2 bg-erp-navy text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-erp-navy/20 active:scale-95 whitespace-nowrap"
                                     >
                                         <Send size={14} /> Gửi duyệt

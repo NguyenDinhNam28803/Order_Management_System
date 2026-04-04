@@ -52,7 +52,7 @@ export default function DeliveryTrackingPage() {
         return stages.findIndex(s => s.key === status);
     };
 
-    const handleUpdateTracking = (data: any) => {
+    const handleUpdateTracking = (data: Partial<DeliveryMock>) => {
         // Mock update logic
         setDeliveries(prev => prev.map(d => d.id === editingDelivery?.id ? { ...d, ...data } : d));
         setEditingDelivery(null);
@@ -254,7 +254,7 @@ export default function DeliveryTrackingPage() {
     );
 }
 
-function TimelineStep({ label, time, active, done, icon, details }: any) {
+function TimelineStep({ label, time, active, done, icon, details }: { label: string, time: string, active: boolean, done: boolean, icon: React.ReactNode, details?: string }) {
     return (
         <div className="relative flex items-start gap-8 z-10 group">
             <div className={`w-10 h-10 rounded-2xl border-4 border-white shadow-xl flex items-center justify-center transition-all duration-500 shrink-0 ${
@@ -273,7 +273,15 @@ function TimelineStep({ label, time, active, done, icon, details }: any) {
     );
 }
 
-function UpdateTrackingModal({ delivery, onClose, onSave }: any) {
+interface TrackingFormData {
+    trackingNumber: string;
+    carrier: string;
+    shippedAt: string;
+    estimatedArrival: string;
+    note: string;
+}
+
+function UpdateTrackingModal({ delivery, onClose, onSave }: { delivery: DeliveryMock, onClose: () => void, onSave: (data: TrackingFormData) => void }) {
     const [formData, setFormData] = useState({
         trackingNumber: delivery.trackingNumber,
         carrier: delivery.carrier,
@@ -340,7 +348,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: any) {
                                     className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                                     value={formData.shippedAt}
                                     onChange={(e) => setFormData({ ...formData, shippedAt: e.target.value })}
-                                    onClick={(e) => (e.currentTarget as any).showPicker?.()}
+                                    onClick={(e) => (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.()}
                                 />
                             </div>
                         </div>
@@ -361,7 +369,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: any) {
                                     className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                                     value={formData.estimatedArrival}
                                     onChange={(e) => setFormData({ ...formData, estimatedArrival: e.target.value })}
-                                    onClick={(e) => (e.currentTarget as any).showPicker?.()}
+                                    onClick={(e) => (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.()}
                                 />
                             </div>
                         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PR, useProcurement, QuoteRequestStatus } from "../context/ProcurementContext";
+import { PR, useProcurement, QuoteRequestStatus, QuoteRequest, Organization, PO } from "../context/ProcurementContext";
 import DashboardHeader from "../components/DashboardHeader";
 import { 
     Filter, ArrowRight, 
@@ -258,7 +258,7 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
     );
 }
 
-function TabButton({ active, onClick, label, count }: any) {
+function TabButton({ active, onClick, label, count }: { active: boolean, onClick: () => void, label: string, count?: number }) {
     return (
         <button 
             onClick={onClick}
@@ -271,19 +271,21 @@ function TabButton({ active, onClick, label, count }: any) {
     );
 }
 
-function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: any) {
+function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: { quoteRequests: QuoteRequest[], suppliers: Organization[], onUpdate: (id: string, data: Partial<QuoteRequest>) => Promise<boolean>, notify: (m: string, t?: 'success' | 'error' | 'info' | 'warning') => void }) {
     const [processingId, setProcessingId] = useState<string | null>(null);
-    const [editData, setEditData] = useState<any>(null);
+    const [editData, setEditData] = useState<QuoteRequest | null>(null);
 
-    const handleStartProcessing = (qr: any) => onUpdate(qr.id, { status: 'PROCESSING' });
-    const handleOpenEdit = (qr: any) => { setProcessingId(qr.id); setEditData(JSON.parse(JSON.stringify(qr))); };
-    const handleUpdateItem = (idx: number, field: string, value: any) => {
-        const ni = [...editData.items]; ni[idx] = { ...ni[idx], [field]: value };
+    const handleStartProcessing = (qr: QuoteRequest) => onUpdate(qr.id, { status: QuoteRequestStatus.PROCESSING });
+    const handleOpenEdit = (qr: QuoteRequest) => { setProcessingId(qr.id); setEditData(JSON.parse(JSON.stringify(qr))); };
+    const handleUpdateItem = (idx: number, field: string, value: string | number) => {
+        if (!editData) return;
+        const ni = [...editData.items]; ni[idx] = { ...ni[idx], [field]: value } as any;
         setEditData({ ...editData, items: ni });
     };
 
     const handleComplete = async () => {
-        await onUpdate(editData.id, { status: 'COMPLETED', items: editData.items });
+        if (!editData) return;
+        await onUpdate(editData.id, { status: QuoteRequestStatus.COMPLETED, items: editData.items });
         setProcessingId(null);
         notify("Báo giá hoàn tất", "success");
     };
@@ -292,7 +294,7 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
         <div className="p-6">
             {!processingId ? (
                 <div className="space-y-4">
-                    {quoteRequests.map((qr: any) => (
+                    {quoteRequests.map((qr) => (
                         <div key={qr.id} className="bg-white border border-slate-100 rounded-2xl p-6 flex justify-between items-center shadow-sm">
                             <div className="flex gap-4 items-center">
                                 <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center font-black text-slate-400 text-xs">{qr.qrNumber.split('-').pop()}</div>
@@ -310,8 +312,8 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
                 </div>
             ) : (
                 <div className="p-6 bg-slate-50 rounded-2xl">
-                    <h3 className="font-black text-erp-navy uppercase mb-6">NHẬP GIÁ: {editData.qrNumber}</h3>
-                    {editData.items.map((item: any, idx: number) => (
+                    <h3 className="font-black text-erp-navy uppercase mb-6">NHẬP GIÁ: {editData?.qrNumber}</h3>
+                    {editData?.items.map((item, idx: number) => (
                         <div key={idx} className="bg-white p-4 rounded-xl border border-slate-100 mb-4 grid grid-cols-2 gap-4">
                             <div><label className="text-[9px] font-black uppercase text-slate-400 block mb-1">Mặt hàng</label><div className="text-xs font-bold">{item.productName}</div></div>
                             <div>
@@ -319,7 +321,7 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
                                 <input type="number" className="erp-input w-full h-10 text-xs" onChange={(e) => handleUpdateItem(idx, 'unitPrice', Number(e.target.value))} />
                                 <select className="erp-input w-full h-10 text-xs mt-2" onChange={(e) => handleUpdateItem(idx, 'supplierName', e.target.value)}>
                                     <option value="">NCC</option>
-                                    {suppliers.map((s: any) => <option key={s.id} value={s.name}>{s.name}</option>)}
+                                    {suppliers.map((s) => <option key={s.id} value={s.name}>{s.name}</option>)}
                                 </select>
                             </div>
                         </div>
@@ -331,10 +333,10 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
     );
 }
 
-function POManagement({ pos }: any) {
+function POManagement({ pos }: { pos: PO[] | null }) {
     return (
         <div className="p-8 space-y-4">
-            {pos.map((po: any) => (
+            {(pos || []).map((po) => (
                 <div key={po.id} className="bg-white border border-slate-100 rounded-3xl p-6 flex justify-between items-center group">
                     <div className="flex gap-4 items-center">
                         <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center font-black text-slate-400 text-lg group-hover:bg-erp-navy group-hover:text-white transition-all">{po.poNumber.split('-').pop()}</div>
