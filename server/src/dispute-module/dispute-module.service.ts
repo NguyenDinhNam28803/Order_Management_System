@@ -4,7 +4,7 @@ import { UpdateDisputeModuleDto } from './dto/update-dispute-module.dto';
 
 @Injectable()
 export class DisputeModuleService {
-  create(createDisputeModuleDto: CreateDisputeModuleDto) {
+  create(_createDisputeModuleDto: CreateDisputeModuleDto) {
     return 'This action adds a new disputeModule';
   }
 
@@ -16,7 +16,7 @@ export class DisputeModuleService {
     return `This action returns a #${id} disputeModule`;
   }
 
-  update(id: number, updateDisputeModuleDto: UpdateDisputeModuleDto) {
+  update(id: number, _updateDisputeModuleDto: UpdateDisputeModuleDto) {
     return `This action updates a #${id} disputeModule`;
   }
 

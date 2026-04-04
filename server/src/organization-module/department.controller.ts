@@ -50,7 +50,7 @@ export class DepartmentController {
   @Get()
   @ApiOperation({ summary: 'Get all departments' })
   async findAll(@Query('orgId') orgId?: string) {
-    const where: any = {};
+    const where: { orgId?: string } = {};
     if (orgId) where.orgId = orgId;
     return this.prisma.department.findMany({
       where,

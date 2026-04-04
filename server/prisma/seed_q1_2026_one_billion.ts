@@ -56,26 +56,33 @@ async function seedQ1Budget() {
   console.log(`Using BudgetPeriod Q1 2026 [ID: ${period.id}]`);
 
   // 3. Create/Update Allocation
-  await prisma.budgetAllocation.upsert({
+  const existingAlloc = await prisma.budgetAllocation.findFirst({
     where: {
-      budgetPeriodId_costCenterId: {
-        budgetPeriodId: period.id,
-        costCenterId,
-      },
-    },
-    update: {
-      allocatedAmount: amount,
-    },
-    create: {
-      orgId,
-      deptId,
       budgetPeriodId: period.id,
       costCenterId,
-      allocatedAmount: amount,
-      currency: 'VND',
-      notes: 'Test budget for Q1 2026 created by AntiGravity',
+      categoryId: null,
     },
   });
+
+  if (existingAlloc) {
+    await prisma.budgetAllocation.update({
+      where: { id: existingAlloc.id },
+      data: { allocatedAmount: amount },
+    });
+  } else {
+    await prisma.budgetAllocation.create({
+      data: {
+        orgId,
+        deptId,
+        budgetPeriodId: period.id,
+        costCenterId,
+        allocatedAmount: amount,
+        currency: 'VND',
+        notes: 'Test budget for Q1 2026 created by AntiGravity',
+        categoryId: null,
+      },
+    });
+  }
 
   console.log(`SUCCESS: Allocated ${amount.toLocaleString()} VND to CC: ${name} for Q1 2026.`);
 }

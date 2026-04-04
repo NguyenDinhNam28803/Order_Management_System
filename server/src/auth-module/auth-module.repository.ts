@@ -113,7 +113,6 @@ export class AuthModuleRepository {
       const tokens = await this.generateToken(user);
       await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash: _, hashedRefreshToken: __, ...userInfo } = user;
       return {
         user: userInfo,

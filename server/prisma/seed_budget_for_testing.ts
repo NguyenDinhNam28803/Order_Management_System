@@ -101,28 +101,35 @@ async function seedBudgetForTesting() {
     // Assume 2 Billion VND for Annual, and 500 Million VND per Quarter
     const amount = p.type === 'ANNUAL' ? 2000000000 : 500000000;
 
-    await prisma.budgetAllocation.upsert({
+    const existingAlloc = await prisma.budgetAllocation.findFirst({
       where: {
-        budgetPeriodId_costCenterId: {
-          budgetPeriodId: period.id,
-          costCenterId: costCenter.id,
-        },
-      },
-      update: {
-        allocatedAmount: amount,
-      },
-      create: {
-        orgId,
-        deptId,
         budgetPeriodId: period.id,
         costCenterId: costCenter.id,
-        allocatedAmount: amount,
-        currency: 'VND',
-        notes: `Seed ${p.type} ${p.num} for testing`,
-        committedAmount: 0,
-        spentAmount: 0,
+        categoryId: null,
       },
     });
+
+    if (existingAlloc) {
+      await prisma.budgetAllocation.update({
+        where: { id: existingAlloc.id },
+        data: { allocatedAmount: amount },
+      });
+    } else {
+      await prisma.budgetAllocation.create({
+        data: {
+          orgId,
+          deptId,
+          budgetPeriodId: period.id,
+          costCenterId: costCenter.id,
+          allocatedAmount: amount,
+          currency: 'VND',
+          notes: `Seed ${p.type} ${p.num} for testing`,
+          committedAmount: 0,
+          spentAmount: 0,
+          categoryId: null,
+        },
+      });
+    }
 
     console.log(
       `Successfully seeded ${p.type} ${p.num} with ${amount.toLocaleString()} VND`,

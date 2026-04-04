@@ -94,10 +94,7 @@ export class AutomationService {
         );
       });
     } catch (error) {
-      this.logger.error(
-        `Failed to auto-create GRN from PO ${poId}: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to auto-create GRN from PO ${poId}: ${error!}`);
     }
   }
 
@@ -246,8 +243,7 @@ export class AutomationService {
       });
     } catch (error) {
       this.logger.error(
-        `Failed to auto-create PO from RFQ ${rfqId}: ${error.message}`,
-        error.stack,
+        `Failed to auto-create PO from RFQ ${rfqId}: ${error!}`,
       );
     }
   }
@@ -322,10 +318,7 @@ export class AutomationService {
 
       this.logger.log(`Automation completed for PR ${pr.prNumber}`);
     } catch (error) {
-      this.logger.error(
-        `Failed to auto-create RFQ from PR ${prId}: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to auto-create RFQ from PR ${prId}: ${error!}`);
     }
   }
 }

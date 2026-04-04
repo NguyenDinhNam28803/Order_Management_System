@@ -17,6 +17,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
 import { AiService } from '../ai-service/ai-service.service';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
+import { BudgetOverrideService } from '../budget-module/budget-override.service';
 
 @Injectable()
 export class PrmoduleService {
@@ -26,6 +27,7 @@ export class PrmoduleService {
     private readonly approvalService: ApprovalModuleService,
     private readonly aiService: AiService,
     private readonly budgetService: BudgetModuleService,
+    private readonly budgetOverrideService: BudgetOverrideService,
   ) {}
 
   async create(
@@ -204,14 +206,62 @@ export class PrmoduleService {
 
       // 2. Khóa ngân sách (Budget Reservation) - CHỈ KHI SUBMIT
       if (pr.costCenterId) {
-        await this.budgetService.reserveBudget(
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          pr.costCenterId,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          pr.orgId,
-          Number(pr.totalEstimate),
-          user,
-        );
+        try {
+          await this.budgetService.reserveBudget(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            pr.costCenterId,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            pr.orgId,
+            Number(pr.totalEstimate),
+            user,
+          );
+        } catch (budgetError) {
+          if (
+            budgetError instanceof BadRequestException &&
+            budgetError.message.includes('Vượt hạn mức ngân sách')
+          ) {
+            // TỰ ĐỘNG tạo yêu cầu duyệt vượt mức nếu hết tiền
+            console.log(
+              `[PR-SUBMIT] Budget exceeded. Creating override request for PR: ${pr.id}`,
+            );
+
+            // Tìm allocation hiện tại để lấy ID
+            const allocation = await this.budgetService.findQuarterlyAllocation(
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              pr.costCenterId,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              pr.orgId,
+              new Date().getFullYear(),
+              Math.ceil((new Date().getMonth() + 1) / 3),
+            );
+
+            if (allocation && !('isVirtual' in allocation)) {
+              await this.budgetOverrideService.createRequest(
+                {
+                  budgetAllocId: allocation.id,
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                  prId: pr.id,
+                  overrideAmount: Number(pr.totalEstimate),
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                  reason: pr.justification || 'Vượt hạn mức ngân sách quý.',
+                },
+                user,
+              );
+
+              // Cập nhật trạng thái PR thành PENDING_OVERRIDE
+              await this.prisma.purchaseRequisition.update({
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                where: { id: pr.id },
+
+                data: { status: PrStatus.PENDING_OVERRIDE },
+              });
+
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              return this.findOne(pr.id);
+            }
+          }
+          throw budgetError;
+        }
       }
 
       // 3. Kích hoạt luồng duyệt (Multi-level Approval)
@@ -230,6 +280,7 @@ export class PrmoduleService {
 
       // 4. Trạng thái PENDING_APPROVAL đã được cập nhật bên trong initiateWorkflow
       // nhưng ta vẫn trả về PR mới nhất để đồng bộ UI
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return this.findOne(pr.id);
     } catch (error) {
       console.error('[PR-SUBMIT] CRITICAL ERROR:', error);

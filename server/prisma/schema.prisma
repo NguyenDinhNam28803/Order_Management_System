@@ -1242,6 +1242,7 @@ model BudgetAllocation {
   createdById     String?          @map("created_by") @db.Uuid
   createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  budgetCode      String?          @unique @map("budget_code") @db.VarChar(50)
   budgetPeriod    BudgetPeriod     @relation(fields: [budgetPeriodId], references: [id])
   category        ProductCategory? @relation(fields: [categoryId], references: [id])
   costCenter      CostCenter       @relation(fields: [costCenterId], references: [id])
@@ -1250,7 +1251,7 @@ model BudgetAllocation {
   org             Organization     @relation("BudgetAllocOrg", fields: [orgId], references: [id])
   overrideRequests BudgetOverrideRequest[]
 
-  @@unique([budgetPeriodId, costCenterId])
+  @@unique([budgetPeriodId, costCenterId, categoryId])
   @@map("budget_allocations")
 }
 
@@ -1487,6 +1488,7 @@ enum SupplierTier {
 
 enum PrStatus {
   DRAFT
+  PENDING_OVERRIDE
   PENDING_APPROVAL
   UNDER_REVIEW
   LEVEL2_REVIEW

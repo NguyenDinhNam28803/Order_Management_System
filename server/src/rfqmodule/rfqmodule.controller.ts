@@ -92,7 +92,10 @@ export class RfqmoduleController {
     summary: 'Cập nhật trạng thái RFQ',
     description: 'Cập nhật trạng thái của một yêu cầu báo giá cụ thể',
   })
-  async updateStatus(@Param('id') id: string, @Body() body: any) {
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() body: { status: string },
+  ) {
     return this.rfqService.updateStatus(id, body.status);
   }
 

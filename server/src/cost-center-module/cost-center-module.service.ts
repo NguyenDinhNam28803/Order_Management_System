@@ -155,6 +155,7 @@ export class CostCenterModuleService {
 
   async remove(id: string) {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const cc = await this.findOne(id);
 
       const hasAllocations = await this.prisma.budgetAllocation.count({

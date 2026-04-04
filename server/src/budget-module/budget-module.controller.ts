@@ -15,11 +15,13 @@ import { RolesGuard, Roles } from '../common/roles.guard';
 import { BudgetPeriodType, UserRole } from '@prisma/client';
 import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { BudgetModuleService } from './budget-module.service';
+import { BudgetOverrideService } from './budget-override.service';
 import {
   CreateBudgetAllocationDto,
   CreateBudgetPeriodDto,
   UpdateBudgetAllocationDto,
   UpdateBudgetPeriodDto,
+  RejectBudgetAllocationDto,
 } from './dto/budget.dto';
 
 @ApiTags('Budget Management')
@@ -27,7 +29,45 @@ import {
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class BudgetModuleController {
-  constructor(private readonly budgetService: BudgetModuleService) {}
+  constructor(
+    private readonly budgetService: BudgetModuleService,
+    private readonly budgetOverrideService: BudgetOverrideService,
+  ) {}
+
+  // Budget Override Requests
+  @Get('overrides')
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
+  @ApiOperation({ summary: 'Lấy danh sách yêu cầu vượt định mức' })
+  async findAllOverrides(@Request() req: { user: JwtPayload }) {
+    return this.budgetOverrideService.findByOrg(req.user);
+  }
+
+  @Get('overrides/:id')
+  @ApiOperation({ summary: 'Lấy chi tiết yêu cầu vượt định mức' })
+  async findOverrideOne(@Param('id') id: string) {
+    return this.budgetOverrideService.findOne(id);
+  }
+
+  @Patch('overrides/:id/approve')
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
+  @ApiOperation({ summary: 'Duyệt yêu cầu vượt định mức' })
+  async approveOverride(
+    @Param('id') id: string,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetOverrideService.approveRequest(id, req.user);
+  }
+
+  @Patch('overrides/:id/reject')
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
+  @ApiOperation({ summary: 'Từ chối yêu cầu vượt định mức' })
+  async rejectOverride(
+    @Param('id') id: string,
+    @Body('reason') reason: string,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetOverrideService.rejectRequest(id, reason, req.user);
+  }
 
   // Budget Periods
   /**
@@ -133,17 +173,60 @@ export class BudgetModuleController {
     UserRole.DIRECTOR,
     UserRole.CEO,
     UserRole.PLATFORM_ADMIN,
+    UserRole.DEPT_APPROVER,
   )
   @ApiOperation({
     summary: 'Tạo một phân bổ ngân sách mới',
     description:
-      'Cấp ngân sách cho một trung tâm chi phí cụ thể trong một chu kỳ ngân sách nhất định. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
+      'Cấp ngân sách cho một trung tâm chi phí cụ thể trong một chu kỳ ngân sách nhất định. Dành cho vai trò Tài chính, Giám đốc hoặc Trưởng phòng.',
   })
   async createAllocation(
     @Body() dto: CreateBudgetAllocationDto,
     @Request() req: { user: JwtPayload },
   ) {
     return this.budgetService.createAllocation(dto, req.user);
+  }
+
+  @Get('my-department')
+  @Roles(UserRole.DEPT_APPROVER)
+  @ApiOperation({ summary: 'Lấy ngân sách của phòng ban tôi' })
+  async findMyDeptAllocations(@Request() req: { user: JwtPayload }) {
+    return this.budgetService.findMyDeptAllocations(req.user);
+  }
+
+  @Patch('allocations/:id/submit')
+  @Roles(UserRole.DEPT_APPROVER)
+  @ApiOperation({ summary: 'Gửi ngân sách để duyệt' })
+  async submitAllocation(
+    @Param('id') id: string,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetService.submitAllocation(id, req.user);
+  }
+
+  @Patch('allocations/:id/approve')
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
+  @ApiOperation({ summary: 'Duyệt ngân sách' })
+  async approveAllocation(
+    @Param('id') id: string,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetService.approveAllocation(id, req.user);
+  }
+
+  @Patch('allocations/:id/reject')
+  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
+  @ApiOperation({ summary: 'Từ chối ngân sách' })
+  async rejectAllocation(
+    @Param('id') id: string,
+    @Body() dto: RejectBudgetAllocationDto,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetService.rejectAllocation(
+      id,
+      dto.rejectedReason || 'Không có lý do cụ thể',
+      req.user,
+    );
   }
 
   /**
