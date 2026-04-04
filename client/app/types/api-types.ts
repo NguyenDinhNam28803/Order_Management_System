@@ -146,6 +146,13 @@ export enum GrnStatus {
     DISPUTED = "DISPUTED"
 }
 
+export enum BudgetAllocationStatus {
+    DRAFT = "DRAFT",
+    SUBMITTED = "SUBMITTED",
+    APPROVED = "APPROVED",
+    REJECTED = "REJECTED"
+}
+
 export enum InvoiceStatus {
     DRAFT = "DRAFT",
     SUBMITTED = "SUBMITTED",

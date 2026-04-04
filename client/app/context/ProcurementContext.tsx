@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import Cookies from 'js-cookie';
 import {
     Organization, CostCenter, Department, CurrencyCode, CompanyType, KycStatus, UserRole, 
-    PrStatus, RfqStatus, QuotationStatus, PoStatus, GrnStatus, InvoiceStatus, ApprovalStatus, DocumentType,
+    PrStatus, RfqStatus, QuotationStatus, PoStatus, GrnStatus, InvoiceStatus, ApprovalStatus, DocumentType, BudgetAllocationStatus,
     ApiResponse, LoginPayload, LoginResponse, RegisterPayload, CreatePrDto, UpdatePrDto, CreateRfqDto, ConsolidateRfqDto, 
     CreateGrnDto, CreateInvoiceDto, CreateQuoteDto, CreateOrganizationPayload, UpdateOrganizationPayload, 
     CreateCostCenterPayload, UpdateCostCenterPayload, CreateDepartmentPayload, UpdateDepartmentPayload, 
@@ -106,6 +106,8 @@ export interface BudgetPeriod {
 export interface BudgetAllocation {
     id: string; budgetPeriodId: string; costCenterId: string; orgId: string; deptId?: string; 
     allocatedAmount: number; committedAmount: number; spentAmount: number; currency: string;
+    status: BudgetAllocationStatus | string; createdAt: string; createdById?: string;
+    budgetCode?: string; rejectedReason?: string;
 }
 
 export interface ApprovalWorkflow {
@@ -150,6 +152,8 @@ export interface ProcurementContextType extends ProcurementState {
     updateBudgetPeriod: (i: string, d: any) => Promise<boolean>;
     removeBudgetPeriod: (i: string) => Promise<boolean>;
     addBudgetAllocation: (d: any) => Promise<boolean>;
+    submitAllocation: (i: string) => Promise<boolean>;
+    approveAllocation: (i: string) => Promise<boolean>;
     updateBudgetAllocation: (i: string, d: any) => Promise<boolean>;
     removeBudgetAllocation: (i: string) => Promise<boolean>;
     addBudgetAllocationBundle: (cc: string, a: any[]) => Promise<boolean>;
@@ -189,6 +193,8 @@ export interface ProcurementContextType extends ProcurementState {
     nextSimulationStep: () => void;
     stopSimulation: () => void;
     confirmCatalogPrice: (d: { prId: string, supplierId: string, price: number, stock: number, leadTime: number, note?: string }) => Promise<boolean>;
+    distributeAnnualBudget: (costCenterId: string, fiscalYear: number) => Promise<boolean>;
+    fetchQuarterlyAllocation: (costCenterId: string, fiscalYear: number, quarter: number) => Promise<any | null>;
 }
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
@@ -311,6 +317,24 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 const result = await costCentersResp.json();
                 const ccData = result.data || result;
                 if (Array.isArray(ccData)) setState(prev => ({ ...prev, costCenters: ccData }));
+            }
+
+            // Fetch Budget Periods and Allocations
+            const [periodsResp, allocsResp] = await Promise.all([
+                apiFetch('/budgets/periods'),
+                apiFetch('/budgets/allocations')
+            ]);
+
+            if (periodsResp.ok) {
+                const res = await periodsResp.json();
+                const data = res.data || res;
+                if (Array.isArray(data)) setState(prev => ({ ...prev, budgetPeriods: data }));
+            }
+
+            if (allocsResp.ok) {
+                const res = await allocsResp.json();
+                const data = res.data || res;
+                if (Array.isArray(data)) setState(prev => ({ ...prev, budgetAllocations: data }));
             }
         } catch (e) {
             console.error("Refresh Data Error", e);
@@ -713,6 +737,51 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         matchInvoice: async (i: string) => { return true; }, 
         addQuoteRequest, updateQuoteRequest, submitQuoteRequest, convertQuoteToPR, sendQuoteRequestToSupplier, createPRFromQuoteRequest,
         startSimulation, nextSimulationStep, stopSimulation, confirmCatalogPrice,
+        distributeAnnualBudget: async (costCenterId: string, fiscalYear: number) => {
+            try {
+                const resp = await apiFetch(`/budgets/distribute-annual/${costCenterId}/${fiscalYear}`, { method: 'POST' });
+                if (resp.ok) {
+                    notify("Đã thực hiện phân bổ ngân sách 20/80 thành công", "success");
+                    await refreshData();
+                    return true;
+                }
+                const err = await resp.json();
+                notify(err.message || "Lỗi khi phân bổ ngân sách", "error");
+            } catch (e) { notify("Lỗi kết nối", "error"); }
+            return false;
+        },
+        fetchQuarterlyAllocation: async (costCenterId: string, fiscalYear: number, quarter: number) => {
+            try {
+                const resp = await apiFetch(`/budgets/allocations/quarterly/${costCenterId}/${fiscalYear}/${quarter}`);
+                if (resp.ok) {
+                    const res = await resp.json();
+                    return res.data || res;
+                }
+            } catch (e) {}
+            return null;
+        },
+        submitAllocation: async (id: string) => {
+            try {
+                const resp = await apiFetch(`/budgets/allocations/${id}/submit`, { method: 'PATCH' });
+                if (resp.ok) {
+                    notify("Đã gửi duyệt ngân sách", "success");
+                    await refreshData();
+                    return true;
+                }
+            } catch (e) {}
+            return false;
+        },
+        approveAllocation: async (id: string) => {
+            try {
+                const resp = await apiFetch(`/budgets/allocations/${id}/approve`, { method: 'PATCH' });
+                if (resp.ok) {
+                    notify("Đã duyệt ngân sách thành decision", "success");
+                    await refreshData();
+                    return true;
+                }
+            } catch (e) {}
+            return false;
+        },
         updatePR: async (id: string, d: any) => { return true; }, fetchPrDetail: async (id: string) => { return null; }
     };
 

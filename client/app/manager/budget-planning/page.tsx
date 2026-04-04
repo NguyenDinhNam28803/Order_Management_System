@@ -1,79 +1,110 @@
 "use client";
 
-import React, { useState } from "react";
-import { Plus, Send, Save, X, Calculator, Building, PieChart, Layers, DollarSign, Calendar } from "lucide-react";
+import React, { useState, useEffect, useMemo } from "react";
+import { Plus, Send, Save, X, Calculator, Building, PieChart, Layers, DollarSign, Calendar, Loader2 } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
 
 export default function BudgetPlanningPage() {
-    const { notify, currentUser } = useProcurement();
+    const { 
+        notify, 
+        currentUser, 
+        budgetAllocations, 
+        budgetPeriods, 
+        costCenters, 
+        addBudgetAllocation, 
+        submitAllocation,
+        refreshData 
+    } = useProcurement();
+    
     const [showModal, setShowModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [allocations, setAllocations] = useState([
-        {
-            id: "alloc-1",
-            periodId: "Q2/2026 - Tháng 4",
-            deptName: "Information Technology",
-            costCenter: "CAPEX-IT",
-            category: "Thiết bị IT",
-            amount: 3000000000,
-            status: "APPROVED",
-            date: "2026-03-25T10:00:00Z"
-        }
-    ]);
+    // Initial state from real context
+    const myAllocations = useMemo(() => {
+        return budgetAllocations.filter(a => a.deptId === currentUser?.deptId || a.createdById === currentUser?.id);
+    }, [budgetAllocations, currentUser]);
 
     const [formData, setFormData] = useState({
-        budgetPeriodId: "Q2/2026 - Tháng 4",
-        deptId: "DEPT-IT",
-        costCenterId: "CAPEX-IT",
-        categoryId: "IT_HW",
+        budgetPeriodId: "",
+        costCenterId: "",
+        categoryId: "",
         allocatedAmount: "0",
         currency: "VND",
         notes: ""
     });
 
-    const handleSubmit = async (e: React.FormEvent, status: "SUBMITTED" | "DRAFT") => {
+    // Filter cost centers based on user department for specific roles
+    const filteredCostCenters = useMemo(() => {
+        if (!currentUser) return [];
+        // Admin and Finance can see all
+        if (["PLATFORM_ADMIN", "FINANCE", "DIRECTOR"].includes(currentUser.role)) {
+            return costCenters;
+        }
+        // Departments see only their own
+        return costCenters.filter(cc => cc.deptId === currentUser.deptId);
+    }, [costCenters, currentUser]);
+
+    // Auto-select first period and cost center if available
+    useEffect(() => {
+        if (budgetPeriods.length > 0 && !formData.budgetPeriodId) {
+            setFormData(prev => ({ ...prev, budgetPeriodId: budgetPeriods[0].id }));
+        }
+        if (filteredCostCenters.length > 0 && !formData.costCenterId) {
+            setFormData(prev => ({ ...prev, costCenterId: filteredCostCenters[0].id }));
+        }
+    }, [budgetPeriods, filteredCostCenters]);
+
+    const handleSubmit = async (e: React.FormEvent, type: "SUBMIT" | "DRAFT") => {
         e.preventDefault();
+        
+        if (!formData.budgetPeriodId || !formData.costCenterId) {
+            notify("Vui lòng chọn Chu kỳ và Cost Center", "error");
+            return;
+        }
+
         setIsSubmitting(true);
         
-        // Mocking API delay
-        setTimeout(() => {
-            const newAlloc = {
-                id: `alloc-${Date.now()}`,
-                periodId: formData.budgetPeriodId,
-                deptName: "Information Technology", // Simplified for mock
-                costCenter: formData.costCenterId,
-                category: "Linh kiện & Phần mềm", // Simplified for mock
-                amount: parseMoney(formData.allocatedAmount),
-                status: status,
-                date: new Date().toISOString()
-            };
-            
-            setAllocations([newAlloc, ...allocations]);
-            setIsSubmitting(false);
-            setShowModal(false);
-            notify(status === "SUBMITTED" ? "Đã gửi phân bổ ngân sách về phòng Tài chính" : "Đã lưu bản nháp phân bổ", "success");
-            
-            // Reset form
-            setFormData({
-                budgetPeriodId: "Q2/2026 - Tháng 4",
-                deptId: "DEPT-IT",
-                costCenterId: "CAPEX-IT",
-                categoryId: "IT_HW",
-                allocatedAmount: "0",
-                currency: "VND",
-                notes: ""
+        try {
+            const amount = parseMoney(formData.allocatedAmount);
+            if (amount <= 0) {
+                notify("Số tiền phải lớn hơn 0", "error");
+                setIsSubmitting(false);
+                return;
+            }
+
+            const success = await addBudgetAllocation({
+                ...formData,
+                allocatedAmount: amount,
+                deptId: currentUser?.deptId
             });
-        }, 800);
+
+            if (success) {
+                notify(type === "SUBMIT" ? "Đã gửi phân bổ thành công" : "Đã lưu bản nháp thành công", "success");
+                setShowModal(false);
+                setFormData({
+                    budgetPeriodId: budgetPeriods[0]?.id || "",
+                    costCenterId: costCenters[0]?.id || "",
+                    categoryId: "",
+                    allocatedAmount: "0",
+                    currency: "VND",
+                    notes: ""
+                });
+                await refreshData();
+            }
+        } catch (err) {
+            notify("Lỗi khi xử lý yêu cầu", "error");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
-        <main className="animate-in fade-in duration-500 pb-20">
+        <main className="animate-in fade-in duration-500 pb-20 p-8">
             <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <h1 className="text-2xl font-black tracking-tight text-erp-navy mb-2 uppercase">LẬP NGÂN SÁCH PHÒNG BAN</h1>
-                    <p className="text-slate-500 font-medium italic">Phân bổ ngân sách theo chu kỳ và gửi về Tài chính để phê duyệt</p>
+                    <p className="text-slate-500 font-medium italic">Phân bổ ngân sách chi tiết và gửi phê duyệt</p>
                 </div>
                 
                 <button 
@@ -85,181 +116,207 @@ export default function BudgetPlanningPage() {
                 </button>
             </header>
 
+            {/* Stats Summary */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                    <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Tổng yêu cầu</p>
+                    <p className="text-2xl font-black text-erp-navy">{myAllocations.length} Bản ghi</p>
+                </div>
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                    <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Tổng tiền dự kiến</p>
+                    <p className="text-2xl font-black text-emerald-600">
+                        {formatVND(myAllocations.reduce((s, a) => s + Number(a.allocatedAmount), 0))}
+                    </p>
+                </div>
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                    <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Trạng thái phê duyệt</p>
+                    <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                        <p className="font-bold text-slate-600 text-sm">Cần xử lý: {myAllocations.filter(a => a.status === 'SUBMITTED').length}</p>
+                    </div>
+                </div>
+            </div>
+
             {/* Allocation List */}
             <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-slate-50/50 border-b border-slate-100">
                             <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Chu kỳ ngân sách</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Phòng ban</th>
                             <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Cost Center</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Hạng mục</th>
                             <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Số tiền</th>
                             <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Trạng thái</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Ngày gửi</th>
+                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Ngày tạo</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {allocations.map((alloc) => (
-                            <tr key={alloc.id} className="hover:bg-slate-50/30 transition-colors">
-                                <td className="px-6 py-5">
-                                    <div className="flex items-center gap-2">
-                                        <Calendar size={14} className="text-slate-400" />
-                                        <span className="font-bold text-erp-navy">{alloc.periodId}</span>
+                        {myAllocations.length > 0 ? myAllocations.map((alloc) => {
+                            const period = budgetPeriods.find(p => p.id === alloc.budgetPeriodId);
+                            const cc = costCenters.find(c => c.id === alloc.costCenterId);
+                            return (
+                                <tr key={alloc.id} className="hover:bg-slate-50/30 transition-colors cursor-pointer group">
+                                    <td className="px-6 py-5">
+                                        <div className="flex items-center gap-2">
+                                            <Calendar size={14} className="text-slate-400" />
+                                            <span className="font-bold text-erp-navy">
+                                                {period ? `${period.periodType} - ${period.fiscalYear}` : "N/A"}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-5">
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-slate-700 text-sm">{cc?.name || "N/A"}</span>
+                                            <span className="text-[10px] font-black text-slate-400 uppercase">{cc?.code || "N/A"}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-5 font-black text-erp-navy text-lg">{formatVND(Number(alloc.allocatedAmount))}</td>
+                                    <td className="px-6 py-5 text-center">
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${
+                                            alloc.status === 'APPROVED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                            alloc.status === 'SUBMITTED' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                            'bg-slate-50 text-slate-400 border-slate-100'
+                                        }`}>
+                                            {alloc.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-5 text-[11px] font-bold text-slate-400 text-center">
+                                        {alloc.createdAt ? new Date(alloc.createdAt).toLocaleDateString("vi-VN") : "--"}
+                                    </td>
+                                </tr>
+                            );
+                        }) : (
+                            <tr>
+                                <td colSpan={5} className="py-20 text-center">
+                                    <div className="flex flex-col items-center gap-2 opacity-20">
+                                        <PieChart size={48} />
+                                        <p className="font-black text-sm uppercase tracking-widest">Chưa có bản ghi phân bổ nào</p>
                                     </div>
                                 </td>
-                                <td className="px-6 py-5 text-sm font-bold text-slate-500">{alloc.deptName}</td>
-                                <td className="px-6 py-5">
-                                    <span className="bg-slate-100 px-2 py-1 rounded text-[10px] font-black text-slate-600">{alloc.costCenter}</span>
-                                </td>
-                                <td className="px-6 py-5 text-sm font-bold text-slate-400">{alloc.category}</td>
-                                <td className="px-6 py-5 font-black text-erp-navy text-lg">{formatVND(alloc.amount)}</td>
-                                <td className="px-6 py-5 text-center">
-                                    <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${
-                                        alloc.status === 'APPROVED' ? 'bg-green-50 text-green-600 border border-green-100' :
-                                        alloc.status === 'SUBMITTED' ? 'bg-blue-50 text-blue-600 border border-blue-100' :
-                                        alloc.status === 'REJECTED' ? 'bg-red-50 text-red-600 border border-red-100' :
-                                        'bg-slate-50 text-slate-400 border border-slate-100'
-                                    }`}>
-                                        {alloc.status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-5 text-[11px] font-bold text-slate-400 text-center">
-                                    {alloc.date ? new Date(alloc.date).toLocaleDateString("vi-VN") : "--"}
-                                </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
 
             {/* Create Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-erp-navy/50 backdrop-blur-sm animate-in fade-in duration-300 overflow-y-auto pt-20 pb-20">
-                    <div className="bg-white rounded-[2.5rem] w-full max-w-2xl p-10 shadow-2xl relative animate-in zoom-in-95 duration-200">
-                        <button onClick={() => setShowModal(false)} className="absolute top-8 right-8 text-slate-300 hover:text-slate-600 transition-colors">
-                            <X size={24} />
+                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-erp-navy/80 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto pt-20 pb-20">
+                    <div className="bg-white rounded-[3rem] w-full max-w-3xl p-12 shadow-2xl relative animate-in zoom-in-95 duration-200">
+                        <button onClick={() => setShowModal(false)} className="absolute top-10 right-10 text-slate-300 hover:text-erp-navy transition-colors">
+                            <X size={28} />
                         </button>
                         
-                        <div className="mb-10 text-center">
-                            <div className="h-16 w-16 bg-erp-blue/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-erp-blue/5">
-                                <Calculator size={32} className="text-erp-blue" />
+                        <div className="mb-12">
+                            <div className="h-20 w-20 bg-erp-blue/10 rounded-[2rem] flex items-center justify-center mb-6 border-2 border-white shadow-xl shadow-erp-blue/10">
+                                <Calculator size={40} className="text-erp-blue" />
                             </div>
-                            <h2 className="text-3xl font-black text-erp-navy tracking-tight uppercase">TẠO NGÂN SÁCH PHÒNG BAN</h2>
-                            <p className="text-slate-400 font-medium">Hoàn tất các thông tin phân bổ bên dưới</p>
+                            <h2 className="text-4xl font-black text-erp-navy tracking-tighter uppercase leading-none mb-2">TẠO NGÂN SÁCH MỚI</h2>
+                            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">
+                                Phòng ban: {currentUser?.department && typeof currentUser.department !== "string" ? currentUser.department.name : currentUser?.deptId}
+                            </p>
                         </div>
 
-                        <form onSubmit={(e) => handleSubmit(e, "SUBMITTED")} className="space-y-8">
-                            <div className="grid grid-cols-2 gap-8">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Chu kỳ ngân sách</label>
+                        <form onSubmit={(e) => handleSubmit(e, "SUBMIT")} className="space-y-10">
+                            <div className="grid grid-cols-2 gap-10">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-6">Chu kỳ ngân sách</label>
                                     <div className="relative group">
-                                        <Calendar size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-erp-blue transition-colors" />
+                                        <Calendar size={20} className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-erp-blue transition-colors" />
                                         <select 
                                             value={formData.budgetPeriodId}
                                             onChange={(e) => setFormData({...formData, budgetPeriodId: e.target.value})}
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-3xl py-5 pl-16 pr-6 text-sm font-bold text-erp-navy outline-none transition-all focus:ring-4 focus:ring-erp-blue/10 appearance-none"
+                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-[2rem] py-6 pl-20 pr-8 text-sm font-bold text-erp-navy outline-none transition-all focus:border-erp-blue/20 focus:bg-white appearance-none"
                                         >
-                                            <option value="Q2/2026 - Tháng 4">Q2/2026 - Tháng 4</option>
-                                            <option value="Q2/2026 - Tháng 5">Q2/2026 - Tháng 5</option>
-                                            <option value="Q2/2026 - Tháng 6">Q2/2026 - Tháng 6</option>
+                                            <option value="">Chọn chu kỳ...</option>
+                                            {budgetPeriods.map(p => (
+                                                <option key={p.id} value={p.id}>{p.periodType} - FY{p.fiscalYear} (P{p.periodNumber})</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Phòng ban (deptId)</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-6">Trung tâm chi phí (CC)</label>
                                     <div className="relative group">
-                                        <Building size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-erp-blue transition-colors" />
-                                        <input 
-                                            type="text" 
-                                            value="Information Technology" 
-                                            readOnly 
-                                            className="w-full bg-slate-100 border border-slate-200 rounded-3xl py-5 pl-16 pr-6 text-sm font-bold text-slate-500 outline-none transition-all cursor-not-allowed" 
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-8">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Trung tâm chi phí</label>
-                                    <div className="relative group">
-                                        <Layers size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-erp-blue transition-colors" />
+                                        <Layers size={20} className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-erp-blue transition-colors" />
                                         <select 
                                             value={formData.costCenterId}
                                             onChange={(e) => setFormData({...formData, costCenterId: e.target.value})}
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-3xl py-5 pl-16 pr-6 text-sm font-bold text-erp-navy outline-none transition-all focus:ring-4 focus:ring-erp-blue/10 appearance-none"
+                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-[2rem] py-6 pl-20 pr-8 text-sm font-bold text-erp-navy outline-none transition-all focus:border-erp-blue/20 focus:bg-white appearance-none"
                                         >
-                                            <option value="CAPEX-IT">CAPEX-IT</option>
-                                            <option value="OPEX-IT">OPEX-IT</option>
-                                            <option value="DEFAULT">DEFAULT</option>
+                                            <option value="">Chọn Cost Center...</option>
+                                            {filteredCostCenters.map(cc => (
+                                                <option key={cc.id} value={cc.id}>{cc.name} ({cc.code})</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Hạng mục (categoryId)</label>
+                            <div className="grid grid-cols-2 gap-10">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-6">Số tiền phân bổ (VNĐ)</label>
                                     <div className="relative group">
-                                        <PieChart size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-erp-blue transition-colors" />
+                                        <DollarSign size={20} className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-erp-blue transition-colors" />
+                                        <input 
+                                            type="text"
+                                            value={formData.allocatedAmount}
+                                            onChange={(e) => setFormData({...formData, allocatedAmount: e.target.value.replace(/\D/g, "")})}
+                                            onBlur={(e) => setFormData({...formData, allocatedAmount: formatVND(parseMoney(e.target.value)).replace(" ₫", "").trim()})}
+                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-[2rem] py-6 pl-20 pr-8 text-3xl font-black text-erp-navy outline-none transition-all focus:border-erp-blue/20 focus:bg-white"
+                                            placeholder="0"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-6">Hạng mục ngân sách (Category)</label>
+                                    <div className="relative group">
+                                        <PieChart size={20} className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-erp-blue transition-colors" />
                                         <select 
                                             value={formData.categoryId}
                                             onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-3xl py-5 pl-16 pr-6 text-sm font-bold text-erp-navy outline-none transition-all focus:ring-4 focus:ring-erp-blue/10 appearance-none"
+                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-[2rem] py-6 pl-20 pr-8 text-sm font-bold text-erp-navy outline-none transition-all focus:border-erp-blue/20 focus:bg-white appearance-none"
                                         >
-                                            <option value="IT_HW">Thiết bị IT</option>
-                                            <option value="OFF_ST">Vật tư văn phòng</option>
-                                            <option value="SOFT_LIC">Phần mềm & Dịch vụ</option>
+                                            <option value="">Ngân sách chung</option>
+                                            <option value="IT_EQUIPMENT">Thiết bị Công nghệ</option>
+                                            <option value="OFFICE_SUPPLIES">Văn phòng phẩm</option>
+                                            <option value="MARKETING_EXPENSE">Chi phí Marketing</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Số tiền phân bổ (VNĐ)</label>
-                                <div className="relative group">
-                                    <DollarSign size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-erp-blue transition-colors" />
-                                    <input 
-                                        type="text"
-                                        value={formData.allocatedAmount}
-                                        onChange={(e) => setFormData({...formData, allocatedAmount: e.target.value.replace(/\D/g, "")})}
-                                        onBlur={(e) => setFormData({...formData, allocatedAmount: formatVND(parseMoney(e.target.value)).replace(" ₫", "").trim()})}
-                                        className="w-full bg-slate-50 border border-slate-100 rounded-3xl py-5 pl-16 pr-6 text-2xl font-black text-erp-navy outline-none transition-all focus:ring-4 focus:ring-erp-blue/10"
-                                    />
-                                    <span className="absolute right-6 top-1/2 -translate-y-1/2 font-black text-slate-300 uppercase tracking-widest text-xs">VND</span>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Ghi chú (Tùy chọn)</label>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-6">Mục đích sử dụng / Ghi chú</label>
                                 <textarea 
                                     value={formData.notes}
                                     onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                                    placeholder="Mô tả mục đích sử dụng ngân sách..."
-                                    className="w-full h-24 bg-slate-50 border border-slate-100 rounded-3xl p-6 text-sm font-medium text-erp-navy outline-none transition-all focus:ring-4 focus:ring-erp-blue/10"
+                                    placeholder="Giải trình chi tiết về nhu cầu ngân sách này..."
+                                    className="w-full h-32 bg-slate-50 border-2 border-slate-50 rounded-[2rem] p-8 text-sm font-bold text-erp-navy outline-none transition-all focus:border-erp-blue/20 focus:bg-white resize-none"
                                 />
                             </div>
 
-                            <div className="flex gap-4 pt-4">
+                            <div className="flex gap-6 pt-6">
                                 <button 
                                     type="button"
                                     onClick={(e) => handleSubmit(e, "DRAFT")}
-                                    className="flex-1 py-5 rounded-3xl border-2 border-slate-100 text-slate-400 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 transition-all active:scale-95 flex items-center justify-center gap-3"
+                                    className="flex-1 py-6 rounded-[2rem] border-2 border-slate-100 text-slate-400 font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all flex items-center justify-center gap-4 active:scale-95"
                                 >
-                                    <Save size={18} />
-                                    Lưu nháp
+                                    <Save size={20} />
+                                    Lưu bản nháp
                                 </button>
                                 <button 
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="flex-[2] py-5 rounded-3xl bg-erp-navy text-white font-black uppercase tracking-widest text-xs shadow-2xl shadow-erp-navy/30 hover:shadow-erp-navy/40 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3"
+                                    className="flex-[2] py-6 rounded-[2rem] bg-erp-navy text-white font-black uppercase tracking-widest text-xs shadow-2xl shadow-erp-navy/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-4 active:scale-95 disabled:opacity-50"
                                 >
                                     {isSubmitting ? (
-                                        <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        <Loader2 size={24} className="animate-spin" />
                                     ) : (
                                         <>
-                                            <Send size={18} />
-                                            Gửi về Tài chính
+                                            <Send size={20} />
+                                            Gửi phê duyệt
                                         </>
                                     )}
                                 </button>
@@ -271,3 +328,4 @@ export default function BudgetPlanningPage() {
         </main>
     );
 }
+

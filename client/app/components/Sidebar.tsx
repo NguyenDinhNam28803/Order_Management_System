@@ -58,7 +58,7 @@ const navigation = [
             { name: "Phê duyệt PR", icon: CheckSquare, path: "/approvals", roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO"] },
             { name: "Phê duyệt PO", icon: ShoppingCart, path: "/manager/po-approvals", roles: ["DEPT_APPROVER", "FINANCE", "DIRECTOR"] },
             { name: "Phê duyệt Thanh toán", icon: FileCheck, path: "/payments", roles: ["FINANCE", "DIRECTOR"] },
-            { name: "Lịch sử phê duyệt", icon: ClipboardCheck, path: "/manager/approval-history", roles: ["DEPT_APPROVER", "DIRECTOR", "CEO"] },
+            { name: "Lịch sử phê duyệt", icon: ClipboardCheck, path: "/manager/approval-history", roles: ["DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO"] },
         ]
     },
     {
@@ -66,8 +66,9 @@ const navigation = [
         roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN", "DIRECTOR"],
         items: [
             { name: "Lập ngân sách", icon: Building, path: "/manager/budget-planning", roles: ["DEPT_APPROVER", "PLATFORM_ADMIN"] },
+            { name: "Phân bổ ngân sách", icon: FolderTree, path: "/finance/budget-allocation", roles: ["FINANCE", "PLATFORM_ADMIN"] },
             { name: "Theo dõi chi tiêu", icon: DollarSign, path: "/manager/spend-tracking", roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
-            { name: "Cảnh báo vượt ngân sách", icon: ShieldAlert, path: "/manager/budget-alerts", roles: ["DEPT_APPROVER", "PLATFORM_ADMIN"] },
+            { name: "Cảnh báo vượt ngân sách", icon: ShieldAlert, path: "/manager/budget-alerts", roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
         ]
     },
     {

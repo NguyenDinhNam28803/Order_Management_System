@@ -1,0 +1,395 @@
+"use client";
+
+import React, { useState, useEffect, useMemo } from "react";
+import { 
+  Building, 
+  DollarSign, 
+  Plus, 
+  Filter, 
+  Search,
+  TrendingUp, 
+  History, 
+  CheckCircle2, 
+  AlertCircle,
+  Clock,
+  LayoutGrid,
+  ChevronRight,
+  PieChart,
+  Calendar,
+  X,
+  Zap,
+  Loader2
+} from "lucide-react";
+import { useProcurement } from "../../context/ProcurementContext";
+
+export default function BudgetAllocationPage() {
+  const { 
+    costCenters, 
+    budgetAllocations, 
+    budgetPeriods, 
+    distributeAnnualBudget, 
+    refreshData 
+  } = useProcurement();
+
+  const [selectedQuarter, setSelectedQuarter] = useState(1);
+  const [selectedYear, setSelectedYear] = useState(2026);
+  const [showDistributeModal, setShowDistributeModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter allocations based on selected quarter and year
+  const activeAllocations = useMemo(() => {
+    return budgetAllocations.filter(alloc => {
+      const period = budgetPeriods.find(p => p.id === alloc.budgetPeriodId);
+      return period?.periodNumber === selectedQuarter && 
+             period?.fiscalYear === selectedYear &&
+             period?.periodType === "QUARTERLY";
+    }).map(alloc => {
+      const cc = costCenters.find(c => c.id === alloc.costCenterId);
+      return {
+        ...alloc,
+        deptName: cc?.name || "N/A",
+        costCenterCode: cc?.code || "N/A",
+        quota: Number(alloc.allocatedAmount),
+        spent: Number(alloc.spentAmount),
+        committed: Number(alloc.committedAmount),
+      };
+    }).filter(item => 
+      item.deptName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.costCenterCode.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [budgetAllocations, budgetPeriods, costCenters, selectedQuarter, selectedYear, searchTerm]);
+
+  const totalQuota = activeAllocations.reduce((sum, item) => sum + item.quota, 0);
+  const totalSpent = activeAllocations.reduce((sum, item) => sum + item.spent, 0);
+  const totalCommitted = activeAllocations.reduce((sum, item) => sum + item.committed, 0);
+  const utilization = totalQuota > 0 ? (totalSpent + totalCommitted) / totalQuota : 0;
+
+  const handleDistribute = async (ccId: string) => {
+    setLoading(true);
+    await distributeAnnualBudget(ccId, selectedYear);
+    setShowDistributeModal(false);
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50/50 p-8">
+      {/* Header section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+            <Building className="text-erp-navy" size={32} />
+            Phân bổ ngân sách theo Quý
+          </h1>
+          <p className="text-slate-500 font-medium mt-1">
+            Quản lý và cấp phát ngân sách định kỳ cho các trung tâm chi phí
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
+            {[1, 2, 3, 4].map((q) => (
+              <button
+                key={q}
+                onClick={() => setSelectedQuarter(q)}
+                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                  selectedQuarter === q 
+                    ? "bg-erp-navy text-white shadow-md shadow-erp-navy/20" 
+                    : "text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                Quý {q}
+              </button>
+            ))}
+          </div>
+          
+          <button 
+            onClick={() => setShowDistributeModal(true)}
+            className="flex items-center gap-2 bg-erp-navy hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-erp-navy/20 transition-all active:scale-95"
+          >
+            <Zap size={18} />
+            Phân bổ 20/80
+          </button>
+        </div>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-erp-navy">
+            <CalculatorIcon size={80} />
+          </div>
+          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Tổng hạn mức Quý {selectedQuarter}</p>
+          <p className="text-2xl font-black text-slate-900">{totalQuota.toLocaleString()} VND</p>
+          <div className="flex items-center gap-2 mt-2 text-emerald-600 text-xs font-bold">
+            <TrendingUp size={14} />
+            <span>Năm tài chính {selectedYear}</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-erp-blue">
+            <DollarSign size={80} />
+          </div>
+          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Đã chi tiêu thực tế</p>
+          <p className="text-2xl font-black text-slate-900">{totalSpent.toLocaleString()} VND</p>
+          <div className="w-full bg-slate-100 h-1.5 rounded-full mt-4">
+            <div 
+              className="bg-erp-blue h-full rounded-full transition-all duration-1000" 
+              style={{ width: `${totalQuota > 0 ? (totalSpent / totalQuota) * 100 : 0}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-amber-500">
+            <Clock size={80} />
+          </div>
+          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Cam kết chi (Committed)</p>
+          <p className="text-2xl font-black text-slate-900">{totalCommitted.toLocaleString()} VND</p>
+          <p className="text-emerald-600 text-xs font-bold mt-2 italic">*Từ PO/PR đang xử lý</p>
+        </div>
+
+        <div className="bg-erp-navy p-6 rounded-3xl shadow-xl shadow-erp-navy/20 relative overflow-hidden group text-white">
+          <div className="absolute top-0 right-0 p-4 opacity-20">
+            <PieChart size={80} />
+          </div>
+          <p className="text-xs font-black uppercase tracking-widest text-white/60 mb-2">Hiệu suất sử dụng</p>
+          <p className="text-3xl font-black">{(utilization * 100).toFixed(1)}%</p>
+          <p className="text-white/80 text-xs font-medium mt-2">Ngân sách còn lại: {(totalQuota - totalSpent - totalCommitted).toLocaleString()} VND</p>
+        </div>
+      </div>
+
+      {/* Main Table Section */}
+      <div className="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+        <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+          <div className="flex items-center gap-4">
+            <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-200">
+              <LayoutGrid size={20} className="text-erp-navy" />
+            </div>
+            <h2 className="font-black text-slate-900 tracking-tight">Dữ liệu phân bổ ngân sách {selectedYear}</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <input 
+                type="text" 
+                placeholder="Tìm phòng ban..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-erp-blue/20"
+              />
+            </div>
+            <button className="p-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
+              <Filter size={18} />
+            </button>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-slate-50/50">
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Trung tâm chi phí (CC)</th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Hạn mức Quý</th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Tiến độ sử dụng</th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Còn lại</th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {activeAllocations.length > 0 ? activeAllocations.map((item) => {
+                const used = item.spent + item.committed;
+                const percent = item.quota > 0 ? (used / item.quota) * 100 : 0;
+                const remaining = item.quota - used;
+
+                return (
+                  <tr key={item.id} className="group hover:bg-slate-50/50 transition-colors cursor-pointer">
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center text-erp-navy group-hover:bg-erp-navy group-hover:text-white transition-all">
+                          <Building size={20} />
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 leading-none mb-1">{item.deptName}</p>
+                          <p className="text-xs font-bold text-slate-400 tracking-wider uppercase">{item.costCenterCode}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <p className="font-black text-slate-900">{item.quota.toLocaleString()}</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase">{item.currency} / Q{selectedQuarter}</p>
+                    </td>
+                    <td className="px-6 py-5 min-w-[200px]">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all duration-1000 ${
+                              percent > 90 ? "bg-red-500" : 
+                              percent > 70 ? "bg-amber-500" : "bg-emerald-500"
+                            }`}
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                        <span className={`text-xs font-black ${
+                          percent > 90 ? "text-red-500" : "text-slate-700"
+                        }`}>{percent.toFixed(0)}%</span>
+                      </div>
+                      <div className="flex justify-between mt-1.5 px-0.5">
+                        <span className="text-[9px] font-black text-slate-400 uppercase">Đã dùng: {used.toLocaleString()}</span>
+                        <span className="text-[9px] font-black text-slate-400 uppercase">Cam kết: {item.committed.toLocaleString()}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <p className={`font-black ${remaining < 0 ? 'text-red-600' : 'text-erp-navy'}`}>{remaining.toLocaleString()}</p>
+                      <p className="text-[10px] font-extrabold text-emerald-600 uppercase">Khả dụng</p>
+                    </td>
+                    <td className="px-6 py-5 text-right">
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border ${
+                        item.status === "APPROVED" 
+                          ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                          : "bg-amber-50 text-amber-600 border-amber-100"
+                      }`}>
+                        <CheckCircle2 size={12} />
+                        <span className="text-[10px] font-black uppercase tracking-wider">{item.status}</span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              }) : (
+                <tr>
+                  <td colSpan={5} className="py-20 text-center">
+                    <div className="flex flex-col items-center gap-2 opacity-30">
+                      <LayoutGrid size={48} />
+                      <p className="font-bold">Chưa có dữ liệu phân bổ cho Quý {selectedQuarter}</p>
+                      <p className="text-xs">Sử dụng tính năng "Phân bổ 20/80" để khởi tạo ngân sách năm</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        
+        {/* Pagination/Footer */}
+        <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Hiển thị {activeAllocations.length} phòng ban</p>
+          <div className="flex items-center gap-1">
+            <button className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-xs font-black hover:bg-slate-50 transition-colors uppercase">Trước</button>
+            <button className="px-3 py-1 rounded-lg bg-erp-navy text-white text-xs font-black shadow-md shadow-erp-navy/20 uppercase">1</button>
+            <button className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-xs font-black hover:bg-slate-50 transition-colors uppercase">Sau</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Warning Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <div className="bg-amber-50 border border-amber-200 p-6 rounded-[2rem] flex items-start gap-4">
+          <div className="p-3 bg-amber-500 rounded-2xl text-white shadow-lg shadow-amber-500/20">
+            <AlertCircle size={24} />
+          </div>
+          <div>
+            <h3 className="font-black text-amber-900 text-lg leading-tight mb-1">Cảnh báo Ngân sách (Quý {selectedQuarter})</h3>
+            <p className="text-amber-700 text-sm font-medium">Theo dõi các trung tâm chi phí có hiệu suất sử dụng vượt ngưỡng 90%. Vui lòng xem xét các yêu cầu bổ sung ngân sách.</p>
+            <button className="mt-3 text-xs font-black uppercase tracking-widest text-amber-900 flex items-center gap-1 hover:underline">
+              Xem chi tiết <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
+        
+        <div className="bg-erp-navy p-8 rounded-[2rem] flex items-center justify-between group overflow-hidden relative">
+          <div className="absolute -right-10 -bottom-10 h-40 w-40 bg-white opacity-5 rounded-full group-hover:scale-150 transition-transform duration-700" />
+          <div className="relative z-10 text-white">
+            <h3 className="font-black text-xl mb-1">Quyết toán tài chính?</h3>
+            <p className="text-white/70 text-sm font-medium max-w-xs">Tự động kết chuyển số dư thừa vào quỹ dự phòng khi kết thúc chu kỳ quý.</p>
+          </div>
+          <button className="relative z-10 bg-white text-erp-navy px-6 py-3 rounded-2xl font-black text-sm shadow-xl shadow-black/20 hover:scale-105 transition-transform active:scale-95 uppercase tracking-wider">
+            Thực hiện quyết toán
+          </button>
+        </div>
+      </div>
+
+      {/* Distribution Modal */}
+      {showDistributeModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div className="flex items-center gap-4">
+                <div className="bg-erp-navy p-3 rounded-2xl text-white shadow-lg shadow-erp-navy/20">
+                  <Zap size={24} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-slate-900">Phân bổ ngân sách năm {selectedYear}</h2>
+                  <p className="text-slate-500 font-bold text-sm uppercase tracking-wider">Quy tắc 20% Dự phòng / 80% Quý (20% mỗi quý)</p>
+                </div>
+              </div>
+              <button onClick={() => setShowDistributeModal(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="p-8 max-h-[60vh] overflow-y-auto">
+              <div className="space-y-4">
+                <p className="text-sm font-bold text-slate-500 mb-4 px-2 italic">⚠️ Chọn Trung tâm chi phí (Cost Center) để thực hiện tính toán và phân bổ tự động cho cả năm {selectedYear}:</p>
+                {costCenters.map(cc => (
+                  <div key={cc.id} className="flex items-center justify-between p-5 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-3xl transition-all group">
+                    <div>
+                      <p className="font-black text-slate-900">{cc.name}</p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{cc.code}</span>
+                        <span className="h-1 w-1 rounded-full bg-slate-300" />
+                        <span className="text-xs font-bold text-erp-blue">Hạn mức năm: {Number(cc.budgetAnnual).toLocaleString()} {cc.currency}</span>
+                      </div>
+                    </div>
+                    <button 
+                      disabled={loading}
+                      onClick={() => handleDistribute(cc.id)}
+                      className="px-6 py-2.5 bg-white border-2 border-slate-200 hover:border-erp-navy hover:bg-erp-navy hover:text-white rounded-2xl font-black text-sm transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      {loading ? <Loader2 size={18} className="animate-spin" /> : "PHÂN BỔ NGAY"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="p-8 bg-slate-50 flex items-center justify-end gap-3 border-t border-slate-100">
+              <button 
+                onClick={() => setShowDistributeModal(false)}
+                className="px-8 py-3 text-sm font-black text-slate-600 hover:text-slate-900 transition-colors uppercase tracking-widest"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CalculatorIcon({ size = 24 }: { size?: number }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <rect x="4" y="2" width="16" height="20" rx="2" />
+      <line x1="8" y1="6" x2="16" y2="6" />
+      <line x1="16" y1="14" x2="16" y2="18" />
+      <path d="M16 10h.01" />
+      <path d="M12 10h.01" />
+      <path d="M8 10h.01" />
+      <path d="M12 14h.01" />
+      <path d="M8 14h.01" />
+      <path d="M12 18h.01" />
+      <path d="M8 18h.01" />
+    </svg>
+  );
+}
