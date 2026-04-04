@@ -164,13 +164,6 @@ export class BudgetModuleController {
   }
 
   // Budget Allocations
-  /**
-   * WORKFLOW QUY TRÌ DUYỆT NGÂN SÁCH:
-   * 1. DEPT_APPROVER (Trưởng phòng) tạo & gửi yêu cầu phân bổ ngân sách
-   * 2. FINANCE (Trưởng phòng Tài chính) duyệt (Level 1: 0 - 500M VND)
-   * 3. DIRECTOR (Giám đốc) duyệt nếu vượt 500M (Level 2: 500M - 1B VND)
-   * 4. CEO duyệt nếu vượt 1B (Level 3: > 1B VND)
-   */
   @Post('allocations')
   @Roles(
     UserRole.FINANCE,
