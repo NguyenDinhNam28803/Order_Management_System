@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { BudgetModuleService } from './budget-module.service';
 import { BudgetModuleController } from './budget-module.controller';
 import { BudgetOverrideService } from './budget-override.service';
 import { AuditModuleModule } from '../audit-module/audit-module.module';
+import { ApprovalModuleModule } from '../approval-module/approval-module.module';
 
 @Module({
-  imports: [AuditModuleModule],
+  imports: [AuditModuleModule, forwardRef(() => ApprovalModuleModule)],
   providers: [BudgetModuleService, BudgetOverrideService],
   controllers: [BudgetModuleController],
   exports: [BudgetModuleService, BudgetOverrideService],

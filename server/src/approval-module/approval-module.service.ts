@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AutomationService } from '../common/automation/automation.service';
@@ -18,14 +20,17 @@ import {
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { UserModuleService } from '../user-module/user-module.service';
+import { AuditModuleService } from '../audit-module/audit-module.service';
 
 @Injectable()
 export class ApprovalModuleService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly automationService: AutomationService,
+    @Inject(forwardRef(() => BudgetModuleService))
     private readonly budgetService: BudgetModuleService,
     private readonly userService: UserModuleService,
+    private readonly auditService: AuditModuleService,
   ) {}
 
   /**
@@ -334,6 +339,90 @@ export class ApprovalModuleService {
             approvedAt: actionStatus === 'APPROVED' ? new Date() : undefined,
           },
         });
+        break;
+      }
+
+      case DocumentType.BUDGET_ALLOCATION: {
+        let status = 'SUBMITTED'; // Default
+        let updateData: any = {};
+
+        if (actionStatus === 'APPROVED') {
+          status = 'APPROVED';
+
+          // Lấy BudgetAllocation để tạo budgetCode
+          const budget = await this.prisma.budgetAllocation.findUnique({
+            where: { id },
+            include: {
+              budgetPeriod: true,
+              department: true,
+              category: true,
+              costCenter: true,
+            },
+          });
+
+          if (budget) {
+            // Tạo budgetCode (giống như trong approveAllocation)
+            const deptCode =
+              budget.department?.code || budget.costCenter?.code || 'ORG';
+            const catCode = budget.category?.code || 'GEN';
+            const year = budget.budgetPeriod?.fiscalYear;
+            let periodCode = '';
+
+            switch (budget.budgetPeriod?.periodType) {
+              case 'MONTHLY':
+                periodCode = `M${budget.budgetPeriod?.periodNumber}`;
+                break;
+              case 'QUARTERLY':
+                periodCode = `Q${budget.budgetPeriod?.periodNumber}`;
+                break;
+              case 'ANNUAL':
+                periodCode = 'FY';
+                break;
+              case 'RESERVE':
+                periodCode = 'RS';
+                break;
+              default:
+                periodCode = `P${budget.budgetPeriod?.periodNumber}`;
+            }
+
+            const budgetCode =
+              `BG-${deptCode}-${catCode}-${year}-${periodCode}`.toUpperCase();
+
+            updateData = {
+              status,
+              budgetCode,
+              approvedById: user?.sub,
+              approvedAt: new Date(),
+            };
+          }
+        } else if (actionStatus === 'REJECTED') {
+          status = 'REJECTED';
+          updateData = {
+            status: ApprovalStatus.REJECTED,
+          };
+        } else if (actionStatus === 'PENDING_APPROVAL') {
+          status = 'SUBMITTED';
+          updateData = {
+            status: ApprovalStatus.PENDING,
+          };
+        }
+
+        await this.prisma.budgetAllocation.update({
+          where: { id },
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: updateData,
+        });
+        await this.auditService.create(
+          {
+            action: 'APPROVE_BUDGET_ALLOCATION',
+            entityType: 'BudgetAllocation',
+            entityId: id,
+            oldValue: location,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            newValue: updateData,
+          },
+          user!,
+        );
         break;
       }
     }

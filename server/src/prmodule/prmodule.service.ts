@@ -11,6 +11,7 @@ import {
   DocumentType,
   UserRole,
   ProductType,
+  BudgetAllocationStatus,
 } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { PrismaService } from '../prisma/prisma.service';
@@ -72,7 +73,7 @@ export class PrmoduleService {
             costCenterId: createPrDto.costCenterId,
             categoryId: item.categoryId,
             orgId: user.orgId,
-            status: 'APPROVED',
+            status: BudgetAllocationStatus.APPROVED,
           },
         });
 

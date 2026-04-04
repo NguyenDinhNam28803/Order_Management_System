@@ -8,6 +8,7 @@ import {
   PoStatus,
   GrnStatus,
   QcResult,
+  PriceVolatility,
 } from '@prisma/client';
 
 @Injectable()
@@ -26,9 +27,57 @@ export class AutomationService {
     this.logger.log(`Handling automation for approved ${docType}: ${docId}`);
 
     if (docType === DocumentType.PURCHASE_REQUISITION) {
-      await this.autoCreateRfqFromPr(docId);
+      await this.routePrApprovalFlow(docId);
     } else if (docType === DocumentType.PURCHASE_ORDER) {
       await this.autoCreateGrnFromPo(docId);
+    }
+  }
+
+  /**
+   * ROUTING 2 FLOWS DỰA VÀO MẶT HÀNG:
+   * - Flow 1 (Giá ổn định): Tạo RFQ ngay
+   * - Flow 2 (Giá thay đổi): Tạo QuotationRequest (báo giá trước) sau đó tạo PR từ giá báo
+   */
+  private async routePrApprovalFlow(prId: string) {
+    try {
+      const pr = await this.prisma.purchaseRequisition.findUnique({
+        where: { id: prId },
+        include: {
+          items: {
+            include: { product: true },
+          },
+        },
+      });
+
+      if (!pr || pr.status !== PrStatus.APPROVED) {
+        this.logger.warn(`PR ${prId} not in APPROVED status`);
+        return;
+      }
+
+      // Kiểm tra xem PR có mặt hàng yêu cầu báo giá không
+      const hasVolatileItems = pr.items.some(
+        (item) =>
+          (item.product?.priceVolatility === PriceVolatility.VOLATILE ||
+            item.product?.priceVolatility === PriceVolatility.MODERATE ||
+            item.product?.requiresQuoteFirst === true) ??
+          false,
+      );
+
+      if (hasVolatileItems) {
+        this.logger.log(
+          `PR ${pr.prNumber} contains volatile items. Creating QuotationRequest instead of RFQ...`,
+        );
+        await this.autoCreateQuotationRequestFromPr(prId);
+      } else {
+        this.logger.log(
+          `PR ${pr.prNumber} contains stable items. Creating RFQ...`,
+        );
+        await this.autoCreateRfqFromPr(prId);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to route PR approval flow for ${prId}: ${error!}`,
+      );
     }
   }
 
@@ -249,7 +298,78 @@ export class AutomationService {
   }
 
   /**
-   * Tự động tạo RFQ từ PR đã duyệt
+   * FLOW 2 - Tự động tạo QuotationRequest từ PR có mặt hàng giá thay đổi
+   * Chờ nhà cung cấp báo giá trước, sau đó mới tạo PR/PO thực tế
+   */
+  private async autoCreateQuotationRequestFromPr(prId: string) {
+    try {
+      const pr = await this.prisma.purchaseRequisition.findUnique({
+        where: { id: prId },
+        include: {
+          items: {
+            include: { product: true },
+          },
+          requester: true,
+        },
+      });
+
+      if (!pr) {
+        this.logger.error(`PR ${prId} not found`);
+        return;
+      }
+
+      this.logger.log(
+        `Auto-creating QuotationRequests for PR with volatile items: ${pr.prNumber}`,
+      );
+
+      // Tạo QuotationRequest cho mỗi item (hoặc mỗi category)
+      // Nhóm theo categoryId để tránh trùng lặp
+      const categoryMap = new Map<string | null, number>();
+
+      for (const item of pr.items) {
+        const catId = item.categoryId || 'default';
+        const totalAmount = Number(item.estimatedPrice) * Number(item.qty);
+
+        if (categoryMap.has(catId)) {
+          // Cộng gọp vào category hiện có
+          categoryMap.set(catId, categoryMap.get(catId)! + totalAmount);
+        } else {
+          categoryMap.set(catId, totalAmount);
+        }
+      }
+
+      // Tạo QuotationRequest cho từng category
+      for (const [catId, budgetAmount] of categoryMap) {
+        const quotationReq = await this.prisma.quotationRequest.create({
+          data: {
+            prId: pr.id,
+            requesterId: pr.requesterId,
+            categoryId: catId === 'default' ? null : catId,
+            description: `Báo giá cho danh mục mặt hàng - PR ${pr.prNumber}`,
+            estimatedBudget: budgetAmount,
+            status: 'PENDING',
+            note: `Mặt hàng có giá thay đổi liên tục. Yêu cầu báo giá chi tiết trước khi thực hiện mua.`,
+          },
+        });
+
+        this.logger.log(
+          `QuotationRequest created: ${quotationReq.id} for category: ${catId}`,
+        );
+      }
+
+      this.logger.log(
+        `Automation completed: QuotationRequests created for PR ${pr.prNumber}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to auto-create QuotationRequest from PR ${prId}: ${error!}`,
+      );
+    }
+  }
+
+  /**
+   * FLOW 1 - Tự động tạo RFQ từ PR có mặt hàng giá ổn định
+   * Tạo RFQ ngay để mời nhà cung cấp báo giá tiêu chuẩn
    */
   private async autoCreateRfqFromPr(prId: string) {
     try {

@@ -233,12 +233,14 @@ export class AuthModuleRepository {
     fullName: string;
     role: UserRole;
     orgId: string;
+    deptId: string | null;
   }): Promise<AuthTokens> {
     const payload = {
       sub: user.id,
       email: user.email,
       role: user.role,
       orgId: user.orgId,
+      deptId: user.deptId,
     };
 
     const [accessToken, refreshToken] = await Promise.all([

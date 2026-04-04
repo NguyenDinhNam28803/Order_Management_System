@@ -22,7 +22,7 @@ import {
   CreateBudgetPeriodDto,
   UpdateBudgetAllocationDto,
   UpdateBudgetPeriodDto,
-  RejectBudgetAllocationDto,
+  // RejectBudgetAllocationDto,
 } from './dto/budget.dto';
 
 @ApiTags('Budget Management')
@@ -228,38 +228,38 @@ export class BudgetModuleController {
     return submitted;
   }
 
-  @Patch('allocations/:id/approve')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
-  @ApiOperation({
-    summary: 'Duyệt yêu cầu phân bổ ngân sách',
-    description:
-      'Phòng Tài chính duyệt yêu cầu từ các phòng ban. Nếu vượt mức 500M, sẽ tự động escalate Giám đốc. Nếu vượt 1B, escalate CEO.',
-  })
-  async approveAllocation(
-    @Param('id') id: string,
-    @Request() req: { user: JwtPayload },
-  ) {
-    return this.budgetService.approveAllocation(id, req.user);
-  }
+  // @Patch('allocations/:id/approve')
+  // @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
+  // @ApiOperation({
+  //   summary: 'Duyệt yêu cầu phân bổ ngân sách',
+  //   description:
+  //     'Phòng Tài chính duyệt yêu cầu từ các phòng ban. Nếu vượt mức 500M, sẽ tự động escalate Giám đốc. Nếu vượt 1B, escalate CEO.',
+  // })
+  // async approveAllocation(
+  //   @Param('id') id: string,
+  //   @Request() req: { user: JwtPayload },
+  // ) {
+  //   return this.budgetService.approveAllocation(id, req.user);
+  // }
 
-  @Patch('allocations/:id/reject')
-  @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
-  @ApiOperation({
-    summary: 'Từ chối yêu cầu phân bổ ngân sách',
-    description:
-      'Duyệt viên từ chối yêu cầu với lý do cụ thể. Trưởng phòng có thể sửa lại và gửi lại sau đó.',
-  })
-  async rejectAllocation(
-    @Param('id') id: string,
-    @Body() dto: RejectBudgetAllocationDto,
-    @Request() req: { user: JwtPayload },
-  ) {
-    return this.budgetService.rejectAllocation(
-      id,
-      dto.rejectedReason || 'Không có lý do cụ thể',
-      req.user,
-    );
-  }
+  // @Patch('allocations/:id/reject')
+  // @Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO)
+  // @ApiOperation({
+  //   summary: 'Từ chối yêu cầu phân bổ ngân sách',
+  //   description:
+  //     'Duyệt viên từ chối yêu cầu với lý do cụ thể. Trưởng phòng có thể sửa lại và gửi lại sau đó.',
+  // })
+  // async rejectAllocation(
+  //   @Param('id') id: string,
+  //   @Body() dto: RejectBudgetAllocationDto,
+  //   @Request() req: { user: JwtPayload },
+  // ) {
+  //   return this.budgetService.rejectAllocation(
+  //     id,
+  //     dto.rejectedReason || 'Không có lý do cụ thể',
+  //     req.user,
+  //   );
+  // }
 
   /**
    * Lấy danh sách tất cả các khoản phân bổ ngân sách

@@ -23,6 +23,11 @@ export class RfqRepository {
   ) {
     const { prId, supplierIds, ...rfqData } = data;
 
+    // Validate prId is provided
+    if (!prId) {
+      throw new Error('prId is required when creating RFQ');
+    }
+
     // Lấy items từ PR để copy sang RFQ
     const prItems = await this.prisma.prItem.findMany({
       where: { prId },

@@ -919,108 +919,133 @@ export class BudgetModuleService {
     return updated;
   }
 
-  async approveAllocation(
-    id: string,
-    user: JwtPayload,
-  ): Promise<BudgetAllocation> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const allocation = (await this.findAllocationOne(id)) as any;
+  // async approveAllocation(
+  //   id: string,
+  //   user: JwtPayload,
+  // ): Promise<BudgetAllocation> {
+  //   // ⚠️ DEPRECATED: Duyệt phải thông qua ApprovalWorkflow (Approval Module)
+  //   // Endpoint này chỉ là fallback khi không có workflow được tạo
+  //   // Flow đúng: submitAllocation() → initiateWorkflow() → handleAction() (approval) → updateSourceDocumentStatus()
 
-    if (allocation.status !== BudgetAllocationStatus.SUBMITTED) {
-      throw new BadRequestException(
-        'Chỉ có thể duyệt ngân sách đang ở trạng thái Đã gửi.',
-      );
-    }
+  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //   const allocation = (await this.findAllocationOne(id)) as any;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { budgetPeriod, department, category, costCenter } = allocation;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const deptCode = department?.code || costCenter?.code || 'ORG';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const catCode = category?.code || 'GEN';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const year = budgetPeriod.fiscalYear;
-    let periodCode = '';
+  //   if (allocation.status !== BudgetAllocationStatus.SUBMITTED) {
+  //     throw new BadRequestException(
+  //       'Chỉ có thể duyệt ngân sách đang ở trạng thái Đã gửi.',
+  //     );
+  //   }
 
-    switch (budgetPeriod.periodType) {
-      case 'MONTHLY':
-        periodCode = `M${budgetPeriod.periodNumber}`;
-        break;
-      case 'QUARTERLY':
-        periodCode = `Q${budgetPeriod.periodNumber}`;
-        break;
-      case 'ANNUAL':
-        periodCode = 'FY';
-        break;
-      case 'RESERVE':
-        periodCode = 'RS';
-        break;
-      default:
-        periodCode = `P${budgetPeriod.periodNumber}`;
-    }
+  //   // Kiểm tra xem có ApprovalWorkflow nào chưa được duyệt không
+  //   const pendingApprovals = await this.prisma.approvalWorkflow.count({
+  //     where: {
+  //       documentType: 'BUDGET_ALLOCATION',
+  //       documentId: id,
+  //       status: 'PENDING',
+  //     },
+  //   });
 
-    const budgetCode =
-      `BG-${deptCode}-${catCode}-${year}-${periodCode}`.toUpperCase();
+  //   if (pendingApprovals > 0) {
+  //     throw new BadRequestException(
+  //       'Ngân sách này đang có bước duyệt chưa hoàn thiện. Vui lòng duyệt qua Approval Workflow.',
+  //     );
+  //   }
 
-    const updated = await this.prisma.budgetAllocation.update({
-      where: { id },
-      data: {
-        status: BudgetAllocationStatus.APPROVED,
-        approvedById: user.sub,
-        approvedAt: new Date(),
-        budgetCode,
-      },
-    });
+  //   // Tạo budgetCode nếu chưa có
+  //   if (!allocation.budgetCode) {
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //     const { budgetPeriod, department, category, costCenter } = allocation;
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //     const deptCode = department?.code || costCenter?.code || 'ORG';
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //     const catCode = category?.code || 'GEN';
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //     const year = budgetPeriod.fiscalYear;
+  //     let periodCode = '';
 
-    await this.auditService.create(
-      {
-        action: 'APPROVE_BUDGET_ALLOCATION',
-        entityType: 'BudgetAllocation',
-        entityId: id,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        oldValue: allocation,
-        newValue: updated,
-      },
-      user,
-    );
+  //     switch (budgetPeriod.periodType) {
+  //       case 'MONTHLY':
+  //         periodCode = `M${budgetPeriod.periodNumber}`;
+  //         break;
+  //       case 'QUARTERLY':
+  //         periodCode = `Q${budgetPeriod.periodNumber}`;
+  //         break;
+  //       case 'ANNUAL':
+  //         periodCode = 'FY';
+  //         break;
+  //       case 'RESERVE':
+  //         periodCode = 'RS';
+  //         break;
+  //       default:
+  //         periodCode = `P${budgetPeriod.periodNumber}`;
+  //     }
 
-    return updated;
-  }
+  //     const budgetCode =
+  //       `BG-${deptCode}-${catCode}-${year}-${periodCode}`.toUpperCase();
 
-  async rejectAllocation(
-    id: string,
-    rejectedReason: string,
-    user: JwtPayload,
-  ): Promise<BudgetAllocation> {
-    const allocation = await this.findAllocationOne(id);
+  //     const updated = await this.prisma.budgetAllocation.update({
+  //       where: { id },
+  //       data: {
+  //         status: BudgetAllocationStatus.APPROVED,
+  //         approvedById: user.sub,
+  //         approvedAt: new Date(),
+  //         budgetCode,
+  //       },
+  //     });
 
-    if (allocation.status !== BudgetAllocationStatus.SUBMITTED) {
-      throw new BadRequestException(
-        'Chỉ có thể từ chối ngân sách đang ở trạng thái Đã gửi.',
-      );
-    }
+  //     await this.auditService.create(
+  //       {
+  //         action: 'APPROVE_BUDGET_ALLOCATION',
+  //         entityType: 'BudgetAllocation',
+  //         entityId: id,
+  //         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //         oldValue: allocation,
+  //         newValue: updated,
+  //       },
+  //       user,
+  //     );
 
-    const updated = await this.prisma.budgetAllocation.update({
-      where: { id },
-      data: {
-        status: BudgetAllocationStatus.REJECTED,
-        rejectedReason,
-      },
-    });
+  //     return updated;
+  //   } else {
+  //     // budgetCode đã được tạo bởi ApprovalWorkflow
+  //     return allocation;
+  //   }
+  // }
 
-    await this.auditService.create(
-      {
-        action: 'REJECT_BUDGET_ALLOCATION',
-        entityType: 'BudgetAllocation',
-        entityId: id,
-        oldValue: allocation,
-        newValue: updated,
-      },
-      user,
-    );
+  // async rejectAllocation(
+  //   id: string,
+  //   rejectedReason: string,
+  //   user: JwtPayload,
+  // ): Promise<BudgetAllocation> {
+  //   const allocation = await this.findAllocationOne(id);
 
-    return updated;
-  }
+  //   if (allocation.status !== BudgetAllocationStatus.SUBMITTED) {
+  //     throw new BadRequestException(
+  //       'Chỉ có thể từ chối ngân sách đang ở trạng thái Đã gửi.',
+  //     );
+  //   }
+
+  //   const updated = await this.prisma.budgetAllocation.update({
+  //     where: { id },
+  //     data: {
+  //       status: BudgetAllocationStatus.REJECTED,
+  //       rejectedReason,
+  //     },
+  //   });
+
+  //   await this.auditService.create(
+  //     {
+  //       action: 'REJECT_BUDGET_ALLOCATION',
+  //       entityType: 'BudgetAllocation',
+  //       entityId: id,
+  //       oldValue: allocation,
+  //       newValue: updated,
+  //     },
+  //     user,
+  //   );
+
+  //   return updated;
+  // }
 
   async findMyDeptAllocations(user: JwtPayload): Promise<BudgetAllocation[]> {
     if (!user.deptId) {
