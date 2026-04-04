@@ -12,10 +12,11 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
-import { BudgetPeriodType, UserRole } from '@prisma/client';
+import { BudgetPeriodType, UserRole, DocumentType } from '@prisma/client';
 import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { BudgetModuleService } from './budget-module.service';
 import { BudgetOverrideService } from './budget-override.service';
+import { ApprovalModuleService } from '../approval-module/approval-module.service';
 import {
   CreateBudgetAllocationDto,
   CreateBudgetPeriodDto,
@@ -32,6 +33,7 @@ export class BudgetModuleController {
   constructor(
     private readonly budgetService: BudgetModuleService,
     private readonly budgetOverrideService: BudgetOverrideService,
+    private readonly approvalService: ApprovalModuleService,
   ) {}
 
   // Budget Override Requests
@@ -202,7 +204,28 @@ export class BudgetModuleController {
     @Param('id') id: string,
     @Request() req: { user: JwtPayload },
   ) {
-    return this.budgetService.submitAllocation(id, req.user);
+    // 1. Submit allocation (change status to SUBMITTED)
+    const submitted = await this.budgetService.submitAllocation(id, req.user);
+
+    // 2. Tạo Approval Workflow tự động gọi ApprovalModuleService.initiateWorkflow()
+    try {
+      await this.approvalService.initiateWorkflow({
+        docType: DocumentType.BUDGET_ALLOCATION,
+        docId: id,
+        totalAmount: Number(submitted.allocatedAmount),
+        orgId: req.user.orgId,
+        requesterId: req.user.sub,
+        user: req.user,
+      });
+      console.log(`✅ Approval workflow created for budget allocation ${id}`);
+    } catch (error) {
+      console.warn(
+        `⚠️ Could not create approval workflow: ${(error as Error).message}`,
+      );
+      // Không block submission nếu workflow creation thất bại
+    }
+
+    return submitted;
   }
 
   @Patch('allocations/:id/approve')

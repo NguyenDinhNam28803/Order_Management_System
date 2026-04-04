@@ -901,6 +901,10 @@ export class BudgetModuleService {
       data: { status: BudgetAllocationStatus.SUBMITTED },
     });
 
+    // 🔄 NOTE: ApprovalModuleService.initiateWorkflow() sẽ được gọi từ controller
+    // để tạo Approval Workflow tự động. Xem budget-module.controller.ts
+    // Điều này tránh circular dependency modules.
+
     await this.auditService.create(
       {
         action: 'SUBMIT_BUDGET_ALLOCATION',
