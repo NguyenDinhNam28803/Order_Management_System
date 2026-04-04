@@ -73,7 +73,8 @@ export default function LoginPage() {
                                 { name: "CEO", email: "ceo@innhub.com", role: "CEO" },
                                 { name: "CFO (Finance)", email: "cfo@innhub.com", role: "FINANCE" },
                                 { name: "System Admin", email: "admin@innhub.com", role: "ADMIN" },
-                                { name: "Procurement", email: "proc.officer@innhub.com", role: "PROCUREMENT" }
+                                { name: "Procurement", email: "proc.officer@innhub.com", role: "PROCUREMENT" },
+                                { name: "Supplier", email: "supplier@abc.com.vn", role: "SUPPLIER" }
                             ].map((u, idx) => (
                                 <button
                                     key={idx}

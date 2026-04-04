@@ -6,13 +6,13 @@ import {
     Building2, Lock, CreditCard, ArrowUpRight,
     ArrowDownRight, Activity, Zap, FileText, ShoppingCart, Eye, Plus, Trash2,
     Clock, CheckCircle, Package, AlertCircle, AlertTriangle, History, Bell, Send, Loader2,
-    Search, ChevronDown, XCircle, RotateCcw
+    Search, ChevronDown, XCircle, RotateCcw, ArrowRight, ClipboardList, Edit3, Calendar
 } from "lucide-react";
 import { useProcurement, PR } from "./context/ProcurementContext";
 import { formatVND } from "./utils/formatUtils";
 
 export default function Dashboard() {
-    const { budgets, prs, myPrs, currentUser, loadingMyPrs, approvals, actionApproval, refreshData, notify, fetchPrDetail, budgetAllocations, budgetPeriods, rfqs, pos } = useProcurement();
+    const { budgets, prs, myPrs, currentUser, loadingMyPrs, approvals, actionApproval, refreshData, notify, fetchPrDetail, budgetAllocations, budgetPeriods, rfqs, pos, quoteRequests, createPRFromQuoteRequest } = useProcurement();
     const availableBudget = (budgets?.allocated || 0) - (budgets?.committed || 0) - (budgets?.spent || 0);
 
     // Calculate Dynamic Quarterly Remaining Budget for the Department
@@ -27,6 +27,15 @@ export default function Dashboard() {
 
     const [selectedPRDetails, setSelectedPRDetails] = React.useState<PR | null>(null);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [confirmModal, setConfirmModal] = React.useState<PR | null>(null);
+    const { confirmCatalogPrice } = useProcurement();
+
+    const formatDate = (ds?: string) => {
+        if (!ds) return "N/A";
+        const d = new Date(ds);
+        if (isNaN(d.getTime())) return ds;
+        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+    };
 
     const isRequester = currentUser?.role === "REQUESTER";
     const isApproverGroup = currentUser?.role === "MANAGER" || currentUser?.role === "DEPT_APPROVER" || currentUser?.role === "DIRECTOR" || currentUser?.role === "CEO" || currentUser?.role === "PLATFORM_ADMIN";
@@ -51,180 +60,276 @@ export default function Dashboard() {
         }
     };
 
+    const handleConfirmCatalogAction = async (pr: PR) => {
+        const success = await confirmCatalogPrice({
+            prId: pr.id,
+            supplierId: pr.preferredSupplierId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253",
+            price: pr.totalEstimate || 0,
+            stock: 10,
+            leadTime: 3
+        });
+        if (success) setConfirmModal(null);
+    };
+
     if (!currentUser) return <div className="p-20 text-center animate-pulse">Đang tải thông tin người dùng...</div>;
 
     const renderRequesterDashboard = () => {
         const personalPRs = myPrs || [];
-        const pendingPRsCount = personalPRs.filter((pr) => pr.status.includes("PENDING")).length;
+        const pendingPRsCount = personalPRs.filter((pr) => pr.status.includes("PENDING") || pr.status === "SUBMITTED").length;
         const approvedPRsCount = personalPRs.filter((pr) => pr.status === "APPROVED").length;
+        const [isSimDropdownOpen, setIsSimDropdownOpen] = React.useState(false);
+
+        const notifications = [
+            { id: 1, message: "PR-2026-001 được duyệt – Giám đốc vừa phê duyệt phiếu yêu cầu vật tư của bạn", time: "10M", type: "success" }
+        ];
 
         return (
             <main className="animate-in fade-in duration-500">
-                <div className="flex justify-between items-end mb-8">
+                {/* HEADER */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
                     <div>
-                        <h1 className="text-3xl font-black text-erp-navy tracking-tight">Khu vực làm việc cá nhân</h1>
-                        <p className="text-sm text-slate-500 mt-1">Xin chào, {currentUser.name || currentUser.fullName} - Hệ thống AI Procurement đã sẵn sàng.</p>
+                        <h1 className="text-4xl font-black text-erp-navy tracking-tighter uppercase mb-1">KHU VỰC LÀM VIỆC CÁ NHÂN</h1>
+                        <p className="text-sm font-bold text-slate-400 tracking-tight">
+                            Xin chào, <span className="text-erp-navy">{currentUser.name || currentUser.fullName}</span> – Hệ thống AI Procurement đã sẵn sàng.
+                        </p>
                     </div>
-                    <div className="flex gap-3">
-                        <Link href="/pr/create" className="btn-primary flex items-center gap-2">
-                            <Plus size={16} /> Tạo PR mới
-                        </Link>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                    <div className="erp-card p-6! border-l-4 border-amber-500">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="p-3 bg-amber-50 rounded-xl"><Clock size={20} className="text-amber-500" /></div>
-                            <span className="text-[10px] font-black uppercase text-amber-500 bg-amber-50 px-2 py-1 rounded">Chờ xử lý</span>
-                        </div>
-                        <div className="text-3xl font-black text-erp-navy font-mono">{pendingPRsCount}</div>
-                        <div className="mt-2 text-[10px] text-slate-400 font-bold">PR đang chờ duyệt</div>
-                    </div>
-
-                    <div className="erp-card p-6! border-l-4 border-emerald-500">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="p-3 bg-emerald-50 rounded-xl"><CheckCircle size={20} className="text-emerald-500" /></div>
-                            <span className="text-[10px] font-black uppercase text-emerald-500 bg-emerald-50 px-2 py-1 rounded">Đã duyệt</span>
-                        </div>
-                        <div className="text-3xl font-black text-erp-navy font-mono">{approvedPRsCount}</div>
-                        <div className="mt-2 text-[10px] text-slate-400 font-bold">PR đã duyệt tháng này</div>
-                    </div>
-
-                    <div className="erp-card !p-6 border-l-4 border-erp-blue">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="p-3 bg-blue-50 rounded-xl"><ShoppingCart size={20} className="text-erp-blue" /></div>
-                            <span className="text-[10px] font-black uppercase text-erp-blue bg-blue-50 px-2 py-1 rounded">Thực thi</span>
-                        </div>
-                        <div className="text-3xl font-black text-erp-navy font-mono">1</div>
-                        <div className="mt-2 text-[10px] text-slate-400 font-bold">PO đang thực hiện</div>
-                    </div>
-
-                    <div className="erp-card !p-6 border-l-4 border-purple-500">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="p-3 bg-purple-50 rounded-xl"><Package size={20} className="text-purple-500" /></div>
-                            <span className="text-[10px] font-black uppercase text-purple-500 bg-purple-50 px-2 py-1 rounded">Giao hàng</span>
-                        </div>
-                        <div className="text-3xl font-black text-erp-navy font-mono">2</div>
-                        <div className="mt-2 text-[10px] text-slate-400 font-bold">Hàng sắp về (trong 7 ngày)</div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div className="xl:col-span-2 space-y-8">
-                        <div className="erp-card bg-amber-50/50 border-amber-100 shadow-sm">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-amber-800 mb-4 flex items-center gap-2">
-                                <AlertTriangle size={14} className="text-amber-500" /> Cần hành động ngay
-                            </h3>
-                            <div className="space-y-3">
-                                <div className="bg-white p-4 rounded-xl border border-amber-200 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
-                                            <Zap size={18} />
-                                        </div>
+                    <div className="flex items-center gap-4 relative">
+                         <Link href="/quote-requests/create" className="px-6 py-4 bg-white border border-slate-200 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
+                             + Tạo yêu cầu báo giá
+                         </Link>
+                         <div className="relative">
+                            <button 
+                                onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
+                                className="px-10 py-5 bg-erp-navy text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-erp-navy/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
+                            >
+                                + Tạo PR mới
+                                <ChevronDown size={18} className={`transition-transform duration-300 ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            
+                            {isSimDropdownOpen && (
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-white rounded-3xl border border-slate-100 shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left w-full translate-z-0">
+                                        <div className="p-3 bg-blue-50 text-erp-blue rounded-xl"><Plus size={18} /></div>
                                         <div>
-                                            <div className="text-xs font-black text-erp-navy mb-1">Xác nhận AI Report cho PR-2026-002</div>
-                                            <div className="text-[10px] text-slate-500 font-bold">Hệ thống đã đề xuất 3 Nhà cung cấp cho lô máy may công nghiệp.</div>
+                                            <div className="text-[10px] font-black uppercase text-erp-navy mb-1 tracking-widest">Tạo quy trình thủ công</div>
+                                            <div className="text-[9px] text-slate-500 font-bold uppercase leading-tight">Vào PR trực tiếp</div>
                                         </div>
-                                    </div>
-                                    <Link href="/ai-report" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-amber-500/20 transition-all">
-                                        Xem AI Report
                                     </Link>
+                                    <button 
+                                        onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-50 transition-colors border-b border-slate-50 w-full text-left"
+                                    >
+                                        <div className="p-3 bg-emerald-50 text-emerald-500 rounded-xl"><Zap size={18} /></div>
+                                        <div>
+                                             <div className="text-[10px] font-black uppercase text-erp-navy mb-1 tracking-widest">Giả lập Catalog</div>
+                                             <div className="text-[9px] text-slate-500 font-bold uppercase leading-tight">Demo full-flow từ Catalog</div>
+                                        </div>
+                                    </button>
+                                    <button 
+                                        onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-50 transition-colors w-full text-left"
+                                    >
+                                        <div className="p-3 bg-purple-50 text-purple-600 rounded-xl"><RotateCcw size={18} /></div>
+                                        <div>
+                                             <div className="text-[10px] font-black uppercase text-erp-navy mb-1 tracking-widest">Giả lập Non-Catalog (AI)</div>
+                                             <div className="text-[9px] text-slate-500 font-bold uppercase leading-tight">Demo quote sync Supplier/AI</div>
+                                        </div>
+                                    </button>
                                 </div>
-                            </div>
-                        </div>
+                            )}
+                         </div>
+                    </div>
+                </div>
 
-                        <div className="erp-card p-0! overflow-hidden shadow-xl shadow-erp-navy/5">
-                            <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/20">
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-erp-navy flex items-center gap-2">
-                                    <FileText size={16} className="text-erp-blue" /> Danh sách PR của tôi (Gần nhất)
-                                </h3>
-                                <Link href="/pr" className="text-[9px] font-black uppercase text-erp-blue hover:underline bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm">Xem tất cả</Link>
-                            </div>
-                            <div className="overflow-x-auto">
-                                <table className="erp-table text-xs">
-                                    <thead>
-                                        <tr>
-                                            <th>Số PR</th>
-                                            <th>Tiêu đề (Lý do)</th>
-                                            <th>Ngày tạo</th>
-                                            <th className="text-right">Tổng ước tính</th>
-                                            <th className="text-center">Trạng thái</th>
-                                            <th className="text-right">Thao tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {loadingMyPrs ? (
-                                            [1, 2, 3].map(i => (
-                                                <tr key={i} className="animate-pulse">
-                                                    <td className="py-4"><div className="h-4 w-20 bg-slate-100 rounded"></div></td>
-                                                    <td className="py-4"><div className="h-4 w-40 bg-slate-100 rounded"></div></td>
-                                                    <td className="py-4"><div className="h-4 w-24 bg-slate-100 rounded"></div></td>
-                                                    <td className="py-4"><div className="h-4 w-24 bg-slate-100 rounded ml-auto"></div></td>
-                                                    <td className="py-4"><div className="h-6 w-16 bg-slate-100 rounded-full mx-auto"></div></td>
-                                                    <td className="py-4"><div className="h-8 w-16 bg-slate-100 rounded-lg ml-auto"></div></td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            personalPRs.length > 0 ? personalPRs.slice(0, 5).map((pr) => (
-                                                <tr key={pr.id} className="group hover:bg-erp-blue/[0.02] transition-colors relative">
-                                                    <td className="font-bold text-erp-navy group-hover:text-erp-blue transition-colors">{pr.prNumber || pr.id.substring(0, 8)}</td>
-                                                    <td className="max-w-50 truncate font-semibold text-slate-600" title={pr.title}>{pr.title}</td>
-                                                    <td className="text-slate-400 font-medium">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</td>
-                                                    <td className="font-mono text-right font-black text-erp-navy tracking-tight">{formatVND(pr.totalEstimate || pr.total)} ₫</td>
-                                                    <td className="text-center">
-                                                        <span className={`status-pill status-${(pr.status || 'DRAFT').toLowerCase()}`}>
-                                                            {pr.status}
-                                                        </span>
-                                                    </td>
-                                                    <td className="text-right">
-                                                        <div className="flex justify-end gap-2">
-                                                            {pr.status === "DRAFT" && (
-                                                                <Link href={`/pr/edit/${pr.id}`} className="px-3 py-2 bg-erp-blue/10 hover:bg-erp-blue hover:text-white text-erp-blue text-[9px] font-black uppercase tracking-widest rounded-xl transition-all shadow-sm">
-                                                                    Sửa
-                                                                </Link>
-                                                            )}
-                                                            <button onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="px-3 py-2 bg-slate-100 hover:bg-erp-navy hover:text-white text-slate-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all shadow-sm">
-                                                                {loadingMyPrs && selectedPRDetails?.id === pr.id ? '...' : 'Chi tiết'}
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )) : (
-                                                <tr>
-                                                    <td colSpan={6} className="py-24 text-center text-slate-400 font-black uppercase">Chưa có yêu cầu nào</td>
-                                                </tr>
-                                            )
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                {/* HÀNG 1 — Metric Summaries */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <MetricCard title="Chờ duyệt" value={pendingPRsCount} icon={<Clock size={20} />} color="bg-amber-500" />
+                    <MetricCard title="Đã duyệt" value={approvedPRsCount} icon={<CheckCircle size={20} />} color="bg-emerald-500" />
+                    <MetricCard title="PO thực thi" value={1} icon={<ShoppingCart size={20} />} color="bg-blue-500" />
+                    <MetricCard title="Hàng sắp về" value={2} icon={<Package size={20} />} color="bg-purple-600" />
+                </div>
+
+                {/* HÀNG 2 — Action Required (Condition-based) */}
+                <ActionRequired items={quoteRequests.filter(q => q.status === 'COMPLETED')} onConvert={createPRFromQuoteRequest} />
+
+                {/* HÀNG 3 — Split Dashboard */}
+                <div className="grid grid-cols-1 xl:grid-cols-10 gap-10">
+                    {/* GIỮ 60% — Danh sách PR */}
+                    <div className="xl:col-span-6 space-y-6">
+                        <div className="bg-white rounded-[40px] border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
+                             <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/20">
+                                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-erp-navy flex items-center gap-3 leading-none">
+                                     <FileText size={16} className="text-erp-blue" /> Danh sách PR của tôi (gần nhất)
+                                 </h3>
+                                 <Link href="/pr" className="text-[9px] font-black uppercase text-erp-blue hover:underline bg-white px-4 py-2 rounded-xl border border-slate-100 shadow-sm transition-all hover:scale-105 active:scale-95">Xem tất cả ›</Link>
+                             </div>
+                             <div className="overflow-x-auto">
+                                 <table className="w-full text-left">
+                                     <thead>
+                                         <tr className="bg-slate-50/50 text-[9px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-widest">
+                                             <th className="px-8 py-5">Số PR</th>
+                                             <th className="px-8 py-5">Tiêu đề (Lý do)</th>
+                                             <th className="px-8 py-5">Ngày tạo</th>
+                                             <th className="px-8 py-5 text-right">Tổng ước tính</th>
+                                             <th className="px-8 py-5 text-center">Trạng thái</th>
+                                             <th className="px-8 py-5 text-right">Thao tác</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody className="divide-y divide-slate-50">
+                                         {loadingMyPrs ? (
+                                             [1, 2, 3].map(i => (
+                                                 <tr key={i} className="animate-pulse px-8">
+                                                     <td className="px-8 py-6"><div className="h-4 w-16 bg-slate-100 rounded"></div></td>
+                                                     <td className="px-8 py-6"><div className="h-4 w-32 bg-slate-100 rounded"></div></td>
+                                                     <td className="px-8 py-6"><div className="h-4 w-20 bg-slate-100 rounded ml-auto"></div></td>
+                                                     <td colSpan={2}></td>
+                                                 </tr>
+                                             ))
+                                         ) : (
+                                             personalPRs.slice(0, 5).map((pr) => (
+                                                 <tr key={pr.id} className="hover:bg-slate-50/50 transition-all group">
+                                                     <td className="px-8 py-6 font-black text-erp-navy text-xs tracking-tighter">{pr.prNumber || pr.id.substring(0, 8)}</td>
+                                                     <td className="px-8 py-6 font-semibold text-slate-600 text-[11px] truncate max-w-[180px]" title={pr.title}>{pr.title}</td>
+                                                     <td className="px-8 py-6 text-slate-400 font-bold text-[10px]">{formatDate(pr.createdAt)}</td>
+                                                     <td className="px-8 py-6 font-mono font-black text-erp-navy text-right tracking-tight">{formatVND(pr.totalEstimate || 0)}</td>
+                                                     <td className="px-8 py-6 text-center">
+                                                         <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase border transition-all ${
+                                                             pr.status === "APPROVED" ? "bg-emerald-50 text-emerald-500 border-emerald-100" : 
+                                                             pr.status === "REJECTED" ? "bg-rose-50 text-rose-500 border-rose-100" :
+                                                             pr.status === "DRAFT" ? "bg-slate-100 text-slate-400 border-slate-200" :
+                                                             "bg-blue-50 text-erp-blue border-blue-100"
+                                                         }`}>
+                                                             {pr.status}
+                                                         </span>
+                                                     </td>
+                                                     <td className="px-8 py-6 text-right">
+                                                         <div className="flex justify-end gap-2">
+                                                             {pr.status === "DRAFT" && (
+                                                                 <Link href={`/pr/edit/${pr.id}`} className="p-2.5 text-slate-300 hover:text-erp-blue hover:bg-blue-50 rounded-xl transition-all"><Edit3 size={16} /></Link>
+                                                             )}
+                                                             <button disabled={loadingMyPrs} onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="p-2.5 text-slate-300 hover:text-erp-navy hover:bg-slate-100 rounded-xl transition-all">
+                                                                 <Eye size={16} />
+                                                             </button>
+                                                         </div>
+                                                     </td>
+                                                 </tr>
+                                             ))
+                                         )}
+                                     </tbody>
+                                 </table>
+                             </div>
                         </div>
                     </div>
 
-                    <div className="space-y-6">
-                        <div className="erp-card shadow-xl shadow-erp-navy/5">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-erp-navy mb-6 flex items-center gap-2">
-                                <Bell size={16} className="text-erp-blue" /> Thông báo mới nhất
-                            </h3>
-                            <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:h-full before:w-0.5 before:bg-slate-100">
-                                <div className="relative flex gap-4">
-                                    <div className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 border-2 border-white shadow-lg shrink-0 z-10 -ml-0.5"></div>
-                                    <div className="flex-1 -mt-1">
-                                        <div className="flex justify-between mb-1">
-                                            <span className="text-[10px] font-black text-erp-navy">PR-2026-001 được duyệt</span>
-                                            <span className="text-[8px] font-bold text-slate-400 uppercase">10m</span>
-                                        </div>
-                                        <p className="text-[10px] text-slate-500 leading-relaxed font-medium">Giám đốc vừa phê duyệt phiếu yêu cầu vật tư của bạn.</p>
-                                    </div>
-                                </div>
-                            </div>
+                    {/* GIỮ 40% — QR & NOTI */}
+                    <div className="xl:col-span-4 space-y-10">
+                        {/* QR Section */}
+                        <div className="bg-white rounded-[40px] border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
+                             <div className="p-8 border-b border-slate-50 flex justify-between items-center">
+                                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-erp-navy flex items-center gap-3">
+                                     <ClipboardList size={16} className="text-erp-blue" /> Yêu cầu báo giá (QR)
+                                 </h3>
+                                 <Link href="/quote-requests" className="text-[9px] font-black uppercase text-erp-blue hover:underline">Xem tất cả ›</Link>
+                             </div>
+                             <div className="p-8 space-y-4">
+                                 {quoteRequests.length > 0 ? (
+                                     [...quoteRequests].sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 3).map(qr => (
+                                         <div key={qr.id} className="flex items-center justify-between p-5 bg-slate-50/50 rounded-3xl border border-slate-100 hover:border-erp-blue/20 transition-all group">
+                                             <div className="flex flex-col gap-1">
+                                                 <div className="flex items-center gap-2">
+                                                     <span className="text-[10px] font-black text-erp-navy">{qr.qrNumber}</span>
+                                                     <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase w-fit ${
+                                                         qr.status === 'QUOTED' ? 'bg-emerald-100 text-emerald-600' : 
+                                                         qr.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-600' :
+                                                         'bg-amber-100 text-amber-600'
+                                                     }`}>{qr.status}</span>
+                                                 </div>
+                                                 <span className="text-[9px] font-bold text-slate-400 truncate max-w-[120px]">{qr.title}</span>
+                                             </div>
+                                             {qr.status === "QUOTED" ? (
+                                                  <button onClick={() => createPRFromQuoteRequest(qr.id)} className="px-4 py-2 bg-erp-navy text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-erp-navy/10">CHUYỂN SANG PR</button>
+                                             ) : (
+                                                  <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest px-4">Đang xử lý...</span>
+                                             )}
+                                         </div>
+                                     ))
+                                 ) : (
+                                     <div className="py-10 text-center">
+                                         <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest italic leading-none">Không có yêu cầu báo giá gần đây</p>
+                                     </div>
+                                 )}
+                             </div>
+                        </div>
+
+                        {/* Notifications */}
+                        <div className="bg-erp-navy rounded-[40px] shadow-2xl shadow-erp-navy/20 p-10 text-white relative overflow-hidden group">
+                             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
+                                 <Bell size={100} />
+                             </div>
+                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-erp-blue mb-8 leading-none">THÔNG BÁO MỚI NHẤT</h3>
+                             <div className="space-y-8 relative">
+                                 <div className="absolute left-1.5 top-2 bottom-2 w-0.5 bg-white/10" />
+                                 {notifications.map(n => (
+                                     <div key={n.id} className="relative flex items-center gap-6 pl-8 group/item">
+                                         <div className="absolute left-0 w-3 h-3 rounded-full bg-erp-blue border-2 border-erp-navy z-10 group-hover/item:scale-150 transition-transform"></div>
+                                         <div className="flex-1">
+                                             <div className="flex justify-between items-start mb-1 leading-none">
+                                                 <p className="text-[11px] font-black text-white/90 leading-relaxed pr-6">{n.message}</p>
+                                                 <span className="text-[8px] font-black text-white/30 truncate">{n.time}</span>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 ))}
+                             </div>
                         </div>
                     </div>
                 </div>
             </main>
         );
     };
+
+    function MetricCard({ title, value, icon, color }: any) {
+        return (
+            <div className={`erp-card p-8! border-none shadow-xl shadow-erp-navy/5 relative overflow-hidden group hover:translate-y-[-4px] transition-all duration-300`}>
+                <div className={`absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 rounded-full opacity-5 group-hover:opacity-10 transition-opacity ${color}`}></div>
+                <div className="flex justify-between items-center mb-6">
+                    <div className={`p-4 rounded-2xl ${color} bg-opacity-10 ${color.replace('bg-', 'text-')}`}>
+                        {icon}
+                    </div>
+                    <div className="text-4xl font-black text-erp-navy font-mono tracking-tighter">{value}</div>
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 leading-none">{title}</div>
+            </div>
+        );
+    }
+
+    function ActionRequired({ items, onConvert }: any) {
+        if (items.length === 0) return null;
+        return (
+            <div className="bg-amber-50 rounded-[40px] p-10 border border-amber-100 mb-12 shadow-inner">
+                <div className="flex items-center gap-3 mb-8">
+                    <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></div>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-800 leading-none">CẦN HÀNH ĐỘNG NGAY ({items.length})</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {items.map((qr: any) => (
+                        <div key={qr.id} className="bg-white p-6 rounded-[32px] border border-amber-200 flex items-center justify-between shadow-xl shadow-amber-900/5 hover:-translate-y-1 transition-all duration-300 group">
+                            <div className="flex items-center gap-4">
+                                <div className="p-4 bg-amber-50 text-amber-500 rounded-[20px] group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
+                                <div>
+                                    <h4 className="text-xs font-black text-erp-navy uppercase mb-1">{qr.qrNumber} ĐÃ CÓ BÁO GIÁ</h4>
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight opacity-70">Nhà cung cấp đã nộp giá. Chuyển sang PR để duyệt mua hàng.</p>
+                                </div>
+                            </div>
+                            <button onClick={() => onConvert(qr.id)} className="px-8 py-4 bg-erp-navy hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-[0.1em] rounded-2xl shadow-xl shadow-erp-navy/20 transition-all flex items-center gap-2">
+                                Chuyển sang PR <ArrowRight size={14} />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     const renderCFODashboard = () => {
         const cfoPendingPRs = (approvals || []).map((app) => {
@@ -448,24 +553,57 @@ export default function Dashboard() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-50">
-                                        {prSourcingQueue.length > 0 ? prSourcingQueue.slice(0, 5).map((pr) => (
-                                            <tr key={pr.id} className="hover:bg-slate-50 transition-colors group">
-                                                <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0, 8)}</td>
-                                                <td className="font-semibold text-slate-500">{typeof pr.department === 'string' ? pr.department : (pr.department as any)?.name || "N/A"}</td>
-                                                <td className="text-slate-400 font-medium">{pr.requiredDate ? new Date(pr.requiredDate).toLocaleDateString('vi-VN') : 'N/A'}</td>
-                                                <td className="text-center">
-                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${pr.priority === 1 ? 'bg-rose-50 text-rose-500' : 'bg-amber-50 text-amber-500'}`}>
-                                                        {pr.priority === 1 ? 'CAO' : 'VỪA'}
-                                                    </span>
-                                                </td>
-                                                <td><span className="text-[10px] font-bold text-slate-500 italic">Chờ RFQ</span></td>
-                                                <td className="text-right pl-2 pr-6">
-                                                    <Link href={`/procurement/rfq/create?prId=${pr.id}`} className="inline-flex items-center justify-center whitespace-nowrap min-w-[100px] px-4 py-2 bg-erp-navy text-white text-[10px] font-black uppercase tracking-wide rounded-xl hover:bg-erp-blue transition-all shadow-md shadow-erp-navy/10">Lấy Báo Giá</Link>
-                                                </td>
-                                            </tr>
-                                        )) : (
-                                            <tr><td colSpan={6} className="py-20 text-center text-slate-300 font-black uppercase text-[10px]">Mọi yêu cầu đã được xử lý nguồn hàng</td></tr>
-                                        )}
+                                        {prs.map((pr) => {
+                                            const isSimulation = pr.id?.includes("SIM");
+                                            return (
+                                                <tr key={pr.id} className={`group hover:bg-slate-50/80 transition-colors border-b border-slate-50 ${isSimulation ? 'bg-erp-blue/5 border-erp-blue/20' : ''}`}>
+                                                    <td className="py-5 px-4 first:pl-6">
+                                                        <div className="flex flex-col">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-[11px] font-black text-erp-navy tracking-tight">{pr.prNumber}</span>
+                                                                {isSimulation && <span className="bg-erp-blue text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse shadow-sm ring-2 ring-erp-blue/20">GIẢ LẬP</span>}
+                                                            </div>
+                                                            <span className="text-[9px] font-bold text-slate-400 uppercase mt-1">{formatDate(pr.createdAt)}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-5 px-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform">
+                                                                <FileText size={14} />
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[11px] font-black text-slate-700 leading-tight group-hover:text-erp-navy transition-colors">{pr.title}</span>
+                                                                <span className="text-[9px] text-slate-400 font-bold mt-1 uppercase tracking-tight">{pr.department as string || "Phòng IT"}</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="text-slate-400 font-medium">{formatDate(pr.requiredDate)}</td>
+                                                    <td className="text-center">
+                                                        <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${pr.priority === 1 ? 'bg-rose-50 text-rose-500' : 'bg-amber-50 text-amber-500'}`}>
+                                                            {pr.priority === 1 ? 'CAO' : 'VỪA'}
+                                                        </span>
+                                                    </td>
+                                                    <td><span className="text-[10px] font-bold text-slate-500 italic">Chờ RFQ</span></td>
+                                                    <td className="text-right pl-2 pr-6">
+                                                        {pr.type === "CATALOG" ? (
+                                                            <button 
+                                                                onClick={() => setConfirmModal(pr)}
+                                                                className="inline-flex items-center justify-center whitespace-nowrap min-w-[120px] px-4 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wide rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-500/10"
+                                                            >
+                                                                Xác nhận giá
+                                                            </button>
+                                                        ) : (
+                                                            <Link 
+                                                                href={`/procurement/rfq/create?prId=${pr.id}`} 
+                                                                className="inline-flex items-center justify-center whitespace-nowrap min-w-[120px] px-4 py-2 bg-erp-navy text-white text-[10px] font-black uppercase tracking-wide rounded-xl hover:bg-erp-blue transition-all shadow-md shadow-erp-navy/10"
+                                                            >
+                                                                Lấy Báo Giá
+                                                            </Link>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>
@@ -550,7 +688,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Summary Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     <div className="erp-card !p-8 border-l-4 border-slate-200 bg-white shadow-sm flex flex-col justify-between relative overflow-hidden">
                         <div className="flex justify-between items-start mb-6">
                             <div className="text-5xl font-black text-erp-navy font-mono mb-1">{pendingPRCount}</div>
@@ -563,7 +701,7 @@ export default function Dashboard() {
                     </div>
 
                     <div className="erp-card !p-8 border-l-4 border-emerald-500 bg-white shadow-sm flex flex-col justify-between">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Ngân sách {currentUser?.department?.name || 'Phòng ban'} còn lại</div>
+                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Ngân sách {typeof currentUser?.department === 'object' ? (currentUser.department as any)?.name : (currentUser?.department || 'Phòng ban')} còn lại</div>
                         <div>
                             <div className="text-3xl font-black text-emerald-500 font-mono mb-2">{formatVND(quarterlyRemainingBudget)} ₫</div>
                             <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest pt-3 border-t border-slate-100">Trong {activeQuarterPeriod ? `Q${activeQuarterPeriod.periodNumber} / ${activeQuarterPeriod.fiscalYear}` : 'Tháng / Quý'}</div>
@@ -575,6 +713,51 @@ export default function Dashboard() {
                         <div>
                             <div className="text-4xl font-black text-amber-500 font-mono mb-2">{pendingPRCount}</div>
                             <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest pt-3 border-t border-slate-100">{pendingPRCount} phiếu đang chờ bạn</div>
+                        </div>
+                    </div>
+
+                    {/* New Budget Widget */}
+                    <div className="erp-card !p-8 border-l-4 border-erp-blue bg-white shadow-sm flex flex-col justify-between relative group hover:shadow-xl transition-all">
+                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 flex justify-between">
+                            Ngân sách phòng ban
+                            <Link href="/manager/spend-tracking" className="text-erp-blue hover:underline">Xem chi tiết →</Link>
+                        </div>
+                        <div>
+                            {deptAllocation ? (
+                                <>
+                                    <div className="flex justify-between items-end mb-2">
+                                        <div className="text-xl font-black text-erp-navy font-mono">
+                                            {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}%
+                                        </div>
+                                        <div className="text-[9px] font-black text-slate-400 uppercase tracking-tighter italic">Đã dùng / Tổng</div>
+                                    </div>
+                                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
+                                        <div 
+                                            className={`h-full transition-all duration-1000 ${
+                                                ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.9 ? 'bg-red-500' :
+                                                ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.7 ? 'bg-orange-500' : 'bg-erp-blue'
+                                            }`} 
+                                            style={{ width: `${Math.min(100, Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100))}%` }}
+                                        ></div>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-2 border-t border-slate-50 pt-3">
+                                        <div className="text-center">
+                                            <div className="text-[8px] font-black text-slate-300 uppercase leading-none mb-1">Cam kết</div>
+                                            <div className="text-[10px] font-black text-erp-blue">{formatVND(deptAllocation.committedAmount).replace('₫', '')}</div>
+                                        </div>
+                                        <div className="text-center border-x border-slate-50">
+                                            <div className="text-[8px] font-black text-slate-300 uppercase leading-none mb-1">Đã chi</div>
+                                            <div className="text-[10px] font-black text-slate-700">{formatVND(deptAllocation.spentAmount).replace('₫', '')}</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-[8px] font-black text-slate-300 uppercase leading-none mb-1">Còn lại</div>
+                                            <div className="text-[10px] font-black text-emerald-500">{formatVND(deptAllocation.allocatedAmount - deptAllocation.committedAmount - deptAllocation.spentAmount).replace('₫', '')}</div>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="py-2 text-center text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Chưa có dữ liệu ngân sách kỳ này</div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -649,7 +832,7 @@ export default function Dashboard() {
                                                 <input type="checkbox" className="rounded-md border-slate-300 text-erp-blue focus:ring-erp-blue" />
                                             </td>
                                             <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0, 8)}</td>
-                                            <td className="text-slate-500 font-medium">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</td>
+                                            <td className="text-slate-500 font-medium">{formatDate(pr.createdAt)}</td>
                                             <td className="text-center">
                                                 <span className={`px-2.5 py-1 ${priorityInfo.color} text-white rounded-lg font-black text-[9px] uppercase shadow-sm`}>
                                                     {priorityInfo.label}
@@ -669,7 +852,7 @@ export default function Dashboard() {
                                                 </span>
                                             </td>
                                             <td className="max-w-[200px] truncate font-medium text-slate-600">{pr.title}</td>
-                                            <td className="font-mono text-right font-black text-erp-blue text-sm">{formatVND(pr.totalEstimate || pr.total)} ₫</td>
+                                            <td className="font-mono text-right font-black text-erp-blue text-sm">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                             <td className="text-right px-8">
                                                 <div className="flex justify-end gap-1.5">
                                                     <button onClick={() => setSelectedPRDetails(pr)} className="p-2 bg-white border border-slate-100 text-slate-400 hover:text-erp-blue hover:border-erp-blue/20 rounded-xl transition-all shadow-sm" title="Xem chi tiết">
@@ -724,7 +907,7 @@ export default function Dashboard() {
                         {(prs || []).slice(0, 5).map(pr => (
                             <tr key={pr.id}>
                                 <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0, 8)}</td>
-                                <td className="font-bold text-slate-500">{typeof pr.department === 'object' ? pr.department?.name : (pr.department || "Dept")}</td>
+                                <td className="font-semibold text-slate-500">{typeof pr.department === 'object' ? (pr.department as any)?.name : (pr.department || "N/A")}</td>
                                 <td className="font-mono text-right font-black text-erp-navy">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                 <td className="text-right text-slate-400"><button onClick={() => setSelectedPRDetails(pr)} className="p-2 hover:bg-slate-100 rounded-xl"><Eye size={16} /></button></td>
                             </tr>
@@ -769,12 +952,12 @@ export default function Dashboard() {
                                     <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-center">
                                         <div className="text-[9px] font-black uppercase text-amber-600 mb-1">Ngày cần hàng</div>
                                         <div className="text-sm font-black text-erp-navy font-mono">
-                                            {selectedPRDetails.requiredDate ? new Date(selectedPRDetails.requiredDate).toLocaleDateString('vi-VN') : 'N/A'}
+                                            {formatDate(selectedPRDetails.requiredDate)}
                                         </div>
                                     </div>
                                     <div className="p-4 bg-erp-navy rounded-2xl text-center">
                                         <div className="text-[9px] font-black uppercase text-white/40 mb-1">Tổng dự toán</div>
-                                        <div className="text-sm font-black text-emerald-400 font-mono">{formatVND(selectedPRDetails.totalEstimate || selectedPRDetails.total || 0)} ₫</div>
+                                        <div className="text-sm font-black text-emerald-400 font-mono">{formatVND(selectedPRDetails.totalEstimate || 0)} ₫</div>
                                     </div>
                                 </div>
 

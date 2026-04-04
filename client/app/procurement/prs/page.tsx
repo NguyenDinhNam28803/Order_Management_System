@@ -19,9 +19,31 @@ import Link from "next/link";
 export default function ProcurementControlPage() {
     const { prs, currentUser, apiFetch, refreshData, notify } = useProcurement();
     const [searchTerm, setSearchTerm] = useState("");
+
+    const formatDate = (ds?: string) => {
+        if (!ds) return "N/A";
+        const d = new Date(ds);
+        if (isNaN(d.getTime())) return ds;
+        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+    };
+
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [deptFilter, setDeptFilter] = useState("ALL");
     const [isAssigning, setIsAssigning] = useState<string | null>(null);
+    const [confirmModal, setConfirmModal] = useState<PR | null>(null);
+
+    const { confirmCatalogPrice } = useProcurement();
+
+    const handleConfirmCatalog = async (pr: PR) => {
+        const success = await confirmCatalogPrice({
+            prId: pr.id,
+            supplierId: pr.preferredSupplierId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253",
+            price: pr.totalEstimate || 0,
+            stock: 10,
+            leadTime: 3
+        });
+        if (success) setConfirmModal(null);
+    };
 
     // Get unique departments for filtering
     const departments = useMemo((): string[] => {
@@ -81,9 +103,18 @@ export default function ProcurementControlPage() {
                     </div>
                     <div className="flex flex-col">
                         <span className="font-black text-erp-navy tracking-tight">{row.prNumber || row.id.substring(0,8)}</span>
-                        <span className="text-[9px] text-slate-400 font-bold uppercase">{new Date(row.createdAt).toLocaleDateString()}</span>
+                        <span className="text-[9px] text-slate-400 font-bold uppercase">{formatDate(row.createdAt)}</span>
                     </div>
                 </div>
+            )
+        },
+        {
+            label: "Loại",
+            key: "type",
+            render: (row: PR) => (
+                <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-widest ${row.type === 'CATALOG' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600'}`}>
+                    {row.type || 'NON-CATALOG'}
+                </span>
             )
         },
         {
@@ -109,7 +140,18 @@ export default function ProcurementControlPage() {
                     <span className="text-xs font-black text-erp-navy">
                         {typeof row.department === 'string' ? row.department : row.department?.name || "N/A"}
                     </span>
-                    <span className="text-[9px] text-slate-400 font-bold">CC: {row.costCenter?.code || "DEFAULT"}</span>
+                    <span className="text-[10px] text-slate-400 font-bold">CC: {row.costCenterId || "DEFAULT"}</span>
+                </div>
+            )
+        },
+        {
+            label: "Ngày cần",
+            key: "requiredDate",
+            render: (row: PR) => (
+                <div className="flex flex-col items-center px-4">
+                    <span className="px-2 py-1 bg-rose-50 text-rose-600 rounded-md text-[10px] font-black uppercase tracking-widest border border-rose-100 overflow-hidden whitespace-nowrap">
+                        {formatDate(row.requiredDate)}
+                    </span>
                 </div>
             )
         },
@@ -118,7 +160,7 @@ export default function ProcurementControlPage() {
             key: "totalEstimate",
             render: (row: PR) => (
                 <div className="text-right">
-                    <div className="font-mono font-black text-erp-blue text-sm">{formatVND(row.totalEstimate || 0)} \u20ab</div>
+                    <div className="font-mono font-black text-erp-blue text-sm">{formatVND(row.totalEstimate || 0)} ₫</div>
                     <div className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Base Amount</div>
                 </div>
             )
@@ -132,9 +174,17 @@ export default function ProcurementControlPage() {
             label: "Xử lý Thu mua",
             render: (row: PR) => (
                 <div className="flex items-center justify-end gap-2">
-                    {row.status === 'APPROVED' && (
+                    {row.status === 'APPROVED' && row.type === 'CATALOG' && (
+                        <button 
+                            onClick={() => setConfirmModal(row)}
+                            className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+                        >
+                            Xác nhận giá NCC <ArrowRight size={14} />
+                        </button>
+                    )}
+                    {row.status === 'APPROVED' && row.type !== 'CATALOG' && (
                         <Link href="/sourcing" className="inline-flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
-                            Sourcing <ArrowRight size={14} />
+                            Lấy báo giá <ArrowRight size={14} />
                         </Link>
                     )}
                     {row.status === 'IN_SOURCING' && (
@@ -155,7 +205,7 @@ export default function ProcurementControlPage() {
                             <UserPlus size={18} />
                         </button>
                     )}
-                    <button className="p-2 text-slate-400 hover:text-erp-navy hover:bg-slate-100 rounded-xl transition-all" title="Cấu đặt">
+                    <button className="p-2 text-slate-400 hover:text-erp-navy hover:bg-slate-100 rounded-xl transition-all" title="Cài đặt">
                         <Settings size={18} />
                     </button>
                 </div>
@@ -250,6 +300,67 @@ export default function ProcurementControlPage() {
                 </div>
             </div>
 
+            {confirmModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="bg-blue-600 px-8 py-6 text-white flex justify-between items-center">
+                            <div>
+                                <h3 className="text-xl font-black uppercase tracking-tight">Xác nhận giá Catalog</h3>
+                                <p className="text-blue-100 text-xs font-bold uppercase mt-1 tracking-widest">PR: {confirmModal.prNumber}</p>
+                            </div>
+                            <button onClick={() => setConfirmModal(null)} className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all font-black">&times;</button>
+                        </div>
+                        <div className="p-8 space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Sản phẩm</label>
+                                    <div className="p-3 bg-slate-50 rounded-xl text-xs font-bold text-erp-navy border border-slate-100">{confirmModal.items?.[0]?.productName}</div>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Số lượng</label>
+                                    <div className="p-3 bg-slate-50 rounded-xl text-xs font-bold text-erp-navy border border-slate-100">{confirmModal.items?.[0]?.qty} {confirmModal.items?.[0]?.unit}</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Nhà cung cấp ưu tiên</label>
+                                <select className="erp-input w-full" defaultValue={confirmModal.preferredSupplierId}>
+                                    <option value="6c7f4a14-9238-419c-ba0f-fa8da8eb0253">ABC Supplier (VnEconomy)</option>
+                                    <option value="SUP-002">Hanoi Hardware</option>
+                                    <option value="SUP-003">Saigon Tech</option>
+                                </select>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Giá xác nhận (VNĐ)</label>
+                                    <input type="number" className="erp-input w-full" defaultValue={confirmModal.items?.[0]?.estimatedPrice} />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Lead time (Ngày)</label>
+                                    <input type="number" className="erp-input w-full" defaultValue="3" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Ghi chú xác nhận</label>
+                                <textarea className="erp-input w-full h-20 py-3" placeholder="Nhập ghi chú cho NCC..."></textarea>
+                            </div>
+
+                            <div className="flex gap-4 pt-4">
+                                <button onClick={() => setConfirmModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-slate-100 text-slate-400 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">Hủy bỏ</button>
+                                <button 
+                                    onClick={() => handleConfirmCatalog(confirmModal)}
+                                    className="flex-1 px-6 py-4 rounded-2xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 active:scale-95"
+                                >
+                                    Gửi xác nhận
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Table */}
             <div className="bg-white rounded-[40px] border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
                 <ERPTable columns={columns} data={filteredPRs} />
@@ -264,26 +375,6 @@ export default function ProcurementControlPage() {
                 )}
             </div>
 
-            {/* Sourcing Suggestion AI Footer */}
-            <div className="mt-12 bg-erp-navy rounded-[40px] p-10 text-white relative overflow-hidden group">
-                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="max-w-xl">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-emerald-400 rounded-xl flex items-center justify-center">
-                                <Zap size={20} className="text-white fill-white" />
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400">AI Optimization</span>
-                        </div>
-                        <h2 className="text-3xl font-black mb-4">Tối ưu hóa phân bổ PR cho PO</h2>
-                        <p className="text-white/60 text-sm font-medium leading-relaxed">Hệ thống AI đề xuất điều phối các PR đang tồn đọng cho các nhân viên thu mua dựa trên chuyên môn và khối lượng công việc hiện tại.</p>
-                    </div>
-                    <button className="bg-white text-erp-navy px-10 py-5 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-emerald-400 hover:text-white transition-all shadow-2xl active:scale-95 shrink-0">
-                        Chạy phân bổ ngay
-                    </button>
-                 </div>
-                 <div className="absolute top-0 right-0 w-96 h-96 bg-erp-blue/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-1000"></div>
-                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-400/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-            </div>
         </main>
     );
 }

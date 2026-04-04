@@ -5,7 +5,7 @@ import { UserPlus, Mail, Edit2, Trash2, Search, Building, ShieldCheck, CheckCirc
 import { useProcurement, User, Department, Organization, UserRole } from "../context/ProcurementContext";
 
 export default function UsersPage() {
-    const { users, departments, organizations, addUser, updateUser } = useProcurement();
+    const { users, departments, organizations, addUser, updateUser, removeUser } = useProcurement();
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -49,7 +49,8 @@ export default function UsersPage() {
 
     const getJobTitle = (user: User) => {
         if (user.jobTitle) return user.jobTitle;
-        return ROLE_TITLES[user.role] || "Nhân viên";
+        const roleKey = user.role as string;
+        return ROLE_TITLES[roleKey] || "Nhân viên";
     };
 
     const handleOpenModal = (user?: User) => {
@@ -238,7 +239,7 @@ export default function UsersPage() {
                                         <div className="flex flex-col gap-1">
                                             <div className="flex items-center gap-1.5 text-slate-600 font-bold">
                                                 <Building size={12} className="text-slate-300" />
-                                                {user.department?.name || departments?.find(d => d.id === user.deptId)?.name || "Chưa có phòng ban"}
+                                                {typeof user.department === 'object' ? user.department?.name : (departments?.find(d => d.id === user.deptId)?.name || "Chưa có phòng ban")}
                                             </div>
                                             <div className="text-[10px] text-slate-400 italic bg-slate-50 w-fit px-2 py-0.5 rounded-md">
                                                 {getJobTitle(user)}
@@ -266,7 +267,14 @@ export default function UsersPage() {
                                             >
                                                 <Edit2 size={14} />
                                             </button>
-                                            <button className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 rounded-xl transition-all shadow-sm">
+                                            <button 
+                                                onClick={() => {
+                                                    if(confirm("Bạn có chắc chắn muốn xóa nhân sự này?")) {
+                                                        removeUser(user.id);
+                                                    }
+                                                }}
+                                                className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 rounded-xl transition-all shadow-sm"
+                                            >
                                                 <Trash2 size={14} />
                                             </button>
                                         </div>

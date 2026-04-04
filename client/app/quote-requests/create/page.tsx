@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { 
     Plus, Trash2, Save, Send, ArrowLeft, 
-    Package, Hash, Layers, FileText 
+    Package, Hash, Layers, FileText, Calendar 
 } from "lucide-react";
 import { useProcurement, QuoteRequestItem } from "../../context/ProcurementContext";
 import Link from "next/link";
@@ -17,6 +17,7 @@ export default function CreateQuoteRequestPage() {
     const [formData, setFormData] = useState({
         title: "",
         description: "",
+        requiredDate: "",
     });
     
     // Equivalent of array manipulation logic
@@ -50,6 +51,7 @@ export default function CreateQuoteRequestPage() {
         const qr = await addQuoteRequest({
             title: formData.title,
             description: formData.description,
+            requiredDate: formData.requiredDate,
             // @ts-ignore
             items: items.map(it => ({ ...it, description: "" }))
         });
@@ -78,17 +80,48 @@ export default function CreateQuoteRequestPage() {
                 <div className="lg:col-span-2 space-y-6">
                     <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 space-y-8">
                         <div className="space-y-6">
-                            <div className="group space-y-2">
-                                <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 group-focus-within:text-erp-blue transition-colors">
-                                    <FileText size={14} /> Tiêu đề yêu cầu
-                                </label>
-                                <input 
-                                    type="text"
-                                    placeholder="Ví dụ: Báo giá linh kiện bảo trì máy nén khí..."
-                                    className="w-full bg-slate-50 border-none rounded-xl px-6 py-4 text-sm font-bold placeholder:italic placeholder:font-normal focus:ring-2 focus:ring-erp-blue transition-all"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="group space-y-2">
+                                    <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 group-focus-within:text-erp-blue transition-colors">
+                                        <FileText size={14} /> Tiêu đề yêu cầu
+                                    </label>
+                                    <input 
+                                        type="text"
+                                        placeholder="Ví dụ: Báo giá linh kiện..."
+                                        className="w-full bg-slate-50 border-none rounded-xl px-6 py-4 text-sm font-bold focus:ring-2 focus:ring-erp-blue transition-all"
+                                        value={formData.title}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="group space-y-2">
+                                    <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 group-focus-within:text-erp-blue transition-colors">
+                                        <Calendar size={14} /> Ngày cần hàng
+                                    </label>
+                                    <div className="relative">
+                                        <div className="relative group/date">
+                                            <input 
+                                                type="text"
+                                                readOnly
+                                                placeholder="Chọn ngày..."
+                                                className="w-full bg-slate-50 border-none rounded-xl px-6 py-4 text-sm font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all"
+                                                value={formData.requiredDate ? (() => {
+                                                    const [y, m, d] = formData.requiredDate.split('-');
+                                                    return `${d}-${m}-${y}`;
+                                                })() : ""}
+                                            />
+                                            <input 
+                                                type="date"
+                                                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                                                value={formData.requiredDate}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, requiredDate: e.target.value }))}
+                                                onClick={(e) => (e.currentTarget as any).showPicker?.()}
+                                            />
+                                        </div>
+                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300">
+                                            <Calendar size={16} />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="group space-y-2">

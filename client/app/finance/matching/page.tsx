@@ -218,7 +218,23 @@ export default function FinanceMatching() {
                          <div className="space-y-4 text-xs font-bold text-slate-600">
                              <div>
                                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 block flex items-center gap-1"><Calendar size={12}/> Ngày T/T Dự kiến (PO Term: Net 30)</label>
-                                 <input type="date" className="erp-input w-full font-mono font-black text-emerald-600 bg-slate-50 focus:bg-white focus:border-emerald-500" value={payDate} onChange={e=>setPayDate(e.target.value)} />
+                                 <div className="relative">
+                                     <input 
+                                         type="text" 
+                                         readOnly
+                                         className="erp-input w-full font-mono font-black text-emerald-600 bg-slate-50 focus:bg-white focus:border-emerald-500 h-10" 
+                                         value={payDate ? (() => {
+                                             const [y, m, d] = payDate.split('-');
+                                             return `${d}-${m}-${y}`;
+                                         })() : ""} 
+                                     />
+                                     <input 
+                                         type="date" 
+                                         className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                         value={payDate} 
+                                         onChange={e=>setPayDate(e.target.value)} 
+                                     />
+                                 </div>
                              </div>
                              <div>
                                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 block flex items-center gap-1"><CreditCard size={12}/> Phương thức Bank</label>

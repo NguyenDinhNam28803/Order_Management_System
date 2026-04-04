@@ -164,7 +164,11 @@ export default function DepartmentsPage() {
                                                 <Edit2 size={14} />
                                             </button>
                                             <button
-                                                onClick={() => removeDept(dept.id)}
+                                                onClick={() => {
+                                                    if(confirm("Bạn có chắc chắn muốn xóa phòng ban này?")) {
+                                                        removeDept(dept.id);
+                                                    }
+                                                }}
                                                 className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Trash2 size={14} />

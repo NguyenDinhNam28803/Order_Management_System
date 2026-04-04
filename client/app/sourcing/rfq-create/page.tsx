@@ -221,12 +221,28 @@ export default function RFQCreatePage() {
                                     <Calendar size={12} className="text-slate-300 group-focus-within:text-erp-blue/50" />
                                     Hạn báo giá (Deadline)
                                 </label>
-                                <input 
-                                    type="date"
-                                    className="erp-input font-mono" 
-                                    value={form.deadline}
-                                    onChange={e => setForm({...form, deadline: e.target.value})}
-                                />
+                                <div className="relative group/date">
+                                    <input 
+                                        type="text"
+                                        readOnly
+                                        placeholder="Chọn ngày..."
+                                        className="erp-input w-full font-mono font-bold h-12 !rounded-xl group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all"
+                                        value={form.deadline ? (() => {
+                                            const [y, m, d] = form.deadline.split('-');
+                                            return `${d}-${m}-${y}`;
+                                        })() : ""}
+                                    />
+                                    <input 
+                                        type="date"
+                                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                                        value={form.deadline}
+                                        onChange={e => setForm({...form, deadline: e.target.value})}
+                                        onClick={(e) => (e.currentTarget as any).showPicker?.()}
+                                    />
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300">
+                                        <Calendar size={16} />
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="col-span-2 group">

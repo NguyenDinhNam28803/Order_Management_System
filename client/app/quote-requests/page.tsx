@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { 
     Plus, Search, Filter, ArrowRight, ClipboardList, 
-    Clock, BadgeCheck, FileText, ChevronRight, MoreVertical 
+    Clock, BadgeCheck, FileText, ChevronRight, MoreVertical, Calendar 
 } from "lucide-react";
 import { useProcurement, QuoteRequestStatus, QuoteRequest } from "../context/ProcurementContext";
 import Link from "next/link";
@@ -15,6 +15,13 @@ export default function QuoteRequestPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState<QuoteRequestStatus | "ALL">("ALL");
     const [selectedQR, setSelectedQR] = useState<QuoteRequest | null>(null);
+
+    const formatDate = (ds?: string) => {
+        if (!ds) return "N/A";
+        const d = new Date(ds);
+        if (isNaN(d.getTime())) return ds;
+        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+    };
 
     // Filter logic
     const filteredQRs = useMemo(() => {
@@ -127,10 +134,18 @@ export default function QuoteRequestPage() {
                                             </div>
                                             <div>
                                                 <h3 className="font-black text-erp-navy group-hover:text-erp-blue transition-colors">{qr.title}</h3>
-                                                <div className="flex items-center gap-2 mt-1">
+                                                <div className="flex flex-wrap items-center gap-2 mt-1">
                                                     <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">{qr.qrNumber}</span>
                                                     <span className="w-1 h-1 rounded-full bg-slate-200"></span>
-                                                    <span className="text-[11px] font-medium text-slate-400">{new Date(qr.createdAt).toLocaleDateString('vi-VN')}</span>
+                                                    <span className="text-[11px] font-medium text-slate-400">Tạo: {new Date(qr.createdAt).toLocaleDateString('vi-VN')}</span>
+                                                    {qr.requiredDate && (
+                                                        <>
+                                                            <span className="w-1 h-1 rounded-full bg-slate-200"></span>
+                                                            <span className="text-[11px] font-black text-rose-500 uppercase tracking-tighter bg-rose-50 px-2 py-0.5 rounded-md">
+                                                                Cần: {formatDate(qr.requiredDate)}
+                                                            </span>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -161,6 +176,12 @@ export default function QuoteRequestPage() {
                                 <div>
                                     <h2 className="text-lg font-black text-erp-navy leading-tight">{selectedQR.title}</h2>
                                     <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest">{selectedQR.qrNumber}</p>
+                                    {selectedQR.requiredDate && (
+                                        <div className="flex items-center gap-2 mt-2 py-1.5 px-3 bg-rose-50 text-rose-600 rounded-lg w-fit border border-rose-100 animate-in fade-in slide-in-from-top-1">
+                                            <Calendar size={12} className="shrink-0" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest leading-none">Cần hàng trước: {formatDate(selectedQR.requiredDate)}</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <button className="p-2 text-slate-400 hover:bg-slate-50 rounded-lg">
                                     <MoreVertical size={20} />

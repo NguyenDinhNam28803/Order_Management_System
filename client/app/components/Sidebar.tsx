@@ -30,11 +30,25 @@ const navigation = [
         roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "CEO", "FINANCE"],
         items: [
             { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
-            { name: "Yêu cầu báo giá", icon: Search, path: "/quote-requests", roles: ["REQUESTER", "PLATFORM_ADMIN"] },
             { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Yêu cầu báo giá (QR)", icon: ShoppingBag, path: "/quote-requests", roles: ["REQUESTER", "PLATFORM_ADMIN"] },
             { name: "Kiểm soát PR", icon: ClipboardCheck, path: "/procurement/prs", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+        ]
+    },
+    {
+        group: "Quản lý Đơn hàng", 
+        roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"],
+        items: [
+            { name: "Đơn đặt hàng (PO)", icon: ShoppingBag, path: "/procurement/pos", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Theo dõi giao hàng", icon: Truck, path: "/procurement/delivery", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Điều chỉnh PO (Amendments)", icon: ShieldAlert, path: "/procurement/amendments", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+        ]
+    },
+    {
+        group: "Nguồn hàng", 
+        roles: ["PROCUREMENT", "PLATFORM_ADMIN"],
+        items: [
             { name: "Nguồn hàng & Báo giá", icon: Search, path: "/sourcing", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
-
         ]
     },
     {
@@ -42,16 +56,18 @@ const navigation = [
         roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO", "PLATFORM_ADMIN"],
         items: [
             { name: "Phê duyệt PR", icon: CheckSquare, path: "/approvals", roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO"] },
-            { name: "Phê duyệt PO", icon: ShoppingCart, path: "/po", roles: ["FINANCE", "DIRECTOR"] },
+            { name: "Phê duyệt PO", icon: ShoppingCart, path: "/manager/po-approvals", roles: ["DEPT_APPROVER", "FINANCE", "DIRECTOR"] },
             { name: "Phê duyệt Thanh toán", icon: FileCheck, path: "/payments", roles: ["FINANCE", "DIRECTOR"] },
+            { name: "Lịch sử phê duyệt", icon: ClipboardCheck, path: "/manager/approval-history", roles: ["DEPT_APPROVER", "DIRECTOR", "CEO"] },
         ]
     },
     {
-        group: "Quản lý Tài chính", 
-        roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN", "DIRECTOR"],
+        group: "Quản lý Ngân sách", 
+        roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN", "DIRECTOR"],
         items: [
-            { name: "Quản lý Ngân sách", icon: DollarSign, path: "/finance/budgets", roles: ["FINANCE", "PLATFORM_ADMIN"] },
-            { name: "Tra cứu Chứng từ", icon: Search, path: "/finance/matching", roles: ["FINANCE", "DIRECTOR"] },
+            { name: "Lập ngân sách", icon: Building, path: "/manager/budget-planning", roles: ["DEPT_APPROVER", "PLATFORM_ADMIN"] },
+            { name: "Theo dõi chi tiêu", icon: DollarSign, path: "/manager/spend-tracking", roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
+            { name: "Cảnh báo vượt ngân sách", icon: ShieldAlert, path: "/manager/budget-alerts", roles: ["DEPT_APPROVER", "PLATFORM_ADMIN"] },
         ]
     },
     {
@@ -96,10 +112,12 @@ const navigation = [
 ];
 
 export default function Sidebar() {
-    const pathname = usePathname();
+    const pathname = usePathname() || "/";
     const { currentUser, logout } = useProcurement();
 
-    const roleInfo = currentUser ? roleMapping[currentUser.role] : { label: "Khách", class: "role-finance" };
+    // Fix lint: ensure role exists in mapping
+    const roleKey = currentUser?.role || "GUEST";
+    const roleInfo = roleMapping[roleKey] || { label: "Khách", class: "role-finance" };
 
     return (
         <aside className="group fixed left-0 top-0 z-50 h-screen w-16 hover:w-64 border-r border-slate-200 bg-white shadow-xl transition-all duration-300 ease-in-out flex flex-col overflow-hidden">
@@ -116,10 +134,11 @@ export default function Sidebar() {
             {/* Nav */}
             <nav className="mt-4 px-2 space-y-4 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-32">
                 {navigation.map((group) => {
-                    const groupVisible = !currentUser || group.roles.includes(currentUser.role);
-                    if (!groupVisible && currentUser?.role !== "PLATFORM_ADMIN") return null;
+                    const userRole = currentUser?.role;
+                    const groupVisible = !userRole || group.roles.includes(userRole);
+                    if (!groupVisible && userRole !== "PLATFORM_ADMIN") return null;
 
-                    const visibleItems = group.items.filter(item => !currentUser || item.roles.includes(currentUser.role));
+                    const visibleItems = group.items.filter(item => !userRole || item.roles.includes(userRole));
                     if (visibleItems.length === 0) return null;
 
                     return (

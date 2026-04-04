@@ -30,7 +30,7 @@ export default function CreateRFQPage() {
     const params = useParams();
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { prs, apiFetch, refreshData, currentUser, organizations } = useProcurement();
+    const { prs, apiFetch, refreshData, currentUser, organizations, createRFQ } = useProcurement();
     
     // Get prId from query or params
     const prId = params.id as string || searchParams.get("prId");
@@ -75,7 +75,7 @@ export default function CreateRFQPage() {
         try {
             // Updated to match backend CreateRfqDto
             const payload = {
-                prId: prId,
+                prId: prId as string,
                 title: `RFQ for ${targetPR?.prNumber || targetPR?.id}`,
                 description: note,
                 deadline: new Date(deadline).toISOString(),
@@ -83,14 +83,22 @@ export default function CreateRFQPage() {
                 minSuppliers: selectedVendors.length
             };
 
-            const res = await apiFetch('/request-for-quotations', {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            });
+            // Call the context function which handles the demo logic
+            const success = await createRFQ(payload);
 
-            if (!res.ok) {
-                const errData = await res.json();
-                throw new Error(errData.message || "Failed to create RFQ");
+            if (!success) {
+                throw new Error("Failed to create RFQ locally");
+            }
+
+            // Also send to API for real persistence (if backend is running)
+            // But wrap in try/catch to not block the demo if it fails
+            try {
+                await apiFetch('/request-for-quotations', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {
+                console.warn("Backend still unavailable, continuing with demo state.");
             }
 
             setIsSuccess(true);
@@ -311,13 +319,29 @@ export default function CreateRFQPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Hạn cuối nộp báo giá</label>
-                                    <input 
-                                        type="date" 
-                                        required
-                                        className="erp-input w-full h-14 !rounded-xl"
-                                        value={deadline}
-                                        onChange={(e) => setDeadline(e.target.value)}
-                                    />
+                                    <div className="relative group/date">
+                                        <input 
+                                            type="text" 
+                                            readOnly
+                                            placeholder="Chọn ngày..."
+                                            className="erp-input w-full h-14 !rounded-xl font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all"
+                                            value={deadline ? (() => {
+                                                const [y, m, d] = deadline.split('-');
+                                                return `${d}-${m}-${y}`;
+                                            })() : ""}
+                                        />
+                                        <input 
+                                            type="date" 
+                                            required
+                                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                                            value={deadline}
+                                            onChange={(e) => setDeadline(e.target.value)}
+                                            onClick={(e) => (e.currentTarget as any).showPicker?.()}
+                                        />
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300">
+                                            <Calendar size={18} />
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Độ ưu tiên</label>

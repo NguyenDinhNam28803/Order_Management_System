@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useProcurement, Notification } from "../context/ProcurementContext";
 import Sidebar from "./Sidebar";
 import ToastContainer from "./Toast";
+import SimulationPanel from "./SimulationPanel";
 
 export default function AppContent({ children }: { children: React.ReactNode }) {
     const { currentUser, notifications, removeNotification } = useProcurement();
@@ -29,6 +30,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
     return (
         <div className="flex h-screen overflow-hidden bg-slate-50">
             <ToastContainer />
+            <SimulationPanel />
 
             {/* Sidebar Cố định */}
             <Sidebar />

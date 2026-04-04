@@ -16,6 +16,13 @@ export default function POPage() {
     const passedVendor = searchParams.get("vendor");
     const passedPrice = searchParams.get("price");
 
+    const formatDate = (ds?: string) => {
+        if (!ds) return "N/A";
+        const d = new Date(ds);
+        if (isNaN(d.getTime())) return ds;
+        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+    };
+
     // Form State for new PO
     const isCreateMode = action === "create" && prId;
     const relatedPR = prs.find((p) => p.id === prId) || prs[0];
@@ -67,7 +74,7 @@ export default function POPage() {
                                 </div>
                                 <div className="text-right">
                                     <div className="text-xl font-bold font-mono">PO-2026-DRAFT</div>
-                                    <div className="text-sm mt-1">Date: {new Date().toLocaleDateString('vi-VN')}</div>
+                                    <div className="text-sm mt-1">Date: {formatDate(new Date().toISOString())}</div>
                                 </div>
                             </div>
 
@@ -205,7 +212,20 @@ export default function POPage() {
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Ngày phát hành</label>
-                                    <input type="date" className="erp-input w-full font-mono" defaultValue={new Date().toISOString().substring(0, 10)} />
+                                    <div className="relative group/date">
+                                        <input 
+                                            type="text" 
+                                            readOnly
+                                            className="erp-input w-full font-mono font-bold h-12 group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all" 
+                                            value={formatDate(new Date().toISOString())} 
+                                        />
+                                        <input 
+                                            type="date"
+                                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                                            defaultValue={new Date().toISOString().substring(0, 10)} 
+                                            onClick={(e) => (e.currentTarget as any).showPicker?.()}
+                                        />
+                                    </div>
                                 </div>
                                 
                                 <div>
@@ -404,7 +424,7 @@ export default function POPage() {
                                 <td className="font-bold text-erp-navy flex items-center gap-2"><FileText size={14} className="text-erp-blue"/> {po.id}</td>
                                 <td className="font-bold text-slate-700">{po.vendor}</td>
                                 <td className="font-mono font-black text-right text-erp-blue text-sm">{po.total.toLocaleString()} ₫</td>
-                                <td className="text-slate-500 text-xs text-center">{po.createdAt ? new Date(po.createdAt!).toLocaleDateString('vi-VN') : 'N/A'}</td>
+                                <td className="text-slate-500 text-xs text-center">{formatDate(po.createdAt)}</td>
                                 <td className="text-center">
                                     <div className="inline-flex items-center gap-1 text-[10px] font-black text-erp-navy bg-slate-100 px-2 py-1 rounded uppercase tracking-tighter">
                                         <Lock size={10} /> Committed

@@ -11,6 +11,13 @@ export default function PRPage() {
     const { prs, myPrs, approvePR, currentUser, actionApproval, costCenters, approvals } = useProcurement();
     const [activeTab, setActiveTab] = React.useState("Tất cả");
 
+    const formatDate = (ds?: string) => {
+        if (!ds) return "N/A";
+        const d = new Date(ds);
+        if (isNaN(d.getTime())) return ds;
+        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+    };
+
     const isManager = currentUser?.role === "DEPT_APPROVER";
     const isDirector = currentUser?.role === "DIRECTOR";
     
@@ -24,21 +31,23 @@ export default function PRPage() {
     const displayData: PR[] = React.useMemo(() => {
         if (!prs || !myPrs) return [];
         
+        const userRole = currentUser?.role;
+        const isProcOrAdmin = userRole === "PROCUREMENT" || userRole === "PLATFORM_ADMIN";
+
         if (activeTab === "PHÊ DUYỆT PR") {
-            // Show PRs that have a pending approval step assigned to the current user
             const pendingPrIds = (approvals || []).map((a: ApprovalWorkflow) => a.documentId);
             return prs.filter((p: PR) => pendingPrIds.includes(p.id));
         }
         
-        // Use myPrs for all other tabs as requested (nối api /my)
-        const filtered = myPrs;
+        // Prioritize full prs list for Procurement/AdminRoles, use myPrs for others
+        const pool = isProcOrAdmin ? prs : myPrs;
         
-        if (activeTab === "Nháp") return filtered.filter((p: PR) => p.status === "DRAFT");
-        if (activeTab === "Chờ duyệt") return filtered.filter((p: PR) => p.status.includes("PENDING"));
-        if (activeTab === "Đã duyệt") return filtered.filter((p: PR) => p.status === "APPROVED");
+        if (activeTab === "Nháp") return pool.filter((p: PR) => p.status === "DRAFT");
+        if (activeTab === "Chờ duyệt") return pool.filter((p: PR) => p.status.includes("PENDING"));
+        if (activeTab === "Đã duyệt") return pool.filter((p: PR) => p.status === "APPROVED");
         
-        return filtered;
-    }, [prs, myPrs, activeTab, approvals]);
+        return pool;
+    }, [prs, myPrs, activeTab, approvals, currentUser?.role]);
 
     const columns: ERPTableColumn<PR>[] = [
         { 
@@ -64,8 +73,7 @@ export default function PRPage() {
                 if (!deptName && costCenters) {
                     const match = costCenters.find((cc) =>
                         cc.deptId === row.deptId || 
-                        cc.id === row.costCenterId || 
-                        cc.code === row.costCenterCode
+                        cc.id === row.costCenterId
                     );
                     if (match) deptName = match.name || match.deptId;
                 }
@@ -77,7 +85,7 @@ export default function PRPage() {
                     <div className="flex flex-col">
                         <span className="text-sm font-bold text-slate-700">{deptName}</span>
                         <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
-                            CC: {row.costCenter?.code || row.costCenterCode || "Default"}
+                            CC: {row.costCenterId || "Default"}
                         </span>
                     </div>
                 );
@@ -89,7 +97,7 @@ export default function PRPage() {
             render: (row: PR) => (
                 <div className="max-w-75">
                     <p className="text-sm font-bold text-slate-700 truncate">{row.title}</p>
-                    <p className="text-[10px] text-slate-400 italic font-medium truncate mt-0.5">{row.reason || row.description || "No description provided"}</p>
+                    <p className="text-[10px] text-slate-400 italic font-medium truncate mt-0.5">{row.description || row.justification || "No description provided"}</p>
                 </div>
             )
         },
@@ -113,11 +121,20 @@ export default function PRPage() {
             }
         },
         { 
+            label: "Ngày cần", 
+            key: "requiredDate", 
+            render: (row: PR) => (
+                <span className="font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded text-[10px]">
+                    {formatDate(row.requiredDate)}
+                </span>
+            ) 
+        },
+        { 
             label: "Tổng ước tính", 
-            key: "total", 
+            key: "totalEstimate", 
             render: (row: PR) => (
                 <span className="font-black text-erp-navy font-mono">
-                    {Number(row.totalEstimate || row.total || 0).toLocaleString()} ₫
+                    {Number(row.totalEstimate || 0).toLocaleString()} ₫
                 </span>
             ) 
         },
@@ -177,16 +194,20 @@ export default function PRPage() {
         <div className="space-y-8 animate-in fade-in duration-500">
             <header className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Yêu cầu mua sắm của tôi (PR)</h1>
-                    <p className="text-sm text-slate-400 font-bold mt-1 tracking-tight">HỆ THỐNG QUẢN LÝ VÀ CHUẨN HÓA QUY TRÌNH MUA HÀNG</p>
+                    <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">
+                        {currentUser?.role === "PROCUREMENT" ? "Danh sách PR toàn hệ thống" : "Yêu cầu mua sắm của tôi (PR)"}
+                    </h1>
+                    <p className="text-sm text-slate-400 font-bold mt-1 tracking-tight uppercase">Hệ thống quản lý và chuẩn hóa quy trình mua sắm</p>
                 </div>
-                <Link href="/pr/create" className="btn-primary flex flex-col items-center py-2!">
-                    <div className="flex items-center gap-2">
-                        <Plus size={20} />
-                        <span className="text-sm font-black uppercase">Tạo PR mới</span>
-                    </div>
-                    <span className="text-[10px] opacity-70 font-bold">{budgetSubtitle}</span>
-                </Link>
+                {currentUser?.role !== "PROCUREMENT" && (
+                    <Link href="/pr/create" className="btn-primary flex flex-col items-center py-2!">
+                        <div className="flex items-center gap-2">
+                            <Plus size={20} />
+                            <span className="text-sm font-black uppercase">Tạo PR mới</span>
+                        </div>
+                        <span className="text-[10px] opacity-70 font-bold">{budgetSubtitle}</span>
+                    </Link>
+                )}
             </header>
 
             <div className="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-erp-navy/5 overflow-hidden">
