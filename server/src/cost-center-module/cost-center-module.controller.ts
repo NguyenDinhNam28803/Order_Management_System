@@ -15,7 +15,7 @@ import { RolesGuard, Roles } from '../common/roles.guard';
 import {
   ApiTags,
   ApiOperation,
-  ApiQuery,
+  //ApiQuery,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CostCenterModuleService } from './cost-center-module.service';
@@ -23,6 +23,7 @@ import {
   CreateCostCenterDto,
   UpdateCostCenterDto,
 } from './dto/cost-center.dto';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
 @ApiTags('Cost-center-module')
@@ -59,9 +60,8 @@ export class CostCenterModuleController {
     description:
       'Trả về danh sách tất cả trung tâm chi phí cho tổ chức hiện tại theo tổ chức người dùng đã xác thực',
   })
-  @ApiQuery({ name: 'orgId', required: true })
-  findAll(@Request() req) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  // @ApiQuery({ name: 'orgId', required: true })
+  findAll(@Request() req: { user: JwtPayload }) {
     return this.costCenterService.findAll(req.user.orgId);
   }
 
