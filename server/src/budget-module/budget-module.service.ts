@@ -233,6 +233,80 @@ export class BudgetModuleService {
   }
 
   /**
+   * Giữ chỗ ngân sách theo Category (Atomic Reservation)
+   * Gọi khi PO được tạo với categoryId
+   */
+  async reserveBudgetByCategory(
+    costCenterId: string,
+    categoryId: string | undefined,
+    orgId: string,
+    amount: number,
+    user: JwtPayload,
+  ): Promise<BudgetAllocation> {
+    // const now = new Date();
+    // const fiscalYear = now.getFullYear();
+    // const quarter = Math.ceil((now.getMonth() + 1) / 3);
+
+    // 1. Find BudgetAllocation by costCenterId + categoryId
+    const allocation = await this.prisma.budgetAllocation.findFirst({
+      where: {
+        costCenterId,
+        categoryId: categoryId || null,
+        orgId,
+        status: 'APPROVED',
+      },
+    });
+
+    if (!allocation) {
+      throw new BadRequestException(
+        `Không tìm thấy cấp phát ngân sách cho Cost Center + Category này. Vui lòng kiểm tra lại kế hoạch ngân sách.`,
+      );
+    }
+
+    // 2. Thực hiện cập nhật committedAmount một cách nguyên tử (Atomic)
+    const updated = await this.prisma.budgetAllocation.update({
+      where: { id: allocation.id },
+      data: {
+        committedAmount: { increment: amount },
+      },
+    });
+
+    const available =
+      Number(updated.allocatedAmount) -
+      Number(updated.committedAmount) -
+      Number(updated.spentAmount);
+
+    if (available < 0) {
+      // Rollback nếu vượt hạn mức (Giảm lại số tiền vừa cộng)
+      await this.prisma.budgetAllocation.update({
+        where: { id: updated.id },
+        data: { committedAmount: { decrement: amount } },
+      });
+
+      throw new BadRequestException(
+        `Vượt hạn mức ngân sách danh mục. Hạn mức cần thêm: ${Math.abs(available).toLocaleString()} VND. Vui lòng xin phê duyệt vượt ngân sách.`,
+      );
+    }
+
+    // Audit log for reservation
+    await this.auditService.create(
+      {
+        action: 'RESERVE_BUDGET_CATEGORY',
+        entityType: 'BudgetAllocation',
+        entityId: updated.id,
+        newValue: {
+          reservedAmount: amount,
+          currentCommitted: updated.committedAmount,
+          category: categoryId,
+        },
+      },
+      user,
+    );
+
+    return updated;
+  }
+
+  /**
    * Giữ chỗ ngân sách (Atomic Reservation)
    * Gọi khi PR được submit cho việc phê duyệt
    */
