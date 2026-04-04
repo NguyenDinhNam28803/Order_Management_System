@@ -10,7 +10,6 @@ import {
   PurchaseRequisition,
   DocumentType,
   UserRole,
-  ProductType,
   BudgetAllocationStatus,
 } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
@@ -45,26 +44,9 @@ export class PrmoduleService {
       throw new BadRequestException('Giá trị PR phải lớn hơn 0.');
     }
 
-    // 2. Kiểm tra tính hợp lệ của giá đối với hàng NON_CATALOG
+    // 2. Kiểm tra Budget by Category (nếu item có categoryId)
+    // NOTE: Flow routing (STABLE/VOLATILE) được handle ở AutomationService
     for (const item of createPrDto.items) {
-      if (item.productId) {
-        const product = await this.prisma.product.findUnique({
-          where: { id: item.productId },
-        });
-
-        if (product && product.type === ProductType.NON_CATALOG) {
-          const thirtyDaysAgo = new Date();
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-          if (!product.lastPriceAt || product.lastPriceAt < thirtyDaysAgo) {
-            throw new BadRequestException(
-              `Sản phẩm "${product.name}" là hàng phi tiêu chuẩn và giá đã quá hạn (30 ngày). Vui lòng thực hiện quy trình báo giá (RFQ) trước khi tạo PR.`,
-            );
-          }
-        }
-      }
-
-      // 2.1 Kiểm tra Budget by Category (nếu item có categoryId)
       if (item.categoryId && createPrDto.costCenterId) {
         const itemCost = item.estimatedPrice * item.qty;
 
