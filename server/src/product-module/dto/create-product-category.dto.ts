@@ -23,13 +23,13 @@ export class CreateProductCategoryDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(30)
-  code: string;
+  code!: string;
 
   @ApiProperty({ example: 'Electronics' })
   @IsString()
   @IsNotEmpty()
   @MaxLength(150)
-  name: string;
+  name!: string;
 
   @ApiPropertyOptional({ example: 'Category for electronic devices' })
   @IsString()

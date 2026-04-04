@@ -277,6 +277,11 @@ model ApprovalWorkflow {
   @@map("approval_workflows")
 }
 
+enum ProductType {
+  CATALOG
+  NON_CATALOG
+}
+
 model ProductCategory {
   id                String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   orgId             String?            @map("org_id") @db.Uuid
@@ -306,6 +311,8 @@ model Product {
   unit         String           @default("PCS") @db.VarChar(30)
   unitPriceRef Decimal?         @map("unit_price_ref") @db.Decimal(18, 2)
   currency     CurrencyCode     @default(VND)
+  type         ProductType      @default(CATALOG)
+  lastPriceAt  DateTime?        @map("last_price_at") @db.Timestamptz(6)
   specSheetUrl String?          @map("spec_sheet_url") @db.VarChar(500)
   imageUrls    Json             @default("[]") @map("image_urls")
   attributes   Json             @default("{}")
@@ -1309,6 +1316,7 @@ model DocumentEmbedding {
   sourceTable String   @map("source_table")
   sourceId    String   @map("source_id")
   metadata    Json?
+  embedding   Unsupported("vector")?
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("document_embeddings")

@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useProcurement, Product, ProductCategory } from "../../context/ProcurementContext";
-import { CreateProductDtoShort, CreateCategoryDto, CurrencyCode } from "../../types/api-types";
+import { CreateProductDtoShort, CreateCategoryDto, CurrencyCode, ProductType } from "../../types/api-types";
 import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
 import { 
-    Plus, Search, Edit2, Trash2, Filter, 
-    Package, Layers, Tag, ChevronDown, Loader2 } from "lucide-react";
+    Plus, Search, Edit2, Trash2, 
+    Layers, ChevronDown, Loader2 } from "lucide-react";
 
 export default function ProductAdminPage() {
     const { 
@@ -52,6 +52,7 @@ export default function ProductAdminPage() {
                 unitPriceRef: 0,
                 unit: "Cái",
                 currency: CurrencyCode.VND,
+                type: ProductType.CATALOG,
                 categoryId: categories[0]?.id || "",
                 orgId: organizations[0]?.id || "",
                 isActive: true
@@ -89,6 +90,7 @@ export default function ProductAdminPage() {
                 unitPriceRef: Number(productForm.unitPriceRef) || 0,
                 unit: productForm.unit || "Cái",
                 currency: productForm.currency || CurrencyCode.VND,
+                type: productForm.type || ProductType.CATALOG,
                 categoryId: productForm.categoryId || undefined,
                 orgId: productForm.orgId || undefined,
                 isActive: productForm.isActive ?? true,
@@ -176,9 +178,14 @@ export default function ProductAdminPage() {
             label: "Danh mục",
             key: "category",
             render: (row: Product) => (
-                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-200">
-                    {row.category?.name || "N/A"}
-                </span>
+                <div className="flex flex-col gap-1">
+                    <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-200 w-fit">
+                        {row.category?.name || "N/A"}
+                    </span>
+                    <span className={`text-[9px] font-bold uppercase tracking-tight ${row.type === ProductType.CATALOG ? 'text-emerald-500' : 'text-amber-500'}`}>
+                        {row.type === ProductType.CATALOG ? '● Catalog (Tiêu chuẩn)' : '○ Non-catalog (Phi tiêu chuẩn)'}
+                    </span>
+                </div>
             )
         },
         {
@@ -433,6 +440,21 @@ export default function ProductAdminPage() {
                                         value={productForm.unitPriceRef || 0} 
                                         onChange={e => setProductForm({ ...productForm, unitPriceRef: Number(e.target.value) })}
                                     />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Loại sản phẩm</label>
+                                    <div className="relative group/select">
+                                        <select 
+                                            className="erp-input w-full font-bold appearance-none bg-white cursor-pointer pr-10"
+                                            value={productForm.type || ProductType.CATALOG}
+                                            onChange={e => setProductForm({ ...productForm, type: e.target.value as ProductType })}
+                                        >
+                                            <option value={ProductType.CATALOG}>Catalog (Hàng tiêu chuẩn)</option>
+                                            <option value={ProductType.NON_CATALOG}>Non-catalog (Phi tiêu chuẩn)</option>
+                                        </select>
+                                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within/select:text-erp-blue" />
+                                    </div>
                                 </div>
 
                                 <div>

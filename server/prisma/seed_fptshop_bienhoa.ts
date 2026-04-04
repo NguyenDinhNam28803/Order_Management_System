@@ -21,16 +21,18 @@ async function main() {
 
   console.log(`Checking organization with ID: ${orgId}`);
   const org = await prisma.organization.findUnique({
-    where: { id: orgId }
+    where: { id: orgId },
   });
 
   if (!org) {
     console.error(`ERROR: Organization with ID ${orgId} not found!`);
-    
+
     // In case it's not found, let's list some to help
     const someOrgs = await prisma.organization.findMany({ take: 5 });
     console.log('Available orgs (sample):');
-    someOrgs.forEach(o => console.log(`- ${o.name} [ID: ${o.id}] [Code: ${o.code}]`));
+    someOrgs.forEach((o) =>
+      console.log(`- ${o.name} [ID: ${o.id}] [Code: ${o.code}]`),
+    );
     return;
   }
 
@@ -47,7 +49,7 @@ async function main() {
       passwordHash,
       isActive: true,
       isVerified: true,
-      kycStatus: KycStatus.APPROVED
+      kycStatus: KycStatus.APPROVED,
     },
     create: {
       email,
@@ -57,11 +59,13 @@ async function main() {
       passwordHash,
       isActive: true,
       isVerified: true,
-      kycStatus: KycStatus.APPROVED
-    }
+      kycStatus: KycStatus.APPROVED,
+    },
   });
 
-  console.log(`SUCCESS: User '${fullName}' (${email}) has been seeded for organization '${org.name}'.`);
+  console.log(
+    `SUCCESS: User '${user.fullName}' (${email}) has been seeded for organization '${org.name}'.`,
+  );
   console.log(`Email account: ${email}`);
   console.log(`Default password: ${password}`);
 }

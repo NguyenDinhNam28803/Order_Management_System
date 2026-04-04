@@ -359,7 +359,7 @@ export interface CreatePrDto {
     items: CreatePrItemDto[];
 }
 
-export interface UpdatePrDto extends Partial<CreatePrDto> {}
+export type UpdatePrDto = Partial<CreatePrDto>
 
 // --- RFQ DTOs ---
 
@@ -426,6 +426,11 @@ export interface ProductCategory {
     updatedAt: string;
 }
 
+export enum ProductType {
+    CATALOG = "CATALOG",
+    NON_CATALOG = "NON_CATALOG"
+}
+
 /**
  * Thực thể Sản phẩm (Product)
  */
@@ -439,6 +444,8 @@ export interface Product {
     unit: string;
     unitPriceRef: number;
     currency: CurrencyCode;
+    type: ProductType;
+    lastPriceAt?: string;
     isActive: boolean;
     attributes: Record<string, unknown>;
     createdAt: string;

@@ -9,7 +9,7 @@ import {
   IsUUID,
   MaxLength,
 } from 'class-validator';
-import { CurrencyCode } from '@prisma/client';
+import { CurrencyCode, ProductType } from '@prisma/client';
 
 export class CreateProductDto {
   @ApiPropertyOptional({ example: '325f187a-c1f6-4a4e-8692-234b6e50334a' })
@@ -54,6 +54,15 @@ export class CreateProductDto {
   @IsEnum(CurrencyCode)
   @IsOptional()
   currency?: CurrencyCode;
+
+  @ApiPropertyOptional({ enum: ProductType, default: ProductType.CATALOG })
+  @IsEnum(ProductType)
+  @IsOptional()
+  type?: ProductType;
+
+  @ApiPropertyOptional({ example: '2026-04-01T08:30:00Z' })
+  @IsOptional()
+  lastPriceAt?: Date;
 
   @ApiPropertyOptional({ example: 'https://example.com/spec.pdf' })
   @IsString()
