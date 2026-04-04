@@ -17,18 +17,24 @@ export class CostCenterModuleService {
   // Helper chuyển đổi Decimal sang Number cho Frontend
   private mapCostCenter(cc: any) {
     if (!cc) return null;
-    return {
+    const mapped = {
       ...cc,
-      budgetAnnual: Number(cc.budgetAnnual || 0),
-      budgetUsed: Number(cc.budgetUsed || 0),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      budgetAllocations: (cc.budgetAllocations || []).map((alloc: any) => ({
+      budgetAnnual: cc.budgetAnnual ? Math.round(Number(cc.budgetAnnual)) : 0,
+      budgetUsed: cc.budgetUsed ? Math.round(Number(cc.budgetUsed)) : 0,
+    };
+
+    if (cc.budgetAllocations && Array.isArray(cc.budgetAllocations)) {
+      mapped.budgetAllocations = cc.budgetAllocations.map((alloc: any) => ({
         ...alloc,
         allocatedAmount: Number(alloc.allocatedAmount || 0),
         committedAmount: Number(alloc.committedAmount || 0),
         spentAmount: Number(alloc.spentAmount || 0),
-      })),
-    };
+      }));
+    } else {
+      mapped.budgetAllocations = [];
+    }
+
+    return mapped;
   }
 
   async create(createCostCenterDto: CreateCostCenterDto) {
@@ -77,18 +83,32 @@ export class CostCenterModuleService {
   }
 
   async findAll(orgId: string) {
-    const results = await this.prisma.costCenter.findMany({
-      where: {
-        orgId,
-        isActive: true,
-      },
-      include: {
-        department: true,
-        budgetAllocations: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-    return results.map((cc) => this.mapCostCenter(cc));
+    if (!orgId) {
+        console.warn("[CostCenterModuleService] findAll called with missing orgId");
+        return [];
+    }
+    
+    try {
+        const results = await this.prisma.costCenter.findMany({
+          where: {
+            orgId,
+            isActive: true,
+          },
+          include: {
+            department: true,
+            budgetAllocations: {
+              include: { budgetPeriod: true },
+              take: 10,
+              orderBy: { createdAt: 'desc' }
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+        return results.map((cc) => this.mapCostCenter(cc));
+    } catch (error: any) {
+        console.error("[CostCenterModuleService] findAll error:", error);
+        throw new BadRequestException("Không thể tải danh sách trung tâm chi phí: " + error.message);
+    }
   }
 
   async findOne(id: string) {

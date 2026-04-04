@@ -18,7 +18,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { AwardRfqDto } from './dto/award-rfq.dto';
 import { RolesGuard, Roles } from '../common/roles.guard';
-import { UserRole } from '@prisma/client';
+import { UserRole, RfqStatus } from '@prisma/client';
 
 @ApiTags('Request for Quotation (RFQ)')
 @Controller('request-for-quotations')
@@ -94,7 +94,7 @@ export class RfqmoduleController {
   })
   async updateStatus(
     @Param('id') id: string,
-    @Body() body: { status: string },
+    @Body() body: { status: RfqStatus },
   ) {
     return this.rfqService.updateStatus(id, body.status);
   }
