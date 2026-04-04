@@ -50,87 +50,87 @@ Hệ thống quản trị mua sắm tập trung (**E-Procurement**) và Quản l
 - **Smart Volatility Detection:** Dựa vào `PriceVolatility` field (STABLE, MODERATE, VOLATILE) & `requiresQuoteFirst` flag
 
 #### **2. 3-Way Intelligent Invoice Matching (Đối Soát 3 Chiều Thông Minh)**
-- **Tolerance-Based Matching:** 
-  - Qty Match: Invoice Qty ≤ GRN Qty × 1.02 (2% tolerance)
-  - Price Match: Invoice Price ≤ PO Price × 1.01 (1% tolerance)
-- **Auto-Decision:** 
-  - ✅ Cả 2 checks pass → Status: `AUTO_APPROVED` (tự động duyệt)
-  - ❌ Bất kỳ check fail → Status: `EXCEPTION_REVIEW` (chờ duyệt manual)
-- **Exception Tracking:** Ghi lại chi tiết lý do không match cho audit trail
-- **Zero Configuration:** Tolerance được định nghĩa trong code, dễ thay đổi qua config
+- **Tolerance-Based Matching:** (Khớp dựa trên Dung sai)
+  - Qty Match: Invoice Qty ≤ GRN Qty × 1.02 (dung sai 2% cho số lượng)
+  - Price Match: Invoice Price ≤ PO Price × 1.01 (dung sai 1% cho giá)
+- **Auto-Decision:** (Quyết định Tự động)
+  - ✅ Cả 2 checks pass → Status: `AUTO_APPROVED` (tự động phê duyệt)
+  - ❌ Bất kỳ check fail → Status: `EXCEPTION_REVIEW` (chờ duyệt thủ công)
+- **Exception Tracking:** (Theo dõi Ngoại lệ) Ghi lại chi tiết lý do không khớp cho kiểm toán
+- **Zero Configuration:** (Không cần Cấu hình) Dung sai được định nghĩa trong code, dễ thay đổi
 
 #### **3. Real-Time Supplier Performance Scoring (Đánh Giá Nhà Cung Cấp Thời Thực)**
-- **6 Metrics Calculated Automatically:**
+- **6 Metrics Calculated Automatically:** (6 chỉ số được tính toán tự động)
   1. **OTD Score (On-Time Delivery):** % PO giao đúng hạn trong 6 tháng
-  2. **Quality Score:** % sản phẩm chất lượng tốt (accepted qty / received qty)
-  3. **Manual Review Score:** Đánh giá chủ quan từ buyer (1-100)
-  4. **Buyer Rating Score:** 5 tiêu chí (timeliness, clarity, communication, compliance, dispute handling)
-  5. **Dispute Count:** Số tranh chấp khởi tố (negative indicator)
-  6. **AI Analysis:** Gemini AI đánh giá tổng hợp & recommend tier
-- **Quarterly Tier Classification:** GOLD (⭐⭐⭐ ≥90) / SILVER (⭐⭐ ≥75) / BRONZE (⭐ <75)
-- **Auto-Trigger:** Tự động tính toán khi PO confirm, không cần manual trigger
-- **Trend Analysis:** Lưu lịch sử theo quarter để phân tích xu hướng
+  2. **Quality Score:** % sản phẩm chất lượng tốt (qty được chấp nhận / qty nhận được)
+  3. **Manual Review Score:** Đánh giá chủ quan từ khách hàng (1-100)
+  4. **Buyer Rating Score:** 5 tiêu chí (thời hạn, độ rõ ràng, giao tiếp, tuân thủ, giải quyết tranh chấp)
+  5. **Dispute Count:** Số lượng tranh chấp được khởi tố (chỉ số tiêu cực)
+  6. **AI Analysis:** Gemini AI đánh giá tổng hợp & đề xuất level
+- **Quarterly Tier Classification:** (Phân loại Level Theo quý) GOLD (⭐⭐⭐ ≥90) / SILVER (⭐⭐ ≥75) / BRONZE (⭐ <75)
+- **Auto-Trigger:** (Kích hoạt Tự động) Tự động tính toán khi PO được xác nhận, không cần trigger thủ công
+- **Trend Analysis:** (Phân tích Xu hướng) Lưu lịch sử theo quý để phân tích xu hướng
 
 #### **4. Budget Management with Category Control (Quản Lý Ngân Sách Theo Danh Mục)**
-- **Hierarchical Budget Allocation:**
+- **Hierarchical Budget Allocation:** (Phân bổ Ngân sách Phân cấp)
   - Organization-level → Cost Center-level → Department-level → Category-level
   - Composite Unique: `[BudgetPeriod, CostCenter, Dept, Category]`
-- **3-Tier Budget State:**
-  1. **Allocated:** Tổng ngân sách phân bổ
-  2. **Committed:** Số tiền được reserve khi tạo PO
-  3. **Spent:** Số tiền thực tế thanh toán
-  - Formula: `Available = Allocated - Committed - Spent`
-- **Auto-Reservation & Release:** PO creation reserves, payment completion releases & transfers to spent
-- **Budget Code Generation:** Auto-generate: `BG-{DEPT}-{CATEGORY}-{YEAR}-{PERIOD}`
+- **3-Tier Budget State:** (3 Trạng thái Ngân sách)
+  1. **Allocated:** (Được phân bổ) Tổng ngân sách được phân bổ
+  2. **Committed:** (Được dành riêng) Số tiền được dành riêng khi tạo PO
+  3. **Spent:** (Đã chi tiêu) Số tiền thực tế được thanh toán
+  - Công thức: `Available = Allocated - Committed - Spent`
+- **Auto-Reservation & Release:** (Tự động Dành riêng & Giải phóng) Tạo PO dành riêng, hoàn tất thanh toán giải phóng & chuyển sang spent
+- **Budget Code Generation:** (Tạo Mã Ngân sách) Tự động tạo: `BG-{DEPT}-{CATEGORY}-{YEAR}-{PERIOD}`
 
 #### **5. 3-Tier Approval Workflow with Dynamic Escalation**
-- **Amount-Based Escalation:**
+- **Amount-Based Escalation:** (Tự động Tăng cấp theo Số tiền)
   - Finance: 0 → 500M VND
   - Director: 500M → 1B VND
   - CEO: > 1B VND
-- **Multi-Step Workflow:** Sequential approval at each tier
-- **SLA Tracking:** Timeout & auto-escalation if tier doesn't approve in time
-- **Parallel Notification:** Email queue with BullMQ for async notifications
-- **Audit Trail:** Ghi lại mỗi action với timestamp, approved by, reason
+- **Multi-Step Workflow:** (Quy trình Đa bước) Phê duyệt tuần tự ở mỗi cấp
+- **SLA Tracking:** (Theo dõi SLA) Hết thời gian & tự động tăng cấp nếu cấp không phê duyệt đúng hạn
+- **Parallel Notification:** (Thông báo Song song) Hàng đợi email với BullMQ để thông báo không đồng bộ
+- **Audit Trail:** (Dấu vết Kiểm toán) Ghi lại mỗi hành động với timestamp, người phê duyệt, lý do
 
 #### **6. Comprehensive Audit Logging (Ghi Log Toàn Diện)**
-- **Track Everything:** Mỗi thay đổi record old value → new value
-- **Who & When:** User ID, Timestamp, IP address
-- **What:** Document type, ID, changed fields, delta
-- **Immutable Log:** Cannot edit/delete, chỉ có thể read
-- **Compliance Ready:** Supports regulatory audits (ISO, GDPR, SOX)
+- **Track Everything:** (Theo dõi Mọi thứ) Mỗi thay đổi ghi lại giá trị cũ → giá trị mới
+- **Who & When:** (Ai & Khi nào) User ID, Timestamp, địa chỉ IP
+- **What:** (Cái gì) Loại tài liệu, ID, các trường đã thay đổi, delta
+- **Immutable Log:** (Nhật ký Bất biến) Không thể chỉnh sửa/xóa, chỉ có thể đọc
+- **Compliance Ready:** (Sẵn sàng Tuân thủ) Hỗ trợ kiểm toán quy định (ISO, GDPR, SOX)
 
 #### **7. Intelligent Procure-to-Pay Automation**
-- **End-to-End Auto Flow:**
-  - PR Approved → Auto RFQ/QuotationRequest based on flow type
-  - RFQ Closed → Auto create PO from best quotation
+- **End-to-End Auto Flow:** (Quy trình Tự động Toàn bộ)
+  - PR Approved → Auto RFQ/QuotationRequest dựa trên loại quy trình
+  - RFQ Closed → Auto create PO từ lựa chọn tốt nhất
   - PO Approved → Auto create GRN template
   - GRN Confirmed → Auto trigger invoice matching
-  - Invoice Matched → Auto create payment if approved
-- **Error Handling:** Graceful retry, fallback to manual, notification to team
-- **No Manual Intervention:** For happy path, completely automated
+  - Invoice Matched → Auto create payment nếu được phê duyệt
+- **Error Handling:** (Xử lý Lỗi) Thử lại một cách nhẹ nhàng, quay lại thủ công, thông báo cho đội
+- **No Manual Intervention:** (Không có Sự can thiệp Thủ công) Đối với quy trình bình thường, hoàn toàn tự động
 
 #### **8. AI-Powered Insights & Recommendations**
-- **Gemini AI Integration:** Advanced language model for analysis
-- **Supplier Performance Analysis:** Predict supplier reliability, identify risks
-- **Quotation Scoring:** Analyze quotations & recommend best value
-- **Cash Flow Prediction:** Forecast payment schedules
-- **Anomaly Detection:** Detect unusual supplier behavior, price spikes
+- **Gemini AI Integration:** (Tích hợp Gemini AI) Mô hình ngôn ngữ tiên tiến cho phân tích
+- **Supplier Performance Analysis:** (Phân tích Hiệu suất Nhà cung cấp) Dự đoán độ tin cậy nhà cung cấp, xác định rủi ro
+- **Quotation Scoring:** (Tính điểm Báo giá) Phân tích báo giá & đề xuất giá trị tốt nhất
+- **Cash Flow Prediction:** (Dự đoán Dòng tiền) Dự báo lịch trình thanh toán
+- **Anomaly Detection:** (Phát hiện Bất thường) Phát hiện hành vi bất thường của nhà cung cấp, tăng giá
 
 #### **9. Enterprise-Grade Security**
-- **JWT Authentication:** Secure token-based auth with refresh token rotation
-- **RBAC (Role-Based Access Control):** 11 distinct user roles with granular permissions
-- **Encrypted Storage:** Sensitive data (bank info, tax codes) encrypted at rest
-- **Audit Trail:** Every action logged & traceable
-- **IP Whitelisting:** Optional IP-based access control
-- **Data Retention:** Configurable retention policy with automated archival
+- **JWT Authentication:** (Xác thực JWT) Xác thực dựa trên token an toàn với xoay vòng refresh token
+- **RBAC (Role-Based Access Control):** (RBAC) 11 vai trò người dùng riêng biệt có quyền chi tiết
+- **Encrypted Storage:** (Lưu trữ Mã hóa) Dữ liệu nhạy cảm (thông tin ngân hàng, mã số thuế) được mã hóa khi lưu
+- **Audit Trail:** (Dấu vết Kiểm toán) Mọi hành động được ghi lại & có thể truy tìm
+- **IP Whitelisting:** (Danh sách Trắng IP) Kiểm soát truy cập dựa trên IP tùy chọn
+- **Data Retention:** (Giữ lại Dữ liệu) Chính sách giữ lại có thể cấu hình với lưu trữ tự động
 
 #### **10. Real-Time Dashboard & Analytics**
-- **Procurement Dashboard:** PR pending, PO status, supplier KPI
-- **Finance Dashboard:** Budget utilization, spending trend, payment aging
-- **Warehouse Dashboard:** GRN received, QC results, inventory status
-- **Admin Dashboard:** System health, user activity, audit logs
-- **Export & Reporting:** PDF, Excel export with scheduled reports
+- **Procurement Dashboard:** (Bảng điều khiển Mua sắm) PR đang chờ, trạng thái PO, KPI nhà cung cấp
+- **Finance Dashboard:** (Bảng điều khiển Tài chính) Sử dụng ngân sách, xu hướng chi tiêu, tình trạng thanh toán
+- **Warehouse Dashboard:** (Bảng điều khiển Kho) GRN nhận được, kết quả QC, trạng thái hàng tồn
+- **Admin Dashboard:** (Bảng điều khiển Quản trị) Tình trạng hệ thống, hoạt động người dùng, nhật ký kiểm toán
+- **Export & Reporting:** (Xuất & Báo cáo) Xuất PDF, Excel với báo cáo theo lịch trình
 
 ---
 
