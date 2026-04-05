@@ -115,7 +115,7 @@ export interface ProcurementContextType extends ProcurementState {
     addBudgetPeriod: (d: CreateBudgetPeriodPayload) => Promise<boolean>;
     updateBudgetPeriod: (id: string, d: UpdateBudgetPeriodPayload) => Promise<boolean>;
     removeBudgetPeriod: (id: string) => Promise<boolean>;
-    addBudgetAllocation: (d: CreateBudgetAllocationPayload) => Promise<boolean>;
+    addBudgetAllocation: (d: CreateBudgetAllocationPayload) => Promise<any>;
     submitAllocation: (id: string) => Promise<boolean>;
     approveAllocation: (id: string) => Promise<boolean>;
     updateBudgetAllocation: (id: string, d: UpdateBudgetAllocationPayload) => Promise<boolean>;
@@ -372,7 +372,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const addBudgetAllocation = useCallback(async (d: CreateBudgetAllocationPayload) => {
         const resp = await apiFetch('/budgets/allocations', { method: 'POST', body: JSON.stringify(d) });
-        if (resp.ok) { await refreshData(); return true; }
+        if (resp.ok) { 
+            const res = await resp.json();
+            await refreshData(); 
+            return res.data || res; 
+        }
         return false;
     }, [apiFetch, refreshData]);
 
@@ -438,6 +442,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         if (resp.ok) { notify("Đã cập nhật trạng thái giao hàng", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
+
+    const fetchQuarterlyAllocation = useCallback(async (cc: string, year: number, quarter: number) => {
+        const resp = await apiFetch(`/budgets/allocations/quarterly/${cc}/${year}/${quarter}`);
+        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        return null;
+    }, [apiFetch]);
 
     const createRFQ = useCallback(async (d: CreateRfqDto) => {
         const resp = await apiFetch('/request-for-quotations', { method: 'POST', body: JSON.stringify(d) });
@@ -627,7 +637,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter,
         addBudgetPeriod: async () => true, updateBudgetPeriod: async () => true, removeBudgetPeriod: async () => true,
         updateBudgetAllocation: async () => true, removeBudgetAllocation: async () => true,
-        fetchQuarterlyAllocation: async () => null,
+        fetchQuarterlyAllocation,
         addQuoteRequest: async () => true, updateQuoteRequest: async () => true, submitQuoteRequest: async () => true,
         sendQuoteRequestToSupplier: async () => true, createPRFromQuoteRequest: async () => true,
         startSimulation: () => {}, nextSimulationStep: () => {}, stopSimulation: () => {},

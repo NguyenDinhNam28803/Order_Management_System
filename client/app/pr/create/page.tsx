@@ -6,7 +6,7 @@ import Select from "react-select";
 import { formatVND } from "../../utils/formatUtils";
 import { useProcurement, Product, BudgetAllocation, BudgetPeriod, PR } from "../../context/ProcurementContext";
 import { CostCenter, CreatePrDto, CreatePrItemDto, CurrencyCode } from "@/app/types/api-types";
-import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle, Calendar } from "lucide-react";
+import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle, Calendar, ClipboardList, BadgeCheck } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
 
@@ -52,13 +52,15 @@ export default function CreatePRPage() {
     const { 
         addPR,
         submitPR,
+        addQuoteRequest,
+        submitQuoteRequest,
         costCenters, 
         currentUser, 
         products, 
         notify, 
         budgetAllocations, 
         budgetPeriods: periods,
-        fetchQuarterlyBudget
+        fetchQuarterlyAllocation
     } = useProcurement();
 
     const router = useRouter();
@@ -73,6 +75,7 @@ export default function CreatePRPage() {
         items: []
     });
 
+    const [flowType, setFlowType] = useState<"FLOW1" | "FLOW2">("FLOW1");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [quarterlyAllocation, setQuarterlyAllocation] = useState<BudgetAllocation | null>(null);
 
@@ -85,14 +88,14 @@ export default function CreatePRPage() {
     useEffect(() => {
         if (form.costCenterId && isValidUuid(form.costCenterId)) {
             const getBudget = async () => {
-                const data = await fetchQuarterlyBudget(form.costCenterId, currentYear, currentQuarter);
+                const data = await fetchQuarterlyAllocation(form.costCenterId, currentYear, currentQuarter);
                 setQuarterlyAllocation(data?.data || null);
             };
             getBudget();
         } else {
             setQuarterlyAllocation(null);
         }
-    }, [form.costCenterId, fetchQuarterlyBudget, currentYear, currentQuarter]);
+    }, [form.costCenterId, fetchQuarterlyAllocation, currentYear, currentQuarter]);
 
     const filteredCostCenters = costCenters.filter((cc: CostCenter) => {
         if (!currentUser) return false;
@@ -211,7 +214,27 @@ export default function CreatePRPage() {
         setIsSubmitting(true);
 
         try {
-            // STEP 1: CREATE DRAFT PR via Context Service
+            if (flowType === "FLOW2") {
+                // Flow 2: Create Quote Request directly FIRST
+                const qrPayload = {
+                    title: form.title.trim(),
+                    description: form.description?.trim() || "Yêu cầu cung cấp từ Flow 2 (Flexible Scope)",
+                    items: form.items
+                };
+                
+                const createdQR = await addQuoteRequest(qrPayload);
+                if (createdQR && createdQR.id) {
+                    await submitQuoteRequest(createdQR.id);
+                    setSubmissionStatus('success');
+                    setTimeout(() => router.push("/quote-requests"), 2000);
+                } else {
+                    setErrorMessage("Không thể tạo Yêu cầu báo giá. Vui lòng thử lại.");
+                    setSubmissionStatus('error');
+                }
+                return;
+            }
+
+            // Flow 1: CREATE DRAFT PR via Context Service directly
             const createdPR = await addPR(payload);
 
             if (createdPR && createdPR.id) {
@@ -230,8 +253,8 @@ export default function CreatePRPage() {
                 setSubmissionStatus('error');
             }
         } catch (err) {
-            console.error("PR Submission Error:", err);
-            setErrorMessage("Lỗi hệ thống khi gửi PR");
+            console.error("PR/QR Submission Error:", err);
+            setErrorMessage("Lỗi hệ thống khi gửi yêu cầu");
             setSubmissionStatus('error');
         } finally {
             setIsSubmitting(false);
@@ -324,6 +347,44 @@ export default function CreatePRPage() {
                                     onChange={e => setForm({ ...form, title: e.target.value })}
                                     placeholder="VD: Mua sắm thiết bị IT định kỳ, Thiết bị văn phòng..."
                                 />
+                            </div>
+
+                            <div className="col-span-2 group">
+                                <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5">
+                                    <div className="w-1 h-3 bg-indigo-400/30 rounded-full" />
+                                    Loại quy trình (Flow)
+                                </label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div 
+                                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${flowType === 'FLOW1' ? 'border-erp-blue bg-blue-50/50 shadow-sm' : 'border-slate-100 bg-white hover:border-slate-200'}`}
+                                        onClick={() => setFlowType('FLOW1')}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-2 rounded-lg ${flowType === 'FLOW1' ? 'bg-erp-blue text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                                <BadgeCheck size={20} />
+                                            </div>
+                                            <div>
+                                                <h4 className={`font-bold text-sm ${flowType === 'FLOW1' ? 'text-erp-navy' : 'text-slate-600'}`}>Flow 1: RFQ (Fixed Scope)</h4>
+                                                <p className="text-[11px] text-slate-400 mt-0.5">Xác định rõ SL/ủng loại. Yêu cầu tạo PR trực tiếp.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div 
+                                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${flowType === 'FLOW2' ? 'border-amber-400 bg-amber-50/50 shadow-sm' : 'border-slate-100 bg-white hover:border-slate-200'}`}
+                                        onClick={() => setFlowType('FLOW2')}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-2 rounded-lg ${flowType === 'FLOW2' ? 'bg-amber-400 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                                <ClipboardList size={20} />
+                                            </div>
+                                            <div>
+                                                <h4 className={`font-bold text-sm ${flowType === 'FLOW2' ? 'text-amber-700' : 'text-slate-600'}`}>Flow 2: Quote Request (Flexible Scope)</h4>
+                                                <p className="text-[11px] text-slate-400 mt-0.5">Nhờ tư vấn phương án. Sẽ có PR sau khi chốt giá.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="group">

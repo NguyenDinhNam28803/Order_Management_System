@@ -23,17 +23,6 @@ export default function ApprovalsPage() {
     const pendingPRs = (approvals || []).map((app) => {
         const pr = prs.find((p) => p.id === app.documentId);
         if (!pr) return null;
-        
-        // Filter by policy: 
-        // Manager only handles < 10,000,000 VND
-        // Director handles all >= 10,000,000 VND
-        const prTotal = Number(pr.totalEstimate) || 0;
-        const isManager = currentUser?.role === "MANAGER" || currentUser?.role === "DEPT_APPROVER";
-        const isDirector = currentUser?.role === "DIRECTOR";
-        
-        if (isManager && prTotal >= 10000000) return null;
-        if (isDirector && prTotal < 10000000) return null;
-
         return { ...pr, workflowId: app.id };
     }).filter((p): p is PendingPR => p !== null);
 
@@ -86,7 +75,7 @@ export default function ApprovalsPage() {
     // Tìm budget cho quý hiện tại (Current Quarter Budget)
     const quarterAlloc = selectedPR && budgetAllocations ? budgetAllocations.find(alloc => {
         const period = budgetPeriods.find(p => p.id === alloc.budgetPeriodId);
-        return (alloc.costCenterId === selectedPR.costCenterId || (typeof selectedPR.costCenter === 'string' && alloc.costCenterId === selectedPR.costCenter)) &&
+        return (alloc.costCenterId === selectedPR.costCenterId) &&
                period?.fiscalYear === currentYear &&
                period?.periodNumber === currentQuarter;
     }) : null;
@@ -96,7 +85,7 @@ export default function ApprovalsPage() {
         : 0;
     
     // Nếu không tìm thấy quý, fallback về ngân sách năm cũ
-    const prCostCenter = !quarterAlloc && selectedPR ? costCenters.find(cc => cc.id === selectedPR.costCenterId || (typeof selectedPR.costCenter === 'string' && cc.id === selectedPR.costCenter)) : null;
+    const prCostCenter = !quarterAlloc && selectedPR ? costCenters.find(cc => cc.id === selectedPR.costCenterId) : null;
     const finalBudget = quarterAlloc ? currentBudget : (prCostCenter ? (Number(prCostCenter.budgetAnnual) - Number(prCostCenter.budgetUsed)) : 0);
 
     const projectedRemaining = selectedPR ? (finalBudget - (Number(selectedPR.totalEstimate) || 0)) : 0;
@@ -151,7 +140,7 @@ export default function ApprovalsPage() {
                                             <div className="text-[13px] font-black text-slate-700 uppercase tracking-tight mb-1">{typeof pr.department === 'object' ? pr.department.name : pr.department}</div>
                                             <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter flex items-center gap-2">
                                                 <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                                Requester: {pr.requester?.fullName || pr.requesterId?.substring(0,8)}
+                                                Requester: {pr.requester?.fullName || pr.requester?.id?.substring(0,8)}
                                             </div>
                                         </td>
                                         <td className="px-4 py-6 max-w-[200px]">
@@ -246,10 +235,7 @@ export default function ApprovalsPage() {
                                     <div>
                                         <div className="text-[10px] uppercase font-black tracking-widest text-slate-300 mb-2">Cost Center</div>
                                         <div className="text-sm font-black text-erp-navy bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 inline-block uppercase">
-                                            {typeof selectedPR.costCenter === 'object' ? selectedPR.costCenter.name : 
-                                             (costCenters.find(cc => cc.id === selectedPR.costCenterId || (typeof selectedPR.costCenter === 'string' && cc.id === selectedPR.costCenter))?.name || 
-                                              selectedPR.costCenterCode || 
-                                              (typeof selectedPR.costCenter === 'string' ? selectedPR.costCenter : 'N/A'))}
+                                            {costCenters.find(cc => cc.id === selectedPR.costCenterId)?.name || selectedPR.costCenterId || 'N/A'}
                                         </div>
                                     </div>
                                     <div>
@@ -285,7 +271,7 @@ export default function ApprovalsPage() {
                                     </thead>
                                     <tbody className="divide-y divide-slate-50">
                                         {selectedPR.items?.map((item, idx: number) => {
-                                            const rowTotal = (Number(item.qty) || Number(item.quantity) || 0) * item.estimatedPrice;
+                                            const rowTotal = (Number(item.qty) || 0) * item.estimatedPrice;
                                             const isSuperHigh = rowTotal >= 100000000;
                                             const isHigh = rowTotal >= 30000000 && !isSuperHigh;
                                             

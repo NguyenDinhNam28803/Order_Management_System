@@ -702,12 +702,6 @@ export default function Dashboard() {
         const myPendingPRs = (approvals || []).map((app) => {
             const pr = prs.find((p) => p.id === app.documentId);
             if (!pr) return null;
-            const prTotal = Number(pr.totalEstimate) || 0;
-            const isManager = currentUser?.role === "MANAGER" || currentUser?.role === "DEPT_APPROVER";
-            const isDirector = currentUser?.role === "DIRECTOR";
-            
-            if (isManager && prTotal >= 10000000) return null;
-            if (isDirector && prTotal < 10000000) return null;
             return { ...pr, workflowId: app.id };
         }).filter((p): p is (PR & { workflowId: string }) => p !== null);
 

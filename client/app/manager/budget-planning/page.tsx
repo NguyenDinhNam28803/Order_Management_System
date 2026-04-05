@@ -12,6 +12,7 @@ export default function BudgetPlanningPage() {
         budgetAllocations, 
         budgetPeriods, 
         costCenters, 
+        categories,
         addBudgetAllocation, 
         submitAllocation,
         refreshData 
@@ -73,15 +74,25 @@ export default function BudgetPlanningPage() {
                 return;
             }
 
-            const success = await addBudgetAllocation({
-                ...formData,
+            const payload: any = {
+                budgetPeriodId: formData.budgetPeriodId,
+                costCenterId: formData.costCenterId,
+                categoryId: formData.categoryId,
+                currency: formData.currency as any,
+                notes: formData.notes,
                 allocatedAmount: amount,
                 deptId: currentUser?.deptId,
-                orgId: currentUser?.orgId || "",
-                status: type === "SUBMIT" ? BudgetAllocationStatus.SUBMITTED : BudgetAllocationStatus.DRAFT
-            });
+            };
+            if (!payload.categoryId) delete payload.categoryId;
+            if (!payload.notes) delete payload.notes;
+            if (!payload.deptId) delete payload.deptId;
 
-            if (success) {
+            const result: any = await addBudgetAllocation(payload);
+
+            if (result) {
+                if (type === "SUBMIT" && result.id) {
+                    await submitAllocation(result.id);
+                }
                 notify(type === "SUBMIT" ? "Đã gửi phân bổ thành công" : "Đã lưu bản nháp thành công", "success");
                 setShowModal(false);
                 setFormData({
@@ -294,9 +305,9 @@ export default function BudgetPlanningPage() {
                                             className="w-full bg-slate-50 border-2 border-slate-50 rounded-[2rem] py-6 pl-20 pr-8 text-sm font-bold text-erp-navy outline-none transition-all focus:border-erp-blue/20 focus:bg-white appearance-none"
                                         >
                                             <option value="">Ngân sách chung</option>
-                                            <option value="IT_EQUIPMENT">Thiết bị Công nghệ</option>
-                                            <option value="OFFICE_SUPPLIES">Văn phòng phẩm</option>
-                                            <option value="MARKETING_EXPENSE">Chi phí Marketing</option>
+                                            {categories.map(c => (
+                                                <option key={c.id} value={c.id}>{c.name}</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
