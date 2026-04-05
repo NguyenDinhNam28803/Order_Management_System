@@ -167,6 +167,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const apiFetch = useCallback(async (url: string, options: RequestInit = {}) => {
         const token = Cookies.get('token');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const headers: any = { 
             'Content-Type': 'application/json',
             ...(options.headers || {})
@@ -346,7 +347,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData]);
 
     const submitPR = useCallback(async (id: string) => {
-        const resp = await apiFetch(`/procurement-requests/${id}/submit`, { method: 'PATCH' });
+        const resp = await apiFetch(`/procurement-requests/${id}/submit`, { method: 'POST' });
         if (resp.ok) { notify("Gửi duyệt thành công", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);

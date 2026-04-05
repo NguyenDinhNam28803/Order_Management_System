@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { 
     Plus, Search, Filter, FileText, ShoppingBag, 
     ChevronRight, ArrowLeft, MoreHorizontal, 
@@ -10,74 +10,42 @@ import {
 } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 import { useProcurement, PoStatus, Organization, PR, RFQ, PO, POItem } from "../../context/ProcurementContext";
+import { poAPI } from "../../utils/api-client";
 
-// --- Mock Data ---
 interface POMockData extends PO {
     vendorId: string;
     vendorName: string;
-    prId: string;
-    rfqId: string;
-    escrowLocked: boolean;
+    prId?: string;
+    rfqId?: string;
+    escrowLocked?: boolean;
 }
 
-const mockPOs: POMockData[] = [
-    { 
-        id: "po-1", 
-        poNumber: "PO-2026-001", 
-        vendorName: "Hanoi Hardware", 
-        vendor: "v-1",
-        vendorId: "v-1",
-        prId: "PR-2026-003", 
-        rfqId: "RFQ-2026-101",
-        status: "ISSUED" as PoStatus, 
-        total: 1200000000, 
-        escrowLocked: true, 
-        createdAt: "2026-04-01T10:00:00Z",
-        items: [
-            { id: "it-1", description: "Server Dell PowerEdge R750", qty: 2, estimatedPrice: 500000000 },
-            { id: "it-2", description: "Ổ cứng SSD 1.92TB SAS", qty: 4, estimatedPrice: 50000000 }
-        ]
-    },
-    { 
-        id: "po-2", 
-        poNumber: "PO-2026-002", 
-        vendorName: "ABC Supplier", 
-        vendor: "6c7f4a14-9238-419c-ba0f-fa8da8eb0253",
-        vendorId: "6c7f4a14-9238-419c-ba0f-fa8da8eb0253",
-        prId: "PR-2026-004", 
-        rfqId: "RFQ-2026-102",
-        status: "DRAFT" as PoStatus, 
-        total: 85000000, 
-        escrowLocked: false, 
-        createdAt: "2026-04-02T14:30:00Z",
-        items: [
-            { id: "it-3", description: "Laptop ThinkPad X1 Carbon Gen 11", qty: 2, estimatedPrice: 42500000 }
-        ]
-    }
-];
-
 export default function POManagementPage() {
-    const { organizations, prs, rfqs, pos: contextPOs, notify } = useProcurement();
+    const { organizations } = useProcurement();
     const [view, setView] = useState<"list" | "create">("list");
     const [selectedPO, setSelectedPO] = useState<POMockData | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [allPOs, setAllPOs] = useState<POMockData[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // Combine mock and context POs
-    const allPOs = useMemo(() => {
-        const mappedContextPOs = (contextPOs || []).map(p => {
-            const org = organizations?.find(o => o.id === p.vendor);
-            return { 
-                ...p, 
-                vendorId: p.vendor,
-                vendorName: org?.name || p.vendor || "Unknown Vendor",
-                prId: (p as POMockData).prId || "PR-SIM",
-                rfqId: (p as POMockData).rfqId || "RFQ-SIM",
-                escrowLocked: (p as POMockData).escrowLocked || false,
-                items: p.items || []
-            } as POMockData;
-        });
-        return [...mockPOs, ...mappedContextPOs];
-    }, [contextPOs, organizations]);
+    useEffect(() => {
+        const fetch = async () => {
+            try {
+                const data = await poAPI.list();
+                const mapped = (data || []).map((p: any) => ({
+                    ...p,
+                    vendorId: p.vendor,
+                    vendorName: organizations?.find((o: any) => o.id === p.vendor)?.name || 'Unknown'
+                }));
+                setAllPOs(mapped);
+            } catch (err) {
+                console.error('Error:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetch();
+    }, [organizations]);
 
     const filteredPOs = allPOs.filter(po => 
         po.poNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -102,6 +70,10 @@ export default function POManagementPage() {
             <div className="p-8 max-w-[1600px] mx-auto">
                 {view === "list" ? (
                     <div className="space-y-8 animate-in fade-in duration-500">
+                        {loading ? (
+                            <div className="p-8 text-center text-slate-400">Đang tải dữ liệu...</div>
+                        ) : (
+                            <>
                         {/* Header & Actions */}
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                             <div>
@@ -226,9 +198,11 @@ export default function POManagementPage() {
                                 </table>
                             </div>
                         </div>
+                        </>
+                        )}
                     </div>
                 ) : (
-                    <POForm onCancel={() => setView("list")} notify={notify} prs={prs || []} rfqs={rfqs || []} organizations={organizations || []} />
+                    <POForm onCancel={() => setView("list")} prs={[]} rfqs={[]} organizations={organizations || []} />
                 )}
             </div>
 
@@ -241,9 +215,8 @@ export default function POManagementPage() {
 }
 
 // --- PO Form Component ---
-function POForm({ onCancel, notify, prs, rfqs, organizations }: { 
+function POForm({ onCancel, prs, rfqs, organizations }: { 
     onCancel: () => void, 
-    notify: (m: string, t?: 'success' | 'error' | 'info' | 'warning', r?: string) => void, 
     prs: PR[], rfqs: RFQ[], organizations: Organization[] 
 }) {
     const [formData, setFormData] = useState({
@@ -285,10 +258,10 @@ function POForm({ onCancel, notify, prs, rfqs, organizations }: {
 
     const handleSave = (status: PoStatus) => {
         if (!formData.vendorId || !formData.prId) {
-            notify("Vui lòng nhập đầy đủ thông tin bắt buộc", "error");
+            console.warn("Vui lòng nhập đầy đủ thông tin bắt buộc");
             return;
         }
-        notify(`Đã ${status === 'DRAFT' ? 'lưu nháp' : 'phát hành'} PO thành công`, "success");
+        console.log(`Đã ${status === 'DRAFT' ? 'lưu nháp' : 'phát hành'} PO thành công`);
         onCancel();
     };
 

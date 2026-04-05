@@ -187,7 +187,13 @@ export class BudgetModuleController {
   }
 
   @Get('my-department')
-  @Roles(UserRole.DEPT_APPROVER)
+  @Roles(
+    UserRole.DEPT_APPROVER,
+    UserRole.REQUESTER,
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+  )
   @ApiOperation({ summary: 'Lấy ngân sách của phòng ban tôi' })
   async findMyDeptAllocations(@Request() req: { user: JwtPayload }) {
     return this.budgetService.findMyDeptAllocations(req.user);

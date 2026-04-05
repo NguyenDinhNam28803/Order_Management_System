@@ -23,7 +23,7 @@ export default function SupplierSuggestionWidget({ items }: { items: PRItem[] })
 
     const fetchSuggestions = async () => {
       setLoading(true);
-      const productNames = items.map(i => i.description || i.item_name).join(", ");
+      const productNames = items.map(i => i.description || i.productName).join(", ");
       const prompt = `Dựa trên danh sách sản phẩm: ${productNames}. Hãy gợi ý 5 nhà cung cấp uy tín nhất. Trả về JSON theo định dạng: [{"name": "Tên NCC", "trustScore": 95, "reason": "Lý do ngắn gọn"}].`;
       
       try {

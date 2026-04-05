@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { UserPlus, Mail, Edit2, Trash2, Search, Building, ShieldCheck, CheckCircle, XCircle, ChevronDown } from "lucide-react";
+import Image from "next/image";
+import { UserPlus, Mail, Edit2, Trash2, Search, Building, ShieldCheck, ChevronDown } from "lucide-react";
 import { useProcurement, User, Department, Organization, UserRole } from "../context/ProcurementContext";
 
 export default function UsersPage() {

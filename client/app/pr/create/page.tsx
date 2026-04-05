@@ -6,9 +6,13 @@ import Select from "react-select";
 import { formatVND } from "../../utils/formatUtils";
 import { useProcurement, Product, BudgetAllocation, BudgetPeriod, PR } from "../../context/ProcurementContext";
 import { CostCenter, CreatePrDto, CreatePrItemDto, CurrencyCode } from "@/app/types/api-types";
-import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle, Calendar, ClipboardList, BadgeCheck } from "lucide-react";
+import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle, Calendar, ClipboardList, BadgeCheck, TrendingUp, Wallet, PieChart, BarChart3 } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
+
+// ─── Budget Period Type & Status enums (mirror from context) ──────────────────
+type BudgetPeriodType = "MONTHLY" | "QUARTERLY" | "ANNUAL";
+type BudgetAllocationStatus = "ACTIVE" | "CLOSED" | "DRAFT" | "SUSPENDED";
 
 interface PRItem {
     id?: string;
@@ -38,15 +42,255 @@ interface PRForm {
     items: PRItem[];
 }
 
-/**
- * UTILITY: Check if string is a valid UUID
- */
 const isValidUuid = (id: string | undefined): boolean => {
     if (!id) return false;
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidRegex.test(id);
 };
 
+// ─── Budget Allocation Status Badge ───────────────────────────────────────────
+const AllocationStatusBadge = ({ status }: { status: BudgetAllocationStatus }) => {
+    const map: Record<BudgetAllocationStatus, { label: string; cls: string }> = {
+        ACTIVE:    { label: "Đang hoạt động", cls: "bg-emerald-50 text-emerald-600 border-emerald-100" },
+        CLOSED:    { label: "Đã đóng",         cls: "bg-slate-50 text-slate-400 border-slate-100" },
+        DRAFT:     { label: "Nháp",             cls: "bg-amber-50 text-amber-500 border-amber-100" },
+        SUSPENDED: { label: "Tạm dừng",         cls: "bg-red-50 text-red-500 border-red-100" },
+    };
+    const cfg = map[status] ?? map.DRAFT;
+    return (
+        <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${cfg.cls}`}>
+            <span className="w-1.5 h-1.5 rounded-full mr-1.5 bg-current opacity-70" />
+            {cfg.label}
+        </span>
+    );
+};
+
+// ─── Period Type Label ─────────────────────────────────────────────────────────
+const periodTypeLabel: Record<BudgetPeriodType, string> = {
+    MONTHLY:   "Tháng",
+    QUARTERLY: "Quý",
+    ANNUAL:    "Năm",
+};
+
+// ─── Budget Allocation Card ────────────────────────────────────────────────────
+const BudgetAllocationCard = ({
+    allocation,
+    isSelected,
+    onClick,
+}: {
+    allocation: BudgetAllocation;
+    isSelected: boolean;
+    onClick: () => void;
+}) => {
+    const spent    = Number(allocation.spentAmount    || 0);
+    const committed = Number(allocation.committedAmount || 0);
+    const total    = Number(allocation.allocatedAmount || 1);
+    const usedPct  = Math.min(100, ((spent + committed) / total) * 100);
+    const remaining = total - spent - committed;
+    const isOver   = remaining < 0;
+
+    const period = allocation.budgetPeriod;
+    const periodLabel = period
+        ? `${periodTypeLabel[period.periodType] ?? period.periodType} ${period.periodNumber} / ${period.fiscalYear}`
+        : "—";
+
+    return (
+        <div
+            onClick={onClick}
+            className={`group relative cursor-pointer rounded-3xl border-2 p-5 transition-all duration-300 hover:shadow-lg overflow-hidden
+                ${isSelected
+                    ? "border-erp-blue bg-erp-blue/[0.04] shadow-md shadow-erp-blue/10"
+                    : "border-slate-100 bg-white hover:border-erp-blue/30 hover:bg-erp-blue/[0.02]"
+                }`}
+        >
+            {/* Selection indicator */}
+            {isSelected && (
+                <div className="absolute top-0 left-0 w-1 h-full bg-erp-blue rounded-l-3xl" />
+            )}
+
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className={`p-2.5 rounded-2xl shrink-0 transition-colors ${isSelected ? "bg-erp-blue text-white" : "bg-slate-100 text-slate-500 group-hover:bg-erp-blue/10 group-hover:text-erp-blue"}`}>
+                        <Wallet size={16} />
+                    </div>
+                    <div className="min-w-0">
+                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 truncate">{allocation.notes}</div>
+                        <div className={`text-sm font-black truncate mt-0.5 ${isSelected ? "text-erp-blue" : "text-erp-navy"}`}>
+                            {formatVND(total)} <span className="text-[10px] font-bold opacity-50">{allocation.currency}</span>
+                        </div>
+                    </div>
+                </div>
+                <AllocationStatusBadge status={allocation.status} />
+            </div>
+
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
+                {[
+                    { label: "Đã chi",     value: spent,     color: "text-slate-600" },
+                    { label: "Cam kết",    value: committed, color: "text-amber-500" },
+                    { label: "Còn lại",    value: remaining, color: isOver ? "text-red-500" : "text-emerald-600" },
+                ].map(({ label, value, color }) => (
+                    <div key={label} className="bg-slate-50 rounded-2xl p-3 text-center border border-slate-100">
+                        <div className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">{label}</div>
+                        <div className={`text-[11px] font-black ${color} leading-tight`}>
+                            {formatVND(Math.abs(value))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Progress bar */}
+            <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Tiêu thụ ngân sách</span>
+                    <span className={`text-[9px] font-black ${isOver ? "text-red-500" : "text-erp-blue"}`}>
+                        {usedPct.toFixed(1)}%
+                    </span>
+                </div>
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex border border-slate-50">
+                    {/* Spent segment */}
+                    <div
+                        className="h-full bg-slate-300 transition-all duration-700"
+                        style={{ width: `${Math.min(100, (spent / total) * 100)}%` }}
+                    />
+                    {/* Committed segment */}
+                    <div
+                        className={`h-full transition-all duration-700 ${isOver ? "bg-red-400" : "bg-amber-400"}`}
+                        style={{ width: `${Math.min(100 - (spent / total) * 100, (committed / total) * 100)}%` }}
+                    />
+                </div>
+                <div className="flex gap-3">
+                    <div className="flex items-center gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                        <span className="text-[8px] font-black text-slate-400 uppercase tracking-wider">Đã chi</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                        <span className="text-[8px] font-black text-slate-400 uppercase tracking-wider">Cam kết</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Notes */}
+            {allocation.notes && (
+                <div className="mt-3 pt-3 border-t border-slate-100">
+                    <p className="text-[9px] text-slate-400 font-medium italic leading-relaxed line-clamp-2">
+                        {allocation.notes}
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+};
+
+// ─── Budget Allocations Panel ──────────────────────────────────────────────────
+const BudgetAllocationsPanel = ({
+    allocations,
+    selectedCostCenterId,
+    selectedAllocationId,
+    onSelect,
+}: {
+    allocations: BudgetAllocation[];
+    selectedCostCenterId: string;
+    selectedAllocationId: string | null;
+    onSelect: (id: string) => void;
+}) => {
+    // Filter by selected cost center if one is chosen
+    // const { costCenters } = useProcurement();
+    const filtered = selectedCostCenterId
+        ? allocations.filter(a => a.costCenterId === selectedCostCenterId)
+        : allocations;
+
+    const totalAllocated  = filtered.reduce((s, a) => s + Number(a.allocatedAmount || 0), 0);
+    const totalSpent      = filtered.reduce((s, a) => s + Number(a.spentAmount || 0), 0);
+    const totalCommitted  = filtered.reduce((s, a) => s + Number(a.committedAmount || 0), 0);
+    const totalRemaining  = totalAllocated - totalSpent - totalCommitted;
+
+    // TODO: Còn lỗi, cần kiểm tra lại
+    // // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    // if(totalAllocated > costCenters.find(cc => cc.id === selectedCostCenterId)?.budgetAnnual) {
+    //     console.warn("Tổng phân bổ vượt ngân sách hàng năm của Cost Center này!");
+    // }
+
+    return (
+        <div className="erp-card shadow-sm border border-slate-200">
+            {/* Panel header */}
+            <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-5">
+                <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy flex items-center gap-2">
+                    <div className="p-2 bg-indigo-50 rounded-xl">
+                        <BarChart3 size={18} className="text-indigo-600" />
+                    </div>
+                    Phân bổ Ngân sách
+                </h3>
+                <div className="flex items-center gap-2">
+                    <div className="px-3 py-1 bg-slate-100 rounded-lg text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        {filtered.length} kỳ
+                    </div>
+                    {selectedCostCenterId && (
+                        <div className="px-3 py-1 bg-erp-blue/10 rounded-lg text-[10px] font-black text-erp-blue uppercase tracking-widest">
+                            Lọc theo CC
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Summary strip */}
+            {filtered.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    {[
+                        { icon: <Wallet size={14} />, label: "Tổng cấp phát",  value: totalAllocated,  color: "text-erp-navy",     bg: "bg-slate-50" },
+                        { icon: <TrendingUp size={14} />, label: "Đã tiêu thụ", value: totalSpent,      color: "text-slate-600",    bg: "bg-slate-50" },
+                        { icon: <PieChart size={14} />,   label: "Đang cam kết", value: totalCommitted, color: "text-amber-600",    bg: "bg-amber-50/60" },
+                        { icon: <CheckCircle2 size={14} />, label: "Còn khả dụng", value: totalRemaining, color: totalRemaining < 0 ? "text-red-600" : "text-emerald-600", bg: totalRemaining < 0 ? "bg-red-50/60" : "bg-emerald-50/60" },
+                    ].map(({ icon, label, value, color, bg }) => (
+                        <div key={label} className={`${bg} rounded-2xl p-4 border border-slate-100`}>
+                            <div className={`flex items-center gap-1.5 ${color} mb-2 opacity-60`}>
+                                {icon}
+                                <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
+                            </div>
+                            <div className={`text-sm font-black ${color} leading-tight`}>
+                                {formatVND(Math.abs(value))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Allocation cards */}
+            {filtered.length === 0 ? (
+                <div className="py-16 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                        <div className="w-16 h-16 rounded-[24px] bg-slate-50 flex items-center justify-center border-2 border-dashed border-slate-200">
+                            <Wallet size={24} className="text-slate-300" />
+                        </div>
+                        <div>
+                            <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                                {selectedCostCenterId ? "Không có phân bổ cho Cost Center này" : "Chưa có dữ liệu phân bổ"}
+                            </p>
+                            <p className="text-[9px] text-slate-300 mt-1 font-bold uppercase tracking-tight">
+                                Vui lòng chọn Cost Center để xem phân bổ ngân sách
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filtered.map(allocation => (
+                        <BudgetAllocationCard
+                            key={allocation.id}
+                            allocation={allocation}
+                            isSelected={selectedAllocationId === allocation.id}
+                            onClick={() => onSelect(allocation.id)}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
+// ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function CreatePRPage() {
     const dateInputRef = useRef<HTMLInputElement>(null);
     const { 
@@ -78,37 +322,35 @@ export default function CreatePRPage() {
     const [flowType, setFlowType] = useState<"FLOW1" | "FLOW2">("FLOW1");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [quarterlyAllocation, setQuarterlyAllocation] = useState<BudgetAllocation | null>(null);
+    const [selectedAllocationId, setSelectedAllocationId] = useState<string | null>(null);
 
-    // Calculate current quarter
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentQuarter = Math.floor((today.getMonth() + 3) / 3);
 
-    // Fetch quarterly budget when Cost Center changes
     useEffect(() => {
         if (form.costCenterId && isValidUuid(form.costCenterId)) {
             const getBudget = async () => {
                 const data = await fetchQuarterlyAllocation(form.costCenterId, currentYear, currentQuarter);
-                setQuarterlyAllocation(data?.data || null);
+                setQuarterlyAllocation(data || null);
+                // Auto-select the active quarterly allocation in the panel
+                if (data?.id) setSelectedAllocationId(data.id);
             };
             getBudget();
         } else {
             setQuarterlyAllocation(null);
+            setSelectedAllocationId(null);
         }
     }, [form.costCenterId, fetchQuarterlyAllocation, currentYear, currentQuarter]);
 
     const filteredCostCenters = costCenters.filter((cc: CostCenter) => {
         if (!currentUser) return false;
-        // Admins and Procurement officers can see all cost centers
         if (currentUser.role === "PLATFORM_ADMIN" || currentUser.role === "PROCUREMENT") return true;
-        // Requesters and Managers only see their own department's cost centers
         return !currentUser.deptId || !cc.deptId || cc.deptId === currentUser.deptId;
     });
 
-    // Auto-assign Cost Center based on department
     useEffect(() => {
         if (!form.costCenterId && filteredCostCenters.length > 0) {
-            // Auto-select the first available CC for the user's department
             setForm(prev => ({ ...prev, costCenterId: filteredCostCenters[0].id }));
         }
     }, [filteredCostCenters, form.costCenterId]);
@@ -116,7 +358,6 @@ export default function CreatePRPage() {
     const activeCC = filteredCostCenters.find((cc: CostCenter) => cc.id === form.costCenterId);
     const totalEstimate = form.items.reduce((sum: number, item: PRItem) => sum + (item.qty * item.estimatedPrice), 0);
     
-    // Calculate remaining budget based strictly on Quarterly Allocation
     const remainingBudget = quarterlyAllocation
         ? (Number(quarterlyAllocation.allocatedAmount) - Number(quarterlyAllocation.spentAmount || 0) - Number(quarterlyAllocation.committedAmount || 0))
         : 0;
@@ -127,7 +368,6 @@ export default function CreatePRPage() {
         const product = products.find((p: Product) => p.id === option.value);
         if (!product || form.items.find((i: PRItem) => i.productId === product.id)) return;
 
-        // Role-based limit validation
         const limits: Record<string, number> = {
             "REQUESTER": 5000000,
             "DEPT_APPROVER": 50000000,
@@ -177,7 +417,6 @@ export default function CreatePRPage() {
     const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = async () => {
-        // Validation check
         if (!form.title || form.items.length === 0 || !form.costCenterId) {
             setErrorMessage("Vui lòng nhập đầy đủ tiêu đề, trung tâm chi phí và ít nhất 1 sản phẩm.");
             setSubmissionStatus('error');
@@ -215,13 +454,11 @@ export default function CreatePRPage() {
 
         try {
             if (flowType === "FLOW2") {
-                // Flow 2: Create Quote Request directly FIRST
                 const qrPayload = {
                     title: form.title.trim(),
                     description: form.description?.trim() || "Yêu cầu cung cấp từ Flow 2 (Flexible Scope)",
                     items: form.items
                 };
-                
                 const createdQR = await addQuoteRequest(qrPayload);
                 if (createdQR && createdQR.id) {
                     await submitQuoteRequest(createdQR.id);
@@ -234,13 +471,9 @@ export default function CreatePRPage() {
                 return;
             }
 
-            // Flow 1: CREATE DRAFT PR via Context Service directly
             const createdPR = await addPR(payload);
-
             if (createdPR && createdPR.id) {
-                // STEP 2: SUBMIT FOR APPROVAL via Context Service
                 const success = await submitPR(createdPR.id);
-
                 if (success) {
                     setSubmissionStatus('success');
                     setTimeout(() => router.push("/pr"), 2000);
@@ -283,7 +516,6 @@ export default function CreatePRPage() {
                             if (products.length > 0 && filteredCostCenters.length > 0) {
                                 const cc = filteredCostCenters.find((c: CostCenter) => c.code === 'CC_IT_OPS') || filteredCostCenters[0];
                                 const sampleProducts = products.slice(0, 2);
-                                
                                 setForm({
                                     ...form,
                                     title: "Mua sắm thiết bị IT định kỳ tháng 03/2026",
@@ -322,8 +554,9 @@ export default function CreatePRPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* General Info */}
+                {/* ── Left: General Info + Items ─────────────────────────────── */}
                 <div className="lg:col-span-2 space-y-8">
+                    {/* General Info card */}
                     <div className="erp-card shadow-sm border border-slate-200">
                         <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-6">
                             <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy flex items-center gap-2">
@@ -369,7 +602,6 @@ export default function CreatePRPage() {
                                             </div>
                                         </div>
                                     </div>
-                                    
                                     <div 
                                         className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${flowType === 'FLOW2' ? 'border-amber-400 bg-amber-50/50 shadow-sm' : 'border-slate-100 bg-white hover:border-slate-200'}`}
                                         onClick={() => setFlowType('FLOW2')}
@@ -423,7 +655,6 @@ export default function CreatePRPage() {
                                                 <div className="text-lg font-black font-mono">{activeCC.code}</div>
                                             </div>
                                         </div>
-                                        
                                         <div className="p-8 grid grid-cols-2 gap-8 bg-white relative">
                                             <div className="absolute top-0 left-1/2 -translate-x-px w-px h-full bg-slate-50" />
                                             <div className="space-y-2">
@@ -438,7 +669,6 @@ export default function CreatePRPage() {
                                                     -{formatVND(totalEstimate)} <span className="text-xs opacity-50 ml-1">VND</span>
                                                 </div>
                                             </div>
-                                            
                                             <div className="col-span-2 pt-6 border-t border-slate-50">
                                                 <div className="flex justify-between items-center mb-3 px-1">
                                                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tỉ lệ chiếm dụng nguồn vốn</span>
@@ -497,13 +727,12 @@ export default function CreatePRPage() {
                                     Ngày cần hàng
                                 </label>
                                 <div className="relative max-w-[260px]">
-                                    {/* HIDDEN DATE INPUT FOR PICKER */}
                                     <input
                                         type="date"
                                         ref={dateInputRef}
                                         className="absolute inset-0 opacity-0 -z-10 pointer-events-none"
                                         onChange={e => {
-                                            const val = e.target.value; // YYYY-MM-DD
+                                            const val = e.target.value;
                                             if (!val) return;
                                             const [y, m, d] = val.split('-');
                                             setForm({ ...form, requiredDate: `${d}-${m}-${y}` });
@@ -517,9 +746,7 @@ export default function CreatePRPage() {
                                         readOnly
                                         onClick={() => dateInputRef.current?.showPicker()}
                                     />
-                                    <div 
-                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                                    >
+                                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
                                         <Calendar size={14} />
                                     </div>
                                 </div>
@@ -540,6 +767,15 @@ export default function CreatePRPage() {
                         </div>
                     </div>
 
+                    {/* ── Budget Allocations Panel ─────────────────────────── */}
+                    <BudgetAllocationsPanel
+                        allocations={budgetAllocations as BudgetAllocation[]}
+                        selectedCostCenterId={form.costCenterId}
+                        selectedAllocationId={selectedAllocationId}
+                        onSelect={setSelectedAllocationId}
+                    />
+
+                    {/* ── Items table ──────────────────────────────────────── */}
                     <div className="erp-card shadow-sm border border-slate-200">
                         <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-6">
                             <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy flex items-center gap-2">
@@ -725,7 +961,7 @@ export default function CreatePRPage() {
                     <SupplierSuggestionWidget items={form.items} />
                 </div>
 
-                {/* Side info & Help */}
+                {/* ── Right Sidebar ───────────────────────────────────────── */}
                 <div className="space-y-6">
                     {activeCC ? (
                         <div className="erp-card shadow-xl border-t-4 border-t-erp-blue overflow-hidden">
@@ -762,12 +998,10 @@ export default function CreatePRPage() {
                                         </span>
                                     </div>
                                     <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden flex shadow-inner border border-slate-50">
-                                        {/* Used Budget Segment */}
                                         <div
                                             className="h-full bg-slate-300 transition-all duration-500"
                                             style={{ width: `${Math.min(100, (quarterlyAllocation ? (Number(quarterlyAllocation.spentAmount || 0) + Number(quarterlyAllocation.committedAmount || 0)) : Number(activeCC.budgetUsed)) / (quarterlyAllocation ? Number(quarterlyAllocation.allocatedAmount) : (Number(activeCC.budgetAnnual) || 1)) * 100)}%` }}
                                         />
-                                        {/* Current PR Impact Segment */}
                                         <div
                                             className={`h-full transition-all duration-500 ${isOverBudget ? 'bg-red-500' : 'bg-erp-blue animate-pulse'}`}
                                             style={{ width: `${Math.min(100 - ((quarterlyAllocation ? (Number(quarterlyAllocation.spentAmount || 0) + Number(quarterlyAllocation.committedAmount || 0)) : Number(activeCC.budgetUsed)) / (quarterlyAllocation ? Number(quarterlyAllocation.allocatedAmount) : (Number(activeCC.budgetAnnual) || 1)) * 100), (totalEstimate / (quarterlyAllocation ? Number(quarterlyAllocation.allocatedAmount) : (Number(activeCC.budgetAnnual) || 1))) * 100)}%` }}
@@ -872,7 +1106,6 @@ export default function CreatePRPage() {
             {submissionStatus !== 'idle' && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-erp-navy/40 backdrop-blur-sm animate-in fade-in duration-300" />
-
                     <div className="relative bg-white rounded-[40px] w-full max-w-sm overflow-hidden shadow-2xl border border-white/20 animate-in zoom-in slide-in-from-bottom-8 duration-500">
                         <div className="p-10 text-center">
                             {submissionStatus === 'loading' && (
@@ -888,7 +1121,6 @@ export default function CreatePRPage() {
                                     </div>
                                 </div>
                             )}
-
                             {submissionStatus === 'success' && (
                                 <div className="flex flex-col items-center gap-6 py-4">
                                     <div className="w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center border-4 border-emerald-100 animate-in zoom-in duration-500">
@@ -903,7 +1135,6 @@ export default function CreatePRPage() {
                                     </div>
                                 </div>
                             )}
-
                             {submissionStatus === 'error' && (
                                 <div className="flex flex-col items-center gap-6 py-4">
                                     <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center border-4 border-red-100 animate-in zoom-in duration-500">

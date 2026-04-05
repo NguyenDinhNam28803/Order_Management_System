@@ -1,0 +1,387 @@
+[
+  {
+    "page": "page.tsx",
+    "status": "PARTIAL",
+    "apiCalls": ["prAPI", "budgetAPI", "approvalAPI"],
+    "missingAPICalls": ["Should have explicit list endpoints for dashboard widgets"],
+    "lineWithAPICall": 52
+  },
+  {
+    "page": "admin/categories/page.tsx",
+    "status": "READY",
+    "apiCalls": ["addCategory", "updateCategory", "removeCategory", "refreshData"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 58
+  },
+  {
+    "page": "admin/cost-centers/page.tsx",
+    "status": "READY",
+    "apiCalls": ["addCostCenter", "updateCostCenter", "removeCostCenter", "fetchCostCenter"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 85
+  },
+  {
+    "page": "admin/departments/page.tsx",
+    "status": "READY",
+    "apiCalls": ["addDept", "updateDept", "removeDept"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 64
+  },
+  {
+    "page": "admin/organizations/page.tsx",
+    "status": "READY",
+    "apiCalls": ["addOrganization", "updateOrganization", "removeOrganization", "refreshData"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 62
+  },
+  {
+    "page": "admin/products/page.tsx",
+    "status": "READY",
+    "apiCalls": ["addProduct", "updateProduct", "removeProduct", "addCategory", "updateCategory", "removeCategory"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 71
+  },
+  {
+    "page": "admin/suppliers/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should use supplierAPI to fetch, create, update suppliers"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "ai-report/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should have aiAPI for report generation and supplier analysis"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "approvals/page.tsx",
+    "status": "READY",
+    "apiCalls": ["actionApproval", "refreshData"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 56
+  },
+  {
+    "page": "finance/budget-allocation/page.tsx",
+    "status": "READY",
+    "apiCalls": ["distributeAnnualBudget", "refreshData"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 92
+  },
+  {
+    "page": "finance/budgets/page.tsx",
+    "status": "READY",
+    "apiCalls": ["addBudgetAllocationBundle"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 118
+  },
+  {
+    "page": "finance/dashboard/page.tsx",
+    "status": "READY",
+    "apiCalls": ["invoiceAPI.list"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 35
+  },
+  {
+    "page": "finance/matching/page.tsx",
+    "status": "READY",
+    "apiCalls": ["matchInvoice", "payInvoice"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 89
+  },
+  {
+    "page": "grn/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should have grnAPI.create or similar to submit GRN"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "help/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Static page - no API needed"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "invoices/page.tsx",
+    "status": "READY",
+    "apiCalls": ["invoiceAPI.list"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 11
+  },
+  {
+    "page": "invoices/[id]/page.tsx",
+    "status": "READY",
+    "apiCalls": ["invoiceAPI.getById", "invoiceAPI.runMatching", "invoiceAPI.pay"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 21
+  },
+  {
+    "page": "login/page.tsx",
+    "status": "READY",
+    "apiCalls": ["login"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 75
+  },
+  {
+    "page": "manager/approval-history/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should fetch approval history from API instead of mock data"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "manager/budget-alerts/page.tsx",
+    "status": "READY",
+    "apiCalls": ["approveOverride", "rejectOverride"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 57
+  },
+  {
+    "page": "manager/budget-planning/page.tsx",
+    "status": "READY",
+    "apiCalls": ["addBudgetAllocation", "submitAllocation", "refreshData"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 73
+  },
+  {
+    "page": "manager/po-approvals/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should use poAPI to fetch approvals and confirmations"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "manager/spend-tracking/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should fetch spend data from budget allocation API"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "matching/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should use invoiceAPI and grnAPI for 3-way matching"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "payments/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["CRITICAL: Should use paymentAPI.list endpoint"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "po/page.tsx",
+    "status": "PARTIAL",
+    "apiCalls": ["prAPI"],
+    "missingAPICalls": ["Should have poAPI.list or poAPI.create"],
+    "lineWithAPICall": 28
+  },
+  {
+    "page": "po/[id]/page.tsx",
+    "status": "READY",
+    "apiCalls": ["poAPI.getById", "poAPI.confirm", "poAPI.submit", "poAPI.reject"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 21
+  },
+  {
+    "page": "pr/page.tsx",
+    "status": "READY",
+    "apiCalls": ["prAPI", "approvalAPI", "actionApproval"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 16
+  },
+  {
+    "page": "pr/create/page.tsx",
+    "status": "READY",
+    "apiCalls": ["addPR", "submitPR", "addQuoteRequest", "submitQuoteRequest"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 154
+  },
+  {
+    "page": "pr/[id]/page.tsx",
+    "status": "READY",
+    "apiCalls": ["prAPI.getById", "prAPI.submit"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 14
+  },
+  {
+    "page": "privacy/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Static page - no API needed"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "procurement/amendments/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should have poAPI endpoint for amendments"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "procurement/delivery/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should have deliveryAPI or grnAPI for tracking"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "procurement/pos/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should use poAPI.list endpoint"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "procurement/prs/page.tsx",
+    "status": "READY",
+    "apiCalls": ["apiFetch", "refreshData", "confirmCatalogPrice"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 91
+  },
+  {
+    "page": "procurement/rfq/create/page.tsx",
+    "status": "READY",
+    "apiCalls": ["createRFQ", "apiFetch"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 149
+  },
+  {
+    "page": "procurement/rfq-interaction/page.tsx",
+    "status": "PARTIAL",
+    "apiCalls": ["RFQInteraction component"],
+    "missingAPICalls": ["Should have rfqAPI calls for quotation handling"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "procurement/rfq-sim/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Simulation page - can remain without API"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "quote-requests/page.tsx",
+    "status": "READY",
+    "apiCalls": ["convertQuoteToPR"],
+    "missingAPICalls": ["Should also use list endpoint from API instead of context only"],
+    "lineWithAPICall": 59
+  },
+  {
+    "page": "quote-requests/create/page.tsx",
+    "status": "READY",
+    "apiCalls": ["addQuoteRequest", "submitQuoteRequest"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 62
+  },
+  {
+    "page": "register/page.tsx",
+    "status": "READY",
+    "apiCalls": ["register"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 67
+  },
+  {
+    "page": "settings/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should have API to fetch and save system settings"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "shop/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should have productAPI.list or catalogAPI"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "simulation/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Simulation/demo page - may not need real API"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "sourcing/page.tsx",
+    "status": "READY",
+    "apiCalls": ["createRFQ", "createPOFromPR", "refreshData"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 68
+  },
+  {
+    "page": "sourcing/rfq-create/page.tsx",
+    "status": "READY",
+    "apiCalls": ["createRFQ"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 126
+  },
+  {
+    "page": "supplier/dashboard/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should fetch supplier's RFQs and quote requests"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "supplier/invoice/page.tsx",
+    "status": "READY",
+    "apiCalls": ["createInvoice"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 89
+  },
+  {
+    "page": "supplier/po/page.tsx",
+    "status": "READY",
+    "apiCalls": ["ackPO", "shipPO"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 32
+  },
+  {
+    "page": "supplier/rfq/page.tsx",
+    "status": "READY",
+    "apiCalls": ["createQuote"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 108
+  },
+  {
+    "page": "supplier/[id]/kpi-evaluation/page.tsx",
+    "status": "READY",
+    "apiCalls": ["supplierKPIAPI.getReport", "supplierKPIAPI.evaluate"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 25
+  },
+  {
+    "page": "terms/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Static page - no API needed"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "users/page.tsx",
+    "status": "READY",
+    "apiCalls": ["addUser", "updateUser", "removeUser"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 92
+  },
+  {
+    "page": "warehouse/dashboard/page.tsx",
+    "status": "MISSING",
+    "apiCalls": [],
+    "missingAPICalls": ["Should use grnAPI or poAPI to fetch incoming shipments"],
+    "lineWithAPICall": null
+  },
+  {
+    "page": "warehouse/grn/new/page.tsx",
+    "status": "READY",
+    "apiCalls": ["createGRN"],
+    "missingAPICalls": [],
+    "lineWithAPICall": 121
+  }
+]

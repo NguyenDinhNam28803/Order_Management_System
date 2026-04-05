@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import DashboardHeader from "../../../components/DashboardHeader";
-import { Search, Package, AlertTriangle, FileCheck, CheckCircle2, RotateCcw, UploadCloud, Info, FileText } from "lucide-react";
+import { Search, Package, AlertTriangle, FileCheck, CheckCircle2, RotateCcw, UploadCloud, FileText } from "lucide-react";
 
 import { useProcurement } from "../../../context/ProcurementContext";
 import { useRouter } from "next/navigation";
