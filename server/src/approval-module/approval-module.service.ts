@@ -412,17 +412,17 @@ export class ApprovalModuleService {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: updateData,
         });
-        await this.auditService.create(
-          {
-            action: 'APPROVE_BUDGET_ALLOCATION',
-            entityType: 'BudgetAllocation',
-            entityId: id,
-            oldValue: location,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            newValue: updateData,
-          },
-          user!,
-        );
+        // await this.auditService.create(
+        //   {
+        //     action: 'APPROVE_BUDGET_ALLOCATION',
+        //     entityType: 'BudgetAllocation',
+        //     entityId: id,
+        //     oldValue: location,
+        //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        //     newValue: updateData,
+        //   },
+        //   user!,
+        // );
         break;
       }
     }
