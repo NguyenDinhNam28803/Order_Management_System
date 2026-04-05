@@ -289,7 +289,7 @@ export default function RFQCreatePage() {
                                     {form.items.map((item, idx: number) => (
                                         <tr key={idx} className="group hover:bg-erp-blue/5 transition-all">
                                             <td className="px-8 py-5">
-                                                <div className="font-black text-erp-navy text-sm leading-tight mb-1">{item.description || item.item_name || item.productName}</div>
+                                                <div className="font-black text-erp-navy text-sm leading-tight mb-1">{item.description || item.productName}</div>
                                                 <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">SKU: {item.sku || "N/A"}</div>
                                             </td>
                                             <td className="px-4 py-5">
@@ -297,9 +297,9 @@ export default function RFQCreatePage() {
                                                     {item.prNumber}
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-5 text-center font-black text-erp-navy text-sm">{item.qty || item.quantity || 0}</td>
+                                            <td className="px-4 py-5 text-center font-black text-erp-navy text-sm">{item.qty || 0}</td>
                                             <td className="px-4 py-5 text-right font-black text-erp-blue text-sm">
-                                                {((Number(item.qty) || Number(item.quantity) || 0) * (item.estimatedPrice || 0)).toLocaleString()} ₫
+                                                {((Number(item.qty) || 0) * (item.estimatedPrice || 0)).toLocaleString()} ₫
                                             </td>
                                             <td className="px-8 py-5 text-center">
                                                 <button 

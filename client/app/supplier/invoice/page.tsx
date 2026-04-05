@@ -21,7 +21,7 @@ interface DeliverablePO {
 }
 
 export default function SupplierInvoice() {
-    const { pos, grns, createInvoice } = useProcurement();
+    const { pos, grns, createInvoice, notify } = useProcurement();
     const router = useRouter();
     
     const [selectedPO, setSelectedPO] = useState("");
@@ -68,15 +68,22 @@ export default function SupplierInvoice() {
     const vatAmount = subTotal * (vat / 100);
     const totalAmount = subTotal + vatAmount;
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if(!currentPO || !invoiceNo) {
             alert("Vui lòng nhập Số HĐ");
             return;
         }
-        createInvoice({ poId: currentPO.id, vendor: currentPO.vendor, amount: totalAmount });
-        alert(`Đã xuất Hóa đơn ${invoiceNo} (Invoice) cho ${currentPO.id} thành công!`);
-        router.push("/supplier/dashboard");
-    }
+        const success = await createInvoice({
+            poId: currentPO.id,
+            vendor: currentPO.vendor,
+            amount: totalAmount,
+            invoiceNumber: invoiceNo
+        });
+        if (success) {
+            notify(`Đã xuất Hóa đơn ${invoiceNo} (Invoice) cho ${currentPO.id} thành công!`, "success");
+            router.push("/supplier/dashboard");
+        }
+    };
 
     return (
         <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300">

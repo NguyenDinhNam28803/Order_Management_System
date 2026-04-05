@@ -104,7 +104,7 @@ export default function UsersPage() {
             const success = await updateUser(editingUser.id, data);
             if (success) setShowModal(false);
         } else {
-            const success = await addUser(data);
+            const success = await addUser(data as any);
             if (success) setShowModal(false);
         }
     };

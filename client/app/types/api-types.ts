@@ -262,6 +262,7 @@ export interface PR {
     totalEstimate?: number;
     items?: PRItem[];
     type: PrType;
+    procurementId?: string;
     preferredSupplierId?: string;
 }
 
@@ -458,7 +459,10 @@ export interface ConsolidateRfqDto {
     title: string;
     description?: string;
     deadline?: string;
-    supplierIds: string[];
+    supplierIds?: string[];
+    vendor?: string;
+    dueDate?: string;
+    items?: any[];
 }
 
 export interface CreateQuoteDto {

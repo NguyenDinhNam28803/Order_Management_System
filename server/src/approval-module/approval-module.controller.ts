@@ -1,11 +1,11 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Param,
   UseGuards,
   Req,
+  Patch,
 } from '@nestjs/common';
 import { ApprovalModuleService } from './approval-module.service';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
@@ -39,9 +39,7 @@ export class ApprovalModuleController {
     description:
       'Trả về danh sách các yêu cầu đang chờ tôi duyệt. Chỉ các role FINANCE, DIRECTOR, CEO, PLATFORM_ADMIN mới được xem',
   })
-  async getMyPending(
-    @Req() req: any,
-  ) {
+  async getMyPending(@Req() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const userId = req.user.sub || req.user.id; // Tùy thuộc vào payload của JWT
     return this.approvalService.getMyPendingApprovals(userId as string);
@@ -55,7 +53,7 @@ export class ApprovalModuleController {
    * @param req Thông tin người thực hiện hành động
    * @returns Kết quả xử lý phê duyệt
    */
-  @Post(':id/action')
+  @Patch(':id/action')
   @Roles(
     UserRole.FINANCE,
     UserRole.DIRECTOR,

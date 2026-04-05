@@ -314,4 +314,11 @@ export class PrmoduleService {
   async findMyPrs(userId: string): Promise<PurchaseRequisition[]> {
     return this.repository.findByRequester(userId);
   }
+
+  async assign(id: string, procurementId: string) {
+    return this.prisma.purchaseRequisition.update({
+      where: { id },
+      data: { procurementId },
+    });
+  }
 }

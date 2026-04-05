@@ -1,8 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { useProcurement, Supplier } from "../../context/ProcurementContext";
+import { useProcurement } from "../../context/ProcurementContext";
 import DashboardHeader from "../../components/DashboardHeader";
+
+export interface Supplier {
+    id: string;
+    name: string;
+    code: string;
+    category: string;
+    status: 'ACTIVE' | 'INACTIVE';
+    rating: number;
+    email: string;
+    phone: string;
+    website?: string;
+}
 import { 
     Truck, Plus, Search, Filter, 
     MoreHorizontal, Edit, Trash2, 

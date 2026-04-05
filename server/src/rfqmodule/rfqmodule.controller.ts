@@ -6,8 +6,8 @@ import {
   Param,
   UseGuards,
   Request,
-  Put,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { RfqmoduleService } from './rfqmodule.service';
 import { CreateRfqDto } from './dto/create-rfq.dto';
@@ -86,7 +86,7 @@ export class RfqmoduleController {
    * @param body Chứa trạng thái mới cần cập nhật
    * @returns RFQ sau khi cập nhật trạng thái
    */
-  @Put(':id/status')
+  @Patch(':id/status')
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Cập nhật trạng thái RFQ',
@@ -178,7 +178,7 @@ export class RfqmoduleController {
   /**
    * Gửi chính thức một báo giá (thay đổi trạng thái từ nháp sang đã gửi)
    */
-  @Put('quotations/:id/submit')
+  @Patch('quotations/:id/submit')
   @Roles(UserRole.SUPPLIER, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Gửi báo giá',
@@ -191,7 +191,7 @@ export class RfqmoduleController {
   /**
    * Chuyên viên mua sắm xem xét báo giá
    */
-  @Put('quotations/:id/review')
+  @Patch('quotations/:id/review')
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Xem xét báo giá',
@@ -205,7 +205,7 @@ export class RfqmoduleController {
   /**
    * Chấp nhận một báo giá và có thể tiến tới tạo đơn hàng (PO)
    */
-  @Put('quotations/:id/accept')
+  @Patch('quotations/:id/accept')
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Chấp nhận báo giá',
@@ -219,7 +219,7 @@ export class RfqmoduleController {
   /**
    * Từ chối một báo giá từ nhà cung cấp
    */
-  @Put('quotations/:id/reject')
+  @Patch('quotations/:id/reject')
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Từ chối báo giá',
@@ -236,7 +236,7 @@ export class RfqmoduleController {
    * @param body Chứa điểm số AI
    * @returns Báo giá với điểm AI mới
    */
-  @Put('quotations/:id/ai-score')
+  @Patch('quotations/:id/ai-score')
   @ApiOperation({
     summary: 'Cập nhật điểm AI của báo giá',
     description: 'Cập nhật điểm AI cho một báo giá cụ thể',
@@ -311,7 +311,7 @@ export class RfqmoduleController {
    * @param req Thông tin người trả lời
    * @returns Luồng Q&A sau khi có câu trả lời
    */
-  @Put('qa-threads/:id/answer')
+  @Patch('qa-threads/:id/answer')
   @ApiOperation({
     summary: 'Trả lời chủ đề Q&A',
     description: 'Trả lời một chủ đề Q&A cụ thể',
@@ -476,7 +476,7 @@ export class RfqmoduleController {
    * @param body Nội dung phản hồi (accept/reject) và status (ACCEPTED/REJECTED)
    * @returns Đề xuất phản hồi sau khi được xử lý
    */
-  @Put('counter-offers/:id/respond')
+  @Patch('counter-offers/:id/respond')
   @ApiOperation({
     summary: 'Phản hồi đề xuất phản hồi',
     description: 'Phản hồi một đề xuất phản hồi cụ thể',
@@ -500,7 +500,7 @@ export class RfqmoduleController {
    * @param req Thông tin người thực hiện
    * @returns RFQ sau khi trao thầu
    */
-  @Put(':rfqId/award')
+  @Patch(':rfqId/award')
   @ApiOperation({
     summary: 'Trao thầu cho nhà cung cấp',
     description: 'Chọn nhà cung cấp thắng thầu cho một yêu cầu báo giá cụ thể',
@@ -516,5 +516,37 @@ export class RfqmoduleController {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       req.user.sub,
     );
+  }
+
+  // ============ Quotation Request Endpoints (Pre-PR Quoting) ============
+
+  @Get('quotation-requests')
+  @ApiOperation({ summary: 'Lấy danh sách yêu cầu báo giá (Pre-PR)' })
+  async findAllQuotationRequests(@Request() req: any) {
+    return this.rfqService.findAllQuotationRequests(req.user.orgId);
+  }
+
+  @Post('quotation-requests')
+  @ApiOperation({ summary: 'Tạo yêu cầu báo giá mới (Pre-PR)' })
+  async createQuotationRequest(@Body() body: any, @Request() req: any) {
+    return this.rfqService.createQuotationRequest(body, req.user);
+  }
+
+  @Get('quotation-requests/:id')
+  @ApiOperation({ summary: 'Lấy chi tiết yêu cầu báo giá (Pre-PR)' })
+  async findQuotationRequestOne(@Param('id') id: string) {
+    return this.rfqService.findQuotationRequestOne(id);
+  }
+
+  @Patch('quotation-requests/:id/submit')
+  @ApiOperation({ summary: 'Gửi yêu cầu báo giá (Pre-PR)' })
+  async submitQuotationRequest(@Param('id') id: string) {
+    return this.rfqService.updateQuotationRequestStatus(id, 'ACKNOWLEDGED');
+  }
+
+  @Post('quotation-requests/:id/convert-to-pr')
+  @ApiOperation({ summary: 'Chuyển đổi báo giá sang PR chính thức' })
+  async convertToPr(@Param('id') id: string, @Request() req: any) {
+    return this.rfqService.convertToPr(id, req.user);
   }
 }

@@ -30,27 +30,36 @@ export default function SupplierRFQ() {
     const [leadTime, setLeadTime] = useState("");
     const [paymentTerms, setPaymentTerms] = useState("Net 30");
 
-    const handleSubmit = () => {
-        if (!activeRFQ) return;
+    const handleSubmit = async () => {
+        if (!activeRFQ || !currentUser) return;
         
         let total = 0;
-        const pricesObj: Record<string, number> = {};
+        const itemsList: Array<{ prItemId: string; unitPrice: number; quantity: number }> = [];
         (activeRFQ.items || []).forEach((item: PRItem) => {
             if (!item.id) return;
             const val = Number(prices[item.id]) || 0;
-            pricesObj[item.id] = val;
-            total += val * (item.qty || item.quantity || 0);
+            const qty = Number(item.qty || 0);
+            total += val * qty;
+            itemsList.push({
+                prItemId: item.id,
+                unitPrice: val,
+                quantity: qty
+            });
         });
 
-        createQuote(activeRFQ.id, {
-            prices: pricesObj,
-            leadTime,
-            paymentTerms,
-            total
+        const success = await createQuote({
+            rfqId: activeRFQ.id,
+            supplierId: currentUser.orgId || "",
+            totalPrice: total,
+            leadTimeDays: Number(leadTime) || 7,
+            notes: paymentTerms,
+            items: itemsList
         });
         
-        notify(`Báo giá cho RFQ ${activeRFQ.id} đã được gửi thành công!`, "success");
-        setViewState("LIST");
+        if (success) {
+            notify(`Báo giá cho RFQ ${activeRFQ.id} đã được gửi thành công!`, "success");
+            setViewState("LIST");
+        }
     };
 
     if (viewState === "DETAIL" && activeRFQ) {
@@ -184,9 +193,9 @@ export default function SupplierRFQ() {
                                 <tbody>
                                     {(activeRFQ.items || []).map((item, idx: number) => {
                                         const itemId = item.id || `item-${idx}`;
-                                        const itemName = item.item_name || item.description || "N/A";
-                                        const itemCode = item.item_code || "SKU-ANY";
-                                        const quantity = item.quantity || item.qty || 0;
+                                        const itemName = item.productName || item.description || "N/A";
+                                        const itemCode = item.sku || "SKU-ANY";
+                                        const quantity = Number(item.qty || 0);
                                         const unit = item.unit || "UNIT";
 
                                         return (
@@ -222,7 +231,7 @@ export default function SupplierRFQ() {
                                                     const itemId = item.id;
                                                     if (!itemId) return sum;
                                                     const priceVal = Number(prices[itemId]) || 0;
-                                                    const quantity = item.quantity || item.qty || 0;
+                                                    const quantity = Number(item.qty || 0);
                                                     return sum + (priceVal * quantity);
                                                 }, 0);
                                                 return total.toLocaleString();
@@ -308,7 +317,7 @@ export default function SupplierRFQ() {
                                             {prDetail?.items && prDetail.items.length > 0 ? (
                                                 prDetail.items.slice(0, 3).map((item, i: number) => (
                                                     <span key={i} className="bg-slate-100 text-[10px] px-2 py-0.5 rounded border border-slate-200">
-                                                        {item.item_name || item.description} x{item.quantity || item.qty}
+                                                        {item.productName || item.description} x{item.qty}
                                                     </span>
                                                 ))
                                             ) : (

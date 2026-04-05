@@ -1350,6 +1350,7 @@ model DocumentEmbedding {
 
 model QuotationRequest {
   id            String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  qrNumber      String   @unique @map("qr_number") @db.VarChar(30)
   prId          String   @map("pr_id") @db.Uuid
   requesterId   String   @map("requester_id") @db.Uuid
   categoryId    String?  @map("category_id") @db.Uuid

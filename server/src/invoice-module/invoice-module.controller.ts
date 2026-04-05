@@ -58,14 +58,14 @@ export class InvoiceModuleController {
     return this.invoiceModuleService.findOne(id);
   }
 
-  @Post(':id/pay')
+  @Patch(':id/pay')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Xác nhận thanh toán hóa đơn' })
   payInvoice(@Param('id') id: string) {
     return this.invoiceModuleService.markAsPaid(id);
   }
 
-  @Post(':id/run-matching')
+  @Patch(':id/run-matching')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Chạy lại đối soát 3 bên' })
   runMatching(@Param('id') id: string) {
@@ -85,17 +85,6 @@ export class InvoiceModuleController {
     @Body() updateInvoiceModuleDto: UpdateInvoiceModuleDto,
   ) {
     return this.invoiceModuleService.update(id, updateInvoiceModuleDto);
-  }
-
-  /**
-   * Đánh dấu hóa đơn là đã thanh toán
-   * @param id ID của hóa đơn
-   * @returns Hóa đơn sau khi được cập nhật trạng thái
-   */
-  @Post(':id/pay')
-  @ApiOperation({ summary: 'Thanh toán hóa đơn' })
-  pay(@Param('id') id: string) {
-    return this.invoiceModuleService.markAsPaid(id);
   }
 
   /**

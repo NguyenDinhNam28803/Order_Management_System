@@ -14,6 +14,7 @@ export default function ProductAdminPage() {
         products, 
         categories,
         organizations,
+        currentUser,
         refreshData,
         addProduct, 
         updateProduct, 

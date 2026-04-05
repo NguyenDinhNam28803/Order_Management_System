@@ -43,6 +43,8 @@ export interface RFQ {
     title?: string; createdAt?: string; items?: PRItem[]; supplierIds?: string[];
     type: "RFQ" | "PO_CONFIRMATION";
     price?: number; stock?: number; leadTime?: number; note?: string;
+    attachments?: any[];
+    messages?: any[];
 }
 
 export interface GRN {
@@ -121,10 +123,11 @@ export interface ProcurementContextType extends ProcurementState {
     updateBudgetAllocation: (id: string, d: UpdateBudgetAllocationPayload) => Promise<boolean>;
     removeBudgetAllocation: (id: string) => Promise<boolean>;
     distributeAnnualBudget: (costCenterId: string, fiscalYear: number) => Promise<boolean>;
+    addBudgetAllocationBundle: (d: { costCenterId: string, fiscalYear: number }) => Promise<boolean>;
     reconcileQuarter: (costCenterId: string, fiscalYear: number, quarter: number) => Promise<boolean>;
     fetchCostCenter: (id: string) => Promise<CostCenter | null>;
     fetchQuarterlyAllocation: (cc: string, year: number, quarter: number) => Promise<BudgetAllocation | null>;
-    addQuoteRequest: (d: any) => Promise<boolean>;
+    addQuoteRequest: (d: any) => Promise<any>;
     updateQuoteRequest: (id: string, d: any) => Promise<boolean>;
     submitQuoteRequest: (id: string) => Promise<boolean>;
     convertQuoteToPR: (qrId: string) => Promise<boolean>;
@@ -141,7 +144,12 @@ export interface ProcurementContextType extends ProcurementState {
     register: (d: RegisterPayload) => Promise<boolean>;
     createQuote: (d: CreateQuoteDto) => Promise<boolean>;
     createGRN: (d: CreateGrnDto) => Promise<boolean>;
+    confirmGRN: (id: string) => Promise<boolean>;
+    updateGRNStatus: (id: string, status: string) => Promise<boolean>;
     createInvoice: (d: CreateInvoiceDto) => Promise<boolean>;
+    assignPR: (id: string) => Promise<boolean>;
+    submitPO: (id: string) => Promise<boolean>;
+    rejectPO: (id: string) => Promise<boolean>;
 }
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
@@ -346,8 +354,19 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData]);
 
     const submitPR = useCallback(async (id: string) => {
-        const resp = await apiFetch(`/procurement-requests/${id}/submit`, { method: 'PATCH' });
+        const userJson = Cookies.get('user');
+        const user = userJson ? JSON.parse(userJson) : {};
+        const resp = await apiFetch(`/procurement-requests/${id}/submit`, {
+            method: 'PATCH',
+            body: JSON.stringify(user)
+        });
         if (resp.ok) { notify("Gửi duyệt thành công", "success"); await refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const assignPR = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/procurement-requests/${id}/assign`, { method: 'PATCH' });
+        if (resp.ok) { notify("Đã nhận PR", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
 
@@ -365,7 +384,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
 
     const actionApproval = useCallback(async (id: string, action: 'APPROVE' | 'REJECT', comment?: string) => {
-        const resp = await apiFetch(`/approvals/${id}/action`, { method: 'POST', body: JSON.stringify({ action, comment }) });
+        const resp = await apiFetch(`/approvals/${id}/action`, { method: 'PATCH', body: JSON.stringify({ action, comment }) });
         if (resp.ok) { notify("Phê duyệt thành công", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
@@ -428,8 +447,20 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData, notify]);
 
     const ackPO = useCallback(async (id: string) => {
-        const resp = await apiFetch(`/purchase-orders/${id}/confirm`, { method: 'POST' });
+        const resp = await apiFetch(`/purchase-orders/${id}/confirm`, { method: 'PATCH' });
         if (resp.ok) { notify("Đã xác nhận đơn hàng", "success"); await refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const rejectPO = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/purchase-orders/${id}/reject`, { method: 'PATCH' });
+        if (resp.ok) { notify("Đã từ chối đơn hàng", "info"); await refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const submitPO = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/purchase-orders/${id}/submit`, { method: 'PATCH' });
+        if (resp.ok) { notify("Đã gửi duyệt đơn hàng", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
 
@@ -452,7 +483,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const awardQuotation = useCallback(async (rfqId: string, quotationId: string) => {
         const resp = await apiFetch(`/request-for-quotations/${rfqId}/award`, { 
-            method: 'PUT', 
+            method: 'PATCH',
             body: JSON.stringify({ quotationId }) 
         });
         if (resp.ok) { notify("Đã chọn nhà thầu thành công!", "success"); await refreshData(); return true; }
@@ -465,6 +496,18 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
+    const confirmGRN = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/grn/${id}/confirm`, { method: 'PATCH' });
+        if (resp.ok) { notify("Đã xác nhận nhập kho", "success"); await refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const updateGRNStatus = useCallback(async (id: string, status: string) => {
+        const resp = await apiFetch(`/grn/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) });
+        if (resp.ok) { await refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData]);
+
     const createInvoice = useCallback(async (d: CreateInvoiceDto) => {
         const resp = await apiFetch('/invoices', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Tạo hóa đơn thành công!", "success"); await refreshData(); return true; }
@@ -472,13 +515,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData, notify]);
 
     const payInvoice = useCallback(async (id: string) => {
-        const resp = await apiFetch(`/invoices/${id}/pay`, { method: 'POST' });
+        const resp = await apiFetch(`/invoices/${id}/pay`, { method: 'PATCH' });
         if (resp.ok) { notify("Đã thanh toán hóa đơn", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
 
     const matchInvoice = useCallback(async (id: string) => {
-        const resp = await apiFetch(`/invoices/${id}/run-matching`, { method: 'POST' });
+        const resp = await apiFetch(`/invoices/${id}/run-matching`, { method: 'PATCH' });
         if (resp.ok) { notify("Đã thực hiện đối soát 3 bên", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
@@ -615,6 +658,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         ...state,
         login, logout, refreshData, apiFetch, addPR, submitPR, updatePR, fetchPrDetail, actionApproval,
         addBudgetAllocation, submitAllocation, approveAllocation, distributeAnnualBudget, reconcileQuarter,
+        addBudgetAllocationBundle: async () => true,
         approveOverride, rejectOverride, convertQuoteToPR,
         removeNotification, notify,
         createPO, createPOFromPR, ackPO, shipPO,
@@ -633,6 +677,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         startSimulation: () => {}, nextSimulationStep: () => {}, stopSimulation: () => {},
         confirmCatalogPrice: async () => true, register: async () => true, createQuote: async () => true,
         createGRN, createInvoice, payInvoice, matchInvoice,
+        confirmGRN, updateGRNStatus,
+        rejectPO, submitPO, assignPR,
         approvePR: async () => true
     };
 

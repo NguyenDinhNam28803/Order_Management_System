@@ -340,8 +340,10 @@ export class AutomationService {
 
       // Tạo QuotationRequest cho từng category
       for (const [catId, budgetAmount] of categoryMap) {
+        const qrNumber = `QR-AUTO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
         const quotationReq = await this.prisma.quotationRequest.create({
           data: {
+            qrNumber,
             prId: pr.id,
             requesterId: pr.requesterId,
             categoryId: catId === 'default' ? null : catId,

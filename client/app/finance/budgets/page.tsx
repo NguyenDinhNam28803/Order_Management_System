@@ -23,9 +23,10 @@ export default function FinanceBudgetsPage() {
         costCenters,
         budgetAllocations,
         budgetPeriods,
-        addBudgetAllocationBundle,
-        fiscalYears = [2024, 2025, 2026]
+        addBudgetAllocationBundle
     } = useProcurement();
+
+    const fiscalYears = [2024, 2025, 2026];
 
     const [activeTab, setActiveTab] = useState<'dashboard' | 'tools'>('dashboard');
     

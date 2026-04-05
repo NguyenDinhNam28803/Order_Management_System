@@ -68,7 +68,7 @@ export class GrnmoduleController {
     return this.grnmoduleService.updateItemQc(id, itemId, dto);
   }
 
-  @Post(':id/confirm')
+  @Patch(':id/confirm')
   @Roles(UserRole.WAREHOUSE, UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Xác nhận nhập kho hoàn tất' })
   confirmGrn(@Param('id') id: string, @Request() req: any) {

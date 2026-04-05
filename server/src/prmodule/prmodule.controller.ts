@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Request,
+  Patch,
 } from '@nestjs/common';
 import { PrmoduleService } from './prmodule.service';
 import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
@@ -94,12 +95,18 @@ export class PrmoduleController {
    * @param id ID của yêu cầu mua sắm cần gửi duyệt
    * @returns Trạng thái PR sau khi gửi duyệt
    */
-  @Post(':id/submit')
+  @Patch(':id/submit')
   @ApiOperation({
     summary: 'Gửi PR đi duyệt',
     description: 'Chuyển trạng thái PR từ DRAFT sang PENDING_APPROVAL',
   })
   async submit(@Param('id') id: string, @Body() user: JwtPayload) {
     return this.prService.submit(id, user);
+  }
+
+  @Patch(':id/assign')
+  @ApiOperation({ summary: 'Gán PR cho chuyên viên mua sắm' })
+  async assign(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
+    return this.prService.assign(id, req.user.sub);
   }
 }

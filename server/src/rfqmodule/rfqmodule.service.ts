@@ -10,7 +10,11 @@ import { CreateRfqDto } from './dto/create-rfq.dto';
 import { CreateQuotationDto } from './dto/create-quotation.dto';
 import { CreateCounterOfferDto } from './dto/create-counter-offer.dto';
 import { RfqRepository } from './rfq.repository';
-import { RfqStatus, QuotationStatus } from '@prisma/client';
+import {
+  RfqStatus,
+  QuotationStatus,
+  QuotationRequestStatus,
+} from '@prisma/client';
 import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
@@ -632,5 +636,92 @@ export class RfqmoduleService {
     void this.automationService.handleRfqAwarded(rfqId, quotationId);
 
     return result;
+  }
+
+  // ============ Quotation Request Methods (Pre-PR Quoting) ============
+
+  async findAllQuotationRequests(orgId: string) {
+    return this.prisma.quotationRequest.findMany({
+      where: { requester: { orgId } },
+      include: { requester: true, pr: true, category: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findQuotationRequestOne(id: string) {
+    return this.prisma.quotationRequest.findUnique({
+      where: { id },
+      include: { requester: true, pr: true, category: true, rfq: true },
+    });
+  }
+
+  async createQuotationRequest(data: any, user: any) {
+    const qrNumber = `QR-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const prId = data.prId as string;
+    const requesterId = user.sub as string;
+    const categoryId = data.categoryId as string | null;
+    const description = data.description as string;
+    const estimatedBudget = Number(data.estimatedBudget) || 0;
+    const note = data.note as string | null;
+
+    return this.prisma.quotationRequest.create({
+      data: {
+        qrNumber,
+        prId,
+        requesterId,
+        categoryId,
+        description,
+        estimatedBudget,
+        status: 'PENDING',
+        note,
+      },
+    });
+  }
+
+  async updateQuotationRequestStatus(id: string, status: any) {
+    return this.prisma.quotationRequest.update({
+      where: { id },
+      data: { status: status as QuotationRequestStatus },
+    });
+  }
+
+  async convertToPr(qrId: string, _user: any) {
+    const qr = await this.prisma.quotationRequest.findUnique({
+      where: { id: qrId },
+      include: { pr: { include: { items: true } } },
+    });
+
+    if (!qr) throw new NotFoundException('Quotation Request not found');
+    if (!qr.returnedPrice)
+      throw new BadRequestException('Báo giá chưa có giá phản hồi');
+
+    // Cập nhật giá vào PR gốc (Giả định PR đang ở trạng thái chờ giá)
+    return this.prisma.$transaction(async (tx) => {
+      if (qr.prId) {
+        // Cập nhật lại giá cho các item trong PR dựa trên returnedPrice
+        // Ở đây làm đơn giản: gán đều hoặc gán vào item đầu tiên tùy logic nghiệp vụ
+        await tx.prItem.updateMany({
+          where: { prId: qr.prId },
+          data: { estimatedPrice: qr.returnedPrice ?? 0 },
+        });
+
+        const updatedPr = await tx.purchaseRequisition.update({
+          where: { id: qr.prId },
+          data: {
+            status: PrStatus.PENDING_APPROVAL, // Chuyển sang luồng duyệt chính thức
+            totalEstimate: Number(qr.returnedPrice) * 1, // Logic tính lại tổng
+          },
+        });
+
+        await tx.quotationRequest.update({
+          where: { id: qrId },
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: { status: 'COMPLETED' as any },
+        });
+
+        return updatedPr;
+      }
+      return null;
+    });
   }
 }

@@ -86,7 +86,7 @@ export default function ApprovalsPage() {
     // Tìm budget cho quý hiện tại (Current Quarter Budget)
     const quarterAlloc = selectedPR && budgetAllocations ? budgetAllocations.find(alloc => {
         const period = budgetPeriods.find(p => p.id === alloc.budgetPeriodId);
-        return (alloc.costCenterId === selectedPR.costCenterId || (typeof selectedPR.costCenter === 'string' && alloc.costCenterId === selectedPR.costCenter)) &&
+        return (alloc.costCenterId === selectedPR.costCenterId) &&
                period?.fiscalYear === currentYear &&
                period?.periodNumber === currentQuarter;
     }) : null;
@@ -96,7 +96,7 @@ export default function ApprovalsPage() {
         : 0;
     
     // Nếu không tìm thấy quý, fallback về ngân sách năm cũ
-    const prCostCenter = !quarterAlloc && selectedPR ? costCenters.find(cc => cc.id === selectedPR.costCenterId || (typeof selectedPR.costCenter === 'string' && cc.id === selectedPR.costCenter)) : null;
+    const prCostCenter = !quarterAlloc && selectedPR ? costCenters.find(cc => cc.id === selectedPR.costCenterId) : null;
     const finalBudget = quarterAlloc ? currentBudget : (prCostCenter ? (Number(prCostCenter.budgetAnnual) - Number(prCostCenter.budgetUsed)) : 0);
 
     const projectedRemaining = selectedPR ? (finalBudget - (Number(selectedPR.totalEstimate) || 0)) : 0;
@@ -151,7 +151,7 @@ export default function ApprovalsPage() {
                                             <div className="text-[13px] font-black text-slate-700 uppercase tracking-tight mb-1">{typeof pr.department === 'object' ? pr.department.name : pr.department}</div>
                                             <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter flex items-center gap-2">
                                                 <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                                Requester: {pr.requester?.fullName || pr.requesterId?.substring(0,8)}
+                                                Requester: {pr.requester?.fullName || pr.requester?.id?.substring(0,8)}
                                             </div>
                                         </td>
                                         <td className="px-4 py-6 max-w-[200px]">
@@ -246,10 +246,7 @@ export default function ApprovalsPage() {
                                     <div>
                                         <div className="text-[10px] uppercase font-black tracking-widest text-slate-300 mb-2">Cost Center</div>
                                         <div className="text-sm font-black text-erp-navy bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 inline-block uppercase">
-                                            {typeof selectedPR.costCenter === 'object' ? selectedPR.costCenter.name : 
-                                             (costCenters.find(cc => cc.id === selectedPR.costCenterId || (typeof selectedPR.costCenter === 'string' && cc.id === selectedPR.costCenter))?.name || 
-                                              selectedPR.costCenterCode || 
-                                              (typeof selectedPR.costCenter === 'string' ? selectedPR.costCenter : 'N/A'))}
+                                            {costCenters.find(cc => cc.id === selectedPR.costCenterId)?.name || 'N/A'}
                                         </div>
                                     </div>
                                     <div>
@@ -285,7 +282,7 @@ export default function ApprovalsPage() {
                                     </thead>
                                     <tbody className="divide-y divide-slate-50">
                                         {selectedPR.items?.map((item, idx: number) => {
-                                            const rowTotal = (Number(item.qty) || Number(item.quantity) || 0) * item.estimatedPrice;
+                                            const rowTotal = (Number(item.qty) || 0) * item.estimatedPrice;
                                             const isSuperHigh = rowTotal >= 100000000;
                                             const isHigh = rowTotal >= 30000000 && !isSuperHigh;
                                             
@@ -299,7 +296,7 @@ export default function ApprovalsPage() {
                                                             {isSuperHigh && <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase text-rose-600 bg-rose-50 px-2 py-1 rounded-xl tracking-tighter border border-rose-100 animate-pulse"><AlertTriangle size={12} /> Phê duyệt TGĐ</span>}
                                                         </div>
                                                     </td>
-                                                    <td className="text-center font-black text-erp-blue text-lg py-6">{item.qty}</td>
+                                                    <td className="text-center font-black text-erp-blue text-lg py-6">{Number(item.qty)}</td>
                                                     <td className="text-right font-mono font-bold text-slate-400 py-6">{formatVND(item.estimatedPrice)}</td>
                                                     <td className={`text-right font-mono font-black py-6 px-8 text-lg ${isSuperHigh ? 'text-rose-600' : isHigh ? 'text-amber-600' : 'text-erp-navy'}`}>
                                                         {formatVND(rowTotal)}

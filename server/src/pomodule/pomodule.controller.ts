@@ -7,6 +7,7 @@ import {
   UseGuards,
   Request,
   Put,
+  Patch,
 } from '@nestjs/common';
 import { PomoduleService } from './pomodule.service';
 import { CreatePoDto } from './dto/create-po.dto';
@@ -45,7 +46,7 @@ export class PomoduleController {
    * @param id ID của đơn hàng cần đặt lại trạng thái
    * @returns Đơn hàng sau khi đã được đặt lại trạng thái
    */
-  @Post(':id/reset')
+  @Patch(':id/reset')
   @ApiOperation({
     summary: 'Reset trạng thái đơn hàng về DRAFT',
     description:
@@ -60,7 +61,7 @@ export class PomoduleController {
    * @param id ID của đơn hàng cần xác nhận
    * @returns Đơn hàng sau khi đã được xác nhận
    */
-  @Post(':id/confirm')
+  @Patch(':id/confirm')
   @ApiOperation({
     summary: 'Xác nhận đơn hàng',
     description: 'Xác nhận đơn hàng, chuyển trạng thái sang CONFIRMED',
@@ -74,7 +75,7 @@ export class PomoduleController {
    * @param id ID của đơn hàng cần từ chối
    * @returns Đơn hàng sau khi đã được cập nhật trạng thái
    */
-  @Post(':id/reject')
+  @Patch(':id/reject')
   @ApiOperation({
     summary: 'Từ chối đơn hàng',
     description: 'Từ chối đơn hàng, chuyển trạng thái sang REJECTED',
@@ -97,7 +98,7 @@ export class PomoduleController {
     return this.poService.createFromPr(body.prId, body.supplierId, req);
   }
 
-  @Post(':id/submit')
+  @Patch(':id/submit')
   @ApiOperation({
     summary: 'Gửi đơn hàng phê duyệt',
     description: 'Kích hoạt luồng duyệt cho đơn hàng',

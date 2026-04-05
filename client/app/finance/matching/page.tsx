@@ -56,7 +56,7 @@ export default function FinanceMatching() {
     const vat = invoiceAmount - subTotal;
 
     const handleRejectFeedback = () => {
-        if (invId) matchInvoice(invId, "EXCEPTION");
+        if (invId) matchInvoice(invId);
         alert("Đã gửi thông báo Reject/Debit Note tới Portal Nhà Cung Cấp!");
         router.push("/finance/dashboard");
     };

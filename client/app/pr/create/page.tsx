@@ -58,7 +58,7 @@ export default function CreatePRPage() {
         notify, 
         budgetAllocations, 
         budgetPeriods: periods,
-        fetchQuarterlyBudget
+        fetchQuarterlyAllocation
     } = useProcurement();
 
     const router = useRouter();
@@ -85,14 +85,14 @@ export default function CreatePRPage() {
     useEffect(() => {
         if (form.costCenterId && isValidUuid(form.costCenterId)) {
             const getBudget = async () => {
-                const data = await fetchQuarterlyBudget(form.costCenterId, currentYear, currentQuarter);
-                setQuarterlyAllocation(data?.data || null);
+                const data = await fetchQuarterlyAllocation(form.costCenterId, currentYear, currentQuarter);
+                setQuarterlyAllocation(data || null);
             };
-            getBudget();
+                getBudget();
         } else {
             setQuarterlyAllocation(null);
         }
-    }, [form.costCenterId, fetchQuarterlyBudget, currentYear, currentQuarter]);
+    }, [form.costCenterId, fetchQuarterlyAllocation, currentYear, currentQuarter]);
 
     const filteredCostCenters = costCenters.filter((cc: CostCenter) => {
         if (!currentUser) return false;
@@ -661,7 +661,7 @@ export default function CreatePRPage() {
                         )}
                     </div>
 
-                    <SupplierSuggestionWidget items={form.items} />
+                    <SupplierSuggestionWidget items={form.items.map(i => ({ ...i, productName: i.productDesc })) as any} />
                 </div>
 
                 {/* Side info & Help */}

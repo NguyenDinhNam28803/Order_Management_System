@@ -17,7 +17,7 @@ import Link from "next/link";
 
 // Local interfaces removed in favor of global definitions in ProcurementContext.
 export default function ProcurementControlPage() {
-    const { prs, currentUser, apiFetch, refreshData, notify } = useProcurement();
+    const { prs, currentUser, notify, assignPR } = useProcurement();
     const [searchTerm, setSearchTerm] = useState("");
 
     const formatDate = (ds?: string) => {
@@ -37,10 +37,7 @@ export default function ProcurementControlPage() {
     const handleConfirmCatalog = async (pr: PR) => {
         const success = await confirmCatalogPrice({
             prId: pr.id,
-            supplierId: pr.preferredSupplierId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253",
-            price: pr.totalEstimate || 0,
-            stock: 10,
-            leadTime: 3
+            supplierId: pr.preferredSupplierId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253"
         });
         if (success) setConfirmModal(null);
     };
@@ -71,19 +68,16 @@ export default function ProcurementControlPage() {
     }, [prs, searchTerm, statusFilter, deptFilter]);
 
     // Role check
-    if (currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN") {
-        return <div className="p-20 text-center font-black text-slate-400">Bạn không có quyền truy cập trung tâm kiểm soát thu mua.</div>;
-    }
+    const hasAccess = currentUser?.role === "PROCUREMENT" || currentUser?.role === "PLATFORM_ADMIN";
 
     const handleAssignToMe = async (prId: string) => {
         setIsAssigning(prId);
         try {
-            const res = await apiFetch(`/procurement-requests/${prId}/assign`, { method: 'PATCH' });
-            if (res.ok) {
-                notify("Đã gán PR cho bạn thành công!", "success");
-                refreshData();
+            const success = await assignPR(prId);
+            if (success) {
+                // notification handled in context
             } else {
-                notify("Đã ghi nhận gán PR cho " + currentUser.fullName, "info");
+                notify("Không thể gán PR. Vui lòng thử lại.", "error");
             }
         } catch (err) {
             console.error("Lỗi khi gán PR:", err instanceof Error ? err.message : err);
@@ -219,6 +213,10 @@ export default function ProcurementControlPage() {
         { label: "Đang Báo Giá", value: prs.filter((p: PR) => p.status === 'IN_SOURCING').length, icon: Send, color: "text-blue-500", bg: "bg-blue-50" },
         { label: "Hoàn tất PO", value: prs.filter((p: PR) => p.status === 'PO_CREATED').length, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-50" },
     ];
+
+    if (!hasAccess) {
+        return <div className="p-20 text-center font-black text-slate-400">Bạn không có quyền truy cập trung tâm kiểm soát thu mua.</div>;
+    }
 
     return (
         <main className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

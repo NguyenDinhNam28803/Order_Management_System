@@ -160,20 +160,6 @@ export default function SimulationPage() {
         }
     };
 
-    const StatusBadge = ({ status }: { status: string }) => (
-        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-            status === "APPROVED" || status === "ISSUED" || status === "CONFIRMED" || status === "PAID" || status === "MATCHED"
-            ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
-            : status === "SUBMITTED" || status === "SENT" || status === "PENDING"
-            ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
-            : status === "DRAFT"
-            ? "bg-slate-500/10 text-slate-400 border border-slate-500/20"
-            : "bg-erp-blue/10 text-erp-blue border border-erp-blue/20"
-        }`}>
-            {status}
-        </span>
-    );
-
     return (
         <div className="min-h-screen bg-[#0a0c10] text-slate-300 p-8 font-sans">
             <header className="max-w-7xl mx-auto flex items-center justify-between mb-12">
@@ -298,7 +284,17 @@ export default function SimulationPage() {
                                 <div className="p-3 bg-[#0a0c10] rounded-xl border border-slate-800">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="p-2 bg-erp-blue/10 rounded-lg"><ShoppingCart size={12} className="text-erp-blue" /></div>
-                                        <StatusBadge status={pr.status} />
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                            pr.status === "APPROVED" || pr.status === "ISSUED" || pr.status === "CONFIRMED" || pr.status === "PAID" || pr.status === "MATCHED"
+                                            ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                                            : pr.status === "SUBMITTED" || pr.status === "SENT" || pr.status === "PENDING"
+                                            ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                                            : pr.status === "DRAFT"
+                                            ? "bg-slate-500/10 text-slate-400 border border-slate-500/20"
+                                            : "bg-erp-blue/10 text-erp-blue border border-erp-blue/20"
+                                        }`}>
+                                            {pr.status}
+                                        </span>
                                     </div>
                                     <div className="text-[11px] font-black text-white">{pr.id}</div>
                                     <div className="text-[9px] text-slate-500 mt-1 font-mono">{pr.total.toLocaleString()} ₫</div>
@@ -309,7 +305,17 @@ export default function SimulationPage() {
                                 <div className="p-3 bg-[#0a0c10] rounded-xl border border-slate-800">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="p-2 bg-amber-500/10 rounded-lg"><Send size={12} className="text-amber-500" /></div>
-                                        <StatusBadge status={rfq.status} />
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                            rfq.status === "APPROVED" || rfq.status === "ISSUED" || rfq.status === "CONFIRMED" || rfq.status === "PAID" || rfq.status === "MATCHED"
+                                            ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                                            : rfq.status === "SUBMITTED" || rfq.status === "SENT" || rfq.status === "PENDING"
+                                            ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                                            : rfq.status === "DRAFT"
+                                            ? "bg-slate-500/10 text-slate-400 border border-slate-500/20"
+                                            : "bg-erp-blue/10 text-erp-blue border border-erp-blue/20"
+                                        }`}>
+                                            {rfq.status}
+                                        </span>
                                     </div>
                                     <div className="text-[11px] font-black text-white">{rfq.id}</div>
                                     <div className="text-[9px] text-slate-500 mt-1 truncate">{rfq.supplier || rfq.title}</div>
@@ -320,7 +326,17 @@ export default function SimulationPage() {
                                 <div className="p-3 bg-[#0a0c10] rounded-xl border border-emerald-500/20">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="p-2 bg-emerald-500/10 rounded-lg"><FileText size={12} className="text-emerald-500" /></div>
-                                        <StatusBadge status={po.status} />
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                            po.status === "APPROVED" || po.status === "ISSUED" || po.status === "CONFIRMED" || po.status === "PAID" || po.status === "MATCHED"
+                                            ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                                            : po.status === "SUBMITTED" || po.status === "SENT" || po.status === "PENDING"
+                                            ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                                            : po.status === "DRAFT"
+                                            ? "bg-slate-500/10 text-slate-400 border border-slate-500/20"
+                                            : "bg-erp-blue/10 text-erp-blue border border-erp-blue/20"
+                                        }`}>
+                                            {po.status}
+                                        </span>
                                     </div>
                                     <div className="text-[11px] font-black text-white">{po.id}</div>
                                     <div className="text-[9px] text-emerald-500 mt-1 font-black">{po.total.toLocaleString()} ₫</div>

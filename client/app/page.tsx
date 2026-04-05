@@ -6,7 +6,7 @@ import {
     Building2, Lock, CreditCard, ArrowUpRight,
     ArrowDownRight, Activity, Zap, FileText, ShoppingCart, Eye, Plus, Trash2,
     Clock, CheckCircle, Package, AlertCircle, AlertTriangle, History, Bell, Send, Loader2,
-    Search, ChevronDown, XCircle, RotateCcw, ArrowRight, ClipboardList, Edit3, Calendar
+    Search, ChevronDown, XCircle, RotateCcw, ArrowRight, ClipboardList, Edit3, Calendar, Truck
 } from "lucide-react";
 import { useProcurement, PR, Organization, QuoteRequest } from "./context/ProcurementContext";
 import { formatVND } from "./utils/formatUtils";
@@ -72,10 +72,7 @@ export default function Dashboard() {
     const handleConfirmCatalogAction = async (pr: PR) => {
         const success = await confirmCatalogPrice({
             prId: pr.id,
-            supplierId: pr.preferredSupplierId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253",
-            price: pr.totalEstimate || 0,
-            stock: 10,
-            leadTime: 3
+            supplierId: pr.preferredSupplierId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253"
         });
         if (success) setConfirmModal(null);
     };
@@ -1160,7 +1157,7 @@ export default function Dashboard() {
                         <h1 className="text-4xl font-black text-erp-navy tracking-tight uppercase italic">Warehouse Ops</h1>
                         <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-2 flex items-center gap-2">
                             <Building2 size={12} /> Distribution Center Alpha
-                        </span >
+                        </p>
                     </div>
                     <Link href="/warehouse/grn/new" className="px-10 py-5 bg-erp-navy text-white rounded-[32px] font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-erp-navy/30 hover:scale-105 transition-all flex items-center gap-3">
                         <Plus size={20} /> New Inbound GRN

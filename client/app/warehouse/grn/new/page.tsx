@@ -35,7 +35,7 @@ interface QcDataItem {
 }
 
 export default function CreateGRN() {
-    const { pos, createGRN } = useProcurement();
+    const { pos, createGRN, notify } = useProcurement();
     const router = useRouter();
 
     const [poLookup, setPoLookup] = useState("");
@@ -77,20 +77,27 @@ export default function CreateGRN() {
         return { diff, pct, isHigh: Math.abs(pct) > 5 };
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         if (!activePO) return;
         
         const receivedItems: Record<string, number> = {};
         activePO.items.forEach((item) => {
-           receivedItems[item.id] = Number(recvData[item.id].actual) || 0;
+            receivedItems[item.id] = Number(recvData[item.id].actual) || 0;
         });
 
-        createGRN({ poId: activePO.id, receivedItems });
-        alert("GRN Đã được ghi nhận. Hệ thống tự động đẩy dữ liệu sang TồnKho & Chuyển sang 3-Way Matching cho kế toán (Finance).");
-        setActivePO(null);
-        setPoLookup("");
-        router.push("/warehouse/dashboard");
-    }
+        const success = await createGRN({
+            poId: activePO.id,
+            receivedItems,
+            notes: "Nhập kho thực tế từ Dashboard"
+        });
+
+        if (success) {
+            notify("GRN Đã được ghi nhận thành công!", "success");
+            setActivePO(null);
+            setPoLookup("");
+            router.push("/warehouse/dashboard");
+        }
+    };
 
     return (
         <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300 min-h-screen bg-slate-50">

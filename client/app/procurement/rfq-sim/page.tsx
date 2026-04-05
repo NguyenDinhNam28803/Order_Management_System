@@ -95,7 +95,7 @@ export default function RFQClosedLoopSimulation() {
         <div style={{ padding: '40px', maxWidth: '1000px', margin: '0 auto', fontFamily: 'system-ui, sans-serif' }}>
             
             {/* Header & Role Switcher */}
-            <div style={{ display: 'flex', justifyBetween: 'space-between', alignItems: 'center', marginBottom: '40px', backgroundColor: '#f8fafc', padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', backgroundColor: '#f8fafc', padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
                 <div>
                     <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#1e293b' }}>Chu trình RFQ Khép kín (Simulation)</h1>
                     <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#64748b' }}>Đang quản trị với vai trò: <strong style={{ color: currentRole === 'PO' ? '#2563eb' : '#059669' }}>{currentRole}</strong></p>
@@ -150,7 +150,7 @@ export default function RFQClosedLoopSimulation() {
                                 <p style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8fafc', borderRadius: '12px', color: '#94a3b8', fontStyle: 'italic' }}>Chưa có báo giá nào từ NCC cần duyệt.</p>
                             ) : (
                                 rfqList.filter(r => r.status === 'Quoted').map(r => (
-                                    <div key={r.id} style={{ padding: '20px', backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', display: 'flex', justifyBetween: 'space-between', alignItems: 'center' }}>
+                                    <div key={r.id} style={{ padding: '20px', backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
                                             <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{r.productName}</div>
                                             <div style={{ fontSize: '12px', color: '#64748b' }}>Đơn giá phản hồi: <strong style={{ color: '#059669', fontSize: '16px' }}>{r.price?.toLocaleString()} VNĐ</strong></div>
@@ -206,7 +206,7 @@ export default function RFQClosedLoopSimulation() {
 
             {/* --- MODAL PO: AI SUGGESTION --- */}
             {selectedProduct && (
-                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyCenter: 'center', zIndex: 100 }}>
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
                     <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '24px', maxWidth: '500px', width: '90%' }}>
                         <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}>Khởi tạo RFQ nhanh</h3>
                         <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>Sản phẩm: <strong>{selectedProduct.name}</strong></p>
@@ -249,7 +249,7 @@ export default function RFQClosedLoopSimulation() {
                 <h2 style={{ fontSize: '14px', fontWeight: 'black', textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.1em' }}>Lịch sử chu kỳ hoàn tất (Completed)</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '15px' }}>
                     {rfqList.filter(r => r.status === 'Completed').map(r => (
-                        <div key={r.id} style={{ padding: '12px 20px', backgroundColor: '#f8fafc', borderRadius: '8px', fontSize: '13px', display: 'flex', justifyBetween: 'space-between' }}>
+                        <div key={r.id} style={{ padding: '12px 20px', backgroundColor: '#f8fafc', borderRadius: '8px', fontSize: '13px', display: 'flex', justifyContent: 'space-between' }}>
                             <span>✅ {r.productName} - <strong>{r.price?.toLocaleString()} VNĐ</strong></span>
                             <span style={{ color: '#94a3b8' }}>{r.createdAt}</span>
                         </div>
