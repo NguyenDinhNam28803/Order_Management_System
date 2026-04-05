@@ -27,12 +27,12 @@ const roleMapping: Record<string, { label: string, class: string }> = {
 const navigation = [
     {
         group: "Menu chính", 
-        roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "CEO", "FINANCE"],
+        roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "CEO", "FINANCE", "WAREHOUSE", "QA", "SYSTEM"],
         items: [
-            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
-            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
-            { name: "Yêu cầu báo giá (QR)", icon: ShoppingBag, path: "/quote-requests", roles: ["REQUESTER", "PLATFORM_ADMIN"] },
-            { name: "Kiểm soát PR", icon: ClipboardCheck, path: "/procurement/prs", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA", "SYSTEM"] },
+            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE", "CEO"] },
+            { name: "Yêu cầu báo giá (QR)", icon: ShoppingBag, path: "/quote-requests", roles: ["REQUESTER", "PLATFORM_ADMIN", "PROCUREMENT"] },
+            { name: "Kiểm soát PR", icon: ClipboardCheck, path: "/procurement/prs", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE", "DIRECTOR"] },
         ]
     },
     {
@@ -73,9 +73,10 @@ const navigation = [
     },
     {
         group: "Báo cáo", 
-        roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "PLATFORM_ADMIN", "CEO"],
+        roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "PLATFORM_ADMIN", "CEO", "SYSTEM"],
         items: [
-            { name: "Báo cáo Chi phí", icon: ClipboardCheck, path: "/reports/spend", roles: ["FINANCE", "DIRECTOR"] },
+            { name: "Phân tích Chiến lược", icon: Activity, path: "/reports/strategy", roles: ["CEO", "DIRECTOR", "SYSTEM"] },
+            { name: "Báo cáo Chi phí", icon: ClipboardCheck, path: "/reports/spend", roles: ["FINANCE", "DIRECTOR", "CEO"] },
             { name: "Báo cáo Công nợ", icon: FolderTree, path: "/reports/ap", roles: ["FINANCE", "DIRECTOR"] },
         ]
     },
@@ -105,10 +106,29 @@ const navigation = [
     },
     {
         group: "Kho vận (Warehouse)", 
-        roles: ["WAREHOUSE"],
+        roles: ["WAREHOUSE", "QA", "PLATFORM_ADMIN"],
         items: [
-            { name: "Bàn làm việc Kho", icon: LayoutDashboard, path: "/warehouse/dashboard", roles: ["WAREHOUSE"] },
+            { name: "Bàn làm việc Kho", icon: LayoutDashboard, path: "/warehouse/dashboard", roles: ["WAREHOUSE", "PLATFORM_ADMIN"] },
             { name: "Kiểm định & Tạo GRN", icon: FileCheck, path: "/warehouse/grn/new", roles: ["WAREHOUSE"] },
+            { name: "Quản lý Tồn kho", icon: Package, path: "/warehouse/inventory", roles: ["WAREHOUSE", "PLATFORM_ADMIN"] },
+        ]
+    },
+    {
+        group: "Kiểm soát CL (QA)",
+        roles: ["QA", "PLATFORM_ADMIN"],
+        items: [
+            { name: "Bảng điều khiển QA", icon: ShieldAlert, path: "/qa/dashboard", roles: ["QA", "PLATFORM_ADMIN"] },
+            { name: "Kiểm tra Lô hàng", icon: Search, path: "/qa/inspections", roles: ["QA"] },
+            { name: "Báo cáo Chất lượng", icon: FileCheck, path: "/qa/reports", roles: ["QA", "PLATFORM_ADMIN"] },
+        ]
+    },
+    {
+        group: "Giám sát Hệ thống",
+        roles: ["PLATFORM_ADMIN", "SYSTEM"],
+        items: [
+            { name: "Nhật ký AI & Hệ thống", icon: Activity, path: "/admin/system-logs", roles: ["PLATFORM_ADMIN", "SYSTEM"] },
+            { name: "Cấu hình AI", icon: Settings, path: "/settings/ai", roles: ["PLATFORM_ADMIN", "SYSTEM"] },
+            { name: "Audit Trail", icon: History, path: "/admin/audit", roles: ["PLATFORM_ADMIN"] },
         ]
     },
 ];

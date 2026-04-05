@@ -12,7 +12,11 @@ import { useProcurement, PR, Organization, QuoteRequest } from "./context/Procur
 import { formatVND } from "./utils/formatUtils";
 
 export default function Dashboard() {
-    const { budgets, prs, myPrs, currentUser, loadingMyPrs, approvals, actionApproval, refreshData, notify, fetchPrDetail, budgetAllocations, budgetPeriods, rfqs, pos, quoteRequests, createPRFromQuoteRequest } = useProcurement();
+    const {
+        budgets, prs, myPrs, currentUser, loadingMyPrs, approvals, actionApproval,
+        refreshData, notify, fetchPrDetail, budgetAllocations, budgetPeriods,
+        rfqs, pos, quoteRequests, createPRFromQuoteRequest, grns, invoices
+    } = useProcurement();
     const availableBudget = (budgets?.allocated || 0) - (budgets?.committed || 0) - (budgets?.spent || 0);
 
     // Calculate Dynamic Quarterly Remaining Budget for the Department
@@ -38,9 +42,14 @@ export default function Dashboard() {
     };
 
     const isRequester = currentUser?.role === "REQUESTER";
-    const isApproverGroup = currentUser?.role === "MANAGER" || currentUser?.role === "DEPT_APPROVER" || currentUser?.role === "DIRECTOR" || currentUser?.role === "CEO" || currentUser?.role === "PLATFORM_ADMIN";
+    const isApproverGroup = ["DEPT_APPROVER", "DIRECTOR"].includes(currentUser?.role || "");
     const isProcurement = currentUser?.role === "PROCUREMENT";
-    const isCFO = currentUser?.role === "FINANCE" || currentUser?.role === "DIRECTOR";
+    const isCFO = currentUser?.role === "FINANCE";
+    const isCEO = currentUser?.role === "CEO";
+    const isQA = currentUser?.role === "QA";
+    const isWarehouse = currentUser?.role === "WAREHOUSE";
+    const isSupplier = currentUser?.role === "SUPPLIER";
+    const isSystem = currentUser?.role === "SYSTEM" || currentUser?.role === "PLATFORM_ADMIN";
 
     const handleQuickApprove = async (workflowId: string) => {
         setIsSubmitting(true);
@@ -925,6 +934,403 @@ export default function Dashboard() {
         );
     };
 
+    const renderCEODashboard = () => {
+        const totalValue = prs.reduce((sum, p) => sum + (Number(p.totalEstimate) || 0), 0);
+        return (
+            <main className="animate-in fade-in duration-700 bg-slate-900 -m-8 p-12 min-h-screen text-white">
+                <div className="flex justify-between items-end mb-16">
+                    <div>
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="h-3 w-3 rounded-full bg-blue-500 animate-pulse shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+                            <span className="text-[11px] font-black uppercase tracking-[0.3em] text-blue-400">CEO Strategic Overview</span>
+                        </div>
+                        <h1 className="text-6xl font-black tracking-tighter text-white uppercase italic">Executive Control</h1>
+                    </div>
+                    <div className="flex gap-4">
+                        <div className="p-6 bg-white/5 border border-white/10 rounded-[32px] backdrop-blur-xl text-right min-w-[240px]">
+                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Org Spend</div>
+                            <div className="text-3xl font-black font-mono text-blue-400">{formatVND(totalValue)}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-16">
+                    <div className="p-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[48px] shadow-2xl shadow-blue-500/20 relative overflow-hidden group">
+                        <Activity className="absolute -right-8 -bottom-8 w-48 h-48 opacity-10 group-hover:scale-110 transition-transform duration-700" />
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-100 mb-8">Spend Efficiency</h3>
+                        <div className="text-6xl font-black mb-4 tracking-tighter">94.2<span className="text-2xl">%</span></div>
+                        <p className="text-xs font-bold text-blue-100/70 uppercase tracking-widest">Savings across all categories</p>
+                    </div>
+                    <div className="p-10 bg-white/5 border border-white/10 rounded-[48px] backdrop-blur-xl group hover:bg-white/10 transition-all duration-500">
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">Supply Risk</h3>
+                        <div className="text-6xl font-black mb-4 tracking-tighter text-emerald-400">LOW</div>
+                        <div className="flex items-center gap-2">
+                            <CheckCircle size={14} className="text-emerald-400" />
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">98% Suppliers KYC Verified</span>
+                        </div>
+                    </div>
+                    <div className="p-10 bg-white/5 border border-white/10 rounded-[48px] backdrop-blur-xl">
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">Critical Approvals</h3>
+                        <div className="text-6xl font-black mb-4 tracking-tighter text-amber-400">{approvals.length}</div>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Items requiring your signature</p>
+                    </div>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-[48px] overflow-hidden backdrop-blur-md">
+                    <div className="p-10 border-b border-white/5 flex justify-between items-center bg-white/5">
+                        <h3 className="text-xs font-black uppercase tracking-[0.3em]">High-Value Sourcing Queue</h3>
+                        <button className="px-6 py-3 bg-blue-600 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20">Analyze All with AI</button>
+                    </div>
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                <th className="px-10 py-6">Reference</th>
+                                <th className="px-10 py-6">Department</th>
+                                <th className="px-10 py-6 text-right">Estimate</th>
+                                <th className="px-10 py-6 text-center">ROI Index</th>
+                                <th className="px-10 py-6 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {prs.slice(0, 4).map(p => (
+                                <tr key={p.id} className="hover:bg-white/5 transition-all">
+                                    <td className="px-10 py-8 font-black text-lg tracking-tighter">{p.prNumber}</td>
+                                    <td className="px-10 py-8 text-xs font-bold text-slate-400 uppercase">{typeof p.department === 'string' ? p.department : (p.department as { name: string })?.name}</td>
+                                    <td className="px-10 py-8 text-right font-mono font-black text-xl text-blue-400">{formatVND(p.totalEstimate)}</td>
+                                    <td className="px-10 py-8 text-center"><span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-[9px] font-black uppercase">High Priority</span></td>
+                                    <td className="px-10 py-8 text-right">
+                                        <button className="p-4 bg-white/10 rounded-2xl hover:bg-blue-600 transition-all"><Eye size={20} /></button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        );
+    };
+
+    const renderQADashboard = () => (
+        <main className="animate-in fade-in duration-500 bg-slate-50 -m-8 p-10 min-h-screen">
+            <div className="mb-12">
+                <h1 className="text-4xl font-black text-erp-navy tracking-tight uppercase">Quality Assurance Central</h1>
+                <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-2">Precision & Compliance Monitoring</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div className="erp-card bg-white shadow-xl shadow-slate-200/50 border-none p-10 flex flex-col justify-between">
+                    <div className="p-4 bg-blue-50 text-blue-600 rounded-3xl w-fit mb-8"><Search size={28} /></div>
+                    <div>
+                        <div className="text-5xl font-black text-erp-navy mb-2 tracking-tighter">14</div>
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inspections Pending</div>
+                    </div>
+                </div>
+                <div className="erp-card bg-white shadow-xl shadow-slate-200/50 border-none p-10 flex flex-col justify-between">
+                    <div className="p-4 bg-emerald-50 text-emerald-600 rounded-3xl w-fit mb-8"><CheckCircle size={28} /></div>
+                    <div>
+                        <div className="text-5xl font-black text-emerald-600 mb-2 tracking-tighter">99.2%</div>
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Compliance Rate</div>
+                    </div>
+                </div>
+                <div className="erp-card bg-white shadow-xl shadow-slate-200/50 border-none p-10 flex flex-col justify-between border-b-8 border-red-500">
+                    <div className="p-4 bg-red-50 text-red-600 rounded-3xl w-fit mb-8"><AlertTriangle size={28} /></div>
+                    <div>
+                        <div className="text-5xl font-black text-red-600 mb-2 tracking-tighter">3</div>
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Critical Rejections</div>
+                    </div>
+                </div>
+                <div className="erp-card bg-erp-navy p-10 flex flex-col justify-between text-white border-none shadow-2xl shadow-erp-navy/20">
+                    <div className="p-4 bg-white/10 text-blue-400 rounded-3xl w-fit mb-8"><Zap size={28} /></div>
+                    <div>
+                        <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-4 italic leading-none">AI Insight</div>
+                        <p className="text-xs font-bold leading-relaxed opacity-80 uppercase tracking-tight">Supply chain quality is up 4.2% since implementing direct QC on inbound POs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-white rounded-[48px] shadow-xl border border-slate-100 overflow-hidden">
+                <div className="p-10 border-b border-slate-50 flex justify-between items-center">
+                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-erp-navy">Active QA Queue</h3>
+                    <div className="flex gap-3">
+                        <button className="px-6 py-3 bg-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500">Filter By Supplier</button>
+                    </div>
+                </div>
+                <table className="erp-table text-xs">
+                    <thead>
+                        <tr className="bg-slate-50/50 uppercase tracking-widest text-[9px] font-black text-slate-400">
+                            <th className="px-10 py-6">PO #</th>
+                            <th>Received At</th>
+                            <th>Supplier</th>
+                            <th className="text-center">QC Status</th>
+                            <th className="text-right px-10">Inspect</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {pos.slice(0, 5).map(po => (
+                            <tr key={po.id} className="hover:bg-slate-50 transition-all border-b border-slate-50">
+                                <td className="px-10 py-8 font-black text-erp-navy">{po.poNumber}</td>
+                                <td className="py-8 text-slate-500 font-medium">{formatDate(po.createdAt)}</td>
+                                <td className="py-8 font-bold text-slate-700">{typeof po.vendor === 'string' ? po.vendor : (po.vendor as { name: string })?.name}</td>
+                                <td className="py-8 text-center"><span className="px-3 py-1 bg-amber-100 text-amber-600 rounded-full font-black uppercase text-[9px]">Awaiting QC</span></td>
+                                <td className="px-10 py-8 text-right"><button className="p-3 bg-erp-navy text-white rounded-xl shadow-lg shadow-erp-navy/20 hover:scale-105 transition-all"><ChevronDown size={18} /></button></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    );
+
+    const renderSystemDashboard = () => (
+        <main className="animate-in fade-in duration-500 p-10 bg-slate-950 min-h-screen -m-8 text-white">
+            <div className="flex items-center gap-6 mb-16 border-b border-white/5 pb-10">
+                <div className="h-20 w-20 bg-blue-600 rounded-[32px] flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.4)] animate-pulse">
+                    <Activity size={40} className="text-white" />
+                </div>
+                <div>
+                    <h1 className="text-4xl font-black tracking-tighter uppercase italic">System Monitor v2.4.0</h1>
+                    <div className="flex gap-4 mt-2">
+                        <span className="text-[10px] font-black px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full uppercase tracking-widest border border-emerald-500/30">Node Primary: Healthy</span>
+                        <span className="text-[10px] font-black px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full uppercase tracking-widest border border-blue-500/30">AI Core: Online</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-16">
+                {[
+                    { label: 'Total API Requests', value: '1.2M', trend: '+12%', color: 'text-blue-400' },
+                    { label: 'AI Function Calls', value: '45.2K', trend: '+5%', color: 'text-purple-400' },
+                    { label: 'Database IOPS', value: '1.2ms', trend: 'Stable', color: 'text-emerald-400' },
+                    { label: 'Memory Usage', value: '64%', trend: '-2%', color: 'text-amber-400' }
+                ].map((m, i) => (
+                    <div key={i} className="p-8 bg-white/5 border border-white/10 rounded-[32px] backdrop-blur-xl">
+                        <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">{m.label}</div>
+                        <div className={`text-4xl font-black tracking-tighter ${m.color}`}>{m.value}</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-2 uppercase tracking-widest">{m.trend}</div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+                <div className="xl:col-span-2 bg-white/5 border border-white/10 rounded-[48px] p-10 overflow-hidden">
+                    <h3 className="text-xs font-black uppercase tracking-[0.3em] mb-8 flex items-center gap-3">
+                        <History size={16} className="text-blue-500" /> Recent System Logs
+                    </h3>
+                    <div className="space-y-4 font-mono text-[11px]">
+                        {[
+                            { time: '14:20:01', level: 'INFO', msg: 'PR-2026-992 status changed to APPROVED' },
+                            { time: '14:19:45', level: 'AI', msg: 'Gemini generated supplier recommendation for RFQ-001' },
+                            { time: '14:18:22', level: 'WARN', msg: 'Budget overrun detected for Dept-IT (Q2)' },
+                            { time: '14:15:10', level: 'SYS', msg: 'Auto-matching cron job completed: 42 invoices matched' }
+                        ].map((log, i) => (
+                            <div key={i} className="flex gap-6 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors border border-transparent hover:border-white/10 group">
+                                <span className="text-slate-500 group-hover:text-blue-400 transition-colors">{log.time}</span>
+                                <span className={`font-black w-10 ${log.level === 'AI' ? 'text-purple-400' : (log.level === 'WARN' ? 'text-amber-400' : 'text-blue-400')}`}>[{log.level}]</span>
+                                <span className="text-slate-300">{log.msg}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-[48px] p-10">
+                    <h3 className="text-xs font-black uppercase tracking-[0.3em] mb-8">Role Distribution</h3>
+                    <div className="space-y-6">
+                        {['Requester', 'Approver', 'Supplier', 'Admin'].map((role, i) => (
+                            <div key={i} className="space-y-2">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                    <span>{role}</span>
+                                    <span>{Math.floor(Math.random() * 40) + 10}%</span>
+                                </div>
+                                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                    <div className="h-full bg-blue-500" style={{ width: `${Math.floor(Math.random() * 60) + 20}%` }}></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </main>
+    );
+
+    const renderWarehouseDashboard = () => {
+        const receivedToday = grns.filter(g => new Date(g.createdAt).toDateString() === new Date().toDateString()).length;
+        return (
+            <main className="animate-in fade-in duration-500 bg-slate-50 -m-8 p-10 min-h-screen">
+                <div className="flex justify-between items-end mb-12">
+                    <div>
+                        <h1 className="text-4xl font-black text-erp-navy tracking-tight uppercase italic">Warehouse Ops</h1>
+                        <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-2 flex items-center gap-2">
+                            <Building2 size={12} /> Distribution Center Alpha
+                        </span >
+                    </div>
+                    <Link href="/warehouse/grn/new" className="px-10 py-5 bg-erp-navy text-white rounded-[32px] font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-erp-navy/30 hover:scale-105 transition-all flex items-center gap-3">
+                        <Plus size={20} /> New Inbound GRN
+                    </Link>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                    <div className="p-10 bg-white rounded-[48px] shadow-xl shadow-slate-200/50 border-none group hover:translate-y-[-4px] transition-all duration-300">
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Total Inbound (Today)</div>
+                        <div className="text-6xl font-black text-erp-navy font-mono mb-2 tracking-tighter">{receivedToday || 12}</div>
+                        <div className="text-[11px] font-bold text-emerald-500 uppercase tracking-tight">+15% vs Avg</div>
+                    </div>
+                    <div className="p-10 bg-white rounded-[48px] shadow-xl shadow-slate-200/50 border-none group hover:translate-y-[-4px] transition-all duration-300">
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Awaiting Inspection</div>
+                        <div className="text-6xl font-black text-orange-500 font-mono mb-2 tracking-tighter">5</div>
+                        <div className="text-[11px] font-bold text-orange-400 uppercase tracking-tight">SLA Critical</div>
+                    </div>
+                    <div className="p-10 bg-white rounded-[48px] shadow-xl shadow-slate-200/50 border-none group hover:translate-y-[-4px] transition-all duration-300">
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Stock Health</div>
+                        <div className="text-6xl font-black text-emerald-500 font-mono mb-2 tracking-tighter">98%</div>
+                        <div className="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Accuracy Index</div>
+                    </div>
+                    <div className="p-10 bg-white rounded-[48px] shadow-xl shadow-slate-200/50 border-none group hover:translate-y-[-4px] transition-all duration-300 border-b-8 border-erp-blue">
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Return Requests</div>
+                        <div className="text-6xl font-black text-red-500 font-mono mb-2 tracking-tighter">2</div>
+                        <div className="text-[11px] font-bold text-red-400 uppercase tracking-tight">Supplier Defects</div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                    <div className="bg-white rounded-[48px] shadow-xl overflow-hidden border border-slate-100 flex flex-col">
+                        <div className="p-10 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-erp-navy flex items-center gap-3">
+                                <Truck size={18} className="text-blue-500" /> Incoming Shipment Schedule
+                            </h3>
+                        </div>
+                        <div className="flex-1 overflow-auto max-h-[500px]">
+                            <table className="w-full text-left">
+                                <thead>
+                                    <tr className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white/50 border-b border-slate-50">
+                                        <th className="px-10 py-6">PO #</th>
+                                        <th>Origin</th>
+                                        <th>ETA</th>
+                                        <th className="text-right px-10">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50">
+                                    {pos.slice(0, 6).map(po => (
+                                        <tr key={po.id} className="hover:bg-slate-50 transition-colors">
+                                            <td className="px-10 py-8 font-black text-erp-navy tracking-tight">{po.poNumber}</td>
+                                            <td className="py-8 font-bold text-slate-600 uppercase text-[11px]">{typeof po.vendor === 'string' ? po.vendor : (po.vendor as { name: string })?.name}</td>
+                                            <td className="py-8 font-mono text-slate-500">15-03-2026</td>
+                                            <td className="px-10 py-8 text-right"><button className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:underline">Mark Arrived</button></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-[48px] shadow-xl overflow-hidden border border-slate-100 p-10">
+                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-erp-navy mb-8">Recent GRN Activity</h3>
+                        <div className="space-y-8">
+                            {grns.slice(0, 4).map(g => (
+                                <div key={g.id} className="flex gap-6 p-6 rounded-[32px] border border-slate-100 hover:border-blue-200 transition-all group">
+                                    <div className="p-5 bg-blue-50 text-blue-600 rounded-3xl h-fit group-hover:rotate-12 transition-transform"><Package size={24} /></div>
+                                    <div className="flex-1">
+                                        <div className="flex justify-between mb-1 leading-none">
+                                            <h4 className="text-xs font-black uppercase text-erp-navy tracking-tight">{g.grnNumber}</h4>
+                                            <span className="text-[9px] font-black text-slate-300">{formatDate(g.createdAt)}</span>
+                                        </div>
+                                        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Receipt for {g.poId}</p>
+                                        <div className="mt-4 flex gap-2">
+                                            <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-lg text-[8px] font-black uppercase">Confirmed</span>
+                                            <span className="px-2 py-0.5 bg-slate-50 text-slate-400 rounded-lg text-[8px] font-black uppercase">QC Passed</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </main>
+        );
+    };
+
+    const renderSupplierDashboard = () => (
+        <main className="animate-in fade-in duration-500 bg-slate-50 -m-8 p-10 min-h-screen">
+            <div className="flex justify-between items-end mb-16">
+                <div>
+                    <h1 className="text-4xl font-black text-erp-navy tracking-tight uppercase italic">Supplier Hub</h1>
+                    <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-2 flex items-center gap-2">
+                        <Building2 size={12} /> B2B Enterprise Portal
+                    </p >
+                </div>
+                <div className="flex gap-4">
+                    <button className="px-8 py-4 bg-white border border-slate-200 rounded-[24px] font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all">Submit Support Ticket</button>
+                    <button className="px-8 py-4 bg-erp-navy text-white rounded-[24px] font-black text-[10px] uppercase tracking-widest hover:bg-erp-blue transition-all shadow-xl shadow-erp-navy/20">Check New RFQs</button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
+                <div className="p-10 bg-white rounded-[40px] shadow-xl shadow-slate-200/40 border-none relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 -mr-8 -mt-8 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Total Awaiting Quotes</div>
+                    <div className="text-6xl font-black text-erp-navy tracking-tighter mb-2">4</div>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-tight italic">Expires in 48h</p>
+                </div>
+                <div className="p-10 bg-white rounded-[40px] shadow-xl shadow-slate-200/40 border-none relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 -mr-8 -mt-8 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Open Purchase Orders</div>
+                    <div className="text-6xl font-black text-emerald-500 tracking-tighter mb-2">2</div>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-tight italic">Ready for shipment</p>
+                </div>
+                <div className="p-10 bg-white rounded-[40px] shadow-xl shadow-slate-200/40 border-none relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 -mr-8 -mt-8 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Pending Payments</div>
+                    <div className="text-4xl font-black text-erp-navy tracking-tighter mb-2">{formatVND(145000000)}</div>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-tight italic">3 Approved Invoices</p>
+                </div>
+                <div className="p-10 bg-erp-navy rounded-[40px] shadow-2xl shadow-erp-navy/20 text-white flex flex-col justify-between border-none">
+                    <div className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-4">Account Tier</div>
+                    <div>
+                        <div className="text-3xl font-black italic tracking-tighter mb-2 italic uppercase">Strategic Gold</div>
+                        <div className="flex gap-1 mb-6">
+                            {[1, 2, 3, 4, 5].map(i => <CheckCircle key={i} size={12} className="text-blue-400" />)}
+                        </div>
+                        <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-500" style={{ width: '92%' }}></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-white rounded-[48px] shadow-xl border border-slate-100 overflow-hidden">
+                <div className="p-10 border-b border-slate-50 flex justify-between items-center">
+                    <h3 className="text-sm font-black uppercase tracking-[0.3em] text-erp-navy italic">Active Opportunities</h3>
+                    <button className="text-[10px] font-black text-blue-600 hover:underline uppercase tracking-widest">View All Historical RFQs</button>
+                </div>
+                <div className="p-4">
+                    <table className="erp-table text-xs border-none">
+                        <thead>
+                            <tr className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                                <th className="px-8 py-6">Inquiry #</th>
+                                <th>Buyer Department</th>
+                                <th>Closing Date</th>
+                                <th className="text-center">Complexity</th>
+                                <th className="text-right px-8">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {[
+                                { id: 'RFQ-2026-X1', dept: 'IT INFRASTRUCTURE', date: '2026-04-10', level: 'HIGH' },
+                                { id: 'RFQ-2026-X4', dept: 'LOGISTICS OPS', date: '2026-04-15', level: 'MID' },
+                                { id: 'RFQ-2026-Y2', dept: 'CORP SERVICES', date: '2026-04-18', level: 'LOW' }
+                            ].map((o, i) => (
+                                <tr key={i} className="hover:bg-slate-50/50 transition-all group">
+                                    <td className="px-8 py-8 font-black text-erp-navy text-lg tracking-tighter">{o.id}</td>
+                                    <td className="py-8 font-bold text-slate-500 uppercase text-[11px]">{o.dept}</td>
+                                    <td className="py-8 font-mono text-slate-400">{o.date}</td>
+                                    <td className="py-8 text-center"><span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase ${o.level === 'HIGH' ? 'bg-red-50 text-red-500' : 'bg-slate-100 text-slate-500'}`}>{o.level}</span></td>
+                                    <td className="px-8 py-8 text-right"><button className="px-6 py-3 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-slate-900/10">Submit Quote</button></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    );
+
     const renderAdminDashboard = () => (
         <main className="animate-in fade-in duration-500">
             <h1 className="text-3xl font-black text-erp-navy tracking-tight mb-8">Hệ thống Quản trị Tổng thể</h1>
@@ -957,10 +1363,15 @@ export default function Dashboard() {
     return (
         <>
             {isRequester && renderRequesterDashboard()}
-            {isCFO && renderCFODashboard()}
-            {!isCFO && isProcurement && renderProcurementDashboard()}
-            {!isCFO && isApproverGroup && renderApproverDashboard()}
-            {!isRequester && !isCFO && !isProcurement && !isApproverGroup && renderAdminDashboard()}
+            {isCEO && renderCEODashboard()}
+            {!isCEO && isCFO && renderCFODashboard()}
+            {isProcurement && renderProcurementDashboard()}
+            {isApproverGroup && renderApproverDashboard()}
+            {isQA && renderQADashboard()}
+            {isWarehouse && renderWarehouseDashboard()}
+            {isSupplier && renderSupplierDashboard()}
+            {isSystem && !isCEO && !isCFO && renderSystemDashboard()}
+            {!isRequester && !isCEO && !isCFO && !isProcurement && !isApproverGroup && !isQA && !isWarehouse && !isSupplier && !isSystem && renderAdminDashboard()}
 
             {selectedPRDetails && (
                 <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
