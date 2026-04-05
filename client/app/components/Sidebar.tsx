@@ -67,6 +67,7 @@ const navigation = [
         items: [
             { name: "Lập ngân sách", icon: Building, path: "/manager/budget-planning", roles: ["DEPT_APPROVER", "PLATFORM_ADMIN"] },
             { name: "Phân bổ ngân sách", icon: FolderTree, path: "/finance/budget-allocation", roles: ["FINANCE", "PLATFORM_ADMIN"] },
+            { name: "Duyệt cấp NS", icon: CheckSquare, path: "/finance/budget-approval", roles: ["FINANCE", "DIRECTOR", "PLATFORM_ADMIN", "CEO"] },
             { name: "Theo dõi chi tiêu", icon: DollarSign, path: "/manager/spend-tracking", roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
             { name: "Cảnh báo vượt ngân sách", icon: ShieldAlert, path: "/manager/budget-alerts", roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
         ]

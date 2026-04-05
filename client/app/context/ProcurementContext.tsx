@@ -118,6 +118,7 @@ export interface ProcurementContextType extends ProcurementState {
     addBudgetAllocation: (d: CreateBudgetAllocationPayload) => Promise<any>;
     submitAllocation: (id: string) => Promise<boolean>;
     approveAllocation: (id: string) => Promise<boolean>;
+    rejectAllocation: (id: string, reason: string) => Promise<boolean>;
     updateBudgetAllocation: (id: string, d: UpdateBudgetAllocationPayload) => Promise<boolean>;
     removeBudgetAllocation: (id: string) => Promise<boolean>;
     distributeAnnualBudget: (costCenterId: string, fiscalYear: number) => Promise<boolean>;
@@ -393,6 +394,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
+    const rejectAllocation = useCallback(async (id: string, reason: string) => {
+        const resp = await apiFetch(`/budgets/allocations/${id}/reject`, { method: 'PATCH', body: JSON.stringify({ rejectedReason: reason }) });
+        if (resp.ok) { notify("Đã từ chối ngân sách!", "success"); await refreshData(); return true; }
+        notify("Lỗi khi từ chối ngân sách", "error"); return false;
+    }, [apiFetch, refreshData, notify]);
+
     const distributeAnnualBudget = useCallback(async (costCenterId: string, fiscalYear: number) => {
         const resp = await apiFetch(`/budgets/distribute-annual/${costCenterId}/${fiscalYear}`, { method: 'POST' });
         if (resp.ok) { notify("Phân bổ 20/80 thành công", "success"); await refreshData(); return true; }
@@ -625,7 +632,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const contextValue: ProcurementContextType = {
         ...state,
         login, logout, refreshData, apiFetch, addPR, submitPR, updatePR, fetchPrDetail, actionApproval,
-        addBudgetAllocation, submitAllocation, approveAllocation, distributeAnnualBudget, reconcileQuarter,
+        addBudgetAllocation, submitAllocation, approveAllocation, rejectAllocation, distributeAnnualBudget, reconcileQuarter,
         approveOverride, rejectOverride, convertQuoteToPR,
         removeNotification, notify,
         createPO, createPOFromPR, ackPO, shipPO,

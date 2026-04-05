@@ -8,11 +8,11 @@ import {
     Clock, CheckCircle, Package, AlertCircle, AlertTriangle, History, Bell, Send, Loader2,
     Search, ChevronDown, XCircle, RotateCcw, ArrowRight, ClipboardList, Edit3, Calendar
 } from "lucide-react";
-import { useProcurement, PR, Organization, QuoteRequest } from "./context/ProcurementContext";
+import { useProcurement, PR, Organization, QuoteRequest, BudgetAllocation, DocumentType } from "./context/ProcurementContext";
 import { formatVND } from "./utils/formatUtils";
 
 export default function Dashboard() {
-    const { budgets, prs, myPrs, currentUser, loadingMyPrs, approvals, actionApproval, refreshData, notify, fetchPrDetail, budgetAllocations, budgetPeriods, rfqs, pos, quoteRequests, createPRFromQuoteRequest } = useProcurement();
+    const { budgets, prs, myPrs, currentUser, loadingMyPrs, approvals, actionApproval, refreshData, notify, fetchPrDetail, budgetAllocations, budgetPeriods, rfqs, pos, quoteRequests, createPRFromQuoteRequest, costCenters, departments } = useProcurement();
     const availableBudget = (budgets?.allocated || 0) - (budgets?.committed || 0) - (budgets?.spent || 0);
 
     // Calculate Dynamic Quarterly Remaining Budget for the Department
@@ -368,14 +368,23 @@ export default function Dashboard() {
     }
 
     const renderCFODashboard = () => {
-        const cfoPendingPRs = (approvals || []).map((app) => {
+        const cfoPendingPRs = (approvals || []).filter(app => app.documentType === DocumentType.PURCHASE_REQUISITION).map((app) => {
             const pr = prs.find((p) => p.id === app.documentId);
             if (!pr) return null;
             return { ...pr, workflowId: app.id };
         }).filter((p): p is (PR & { workflowId: string }) => p !== null && (Number(p.totalEstimate) >= 10000000));
 
+        const pendingBudgets = (approvals || []).filter(app => app.documentType === DocumentType.BUDGET_ALLOCATION).map((app) => {
+            const alloc = budgetAllocations.find(a => a.id === app.documentId);
+            if (!alloc) return null;
+            return { ...alloc, workflowId: app.id };
+        }).filter((a): a is (BudgetAllocation & { workflowId: string }) => a !== null);
+
         const pendingPRCount = cfoPendingPRs.length;
         const pendingPRValue = cfoPendingPRs.reduce((sum: number, pr) => sum + (Number(pr.totalEstimate) || 0), 0);
+        const pendingBudgetCount = pendingBudgets.length;
+        const pendingBudgetValue = pendingBudgets.reduce((sum: number, b) => sum + (Number(b.allocatedAmount) || 0), 0);
+
         const totalAllocated = budgets?.allocated || 10000000000;
         const totalUsed = budgets?.spent || 4500000000;
         const usagePercent = Math.round((totalUsed / totalAllocated) * 100);
@@ -419,13 +428,13 @@ export default function Dashboard() {
                     </div>
 
                     <div className="erp-card !p-8 bg-white shadow-sm border-none flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Giá trị chờ CFO Duyệt</div>
+                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Chờ CFO Duyệt (PR & Budget)</div>
                         <div>
                             <div className="flex items-baseline gap-2 mb-1">
-                                <div className="text-4xl font-black text-amber-500 font-mono">{pendingPRCount}</div>
-                                <div className="text-[10px] font-black text-slate-300 uppercase">Phiếu</div>
+                                <div className="text-4xl font-black text-amber-500 font-mono">{pendingPRCount + pendingBudgetCount}</div>
+                                <div className="text-[10px] font-black text-slate-300 uppercase">Chứng từ</div>
                             </div>
-                            <div className="text-xl font-black text-amber-600 font-mono">{formatVND(pendingPRValue)} ₫</div>
+                            <div className="text-xl font-black text-amber-600 font-mono">{formatVND(pendingPRValue + pendingBudgetValue)} ₫</div>
                         </div>
                     </div>
 
@@ -449,9 +458,58 @@ export default function Dashboard() {
                     </div>
                 </div>
 
+                {/* Budget Approvals Section */}
+                {pendingBudgets.length > 0 && (
+                    <div className="mb-12">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-erp-blue flex items-center gap-2">
+                                <Activity size={14} /> Duyệt Định Biên Ngân Sách ({pendingBudgetCount})
+                            </h3>
+                        </div>
+                        <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-erp-blue/5 border-none">
+                            <table className="erp-table text-xs">
+                                <thead>
+                                    <tr className="bg-blue-50/30">
+                                        <th className="px-8">Cost Center / Đơn vị</th>
+                                        <th>Chu kỳ</th>
+                                        <th className="text-right">Số tiền yêu cầu</th>
+                                        <th>Ghi chú</th>
+                                        <th className="text-right px-8">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50">
+                                    {pendingBudgets.map((b) => {
+                                        const cc = costCenters.find(c => c.id === b.costCenterId);
+                                        const dept = departments.find(d => d.id === b.deptId || d.id === cc?.deptId);
+                                        return (
+                                            <tr key={b.id} className="hover:bg-blue-50/10 group transition-all">
+                                                <td className="px-8 flex flex-col py-4">
+                                                    <span className="font-black text-erp-navy uppercase text-[10px]">{cc?.name || "N/A"}</span>
+                                                    <span className="text-[9px] font-bold text-slate-400">{dept?.name || "Global"} ({cc?.code || "CC"})</span>
+                                                </td>
+                                                <td className="font-bold text-slate-600">
+                                                    Q{b.budgetPeriod?.periodNumber} / {b.budgetPeriod?.fiscalYear}
+                                                </td>
+                                                <td className="text-right font-black text-erp-blue text-sm">{formatVND(b.allocatedAmount)} Đ</td>
+                                                <td className="text-slate-400 italic text-[11px] font-medium">{b.notes || "Ngân sách định kỳ"}</td>
+                                                <td className="text-right px-8">
+                                                    <div className="flex justify-end gap-2">
+                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="btn-primary !py-2 !px-4 !text-[9px]">Duyệt định biên</button>
+                                                        <button onClick={() => actionApproval(b.workflowId, 'REJECT', 'Không hợp lệ')} className="p-2 border border-rose-100 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all"><XCircle size={14}/></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
                 {/* Approval Queue Section */}
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-erp-navy">Queue Cần Duyệt Mới Nhất</h3>
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-erp-navy">Queue Duyệt Phiếu Mua Sắm (PR)</h3>
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={14} />
@@ -609,7 +667,7 @@ export default function Dashboard() {
                                                             </div>
                                                             <div className="flex flex-col">
                                                                 <span className="text-[11px] font-black text-slate-700 leading-tight group-hover:text-erp-navy transition-colors">{pr.title}</span>
-                                                                <span className="text-[9px] text-slate-400 font-bold mt-1 uppercase tracking-tight">{pr.department as string || "Phòng IT"}</span>
+                                                                <span className="text-[9px] text-slate-400 font-bold mt-1 uppercase tracking-tight">{typeof pr.department === 'object' ? pr.department?.name : (pr.department || "Phòng ban")}</span>
                                                             </div>
                                                         </div>
                                                     </td>
