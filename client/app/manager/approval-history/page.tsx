@@ -1,19 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Filter, History, ShoppingCart, FolderTree, CheckCircle, XCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { useProcurement } from "@/app/context/ProcurementContext";
+import { Search, Filter, History, ShoppingCart, FolderTree, CheckCircle, XCircle, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { formatVND } from "../../utils/formatUtils";
 
 export default function ApprovalHistoryPage() {
     const [filter, setFilter] = useState({ type: "ALL", status: "ALL", date: "" });
-
-    const historyData = [
-        { id: "PR-2026-4704", type: "PR", title: "Máy tính xách tay Dell XPS", status: "APPROVED", date: "2026-04-04T09:15:00Z", note: "Phê duyệt thay thế thiết bị cũ" },
-        { id: "PR-2026-1549", type: "PR", title: "Nâng cấp hạ tầng Switch", status: "APPROVED", date: "2026-04-04T10:30:00Z", note: "Đã rà soát báo giá" },
-        { id: "PR-2026-1700", type: "PR", title: "Máy in màu Canon", status: "APPROVED", date: "2026-04-04T14:45:00Z", note: "Cần thiết cho bộ phận Thiết kế" },
-        { id: "PO-2026-001", type: "PO", title: "Đơn hàng linh kiện ABC", status: "REJECTED", date: "2026-04-04T11:20:00Z", note: "Báo giá cao hơn thị trường 15%" }
-    ];
-
+    const { approvals } = useProcurement();
     return (
         <main className="animate-in fade-in duration-500">
             <header className="mb-10 lg:flex items-end justify-between">
@@ -33,19 +27,19 @@ export default function ApprovalHistoryPage() {
 
             {/* Filter Bar */}
             <div className="bg-white rounded-3xl border border-slate-200 p-6 mb-8 shadow-sm flex flex-wrap gap-6 items-end">
-                <div className="flex-1 min-w-[200px]">
+                <div className="flex-1 min-w-50">
                     <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Loại chứng từ</label>
                     <div className="relative">
                         <FolderTree size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                         <select className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 pl-12 pr-4 text-sm font-bold text-erp-navy outline-none appearance-none cursor-pointer">
                             <option value="ALL">Tất cả chứng từ</option>
-                            <option value="PR">Yêu cầu mua hàng (PR)</option>
-                            <option value="PO">Đơn đặt hàng (PO)</option>
+                            <option value="PURCHASE_REQUISITION">Yêu cầu mua hàng (PR)</option>
+                            <option value="PURCHASE_ORDER">Đơn đặt hàng (PO)</option>
                         </select>
                     </div>
                 </div>
 
-                <div className="flex-1 min-w-[200px]">
+                <div className="flex-1 min-w-50">
                     <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Quyết định</label>
                     <div className="relative">
                         <CheckCircle size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -76,17 +70,17 @@ export default function ApprovalHistoryPage() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {historyData.map((item) => (
+                        {approvals.map((item) => (
                             <tr key={item.id} className="hover:bg-slate-50/30 transition-colors">
                                 <td className="px-6 py-5">
-                                    <span className={`px-2 py-1 rounded-md text-[10px] font-black tracking-widest uppercase ${item.type === 'PR' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
-                                        {item.type}
+                                    <span className={`px-2 py-1 rounded-md text-[10px] font-black tracking-widest uppercase ${item.documentType === "PURCHASE_REQUISITION" ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
+                                        {item.documentType === "PURCHASE_REQUISITION" ? 'Yêu cầu mua hàng' : 'Đơn đặt hàng'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-5">
                                     <span className="font-bold text-erp-navy">{item.id}</span>
                                 </td>
-                                <td className="px-6 py-5 font-bold text-slate-600">{item.title}</td>
+                                <td className="px-6 py-5 font-bold text-slate-600">{item.documentType}</td>
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-2">
                                         {item.status === 'APPROVED' ? (
@@ -96,21 +90,23 @@ export default function ApprovalHistoryPage() {
                                                 </div>
                                                 <span className="text-xs font-black text-green-600 uppercase tracking-tight">Đã duyệt</span>
                                             </>
-                                        ) : (
+                                        ) : item.status === "PENDING" ? (
                                             <>
-                                                <div className="h-5 w-5 rounded-full bg-red-500 text-white flex items-center justify-center">
-                                                    <XCircle size={12} />
+                                                <div className="h-5 w-5 rounded-full bg-yellow-500 text-white flex items-center justify-center">
+                                                    <Clock size={12} />
                                                 </div>
-                                                <span className="text-xs font-black text-red-600 uppercase tracking-tight">Từ chối</span>
+                                                <span className="text-xs font-black text-yellow-600 uppercase tracking-tight">Đang chờ duyệt</span>
                                             </>
+                                        ) : (
+                                            <span className="text-xs font-black text-slate-400 uppercase tracking-tight">Đang chờ</span>
                                         )}
                                     </div>
                                 </td>
                                 <td className="px-6 py-5 text-[11px] font-bold text-slate-400 text-center whitespace-nowrap">
-                                    {new Date(item.date).toLocaleDateString("vi-VN")} {new Date(item.date).toLocaleTimeString("vi-VN", { hour: '2-digit', minute: '2-digit' })}
+                                    {new Date(item.createdAt!).toLocaleDateString("vi-VN")} {new Date(item.createdAt!).toLocaleTimeString("vi-VN", { hour: '2-digit', minute: '2-digit' })}
                                 </td>
                                 <td className="px-6 py-5 text-xs text-slate-500 font-medium italic">
-                                    {item.note}
+                                    {item.status === 'APPROVED' ? 'Hồ sơ đã được phê duyệt thành công' : 'Hồ sơ đã bị từ chối'}
                                 </td>
                             </tr>
                         ))}

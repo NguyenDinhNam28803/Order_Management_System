@@ -21,7 +21,8 @@ export default function ProductAdminPage() {
         addCategory,
         updateCategory,
         removeCategory,
-        notify 
+        notify,
+        currentUser
     } = useProcurement();
 
     useEffect(() => {
@@ -99,7 +100,7 @@ export default function ProductAdminPage() {
             };
 
             if (editingProduct) {
-                success = await updateProduct(editingProduct.id, payload as any);
+                success = await updateProduct(editingProduct.id, payload);
             } else {
                 success = await addProduct(payload);
             }
@@ -132,7 +133,7 @@ export default function ProductAdminPage() {
             };
 
             if (editingCategory) {
-                success = await updateCategory(editingCategory.id, payload as any);
+                success = await updateCategory(editingCategory.id, payload);
             } else {
                 success = await addCategory(payload);
             }
@@ -356,7 +357,7 @@ export default function ProductAdminPage() {
                         </div>
                     </div>
 
-                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-[400px]">
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-100">
                         {activeTab === "Sản phẩm" ? (
                             <ERPTable columns={productColumns} data={filteredProducts} />
                         ) : (

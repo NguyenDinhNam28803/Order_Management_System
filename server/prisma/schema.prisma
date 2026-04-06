@@ -275,8 +275,7 @@ model ApprovalWorkflow {
   updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
   approver        User           @relation("ApprovalApprover", fields: [approverId], references: [id])
   delegatedFrom   User?          @relation("ApprovalDelegatedFrom", fields: [delegatedFromId], references: [id])
-  escalatedTo     User?          @relation("ApprovalEscalatedTo", fields: [escalatedToId], references: [id])
-
+  escalatedTo     User?          @relation("ApprovalEscalatedTo", fields: [escalatedToId], references: [id])    
   @@index([documentType, documentId])
   @@index([approverId, status])
   @@map("approval_workflows")

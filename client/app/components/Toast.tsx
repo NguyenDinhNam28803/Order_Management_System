@@ -11,7 +11,7 @@ const ToastItem = ({ notification }: { notification: Notification }) => {
     const { removeNotification } = useProcurement();
     const [isPaused, setIsPaused] = useState(false);
     const duration = 5000;
-    const startTimeRef = useRef<number>(Date.now());
+    const startTimeRef = useRef<number>(0);
     const remainingTimeRef = useRef<number>(duration);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

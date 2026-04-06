@@ -359,6 +359,10 @@ export interface BudgetAllocation {
         periodType: BudgetPeriodType;
     };
     status: BudgetAllocationStatus;
+    category?: {
+        id: string;
+        name: string;
+    };
 }
 
 export interface BudgetOverride {
@@ -444,6 +448,20 @@ export interface CreatePrDto {
 }
 
 export type UpdatePrDto = Partial<CreatePrDto>;
+
+export interface CreatePoDto {
+    vendorId?: string;
+    vendor?: string;
+    prId?: string;
+    total?: number;
+    currency?: CurrencyCode;
+    items?: Array<{
+        description: string;
+        qty: number;
+        estimatedPrice: number;
+        productId?: string;
+    }>;
+}
 
 export interface CreateRfqDto {
     prId: string;
@@ -575,12 +593,146 @@ export type UpdateBudgetAllocationPayload = Partial<
     Omit<BudgetAllocation, 'id' | 'orgId' | 'createdAt'>
 >;
 
-export interface CreatePoDto {
-    vendor?: string;
-    total?: number;
-    items?: Array<{
-        description: string;
+export enum ContractStatus {
+    DRAFT = "DRAFT",
+    PENDING_APPROVAL = "PENDING_APPROVAL",
+    ACTIVE = "ACTIVE",
+    EXPIRED = "EXPIRED",
+    TERMINATED = "TERMINATED",
+    COMPLETED = "COMPLETED"
+}
+
+export interface ContractMilestone {
+    id: string;
+    contractId: string;
+    title: string;
+    description?: string;
+    dueDate: string;
+    amount: number;
+    status: string;
+    completedAt?: string;
+}
+
+export interface Contract {
+    id: string;
+    contractNumber: string;
+    title: string;
+    description?: string;
+    orgId: string;
+    supplierId: string;
+    poId?: string;
+    status: ContractStatus;
+    startDate: string;
+    endDate: string;
+    totalValue: number;
+    currency: CurrencyCode;
+    buyerSignedAt?: string;
+    supplierSignedAt?: string;
+    createdAt: string;
+    updatedAt: string;
+    milestones?: ContractMilestone[];
+    supplier?: Organization;
+    organization?: Organization;
+}
+
+export enum DisputeStatus {
+    OPEN = "OPEN",
+    UNDER_INVESTIGATION = "UNDER_INVESTIGATION",
+    RESOLVED = "RESOLVED",
+    CLOSED = "CLOSED",
+    CANCELLED = "CANCELLED"
+}
+
+export interface Dispute {
+    id: string;
+    disputeNumber: string;
+    relatedDocumentId: string;
+    relatedDocumentType: DocumentType;
+    title: string;
+    reason: string;
+    status: DisputeStatus;
+    priority: string;
+    reportedById: string;
+    assignedToId?: string;
+    resolution?: string;
+    resolvedAt?: string;
+    createdAt: string;
+    updatedAt: string;
+    reportedBy?: User;
+    assignedTo?: User;
+}
+
+export interface AuditLog {
+    id: string;
+    orgId: string;
+    userId: string;
+    action: string;
+    entityType: string;
+    entityId: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    oldValue?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    newValue?: any;
+    ipAddress?: string;
+    userAgent?: string;
+    createdAt: string;
+    user?: User;
+}
+export interface SupplierKPI {
+    id: string;
+    supplierId: string;
+    period: string;
+    onTimeDeliveryScore: number;
+    qualityScore: number;
+    priceScore: number;
+    responsivenessScore: number;
+    complianceScore: number;
+    overallScore: number;
+    tier: SupplierTier;
+    evaluatedAt: string;
+}
+
+export interface SupplierEvaluation {
+    id: string;
+    supplierId: string;
+    evaluationPeriod: string;
+    score: number;
+    tier: SupplierTier;
+    metrics: {
+        onTimeDelivery: number;
+        qualityScore: number;
+        priceCompetitiveness: number;
+        invoiceAccuracy: number;
+        responsiveness: number;
+        orderFulfillment: number;
+    };
+    evaluationDate: string;
+}
+
+// export interface CreateCostCenterPayload {
+//     name: string;
+//     code: string;
+//     description?: string;
+//     orgId: string;
+//     managerId?: string;
+//     deptId?: string;
+// }
+
+// }
+
+// export interface UpdateCostCenterPayload extends Partial<CreateCostCenterPayload> {}
+
+export interface CreateQuoteRequestDto {
+    title: string;
+    description?: string;
+    deadline?: string;
+    items: Array<{
+        productName: string;
         qty: number;
-        estimatedPrice: number;
+        estimatedUnitPrice: number;
     }>;
+}
+
+export interface UpdateQuoteRequestDto extends Partial<CreateQuoteRequestDto> {
+    status?: string;
 }

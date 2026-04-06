@@ -80,7 +80,7 @@ export default function RFQInteraction() {
                     </div>
                     <button 
                         onClick={() => setStep(2)}
-                        style={{ padding: '12px 25px', background: '#0056b3', color: '#white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', alignSelf: 'flex-end', color: '#fff' }}
+                        style={{ padding: '12px 25px', background: '#0056b3', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', alignSelf: 'flex-end', color: '#fff' }}
                     >
                         Gửi yêu cầu báo giá (RFQ) cho Top 3 &rarr;
                     </button>

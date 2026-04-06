@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useProcurement, Supplier } from "../../context/ProcurementContext";
+import { useProcurement, Organization } from "../../context/ProcurementContext";
 import DashboardHeader from "../../components/DashboardHeader";
 import { 
     Truck, Plus, Search, Filter, 
@@ -9,6 +9,18 @@ import {
     CheckCircle2, XCircle, Star, 
     Mail, Phone, ExternalLink, Globe
 } from "lucide-react";
+
+export interface Supplier {
+    id: string;
+    name: string;
+    code: string;
+    category: string;
+    status: 'ACTIVE' | 'INACTIVE';
+    rating: number;
+    email: string;
+    phone: string;
+    website?: string;
+}
 
 export default function SupplierManagementPage() {
     const { currentUser, notify } = useProcurement();

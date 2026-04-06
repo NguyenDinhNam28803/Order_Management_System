@@ -4,7 +4,8 @@ import React from "react";
 import {
     LayoutDashboard, ShoppingCart, CheckSquare, Truck,
     FileCheck, ShieldAlert, Users, Settings, LogOut,
-    FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers
+    FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers,
+    ShieldCheck, MessageSquare, History
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -40,6 +41,8 @@ const navigation = [
         roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"],
         items: [
             { name: "Đơn đặt hàng (PO)", icon: ShoppingBag, path: "/procurement/pos", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Quản lý Hợp đồng", icon: ShieldCheck, path: "/procurement/contracts", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Khiếu nại & Tranh chấp", icon: MessageSquare, path: "/procurement/disputes", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
             { name: "Theo dõi giao hàng", icon: Truck, path: "/procurement/delivery", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
             { name: "Điều chỉnh PO (Amendments)", icon: ShieldAlert, path: "/procurement/amendments", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
         ]
@@ -91,6 +94,7 @@ const navigation = [
             { name: "Quản lý Tổ chức", icon: LayoutDashboard, path: "/admin/organizations", roles: ["PLATFORM_ADMIN"] },
             { name: "Quản lý Phòng ban", icon: Building, path: "/admin/departments", roles: ["PLATFORM_ADMIN"] },
             { name: "Quản lý Cost Center", icon: ShieldAlert, path: "/admin/cost-centers", roles: ["PLATFORM_ADMIN"] },
+            { name: "Nhật ký hệ thống", icon: History, path: "/admin/audit-logs", roles: ["PLATFORM_ADMIN"] },
             { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["PLATFORM_ADMIN"] },
         ]
     },
@@ -101,6 +105,7 @@ const navigation = [
             { name: "Bàn làm việc B2B", icon: LayoutDashboard, path: "/supplier/dashboard", roles: ["SUPPLIER"] },
             { name: "Yêu cầu báo giá (RFQ)", icon: FolderTree, path: "/supplier/rfq", roles: ["SUPPLIER"] },
             { name: "Đơn đặt hàng (PO)", icon: ShoppingCart, path: "/supplier/po", roles: ["SUPPLIER"] },
+            { name: "Hợp đồng & Ký kết", icon: ShieldCheck, path: "/procurement/contracts", roles: ["SUPPLIER"] },
             { name: "Gửi hóa đơn (Invoice)", icon: FileCheck, path: "/supplier/invoice", roles: ["SUPPLIER"] },
         ]
     },

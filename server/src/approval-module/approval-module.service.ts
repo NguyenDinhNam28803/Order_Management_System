@@ -438,6 +438,9 @@ export class ApprovalModuleService {
         approverId: userId,
         status: ApprovalStatus.PENDING,
       },
+      // include: {
+      //   purchaseRequisition: true,
+      // },
       orderBy: { createdAt: 'desc' },
     });
   }

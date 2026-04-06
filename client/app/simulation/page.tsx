@@ -43,6 +43,20 @@ const W2_STEPS: Step[] = [
 
 function ShoppingCart({ size, className }: { size: number, className?: string }) { return <ShoppingBag size={size} className={className} />; }
 
+const StatusBadge = ({ status }: { status: string }) => (
+    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+        status === "APPROVED" || status === "ISSUED" || status === "CONFIRMED" || status === "PAID" || status === "MATCHED"
+        ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+        : status === "SUBMITTED" || status === "SENT" || status === "PENDING"
+        ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+        : status === "DRAFT"
+        ? "bg-slate-500/10 text-slate-400 border border-slate-500/20"
+        : "bg-erp-blue/10 text-erp-blue border border-erp-blue/20"
+    }`}>
+        {status}
+    </span>
+);
+
 interface BudgetState {
     allocated: number;
     committed: number;

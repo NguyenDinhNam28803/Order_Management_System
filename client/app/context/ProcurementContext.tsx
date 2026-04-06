@@ -12,12 +12,14 @@ import {
     Product, ProductCategory, CreateProductDtoShort, UpdateProductDtoShort, CreateCategoryDto, UpdateCategoryDto,
     User, BudgetPeriod, BudgetAllocation, CreateUserPayload, UpdateUserPayload, CreateBudgetPeriodPayload, UpdateBudgetPeriodPayload,
     CreateBudgetAllocationPayload, UpdateBudgetAllocationPayload, CreatePoDto,
-    PR, PRItem, QuoteRequest, QuoteRequestItem, BudgetOverride, PrType, QuoteRequestStatus
+    PR, PRItem, QuoteRequest, QuoteRequestItem, BudgetOverride, PrType, QuoteRequestStatus,
+    Contract, Dispute, AuditLog, SupplierEvaluation
 } from "../types/api-types";
 
 export type { 
     Organization, CostCenter, Department, Product, ProductCategory, User, BudgetPeriod, BudgetAllocation, 
-    PR, PRItem, QuoteRequest, QuoteRequestItem, BudgetOverride 
+    PR, PRItem, QuoteRequest, QuoteRequestItem, BudgetOverride,
+    Contract, Dispute, AuditLog, SupplierEvaluation 
 };
 
 export {
@@ -72,6 +74,8 @@ export interface ProcurementState {
     budgetAllocations: BudgetAllocation[]; budgetOverrides: BudgetOverride[]; organizations: Organization[]; products: Product[]; 
     categories: ProductCategory[]; quoteRequests: QuoteRequest[]; loadingMyPrs: boolean; 
     simulation: SimulationState;
+    contracts: Contract[]; disputes: Dispute[]; auditLogs: AuditLog[]; 
+    supplierEvaluations: SupplierEvaluation[];
 }
 
 export interface ProcurementContextType extends ProcurementState {
@@ -109,13 +113,15 @@ export interface ProcurementContextType extends ProcurementState {
     removeCategory: (id: string) => Promise<boolean>;
     payInvoice: (id: string) => Promise<boolean>;
     matchInvoice: (id: string) => Promise<boolean>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addCostCenter: (d: any) => Promise<boolean>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateCostCenter: (id: string, d: any) => Promise<boolean>;
     removeCostCenter: (id: string) => Promise<boolean>;
     addBudgetPeriod: (d: CreateBudgetPeriodPayload) => Promise<boolean>;
     updateBudgetPeriod: (id: string, d: UpdateBudgetPeriodPayload) => Promise<boolean>;
     removeBudgetPeriod: (id: string) => Promise<boolean>;
-    addBudgetAllocation: (d: CreateBudgetAllocationPayload) => Promise<any>;
+    addBudgetAllocation: (d: CreateBudgetAllocationPayload) => Promise<BudgetAllocation | null>;
     submitAllocation: (id: string) => Promise<boolean>;
     approveAllocation: (id: string) => Promise<boolean>;
     rejectAllocation: (id: string, reason: string) => Promise<boolean>;
@@ -125,7 +131,9 @@ export interface ProcurementContextType extends ProcurementState {
     reconcileQuarter: (costCenterId: string, fiscalYear: number, quarter: number) => Promise<boolean>;
     fetchCostCenter: (id: string) => Promise<CostCenter | null>;
     fetchQuarterlyAllocation: (cc: string, year: number, quarter: number) => Promise<BudgetAllocation | null>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addQuoteRequest: (d: any) => Promise<boolean>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateQuoteRequest: (id: string, d: any) => Promise<boolean>;
     submitQuoteRequest: (id: string) => Promise<boolean>;
     convertQuoteToPR: (qrId: string) => Promise<boolean>;
@@ -134,6 +142,7 @@ export interface ProcurementContextType extends ProcurementState {
     startSimulation: (wf: "CATALOG" | "NON_CATALOG") => void;
     nextSimulationStep: () => void;
     stopSimulation: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     confirmCatalogPrice: (d: any) => Promise<boolean>;
     approveOverride: (id: string) => Promise<boolean>;
     rejectOverride: (id: string, reason: string) => Promise<boolean>;
@@ -142,7 +151,15 @@ export interface ProcurementContextType extends ProcurementState {
     register: (d: RegisterPayload) => Promise<boolean>;
     createQuote: (d: CreateQuoteDto) => Promise<boolean>;
     createGRN: (d: CreateGrnDto) => Promise<boolean>;
+    updateGrnItemQc: (id: string, itemId: string, status: string, notes?: string) => Promise<boolean>;
     createInvoice: (d: CreateInvoiceDto) => Promise<boolean>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    createContract: (d: any) => Promise<boolean>;
+    signContract: (id: string, isBuyer: boolean) => Promise<boolean>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    createDispute: (d: any) => Promise<boolean>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    createReview: (d: any) => Promise<boolean>;
 }
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
@@ -153,7 +170,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         budgets: null, users: [], departments: [], notifications: [], approvals: [], 
         costCenters: [], budgetPeriods: [], budgetAllocations: [], budgetOverrides: [], organizations: [], 
         products: [], categories: [], quoteRequests: [], loadingMyPrs: false,
-        simulation: { workflow: null, step: 0, isActive: false }
+        simulation: { workflow: null, step: 0, isActive: false },
+        contracts: [], disputes: [], auditLogs: [], supplierEvaluations: []
     });
 
     const notify = useCallback((message: string, type: Notification['type'] = 'info') => {
@@ -185,7 +203,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             const userJson = Cookies.get('user');
             const user = userJson ? JSON.parse(userJson) : null;
             
-            const [periodsResp, allocsResp, prsResp, myPrsResp, approvalsResp, orgsResp, deptsResp, usersResp, productsResp, categoriesResp, ccResp, posResp, rfqsResp, grnsResp, invoicesResp] = await Promise.all([
+            const [
+                periodsResp, allocsResp, prsResp, myPrsResp, approvalsResp, 
+                orgsResp, deptsResp, usersResp, productsResp, categoriesResp, 
+                ccResp, posResp, rfqsResp, grnsResp, invoicesResp,
+                contractsResp, disputesResp
+            ] = await Promise.all([
                 apiFetch('/budgets/periods'),
                 apiFetch('/budgets/allocations'),
                 apiFetch('/procurement-requests'),
@@ -200,16 +223,37 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 apiFetch('/purchase-orders'),
                 apiFetch('/request-for-quotations'),
                 apiFetch('/grn'),
-                apiFetch('/invoices')
+                apiFetch('/invoices'),
+                apiFetch('/contracts'),
+                apiFetch('/disputes')
             ]);
 
-            if (user && ["FINANCE", "DIRECTOR", "CEO"].includes(user.role)) {
+            if (user && ["FINANCE", "DIRECTOR", "CEO", "PLATFORM_ADMIN"].includes(user.role)) {
                 const overridesResp = await apiFetch('/budgets/overrides');
                 if (overridesResp.ok) {
                     const res = await overridesResp.json();
                     const data = res.data || res;
                     if (Array.isArray(data)) setState(prev => ({ ...prev, budgetOverrides: data }));
                 }
+
+                const auditResp = await apiFetch('/audit-logs');
+                if (auditResp.ok) {
+                    const res = await auditResp.json();
+                    const data = res.data || res;
+                    if (Array.isArray(data)) setState(prev => ({ ...prev, auditLogs: data }));
+                }
+            }
+
+            if (contractsResp.ok) {
+                const res = await contractsResp.json();
+                const data = res.data || res;
+                if (Array.isArray(data)) setState(prev => ({ ...prev, contracts: data }));
+            }
+
+            if (disputesResp.ok) {
+                const res = await disputesResp.json();
+                const data = res.data || res;
+                if (Array.isArray(data)) setState(prev => ({ ...prev, disputes: data }));
             }
 
             if (periodsResp.ok) {
@@ -307,6 +351,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             if (approvalsResp.ok) {
                 const res = await approvalsResp.json();
                 const data = res.data || res;
+                console.log("Pending Approvals", data);
                 if (Array.isArray(data)) setState(prev => ({ ...prev, approvals: data }));
             }
         } catch (e) {
@@ -573,17 +618,18 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return null;
     }, [apiFetch]);
 
-    const addCostCenter = useCallback(async (d: any) => {
+    const addCostCenter = useCallback(async (d: CreateCostCenterPayload) => {
         const resp = await apiFetch('/cost-centers', { method: 'POST', body: JSON.stringify(d) });
-        if (resp.ok) { notify("Tạo trung tâm chi phí thành công!", "success"); await refreshData(); return true; }
+        if (resp.ok) { notify("Đã thêm Cost Center", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const updateCostCenter = useCallback(async (id: string, d: any) => {
+    const updateCostCenter = useCallback(async (id: string, d: UpdateCostCenterPayload) => {
         const resp = await apiFetch(`/cost-centers/${id}`, { method: 'PATCH', body: JSON.stringify(d) });
-        if (resp.ok) { notify("Cập nhật trung tâm chi phí thành công!", "success"); await refreshData(); return true; }
+        if (resp.ok) { notify("Đã cập nhật Cost Center", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
+
 
     const removeCostCenter = useCallback(async (id: string) => {
         const resp = await apiFetch(`/cost-centers/${id}`, { method: 'DELETE' });
@@ -609,13 +655,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const addUser = useCallback(async (d: any) => {
+    const addUser = useCallback(async (d: CreateUserPayload) => {
         const resp = await apiFetch('/users', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Tạo người dùng thành công!", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const updateUser = useCallback(async (id: string, d: any) => {
+    const updateUser = useCallback(async (id: string, d: UpdateUserPayload) => {
         const resp = await apiFetch(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(d) });
         if (resp.ok) { notify("Cập nhật người dùng thành công!", "success"); await refreshData(); return true; }
         return false;
@@ -624,6 +670,40 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const removeUser = useCallback(async (id: string) => {
         const resp = await apiFetch(`/users/${id}`, { method: 'DELETE' });
         if (resp.ok) { notify("Đã xóa người dùng", "success"); await refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const updateGrnItemQc = useCallback(async (id: string, itemId: string, status: string, notes?: string) => {
+        const resp = await apiFetch(`/grn/${id}/items/${itemId}/qc`, { 
+            method: 'PATCH', 
+            body: JSON.stringify({ status, notes }) 
+        });
+        if (resp.ok) { notify("Cập nhật kết quả QC thành công", "success"); await refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const createContract = useCallback(async (d: Partial<Contract>) => {
+        const resp = await apiFetch('/contracts', { method: 'POST', body: JSON.stringify(d) });
+        if (resp.ok) { notify("Tạo hợp đồng thành công", "success"); await refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const signContract = useCallback(async (id: string, isBuyer: boolean) => {
+        const resp = await apiFetch(`/contracts/${id}/sign`, { method: 'POST', body: JSON.stringify({ isBuyer }) });
+        if (resp.ok) { notify("Ký hợp đồng thành công", "success"); await refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const createDispute = useCallback(async (d: Partial<Dispute>) => {
+        const resp = await apiFetch('/disputes', { method: 'POST', body: JSON.stringify(d) });
+        if (resp.ok) { notify("Tạo khiếu nại thành công", "success"); await refreshData(); return true; }
+        return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const createReview = useCallback(async (d: { type: 'BUYER' | 'SUPPLIER', rating: number, comment: string, relatedId: string }) => {
+        const url = d.type === 'BUYER' ? '/reviews/buyer-rating' : '/reviews/supplier-review';
+        const resp = await apiFetch(url, { method: 'POST', body: JSON.stringify(d) });
+        if (resp.ok) { notify("Đã gửi đánh giá thành công", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
 
@@ -650,8 +730,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         sendQuoteRequestToSupplier: async () => true, createPRFromQuoteRequest: async () => true,
         startSimulation: () => {}, nextSimulationStep: () => {}, stopSimulation: () => {},
         confirmCatalogPrice: async () => true, register: async () => true, createQuote: async () => true,
-        createGRN, createInvoice, payInvoice, matchInvoice,
-        approvePR: async () => true
+        createGRN, updateGrnItemQc, createInvoice, payInvoice, matchInvoice,
+        approvePR: async () => true,
+        createContract, signContract, createDispute, createReview
     };
 
     return <ProcurementContext.Provider value={contextValue}>{children}</ProcurementContext.Provider>;

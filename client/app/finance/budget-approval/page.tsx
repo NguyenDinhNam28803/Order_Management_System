@@ -22,6 +22,7 @@ import { formatVND } from "../../utils/formatUtils";
 export default function FinanceBudgetApprovalPage() {
     const { 
         budgetAllocations, 
+        approvals,
         costCenters, 
         departments, 
         budgetPeriods,
@@ -56,7 +57,7 @@ export default function FinanceBudgetApprovalPage() {
             const dept = departments.find(d => d.id === cc?.deptId);
             return cc?.name.toLowerCase().includes(lower) || 
                    dept?.name.toLowerCase().includes(lower) || 
-                   (req as any).category?.name.toLowerCase().includes(lower);
+                   "không có tên danh mục";
         });
     }, [submittedBudgets, costCenters, departments, searchTerm]);
 
@@ -174,7 +175,7 @@ export default function FinanceBudgetApprovalPage() {
                                         </div>
                                         <div>
                                             <h3 className="font-black text-erp-navy text-lg leading-tight">Yêu cầu cấp NS</h3>
-                                            <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">{(req as any).budgetCode || "CHƯA CÓ MÃ"}</p>
+                                            <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">{req.id || "CHƯA CÓ MÃ"}</p>
                                         </div>
                                     </div>
                                     <span className="px-3 py-1.5 rounded-lg bg-amber-100 text-amber-700 text-xs font-bold tracking-tight">
@@ -218,7 +219,7 @@ export default function FinanceBudgetApprovalPage() {
                                             <AlertCircle size={14} /> DANH MỤC / LÝ DO
                                         </div>
                                         <p className="font-medium text-slate-600 text-sm bg-amber-50/50 p-3 rounded-xl border border-amber-100">
-                                            {(req as any).category ? <span className="font-bold text-amber-700">[{(req as any).category.name}] </span> : ""}
+                                            {req.category ? <span className="font-bold text-amber-700">[{req.category.name}] </span> : ""}
                                             {req.notes || "Không có ghi chú"}
                                         </p>
                                     </div>
@@ -227,7 +228,7 @@ export default function FinanceBudgetApprovalPage() {
                                 <div className="flex items-center gap-3 pt-6 border-t-2 border-slate-50">
                                     <button
                                         onClick={() => { setSelectedRequest(req); setActionType("APPROVE"); }}
-                                        className="flex-1 max-w-[160px] ml-auto py-2.5 px-4 bg-emerald-50 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn"
+                                        className="flex-1 max-w-40 ml-auto py-2.5 px-4 bg-emerald-50 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn"
                                     >
                                         <Check size={18} className="group-hover/btn:scale-110 transition-transform" />
                                         DUYỆT
@@ -248,10 +249,10 @@ export default function FinanceBudgetApprovalPage() {
 
             {/* Action Modal */}
             {selectedRequest && actionType && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+                <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
                     <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => !isSubmitting && setActionType(null)} />
                     
-                    <div className="relative w-full max-w-lg bg-white rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                    <div className="relative w-full max-w-lg bg-white rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
                         <div className={`p-8 pb-10 ${actionType === "APPROVE" ? "bg-emerald-50" : "bg-rose-50"}`}>
                             <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-6">
                                 {actionType === "APPROVE" ? (
@@ -276,7 +277,7 @@ export default function FinanceBudgetApprovalPage() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-slate-700">Lý do từ chối (Bắt buộc)</label>
                                     <textarea 
-                                        className="w-full bg-slate-50 border-2 border-slate-200 focus:border-rose-300 focus:ring-0 rounded-2xl p-4 min-h-[100px] text-sm font-medium"
+                                        className="w-full bg-slate-50 border-2 border-slate-200 focus:border-rose-300 focus:ring-0 rounded-2xl p-4 min-h-25 text-sm font-medium"
                                         placeholder="Nhập lý do để Trưởng phòng có thể điều chỉnh lại..."
                                         value={rejectReason}
                                         onChange={e => setRejectReason(e.target.value)}
@@ -296,7 +297,7 @@ export default function FinanceBudgetApprovalPage() {
                                 <button 
                                     onClick={handleAction}
                                     disabled={isSubmitting || (actionType === "REJECT" && !rejectReason.trim())}
-                                    className={`flex-[2] py-4 font-black rounded-2xl text-white shadow-lg shadow-black/5 transition-all ${
+                                    className={`flex-2 py-4 font-black rounded-2xl text-white shadow-lg shadow-black/5 transition-all ${
                                         actionType === "APPROVE" 
                                             ? "bg-emerald-500 hover:bg-emerald-600 hover:-translate-y-0.5" 
                                             : "bg-rose-500 hover:bg-rose-600 disabled:bg-rose-300 hover:-translate-y-0.5"

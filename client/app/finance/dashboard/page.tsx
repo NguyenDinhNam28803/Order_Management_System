@@ -13,8 +13,16 @@ export default function FinanceDashboard() {
     const { invoices } = useProcurement();
     const [activeTab, setActiveTab] = useState<"ALL" | "EXCEPTION">("ALL");
 
-    const activeInvoices = invoices.filter((i) => i.status === "PENDING" || i.status === "EXCEPTION");
+    const activeInvoices = invoices.filter((i) => i.status === "PENDING" || i.status === "EXCEPTION" || i.status === "UNMATCHED");
     const displayedInvoices = activeTab === "ALL" ? activeInvoices : activeInvoices.filter((i) => i.status === "EXCEPTION");
+
+    const totalSpentThisMonth = invoices
+        .filter(i => i.status === "PAID")
+        .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+
+    const pendingPaymentAmount = invoices
+        .filter(i => i.status === "APPROVED")
+        .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
 
 
     return (
@@ -51,16 +59,16 @@ export default function FinanceDashboard() {
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-3 bg-orange-100 text-orange-600 rounded-xl"><CalendarClock size={24} /></div>
                     </div>
-                    <div className="text-3xl font-black text-orange-950">8<span className="text-sm font-bold text-orange-700/60 uppercase ml-1">Lệnh chi</span></div>
-                    <div className="text-xs font-bold text-orange-700/60 uppercase tracking-widest mt-1">Thanh toán trong 7 ngày tới</div>
-                    <div className="text-[10px] text-orange-600 font-bold mt-2">Dự kiến chi: 450,000,000 ₫</div>
+                    <div className="text-3xl font-black text-orange-950">{invoices.filter(i => i.status === "APPROVED").length}<span className="text-sm font-bold text-orange-700/60 uppercase ml-1">Lệnh chi</span></div>
+                    <div className="text-xs font-bold text-orange-700/60 uppercase tracking-widest mt-1">Hóa đơn chờ giải ngân</div>
+                    <div className="text-[10px] text-orange-600 font-bold mt-2">Dự kiến chi: {formatVND(pendingPaymentAmount)} ₫</div>
                 </div>
 
                 <div className="erp-card bg-emerald-50 border-emerald-200">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl"><TrendingDown size={24} /></div>
                     </div>
-                    <div className="text-2xl font-black text-emerald-950 font-mono">1.2B ₫</div>
+                    <div className="text-2xl font-black text-emerald-950 font-mono">{formatVND(totalSpentThisMonth)} ₫</div>
                     <div className="text-xs font-bold text-emerald-700/60 uppercase tracking-widest mt-1">Tổng chi tháng này</div>
                 </div>
             </div>

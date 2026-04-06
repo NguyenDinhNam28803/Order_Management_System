@@ -136,7 +136,14 @@ export default function POManagementPage() {
                                                         <div className="w-10 h-10 rounded-xl bg-erp-navy border border-white/10 flex items-center justify-center text-white text-[10px] font-black group-hover:scale-110 transition-transform">
                                                             {po.poNumber.split('-').pop()}
                                                         </div>
-                                                        <span className="font-black text-erp-navy">{po.poNumber}</span>
+                                                        <div className="flex flex-col">
+                                                            <span className="font-black text-erp-navy">{po.poNumber}</span>
+                                                            {!po.rfqId && (
+                                                                <span className="text-[8px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 w-fit mt-1 animate-pulse">
+                                                                    AUTO-GENERATED
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-6">
