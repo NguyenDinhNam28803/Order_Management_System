@@ -337,7 +337,7 @@ export default function QuotationManagementPage() {
     }, [quotations]);
 
     return (
-        <main className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
             <DashboardHeader breadcrumbs={["Nghiệp vụ Thu mua", selectedRFQ ? `RFQ: ${selectedRFQ.rfqNumber || selectedRFQ.id.substring(0, 8)}` : "Quản lý Báo giá (Quotations)"]} />
 
             {/* Header */}

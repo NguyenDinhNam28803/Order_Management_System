@@ -270,28 +270,28 @@ export default function SupplierDashboard() {
   // --- Components ---
 
   const renderSidebar = () => (
-    <div className="w-64 bg-erp-navy min-h-screen p-6 text-white flex flex-col gap-8 hidden lg:flex sticky top-0">
+    <div className="w-64 bg-[#161922] min-h-screen p-6 text-white flex flex-col gap-8 hidden lg:flex sticky top-0 border-r border-[rgba(148,163,184,0.1)]">
       <div className="flex items-center gap-3 px-2">
-        <div className="bg-white/10 p-2 rounded-xl border border-white/20">
-          <Building2 size={24} className="text-white" />
+        <div className="bg-[#3B82F6]/10 p-2 rounded-xl border border-[#3B82F6]/20">
+          <Building2 size={24} className="text-[#3B82F6]" />
         </div>
         <div>
-          <h2 className="text-sm font-black uppercase tracking-widest leading-none">ProcurePro</h2>
-          <span className="text-[10px] font-bold text-white/50 uppercase tracking-tighter">Supplier Portal</span>
+          <h2 className="text-sm font-black uppercase tracking-widest leading-none text-[#F8FAFC]">ProcurePro</h2>
+          <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Supplier Portal</span>
         </div>
       </div>
 
       <nav className="flex flex-col gap-2">
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Pending"); }}
-          className={`sidebar-item !text-white/70 ${!selectedRfq && activeTab === "Pending" ? "active" : ""}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:bg-[#1A1D23] hover:text-[#F8FAFC]'}`}
         >
           <LayoutDashboard size={20} />
           <span>Dashboard</span>
         </button>
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Quoted"); }}
-          className={`sidebar-item !text-white/70 ${!selectedRfq && activeTab === "Quoted" ? "active" : ""}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:bg-[#1A1D23] hover:text-[#F8FAFC]'}`}
         >
           <History size={20} />
           <span>Lịch sử báo giá</span>
@@ -299,17 +299,17 @@ export default function SupplierDashboard() {
       </nav>
 
       <div className="mt-auto">
-        <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+        <div className="bg-[#0F1117] rounded-2xl p-4 border border-[rgba(148,163,184,0.1)]">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-erp-blue flex items-center justify-center font-black text-xs">
+            <div className="w-8 h-8 rounded-full bg-[#3B82F6] flex items-center justify-center font-black text-xs text-white">
               ABC
             </div>
             <div className="overflow-hidden">
-              <p className="text-[10px] font-black truncate">{currentSupplier.name}</p>
-              <p className="text-[8px] font-bold text-white/40 uppercase">ID: {currentSupplier.id}</p>
+              <p className="text-[10px] font-black truncate text-[#F8FAFC]">{currentSupplier.name}</p>
+              <p className="text-[8px] font-bold text-[#64748B] uppercase">ID: {currentSupplier.id}</p>
             </div>
           </div>
-          <div className="role-badge role-supplier w-full text-center py-1">Nhà cung cấp</div>
+          <div className="px-3 py-1.5 bg-[#3B82F6]/10 text-[#3B82F6] rounded-lg text-[10px] font-black uppercase tracking-wider text-center border border-[#3B82F6]/20">Nhà cung cấp</div>
         </div>
       </div>
     </div>
@@ -319,78 +319,78 @@ export default function SupplierDashboard() {
     <div className="animate-in fade-in duration-500">
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-erp-navy tracking-tight">Yêu cầu báo giá (RFQs)</h1>
-          <p className="text-slate-500 font-medium text-sm mt-1">Quản lý và phản hồi các yêu cầu báo giá từ đối tác.</p>
+          <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Yêu cầu báo giá (RFQs)</h1>
+          <p className="text-[#64748B] font-medium text-sm mt-1">Quản lý và phản hồi các yêu cầu báo giá từ đối tác.</p>
         </div>
         
-        <div className="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+        <div className="flex bg-[#161922] p-1.5 rounded-xl border border-[rgba(148,163,184,0.1)]">
           <button 
             onClick={() => setActiveTab("Pending")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-white text-erp-navy shadow-sm border border-slate-100' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:text-[#F8FAFC]'}`}
           >
             Chưa xử lý
           </button>
           <button 
             onClick={() => setActiveTab("CatalogConfirmation")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-white text-erp-navy shadow-sm border border-slate-100' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:text-[#F8FAFC]'}`}
           >
             Xác nhận giá Catalog
           </button>
           <button 
             onClick={() => setActiveTab("Quoted")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-white text-erp-navy shadow-sm border border-slate-100' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:text-[#F8FAFC]'}`}
           >
             Đã báo giá
           </button>
         </div>
       </div>
 
-      <div className="erp-card !p-0 overflow-hidden shadow-sm border border-slate-200">
-        <table className="erp-table">
-          <thead>
-            <tr>
-              <th className="w-32">Mã RFQ</th>
-              <th>Dự án / Tên yêu cầu</th>
-              <th>Thời gian nhận</th>
-              <th>Trạng thái</th>
-              <th className="text-right">Hành động</th>
+      <div className="bg-[#161922] rounded-2xl overflow-hidden shadow-xl shadow-[#3B82F6]/5 border border-[rgba(148,163,184,0.1)]">
+        <table className="w-full text-left">
+          <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]">
+            <tr className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">
+              <th className="w-32 py-4 px-6">Mã RFQ</th>
+              <th className="py-4 px-6">Dự án / Tên yêu cầu</th>
+              <th className="py-4 px-6">Thời gian nhận</th>
+              <th className="py-4 px-6">Trạng thái</th>
+              <th className="text-right py-4 px-6">Hành động</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
             {currentRFQs.length > 0 ? currentRFQs.map(rfq => {
               const isSimulation = rfq.rfqId.includes("SIM");
               return (
-                <tr key={rfq.rfqId} className={`group ${isSimulation ? 'bg-erp-blue/5 border-erp-blue/20' : ''}`}>
-                  <td className="font-black text-erp-navy">
+                <tr key={rfq.rfqId} className={`group hover:bg-[#0F1117]/50 transition-colors ${isSimulation ? 'bg-[#3B82F6]/5' : ''}`}>
+                  <td className="font-black text-[#F8FAFC] py-4 px-6">
                     <div className="flex items-center gap-2">
                        {rfq.rfqId}
-                       {isSimulation && <span className="bg-erp-blue text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
+                       {isSimulation && <span className="bg-[#3B82F6] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
                     </div>
                   </td>
-                  <td>
-                    <div className="font-bold text-slate-700">{rfq.projectName}</div>
-                    <div className="text-[10px] text-slate-400 font-medium uppercase mt-1">
+                  <td className="py-4 px-6">
+                    <div className="font-bold text-[#F8FAFC]">{rfq.projectName}</div>
+                    <div className="text-[10px] text-[#64748B] font-medium uppercase mt-1">
                       {rfq.items.length} hạng mục • {rfq.items.slice(0, 2).map(i => i.name).join(", ")}{rfq.items.length > 2 ? "..." : ""}
                     </div>
                   </td>
-                  <td className="text-slate-500  text-xs">{rfq.createdAt}</td>
-                  <td>
-                    <span className={`status-pill ${rfq.status === 'Pending' ? 'status-pending' : 'status-approved'}`}>
+                  <td className="text-[#64748B] text-xs py-4 px-6">{rfq.createdAt}</td>
+                  <td className="py-4 px-6">
+                    <span className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
                       {rfq.status === 'Pending' ? 'Chờ báo giá' : 'Đã báo giá'}
                     </span>
                   </td>
-                  <td className="text-right">
+                  <td className="text-right py-4 px-6">
                     {rfq.status === 'Pending' ? (
                       <button 
                         onClick={() => handleStartQuoting(rfq)}
-                        className={`text-[10px] font-black uppercase tracking-widest text-erp-blue inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-erp-blue text-white border-erp-blue shadow-lg' : 'bg-blue-50 border-blue-100'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#3B82F6] text-white border-[#3B82F6] shadow-lg' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20 hover:bg-[#3B82F6]/20'}`}
                       >
                         Báo giá ngay <ChevronRight size={14} />
                       </button>
                     ) : (
                       <div className="text-right pr-4">
-                        <div className="text-xs font-black text-erp-navy">{(rfq.totalAmount || 0).toLocaleString()} ₫</div>
-                        <div className="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter">Thành công</div>
+                        <div className="text-xs font-black text-[#F8FAFC]">{(rfq.totalAmount || 0).toLocaleString()} ₫</div>
+                        <div className="text-[9px] font-bold text-emerald-400 uppercase tracking-tighter">Thành công</div>
                       </div>
                     )}
                   </td>
@@ -400,8 +400,8 @@ export default function SupplierDashboard() {
               <tr>
                 <td colSpan={5} className="py-20 text-center">
                   <div className="flex flex-col items-center gap-3 opacity-30">
-                    <Inbox size={48} />
-                    <p className="font-black uppercase tracking-[0.2em] text-xs">Không có yêu cầu nào</p>
+                    <Inbox size={48} className="text-[#64748B]" />
+                    <p className="font-black uppercase tracking-[0.2em] text-xs text-[#64748B]">Không có yêu cầu nào</p>
                   </div>
                 </td>
               </tr>
@@ -560,15 +560,15 @@ export default function SupplierDashboard() {
   };
 
   return (
-    <div className="flex bg-[#f8fafc] min-h-screen font-sans">
+    <div className="flex bg-[#0F1117] min-h-screen font-sans">
       {renderSidebar()}
       
       <div className="flex-1 min-w-0">
-        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-30">
+        <header className="h-16 bg-[#0F1117]/80 backdrop-blur-md border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between px-8 sticky top-0 z-30">
           <div className="flex items-center gap-4">
-            <span className="lg:hidden font-black text-erp-navy">ProcurePro</span>
-            <div className="h-4 w-px bg-slate-200 hidden lg:block" />
-            <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <span className="lg:hidden font-black text-[#F8FAFC]">ProcurePro</span>
+            <div className="h-4 w-px bg-[rgba(148,163,184,0.1)] hidden lg:block" />
+            <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">
                Supplier Dashboard <ChevronRight size={10} className="inline mx-1" /> {selectedRfq ? 'RFQ Detail' : 'Overview'}
             </div>
           </div>
@@ -576,11 +576,11 @@ export default function SupplierDashboard() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-black text-erp-navy leading-none mb-0.5">{currentSupplier.name}</p>
-                <p className="text-[8px] font-bold text-emerald-500 uppercase tracking-tighter">Trạng thái: Online</p>
+                <p className="text-[10px] font-black text-[#F8FAFC] leading-none mb-0.5">{currentSupplier.name}</p>
+                <p className="text-[8px] font-bold text-emerald-400 uppercase tracking-tighter">Trạng thái: Online</p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center">
-                <Building2 size={16} className="text-slate-400" />
+              <div className="w-8 h-8 rounded-full bg-[#161922] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                <Building2 size={16} className="text-[#64748B]" />
               </div>
             </div>
           </div>

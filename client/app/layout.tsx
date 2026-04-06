@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ProcurePro ERP | Hệ thống Mua sắm Doanh nghiệp Quốc tế",
-  description: "Giải pháp ERP hiện đại cho quản lý mua sắm doanh nghiệp",
+  title: "ProcurePro ERP | Hệ thống Mua sắm Doanh nghiệp",
+  description: "Giải pháp ERP hiện đại cho quản lý mua sắm doanh nghiệp - Refined Corporate Dark",
 };
 
 import { ProcurementProvider } from "./context/ProcurementContext";
@@ -21,9 +21,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="vi" suppressHydrationWarning>
       <body
-        className={`${inter.variable} antialiased bg-slate-50 text-slate-900 font-sans min-h-screen`}
+        className={`${inter.variable} antialiased bg-bg-primary text-[#F8FAFC] font-sans min-h-screen`}
         suppressHydrationWarning
       >
         <ProcurementProvider>

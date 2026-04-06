@@ -5,8 +5,8 @@ import DashboardHeader from "../../components/DashboardHeader";
 
 export default function RFQInteractionPage() {
     return (
-        <main className="p-8">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ", "Xử lý RFQ Tương tác cao"]} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <DashboardHeader breadcrumbs={["Nghiệp vụ", "RFQ", "Tương tác RFQ"]} />
             
             <div className="mt-12 mb-8">
                 <h1 className="text-3xl font-black text-erp-navy mb-2 tracking-tight">CÔNG CỤ XỬ LÝ RFQ THÔNG MINH</h1>

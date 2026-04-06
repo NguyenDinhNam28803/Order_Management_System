@@ -83,8 +83,8 @@ export default function SourcingPage() {
     }
 
     return (
-        <main className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ", "Nguồn hàng & Báo giá"]} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <DashboardHeader breadcrumbs={["Nghiệp vụ", "Sourcing", "RFQ Market"]} />
 
             <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
                 <div>

@@ -192,63 +192,63 @@ export default function SupplierProductsPage() {
     ];
 
     return (
-        <main className="pt-20 px-8 pb-12 bg-slate-50 min-h-screen animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Nhà cung cấp", "Sản phẩm & Dịch vụ"]} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <DashboardHeader breadcrumbs={["Bàn làm việc B2B", "Quản lý Sản phẩm"]} />
             
             <div className="mt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Danh mục Sản phẩm</h1>
-                    <p className="text-sm text-slate-500 mt-1 font-medium italic">Quản lý danh sách hàng hóa và dịch vụ bạn cung cấp cho hệ thống.</p>
+                    <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tight">Danh mục Sản phẩm</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-medium italic">Quản lý danh sách hàng hóa và dịch vụ bạn cung cấp cho hệ thống.</p>
                 </div>
                 <button 
-                    className="btn-primary flex items-center gap-2 py-4 px-8 shadow-xl shadow-indigo-200"
+                    className="flex items-center gap-2 py-4 px-8 bg-[#3B82F6] text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#2563EB] transition-all shadow-xl shadow-[#3B82F6]/20"
                     onClick={() => {
                         setEditingProduct(null);
                         setIsModalOpen(true);
                     }}
                 >
                     <Plus size={20} />
-                    <span className="text-sm font-black uppercase tracking-widest">Thêm sản phẩm mới</span>
+                    <span>Thêm sản phẩm mới</span>
                 </button>
             </div>
 
             <div className="grid grid-cols-1 gap-8">
                 {/* Stats cards for supplier */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                    <div className="bg-[#161922] p-6 rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-[#3B82F6]/10 text-[#3B82F6] flex items-center justify-center border border-[#3B82F6]/20">
                             <Box size={24} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Tổng sản phẩm</p>
-                            <p className="text-2xl font-black text-slate-900 leading-none">{myProducts.length}</p>
+                            <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest leading-none mb-1">Tổng sản phẩm</p>
+                            <p className="text-2xl font-black text-[#F8FAFC] leading-none">{myProducts.length}</p>
                         </div>
                     </div>
-                    <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                    <div className="bg-[#161922] p-6 rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
                             <Box size={24} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Đang kinh doanh</p>
-                            <p className="text-2xl font-black text-slate-900 leading-none">{myProducts.filter(p => p.isActive).length}</p>
+                            <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest leading-none mb-1">Đang kinh doanh</p>
+                            <p className="text-2xl font-black text-[#F8FAFC] leading-none">{myProducts.filter(p => p.isActive).length}</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/50 overflow-hidden">
+                <div className="bg-[#161922] rounded-[2.5rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 overflow-hidden">
                     {/* Toolbar */}
-                    <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117] flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="relative flex-1 max-w-md group">
-                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors" />
+                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B] group-focus-within:text-[#3B82F6] transition-colors" />
                             <input 
-                                className="erp-input w-full pl-12 font-bold focus:border-indigo-500" 
+                                className="w-full pl-12 pr-4 py-3 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#3B82F6]/30 focus:bg-[#1A1D23] transition-all" 
                                 placeholder="Tìm theo tên hoặc mã SKU..."
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                             />
                         </div>
                         <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-2 flex items-center gap-1">
+                            <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mr-2 flex items-center gap-1">
                                 <Info size={12} /> Tự động đồng nhất với dữ liệu Backend
                             </span>
                         </div>
@@ -258,17 +258,17 @@ export default function SupplierProductsPage() {
                         <ERPTable columns={columns} data={filteredData} />
                         {filteredData.length === 0 && !loading && (
                             <div className="py-20 text-center">
-                                <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-200 border border-slate-100">
+                                <div className="h-20 w-20 bg-[#161922] rounded-full flex items-center justify-center mx-auto mb-4 text-[#64748B] border border-[rgba(148,163,184,0.1)]">
                                     <Package size={40} />
                                 </div>
-                                <h3 className="text-lg font-bold text-slate-900">Chưa có sản phẩm nào</h3>
-                                <p className="text-slate-500 text-sm">Hãy bắt đầu bằng cách thêm sản phẩm đầu tiên của bạn.</p>
+                                <h3 className="text-lg font-bold text-[#F8FAFC]">Chưa có sản phẩm nào</h3>
+                                <p className="text-[#64748B] text-sm">Hãy bắt đầu bằng cách thêm sản phẩm đầu tiên của bạn.</p>
                             </div>
                         )}
                         {loading && (
                             <div className="py-20 text-center flex flex-col items-center justify-center gap-4">
-                                <Loader2 size={40} className="animate-spin text-indigo-500" />
-                                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em]">Đang tải dữ liệu...</p>
+                                <Loader2 size={40} className="animate-spin text-[#3B82F6]" />
+                                <p className="text-[#64748B] font-bold uppercase text-[10px] tracking-[0.2em]">Đang tải dữ liệu...</p>
                             </div>
                         )}
                     </div>
@@ -277,21 +277,21 @@ export default function SupplierProductsPage() {
 
             {/* Product Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-500 border border-slate-100">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0F1117]/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
+                    <div className="bg-[#161922] rounded-[3rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-500 border border-[rgba(148,163,184,0.1)]">
                         {/* Header */}
-                        <div className="p-10 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                        <div className="p-10 border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117] flex items-center justify-between">
                             <div>
-                                <h3 className="text-3xl font-black text-slate-900 tracking-tight">
+                                <h3 className="text-3xl font-black text-[#F8FAFC] tracking-tight">
                                     {editingProduct ? "CẬP NHẬT SẢN PHẨM" : "THÊM SẢN PHẨM MỚI"}
                                 </h3>
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Hồ sơ hàng hóa & dịch vụ</p>
+                                <p className="text-xs font-bold text-[#64748B] uppercase tracking-widest mt-1">Hồ sơ hàng hóa & dịch vụ</p>
                             </div>
                             <button 
                                 onClick={() => setIsModalOpen(false)}
-                                className="h-12 w-12 rounded-2xl bg-white border border-slate-100 hover:bg-slate-50 flex items-center justify-center transition-all shadow-sm group"
+                                className="h-12 w-12 rounded-2xl bg-[#161922] border border-[rgba(148,163,184,0.1)] hover:bg-[#1A1D23] flex items-center justify-center transition-all shadow-sm group"
                             >
-                                <Plus size={24} className="rotate-45 text-slate-400 group-hover:text-red-500 transition-colors" />
+                                <Plus size={24} className="rotate-45 text-[#64748B] group-hover:text-rose-400 transition-colors" />
                             </button>
                         </div>
                         
@@ -299,9 +299,9 @@ export default function SupplierProductsPage() {
                         <div className="p-10 space-y-6 max-h-[60vh] overflow-y-auto no-scrollbar">
                             <div className="grid grid-cols-2 gap-8">
                                 <div className="col-span-2">
-                                    <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5 ml-1">Tên sản phẩm / Dịch vụ <span className="text-red-500">*</span></label>
+                                    <label className="block text-[10px] font-black uppercase text-[#64748B] tracking-widest mb-2.5 ml-1">Tên sản phẩm / Dịch vụ <span className="text-rose-400">*</span></label>
                                     <input 
-                                        className="erp-input w-full font-bold text-lg" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-lg text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#3B82F6]/30 focus:bg-[#161922] transition-all" 
                                         value={form.name || ""} 
                                         onChange={e => setForm({ ...form, name: e.target.value })}
                                         placeholder="VD: Gói bảo trì máy chủ hàng tháng..." 
@@ -309,9 +309,9 @@ export default function SupplierProductsPage() {
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5 ml-1">Mã SKU / Model <span className="text-red-500">*</span></label>
+                                    <label className="block text-[10px] font-black uppercase text-[#64748B] tracking-widest mb-2.5 ml-1">Mã SKU / Model <span className="text-rose-400">*</span></label>
                                     <input 
-                                        className="erp-input w-full font-bold" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#3B82F6]/30 focus:bg-[#161922] transition-all" 
                                         value={form.sku || ""} 
                                         onChange={e => setForm({ ...form, sku: e.target.value })}
                                         placeholder="VD: SVC-MAINT-2024" 
@@ -319,9 +319,9 @@ export default function SupplierProductsPage() {
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5 ml-1">Đơn vị tính</label>
+                                    <label className="block text-[10px] font-black uppercase text-[#64748B] tracking-widest mb-2.5 ml-1">Đơn vị tính</label>
                                     <input 
-                                        className="erp-input w-full font-bold" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#3B82F6]/30 focus:bg-[#161922] transition-all" 
                                         value={form.unit || "Cái"} 
                                         onChange={e => setForm({ ...form, unit: e.target.value })}
                                         placeholder="Cái, Giờ, Gói..." 
@@ -329,20 +329,20 @@ export default function SupplierProductsPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5 ml-1">Giá tham khảo (VNĐ) <span className="text-red-500">*</span></label>
+                                    <label className="block text-[10px] font-black uppercase text-[#64748B] tracking-widest mb-2.5 ml-1">Giá tham khảo (VNĐ) <span className="text-rose-400">*</span></label>
                                     <input 
                                         type="number" 
-                                        className="erp-input w-full font-black text-indigo-600 text-lg" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl font-black text-[#3B82F6] text-lg placeholder:text-[#64748B] focus:outline-none focus:border-[#3B82F6]/30 focus:bg-[#161922] transition-all" 
                                         value={form.unitPriceRef || 0} 
                                         onChange={e => setForm({ ...form, unitPriceRef: Number(e.target.value) })}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5 ml-1">Danh mục hệ thống <span className="text-red-500">*</span></label>
+                                    <label className="block text-[10px] font-black uppercase text-[#64748B] tracking-widest mb-2.5 ml-1">Danh mục hệ thống <span className="text-rose-400">*</span></label>
                                     <div className="relative">
                                         <select 
-                                            className="erp-input w-full font-bold appearance-none bg-white cursor-pointer pr-10"
+                                            className="w-full pl-4 pr-10 py-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#F8FAFC] appearance-none cursor-pointer focus:outline-none focus:border-[#3B82F6]/30 focus:bg-[#161922] transition-all"
                                             value={form.categoryId || ""}
                                             onChange={e => setForm({ ...form, categoryId: e.target.value })}
                                         >
@@ -351,28 +351,28 @@ export default function SupplierProductsPage() {
                                                 <option key={cat.id} value={cat.id}>{cat.name}</option>
                                             ))}
                                         </select>
-                                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
                                     </div>
                                 </div>
 
                                 <div className="col-span-2">
-                                    <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5 ml-1">Mô tả chi tiết</label>
+                                    <label className="block text-[10px] font-black uppercase text-[#64748B] tracking-widest mb-2.5 ml-1">Mô tả chi tiết</label>
                                     <textarea 
-                                        className="erp-input w-full h-24 font-medium resize-none" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl font-medium text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#3B82F6]/30 focus:bg-[#161922] transition-all h-24 resize-none" 
                                         value={form.description || ""} 
                                         onChange={e => setForm({ ...form, description: e.target.value })}
                                         placeholder="Nhập các đặc tính kỹ thuật, cam kết bảo hành..."
                                     />
                                 </div>
 
-                                <div className="col-span-2 flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-200/50 border-dashed">
+                                <div className="col-span-2 flex items-center justify-between p-6 bg-[#0F1117] rounded-3xl border border-[rgba(148,163,184,0.1)] border-dashed">
                                     <div className="flex flex-col">
-                                        <span className="text-[11px] font-black uppercase text-slate-700 tracking-widest">Sẵn sàng kinh doanh</span>
-                                        <span className="text-[10px] text-slate-400 font-bold">Nếu tắt, sản phẩm sẽ không hiển thị khi khách hàng tìm kiếm</span>
+                                        <span className="text-[11px] font-black uppercase text-[#F8FAFC] tracking-widest">Sẵn sàng kinh doanh</span>
+                                        <span className="text-[10px] text-[#64748B] font-bold">Nếu tắt, sản phẩm sẽ không hiển thị khi khách hàng tìm kiếm</span>
                                     </div>
                                     <button 
                                         onClick={() => setForm({...form, isActive: !form.isActive})}
-                                        className={`w-14 h-7 rounded-full p-1 transition-all duration-500 shadow-inner ${form.isActive ? 'bg-indigo-600' : 'bg-slate-300'}`}
+                                        className={`w-14 h-7 rounded-full p-1 transition-all duration-500 shadow-inner ${form.isActive ? 'bg-[#3B82F6]' : 'bg-[#64748B]'}`}
                                     >
                                         <div className={`h-5 w-5 bg-white rounded-full shadow-md transition-transform duration-500 ${form.isActive ? 'translate-x-7' : 'translate-x-0'}`} />
                                     </button>
@@ -381,21 +381,21 @@ export default function SupplierProductsPage() {
                         </div>
 
                         {/* Footer */}
-                        <div className="p-10 bg-slate-50/80 border-t border-slate-100 flex justify-end gap-4">
+                        <div className="p-10 bg-[#0F1117] border-t border-[rgba(148,163,184,0.1)] flex justify-end gap-4">
                             {loading && (
-                                <div className="flex items-center gap-2 text-indigo-600 font-black uppercase text-[10px] tracking-widest mr-auto">
+                                <div className="flex items-center gap-2 text-[#3B82F6] font-black uppercase text-[10px] tracking-widest mr-auto">
                                     <Loader2 size={16} className="animate-spin" /> Đang cập nhật dữ liệu...
                                 </div>
                             )}
                             <button 
-                                className="px-10 py-4 font-black text-slate-500 uppercase tracking-widest border border-slate-200 hover:bg-white rounded-2xl transition-all shadow-sm active:scale-95" 
+                                className="px-10 py-4 font-black text-[#64748B] uppercase tracking-widest border border-[rgba(148,163,184,0.1)] hover:bg-[#161922] hover:text-[#F8FAFC] rounded-2xl transition-all shadow-sm active:scale-95" 
                                 onClick={() => setIsModalOpen(false)}
                                 disabled={loading}
                             >
                                 Đóng
                             </button>
                             <button 
-                                className="btn-primary py-4 px-12 shadow-2xl shadow-indigo-200 active:scale-95 disabled:opacity-50" 
+                                className="py-4 px-12 bg-[#3B82F6] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-[#3B82F6]/20 active:scale-95 disabled:opacity-50 hover:bg-[#2563EB] transition-all" 
                                 onClick={handleSave} 
                                 disabled={loading}
                             >

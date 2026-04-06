@@ -21,50 +21,50 @@ export default function AuditLogsPage() {
     });
 
     const getActionColor = (action: string) => {
-        if (action.includes("CREATE")) return "text-green-600 bg-green-50";
-        if (action.includes("UPDATE") || action.includes("PATCH")) return "text-blue-600 bg-blue-50";
-        if (action.includes("DELETE")) return "text-red-600 bg-red-50";
-        if (action.includes("APPROVE")) return "text-purple-600 bg-purple-50";
-        return "text-gray-600 bg-gray-50";
+        if (action.includes("CREATE")) return "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20";
+        if (action.includes("UPDATE") || action.includes("PATCH")) return "text-[#3B82F6] bg-[#3B82F6]/10 border border-[#3B82F6]/20";
+        if (action.includes("DELETE")) return "text-rose-400 bg-rose-500/10 border border-rose-500/20";
+        if (action.includes("APPROVE")) return "text-purple-400 bg-purple-500/10 border border-purple-500/20";
+        return "text-[#64748B] bg-[#161922] border border-[rgba(148,163,184,0.1)]";
     };
 
     const entityTypes = Array.from(new Set(auditLogs.map(l => l.entityType)));
 
     return (
-        <div className="p-6 space-y-6">
-            <div className="flex justify-between items-center">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <div className="flex justify-between items-center mb-10">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-100">
+                    <div className="p-3 bg-[#3B82F6] text-white rounded-xl shadow-lg shadow-[#3B82F6]/20">
                         <Shield size={24} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-800">Nhật ký Hệ thống (Audit Logs)</h1>
-                        <p className="text-gray-500 text-sm">Truy vết mọi hoạt động và thay đổi dữ liệu trên hệ thống</p>
+                        <h1 className="text-2xl font-black text-[#F8FAFC] tracking-tight">Nhật ký Hệ thống (Audit Logs)</h1>
+                        <p className="text-[#64748B] text-sm font-medium">Truy vết mọi hoạt động và thay đổi dữ liệu trên hệ thống</p>
                     </div>
                 </div>
                 <button 
                     onClick={() => refreshData()}
-                    className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 transition-all shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-xl hover:bg-[#1A1D23] text-[#94A3B8] transition-all shadow-sm"
                 >
                     <RefreshCw size={18} className={loadingMyPrs ? "animate-spin" : ""} /> Làm mới dữ liệu
                 </button>
             </div>
 
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center">
-                <div className="flex-1 min-w-75 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <div className="bg-[#161922] p-4 rounded-2xl shadow-xl shadow-[#3B82F6]/5 border border-[rgba(148,163,184,0.1)] flex flex-wrap gap-4 items-center mb-6">
+                <div className="flex-1 min-w-[300px] relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B]" size={18} />
                     <input 
                         type="text" 
                         placeholder="Tìm theo hành động, mã đối tượng, người thực hiện..." 
-                        className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full pl-10 pr-4 py-2 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 text-[#F8FAFC] placeholder:text-[#64748B] text-sm"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                    <Filter size={18} className="text-gray-400" />
+                    <Filter size={18} className="text-[#64748B]" />
                     <select 
-                        className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 text-[#F8FAFC] text-sm"
                         value={entityFilter}
                         onChange={(e) => setEntityFilter(e.target.value)}
                     >
@@ -76,59 +76,59 @@ export default function AuditLogsPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-[#161922] rounded-2xl shadow-xl shadow-[#3B82F6]/5 border border-[rgba(148,163,184,0.1)] overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 border-b border-gray-100 text-gray-600 text-xs uppercase tracking-wider">
+                        <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)] text-[#64748B] text-xs uppercase tracking-wider">
                             <tr>
-                                <th className="px-6 py-4 font-bold">Thời gian</th>
-                                <th className="px-6 py-4 font-bold">Người thực hiện</th>
-                                <th className="px-6 py-4 font-bold">Hành động</th>
-                                <th className="px-6 py-4 font-bold">Đối tượng</th>
-                                <th className="px-6 py-4 font-bold">Mã ID</th>
-                                <th className="px-6 py-4 font-bold text-right">Chi tiết</th>
+                                <th className="px-6 py-4 font-black">Thời gian</th>
+                                <th className="px-6 py-4 font-black">Người thực hiện</th>
+                                <th className="px-6 py-4 font-black">Hành động</th>
+                                <th className="px-6 py-4 font-black">Đối tượng</th>
+                                <th className="px-6 py-4 font-black">Mã ID</th>
+                                <th className="px-6 py-4 font-black text-right">Chi tiết</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50 text-sm">
+                        <tbody className="divide-y divide-[rgba(148,163,184,0.1)] text-sm">
                             {filteredLogs.length > 0 ? filteredLogs.map((log) => (
-                                <tr key={log.id} className="hover:bg-gray-50 transition-colors group">
+                                <tr key={log.id} className="hover:bg-[#0F1117]/30 transition-colors group">
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center gap-2 text-gray-500">
+                                        <div className="flex items-center gap-2 text-[#64748B]">
                                             <Calendar size={14} />
                                             {new Date(log.createdAt).toLocaleString('vi-VN')}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 border border-gray-200">
+                                            <div className="w-7 h-7 rounded-full bg-[#3B82F6]/10 flex items-center justify-center text-[10px] font-bold text-[#3B82F6] border border-[#3B82F6]/20">
                                                 {log.user?.fullName?.charAt(0) || "U"}
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-gray-800">{log.user?.fullName || "Hệ thống"}</p>
-                                                <p className="text-[10px] text-gray-400 uppercase">{log.user?.role}</p>
+                                                <p className="font-bold text-[#F8FAFC]">{log.user?.fullName || "Hệ thống"}</p>
+                                                <p className="text-[10px] text-[#64748B] uppercase">{log.user?.role}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getActionColor(log.action)}`}>
+                                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${getActionColor(log.action)}`}>
                                             {log.action}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-600">
+                                    <td className="px-6 py-4 whitespace-nowrap font-bold text-[#94A3B8]">
                                         {log.entityType}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap  text-xs text-gray-400">
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-[#64748B]">
                                         {log.entityId}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                                        <button className="p-1.5 text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 rounded-lg transition-all">
                                             <ExternalLink size={16} />
                                         </button>
                                     </td>
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-400 italic">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-[#64748B]">
                                         <History size={48} className="mx-auto mb-3 opacity-20" />
                                         {loadingMyPrs ? "Đang tải dữ liệu..." : "Không tìm thấy nhật ký nào."}
                                     </td>
@@ -138,6 +138,6 @@ export default function AuditLogsPage() {
                     </table>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }

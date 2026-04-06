@@ -78,7 +78,7 @@ export default function SupplierRFQ() {
 
     if (loading) {
         return (
-            <main className="pt-16 px-8 pb-12">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
                 <DashboardHeader breadcrumbs={["Nhà cung cấp", "Danh sách Yêu cầu báo giá"]} />
                 <div className="mt-8 flex items-center justify-center min-h-75">
                     <div className="text-slate-400 font-bold uppercase tracking-widest">Đang tải...</div>
@@ -89,7 +89,7 @@ export default function SupplierRFQ() {
 
     if (viewState === "DETAIL" && activeRFQ) {
         return (
-            <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300 bg-slate-50 min-h-screen">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
                 <DashboardHeader breadcrumbs={["Bàn làm việc B2B", "Chi tiết RFQ"]} />
                 
                 <div className="mt-8 mb-6 flex justify-between items-end">

@@ -22,9 +22,9 @@ export default function ERPTable<T>({ columns, data }: { columns: ERPTableColumn
                 <tbody>
                     {data.length === 0 ? (
                         <tr>
-                            <td colSpan={columns.length} className="text-center py-20 bg-white">
+                            <td colSpan={columns.length} className="text-center py-20 bg-[#161922]">
                                 <div className="flex flex-col items-center gap-3 opacity-30">
-                                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+                                    <div className="w-12 h-12 rounded-full bg-[#0F1117] flex items-center justify-center">
                                         <Plus className="rotate-45" size={24} />
                                     </div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Dữ liệu trống</span>

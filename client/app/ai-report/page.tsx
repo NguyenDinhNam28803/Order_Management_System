@@ -22,7 +22,7 @@ export default function AIReportPage() {
     if (isConfirmed) {
         return (
             <div className="h-screen flex items-center justify-center bg-slate-50">
-                <div className="text-center erp-card !p-12 animate-in fade-in zoom-in duration-500">
+                <div className="text-center erp-card p-12! animate-in fade-in zoom-in duration-500">
                     <div className="h-20 w-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
                         <CheckCircle2 size={40} />
                     </div>
@@ -45,13 +45,13 @@ export default function AIReportPage() {
                     </h1>
                     <p className="text-sm text-slate-500 mt-1">Hệ thống đã phân tích 3 nhà cung cấp cho hạng mục &quot;Máy may công nghiệp&quot;.</p>
                 </div>
-                <Link href="/" className="btn-secondary !py-2 text-xs flex items-center gap-2">
+                <Link href="/" className="btn-secondary py-2! text-xs flex items-center gap-2">
                     <ArrowLeft size={16} /> Quay lại
                 </Link>
             </div>
 
             {/* Banner Thông báo */}
-            <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-between mb-8 animate-in slide-in-from-top-4">
+            <div className="bg-linear-to-r from-amber-500 to-orange-500 p-4 rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-between mb-8 animate-in slide-in-from-top-4">
                 <div className="flex items-center gap-3">
                     <div className="bg-white/20 p-2 rounded-lg text-white">
                         <Info size={24} />

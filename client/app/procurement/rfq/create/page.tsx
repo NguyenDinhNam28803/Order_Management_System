@@ -184,17 +184,18 @@ export default function CreateRFQPage() {
                                 <span className="text-erp-navy font-black">{typeof targetPR.department === 'string' ? targetPR.department : targetPR.department?.name || "N/A"}</span>
                             </div>
                             <div className="flex justify-between items-center text-sm">
-                                <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Ước tính (VNĐ)</span>
-                                <span className="text-erp-blue font-black ">{(Number(targetPR.totalEstimate) || 0).toLocaleString()} \u20ab</span>
+                                <span className="text-[#F8FAFC]/60 font-bold uppercase text-[10px] tracking-widest">Ước tính (VNĐ)</span>
+                                <span className="text-[#F8FAFC] font-black ">{(Number(targetPR.totalEstimate) || 0).toLocaleString()} \u20ab</span>
                             </div>
                             
-                            <div className="pt-6 border-t border-slate-50">
-                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Danh sách sản phẩm</h3>
+                            <div className="pt-6 border-t border-[#F8FAFC]/60">
+                                <h3 className="text-[10px] font-black text-[#F8FAFC]/60 uppercase tracking-widest mb-4">Danh sách sản phẩm</h3>
                                 <div className="space-y-3">
                                     {(targetPR.items || []).map((item: PRItem, idx: number) => (
                                         <div key={idx} className="flex justify-between items-start">
                                             <div className="flex flex-col">
-                                                <span className="text-[11px] font-black text-slate-700">{item.productId || "Sản phẩm " + (idx+1)}</span>
+                                                <span className="text-[11px] font-black text-[#F8FAFC]/70">{item.productId || "Sản phẩm " + (idx+1)}</span>
+                                                <span className="text-[10px] text-[#F8FAFC]/60 font-bold">{item.qty} {item.unit}</span>
                                                 <span className="text-[10px] text-slate-400 font-bold italic">{item.qty} {item.unit}</span>
                                             </div>
                                             <span className="text-[11px] font-black text-slate-400">{(Number(item.estimatedPrice) || 0).toLocaleString()}</span>
@@ -324,7 +325,7 @@ export default function CreateRFQPage() {
                                             type="text" 
                                             readOnly
                                             placeholder="Chọn ngày..."
-                                            className="erp-input w-full h-14 !rounded-xl font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all"
+                                            className="erp-input w-full h-14 rounded-xl! font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all"
                                             value={deadline ? (() => {
                                                 const [y, m, d] = deadline.split('-');
                                                 return `${d}-${m}-${y}`;
@@ -345,7 +346,7 @@ export default function CreateRFQPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Độ ưu tiên</label>
-                                    <select className="erp-input w-full h-14 !rounded-xl appearance-none bg-slate-50 border-transparent font-bold">
+                                    <select className="erp-input w-full h-14 rounded-xl! appearance-none bg-slate-50 border-transparent font-bold">
                                         <option>BÌNH THƯỜNG</option>
                                         <option>CAO - CẦN GẤP</option>
                                         <option>KHẨN CẤP - CHIẾN LƯỢC</option>
@@ -364,7 +365,7 @@ export default function CreateRFQPage() {
                             </div>
                             <textarea 
                                 placeholder="Ghi chú thêm cho nhà cung cấp về chất lượng, hình thức thanh toán, thời gian giao hàng mong muốn..."
-                                className="erp-input w-full min-h-[150px] !rounded-3xl p-6"
+                                className="erp-input w-full min-h-37.5 rounded-3xl! p-6"
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
                             ></textarea>

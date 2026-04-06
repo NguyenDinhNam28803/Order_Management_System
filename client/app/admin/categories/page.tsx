@@ -174,8 +174,8 @@ export default function CategoriesPage() {
     ];
 
     return (
-        <main className="p-8 animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Quản trị hệ thống", "Danh mục sản phẩm"]} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <DashboardHeader breadcrumbs={["Admin", "Quản lý Danh mục"]} />
 
             <div className="flex justify-between items-end mb-10 mt-6">
                 <div>

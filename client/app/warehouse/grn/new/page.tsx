@@ -117,7 +117,7 @@ export default function CreateGRN() {
     }
 
     return (
-        <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300 min-h-screen bg-slate-50">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
             <DashboardHeader breadcrumbs={["Kho vận", "Kiểm định Nhập Kho", "Tạo GRN & QC"]} />
 
             <div className="mt-8 mb-8 border-b border-slate-200 pb-4 flex justify-between items-end">
@@ -218,7 +218,7 @@ export default function CreateGRN() {
                     </div>
 
                     {/* Step 2: Quality Control */}
-                    <div className="erp-card shadow-sm border border-slate-200 bg-white !p-0 overflow-hidden">
+                    <div className="erp-card shadow-sm border border-slate-200 bg-white p-0! overflow-hidden">
                         <div className="p-4 bg-blue-50 border-b border-blue-100 flex justify-between items-center">
                             <div className="flex items-center gap-2">
                                 <FileCheck size={16} className="text-blue-600" />

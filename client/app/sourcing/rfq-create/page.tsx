@@ -132,7 +132,7 @@ export default function RFQCreatePage() {
     const totalEstimate = form.items.reduce((sum: number, item) => sum + (Number(item.qty || 0) * (item.estimatedPrice || 0)), 0);
 
     return (
-        <main className="pt-16 px-8 pb-12 animate-in fade-in duration-500">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
             <DashboardHeader breadcrumbs={["Nghiệp vụ", "Sourcing", "Tạo RFQ thủ công"]} />
 
             <div className="mt-8 flex justify-between items-end mb-8 border-b border-slate-200 pb-4">

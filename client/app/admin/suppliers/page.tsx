@@ -78,8 +78,8 @@ export default function SupplierManagementPage() {
     );
 
     return (
-        <main className="pt-16 px-8 pb-12 animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Hệ thống", "Quản lý Nhà cung cấp"]} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <DashboardHeader breadcrumbs={["Admin", "Quản lý Nhà cung cấp"]} />
 
             <div className="mt-8 flex justify-between items-end mb-10">
                 <div>

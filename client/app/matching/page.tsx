@@ -22,13 +22,13 @@ export default function MatchingPage() {
     };
 
     return (
-        <main className="pt-16 px-8 pb-12">
-            <DashboardHeader breadcrumbs={["Tài chính", "Đối soát 3 bên"]} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <DashboardHeader breadcrumbs={["Nghiệp vụ", "Matching"]} />
 
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight">Đối soát 3 bên (3-Way Match)</h1>
-                    <p className="text-sm text-slate-500 mt-1">Hệ thống tự động đối chiếu dữ liệu giữa PO, Nhập kho và Hóa đơn.</p>
+                    <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Đối soát 3 bên (3-Way Match)</h1>
+                    <p className="text-sm text-[#94A3B8] mt-1">Hệ thống tự động đối chiếu dữ liệu giữa PO, Nhập kho và Hóa đơn.</p>
                 </div>
             </div>
 
@@ -45,7 +45,7 @@ export default function MatchingPage() {
                             <div className="h-14 w-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center shrink-0">
                                 <ShieldAlert size={30} />
                             </div>
-                            <div className="flex-grow">
+                            <div className="grow">
                                 <h4 className="text-sm font-black text-red-800 uppercase tracking-widest mb-1">Cảnh báo: Lệch số lượng mực in!</h4>
                                 <p className="text-xs text-red-700 font-medium leading-relaxed">
                                     Hóa đơn Nhà cung cấp (Invoice) yêu cầu: <span className="font-black underline">50 Thùng</span>.
@@ -64,7 +64,7 @@ export default function MatchingPage() {
                         </div>
                     )}
 
-                    <div className="erp-card !p-0 overflow-hidden">
+                    <div className="erp-card p-0! overflow-hidden">
                         <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
                             <div>
                                 <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy">Kết quả đối soát: {activePO.id}</h3>

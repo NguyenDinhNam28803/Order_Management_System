@@ -121,25 +121,25 @@ export default function UsersPage() {
     });
 
     return (
-        <main className="animate-in fade-in duration-500">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
             <div className="flex justify-between items-end mb-10">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Quản trị Nhân sự</h1>
-                    <p className="text-sm text-slate-500 mt-1 font-medium italic">TOÀN QUYỀN TRUY CẬP VÀ PHÂN QUYỀN HỆ THỐNG ERP</p>
+                    <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase">Quản trị Nhân sự</h1>
+                    <p className="text-sm text-[#94A3B8] mt-1 font-medium italic">TOÀN QUYỀN TRUY CẬP VÀ PHÂN QUYỀN HỆ THỐNG ERP</p>
                 </div>
                 <button 
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-erp-navy text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-erp-navy/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#3B82F6] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#3B82F6]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <UserPlus size={18} /> Thêm nhân sự mới
                 </button>
             </div>
 
-            <div className="bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-erp-navy/5 overflow-hidden">
-                <div className="p-8 bg-slate-50/20 border-b border-slate-50 flex justify-between items-center">
+            <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 overflow-hidden">
+                <div className="p-8 bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-200 pr-4">Danh mục nhân sự (Directory)</div>
-                        <div className="text-[10px] font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-full">{filteredUsers?.length || 0} Kết quả</div>
+                        <div className="text-[10px] font-black text-[#64748B] uppercase tracking-widest border-r border-[rgba(148,163,184,0.1)] pr-4">Danh mục nhân sự (Directory)</div>
+                        <div className="text-[10px] font-black text-[#3B82F6] bg-[#3B82F6]/10 px-3 py-1 rounded-full">{filteredUsers?.length || 0} Kết quả</div>
                     </div>
                     <div className="flex items-center gap-3 flex-wrap">
                         {/* Org Filter */}
@@ -147,14 +147,14 @@ export default function UsersPage() {
                             <select 
                                 value={selectedOrg}
                                 onChange={(e) => setSelectedOrg(e.target.value)}
-                                className="pl-4 pr-8 py-2.5 bg-white border border-slate-100 rounded-xl text-[10px] font-black uppercase text-erp-navy outline-none focus:ring-2 focus:ring-erp-blue/10 appearance-none shadow-sm min-w-[140px]"
+                                className="pl-4 pr-8 py-2.5 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl text-[10px] font-black uppercase text-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#3B82F6]/10 appearance-none shadow-sm min-w-[140px]"
                             >
                                 <option value="all">Tổ chức</option>
                                 {organizations?.map((org: Organization) => (
                                     <option key={org.id} value={org.id}>{org.name}</option>
                                 ))}
                             </select>
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#64748B]">
                                 <ChevronDown size={12} />
                             </div>
                         </div>
@@ -164,14 +164,14 @@ export default function UsersPage() {
                             <select 
                                 value={selectedDept}
                                 onChange={(e) => setSelectedDept(e.target.value)}
-                                className="pl-4 pr-8 py-2.5 bg-white border border-slate-100 rounded-xl text-[10px] font-black uppercase text-erp-navy outline-none focus:ring-2 focus:ring-erp-blue/10 appearance-none shadow-sm min-w-[140px]"
+                                className="pl-4 pr-8 py-2.5 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl text-[10px] font-black uppercase text-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#3B82F6]/10 appearance-none shadow-sm min-w-[140px]"
                             >
                                 <option value="all">Phòng ban</option>
                                 {departments?.map((d: Department) => (
                                     <option key={d.id} value={d.id}>{d.name}</option>
                                 ))}
                             </select>
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#64748B]">
                                 <ChevronDown size={12} />
                             </div>
                         </div>
@@ -181,7 +181,7 @@ export default function UsersPage() {
                             <select 
                                 value={selectedRole}
                                 onChange={(e) => setSelectedRole(e.target.value)}
-                                className="pl-4 pr-8 py-2.5 bg-white border border-slate-100 rounded-xl text-[10px] font-black uppercase text-erp-navy outline-none focus:ring-2 focus:ring-erp-blue/10 appearance-none shadow-sm min-w-[140px]"
+                                className="pl-4 pr-8 py-2.5 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl text-[10px] font-black uppercase text-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#3B82F6]/10 appearance-none shadow-sm min-w-[140px]"
                             >
                                 <option value="all">Vai trò</option>
                                 <option value="REQUESTER">REQUESTER</option>
@@ -199,13 +199,13 @@ export default function UsersPage() {
                         </div>
 
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B]" size={14} />
                             <input 
                                 type="text" 
                                 placeholder="Tìm kiếm tên, email..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 pr-4 py-2.5 bg-slate-100/50 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-erp-blue/20 w-48 shadow-inner"
+                                className="pl-10 pr-4 py-2.5 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#3B82F6]/20 w-48 shadow-inner text-[#F8FAFC] placeholder:text-[#64748B]"
                             />
                         </div>
                     </div>
@@ -213,7 +213,7 @@ export default function UsersPage() {
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
                         <thead>
-                            <tr className="bg-slate-50/30">
+                            <tr className="bg-[#0F1117]">
                                 <th>Họ tên & Email</th>
                                 <th>Phòng ban & Chức danh</th>
                                 <th>Vai trò Hệ thống</th>
@@ -223,27 +223,27 @@ export default function UsersPage() {
                         </thead>
                         <tbody>
                             {filteredUsers?.map((user: User, i: number) => (
-                                <tr key={user.id || i} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
+                                <tr key={user.id || i} className="hover:bg-[#0F1117]/50 transition-colors border-b border-[rgba(148,163,184,0.1)]">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
-                                            <div className={`h-12 w-12 rounded-2xl ${user.isActive === false ? 'bg-slate-300' : 'bg-erp-navy'} flex items-center justify-center font-black text-white shadow-lg shadow-erp-navy/10 text-xs`}>
+                                            <div className={`h-12 w-12 rounded-2xl ${user.isActive === false ? 'bg-[#64748B]' : 'bg-[#3B82F6]'} flex items-center justify-center font-black text-white shadow-lg shadow-[#3B82F6]/10 text-xs`}>
                                                 {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="h-full w-full rounded-2xl object-cover" /> : (user.fullName || user.name || "??").substring(0,2).toUpperCase()}
                                             </div>
                                             <div>
-                                                <div className="text-sm font-black text-erp-navy leading-tight">{user.fullName || user.name}</div>
-                                                <div className="text-[10px] text-slate-400 font-bold flex items-center gap-1.5 mt-1 tracking-tight">
-                                                    <Mail size={12} className="text-slate-300" /> {user.email}
+                                                <div className="text-sm font-black text-[#F8FAFC] leading-tight">{user.fullName || user.name}</div>
+                                                <div className="text-[10px] text-[#64748B] font-bold flex items-center gap-1.5 mt-1 tracking-tight">
+                                                    <Mail size={12} className="text-[#94A3B8]" /> {user.email}
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div className="flex flex-col gap-1">
-                                            <div className="flex items-center gap-1.5 text-slate-600 font-bold">
-                                                <Building size={12} className="text-slate-300" />
+                                            <div className="flex items-center gap-1.5 text-[#94A3B8] font-bold">
+                                                <Building size={12} className="text-[#64748B]" />
                                                 {typeof user.department === 'object' ? user.department?.name : (departments?.find(d => d.id === user.deptId)?.name || "Chưa có phòng ban")}
                                             </div>
-                                            <div className="text-[10px] text-slate-400 italic bg-slate-50 w-fit px-2 py-0.5 rounded-md">
+                                            <div className="text-[10px] text-[#64748B] italic bg-[#0F1117] w-fit px-2 py-0.5 rounded-md">
                                                 {getJobTitle(user)}
                                             </div>
                                         </div>
@@ -256,7 +256,7 @@ export default function UsersPage() {
                                     <td className="text-center">
                                         <div className="flex items-center justify-center gap-2">
                                             <div className={`h-2 w-2 rounded-full ${user.isActive === false ? 'bg-red-400' : 'bg-emerald-500 animate-pulse'}`}></div>
-                                            <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">
+                                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-widest">
                                                 {user.isActive === false ? "LOCKED" : "ACTIVE"}
                                             </span>
                                         </div>
@@ -265,7 +265,7 @@ export default function UsersPage() {
                                         <div className="flex justify-center gap-3">
                                             <button 
                                                 onClick={() => handleOpenModal(user)}
-                                                className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-erp-blue hover:border-erp-blue/30 rounded-xl transition-all shadow-sm"
+                                                className="h-9 w-9 flex items-center justify-center bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-[#3B82F6] hover:border-[#3B82F6]/30 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Edit2 size={14} />
                                             </button>
@@ -275,7 +275,7 @@ export default function UsersPage() {
                                                         removeUser(user.id);
                                                     }
                                                 }}
-                                                className="h-9 w-9 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 rounded-xl transition-all shadow-sm"
+                                                className="h-9 w-9 flex items-center justify-center bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-red-500 hover:border-red-500/30 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Trash2 size={14} />
                                             </button>
@@ -290,18 +290,18 @@ export default function UsersPage() {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-erp-navy/40 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-white rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-white/20">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F1117]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
+                    <div className="bg-[#161922] rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         <div className="p-10">
-                            <h2 className="text-2xl font-black text-erp-navy uppercase mb-2 tracking-tight">
+                            <h2 className="text-2xl font-black text-[#F8FAFC] uppercase mb-2 tracking-tight">
                                 {editingUser ? "Cập nhật hồ sơ Nhân sự" : "Tạo tài khoản nhân viên mới"}
                             </h2>
-                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-10">QUẢN LÝ QUYỀN TRUY CẬP VÀ PHÂN BỔ PHÒNG BAN</p>
+                            <p className="text-xs text-[#64748B] font-bold uppercase tracking-widest mb-10">QUẢN LÝ QUYỀN TRUY CẬP VÀ PHÂN BỔ PHÒNG BAN</p>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Họ và tên</label>
+                                        <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Họ và tên</label>
                                         <input 
                                             required
                                             value={formData.fullName}
@@ -309,11 +309,11 @@ export default function UsersPage() {
                                             type="text" 
                                             placeholder="VD: Nguyễn Văn A"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#0F1117] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#3B82F6]/20 focus:bg-[#0F1117] outline-none transition-all placeholder:text-[#64748B] text-[#F8FAFC] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email nội bộ</label>
+                                        <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Email nội bộ</label>
                                         <input 
                                             required
                                             value={formData.email}
@@ -321,19 +321,19 @@ export default function UsersPage() {
                                             type="email" 
                                             placeholder="email@company.com"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#0F1117] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#3B82F6]/20 focus:bg-[#0F1117] outline-none transition-all placeholder:text-[#64748B] text-[#F8FAFC] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Vai trò hệ thống</label>
+                                        <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Vai trò hệ thống</label>
                                         <select 
                                             required
                                             value={formData.role}
                                             onChange={(e) => setFormData({...formData, role: e.target.value as UserRole})}
-                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
+                                            className="w-full bg-[#0F1117] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#3B82F6]/20 focus:bg-[#0F1117] outline-none transition-all text-[#F8FAFC]"
                                         >
                                             <option value={UserRole.REQUESTER}>REQUESTER (Người yêu cầu)</option>
                                             <option value={UserRole.DEPT_APPROVER}>DEPT_APPROVER (Trưởng bộ phận)</option>
@@ -346,11 +346,11 @@ export default function UsersPage() {
                                         </select>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phòng ban</label>
+                                        <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Phòng ban</label>
                                         <select 
                                             value={formData.deptId}
                                             onChange={(e) => setFormData({...formData, deptId: e.target.value})}
-                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all"
+                                            className="w-full bg-[#0F1117] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#3B82F6]/20 focus:bg-[#0F1117] outline-none transition-all text-[#F8FAFC]"
                                         >
                                             <option value="">Chưa phân bổ</option>
                                             {departments?.map((d: Department) => (
@@ -362,37 +362,37 @@ export default function UsersPage() {
 
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Chức danh</label>
+                                        <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Chức danh</label>
                                         <input 
                                             value={formData.jobTitle}
                                             onChange={(e) => setFormData({...formData, jobTitle: e.target.value})}
                                             type="text" 
                                             placeholder="VD: Senior Developer"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#0F1117] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#3B82F6]/20 focus:bg-[#0F1117] outline-none transition-all placeholder:text-[#64748B] text-[#F8FAFC] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã nhân viên (Tự động nếu để trống)</label>
+                                        <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Mã nhân viên (Tự động nếu để trống)</label>
                                         <input 
                                             value={formData.employeeCode}
                                             onChange={(e) => setFormData({...formData, employeeCode: e.target.value})}
                                             type="text" 
                                             placeholder="VD: EMP001"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold focus:border-erp-blue/20 focus:bg-white outline-none transition-all ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#0F1117] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#3B82F6]/20 focus:bg-[#0F1117] outline-none transition-all placeholder:text-[#64748B] text-[#F8FAFC] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                                <div className="flex items-center justify-between p-6 bg-[#0F1117] rounded-3xl border border-[rgba(148,163,184,0.1)]">
                                     <div>
-                                        <div className="text-xs font-black text-erp-navy uppercase tracking-tight">Trạng thái tài khoản</div>
-                                        <div className="text-[10px] text-slate-400 font-bold uppercase mt-1">Khóa hoặc kích hoạt quyền truy nhập hệ thống</div>
+                                        <div className="text-xs font-black text-[#F8FAFC] uppercase tracking-tight">Trạng thái tài khoản</div>
+                                        <div className="text-[10px] text-[#64748B] font-bold uppercase mt-1">Khóa hoặc kích hoạt quyền truy nhập hệ thống</div>
                                     </div>
                                     <div 
                                         onClick={() => !editingUser && setFormData({...formData, isActive: !formData.isActive})}
-                                        className={`w-14 h-8 rounded-full transition-all p-1 flex items-center ${formData.isActive ? 'bg-emerald-500 justify-end' : 'bg-slate-300 justify-start'} ${editingUser ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+                                        className={`w-14 h-8 rounded-full transition-all p-1 flex items-center ${formData.isActive ? 'bg-emerald-500 justify-end' : 'bg-[#64748B] justify-start'} ${editingUser ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
                                     >
                                         <div className="w-6 h-6 bg-white rounded-full shadow-md"></div>
                                     </div>
@@ -402,13 +402,13 @@ export default function UsersPage() {
                                     <button 
                                         type="button"
                                         onClick={() => setShowModal(false)}
-                                        className="flex-1 px-8 py-4 bg-slate-100 rounded-3xl font-black text-slate-400 uppercase tracking-widest hover:bg-slate-200 transition-colors"
+                                        className="flex-1 px-8 py-4 bg-[#0F1117] rounded-3xl font-black text-[#64748B] uppercase tracking-widest hover:bg-[#1A1D23] transition-colors"
                                     >
                                         Bỏ qua
                                     </button>
                                     <button 
                                         type="submit"
-                                        className="flex-1 px-8 py-4 bg-erp-navy text-white rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-erp-navy/20 hover:scale-[1.02] transition-all"
+                                        className="flex-1 px-8 py-4 bg-[#3B82F6] text-white rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-[#3B82F6]/20 hover:scale-[1.02] transition-all"
                                     >
                                         {editingUser ? "Lưu cập nhật" : "Tạo tài khoản"}
                                     </button>

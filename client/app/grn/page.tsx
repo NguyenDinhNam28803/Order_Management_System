@@ -38,8 +38,8 @@ export default function GRNPage() {
     };
 
     return (
-        <main className="pt-16 px-8 pb-12">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ", "Nhập kho (GRN)"]} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <DashboardHeader breadcrumbs={["Kho vận", "GRN"]} />
 
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>

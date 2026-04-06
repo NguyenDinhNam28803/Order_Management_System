@@ -11,7 +11,7 @@ export default function RegisterPage() {
     const router = useRouter();
 
     const [form, setForm] = useState({
-        fullName: "",
+        name: "",
         email: "",
         password: "",
         role: "REQUESTER"
@@ -35,7 +35,7 @@ export default function RegisterPage() {
         setIsLoading(true);
         setError("");
 
-        if (!form.fullName || !form.email || !form.password) {
+        if (!form.name || !form.email || !form.password) {
             setError("Vui lòng điền đầy đủ các trường bắt buộc.");
             setIsLoading(false);
             return;
@@ -117,8 +117,8 @@ export default function RegisterPage() {
                                     <input
                                         type="text"
                                         required
-                                        value={form.fullName}
-                                        onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                                        value={form.name}
+                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
                                         placeholder="Nhập họ tên đầy đủ..."
                                         className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-white text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
                                     />

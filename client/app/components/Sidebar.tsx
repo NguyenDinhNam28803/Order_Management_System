@@ -6,16 +6,17 @@ import {
     FileCheck, ShieldAlert, Users, Settings, LogOut,
     FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers,
     ShieldCheck, MessageSquare, History, FileText,
+    Bell, Inbox, Command
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useProcurement } from "../context/ProcurementContext";
 
-const roleMapping: Record<string, { label: string, class: string }> = {
+const roleMapping: Record<string, { label: string; class: string }> = {
     "REQUESTER": { label: "Người yêu cầu", class: "role-requester" },
     "DEPT_APPROVER": { label: "Trưởng phòng", class: "role-approver" },
-    "DIRECTOR": { label: "Giám đốc", class: "role-approver" },
-    "CEO": { label: "CEO / Board", class: "role-admin" },
+    "DIRECTOR": { label: "Giám đốc", class: "role-director" },
+    "CEO": { label: "CEO / Board", class: "role-ceo" },
     "PROCUREMENT": { label: "Thu mua", class: "role-procurement" },
     "WAREHOUSE": { label: "Kho vận", class: "role-warehouse" },
     "QA": { label: "Kiểm soát CL", class: "role-warehouse" },
@@ -25,13 +26,27 @@ const roleMapping: Record<string, { label: string, class: string }> = {
     "SYSTEM": { label: "Hệ thống AI", class: "role-admin" },
 };
 
-const navigation = [
+interface NavItem {
+    name: string;
+    icon: React.ComponentType<{ size?: number; className?: string }>;
+    path: string;
+    roles: string[];
+    badge?: number;
+}
+
+interface NavGroup {
+    group: string;
+    roles: string[];
+    items: NavItem[];
+}
+
+const navigation: NavGroup[] = [
     {
         group: "Menu chính", 
         roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "CEO", "FINANCE"],
         items: [
             { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
-            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"], badge: 3 },
             { name: "Yêu cầu báo giá (QR)", icon: ShoppingBag, path: "/quote-requests", roles: ["REQUESTER", "PLATFORM_ADMIN"] },
             { name: "Kiểm soát PR", icon: ClipboardCheck, path: "/procurement/prs", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
         ]
@@ -125,19 +140,24 @@ export default function Sidebar() {
     const pathname = usePathname() || "/";
     const { currentUser, logout } = useProcurement();
 
-    // Fix lint: ensure role exists in mapping
     const roleKey = currentUser?.role || "GUEST";
     const roleInfo = roleMapping[roleKey] || { label: "Khách", class: "role-finance" };
 
+    // Calculate total badge count
+    const totalBadgeCount = navigation
+        .flatMap(g => g.items)
+        .filter(item => item.roles.includes(roleKey) && item.badge)
+        .reduce((acc, item) => acc + (item.badge || 0), 0);
+
     return (
-        <aside className="group fixed left-0 top-0 z-50 h-screen w-16 hover:w-64 border-r border-slate-200 bg-white shadow-xl transition-all duration-300 ease-in-out flex flex-col overflow-hidden">
+        <aside className="group fixed left-0 top-0 z-50 h-screen w-16 hover:w-64 bg-gradient-to-b from-[#161922] to-[#0F1117] border-r border-[rgba(148,163,184,0.1)] shadow-2xl transition-all duration-300 ease-in-out flex flex-col overflow-hidden">
             {/* Logo Section */}
-            <div className="flex h-16 items-center px-4 border-b border-slate-100 shrink-0">
-                <div className="h-8 w-8 rounded bg-erp-navy flex items-center justify-center shrink-0">
+            <div className="flex h-16 items-center px-4 border-b border-[rgba(148,163,184,0.1)] shrink-0">
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center shrink-0 shadow-lg shadow-[#3B82F6]/30">
                     <span className="text-white text-xs font-bold">PP</span>
                 </div>
-                <span className="ml-4 text-sm font-black tracking-tight text-erp-navy opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    PROCURE<span className="text-erp-blue">PRO</span>
+                <span className="ml-4 text-sm font-black tracking-tight text-[#F8FAFC] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    PROCURE<span className="text-[#3B82F6]">PRO</span>
                 </span>
             </div>
 
@@ -153,23 +173,29 @@ export default function Sidebar() {
 
                     return (
                         <div key={group.group}>
-                            <h3 className="mb-2 px-4 text-[9px] font-black uppercase tracking-widest text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            <h3 className="mb-2 px-4 text-[9px] font-black uppercase tracking-widest text-[#64748B] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                                 {group.group}
                             </h3>
-                            <div className="space-y-1.5 ml-1">
+                            <div className="space-y-1 ml-1">
                                 {visibleItems.map((item) => {
-                                    const isActive = pathname === item.path;
+                                    const isActive = pathname === item.path || pathname.startsWith(`${item.path}/`);
                                     return (
                                         <Link
                                             key={item.name}
                                             href={item.path}
-                                            className={`sidebar-item ${isActive ? "active" : ""}`}
+                                            className={`sidebar-item relative ${isActive ? "active" : ""}`}
                                         >
-                                            <item.icon size={18} className={`shrink-0 transition-colors ${isActive ? "text-white" : "text-slate-400 group-hover/item:text-erp-navy"}`} />
-                                            <span className="ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold text-sm tracking-tight">
+                                            <item.icon size={18} className={`shrink-0 transition-colors ${isActive ? "text-[#60A5FA]" : "text-[#64748B] group-hover/item:text-[#94A3B8]"}`} />
+                                            <span className="ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-semibold text-sm">
                                                 {item.name}
                                             </span>
-                                            {isActive && <ChevronRight size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />}
+                                            {/* Badge */}
+                                            {item.badge && (
+                                                <span className={`absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1.5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg ${!isActive ? "animate-pulse" : ""}`}>
+                                                    {item.badge > 9 ? "9+" : item.badge}
+                                                </span>
+                                            )}
+                                            {isActive && <ChevronRight size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-[#60A5FA]" />}
                                         </Link>
                                     );
                                 })}
@@ -179,24 +205,40 @@ export default function Sidebar() {
                 })}
             </nav>
 
+            {/* Quick Stats - Only visible on hover */}
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity px-4 py-3 border-t border-[rgba(148,163,184,0.1)] bg-[rgba(22,25,34,0.5)]">
+                <div className="grid grid-cols-2 gap-2 text-center">
+                    <div className="p-2 bg-[#0F1117] rounded-lg">
+                        <p className="text-xs text-[#64748B]">Chờ duyệt</p>
+                        <p className="text-lg font-bold text-amber-400">{totalBadgeCount}</p>
+                    </div>
+                    <div className="p-2 bg-[#0F1117] rounded-lg">
+                        <p className="text-xs text-[#64748B]">Hoạt động</p>
+                        <p className="text-lg font-bold text-emerald-400">24</p>
+                    </div>
+                </div>
+            </div>
+
             {/* Logout / User Info Footer */}
-            <div className="absolute bottom-0 w-full border-t border-slate-100 bg-slate-50 p-3">
+            <div className="absolute bottom-0 w-full border-t border-[rgba(148,163,184,0.1)] bg-[#161922] p-3">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="h-10 w-10 rounded-xl bg-erp-navy flex items-center justify-center font-black text-white text-xs shrink-0 shadow-lg shadow-erp-navy/30 border border-white/10">
-                        {currentUser?.icon || currentUser?.fullName?.substring(0, 2).toUpperCase() || "GU"}
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center font-black text-white text-xs shrink-0 shadow-lg shadow-[#3B82F6]/20">
+                        {currentUser?.fullName?.substring(0, 2).toUpperCase() || "GU"}
                     </div>
                     <div className="flex flex-col opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden">
-                        <span className="text-xs font-black truncate text-slate-700 leading-none mb-1">{currentUser?.name || currentUser?.fullName || "Jonathan Doe"}</span>
+                        <span className="text-xs font-bold truncate text-[#F8FAFC] leading-none mb-1">
+                            {currentUser?.name || currentUser?.fullName || "Guest"}
+                        </span>
                         <div className="flex">
                             <span className={`role-badge ${roleInfo?.class ?? "bg-slate-400"}`}>
-                                {currentUser?.role === "DEPT_APPROVER" ? "MANAGER" : (currentUser?.role === "DIRECTOR" ? "DIRECTOR" : (currentUser?.role || "GUEST"))}
+                                {roleInfo?.label || roleKey}
                             </span>
                         </div>
                     </div>
                 </div>
                 <button 
                     onClick={logout}
-                    className="flex w-full items-center gap-3 p-3 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-xl transition-colors group/logout"
+                    className="flex w-full items-center gap-3 p-3 text-xs font-bold uppercase tracking-wider text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors group/logout"
                 >
                     <LogOut size={20} className="shrink-0" />
                     <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">

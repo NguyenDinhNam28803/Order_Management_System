@@ -43,62 +43,62 @@ export default function PRDetailPage() {
     }
   };
 
-  if (loading) return <div className="p-8">Loading...</div>;
-  if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
-  if (!pr) return <div className="p-8">PR not found</div>;
+  if (loading) return <div className="p-8 text-[#F8FAFC]">Loading...</div>;
+  if (error) return <div className="p-8 text-rose-400">Error: {error}</div>;
+  if (!pr) return <div className="p-8 text-[#F8FAFC]">PR not found</div>;
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">PR Details: {pr.prNumber}</h1>
+    <div className="container mx-auto p-8 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+      <h1 className="text-3xl font-bold mb-6 text-[#F8FAFC]">PR Details: {pr.prNumber}</h1>
 
-      <div className="grid grid-cols-2 gap-6 mb-8 p-6 bg-gray-50 rounded-lg">
+      <div className="grid grid-cols-2 gap-6 mb-8 p-6 bg-[#161922] rounded-lg border border-[rgba(148,163,184,0.1)]">
         <div>
-          <label className="text-sm text-gray-600">Request Number</label>
-          <p className="text-lg font-semibold">{pr.prNumber}</p>
+          <label className="text-sm text-[#64748B]">Request Number</label>
+          <p className="text-lg font-semibold text-[#F8FAFC]">{pr.prNumber}</p>
         </div>
         <div>
-          <label className="text-sm text-gray-600">Status</label>
-          <p className="text-lg font-semibold">{pr.status}</p>
+          <label className="text-sm text-[#64748B]">Status</label>
+          <p className="text-lg font-semibold text-[#F8FAFC]">{pr.status}</p>
         </div>
         <div>
-          <label className="text-sm text-gray-600">Department</label>
-          <p className="text-lg">{pr.deptId}</p>
+          <label className="text-sm text-[#64748B]">Department</label>
+          <p className="text-lg text-[#94A3B8]">{pr.deptId}</p>
         </div>
         <div>
-          <label className="text-sm text-gray-600">Requestor</label>
-          <p className="text-lg">{pr.requester?.fullName}</p>
+          <label className="text-sm text-[#64748B]">Requestor</label>
+          <p className="text-lg text-[#94A3B8]">{pr.requester?.fullName}</p>
         </div>
         <div>
-          <label className="text-sm text-gray-600">Created Date</label>
-          <p className="text-lg">{new Date(pr.createdAt).toLocaleDateString()}</p>
+          <label className="text-sm text-[#64748B]">Created Date</label>
+          <p className="text-lg text-[#94A3B8]">{new Date(pr.createdAt).toLocaleDateString()}</p>
         </div>
         <div>
-          <label className="text-sm text-gray-600">Total Amount</label>
-          <p className="text-lg font-semibold">{pr.totalEstimate?.toLocaleString('vi-VN')} VND</p>
+          <label className="text-sm text-[#64748B]">Total Amount</label>
+          <p className="text-lg font-semibold text-emerald-400">{pr.totalEstimate?.toLocaleString('vi-VN')} VND</p>
         </div>
       </div>
 
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Items</h2>
+        <h2 className="text-2xl font-bold mb-4 text-[#F8FAFC]">Items</h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="border p-3 text-left">Product</th>
-                <th className="border p-3 text-right">Qty</th>
-                <th className="border p-3 text-right">Unit Price</th>
-                <th className="border p-3 text-right">Total</th>
+              <tr className="bg-[#161922]">
+                <th className="border border-[rgba(148,163,184,0.1)] p-3 text-left text-[#64748B]">Product</th>
+                <th className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#64748B]">Qty</th>
+                <th className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#64748B]">Unit Price</th>
+                <th className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#64748B]">Total</th>
               </tr>
             </thead>
             <tbody>
               {pr.items?.map((item: PRItem) => (
-                <tr key={item.id} className="border">
-                  <td className="border p-3">{item.productName || item.description}</td>
-                  <td className="border p-3 text-right">{item.qty}</td>
-                  <td className="border p-3 text-right">
+                <tr key={item.id} className="border border-[rgba(148,163,184,0.1)]">
+                  <td className="border border-[rgba(148,163,184,0.1)] p-3 text-[#F8FAFC]">{item.productName || item.description}</td>
+                  <td className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#94A3B8]">{item.qty}</td>
+                  <td className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#94A3B8]">
                     {item.unit?.toLocaleString()} VND
                   </td>
-                  <td className="border p-3 text-right">
+                  <td className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#F8FAFC] font-semibold">
                     {(item.qty * item.estimatedPrice)?.toLocaleString('vi-VN')} VND
                   </td>
                 </tr>
@@ -112,7 +112,7 @@ export default function PRDetailPage() {
         <button
           onClick={handleSubmit}
           disabled={submitting}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="bg-[#3B82F6] text-white px-6 py-2 rounded hover:bg-[#2563EB] disabled:opacity-50 transition-colors"
         >
           {submitting ? 'Submitting...' : 'Submit For Approval'}
         </button>

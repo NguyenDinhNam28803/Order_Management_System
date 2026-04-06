@@ -97,52 +97,52 @@ export default function FinanceBudgetApprovalPage() {
 
     if (!canApprove) {
         return (
-            <div className="flex flex-col items-center justify-center p-12 text-slate-500">
+            <div className="flex flex-col items-center justify-center p-12 text-[#64748B] bg-[#0F1117] min-h-screen">
                 <AlertCircle size={48} className="mb-4 text-rose-500" />
-                <h2 className="text-xl font-bold mb-2">Không đủ quyền hạn</h2>
+                <h2 className="text-xl font-bold mb-2 text-[#F8FAFC]">Không đủ quyền hạn</h2>
                 <p>Chỉ phòng Tài chính và Ban giám đốc mới có thể duyệt ngân sách phân bổ.</p>
             </div>
         );
     }
 
     return (
-        <div className="p-6 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <main className="p-6 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
             {/* Header */}
             <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-erp-primary">
-                    <ShieldCheck size={28} className="text-erp-primary" />
-                    <h1 className="text-2xl md:text-3xl font-black tracking-tight text-erp-navy">
+                <div className="flex items-center gap-2 text-[#3B82F6]">
+                    <ShieldCheck size={28} className="text-[#3B82F6]" />
+                    <h1 className="text-2xl md:text-3xl font-black tracking-tight text-[#F8FAFC]">
                         Duyệt Ngân Sách
                     </h1>
                 </div>
-                <p className="text-sm font-medium text-slate-500 max-w-2xl">
+                <p className="text-sm font-medium text-[#64748B] max-w-2xl">
                     Xét duyệt yêu cầu phân bổ ngân sách từ các phòng ban. Quyết định duyệt sẽ lập tức mở khóa ngân sách cho việc mua sắm.
                 </p>
             </div>
 
             {/* Dashboard Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white rounded-3xl p-6 border-2 border-slate-100 shadow-sm flex items-center justify-between">
+                <div className="bg-[#161922] rounded-3xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 flex items-center justify-between">
                     <div>
-                        <p className="text-sm font-bold text-slate-400 mb-1">CẦN DUYỆT</p>
-                        <h3 className="text-3xl font-black text-amber-500">{submittedBudgets.length}</h3>
+                        <p className="text-sm font-bold text-[#64748B] mb-1">CẦN DUYỆT</p>
+                        <h3 className="text-3xl font-black text-amber-400">{submittedBudgets.length}</h3>
                     </div>
-                    <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600">
+                    <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400">
                         <AlertCircle size={24} />
                     </div>
                 </div>
             </div>
 
             {/* List Header */}
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border-2 border-slate-100 shadow-sm">
-                <div className="relative flex-1 max-w-md w-full focus-within:ring-2 ring-erp-primary/20 rounded-xl transition-all">
-                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-[#161922] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5">
+                <div className="relative flex-1 max-w-md w-full focus-within:ring-2 ring-[#3B82F6]/20 rounded-xl transition-all">
+                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[#64748B]">
                         <Search size={18} />
                     </div>
                     <input 
                         type="text" 
                         placeholder="Tìm theo phòng ban, trung tâm chi phí, danh mục..." 
-                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-xl text-sm font-medium placeholder:text-slate-400 focus:ring-0"
+                        className="w-full pl-11 pr-4 py-3 bg-[#0F1117] border-none rounded-xl text-sm font-medium text-[#F8FAFC] placeholder:text-[#64748B] focus:ring-0"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -151,12 +151,12 @@ export default function FinanceBudgetApprovalPage() {
 
             {/* List */}
             {filteredRequests.length === 0 ? (
-                 <div className="flex flex-col items-center justify-center bg-white border-2 border-slate-100 rounded-3xl p-16 text-center shadow-sm">
-                    <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-6">
+                 <div className="flex flex-col items-center justify-center bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-3xl p-16 text-center shadow-xl shadow-[#3B82F6]/5">
+                    <div className="w-20 h-20 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mb-6">
                         <CheckCircle2 size={40} />
                     </div>
-                    <h3 className="text-xl font-black text-erp-navy mb-2">Hoàn tất công việc!</h3>
-                    <p className="text-slate-500 font-medium max-w-md">
+                    <h3 className="text-xl font-black text-[#F8FAFC] mb-2">Hoàn tất công việc!</h3>
+                    <p className="text-[#64748B] font-medium max-w-md">
                         Không còn yêu cầu phân bổ ngân sách nào đang chờ duyệt vào lúc này.
                     </p>
                 </div>
@@ -167,18 +167,18 @@ export default function FinanceBudgetApprovalPage() {
                         const dept = departments.find(d => d.id === cc?.deptId);
                         
                         return (
-                            <div key={req.id} className="group bg-white rounded-3xl border-2 border-slate-100 p-6 shadow-sm hover:shadow-xl hover:border-amber-200 transition-all duration-300">
+                            <div key={req.id} className="group bg-[#161922] rounded-3xl border border-[rgba(148,163,184,0.1)] p-6 shadow-xl shadow-[#3B82F6]/5 hover:border-amber-400/20 transition-all duration-300">
                                 <div className="flex justify-between items-start mb-6">
                                     <div className="flex gap-4 items-center">
-                                        <div className="w-12 h-12 bg-erp-blue/10 rounded-2xl flex items-center justify-center text-erp-blue">
+                                        <div className="w-12 h-12 bg-[#3B82F6]/10 rounded-2xl flex items-center justify-center text-[#3B82F6] border border-[#3B82F6]/20">
                                             <FileText size={24} />
                                         </div>
                                         <div>
-                                            <h3 className="font-black text-erp-navy text-lg leading-tight">Yêu cầu cấp NS</h3>
-                                            <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">{req.id || "CHƯA CÓ MÃ"}</p>
+                                            <h3 className="font-black text-[#F8FAFC] text-lg leading-tight">Yêu cầu cấp NS</h3>
+                                            <p className="text-xs font-bold text-[#64748B] mt-1 uppercase tracking-wider">{req.id || "CHƯA CÓ MÃ"}</p>
                                         </div>
                                     </div>
-                                    <span className="px-3 py-1.5 rounded-lg bg-amber-100 text-amber-700 text-xs font-bold tracking-tight">
+                                    <span className="px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 text-xs font-bold tracking-tight border border-amber-500/20">
                                         CHỜ DUYỆT
                                     </span>
                                 </div>
@@ -186,56 +186,56 @@ export default function FinanceBudgetApprovalPage() {
                                 <div className="space-y-4 mb-6">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">
-                                            <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold">
+                                            <div className="flex items-center gap-1.5 text-[#64748B] text-xs font-bold">
                                                 <Building size={14} /> DEPT
                                             </div>
-                                            <p className="font-bold text-slate-700 text-sm truncate">{dept?.name || "N/A"}</p>
+                                            <p className="font-bold text-[#F8FAFC] text-sm truncate">{dept?.name || "N/A"}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold">
+                                            <div className="flex items-center gap-1.5 text-[#64748B] text-xs font-bold">
                                                 <LayoutDashboard size={14} /> COST CENTER
                                             </div>
-                                            <p className="font-bold text-slate-700 text-sm truncate">{cc?.name || "N/A"}</p>
+                                            <p className="font-bold text-[#F8FAFC] text-sm truncate">{cc?.name || "N/A"}</p>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div className="grid grid-cols-2 gap-4 bg-[#0F1117] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                                         <div className="space-y-1">
-                                            <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold">
+                                            <div className="flex items-center gap-1.5 text-[#64748B] text-xs font-bold">
                                                 <Calendar size={14} /> KỲ NGÂN SÁCH
                                             </div>
-                                            <p className="font-bold text-erp-blue text-sm">{getPeriodInfo(req.budgetPeriodId)}</p>
+                                            <p className="font-bold text-[#3B82F6] text-sm">{getPeriodInfo(req.budgetPeriodId)}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold">
+                                            <div className="flex items-center gap-1.5 text-[#64748B] text-xs font-bold">
                                                 <DollarSign size={14} /> SỐ TIỀN ĐỀ XUẤT
                                             </div>
-                                            <p className="font-black text-rose-600 text-lg">{formatVND(req.allocatedAmount)}</p>
+                                            <p className="font-black text-rose-400 text-lg">{formatVND(req.allocatedAmount)}</p>
                                         </div>
                                     </div>
                                     
                                     <div className="w-full">
-                                        <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold mb-1">
+                                        <div className="flex items-center gap-1.5 text-[#64748B] text-xs font-bold mb-1">
                                             <AlertCircle size={14} /> DANH MỤC / LÝ DO
                                         </div>
-                                        <p className="font-medium text-slate-600 text-sm bg-amber-50/50 p-3 rounded-xl border border-amber-100">
-                                            {req.category ? <span className="font-bold text-amber-700">[{req.category.name}] </span> : ""}
+                                        <p className="font-medium text-[#94A3B8] text-sm bg-amber-500/10 p-3 rounded-xl border border-amber-500/20">
+                                            {req.category ? <span className="font-bold text-amber-400">[{req.category.name}] </span> : ""}
                                             {req.notes || "Không có ghi chú"}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3 pt-6 border-t-2 border-slate-50">
+                                <div className="flex items-center gap-3 pt-6 border-t border-[rgba(148,163,184,0.1)]">
                                     <button
                                         onClick={() => { setSelectedRequest(req); setActionType("APPROVE"); }}
-                                        className="flex-1 max-w-40 ml-auto py-2.5 px-4 bg-emerald-50 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn"
+                                        className="flex-1 max-w-40 ml-auto py-2.5 px-4 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn border border-emerald-500/20"
                                     >
                                         <Check size={18} className="group-hover/btn:scale-110 transition-transform" />
                                         DUYỆT
                                     </button>
                                     <button
                                         onClick={() => { setSelectedRequest(req); setActionType("REJECT"); }}
-                                        className="py-2.5 px-4 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn"
+                                        className="py-2.5 px-4 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn border border-rose-500/20"
                                     >
                                         <X size={18} className="group-hover/btn:scale-110 transition-transform" />
                                         TỪ CHỐI
@@ -250,34 +250,34 @@ export default function FinanceBudgetApprovalPage() {
             {/* Action Modal */}
             {selectedRequest && actionType && (
                 <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
-                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => !isSubmitting && setActionType(null)} />
+                    <div className="absolute inset-0 bg-[#0F1117]/80 backdrop-blur-sm" onClick={() => !isSubmitting && setActionType(null)} />
                     
-                    <div className="relative w-full max-w-lg bg-white rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className={`p-8 pb-10 ${actionType === "APPROVE" ? "bg-emerald-50" : "bg-rose-50"}`}>
-                            <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-6">
+                    <div className="relative w-full max-w-lg bg-[#161922] rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
+                        <div className={`p-8 pb-10 ${actionType === "APPROVE" ? "bg-emerald-500/10" : "bg-rose-500/10"}`}>
+                            <div className="w-16 h-16 rounded-2xl bg-[#161922] shadow-sm flex items-center justify-center mb-6 border border-[rgba(148,163,184,0.1)]">
                                 {actionType === "APPROVE" ? (
-                                    <CheckCircle2 size={32} className="text-emerald-500" />
+                                    <CheckCircle2 size={32} className="text-emerald-400" />
                                 ) : (
-                                    <XCircle size={32} className="text-rose-500" />
+                                    <XCircle size={32} className="text-rose-400" />
                                 )}
                             </div>
                             
-                            <h2 className={`text-2xl font-black tracking-tight mb-2 ${actionType === "APPROVE" ? "text-emerald-900" : "text-rose-900"}`}>
+                            <h2 className={`text-2xl font-black tracking-tight mb-2 ${actionType === "APPROVE" ? "text-emerald-400" : "text-rose-400"}`}>
                                 {actionType === "APPROVE" ? "Xác nhận Duyệt NS?" : "Từ chối phân bổ NS?"}
                             </h2>
                             
-                            <p className={`font-medium ${actionType === "APPROVE" ? "text-emerald-700/80" : "text-rose-700/80"}`}>
+                            <p className={`font-medium ${actionType === "APPROVE" ? "text-emerald-400/80" : "text-rose-400/80"}`}>
                                 Bạn đang thực hiện {actionType === "APPROVE" ? "CẤP" : "TỪ CHỐI"} ngân sách: <br/>
-                                <strong className="text-xl inline-block mt-2">{formatVND(selectedRequest.allocatedAmount)}</strong>
+                                <strong className="text-xl inline-block mt-2 text-[#F8FAFC]">{formatVND(selectedRequest.allocatedAmount)}</strong>
                             </p>
                         </div>
                         
                         <div className="p-8 pt-6 space-y-6">
                             {actionType === "REJECT" && (
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700">Lý do từ chối (Bắt buộc)</label>
+                                    <label className="text-sm font-bold text-[#64748B]">Lý do từ chối (Bắt buộc)</label>
                                     <textarea 
-                                        className="w-full bg-slate-50 border-2 border-slate-200 focus:border-rose-300 focus:ring-0 rounded-2xl p-4 min-h-25 text-sm font-medium"
+                                        className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] focus:border-rose-400/50 focus:ring-0 rounded-2xl p-4 min-h-[100px] text-sm font-medium text-[#F8FAFC] placeholder:text-[#64748B]"
                                         placeholder="Nhập lý do để Trưởng phòng có thể điều chỉnh lại..."
                                         value={rejectReason}
                                         onChange={e => setRejectReason(e.target.value)}
@@ -288,7 +288,7 @@ export default function FinanceBudgetApprovalPage() {
 
                             <div className="flex gap-4">
                                 <button 
-                                    className="flex-1 py-4 font-bold rounded-2xl text-slate-500 bg-slate-50 hover:bg-slate-100 transition-colors"
+                                    className="flex-1 py-4 font-bold rounded-2xl text-[#64748B] bg-[#0F1117] hover:bg-[#161922] transition-colors"
                                     onClick={() => setActionType(null)}
                                     disabled={isSubmitting}
                                 >
@@ -297,10 +297,10 @@ export default function FinanceBudgetApprovalPage() {
                                 <button 
                                     onClick={handleAction}
                                     disabled={isSubmitting || (actionType === "REJECT" && !rejectReason.trim())}
-                                    className={`flex-2 py-4 font-black rounded-2xl text-white shadow-lg shadow-black/5 transition-all ${
+                                    className={`flex-2 py-4 font-black rounded-2xl text-white shadow-lg transition-all ${
                                         actionType === "APPROVE" 
                                             ? "bg-emerald-500 hover:bg-emerald-600 hover:-translate-y-0.5" 
-                                            : "bg-rose-500 hover:bg-rose-600 disabled:bg-rose-300 hover:-translate-y-0.5"
+                                            : "bg-rose-500 hover:bg-rose-600 disabled:bg-rose-400 hover:-translate-y-0.5"
                                     }`}
                                 >
                                     {isSubmitting ? "ĐANG XỬ LÝ..." : actionType === "APPROVE" ? "XÁC NHẬN DUYỆT" : "XÁC NHẬN TỪ CHỐI"}
@@ -310,6 +310,6 @@ export default function FinanceBudgetApprovalPage() {
                     </div>
                 </div>
             )}
-        </div>
+        </main>
     );
 }

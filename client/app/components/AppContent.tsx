@@ -2,20 +2,20 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useProcurement, Notification } from "../context/ProcurementContext";
+import { useProcurement } from "../context/ProcurementContext";
 import Sidebar from "./Sidebar";
 import ToastContainer from "./Toast";
-import SimulationPanel from "./SimulationPanel";
+import SmartSearch from "./SmartSearch";
+import NotificationInbox from "./NotificationInbox";
 
 export default function AppContent({ children }: { children: React.ReactNode }) {
-    const { currentUser, notifications, removeNotification, isAuthChecking } = useProcurement();
+    const { currentUser, isAuthChecking } = useProcurement();
     const pathname = usePathname();
     const router = useRouter();
 
     const isWhiteListed = pathname === "/login" || pathname === "/register";
 
     useEffect(() => {
-        // Wait for auth check to complete before redirecting
         if (isAuthChecking) return;
         
         if (!currentUser && !isWhiteListed) {
@@ -29,10 +29,10 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
     // Show loading while checking auth
     if (isAuthChecking) {
         return (
-            <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+            <div className="min-h-screen bg-[#0F1117] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="h-8 w-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
-                    <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">Đang kiểm tra...</span>
+                    <div className="h-8 w-8 border-4 border-[#3B82F6]/20 border-t-[#3B82F6] rounded-full animate-spin"></div>
+                    <span className="text-[#64748B] text-xs font-bold uppercase tracking-widest">Đang kiểm tra...</span>
                 </div>
             </div>
         );
@@ -40,45 +40,66 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
     if (!currentUser && !isWhiteListed) return null;
 
-    if (isWhiteListed) return <main className="min-h-screen bg-slate-50">{children}</main>;
+    if (isWhiteListed) return (
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            {children}
+        </main>
+    );
 
     return (
-        <div className="flex h-screen overflow-hidden bg-slate-50">
+        <div className="flex h-screen overflow-hidden bg-[#0F1117]">
             <ToastContainer />
-            <SimulationPanel />
 
-            {/* Sidebar Cố định */}
+            {/* Sidebar - Dark Theme */}
             <Sidebar />
             
-            {/* Vùng nội dung chính */}
+            {/* Main Content Area */}
             <div className="flex-1 flex flex-col overflow-hidden ml-16 transform-gpu transition-all duration-300">
-                {/* Header Doanh nghiệp */}
-                <header className="h-16 bg-white/80 backdrop-blur-lg border-b border-slate-100 flex items-center justify-between px-8 z-10 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02)]">
-                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-3">
-                        <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></div>
-                        {pathname === "/" ? "Bảng điều khiển Hệ thống" : `MODULE / ${pathname.split('/').filter(Boolean).pop()?.toUpperCase() || ""}`}
+                {/* Enterprise Header - Dark Glassmorphism */}
+                <header className="h-16 bg-[#161922]/80 backdrop-blur-xl border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between px-6 z-10">
+                    {/* Breadcrumb / Module Title */}
+                    <div className="flex items-center gap-3">
+                        <div className="h-2 w-2 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></div>
+                        <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">
+                            {pathname === "/" ? "Dashboard" : pathname.split('/').filter(Boolean)[0]?.toUpperCase()}
+                        </span>
+                        {pathname !== "/" && (
+                            <>
+                                <span className="text-[#64748B]">/</span>
+                                <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">
+                                    {pathname.split('/').filter(Boolean).pop()?.toUpperCase()}
+                                </span>
+                            </>
+                        )}
                     </div>
-                    <div className="flex items-center gap-6">
-                        <div className="relative group/notif cursor-pointer">
-                           <div className="h-4 w-4 bg-rose-500 rounded-full absolute -top-1 -right-1 border-2 border-white flex items-center justify-center text-[8px] font-black text-white shadow-sm ring-2 ring-rose-500/10">2</div>
-                           <div className="text-slate-400 group-hover/notif:text-erp-navy group-hover/notif:scale-110 transition-all">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
-                           </div>
-                        </div>
-                        <div className="flex items-center gap-4 pl-6 border-l border-slate-100">
+
+                    {/* Right Actions */}
+                    <div className="flex items-center gap-3">
+                        {/* Smart Search Trigger */}
+                        <SmartSearch />
+                        
+                        {/* Notification Inbox */}
+                        <NotificationInbox />
+                        
+                        {/* User Profile */}
+                        <div className="flex items-center gap-3 pl-4 border-l border-[rgba(148,163,184,0.1)]">
                             <div className="flex flex-col text-right">
-                                <span className="text-[11px] font-black text-erp-navy leading-none mb-1 uppercase tracking-tight">{currentUser?.name || currentUser?.fullName}</span>
-                                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Hoạt động</span>
+                                <span className="text-[11px] font-black text-[#F8FAFC] leading-none mb-0.5 uppercase tracking-tight">
+                                    {currentUser?.name || currentUser?.fullName}
+                                </span>
+                                <span className="text-[9px] font-bold text-[#64748B] uppercase tracking-tighter">
+                                    {currentUser?.role}
+                                </span>
                             </div>
-                            <div className="h-9 w-9 rounded-xl bg-erp-navy flex items-center justify-center text-white text-[11px] font-black shadow-lg shadow-erp-navy/30 border border-white/10 cursor-pointer hover:scale-105 active:scale-95 transition-all">
-                                {currentUser?.icon || currentUser?.fullName?.substring(0, 2).toUpperCase() || "JD"}
+                            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center text-white text-[11px] font-black shadow-lg shadow-[#3B82F6]/20 cursor-pointer hover:scale-105 active:scale-95 transition-all">
+                                {currentUser?.fullName?.substring(0, 2).toUpperCase() || "U"}
                             </div>
                         </div>
                     </div>
                 </header>
 
-                {/* Main Content Area */}
-                <main className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
+                {/* Main Content Area - Dark */}
+                <main className="flex-1 overflow-y-auto p-6 bg-[#0F1117]">
                     <div className="max-w-screen-2xl mx-auto pb-12">
                         {children}
                     </div>

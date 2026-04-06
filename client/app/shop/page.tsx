@@ -223,9 +223,9 @@ export default function ShopPage() {
                         {/* Main Content */}
                         <div className="col-span-9">
                             {/* Shop Banner */}
-                            <div className="relative h-[250px] rounded-2xl overflow-hidden mb-10 bg-[#000e28]">
+                            <div className="relative h-62.5 rounded-2xl overflow-hidden mb-10 bg-[#000e28]">
                                 <Image src="/laptop.png" alt="Shop Banner" fill style={{ objectFit: 'cover' }} className="opacity-60" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col justify-center px-12">
+                                <div className="absolute inset-0 bg-linear-to-r from-black/60 to-transparent flex flex-col justify-center px-12">
                                     <span className="text-secondary font-bold text-sm uppercase tracking-widest mb-2">Up To 30% Offer</span>
                                     <h2 className="text-4xl font-black text-white leading-tight">New Accessories <br />Collection</h2>
                                     <div className="flex gap-2 mt-6">
@@ -256,7 +256,7 @@ export default function ShopPage() {
                                             <List size={18} />
                                         </button>
                                     </div>
-                                    <div className="h-6 w-[1px] bg-gray-200"></div>
+                                    <div className="h-6 w-px bg-gray-200"></div>
                                     <div className="flex items-center gap-2 text-sm">
                                         <span className="text-gray-500">Show:</span>
                                         <div className="flex items-center gap-1 border border-gray-200 px-3 py-1.5 rounded-md cursor-pointer hover:border-primary transition-colors">
@@ -289,8 +289,8 @@ export default function ShopPage() {
                                                 <Image src={product.img} alt={product.name} fill style={{ objectFit: 'contain' }} className="p-8 group-hover:scale-110 transition-transform duration-500" />
                                             </div>
 
-                                            <div className="p-6 flex flex-col items-center text-center flex-grow">
-                                                <h3 className="text-sm font-bold text-accent mb-3 line-clamp-2 hover:text-primary transition-colors cursor-pointer min-h-[40px] uppercase tracking-wide">
+                                            <div className="p-6 flex flex-col items-center text-center grow">
+                                                <h3 className="text-sm font-bold text-accent mb-3 line-clamp-2 hover:text-primary transition-colors cursor-pointer min-h-10 uppercase tracking-wide">
                                                     {product.name}
                                                 </h3>
                                                 <div className="flex items-center gap-1 mb-3">

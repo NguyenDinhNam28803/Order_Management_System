@@ -79,8 +79,8 @@ export default function SupplierInvoice() {
     }
 
     return (
-        <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300">
-            <DashboardHeader breadcrumbs={["Nhà cung cấp", "Tạo Hóa đơn (Invoice)"]} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <DashboardHeader breadcrumbs={["Bàn làm việc B2B", "Gửi hóa đơn"]} />
 
             <div className="mt-8 mb-8 border-b border-slate-200 pb-4">
                 <h1 className="text-3xl font-black text-erp-navy tracking-tight flex items-center gap-3">

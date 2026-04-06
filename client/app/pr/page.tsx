@@ -55,10 +55,10 @@ export default function PRPage() {
             key: "id", 
             render: (row: PR) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
+                    <div className="h-9 w-9 rounded-lg bg-[#3B82F6]/10 text-[#3B82F6] flex items-center justify-center border border-[#3B82F6]/20">
                         <FileText size={16} />
                     </div>
-                    <span className="font-bold text-slate-900 tracking-tight">{row.prNumber || row.id.substring(0,8)}</span>
+                    <span className="font-bold text-[#F8FAFC] tracking-tight">{row.prNumber || row.id.substring(0,8)}</span>
                 </div>
             ) 
         },
@@ -78,8 +78,8 @@ export default function PRPage() {
 
                 return (
                     <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-slate-800">{deptName}</span>
-                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                        <span className="text-sm font-semibold text-[#F8FAFC]">{deptName}</span>
+                        <span className="text-[10px] text-[#64748B] font-bold uppercase tracking-wider mt-0.5">
                             {row.costCenterId || "CC_GLOBAL"}
                         </span>
                     </div>
@@ -91,8 +91,8 @@ export default function PRPage() {
             key: "title",
             render: (row: PR) => (
                 <div className="max-w-[280px]">
-                    <p className="text-sm font-semibold text-slate-800 truncate">{row.title}</p>
-                    <p className="text-[11px] text-slate-500 italic font-medium truncate mt-0.5">{row.description || "—"}</p>
+                    <p className="text-sm font-semibold text-[#F8FAFC] truncate">{row.title}</p>
+                    <p className="text-[11px] text-[#64748B] italic font-medium truncate mt-0.5">{row.description || "—"}</p>
                 </div>
             )
         },
@@ -101,13 +101,14 @@ export default function PRPage() {
             key: "status", 
             render: (row: PR) => {
                 const status = row.status || 'DRAFT';
-                let cls = 'status-draft';
-                if (status.includes('PENDING')) cls = 'status-pending';
-                if (status === 'APPROVED') cls = 'status-approved';
-                if (status === 'REJECTED') cls = 'status-rejected';
+                let cls = 'px-2 py-0.5 rounded text-[10px] font-bold uppercase border ';
+                if (status === 'DRAFT') cls += 'bg-[#161922] text-[#64748B] border-[rgba(148,163,184,0.1)]';
+                if (status.includes('PENDING')) cls += 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20';
+                if (status === 'APPROVED') cls += 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+                if (status === 'REJECTED') cls += 'bg-rose-500/10 text-rose-400 border-rose-500/20';
                 
                 return (
-                    <span className={`status-pill ${cls} px-2 py-0.5 text-[10px]`}>
+                    <span className={cls}>
                         {status.replace(/_/g, ' ')}
                     </span>
                 );
@@ -117,7 +118,7 @@ export default function PRPage() {
             label: "Ngân sách (VND)", 
             key: "totalEstimate", 
             render: (row: PR) => (
-                <span className="font-bold text-slate-900 ">
+                <span className="font-bold text-[#F8FAFC]">
                     {Number(row.totalEstimate || 0).toLocaleString()} ₫
                 </span>
             ) 
@@ -136,7 +137,7 @@ export default function PRPage() {
                     <div className="flex gap-2 justify-end pr-4">
                         <Link 
                             href={`/pr/${row.id}`}
-                            className="p-1.5 rounded-lg bg-slate-50 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-100 transition-all shadow-sm"
+                            className="p-1.5 rounded-lg bg-[#0F1117] text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 border border-[rgba(148,163,184,0.1)] transition-all shadow-sm"
                             title="Xem chi tiết PR"
                         >
                             <FileText size={16} />
@@ -145,13 +146,13 @@ export default function PRPage() {
                             <div className="flex gap-1.5">
                                 <button 
                                     onClick={() => handleAction(row.id, 'APPROVE')}
-                                    className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white border border-emerald-100 transition-all"
+                                    className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white border border-emerald-500/20 transition-all"
                                 >
                                     <Check size={16} />
                                 </button>
                                 <button 
                                     onClick={() => handleAction(row.id, 'REJECT')}
-                                    className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-100 transition-all"
+                                    className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white border border-rose-500/20 transition-all"
                                 >
                                     <X size={16} />
                                 </button>
@@ -161,13 +162,13 @@ export default function PRPage() {
                                 {row.status === 'DRAFT' && (
                                     <button 
                                         onClick={() => submitPR(row.id)}
-                                        className="btn-primary py-1.5 px-4 text-[11px] whitespace-nowrap shadow-md shadow-indigo-100"
+                                        className="py-1.5 px-4 text-[11px] whitespace-nowrap bg-[#3B82F6] text-white rounded-lg font-bold uppercase tracking-wider shadow-lg shadow-[#3B82F6]/20 hover:bg-[#2563EB] transition-all flex items-center gap-2"
                                     >
                                         <Send size={14} /> Gửi duyệt
                                     </button>
                                 )}
                                 {row.status.includes('PENDING') && (
-                                    <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-lg border border-slate-200">
+                                    <span className="text-[10px] font-bold text-[#64748B] bg-[#0F1117] px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)]">
                                         Đang thẩm định
                                     </span>
                                 )}
@@ -180,18 +181,18 @@ export default function PRPage() {
     ];
 
     return (
-        <main className="pt-20 px-8 pb-12 bg-slate-50 min-h-screen animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ", "Yêu cầu mua sắm"]} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <DashboardHeader breadcrumbs={["Nghiệp vụ", "PR", "Danh sách PR"]} />
 
-            <header className="mt-8 flex items-center justify-between border-b border-slate-200 pb-8 mb-8">
+            <header className="mt-8 flex items-center justify-between border-b border-[rgba(148,163,184,0.1)] pb-8 mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                    <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">
                         {currentUser?.role === "PROCUREMENT" ? "Toàn bộ Yêu cầu PR" : "Yêu cầu mua sắm của tôi"}
                     </h1>
-                    <p className="text-sm font-medium text-slate-500 mt-1">Quản lý và theo dõi tiến độ phê duyệt định mức mua sắm tập trung.</p>
+                    <p className="text-sm font-medium text-[#64748B] mt-1">Quản lý và theo dõi tiến độ phê duyệt định mức mua sắm tập trung.</p>
                 </div>
                 {currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN" && (
-                    <Link href="/pr/create" className="btn-primary py-3 px-6 flex flex-col items-center">
+                    <Link href="/pr/create" className="py-3 px-6 bg-[#3B82F6] text-white rounded-xl font-black uppercase tracking-wider text-xs shadow-lg shadow-[#3B82F6]/20 hover:bg-[#2563EB] transition-all flex flex-col items-center">
                         <div className="flex items-center gap-2">
                             <Plus size={18} />
                             <span className="text-sm font-semibold">Tạo yêu cầu mới</span>
@@ -200,19 +201,19 @@ export default function PRPage() {
                 )}
             </header>
 
-            <div className="erp-card !p-0 overflow-hidden bg-white shadow-sm border border-slate-200">
-                <div className="p-5 bg-slate-50/50 border-b border-slate-200 flex items-center justify-between">
+            <div className="bg-[#161922] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 overflow-hidden">
+                <div className="p-5 bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                     <div className="flex items-center gap-6">
-                        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest px-2">Bộ lọc nhanh</div>
+                        <div className="text-xs font-black text-[#64748B] uppercase tracking-widest px-2">Bộ lọc nhanh</div>
                         <div className="flex gap-2">
                             {tabs.map(filter => (
                                 <button 
                                     key={filter} 
                                     onClick={() => setActiveTab(filter)}
-                                    className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
                                         activeTab === filter 
-                                        ? "bg-white text-indigo-600 shadow-sm border border-slate-200" 
-                                        : "text-slate-500 hover:text-indigo-600"
+                                        ? "bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20" 
+                                        : "text-[#64748B] hover:text-[#F8FAFC] hover:bg-[#0F1117]"
                                     }`}
                                 >
                                     {filter}
@@ -226,12 +227,12 @@ export default function PRPage() {
                 
                 {displayData.length === 0 && (
                     <div className="p-20 text-center flex flex-col items-center justify-center space-y-4">
-                        <div className="h-16 w-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200 border border-slate-100">
+                        <div className="h-16 w-16 rounded-2xl bg-[#0F1117] flex items-center justify-center text-[#64748B] border border-[rgba(148,163,184,0.1)]">
                             <FileText size={28} />
                         </div>
                         <div>
-                            <h3 className="font-bold text-slate-900">Thông tin trống</h3>
-                            <p className="text-slate-500 text-sm">Chưa có yêu cầu nào được thiết lập cho mục này.</p>
+                            <h3 className="font-bold text-[#F8FAFC]">Thông tin trống</h3>
+                            <p className="text-[#64748B] text-sm">Chưa có yêu cầu nào được thiết lập cho mục này.</p>
                         </div>
                     </div>
                 )}

@@ -38,8 +38,8 @@ export default function WarehouseDashboard() {
     ];
 
     return (
-        <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300">
-            <DashboardHeader breadcrumbs={["Kho vận", "Bàn làm việc Kho"]} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <DashboardHeader breadcrumbs={["Kho vận", "Dashboard Kho"]} />
 
             <div className="mt-8 mb-8 pb-6 border-b border-slate-200">
                 <h1 className="text-3xl font-black text-erp-navy tracking-tight">Dashboard Warehouse</h1>
