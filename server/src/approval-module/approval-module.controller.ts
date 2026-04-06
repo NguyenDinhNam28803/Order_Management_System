@@ -30,6 +30,7 @@ export class ApprovalModuleController {
   @Get('pending')
   @Roles(
     UserRole.FINANCE,
+    UserRole.DEPT_APPROVER,
     UserRole.DIRECTOR,
     UserRole.CEO,
     UserRole.PLATFORM_ADMIN,
@@ -39,9 +40,7 @@ export class ApprovalModuleController {
     description:
       'Trả về danh sách các yêu cầu đang chờ tôi duyệt. Chỉ các role FINANCE, DIRECTOR, CEO, PLATFORM_ADMIN mới được xem',
   })
-  async getMyPending(
-    @Req() req: any,
-  ) {
+  async getMyPending(@Req() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const userId = req.user.sub || req.user.id; // Tùy thuộc vào payload của JWT
     return this.approvalService.getMyPendingApprovals(userId as string);
@@ -59,6 +58,7 @@ export class ApprovalModuleController {
   @Roles(
     UserRole.FINANCE,
     UserRole.DIRECTOR,
+    UserRole.DEPT_APPROVER,
     UserRole.CEO,
     UserRole.PLATFORM_ADMIN,
   )

@@ -52,7 +52,6 @@ export default function CreateQuoteRequestPage() {
             title: formData.title,
             description: formData.description,
             requiredDate: formData.requiredDate,
-            // @ts-ignore
             items: items.map(it => ({ ...it, description: "" }))
         });
 

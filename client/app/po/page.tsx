@@ -110,10 +110,10 @@ export default function POPage() {
                                 <tbody className="border-b border-slate-300">
                                     {relatedPR?.items?.map((item, i: number) => (
                                         <tr key={i} className="border-b border-slate-100">
-                                            <td className="py-3 px-4">{item.description || item.item_name || item.productName}</td>
-                                            <td className="py-3 px-4 text-center font-mono">{item.qty || item.quantity}</td>
+                                            <td className="py-3 px-4">{item.description || item.productName || item.productDesc}</td>
+                                            <td className="py-3 px-4 text-center font-mono">{item.qty}</td>
                                             <td className="py-3 px-4 text-right font-mono">{item.estimatedPrice.toLocaleString()}</td>
-                                            <td className="py-3 px-4 text-right font-mono font-bold">{(Number(item.qty || item.quantity || 0) * item.estimatedPrice).toLocaleString()}</td>
+                                            <td className="py-3 px-4 text-right font-mono font-bold">{(Number(item.qty || 0) * item.estimatedPrice).toLocaleString()}</td>
                                         </tr>
                                     ))}
                                     {(!relatedPR?.items) && (
@@ -126,7 +126,7 @@ export default function POPage() {
                                     <tr>
                                         <td colSpan={3} className="py-4 px-4 text-right font-bold text-slate-600 uppercase">Total Amount:</td>
                                         <td className="py-4 px-4 text-right font-bold font-mono text-xl text-erp-navy">
-                                            {passedPrice ? Number(passedPrice).toLocaleString() : relatedPR?.total?.toLocaleString()} ₫
+                                            {passedPrice ? Number(passedPrice).toLocaleString() : relatedPR?.totalEstimate?.toLocaleString()} ₫
                                         </td>
                                     </tr>
                                 </tfoot>
@@ -223,6 +223,7 @@ export default function POPage() {
                                             type="date"
                                             className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                                             defaultValue={new Date().toISOString().substring(0, 10)} 
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                             onClick={(e) => (e.currentTarget as any).showPicker?.()}
                                         />
                                     </div>
@@ -318,10 +319,10 @@ export default function POPage() {
                                 <tbody>
                                     {relatedPR?.items?.map((item, idx: number) => (
                                         <tr key={idx} className="border-b border-slate-50">
-                                            <td className="font-bold text-erp-navy">{item.description || item.item_name || item.productName}</td>
-                                            <td className="text-center font-black">{item.qty || item.quantity}</td>
+                                            <td className="font-bold text-erp-navy">{item.description || item.productName}</td>
+                                            <td className="text-center font-black">{item.qty || 0}</td>
                                             <td className="text-right font-mono text-slate-500">{item.estimatedPrice.toLocaleString()}</td>
-                                            <td className="text-right font-mono font-black text-erp-blue">{(Number(item.qty || item.quantity || 0) * item.estimatedPrice).toLocaleString()} ₫</td>
+                                            <td className="text-right font-mono font-black text-erp-blue">{(Number(item.qty || 0) * item.estimatedPrice).toLocaleString()} ₫</td>
                                             <td><input type="text" className="erp-input py-1! text-[10px]! w-full bg-slate-50 font-medium" placeholder="Ghi chú item..." /></td>
                                         </tr>
                                     ))}

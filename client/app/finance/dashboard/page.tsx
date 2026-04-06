@@ -74,7 +74,7 @@ export default function FinanceDashboard() {
             </div>
 
             {/* List & Tabs (8.1) */}
-            <div className="erp-card !p-0 shadow-sm border border-slate-200 bg-white overflow-hidden">
+            <div className="erp-card p-0! shadow-sm border border-slate-200 bg-white overflow-hidden">
                 <div className="bg-slate-50 border-b border-slate-100 p-4 flex gap-4">
                     <button 
                         className={`text-xs font-black uppercase tracking-widest px-6 py-3 rounded-lg transition-colors ${activeTab === 'ALL' ? 'bg-erp-navy text-white shadow' : 'text-slate-500 hover:bg-slate-200'}`}
@@ -94,7 +94,7 @@ export default function FinanceDashboard() {
                     </div>
                 </div>
 
-                <table className="erp-table text-xs m-0 !border-none">
+                <table className="erp-table text-xs m-0 border-none!">
                     <thead className="bg-slate-50">
                         <tr>
                             <th>Số Invoice</th>
@@ -127,7 +127,7 @@ export default function FinanceDashboard() {
                                     )}
                                 </td>
                                 {activeTab === "EXCEPTION" && (
-                                    <td className="text-[11px] font-bold text-red-700 bg-red-50/50 max-w-[200px] truncate" title={"Lệch hệ thống 3-way"}>
+                                    <td className="text-[11px] font-bold text-red-700 bg-red-50/50 max-w-50 truncate" title={"Lệch hệ thống 3-way"}>
                                         {"Lệch hệ thống 3-way"}
                                     </td>
                                 )}

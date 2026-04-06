@@ -195,7 +195,7 @@ export default function ProcurementControlPage() {
                             Quản lý RFQ
                         </Link>
                     )}
-                    {!row.procurementId && row.status !== 'DRAFT' && row.status !== 'REJECTED' && (
+                    {row.status !== 'DRAFT' && row.status !== 'REJECTED' && (
                         <button 
                             onClick={() => handleAssignToMe(row.id)}
                             disabled={isAssigning === row.id}

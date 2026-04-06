@@ -56,7 +56,7 @@ export default function FinanceMatching() {
     const vat = invoiceAmount - subTotal;
 
     const handleRejectFeedback = () => {
-        if (invId) matchInvoice(invId, "EXCEPTION");
+        if (invId) matchInvoice(invId);
         alert("Đã gửi thông báo Reject/Debit Note tới Portal Nhà Cung Cấp!");
         router.push("/finance/dashboard");
     };
@@ -96,7 +96,7 @@ export default function FinanceMatching() {
 
             {/* 3-Way Panel Section */}
             <div className="space-y-6">
-                <div className="erp-card shadow-sm border border-slate-200 bg-white !p-0 overflow-hidden">
+                <div className="erp-card shadow-sm border border-slate-200 bg-white p-0! overflow-hidden">
                     <div className="p-4 bg-slate-800 border-b border-slate-700 flex justify-between items-center text-white">
                         <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
                             <FileCheck size={16}/> 3-Way Matching Panel (Bảng Đối Soát 3 Cột)
@@ -188,7 +188,7 @@ export default function FinanceMatching() {
                                 </div>
                                 <div className="mt-4">
                                     <label className="text-[10px] font-black uppercase text-red-700 tracking-widest mb-2 block">Feedback gửi NCC & Manager (Ghi chú)</label>
-                                    <textarea className="erp-input w-full min-h-[100px] text-xs bg-white focus:border-red-500 focus:ring-red-200" placeholder="Lý do Reject / Credit Note..." value={note} onChange={e=>setNote(e.target.value)}></textarea>
+                                    <textarea className="erp-input w-full min-h-25 text-xs bg-white focus:border-red-500 focus:ring-red-200" placeholder="Lý do Reject / Credit Note..." value={note} onChange={e=>setNote(e.target.value)}></textarea>
                                 </div>
                             </div>
                             <div className="mt-6 flex justify-end gap-4">
@@ -217,7 +217,7 @@ export default function FinanceMatching() {
                          </h3>
                          <div className="space-y-4 text-xs font-bold text-slate-600">
                              <div>
-                                 <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 block flex items-center gap-1"><Calendar size={12}/> Ngày T/T Dự kiến (PO Term: Net 30)</label>
+                                 <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 block items-center gap-1"><Calendar size={12}/> Ngày T/T Dự kiến (PO Term: Net 30)</label>
                                  <div className="relative">
                                      <input 
                                          type="text" 
@@ -237,7 +237,7 @@ export default function FinanceMatching() {
                                  </div>
                              </div>
                              <div>
-                                 <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 block flex items-center gap-1"><CreditCard size={12}/> Phương thức Bank</label>
+                                 <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 block items-center gap-1"><CreditCard size={12}/> Phương thức Bank</label>
                                  <select className="erp-input w-full font-mono bg-slate-50 text-slate-700 focus:bg-white" value={payMethod} onChange={e=>setPayMethod(e.target.value)}>
                                      <option value="Bank Transfer (VND)">Bank Transfer (Techcombank VND)</option>
                                      <option value="LC">Thư Tín Dụng (L/C)</option>

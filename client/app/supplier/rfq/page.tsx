@@ -5,6 +5,7 @@ import DashboardHeader from "../../components/DashboardHeader";
 import { Inbox, FileText, UploadCloud, Send, MessageSquare, ChevronDown, CheckCircle, Info } from "lucide-react";
 
 import { useProcurement, RFQ, PR, PRItem } from "../../context/ProcurementContext";
+import type { CreateQuoteDto } from "../../types/api-types";
 
 export default function SupplierRFQ() {
     const { currentUser, rfqs, prs, createQuote, notify } = useProcurement();
@@ -15,8 +16,8 @@ export default function SupplierRFQ() {
     const openRfqs = rfqs.filter((r: RFQ) =>
         (r.status === "SENT" || r.status === "OPEN") && 
         (r.vendor?.toLowerCase().includes(currentUser?.name?.toLowerCase() || "") || 
-         r.vendor?.toLowerCase().includes(currentUser?.fullName?.toLowerCase() || "") ||
-         currentUser?.role === "PLATFORM_ADMIN")
+        (r.vendor?.toLowerCase().includes(currentUser?.fullName?.toLowerCase() || "") ||
+        (currentUser?.role === "PLATFORM_ADMIN")))
     );
     
     const activeRFQRaw = selectedRfqId ? rfqs.find((r: RFQ) => r.id === selectedRfqId) : (openRfqs.length > 0 ? openRfqs[0] : null);
@@ -39,15 +40,23 @@ export default function SupplierRFQ() {
             if (!item.id) return;
             const val = Number(prices[item.id]) || 0;
             pricesObj[item.id] = val;
-            total += val * (item.qty || item.quantity || 0);
+            total += val * (item.qty || 0);
         });
 
-        createQuote(activeRFQ.id, {
-            prices: pricesObj,
-            leadTime,
-            paymentTerms,
-            total
-        });
+        const payload: CreateQuoteDto = {
+            rfqId: activeRFQ.id,
+            supplierId: currentUser?.orgId || "",
+            leadTimeDays: Number(leadTime) || 0,
+            totalPrice: total,
+            items: activeRFQ.items ? activeRFQ.items.map((item: PRItem) => ({
+                prItemId: item.id || "",
+                quantity: item.qty || 0,
+                unitPrice: pricesObj[item.id || ""] || 0,
+                price: pricesObj[item.id || ""] || 0,
+            })) : [],
+        };
+
+        createQuote(payload);
         
         notify(`Báo giá cho RFQ ${activeRFQ.id} đã được gửi thành công!`, "success");
         setViewState("LIST");
@@ -105,7 +114,7 @@ export default function SupplierRFQ() {
                             </div>
                         </div>
 
-                        <div className="erp-card shadow-sm border border-slate-200">
+                        {/* <div className="erp-card shadow-sm border border-slate-200">
                             <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 border-b border-slate-100 pb-2">
                                 Yêu cầu kỹ thuật & File đính kèm
                             </h3>
@@ -162,7 +171,7 @@ export default function SupplierRFQ() {
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Cột phải: Form Báo giá */}
@@ -184,9 +193,9 @@ export default function SupplierRFQ() {
                                 <tbody>
                                     {(activeRFQ.items || []).map((item, idx: number) => {
                                         const itemId = item.id || `item-${idx}`;
-                                        const itemName = item.item_name || item.description || "N/A";
-                                        const itemCode = item.item_code || "SKU-ANY";
-                                        const quantity = item.quantity || item.qty || 0;
+                                        const itemName = item.productName || item.description || "N/A";
+                                        const itemCode = item.sku || "SKU-ANY";
+                                        const quantity = item.qty || 0;
                                         const unit = item.unit || "UNIT";
 
                                         return (
@@ -222,7 +231,7 @@ export default function SupplierRFQ() {
                                                     const itemId = item.id;
                                                     if (!itemId) return sum;
                                                     const priceVal = Number(prices[itemId]) || 0;
-                                                    const quantity = item.quantity || item.qty || 0;
+                                                    const quantity = item.qty || 0;
                                                     return sum + (priceVal * quantity);
                                                 }, 0);
                                                 return total.toLocaleString();
@@ -282,7 +291,7 @@ export default function SupplierRFQ() {
                 <h1 className="text-3xl font-black text-erp-navy tracking-tight">Thư mời (RFQ) cần báo giá</h1>
             </div>
 
-            <div className="erp-card !p-0 overflow-hidden shadow-sm border border-slate-200">
+            <div className="erp-card p-0! overflow-hidden shadow-sm border border-slate-200">
                 <table className="erp-table text-xs m-0">
                     <thead className="bg-slate-50">
                         <tr>
@@ -308,7 +317,7 @@ export default function SupplierRFQ() {
                                             {prDetail?.items && prDetail.items.length > 0 ? (
                                                 prDetail.items.slice(0, 3).map((item, i: number) => (
                                                     <span key={i} className="bg-slate-100 text-[10px] px-2 py-0.5 rounded border border-slate-200">
-                                                        {item.item_name || item.description} x{item.quantity || item.qty}
+                                                        {item.productName || item.description} x{item.qty}
                                                     </span>
                                                 ))
                                             ) : (

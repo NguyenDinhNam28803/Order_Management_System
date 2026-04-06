@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { UserPlus, Mail, Edit2, Trash2, Search, Building, ShieldCheck, ChevronDown } from "lucide-react";
 import { useProcurement, User, Department, Organization, UserRole } from "../context/ProcurementContext";
+import { CreateUserPayload } from "../types/api-types";
 
 export default function UsersPage() {
     const { users, departments, organizations, addUser, updateUser, removeUser } = useProcurement();
@@ -94,25 +95,25 @@ export default function UsersPage() {
         // Ensure orgId is not empty (fallback to first org if needed)
         const cleanedOrgId = formData.orgId === "" ? (organizations?.[0]?.id || "") : formData.orgId;
 
-        const data: Partial<User & { passwordHash?: string }> = {
+        const data = {
             ...formData, 
             deptId: cleanedDeptId,
             orgId: cleanedOrgId
         };
 
         if (editingUser) {
-            delete data.passwordHash; // Don't send dummy password on update
+            delete (data as { passwordHash?: string }).passwordHash;
             const success = await updateUser(editingUser.id, data);
             if (success) setShowModal(false);
         } else {
-            const success = await addUser(data);
+            const success = await addUser(data as CreateUserPayload);
             if (success) setShowModal(false);
         }
     };
 
     const filteredUsers = users?.filter((user: User) => {
         const matchesSearch = (user.fullName || user.name || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              user.email.toLowerCase().includes(searchTerm.toLowerCase());
+                              (user.email.toLowerCase().includes(searchTerm.toLowerCase()));
         const matchesDept = selectedDept === "all" || user.deptId === selectedDept;
         const matchesOrg = selectedOrg === "all" || user.orgId === selectedOrg;
         const matchesRole = selectedRole === "all" || user.role === selectedRole;

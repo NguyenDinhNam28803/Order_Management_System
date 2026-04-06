@@ -3,13 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { prAPI } from '@/app/utils/api-client';
-
-interface PRDetailPageProps {}
+import { PR, PRItem } from '@/app/types/api-types';
 
 export default function PRDetailPage() {
   const params = useParams();
   const prId = params.id as string;
-  const [pr, setPR] = useState<any>(null);
+  const [pr, setPR] = useState<PR | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -35,7 +34,7 @@ export default function PRDetailPage() {
     try {
       setSubmitting(true);
       // Get reviewers - in real app, this would be from form
-      const reviewers = []; // TODO: select from UI
+      const reviewers: string[] = []; // TODO: select from UI
       const updated = await prAPI.submit(prId, reviewers);
       setPR(updated);
       alert('PR submitted for approval');
@@ -65,7 +64,7 @@ export default function PRDetailPage() {
         </div>
         <div>
           <label className="text-sm text-gray-600">Department</label>
-          <p className="text-lg">{pr.dept?.name}</p>
+          <p className="text-lg">{pr.deptId}</p>
         </div>
         <div>
           <label className="text-sm text-gray-600">Requestor</label>
@@ -77,7 +76,7 @@ export default function PRDetailPage() {
         </div>
         <div>
           <label className="text-sm text-gray-600">Total Amount</label>
-          <p className="text-lg font-semibold">{pr.totalAmount?.toLocaleString('vi-VN')} VND</p>
+          <p className="text-lg font-semibold">{pr.totalEstimate?.toLocaleString('vi-VN')} VND</p>
         </div>
       </div>
 
@@ -94,15 +93,15 @@ export default function PRDetailPage() {
               </tr>
             </thead>
             <tbody>
-              {pr.items?.map((item: any) => (
+              {pr.items?.map((item: PRItem) => (
                 <tr key={item.id} className="border">
-                  <td className="border p-3">{item.product?.name}</td>
-                  <td className="border p-3 text-right">{item.quantity}</td>
+                  <td className="border p-3">{item.productName || item.description}</td>
+                  <td className="border p-3 text-right">{item.qty}</td>
                   <td className="border p-3 text-right">
-                    {item.unitPrice?.toLocaleString('vi-VN')} VND
+                    {item.unit?.toLocaleString()} VND
                   </td>
                   <td className="border p-3 text-right">
-                    {(item.quantity * item.unitPrice)?.toLocaleString('vi-VN')} VND
+                    {(item.qty * item.estimatedPrice)?.toLocaleString('vi-VN')} VND
                   </td>
                 </tr>
               ))}

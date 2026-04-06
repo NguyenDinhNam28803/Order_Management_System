@@ -23,9 +23,10 @@ export default function FinanceBudgetsPage() {
         costCenters,
         budgetAllocations,
         budgetPeriods,
-        addBudgetAllocationBundle,
-        fiscalYears = [2024, 2025, 2026]
+        distributeAnnualBudget,
     } = useProcurement();
+    
+    const fiscalYears = [2024, 2025, 2026];
 
     const [activeTab, setActiveTab] = useState<'dashboard' | 'tools'>('dashboard');
     
@@ -67,10 +68,7 @@ export default function FinanceBudgetsPage() {
         if (!isValid || !selectedCCId) return;
         setIsSaving(true);
         
-        const success = await addBudgetAllocationBundle({
-            costCenterId: selectedCCId,
-            fiscalYear: selectedYear
-        });
+        const success = await distributeAnnualBudget(selectedCCId, selectedYear);
 
         setIsSaving(false);
         if (success) {
@@ -206,6 +204,7 @@ export default function FinanceBudgetsPage() {
                         </select>
                         <select 
                             value={dashPeriodType} 
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             onChange={e => setDashPeriodType(e.target.value as any)}
                             className="bg-white px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-black outline-none"
                         >

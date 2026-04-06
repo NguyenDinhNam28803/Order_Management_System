@@ -455,6 +455,8 @@ export interface CreatePoDto {
     prId?: string;
     total?: number;
     currency?: CurrencyCode;
+    paymentTerms?: string;
+    deliveryAddress?: string;
     items?: Array<{
         description: string;
         qty: number;
@@ -485,6 +487,9 @@ export interface CreateQuoteDto {
     supplierId: string;
     totalPrice: number;
     leadTimeDays: number;
+    paymentTerms?: string;
+    deliveryTerms?: string;
+    validityDays?: number;
     notes?: string;
     items?: Array<{
         prItemId: string;
@@ -735,4 +740,219 @@ export interface CreateQuoteRequestDto {
 
 export interface UpdateQuoteRequestDto extends Partial<CreateQuoteRequestDto> {
     status?: string;
+}
+
+// ========== RFQ Quotations & Q&A ==========
+
+export interface Quotation {
+    id: string;
+    rfqId: string;
+    supplierId: string;
+    totalPrice: number;
+    leadTimeDays: number;
+    paymentTerms?: string;
+    deliveryTerms?: string;
+    validityDays?: number;
+    notes?: string;
+    status: QuotationStatus;
+    aiScore?: number;
+    createdAt: string;
+    updatedAt?: string;
+    items?: QuotationItem[];
+    supplier?: Organization;
+}
+
+export interface QuotationItem {
+    id: string;
+    quotationId: string;
+    prItemId: string;
+    unitPrice: number;
+    quantity: number;
+    totalPrice: number;
+}
+
+export interface CreateQuotationDto {
+    supplierId: string;
+    totalPrice: number;
+    leadTimeDays: number;
+    paymentTerms?: string;
+    deliveryTerms?: string;
+    validityDays?: number;
+    notes?: string;
+    items?: Array<{
+        prItemId: string;
+        unitPrice: number;
+        quantity: number;
+    }>;
+}
+
+export interface QAThread {
+    id: string;
+    rfqId: string;
+    supplierId: string;
+    question: string;
+    answer?: string;
+    isPublic: boolean;
+    createdById: string;
+    createdAt: string;
+    answeredAt?: string;
+    answeredById?: string;
+}
+
+export interface CreateQAThreadDto {
+    supplierId: string;
+    question: string;
+    isPublic?: boolean;
+}
+
+export interface AnswerQAThreadDto {
+    answer: string;
+}
+
+export interface CounterOffer {
+    id: string;
+    quotationId: string;
+    proposedPrice: number;
+    proposedLeadTime?: number;
+    notes?: string;
+    status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+    createdById: string;
+    createdAt: string;
+    respondedAt?: string;
+    responseNotes?: string;
+}
+
+export interface CreateCounterOfferDto {
+    proposedPrice: number;
+    proposedLeadTime?: number;
+    notes?: string;
+}
+
+export interface RespondCounterOfferDto {
+    response: 'ACCEPT' | 'REJECT';
+    status: 'ACCEPTED' | 'REJECTED';
+    notes?: string;
+}
+
+// ========== Payments ==========
+
+export enum PaymentStatus {
+    PENDING = "PENDING",
+    PROCESSING = "PROCESSING",
+    COMPLETED = "COMPLETED",
+    FAILED = "FAILED",
+    CANCELLED = "CANCELLED"
+}
+
+export interface Payment {
+    id: string;
+    invoiceId: string;
+    poId?: string;
+    amount: number;
+    currency: CurrencyCode;
+    status: PaymentStatus;
+    paymentMethod?: string;
+    transactionId?: string;
+    paidAt?: string;
+    createdAt: string;
+    updatedAt?: string;
+}
+
+export interface CreatePaymentDto {
+    invoiceId: string;
+    amount: number;
+    paymentMethod?: string;
+}
+
+// ========== User Delegations ==========
+
+export interface UserDelegation {
+    id: string;
+    delegatorId: string;
+    delegateeId: string;
+    startDate: string;
+    endDate?: string;
+    reason?: string;
+    isActive: boolean;
+    createdAt: string;
+    delegator?: User;
+    delegatee?: User;
+}
+
+export interface CreateDelegationDto {
+    delegateeId: string;
+    startDate: string;
+    endDate?: string;
+    reason?: string;
+}
+
+// ========== Contract Milestones ==========
+
+export interface ContractMilestone {
+    id: string;
+    contractId: string;
+    title: string;
+    description?: string;
+    dueDate: string;
+    amount: number;
+    status: string;
+    completedAt?: string;
+}
+
+export interface UpdateMilestoneDto {
+    status?: string;
+    completionDate?: string;
+}
+
+// ========== GRN ==========
+
+export interface UpdateGrnStatusDto {
+    status: GrnStatus;
+}
+
+// ========== Invoice ==========
+
+export interface UpdateInvoiceDto {
+    invoiceNumber?: string;
+    amount?: number;
+    vendor?: string;
+    dueDate?: string;
+    notes?: string;
+}
+
+// ========== Audit Log ==========
+
+export interface AuditLogFilterDto {
+    type?: string;
+    id?: string;
+}
+
+// ========== Supplier KPI ==========
+
+export interface SupplierKPI {
+    id: string;
+    supplierId: string;
+    period: string;
+    onTimeDeliveryScore: number;
+    qualityScore: number;
+    priceScore: number;
+    responsivenessScore: number;
+    complianceScore: number;
+    overallScore: number;
+    tier: SupplierTier;
+    evaluatedAt: string;
+}
+
+// ========== Auth ==========
+
+export interface RefreshTokenDto {
+    refreshToken: string;
+}
+
+export interface ValidateTokenDto {
+    token: string;
+}
+
+export interface LogoutDto {
+    userId: string;
 }
