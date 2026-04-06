@@ -83,7 +83,8 @@ export default function CostCentersPage() {
 
         let success = false;
         if (editingCC) {
-            success = await updateCostCenter(editingCC.id, payload);
+            const { orgId, currency, ...updatePayload } = payload;
+            success = await updateCostCenter(editingCC.id, updatePayload);
         } else {
             success = await addCostCenter(payload);
         }

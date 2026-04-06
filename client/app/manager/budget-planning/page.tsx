@@ -46,10 +46,24 @@ export default function BudgetPlanningPage() {
         return costCenters.filter(cc => cc.deptId === currentUser.deptId);
     }, [costCenters, currentUser]);
 
-    // Auto-select first period and cost center if available
+    // Auto-select current quarter period and first cost center if available
     useEffect(() => {
         if (budgetPeriods.length > 0 && !formData.budgetPeriodId) {
-            setFormData(prev => ({ ...prev, budgetPeriodId: budgetPeriods[0].id }));
+            const currentMonth = new Date().getMonth() + 1;
+            const currentQuarter = Math.ceil(currentMonth / 3);
+            const currentYear = new Date().getFullYear();
+            
+            const currentPeriod = budgetPeriods.find(p => 
+                p.periodType === 'QUARTERLY' && 
+                p.fiscalYear === currentYear && 
+                p.periodNumber === currentQuarter
+            );
+            
+            if (currentPeriod) {
+                setFormData(prev => ({ ...prev, budgetPeriodId: currentPeriod.id }));
+            } else {
+                setFormData(prev => ({ ...prev, budgetPeriodId: budgetPeriods[0].id }));
+            }
         }
         if (filteredCostCenters.length > 0 && !formData.costCenterId) {
             setFormData(prev => ({ ...prev, costCenterId: filteredCostCenters[0].id }));
@@ -72,6 +86,40 @@ export default function BudgetPlanningPage() {
                 notify("Số tiền phải lớn hơn 0", "error");
                 setIsSubmitting(false);
                 return;
+            }
+
+            // --- Bổ sung Logic Kiểm soát ---
+            if (formData.categoryId) {
+                // Lấy ngân sách tổng (Master Allocation) cho CC & Kỳ hiện tại (không có category)
+                const masterAllocation = budgetAllocations.find(a => 
+                    a.budgetPeriodId === formData.budgetPeriodId && 
+                    a.costCenterId === formData.costCenterId && 
+                    !a.category?.id
+                );
+
+                if (!masterAllocation) {
+                    notify("Cost Center này chưa được cấp ngân sách tổng cho kỳ này từ Finance!", "error");
+                    setIsSubmitting(false);
+                    return;
+                }
+
+                // Tính tổng các khoản đã chia nhỏ (có category)
+                const allocatedSum = budgetAllocations
+                    .filter(a => 
+                        a.budgetPeriodId === formData.budgetPeriodId && 
+                        a.costCenterId === formData.costCenterId && 
+                        !!a.category?.id
+                    )
+                    .reduce((sum, a) => sum + Number(a.allocatedAmount), 0);
+
+                const limit = Number(masterAllocation.allocatedAmount);
+                const available = limit - allocatedSum;
+
+                if (amount > available) {
+                    notify(`Số tiền vượt quá mức quy định! Ngân sách quý còn lại: ${formatVND(available)}`, "error");
+                    setIsSubmitting(false);
+                    return;
+                }
             }
 
             const payload: any = {
