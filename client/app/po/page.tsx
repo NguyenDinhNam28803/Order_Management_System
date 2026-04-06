@@ -73,7 +73,7 @@ export default function POPage() {
                                     <div className="text-sm font-bold text-slate-500 uppercase tracking-widest">ProcurePro Corporation</div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-xl font-bold font-mono">PO-2026-DRAFT</div>
+                                    <div className="text-xl font-bold ">PO-2026-DRAFT</div>
                                     <div className="text-sm mt-1">Date: {formatDate(new Date().toISOString())}</div>
                                 </div>
                             </div>
@@ -111,9 +111,9 @@ export default function POPage() {
                                     {relatedPR?.items?.map((item, i: number) => (
                                         <tr key={i} className="border-b border-slate-100">
                                             <td className="py-3 px-4">{item.description || item.productName || item.productDesc}</td>
-                                            <td className="py-3 px-4 text-center font-mono">{item.qty}</td>
-                                            <td className="py-3 px-4 text-right font-mono">{item.estimatedPrice.toLocaleString()}</td>
-                                            <td className="py-3 px-4 text-right font-mono font-bold">{(Number(item.qty || 0) * item.estimatedPrice).toLocaleString()}</td>
+                                            <td className="py-3 px-4 text-center ">{item.qty}</td>
+                                            <td className="py-3 px-4 text-right ">{item.estimatedPrice.toLocaleString()}</td>
+                                            <td className="py-3 px-4 text-right  font-bold">{(Number(item.qty || 0) * item.estimatedPrice).toLocaleString()}</td>
                                         </tr>
                                     ))}
                                     {(!relatedPR?.items) && (
@@ -125,7 +125,7 @@ export default function POPage() {
                                 <tfoot>
                                     <tr>
                                         <td colSpan={3} className="py-4 px-4 text-right font-bold text-slate-600 uppercase">Total Amount:</td>
-                                        <td className="py-4 px-4 text-right font-bold font-mono text-xl text-erp-navy">
+                                        <td className="py-4 px-4 text-right font-bold  text-xl text-erp-navy">
                                             {passedPrice ? Number(passedPrice).toLocaleString() : relatedPR?.totalEstimate?.toLocaleString()} ₫
                                         </td>
                                     </tr>
@@ -187,7 +187,7 @@ export default function POPage() {
                             <div className="h-8 w-px bg-slate-200"></div>
                             <div>
                                 <div className="text-[10px] font-black uppercase text-slate-400 mb-1">Tổng GT Đơn hàng</div>
-                                <div className="font-black font-mono text-emerald-600 text-lg">
+                                <div className="font-black  text-emerald-600 text-lg">
                                     {passedPrice ? Number(passedPrice).toLocaleString() : 'N/A'} ₫
                                 </div>
                             </div>
@@ -208,7 +208,7 @@ export default function POPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Số PO (Tự động)</label>
-                                    <input type="text" className="erp-input w-full bg-slate-100 font-mono font-bold text-slate-500 cursor-not-allowed" value="PO-2026-DRAFT" disabled />
+                                    <input type="text" className="erp-input w-full bg-slate-100  font-bold text-slate-500 cursor-not-allowed" value="PO-2026-DRAFT" disabled />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Ngày phát hành</label>
@@ -216,7 +216,7 @@ export default function POPage() {
                                         <input 
                                             type="text" 
                                             readOnly
-                                            className="erp-input w-full font-mono font-bold h-12 group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all" 
+                                            className="erp-input w-full  font-bold h-12 group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all" 
                                             value={formatDate(new Date().toISOString())} 
                                         />
                                         <input 
@@ -321,8 +321,8 @@ export default function POPage() {
                                         <tr key={idx} className="border-b border-slate-50">
                                             <td className="font-bold text-erp-navy">{item.description || item.productName}</td>
                                             <td className="text-center font-black">{item.qty || 0}</td>
-                                            <td className="text-right font-mono text-slate-500">{item.estimatedPrice.toLocaleString()}</td>
-                                            <td className="text-right font-mono font-black text-erp-blue">{(Number(item.qty || 0) * item.estimatedPrice).toLocaleString()} ₫</td>
+                                            <td className="text-right  text-slate-500">{item.estimatedPrice.toLocaleString()}</td>
+                                            <td className="text-right  font-black text-erp-blue">{(Number(item.qty || 0) * item.estimatedPrice).toLocaleString()} ₫</td>
                                             <td><input type="text" className="erp-input py-1! text-[10px]! w-full bg-slate-50 font-medium" placeholder="Ghi chú item..." /></td>
                                         </tr>
                                     ))}
@@ -424,7 +424,7 @@ export default function POPage() {
                             <tr key={po.id} className="hover:bg-slate-50">
                                 <td className="font-bold text-erp-navy flex items-center gap-2"><FileText size={14} className="text-erp-blue"/> {po.id}</td>
                                 <td className="font-bold text-slate-700">{po.vendor}</td>
-                                <td className="font-mono font-black text-right text-erp-blue text-sm">{po.total.toLocaleString()} ₫</td>
+                                <td className=" font-black text-right text-erp-blue text-sm">{po.total.toLocaleString()} ₫</td>
                                 <td className="text-slate-500 text-xs text-center">{formatDate(po.createdAt)}</td>
                                 <td className="text-center">
                                     <div className="inline-flex items-center gap-1 text-[10px] font-black text-erp-navy bg-slate-100 px-2 py-1 rounded uppercase tracking-tighter">

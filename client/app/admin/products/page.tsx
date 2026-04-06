@@ -170,7 +170,7 @@ export default function ProductAdminPage() {
                     </div>
                     <div>
                         <div className="font-bold text-erp-navy leading-tight">{row.name}</div>
-                        <div className="text-[10px] text-slate-400 font-mono tracking-tighter uppercase">{row.sku}</div>
+                        <div className="text-[10px] text-slate-400  tracking-tighter uppercase">{row.sku}</div>
                     </div>
                 </div>
             )
@@ -198,7 +198,7 @@ export default function ProductAdminPage() {
             label: "Giá tham khảo",
             key: "unitPriceRef",
             render: (row: Product) => (
-                <div className="font-mono font-black text-erp-navy text-sm">
+                <div className=" font-black text-erp-navy text-sm">
                     {Number(row.unitPriceRef || 0).toLocaleString()} ₫
                 </div>
             )
@@ -243,7 +243,7 @@ export default function ProductAdminPage() {
         {
             label: "Mã",
             key: "code",
-            render: (row: ProductCategory) => <span className="font-mono text-xs font-bold text-erp-navy">{row.code}</span>
+            render: (row: ProductCategory) => <span className=" text-xs font-bold text-erp-navy">{row.code}</span>
         },
         {
             label: "Tên danh mục",
@@ -416,7 +416,7 @@ export default function ProductAdminPage() {
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Mã SKU</label>
                                     <input 
-                                        className="erp-input w-full font-mono font-bold" 
+                                        className="erp-input w-full  font-bold" 
                                         value={productForm.sku || ""} 
                                         onChange={e => setProductForm({ ...productForm, sku: e.target.value })}
                                         placeholder="DELL-R740-01" 
@@ -550,7 +550,7 @@ export default function ProductAdminPage() {
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Mã (Code)</label>
                                     <input 
-                                        className="erp-input w-full font-mono font-bold" 
+                                        className="erp-input w-full  font-bold" 
                                         placeholder="VD: CAT-001"
                                         value={categoryForm.code || ""} 
                                         onChange={e => setCategoryForm({...categoryForm, code: e.target.value})} 

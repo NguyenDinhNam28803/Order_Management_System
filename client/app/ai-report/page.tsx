@@ -85,7 +85,7 @@ export default function AIReportPage() {
                             </div>
                             <div className="flex flex-col items-center justify-center p-6 bg-white border-2 border-emerald-100 rounded-2xl shadow-sm min-w-[140px]">
                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Điểm tổng hợp</span>
-                                <div className="text-5xl font-black text-emerald-500 font-mono tracking-tighter">94<span className="text-2xl text-emerald-300">/100</span></div>
+                                <div className="text-5xl font-black text-emerald-500  tracking-tighter">94<span className="text-2xl text-emerald-300">/100</span></div>
                             </div>
                         </div>
                     </div>
@@ -114,7 +114,7 @@ export default function AIReportPage() {
                                         Cơ Khí Nhật Bản (Juki VN)
                                         <span className="block text-[9px] font-black text-emerald-500 uppercase tracking-widest mt-1">Đề xuất</span>
                                     </td>
-                                    <td className="text-right font-mono font-black text-erp-blue">210,000,000</td>
+                                    <td className="text-right  font-black text-erp-blue">210,000,000</td>
                                     <td className="text-center font-bold text-slate-600">5 ngày</td>
                                     <td className="text-center font-black text-emerald-500">92/100</td>
                                     <td className="text-center font-black text-emerald-500 text-lg">94</td>
@@ -122,7 +122,7 @@ export default function AIReportPage() {
                                 </tr>
                                 <tr>
                                     <td className="font-bold text-erp-navy">Đại lý Việt Phát</td>
-                                    <td className="text-right font-mono font-bold text-slate-500">205,000,000</td>
+                                    <td className="text-right  font-bold text-slate-500">205,000,000</td>
                                     <td className="text-center font-bold text-slate-600">12 ngày</td>
                                     <td className="text-center font-black text-amber-500">75/100</td>
                                     <td className="text-center font-black text-slate-500 text-lg">82</td>
@@ -130,7 +130,7 @@ export default function AIReportPage() {
                                 </tr>
                                 <tr>
                                     <td className="font-bold text-erp-navy">Công ty TNHH Hoàng Gia</td>
-                                    <td className="text-right font-mono font-bold text-slate-500">225,000,000</td>
+                                    <td className="text-right  font-bold text-slate-500">225,000,000</td>
                                     <td className="text-center font-bold text-slate-600">3 ngày</td>
                                     <td className="text-center font-black text-emerald-500">88/100</td>
                                     <td className="text-center font-black text-slate-500 text-lg">80</td>

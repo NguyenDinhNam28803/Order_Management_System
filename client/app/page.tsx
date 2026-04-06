@@ -6,13 +6,14 @@ import {
     Building2, Lock, CreditCard, ArrowUpRight,
     ArrowDownRight, Activity, Zap, FileText, ShoppingCart, Eye, Plus, Trash2,
     Clock, CheckCircle, Package, AlertCircle, AlertTriangle, History, Bell, Send, Loader2,
-    Search, ChevronDown, XCircle, RotateCcw, ArrowRight, ClipboardList, Edit3, Calendar
+    Search, ChevronDown, XCircle, RotateCcw, ArrowRight, ClipboardList, Edit3, Calendar, DollarSign
 } from "lucide-react";
 import { useProcurement, PR, Organization, QuoteRequest, BudgetAllocation, DocumentType } from "./context/ProcurementContext";
 import { formatVND } from "./utils/formatUtils";
+import BudgetHeatmap from "./components/BudgetHeatmap";
 
 export default function Dashboard() {
-    const { budgets, prs, myPrs, currentUser, loadingMyPrs, approvals, actionApproval, refreshData, notify, fetchPrDetail, budgetAllocations, budgetPeriods, rfqs, pos, quoteRequests, createPRFromQuoteRequest, costCenters, departments } = useProcurement();
+    const { budgets, prs, myPrs, currentUser, loadingMyPrs, approvals, actionApproval, refreshData, notify, fetchPrDetail, budgetAllocations, budgetPeriods, rfqs, pos, quoteRequests, createPRFromQuoteRequest, costCenters, departments, organizations } = useProcurement();
     const availableBudget = (budgets?.allocated || 0) - (budgets?.committed || 0) - (budgets?.spent || 0);
 
     // Calculate Dynamic Quarterly Remaining Budget for the Department
@@ -41,6 +42,7 @@ export default function Dashboard() {
     const isApproverGroup = currentUser?.role === "MANAGER" || currentUser?.role === "DEPT_APPROVER" || currentUser?.role === "DIRECTOR" || currentUser?.role === "CEO" || currentUser?.role === "PLATFORM_ADMIN";
     const isProcurement = currentUser?.role === "PROCUREMENT";
     const isCFO = currentUser?.role === "FINANCE" || currentUser?.role === "DIRECTOR";
+    const isSupplier = currentUser?.role === "SUPPLIER";
 
     const handleQuickApprove = async (workflowId: string) => {
         setIsSubmitting(true);
@@ -197,7 +199,7 @@ export default function Dashboard() {
                                                      <td className="px-8 py-6 font-black text-erp-navy text-xs tracking-tighter">{pr.prNumber || pr.id.substring(0, 8)}</td>
                                                      <td className="px-8 py-6 font-semibold text-slate-600 text-[11px] truncate max-w-[180px]" title={pr.title}>{pr.title}</td>
                                                      <td className="px-8 py-6 text-slate-400 font-bold text-[10px]">{formatDate(pr.createdAt)}</td>
-                                                     <td className="px-8 py-6 font-mono font-black text-erp-navy text-right tracking-tight">{formatVND(pr.totalEstimate || 0)}</td>
+                                                     <td className="px-8 py-6  font-black text-erp-navy text-right tracking-tight">{formatVND(pr.totalEstimate || 0)}</td>
                                                      <td className="px-8 py-6 text-center">
                                                          <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase border transition-all ${
                                                              pr.status === "APPROVED" ? "bg-emerald-50 text-emerald-500 border-emerald-100" : 
@@ -311,7 +313,7 @@ export default function Dashboard() {
                     <div className={`p-4 rounded-2xl ${color} bg-opacity-10 ${color.replace('bg-', 'text-')}`}>
                         {icon}
                     </div>
-                    <div className="text-4xl font-black text-erp-navy font-mono tracking-tighter">{value}</div>
+                    <div className="text-4xl font-black text-erp-navy  tracking-tighter">{value}</div>
                 </div>
                 <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 leading-none">{title}</div>
             </div>
@@ -406,7 +408,7 @@ export default function Dashboard() {
                     <div className="erp-card !p-8 bg-white shadow-sm border-none flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Tổng Ngân Sách Công Ty</div>
                         <div>
-                            <div className="text-3xl font-black text-emerald-600 font-mono mb-4">{formatVND(totalAllocated)} ₫</div>
+                            <div className="text-3xl font-black text-emerald-600  mb-4">{formatVND(totalAllocated)} ₫</div>
                             <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-2">
                                 <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${usagePercent}%` }}></div>
                             </div>
@@ -420,7 +422,7 @@ export default function Dashboard() {
                     <div className="erp-card !p-8 bg-white shadow-sm border-none flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Dự kiến chi tiền (Tuần này)</div>
                         <div>
-                            <div className="text-3xl font-black text-erp-navy font-mono mb-1">450,000,000 ₫</div>
+                            <div className="text-3xl font-black text-erp-navy  mb-1">450,000,000 ₫</div>
                             <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-2 flex items-center gap-2">
                                 <Activity size={12} className="text-erp-blue" /> Cho các hóa đơn đã duyệt
                             </div>
@@ -431,10 +433,10 @@ export default function Dashboard() {
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Chờ CFO Duyệt (PR & Budget)</div>
                         <div>
                             <div className="flex items-baseline gap-2 mb-1">
-                                <div className="text-4xl font-black text-amber-500 font-mono">{pendingPRCount + pendingBudgetCount}</div>
+                                <div className="text-4xl font-black text-amber-500 ">{pendingPRCount + pendingBudgetCount}</div>
                                 <div className="text-[10px] font-black text-slate-300 uppercase">Chứng từ</div>
                             </div>
-                            <div className="text-xl font-black text-amber-600 font-mono">{formatVND(pendingPRValue + pendingBudgetValue)} ₫</div>
+                            <div className="text-xl font-black text-amber-600 ">{formatVND(pendingPRValue + pendingBudgetValue)} ₫</div>
                         </div>
                     </div>
 
@@ -456,6 +458,10 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div className="mb-10">
+                    <BudgetHeatmap />
                 </div>
 
                 {/* Budget Approvals Section */}
@@ -552,7 +558,7 @@ export default function Dashboard() {
                                                 <span className="text-[10px] font-black text-emerald-500 uppercase flex items-center justify-center gap-1.5"><CheckCircle size={11}/> An toàn: 2% quỹ IT</span>
                                             )}
                                         </td>
-                                        <td className="font-mono text-right font-black text-erp-navy text-sm">{formatVND(pr.totalEstimate)} ₫</td>
+                                        <td className=" text-right font-black text-erp-navy text-sm">{formatVND(pr.totalEstimate)} ₫</td>
                                         <td className="text-right px-8">
                                             <div className="flex justify-end gap-1.5">
                                                 <button onClick={() => setSelectedPRDetails(pr)} className="p-2.5 bg-white border border-slate-200 text-slate-400 hover:text-erp-blue hover:border-erp-blue/20 rounded-xl transition-all shadow-sm"><Eye size={14}/></button>
@@ -596,7 +602,7 @@ export default function Dashboard() {
                     <div className="erp-card !p-8 bg-white shadow-sm border-none flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">PR CHỜ TÌM NGUỒN</div>
                         <div className="flex items-baseline gap-2">
-                            <div className="text-5xl font-black text-erp-navy font-mono tracking-tighter">{prSourcingQueue.length}</div>
+                            <div className="text-5xl font-black text-erp-navy  tracking-tighter">{prSourcingQueue.length}</div>
                             <div className="text-[11px] font-black text-slate-300 uppercase">Yêu cầu</div>
                         </div>
                     </div>
@@ -604,7 +610,7 @@ export default function Dashboard() {
                     <div className="erp-card !p-8 bg-white shadow-sm border-none flex flex-col justify-between border-l-4 border-blue-500 group hover:shadow-xl transition-all duration-500">
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6 text-blue-500">BÁO GIÁ (RFQ) ĐANG XỬ LÝ</div>
                         <div className="flex items-baseline gap-2">
-                            <div className="text-5xl font-black text-blue-500 font-mono tracking-tighter">{activeRfqs.length}</div>
+                            <div className="text-5xl font-black text-blue-500  tracking-tighter">{activeRfqs.length}</div>
                             <div className="text-[11px] font-black text-blue-200 uppercase">Hồ sơ</div>
                         </div>
                     </div>
@@ -612,7 +618,7 @@ export default function Dashboard() {
                     <div className="erp-card !p-8 bg-white shadow-sm border-none flex flex-col justify-between border-l-4 border-amber-500 group hover:shadow-xl transition-all duration-500">
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6 text-amber-500">PO CHỜ SẾP DUYỆT</div>
                         <div className="flex items-baseline gap-2">
-                            <div className="text-5xl font-black text-amber-500 font-mono tracking-tighter">{poApprovalPending.length}</div>
+                            <div className="text-5xl font-black text-amber-500  tracking-tighter">{poApprovalPending.length}</div>
                             <div className="text-[11px] font-black text-amber-200 uppercase">Đơn hàng</div>
                         </div>
                     </div>
@@ -620,7 +626,7 @@ export default function Dashboard() {
                     <div className="erp-card !p-8 bg-white shadow-sm border-none flex flex-col justify-between border-l-4 border-emerald-500 group hover:shadow-xl transition-all duration-500">
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6 text-emerald-500">PO ĐANG GIAO HÀNG</div>
                         <div className="flex items-baseline gap-2">
-                            <div className="text-5xl font-black text-emerald-500 font-mono tracking-tighter">{openPos.length}</div>
+                            <div className="text-5xl font-black text-emerald-500  tracking-tighter">{openPos.length}</div>
                             <div className="text-[11px] font-black text-emerald-200 uppercase">Active</div>
                         </div>
                     </div>
@@ -737,7 +743,7 @@ export default function Dashboard() {
                                                             <span className="text-[9px] font-black text-slate-400">{progress}%</span>
                                                         </div>
                                                     </td>
-                                                    <td className="font-mono text-right font-black text-erp-navy text-sm">{formatVND(po.total)} ₫</td>
+                                                    <td className=" text-right font-black text-erp-navy text-sm">{formatVND(po.total)} ₫</td>
                                                     <td className="text-right pl-2 pr-6">
                                                         <button className="inline-flex items-center justify-center whitespace-nowrap min-w-[100px] px-4 py-2 border border-amber-200 text-amber-600 text-[10px] font-black uppercase tracking-wide rounded-xl hover:bg-amber-50 transition-all">Đốc thúc</button>
                                                     </td>
@@ -779,11 +785,11 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     <div className="erp-card !p-8 border-l-4 border-slate-200 bg-white shadow-sm flex flex-col justify-between relative overflow-hidden">
                         <div className="flex justify-between items-start mb-6">
-                            <div className="text-5xl font-black text-erp-navy font-mono mb-1">{pendingPRCount}</div>
+                            <div className="text-5xl font-black text-erp-navy  mb-1">{pendingPRCount}</div>
                             <AlertTriangle size={24} className="text-red-500" />
                         </div>
                         <div>
-                            <div className="text-sm font-black text-erp-blue font-mono mb-2">{formatVND(pendingPRValue)} ₫</div>
+                            <div className="text-sm font-black text-erp-blue  mb-2">{formatVND(pendingPRValue)} ₫</div>
                             <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest pt-3 border-t border-slate-100">Tổng giá trị chờ duyệt</div>
                         </div>
                     </div>
@@ -791,7 +797,7 @@ export default function Dashboard() {
                     <div className="erp-card !p-8 border-l-4 border-emerald-500 bg-white shadow-sm flex flex-col justify-between">
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Ngân sách {typeof currentUser?.department === 'object' ? (currentUser.department as { name: string })?.name : (currentUser?.department || 'Phòng ban')} còn lại</div>
                         <div>
-                            <div className="text-3xl font-black text-emerald-500 font-mono mb-2">{formatVND(quarterlyRemainingBudget)} ₫</div>
+                            <div className="text-3xl font-black text-emerald-500  mb-2">{formatVND(quarterlyRemainingBudget)} ₫</div>
                             <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest pt-3 border-t border-slate-100">Trong {activeQuarterPeriod ? `Q${activeQuarterPeriod.periodNumber} / ${activeQuarterPeriod.fiscalYear}` : 'Tháng / Quý'}</div>
                         </div>
                     </div>
@@ -799,7 +805,7 @@ export default function Dashboard() {
                     <div className="erp-card !p-8 border-l-4 border-amber-500 bg-white shadow-sm flex flex-col justify-between">
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Cảnh báo tồn đọng</div>
                         <div>
-                            <div className="text-4xl font-black text-amber-500 font-mono mb-2">{pendingPRCount}</div>
+                            <div className="text-4xl font-black text-amber-500  mb-2">{pendingPRCount}</div>
                             <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest pt-3 border-t border-slate-100">{pendingPRCount} phiếu đang chờ bạn</div>
                         </div>
                     </div>
@@ -814,7 +820,7 @@ export default function Dashboard() {
                             {deptAllocation ? (
                                 <>
                                     <div className="flex justify-between items-end mb-2">
-                                        <div className="text-xl font-black text-erp-navy font-mono">
+                                        <div className="text-xl font-black text-erp-navy ">
                                             {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}%
                                         </div>
                                         <div className="text-[9px] font-black text-slate-400 uppercase tracking-tighter italic">Đã dùng / Tổng</div>
@@ -848,6 +854,10 @@ export default function Dashboard() {
                             )}
                         </div>
                     </div>
+                </div>
+
+                <div className="mb-10">
+                    <BudgetHeatmap />
                 </div>
 
                 {/* Search & Filter Toolbar */}
@@ -940,7 +950,7 @@ export default function Dashboard() {
                                                 </span>
                                             </td>
                                             <td className="max-w-[200px] truncate font-medium text-slate-600">{pr.title}</td>
-                                            <td className="font-mono text-right font-black text-erp-blue text-sm">{formatVND(pr.totalEstimate || 0)} ₫</td>
+                                            <td className=" text-right font-black text-erp-blue text-sm">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                             <td className="text-right px-8">
                                                 <div className="flex justify-end gap-1.5">
                                                     <button onClick={() => setSelectedPRDetails(pr)} className="p-2 bg-white border border-slate-100 text-slate-400 hover:text-erp-blue hover:border-erp-blue/20 rounded-xl transition-all shadow-sm" title="Xem chi tiết">
@@ -977,12 +987,107 @@ export default function Dashboard() {
         );
     };
 
+    const renderSupplierDashboard = () => {
+        const myPendingRFQs = (rfqs || []).filter(r => r.status === "SENT");
+        const myActivePOs = (pos || []).filter(po => po.status === "ISSUED" || po.status === "PARTIALLY_RECEIVED");
+        const myOrg = (organizations || []).find(o => o.id === currentUser?.orgId);
+        
+        return (
+            <main className="animate-in fade-in duration-700 bg-slate-50/30 -m-8 p-8 min-h-screen">
+                <div className="flex justify-between items-end mb-10">
+                    <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse"></div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hệ thống Quản trị Nhà cung cấp</span>
+                        </div>
+                        <h1 className="text-4xl font-black text-erp-navy tracking-tight">Bảng điều khiển B2B</h1>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="text-right">
+                            <p className="text-[10px] font-black text-erp-navy mb-0.5">{myOrg?.name || "Đối tác ProcurePro"}</p>
+                            <p className="text-[8px] font-bold text-emerald-500 uppercase tracking-tighter">Xác thực: Gold Partner</p>
+                        </div>
+                        <div className="w-10 h-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-sm">
+                            <Building2 size={20} className="text-erp-blue" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Supplier Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+                    <MetricCard title="Hồ sơ Báo giá mới" value={myPendingRFQs.length} icon={<ClipboardList size={20} />} color="bg-blue-500" />
+                    <MetricCard title="Đơn hàng đang chờ" value={myActivePOs.length} icon={<ShoppingCart size={20} />} color="bg-amber-500" />
+                    <MetricCard title="Doanh thu dự tính" value={formatVND(125000000).replace('₫', '')} icon={<DollarSign size={20} />} color="bg-emerald-500" />
+                    <MetricCard title="Điểm đánh giá" value="4.9/5" icon={<Zap size={20} />} color="bg-purple-600" />
+                </div>
+
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                    {/* RFQ List */}
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-erp-navy">YÊU CẦU BÁO GIÁ ĐẾN (RFQ)</h3>
+                            <Link href="/supplier/rfq" className="text-[10px] font-black text-erp-blue hover:underline uppercase tracking-widest">Xem tất cả ›</Link>
+                        </div>
+                        <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-erp-navy/5 border-none bg-white">
+                            <table className="erp-table text-xs">
+                                <thead>
+                                    <tr className="bg-slate-50/50">
+                                        <th className="px-8">Mã RFQ</th>
+                                        <th>Bên mua</th>
+                                        <th className="text-right">Thời hạn</th>
+                                        <th className="text-right px-8">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50">
+                                    {myPendingRFQs.length > 0 ? myPendingRFQs.slice(0, 5).map(rfq => (
+                                        <tr key={rfq.id} className="hover:bg-slate-50 transition-all">
+                                            <td className="px-8 font-black text-erp-navy">{rfq.rfqNumber}</td>
+                                            <td className="font-semibold text-slate-500">ProcurePro Corp</td>
+                                            <td className="text-right text-slate-400 font-bold">{formatDate(rfq.createdAt)}</td>
+                                            <td className="text-right px-8 whitespace-nowrap">
+                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-erp-blue text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-erp-navy transition-all">Báo giá</Link>
+                                            </td>
+                                        </tr>
+                                    )) : (
+                                        <tr><td colSpan={4} className="py-20 text-center text-slate-300 font-black uppercase text-[10px]">Không có RFQ mới</td></tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Quick Tips or Announcements */}
+                    <div className="space-y-6">
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-erp-navy flex items-center gap-2">
+                             <Bell size={14} className="text-erp-blue" /> THÔNG BÁO TỪ HỆ THỐNG
+                        </h3>
+                        <div className="bg-erp-navy rounded-[40px] p-10 text-white relative overflow-hidden group shadow-2xl shadow-erp-navy/20">
+                             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
+                                 <Zap size={100} />
+                             </div>
+                             <div className="relative z-10 space-y-6">
+                                 <div className="p-6 bg-white/5 rounded-3xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                                     <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400 mb-2">Cập nhật Chính sách Thanh toán</h4>
+                                     <p className="text-[11px] text-white/60 leading-relaxed font-medium">Hệ thống ProcurePro sẽ rút ngắn thời hạn thanh toán từ 45 ngày xuống còn 30 ngày cho các đối tác Gold.</p>
+                                 </div>
+                                 <div className="p-6 bg-white/5 rounded-3xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                                     <h4 className="text-xs font-black uppercase tracking-widest text-amber-400 mb-2">Bảo trì Hệ thống B2B</h4>
+                                     <p className="text-[11px] text-white/60 leading-relaxed font-medium">Hệ thống sẽ bảo trì từ 2h00 đến 4h00 sáng Chủ Nhật tới. Vui lòng hoàn tất báo giá trước thời gian này.</p>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        );
+    };
+
     const renderAdminDashboard = () => (
         <main className="animate-in fade-in duration-500">
             <h1 className="text-3xl font-black text-erp-navy tracking-tight mb-8">Hệ thống Quản trị Tổng thể</h1>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
                 <div className="erp-card p-6! border-l-4 border-slate-200">
-                    <div className="text-2xl font-black text-erp-navy font-mono">{formatVND(budgets?.allocated || 0)} ₫</div>
+                    <div className="text-2xl font-black text-erp-navy ">{formatVND(budgets?.allocated || 0)} ₫</div>
                     <div className="mt-2 text-[10px] text-slate-400 font-bold">Ngân sách đã phân bổ</div>
                 </div>
             </div>
@@ -996,7 +1101,7 @@ export default function Dashboard() {
                             <tr key={pr.id}>
                                 <td className="font-bold text-erp-navy">{pr.prNumber || pr.id.substring(0, 8)}</td>
                                 <td className="font-semibold text-slate-500">{typeof pr.department === 'object' ? pr.department?.name : (pr.department || "N/A")}</td>
-                                <td className="font-mono text-right font-black text-erp-navy">{formatVND(pr.totalEstimate || 0)} ₫</td>
+                                <td className=" text-right font-black text-erp-navy">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                 <td className="text-right text-slate-400"><button onClick={() => setSelectedPRDetails(pr)} className="p-2 hover:bg-slate-100 rounded-xl"><Eye size={16} /></button></td>
                             </tr>
                         ))}
@@ -1010,9 +1115,10 @@ export default function Dashboard() {
         <>
             {isRequester && renderRequesterDashboard()}
             {isCFO && renderCFODashboard()}
-            {!isCFO && isProcurement && renderProcurementDashboard()}
-            {!isCFO && isApproverGroup && renderApproverDashboard()}
-            {!isRequester && !isCFO && !isProcurement && !isApproverGroup && renderAdminDashboard()}
+            {isSupplier && renderSupplierDashboard()}
+            {!isCFO && !isSupplier && isProcurement && renderProcurementDashboard()}
+            {!isCFO && !isSupplier && isApproverGroup && renderApproverDashboard()}
+            {!isRequester && !isCFO && !isProcurement && !isApproverGroup && !isSupplier && renderAdminDashboard()}
 
             {selectedPRDetails && (
                 <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
@@ -1039,13 +1145,13 @@ export default function Dashboard() {
                                     </div>
                                     <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-center">
                                         <div className="text-[9px] font-black uppercase text-amber-600 mb-1">Ngày cần hàng</div>
-                                        <div className="text-sm font-black text-erp-navy font-mono">
+                                        <div className="text-sm font-black text-erp-navy ">
                                             {formatDate(selectedPRDetails.requiredDate)}
                                         </div>
                                     </div>
                                     <div className="p-4 bg-erp-navy rounded-2xl text-center">
                                         <div className="text-[9px] font-black uppercase text-white/40 mb-1">Tổng dự toán</div>
-                                        <div className="text-sm font-black text-emerald-400 font-mono">{formatVND(selectedPRDetails.totalEstimate || 0)} ₫</div>
+                                        <div className="text-sm font-black text-emerald-400 ">{formatVND(selectedPRDetails.totalEstimate || 0)} ₫</div>
                                     </div>
                                 </div>
 
@@ -1061,7 +1167,7 @@ export default function Dashboard() {
                                                     <tr key={idx} className="border-b border-slate-50">
                                                         <td className="p-4 font-black">{item.productName || item.description}</td>
                                                         <td className="p-4 text-center">{item.qty} {item.unit}</td>
-                                                        <td className="p-4 text-right font-mono font-black">{formatVND((item.qty || 0) * (item.estimatedPrice || 0))} ₫</td>
+                                                        <td className="p-4 text-right  font-black">{formatVND((item.qty || 0) * (item.estimatedPrice || 0))} ₫</td>
                                                     </tr>
                                                 ))}
                                             </tbody>

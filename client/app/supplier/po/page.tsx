@@ -234,7 +234,7 @@ export default function SupplierPO() {
                             <div className="space-y-4 text-xs font-medium text-slate-600">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-1">Số Vận Đơn (Mã DO NCC)</label>
-                                    <input type="text" className="erp-input w-full bg-slate-50 font-mono text-erp-blue font-bold" placeholder="DO-2026-###"/>
+                                    <input type="text" className="erp-input w-full bg-slate-50  text-erp-blue font-bold" placeholder="DO-2026-###"/>
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-1">Bên Vận Chuyển / Biển số Xe</label>
@@ -323,13 +323,13 @@ export default function SupplierPO() {
                             <tr key={p.id} className={`hover:bg-slate-50 border-b border-slate-100 ${(p as any).supplierId === supplierId || (p as any).supplier?.id === supplierId ? 'bg-blue-50' : ''}`}>
                                 <td className="font-bold text-erp-navy">{p.poNumber || p.id}</td>
                                 <td className="font-bold text-slate-700">{(p as any).buyer?.name || (p as any).org?.name || "ProcurePro"}</td>
-                                <td className="text-center font-mono text-slate-500">{p.createdAt ? new Date(p.createdAt).toLocaleDateString("vi-VN") : "N/A"}</td>
+                                <td className="text-center  text-slate-500">{p.createdAt ? new Date(p.createdAt).toLocaleDateString("vi-VN") : "N/A"}</td>
                                 <td className="text-center">
                                     <span className={`${p.status === "ISSUED" || p.status === "PENDING" ? "bg-red-50 text-red-600 border border-red-200" : p.status === "REJECTED" ? "bg-red-100 text-red-700 border border-red-300" : "bg-emerald-50 text-emerald-600 border-none"} font-black uppercase px-2 py-1 rounded text-[9px] tracking-widest`}>
                                         {p.status === "ISSUED" || p.status === "PENDING" ? "Cần Confirm" : p.status === "REJECTED" ? "Đã Từ chối" : "Đã Ack"}
                                     </span>
                                 </td>
-                                <td className="text-center font-mono text-[10px] text-slate-400">{(p as any).supplierId?.substring(0, 8) || (p as any).supplier?.id?.substring(0, 8) || "N/A"}</td>
+                                <td className="text-center  text-[10px] text-slate-400">{(p as any).supplierId?.substring(0, 8) || (p as any).supplier?.id?.substring(0, 8) || "N/A"}</td>
                                 <td className="text-right">
                                     <button 
                                         onClick={() => openModal(p)}

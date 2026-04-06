@@ -81,7 +81,7 @@ export default function DisputesPage() {
                         <div className="flex justify-between items-start mb-3">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-3">
-                                    <span className="font-mono font-bold text-red-600">#{d.disputeNumber}</span>
+                                    <span className=" font-bold text-red-600">#{d.disputeNumber}</span>
                                     {getStatusBadge(d.status)}
                                     <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${d.priority === 'HIGH' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
                                         {d.priority}

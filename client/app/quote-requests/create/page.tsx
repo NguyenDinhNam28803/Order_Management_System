@@ -70,7 +70,7 @@ export default function CreateQuoteRequestPage() {
                 </Link>
                 <div>
                     <h1 className="text-2xl font-black text-erp-navy tracking-tight">Tạo yêu cầu báo giá mới</h1>
-                    <p className="text-sm text-slate-400 font-medium italic">Gửi danh sách yêu cầu tới Thu mua để cập nhật báo giá nhanh nhất</p>
+                    <p className="text-sm text-slate-500 font-bold italic">Gửi danh sách yêu cầu tới Thu mua để cập nhật báo giá nhanh nhất</p>
                 </div>
             </header>
 
@@ -81,7 +81,7 @@ export default function CreateQuoteRequestPage() {
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="group space-y-2">
-                                    <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 group-focus-within:text-erp-blue transition-colors">
+                                    <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 group-focus-within:text-erp-blue transition-colors">
                                         <FileText size={14} /> Tiêu đề yêu cầu
                                     </label>
                                     <input 
@@ -140,7 +140,7 @@ export default function CreateQuoteRequestPage() {
                         <div className="space-y-6 pt-6 border-t border-slate-100">
                             <div className="flex justify-between items-center">
                                 <h3 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-erp-navy">
-                                    <Package size={16} className="text-erp-blue" /> Danh mục mặt hàng cần báo giá
+                                    <Package size={16} className="text-erp-blue" /> <span className="text-slate-900">Danh mục mặt hàng cần báo giá</span>
                                 </h3>
                                 <button 
                                     onClick={addItem}

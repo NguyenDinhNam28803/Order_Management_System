@@ -160,7 +160,7 @@ export default function ProcurementControlPage() {
             key: "totalEstimate",
             render: (row: PR) => (
                 <div className="text-right">
-                    <div className="font-mono font-black text-erp-blue text-sm">{formatVND(row.totalEstimate || 0)} ₫</div>
+                    <div className=" font-black text-erp-blue text-sm">{formatVND(row.totalEstimate || 0)} ₫</div>
                     <div className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Base Amount</div>
                 </div>
             )

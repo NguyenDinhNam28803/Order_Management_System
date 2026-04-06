@@ -289,7 +289,7 @@ export default function SimulationPage() {
                                                 <span className="text-[10px] font-black text-white">{q.supplier}</span>
                                                 <span className="text-emerald-500 text-[10px] font-black">{q.aiScore}%</span>
                                             </div>
-                                            <div className="text-xs font-mono text-erp-blue font-black">{q.price.toLocaleString()} ₫</div>
+                                            <div className="text-xs  text-erp-blue font-black">{q.price.toLocaleString()} ₫</div>
                                             <div className="text-[8px] mt-2 text-slate-500 uppercase tracking-widest font-black flex items-center gap-1">
                                                 <Bot size={10} /> {q.aiRec}
                                             </div>
@@ -315,7 +315,7 @@ export default function SimulationPage() {
                                         <StatusBadge status={pr.status} />
                                     </div>
                                     <div className="text-[11px] font-black text-white">{pr.id}</div>
-                                    <div className="text-[9px] text-slate-500 mt-1 font-mono">{pr.total.toLocaleString()} ₫</div>
+                                    <div className="text-[9px] text-slate-500 mt-1 ">{pr.total.toLocaleString()} ₫</div>
                                 </div>
                             )}
 

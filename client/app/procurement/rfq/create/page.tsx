@@ -185,7 +185,7 @@ export default function CreateRFQPage() {
                             </div>
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Ước tính (VNĐ)</span>
-                                <span className="text-erp-blue font-black font-mono">{(Number(targetPR.totalEstimate) || 0).toLocaleString()} \u20ab</span>
+                                <span className="text-erp-blue font-black ">{(Number(targetPR.totalEstimate) || 0).toLocaleString()} \u20ab</span>
                             </div>
                             
                             <div className="pt-6 border-t border-slate-50">

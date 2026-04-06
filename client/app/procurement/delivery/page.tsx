@@ -120,7 +120,7 @@ export default function DeliveryTrackingPage() {
                                                 <td className="px-8 py-8">
                                                     <div className="flex flex-col">
                                                         <p className="text-xs font-black text-slate-700">{del.carrier}</p>
-                                                        <p className="text-[10px] font-mono text-erp-blue font-bold tracking-tight">#{del.trackingNumber}</p>
+                                                        <p className="text-[10px]  text-erp-blue font-bold tracking-tight">#{del.trackingNumber}</p>
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-8">

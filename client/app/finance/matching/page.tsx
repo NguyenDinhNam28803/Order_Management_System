@@ -118,13 +118,13 @@ export default function FinanceMatching() {
                                     <td className="font-bold text-slate-700 p-4 border-r border-slate-100">{item.desc}</td>
                                     <td className="p-4 text-center border-r border-slate-100 bg-blue-50/10">
                                         <div className="flex flex-col gap-1 items-center">
-                                            <span className="font-mono font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded text-[10px]">SL: {item.po.qty}</span>
-                                            <span className="font-mono text-[9px] text-slate-400">@ {formatVND(item.po.price)}</span>
+                                            <span className=" font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded text-[10px]">SL: {item.po.qty}</span>
+                                            <span className=" text-[9px] text-slate-400">@ {formatVND(item.po.price)}</span>
                                         </div>
                                     </td>
                                     <td className="p-4 text-center border-r border-slate-100 bg-orange-50/10">
                                         <div className="flex flex-col gap-1 items-center justify-center">
-                                            <span className={`font-mono font-black px-2 py-0.5 rounded text-[10px] ${item.matched ? 'text-slate-500 bg-slate-100' : 'text-red-600 bg-red-100 border border-red-200'}`}>
+                                            <span className={` font-black px-2 py-0.5 rounded text-[10px] ${item.matched ? 'text-slate-500 bg-slate-100' : 'text-red-600 bg-red-100 border border-red-200'}`}>
                                                 SL: {item.grn.qty}
                                             </span>
                                             {!item.matched && <span className="text-[9px] font-bold text-red-500 mt-1">Thiếu {item.po.qty - item.grn.qty}</span>}
@@ -133,12 +133,12 @@ export default function FinanceMatching() {
                                     <td className={`p-4 relative bg-purple-50/10 ${!item.matched ? 'bg-red-50/50 border-y border-r-2 border-red-300' : ''}`}>
                                         <div className="flex items-center justify-between">
                                             <div className="flex flex-col gap-1">
-                                                <span className={`font-mono font-black px-2 py-0.5 rounded text-[10px] ${!item.matched ? 'text-red-700 bg-red-100' : 'text-slate-500 bg-slate-100'}`}>
+                                                <span className={` font-black px-2 py-0.5 rounded text-[10px] ${!item.matched ? 'text-red-700 bg-red-100' : 'text-slate-500 bg-slate-100'}`}>
                                                     SL: {item.inv.qty}
                                                 </span>
-                                                <span className="font-mono text-[9px] text-slate-400">@ {formatVND(item.inv.price)}</span>
+                                                <span className=" text-[9px] text-slate-400">@ {formatVND(item.inv.price)}</span>
                                             </div>
-                                            <div className="text-right font-mono font-black text-erp-navy text-sm">
+                                            <div className="text-right  font-black text-erp-navy text-sm">
                                                 {formatVND(item.inv.qty * item.inv.price)} ₫
                                             </div>
                                         </div>
@@ -156,15 +156,15 @@ export default function FinanceMatching() {
                     <div className="p-6 bg-slate-50 border-t border-slate-200 flex justify-end gap-12">
                         <div className="text-right space-y-2">
                             <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Tổng trước thuế</p>
-                            <p className="font-mono text-xl font-black text-slate-500">{subTotal.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
+                            <p className=" text-xl font-black text-slate-500">{subTotal.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
                         </div>
                         <div className="text-right space-y-2">
                             <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Thuế GTGT (10%)</p>
-                            <p className="font-mono text-xl font-black text-slate-500">{vat.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
+                            <p className=" text-xl font-black text-slate-500">{vat.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
                         </div>
                         <div className="text-right space-y-2">
                             <p className="text-[10px] font-black uppercase text-erp-blue tracking-widest border-b border-erp-blue pb-1 mb-1 inline-block">Tổng Yêu Cầu T/T (Invoice)</p>
-                            <p className="font-mono text-3xl font-black text-erp-navy">{(subTotal + vat).toLocaleString()} <span className="text-xs">VNĐ</span></p>
+                            <p className=" text-3xl font-black text-erp-navy">{(subTotal + vat).toLocaleString()} <span className="text-xs">VNĐ</span></p>
                         </div>
                     </div>
                 </div>
@@ -222,7 +222,7 @@ export default function FinanceMatching() {
                                      <input 
                                          type="text" 
                                          readOnly
-                                         className="erp-input w-full font-mono font-black text-emerald-600 bg-slate-50 focus:bg-white focus:border-emerald-500 h-10" 
+                                         className="erp-input w-full  font-black text-emerald-600 bg-slate-50 focus:bg-white focus:border-emerald-500 h-10" 
                                          value={payDate ? (() => {
                                              const [y, m, d] = payDate.split('-');
                                              return `${d}-${m}-${y}`;
@@ -238,7 +238,7 @@ export default function FinanceMatching() {
                              </div>
                              <div>
                                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 block items-center gap-1"><CreditCard size={12}/> Phương thức Bank</label>
-                                 <select className="erp-input w-full font-mono bg-slate-50 text-slate-700 focus:bg-white" value={payMethod} onChange={e=>setPayMethod(e.target.value)}>
+                                 <select className="erp-input w-full  bg-slate-50 text-slate-700 focus:bg-white" value={payMethod} onChange={e=>setPayMethod(e.target.value)}>
                                      <option value="Bank Transfer (VND)">Bank Transfer (Techcombank VND)</option>
                                      <option value="LC">Thư Tín Dụng (L/C)</option>
                                      <option value="Cash">Tiền Mặt</option>

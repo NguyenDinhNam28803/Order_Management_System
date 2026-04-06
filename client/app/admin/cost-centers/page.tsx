@@ -155,7 +155,7 @@ export default function CostCentersPage() {
                                                 </div>
                                                 <div>
                                                     <div className="text-sm font-bold text-slate-900 leading-tight">{cc.name}</div>
-                                                    <div className="text-[10px] text-indigo-600 font-bold mt-0.5 tracking-wider font-mono">
+                                                    <div className="text-[10px] text-indigo-600 font-bold mt-0.5 tracking-wider">
                                                         {cc.code}
                                                     </div>
                                                 </div>
@@ -345,7 +345,7 @@ export default function CostCentersPage() {
                                     <div className="grid grid-cols-2 gap-8 p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-inner">
                                         <div className="form-group">
                                             <label className="erp-label">Mã định danh</label>
-                                            <div className="text-sm font-bold text-indigo-900 font-mono tracking-wider">{viewingCC.code}</div>
+                                            <div className="text-sm font-bold text-indigo-900  tracking-wider">{viewingCC.code}</div>
                                         </div>
                                         <div className="form-group">
                                             <label className="erp-label">Tên hiển thị</label>

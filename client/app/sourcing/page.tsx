@@ -229,7 +229,7 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
                             <td className="px-6 py-5 text-center">
                                 <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-black uppercase">{pr.deptId || pr.requester?.fullName?.substring(0,2)}</span>
                             </td>
-                            <td className="px-6 py-5 text-right font-mono font-black text-erp-blue">
+                            <td className="px-6 py-5 text-right  font-black text-erp-blue">
                                 {(pr.totalEstimate || 0).toLocaleString()} ₫
                             </td>
                             <td className="px-6 py-5 text-center">

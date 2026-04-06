@@ -103,7 +103,7 @@ const navigation = [
         group: "Nhà cung cấp (B2B)", 
         roles: ["SUPPLIER"],
         items: [
-            { name: "Bàn làm việc B2B", icon: LayoutDashboard, path: "/supplier/dashboard", roles: ["SUPPLIER"] },
+            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/supplier/dashboard", roles: ["SUPPLIER"] },
             { name: "Yêu cầu báo giá (RFQ)", icon: FolderTree, path: "/supplier/rfq", roles: ["SUPPLIER"] },
             { name: "Đơn đặt hàng (PO)", icon: ShoppingCart, path: "/supplier/po", roles: ["SUPPLIER"] },
             { name: "Hợp đồng & Ký kết", icon: ShieldCheck, path: "/procurement/contracts", roles: ["SUPPLIER"] },

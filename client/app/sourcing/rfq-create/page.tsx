@@ -225,7 +225,7 @@ export default function RFQCreatePage() {
                                         type="text"
                                         readOnly
                                         placeholder="Chọn ngày..."
-                                        className="erp-input w-full font-mono font-bold h-12 !rounded-xl group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all"
+                                        className="erp-input w-full  font-bold h-12 !rounded-xl group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all"
                                         value={form.deadline ? (() => {
                                             const [y, m, d] = form.deadline.split('-');
                                             return `${d}-${m}-${y}`;

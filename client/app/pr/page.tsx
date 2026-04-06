@@ -117,7 +117,7 @@ export default function PRPage() {
             label: "Ngân sách (VND)", 
             key: "totalEstimate", 
             render: (row: PR) => (
-                <span className="font-bold text-slate-900 font-mono">
+                <span className="font-bold text-slate-900 ">
                     {Number(row.totalEstimate || 0).toLocaleString()} ₫
                 </span>
             ) 
@@ -134,6 +134,13 @@ export default function PRPage() {
                 
                 return (
                     <div className="flex gap-2 justify-end pr-4">
+                        <Link 
+                            href={`/pr/${row.id}`}
+                            className="p-1.5 rounded-lg bg-slate-50 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-100 transition-all shadow-sm"
+                            title="Xem chi tiết PR"
+                        >
+                            <FileText size={16} />
+                        </Link>
                         {activeTab === "Phê duyệt" ? (
                             <div className="flex gap-1.5">
                                 <button 

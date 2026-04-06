@@ -88,16 +88,16 @@ export default function MatchingPage() {
                             <tbody>
                                 <tr>
                                     <td className="p-6 font-bold text-erp-navy">Vải Cotton 100% (Trắng)</td>
-                                    <td className="p-6 text-center font-mono">500</td>
-                                    <td className="p-6 text-center font-mono font-black text-emerald-600">500</td>
-                                    <td className="p-6 text-center font-mono font-black text-emerald-600">500</td>
+                                    <td className="p-6 text-center ">500</td>
+                                    <td className="p-6 text-center  font-black text-emerald-600">500</td>
+                                    <td className="p-6 text-center  font-black text-emerald-600">500</td>
                                     <td className="p-6 text-right"><span className="status-pill status-approved">Khớp 100%</span></td>
                                 </tr>
                                 <tr>
                                     <td className="p-6 font-bold text-erp-navy">Mực in lụa (Thùng 20L)</td>
-                                    <td className="p-6 text-center font-mono">50</td>
-                                    <td className="p-6 text-center font-mono font-black text-red-600 bg-red-50/30">42</td>
-                                    <td className="p-6 text-center font-mono font-black text-red-600 bg-red-50/30 animate-pulse">50</td>
+                                    <td className="p-6 text-center ">50</td>
+                                    <td className="p-6 text-center  font-black text-red-600 bg-red-50/30">42</td>
+                                    <td className="p-6 text-center  font-black text-red-600 bg-red-50/30 animate-pulse">50</td>
                                     <td className="p-6 text-right"><span className="status-pill status-rejected">Bất thường</span></td>
                                 </tr>
                             </tbody>

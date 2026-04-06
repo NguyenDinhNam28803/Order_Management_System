@@ -110,15 +110,15 @@ export default function SupplierInvoice() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="erp-card shadow-sm border border-slate-200">
                                     <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Số HĐ Điện Tử VAT</label>
-                                    <input type="text" className="erp-input w-full font-mono font-bold text-slate-700" placeholder="VD: 0001234" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} />
+                                    <input type="text" className="erp-input w-full  font-bold text-slate-700" placeholder="VD: 0001234" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} />
                                 </div>
                                 <div className="erp-card shadow-sm border border-slate-200">
                                     <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Ký hiệu Mẫu số</label>
-                                    <input type="text" className="erp-input w-full font-mono text-slate-600" defaultValue="1C26TAA" />
+                                    <input type="text" className="erp-input w-full  text-slate-600" defaultValue="1C26TAA" />
                                 </div>
                                 <div className="erp-card shadow-sm border border-slate-200">
                                     <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Ngày xuất (Auto)</label>
-                                    <input type="date" className="erp-input w-full font-mono bg-slate-50 opacity-70 cursor-not-allowed" disabled defaultValue={new Date().toISOString().substring(0, 10)} />
+                                    <input type="date" className="erp-input w-full  bg-slate-50 opacity-70 cursor-not-allowed" disabled defaultValue={new Date().toISOString().substring(0, 10)} />
                                 </div>
                             </div>
 
@@ -144,20 +144,20 @@ export default function SupplierInvoice() {
                                                 <td className="font-bold text-slate-700">{item.desc}</td>
                                                 <td className="text-right">
                                                     <div className="inline-flex flex-col items-end">
-                                                        <span className="font-mono font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded text-[10px] mb-1">{item.received} {item.received < item.expected && <span className="text-red-500 ml-1">(! thiếu)</span>}</span>
+                                                        <span className=" font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded text-[10px] mb-1">{item.received} {item.received < item.expected && <span className="text-red-500 ml-1">(! thiếu)</span>}</span>
                                                         <span className="text-[9px] text-slate-400">@ {(item.price).toLocaleString()}</span>
                                                     </div>
                                                 </td>
                                                 <td className="border-l-2 border-emerald-100 p-2 bg-emerald-50/10">
                                                     <input 
                                                         type="number" 
-                                                        className="erp-input w-full text-right font-mono font-black text-emerald-700 focus:border-emerald-500 shadow-inner bg-white" 
+                                                        className="erp-input w-full text-right  font-black text-emerald-700 focus:border-emerald-500 shadow-inner bg-white" 
                                                         value={invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.received}
                                                         max={item.received}
                                                         onChange={e => handleQtyChange(item.id, e.target.value, item.received)}
                                                     />
                                                 </td>
-                                                <td className="text-right font-mono font-bold text-erp-navy text-sm p-4 bg-slate-50/50">
+                                                <td className="text-right  font-bold text-erp-navy text-sm p-4 bg-slate-50/50">
                                                     {((invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.received) * item.price).toLocaleString()} ₫
                                                 </td>
                                             </tr>
@@ -185,17 +185,17 @@ export default function SupplierInvoice() {
                         <div className="space-y-4 text-xs font-bold text-slate-600 mb-6 border-b border-slate-100 pb-6">
                             <div className="flex justify-between items-center">
                                 <span className="uppercase tracking-widest text-[10px] text-slate-500">Tổng tiền TRƯỚC THUẾ</span>
-                                <span className="font-mono text-base">{subTotal.toLocaleString()} ₫</span>
+                                <span className=" text-base">{subTotal.toLocaleString()} ₫</span>
                             </div>
                             <div className="flex justify-between items-center group">
-                                <span className="uppercase tracking-widest text-[10px] text-slate-500 flex items-center gap-2">Thuế SUẤT VAT <input type="number" className="erp-input !py-0 !px-1 w-12 text-center font-mono border-slate-300" value={vat} onChange={e => setVat(Number(e.target.value))}/> %</span>
-                                <span className="font-mono text-base text-slate-400 group-hover:text-erp-navy transition-colors">{vatAmount.toLocaleString()} ₫</span>
+                                <span className="uppercase tracking-widest text-[10px] text-slate-500 flex items-center gap-2">Thuế SUẤT VAT <input type="number" className="erp-input !py-0 !px-1 w-12 text-center  border-slate-300" value={vat} onChange={e => setVat(Number(e.target.value))}/> %</span>
+                                <span className=" text-base text-slate-400 group-hover:text-erp-navy transition-colors">{vatAmount.toLocaleString()} ₫</span>
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-1 text-right mb-6">
                             <span className="text-[10px] font-black uppercase tracking-widest text-erp-blue mb-1">Tổng Tiền THANH TOÁN YÊU CẦU</span>
-                            <span className="text-3xl font-black font-mono text-erp-navy tracking-tight">{totalAmount.toLocaleString()} <span className="text-sm">VND</span></span>
+                            <span className="text-3xl font-black  text-erp-navy tracking-tight">{totalAmount.toLocaleString()} <span className="text-sm">VND</span></span>
                         </div>
                         
                         <div className="space-y-3 pt-6 border-t border-slate-100">

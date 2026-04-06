@@ -373,7 +373,7 @@ export default function SupplierDashboard() {
                       {rfq.items.length} hạng mục • {rfq.items.slice(0, 2).map(i => i.name).join(", ")}{rfq.items.length > 2 ? "..." : ""}
                     </div>
                   </td>
-                  <td className="text-slate-500 font-mono text-xs">{rfq.createdAt}</td>
+                  <td className="text-slate-500  text-xs">{rfq.createdAt}</td>
                   <td>
                     <span className={`status-pill ${rfq.status === 'Pending' ? 'status-pending' : 'status-approved'}`}>
                       {rfq.status === 'Pending' ? 'Chờ báo giá' : 'Đã báo giá'}
@@ -474,7 +474,7 @@ export default function SupplierDashboard() {
                           <div className="relative">
                             <input 
                               type="number" 
-                              className="erp-input w-full pr-8 !py-2.5 font-mono text-erp-blue font-black focus:border-erp-blue bg-white border-slate-200"
+                              className="erp-input w-full pr-8 !py-2.5  text-erp-blue font-black focus:border-erp-blue bg-white border-slate-200"
                               placeholder="0"
                               value={quotationData[item.id]?.unitPrice || ""}
                               onChange={(e) => handlePriceChange(item.id, e.target.value)}
@@ -497,7 +497,7 @@ export default function SupplierDashboard() {
                   <tfoot>
                     <tr className="bg-slate-50 font-black">
                       <td colSpan={2} className="text-right py-6 uppercase tracking-widest text-slate-400 text-[10px]">Thành tiền (Draft):</td>
-                      <td className="text-left py-6 pl-4 text-erp-blue text-xl font-black font-mono">
+                      <td className="text-left py-6 pl-4 text-erp-blue text-xl font-black ">
                         {totalValue.toLocaleString()} ₫
                       </td>
                       <td></td>

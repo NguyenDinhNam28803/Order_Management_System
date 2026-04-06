@@ -234,14 +234,14 @@ export default function SupplierRFQ() {
                                                     <div className="font-black text-slate-700">{itemName}</div>
                                                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Mã: {itemCode}</div>
                                                 </td>
-                                                <td className="text-center font-mono font-black border-x border-slate-50">
+                                                <td className="text-center  font-black border-x border-slate-50">
                                                     <div className="text-erp-navy">{quantity}</div>
                                                     <div className="text-[9px] text-slate-400 uppercase tracking-widest">{unit}</div>
                                                 </td>
                                                 <td className="text-right p-4 bg-emerald-50/20">
                                                     <input 
                                                         type="number" 
-                                                        className="erp-input w-full text-right font-mono text-emerald-600 font-black focus:border-emerald-500 bg-white shadow-sm" 
+                                                        className="erp-input w-full text-right  text-emerald-600 font-black focus:border-emerald-500 bg-white shadow-sm" 
                                                         placeholder="Nhập giá..."
                                                         value={prices[itemId] || ""}  
                                                         onChange={e => setPrices({...prices, [itemId]: e.target.value})}
@@ -255,7 +255,7 @@ export default function SupplierRFQ() {
                                     })}
                                     <tr className="bg-slate-100/50">
                                         <td colSpan={2} className="text-right font-black text-slate-500 uppercase tracking-widest py-4">Tổng tiền nháp:</td>
-                                        <td className="text-right font-black font-mono text-erp-navy text-lg py-4">
+                                        <td className="text-right font-black  text-erp-navy text-lg py-4">
                                             {(() => {
                                                 const total = (activeRFQ.items || []).reduce((sum: number, item: PRItem) => {
                                                     const itemId = item.id;
@@ -285,7 +285,7 @@ export default function SupplierRFQ() {
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Lead time (Ngày giao hàng)</label>
-                                    <input type="number" className="erp-input w-full bg-white font-mono" placeholder="Vd: 14" value={leadTime} onChange={e => setLeadTime(e.target.value)} />
+                                    <input type="number" className="erp-input w-full bg-white " placeholder="Vd: 14" value={leadTime} onChange={e => setLeadTime(e.target.value)} />
                                 </div>
                             </div>
                             
@@ -358,7 +358,7 @@ export default function SupplierRFQ() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="font-mono text-slate-400 text-[10px]">{r.leadTime ? new Date(r.leadTime).toLocaleString() : (r.createdAt ? new Date(r.createdAt).toLocaleString() : 'N/A')}</td>
+                                    <td className=" text-slate-400 text-[10px]">{r.leadTime ? new Date(r.leadTime).toLocaleString() : (r.createdAt ? new Date(r.createdAt).toLocaleString() : 'N/A')}</td>
                                     <td className="text-center">
                                         <span className="bg-red-50 text-red-600 border border-red-100 font-black uppercase text-[9px] px-2 py-1 rounded-lg tracking-widest animate-pulse">20h 15m</span>
                                     </td>

@@ -137,7 +137,7 @@ export default function CreateGRN() {
                         <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input 
                             type="text" 
-                            className="erp-input w-full pl-10 font-bold font-mono text-erp-navy" 
+                            className="erp-input w-full pl-10 font-bold  text-erp-navy" 
                             placeholder="Nhập/Scan PO-2026-..." 
                             value={poLookup}
                             onChange={e => setPoLookup(e.target.value)}
@@ -162,7 +162,7 @@ export default function CreateGRN() {
                         </div>
                         <div className="flex flex-col text-right mt-4 md:mt-0 relative z-10">
                             <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-widest rounded px-2 py-1 border border-emerald-500 bg-emerald-900/50">Hàng chuẩn bị dỡ (Ready for Unload)</span>
-                            <span className="text-xs text-slate-300 mt-2 font-mono">Date: {activePO.createdAt || new Date().toLocaleDateString()}</span>
+                            <span className="text-xs text-slate-300 mt-2 ">Date: {activePO.createdAt || new Date().toLocaleDateString()}</span>
                         </div>
                     </div>
 
@@ -192,16 +192,16 @@ export default function CreateGRN() {
                                     return (
                                         <tr key={item.id} className="border-b border-slate-100 hover:bg-slate-50">
                                             <td className="font-bold text-slate-700">{item.description}</td>
-                                            <td className="text-center font-mono font-bold text-slate-500">{item.qty}</td>
+                                            <td className="text-center  font-bold text-slate-500">{item.qty}</td>
                                             <td className="text-center border-l border-slate-200">
-                                                <input type="number" className="w-16 text-center font-mono text-xs border border-slate-300 rounded focus:outline-none focus:border-erp-blue py-1" value={rData.pList} onChange={e => handleRecvChange(item.id, 'pList', Number(e.target.value))} />
+                                                <input type="number" className="w-16 text-center  text-xs border border-slate-300 rounded focus:outline-none focus:border-erp-blue py-1" value={rData.pList} onChange={e => handleRecvChange(item.id, 'pList', Number(e.target.value))} />
                                             </td>
                                             <td className="text-center border-l-2 border-orange-200 bg-orange-50/10 p-2">
-                                                <input type="number" className="w-full text-center font-black font-mono text-sm border border-orange-300 bg-white rounded shadow-inner focus:outline-none focus:ring-2 focus:ring-orange-500 py-1" value={rData.actual} onChange={e => handleRecvChange(item.id, 'actual', Number(e.target.value))} />
+                                                <input type="number" className="w-full text-center font-black  text-sm border border-orange-300 bg-white rounded shadow-inner focus:outline-none focus:ring-2 focus:ring-orange-500 py-1" value={rData.actual} onChange={e => handleRecvChange(item.id, 'actual', Number(e.target.value))} />
                                             </td>
                                             <td className="text-center">
                                                 {diff !== 0 ? (
-                                                    <span className={`font-mono font-bold px-2 py-1 rounded text-[10px] ${isHigh ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-orange-50 text-orange-600'}`}>
+                                                    <span className={` font-bold px-2 py-1 rounded text-[10px] ${isHigh ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-orange-50 text-orange-600'}`}>
                                                         {diff > 0 ? '+' : ''}{diff} ({pct.toFixed(1)}%)
                                                         {isHigh && <AlertTriangle size={10} className="inline ml-1" />}
                                                     </span>
@@ -238,7 +238,7 @@ export default function CreateGRN() {
                                             {/* Item Info & QC Dropdown */}
                                             <div className="w-full xl:w-1/3 border-r border-slate-100 pr-6">
                                                 <h4 className="font-bold text-erp-navy mb-2">{item.description}</h4>
-                                                <p className="text-[10px] font-mono text-slate-400 mb-4">Mã nội bộ: SP-100{item.id}</p>
+                                                <p className="text-[10px]  text-slate-400 mb-4">Mã nội bộ: SP-100{item.id}</p>
                                                 
                                                 <label className="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-1 block">Kết quả QC Dropdown</label>
                                                 <select 
@@ -271,12 +271,12 @@ export default function CreateGRN() {
                                                         <div className="w-full space-y-3">
                                                             <div className="flex items-center justify-between border-b border-red-100 pb-2">
                                                                 <span className="text-xs font-black text-red-900 uppercase">Khai báo Lỗi (Defect Handling)</span>
-                                                                <span className="text-xs font-mono font-bold text-red-600">SL Thực nhận: {recvData[item.id]?.actual}</span>
+                                                                <span className="text-xs  font-bold text-red-600">SL Thực nhận: {recvData[item.id]?.actual}</span>
                                                             </div>
                                                             <div className="grid grid-cols-2 gap-4">
                                                                 <div>
                                                                     <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Số lượng Lỗi/Hỏng</label>
-                                                                    <input type="number" className="erp-input w-full font-mono text-red-600 font-bold border-red-300 focus:border-red-500" value={qData.failQty} onChange={e => handleQcChange(item.id, 'failQty', Number(e.target.value))} />
+                                                                    <input type="number" className="erp-input w-full  text-red-600 font-bold border-red-300 focus:border-red-500" value={qData.failQty} onChange={e => handleQcChange(item.id, 'failQty', Number(e.target.value))} />
                                                                 </div>
                                                                 <div>
                                                                     <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Lý do chính</label>
@@ -342,19 +342,19 @@ export default function CreateGRN() {
                                 <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-xs font-bold text-slate-300">
                                     <div className="flex justify-between border-b border-white/10 pb-2">
                                         <span>Tổng SL Nhận:</span>
-                                        <span className="font-mono text-white text-base">
+                                        <span className=" text-white text-base">
                                             {activePO.items.reduce((sum: number, i) => sum + (recvData[i.id]?.actual||0), 0)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between border-b border-red-500/30 pb-2 text-red-200">
                                         <span>Tổng SL Lỗi/Từ chối:</span>
-                                        <span className="font-mono text-red-400 text-base">
+                                        <span className=" text-red-400 text-base">
                                             {activePO.items.reduce((sum: number, i) => sum + (qcData[i.id]?.failQty||0), 0)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between border-b border-white/10 pb-2 col-span-2 mt-2">
                                         <span className="uppercase tracking-widest text-[10px] text-slate-400">Tỷ lệ Pass (Kho):</span>
-                                        <span className="font-mono text-emerald-400 text-xl flex items-center gap-1">
+                                        <span className=" text-emerald-400 text-xl flex items-center gap-1">
                                             {(() => {
                                                 const total = activePO.items.reduce((sum: number, i) => sum + (recvData[i.id]?.actual||0), 0);
                                                 const fail = activePO.items.reduce((sum: number, i) => sum + (qcData[i.id]?.failQty||0), 0);

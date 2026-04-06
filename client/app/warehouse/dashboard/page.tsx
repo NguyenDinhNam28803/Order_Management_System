@@ -113,9 +113,9 @@ export default function WarehouseDashboard() {
                                         <td className="font-bold text-slate-600">{po.vendor}</td>
                                         <td>
                                             <div className="truncate w-32 font-medium text-slate-700">{po.items}</div>
-                                            <div className="text-[10px] text-slate-400 font-mono">x {po.qty}</div>
+                                            <div className="text-[10px] text-slate-400 ">x {po.qty}</div>
                                         </td>
-                                        <td className="text-center font-mono text-slate-600">{po.deliveryDate}</td>
+                                        <td className="text-center  text-slate-600">{po.deliveryDate}</td>
                                         <td className="text-center">
                                             {po.status === "PENDING" ? (
                                                 <span className="text-[9px] font-black uppercase tracking-widest bg-blue-50 text-blue-600 px-2 py-1 rounded border border-blue-200">Sắp tới</span>
@@ -156,7 +156,7 @@ export default function WarehouseDashboard() {
                                             {grn.poId} <br/>
                                             <span className="font-normal text-[10px] text-slate-400">{grn.vendor}</span>
                                         </td>
-                                        <td className="font-mono text-slate-500">{grn.date}</td>
+                                        <td className=" text-slate-500">{grn.date}</td>
                                         <td className="text-center text-[10px] font-bold text-orange-600">{grn.missing}</td>
                                         <td className="text-right">
                                             <button className="text-[10px] font-black uppercase tracking-widest text-erp-blue hover:underline">Tiếp tục QC</button>

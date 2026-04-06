@@ -60,7 +60,7 @@ export default function QuoteRequestPage() {
             <header className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                 <div>
                     <h1 className="text-2xl font-black text-erp-navy tracking-tight">Yêu cầu báo giá</h1>
-                    <p className="text-sm text-slate-400 font-medium">Quản lý và theo dõi các báo giá từ bộ phận Thu mua</p>
+                    <p className="text-sm text-slate-500 font-medium">Quản lý và theo dõi các báo giá từ bộ phận Thu mua</p>
                 </div>
                 <Link 
                     href="/quote-requests/create"
@@ -79,7 +79,7 @@ export default function QuoteRequestPage() {
                         <input 
                             type="text"
                             placeholder="Tìm kiếm báo giá..."
-                            className="bg-slate-50 border-none rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-erp-blue"
+                            className="bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none placeholder:text-slate-400"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -116,7 +116,7 @@ export default function QuoteRequestPage() {
                             <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-slate-300">
                                 <Search size={32} />
                             </div>
-                            <h3 className="text-slate-500 font-bold italic font-serif">Không tìm thấy báo giá nào</h3>
+                            <h3 className="text-slate-500 font-bold italic">Không tìm thấy báo giá nào</h3>
                         </div>
                     ) : (
                         filteredQRs.map(qr => {
@@ -135,9 +135,9 @@ export default function QuoteRequestPage() {
                                             <div>
                                                 <h3 className="font-black text-erp-navy group-hover:text-erp-blue transition-colors">{qr.title}</h3>
                                                 <div className="flex flex-wrap items-center gap-2 mt-1">
-                                                    <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">{qr.qrNumber}</span>
+                                                    <span className="text-[10px] font-black tracking-widest text-slate-500 uppercase">{qr.qrNumber}</span>
                                                     <span className="w-1 h-1 rounded-full bg-slate-200"></span>
-                                                    <span className="text-[11px] font-medium text-slate-400">Tạo: {new Date(qr.createdAt).toLocaleDateString('vi-VN')}</span>
+                                                    <span className="text-[11px] font-bold text-slate-500">Tạo: {new Date(qr.createdAt).toLocaleDateString('vi-VN')}</span>
                                                     {qr.requiredDate && (
                                                         <>
                                                             <span className="w-1 h-1 rounded-full bg-slate-200"></span>
@@ -247,7 +247,7 @@ export default function QuoteRequestPage() {
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center p-12 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
                             <ClipboardList className="text-slate-200 mb-4" size={48} />
-                            <p className="text-slate-400 text-sm font-medium italic text-center leading-relaxed">Chọn một yêu cầu để xem chi tiết báo giá và thực hiện hành động</p>
+                            <p className="text-slate-500 text-sm font-bold italic text-center max-w-[240px] leading-relaxed">Chọn một yêu cầu để xem chi tiết báo giá và thực hiện hành động</p>
                         </div>
                     )}
                 </div>

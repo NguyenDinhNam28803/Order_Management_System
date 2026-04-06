@@ -85,7 +85,7 @@ export default function PaymentsPage() {
                                             
                                             return (
                                                 <tr key={payment.id}>
-                                                    <td className="font-mono font-bold">{payment.id}</td>
+                                                    <td className=" font-bold">{payment.id}</td>
                                                     <td className="font-bold">{(payment as any).supplierName || 'N/A'}</td>
                                                     <td className="font-black text-erp-navy">{formatCurrency(payment.amount)}</td>
                                                     <td>
@@ -114,7 +114,7 @@ export default function PaymentsPage() {
                     <div className="bg-erp-navy rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
                         <div className="absolute -top-10 -right-10 h-40 w-40 bg-white/5 rounded-full blur-2xl font-black"></div>
                         <h3 className="text-xs font-black uppercase text-white/40 mb-8 tracking-widest">Ví tổng thanh toán</h3>
-                        <div className="text-4xl font-mono font-black mb-1">{formatCurrency(totalAmount)}</div>
+                        <div className="text-4xl  font-black mb-1">{formatCurrency(totalAmount)}</div>
                         <p className="text-[10px] text-emerald-400 font-bold mb-8 italic">● Hệ thống đã sẵn sàng giải ngân</p>
 
                         <div className="space-y-4 pt-8 border-t border-white/10">

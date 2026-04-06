@@ -269,11 +269,11 @@ export default function FinanceBudgetsPage() {
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="bg-slate-50/50">
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono">Đơn vị / Cost Center</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono">Định mức</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono text-center">Tiến độ sử dụng</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono">Còn lại</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest font-mono">Trạng thái</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest ">Đơn vị / Cost Center</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest ">Định mức</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest  text-center">Tiến độ sử dụng</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest ">Còn lại</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest ">Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">

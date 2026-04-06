@@ -1,42 +1,54 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Brand Identity */
-  --color-erp-navy: #001f3f;
-  --color-erp-blue: #2563eb;
+  /* Design Direction Swatches (Modern ERP) */
+  --color-brand-primary: #4f46e5;      /* Indigo 600 */
+  --color-brand-secondary: #0ea5e9;    /* Sky 500 */
+  --color-erp-navy: #0f172a;           /* Slate 900 */
+  --color-erp-blue: #4f46e5;           /* Indigo 600 */
   
   /* Semantic Colors */
-  --color-erp-success: #10b981;
-  --color-erp-error: #f43f5e;
-  --color-erp-warning: #f59e0b;
-  --color-erp-info: #3b82f6;
-  
-  /* Neutral Shades */
-  --color-erp-gray-50: #f8fafc;
-  --color-erp-gray-100: #f1f5f9;
-  --color-erp-gray-200: #e2e8f0;
-  --color-erp-gray-300: #cbd5e1;
-  --color-erp-gray-400: #94a3b8;
-  --color-erp-gray-500: #64748b;
-  --color-erp-gray-900: #0f172a;
+  --color-status-success: #10b981;
+  --color-status-error: #ef4444;
+  --color-status-warning: #f59e0b;
+  --color-status-info: #3b82f6;
 
+  /* Responsive Spacing Tokens */
+  --spacing-container: clamp(1rem, 5vw, 2.5rem);
+  
   --font-sans: var(--font-inter), ui-sans-serif, system-ui;
-  
-  /* Standardized Transitions */
-  --transition-erp: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  --animate-fade-in: fade-in 0.4s ease-out forwards;
+  --font-mono: var(--font-inter), ui-monospace, monospace;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --surface: #ffffff;
+  /* Light Palette Swatches */
+  --background: #f8fafc;        /* Slate 50 */
+  --foreground: #0f172a;        /* Slate 900 */
+  --card: #ffffff;
+  --card-foreground: #1e293b;
+  --border: #e2e8f0;            /* Slate 200 */
+  --input: #f1f5f9;
+  --ring: #4f46e5;
+  --muted: #64748b;
+  --accent: #f8fafc;
+  
+  --radius-xl: 1rem;
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+}
+
+[data-theme='dark'] {
+  /* Dark Palette Swatches */
+  --background: #020617;        /* Slate 950 */
+  --foreground: #f8fafc;        /* Slate 50 */
+  --card: #0f172a;              /* Slate 900 */
+  --card-foreground: #f1f5f9;
+  --border: #1e293b;            /* Slate 800 */
+  --input: #1e293b;
+  --ring: #6366f1;              /* Indigo 500 */
+  --muted: #94a3b8;
+  --accent: #1e293b;
 }
 
 body {
@@ -44,6 +56,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  transition: var(--transition-smooth);
 }
 
 /* Scrollbar Reconstruction */

@@ -117,7 +117,7 @@ export default function AuditLogsPage() {
                                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-600">
                                         {log.entityType}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap font-mono text-xs text-gray-400">
+                                    <td className="px-6 py-4 whitespace-nowrap  text-xs text-gray-400">
                                         {log.entityId}
                                     </td>
                                     <td className="px-6 py-4 text-right">

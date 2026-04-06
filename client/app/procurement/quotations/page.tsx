@@ -221,7 +221,7 @@ export default function QuotationManagementPage() {
                     <div className="flex flex-col">
                         <span className="font-black text-slate-800 text-sm">{row.supplier?.name || "Chưa có tên"}</span>
                         <div className="flex items-center gap-2 text-[10px] text-slate-400">
-                            <span className="bg-slate-100 px-2 py-0.5 rounded font-mono">{row.supplierId.substring(0, 8)}</span>
+                            <span className="bg-slate-100 px-2 py-0.5 rounded ">{row.supplierId.substring(0, 8)}</span>
                             {row.supplier?.email && (
                                 <span className="flex items-center gap-1">
                                     <Mail size={10} /> {row.supplier.email}
@@ -237,7 +237,7 @@ export default function QuotationManagementPage() {
             key: "totalPrice",
             render: (row: Quotation) => (
                 <div className="text-right">
-                    <div className="font-mono font-black text-emerald-600 text-sm">{formatVND(row.totalPrice)} ₫</div>
+                    <div className=" font-black text-emerald-600 text-sm">{formatVND(row.totalPrice)} ₫</div>
                     <div className="text-[9px] text-slate-400 font-black uppercase">Total</div>
                 </div>
             )
@@ -428,7 +428,7 @@ export default function QuotationManagementPage() {
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div>
                                         <span className="text-[10px] font-black uppercase text-slate-400">Giá báo:</span>
-                                        <div className="font-mono font-black text-emerald-600">{formatVND(awardModal.totalPrice)} ₫</div>
+                                        <div className=" font-black text-emerald-600">{formatVND(awardModal.totalPrice)} ₫</div>
                                     </div>
                                     <div>
                                         <span className="text-[10px] font-black uppercase text-slate-400">Lead time:</span>
@@ -482,7 +482,7 @@ export default function QuotationManagementPage() {
                                 <div>
                                     <div className="font-black text-slate-800 text-lg">{viewQuotation.supplier?.name || "Chưa có tên"}</div>
                                     <div className="flex items-center gap-3 text-sm text-slate-500 mt-1">
-                                        <span className="bg-slate-100 px-2 py-0.5 rounded font-mono">{viewQuotation.supplierId.substring(0, 8)}</span>
+                                        <span className="bg-slate-100 px-2 py-0.5 rounded ">{viewQuotation.supplierId.substring(0, 8)}</span>
                                         {viewQuotation.supplier?.email && (
                                             <span className="flex items-center gap-1">
                                                 <Mail size={12} /> {viewQuotation.supplier.email}
@@ -499,7 +499,7 @@ export default function QuotationManagementPage() {
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
                                     <div className="text-[10px] font-black uppercase text-emerald-600 mb-1">Tổng giá trị</div>
-                                    <div className="font-mono font-black text-emerald-700 text-xl">{formatVND(viewQuotation.totalPrice)} ₫</div>
+                                    <div className=" font-black text-emerald-700 text-xl">{formatVND(viewQuotation.totalPrice)} ₫</div>
                                 </div>
                                 <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
                                     <div className="text-[10px] font-black uppercase text-blue-600 mb-1">Lead Time</div>

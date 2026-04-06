@@ -183,7 +183,7 @@ export default function GRNPage() {
                                                 Điểm đánh giá hệ thống
                                             </div>
                                             <div className="flex items-end gap-3">
-                                                <span className="text-4xl font-black font-mono leading-none">{finalKpiScore}</span>
+                                                <span className="text-4xl font-black  leading-none">{finalKpiScore}</span>
                                                 <span className="text-xs font-bold text-slate-400 mb-1">/ 100 pt</span>
                                             </div>
                                             

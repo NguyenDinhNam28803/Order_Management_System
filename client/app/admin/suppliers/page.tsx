@@ -207,7 +207,7 @@ export default function SupplierManagementPage() {
                                 <div>
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2 block">Mã NCC</label>
                                     <input 
-                                        className="erp-input font-mono" 
+                                        className="erp-input " 
                                         placeholder="VD: DGT-SOL" 
                                         value={newSupplier.code || ""}
                                         onChange={e => setNewSupplier({...newSupplier, code: e.target.value})}
