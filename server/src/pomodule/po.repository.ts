@@ -138,7 +138,11 @@ export class PoRepository {
 
   async getAll() {
     return this.prisma.purchaseOrder.findMany({
-      include: { supplier: true, buyer: true },
+      include: { 
+        supplier: true, 
+        buyer: true,
+        items: true
+      },
       orderBy: { createdAt: 'desc' },
     });
   }

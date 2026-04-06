@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
-import { Package, DownloadCloud, FileText, CheckCircle, AlertTriangle, Truck, Clock, RefreshCcw, Send, XCircle, Search } from "lucide-react";
+import { Package, DownloadCloud, FileText, CheckCircle, AlertTriangle, Truck, Clock, RefreshCcw, Send, XCircle, Search, Eye, X } from "lucide-react";
 
 import { useProcurement, PO } from "../../context/ProcurementContext";
 
@@ -10,6 +10,8 @@ export default function SupplierPO() {
     const [viewState, setViewState] = useState<"LIST" | "DETAIL">("LIST");
     const [poIdInput, setPoIdInput] = useState("");
     const [searchedPO, setSearchedPO] = useState<PO | null>(null);
+    const [selectedPO, setSelectedPO] = useState<PO | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     
     const { currentUser, pos, ackPO, shipPO, rejectPO, notify, fetchPOById } = useProcurement();
     
@@ -57,6 +59,43 @@ export default function SupplierPO() {
                 notify("Không tìm thấy PO", "error");
             }
         }
+    };
+
+    const openModal = (po: PO) => {
+        console.log("Opening modal with PO:", po);
+        console.log("PO items:", (po as any).items);
+        console.log("PO products:", (po as any).products);
+        console.log("PO lines:", (po as any).lines);
+        console.log("PO poLines:", (po as any).poLines);
+        setSelectedPO(po);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setSelectedPO(null);
+        setIsModalOpen(false);
+    };
+
+    const handleConfirmModal = async () => {
+        if(!selectedPO) return;
+        await ackPO(selectedPO.id);
+        notify("Đã xác nhận đơn hàng (ACK)", "success");
+        closeModal();
+    };
+
+    const handleRejectModal = async () => {
+        if(!selectedPO) return;
+        if (!confirm("Bạn có chắc muốn từ chối PO này?")) return;
+        await rejectPO(selectedPO.id);
+        notify("Đã từ chối đơn hàng", "warning");
+        closeModal();
+    };
+
+    const handleShipModal = async () => {
+        if(!selectedPO) return;
+        await shipPO(selectedPO.id);
+        notify("Đã cập nhật vận đơn (ASN/DO). Hệ thống Kho Vận Buyer sẽ nhận thông báo.", "success");
+        closeModal();
     };
 
     const handleConfirm = async () => {
@@ -281,7 +320,7 @@ export default function SupplierPO() {
                     </thead>
                     <tbody>
                         {displayPOs.map((p) => (
-                            <tr key={p.id} className={`hover:bg-slate-50 border-b border-slate-100 cursor-pointer ${(p as any).supplierId === supplierId || (p as any).supplier?.id === supplierId ? 'bg-blue-50' : ''}`} onClick={() => { setSelectedPoId(p.id); setViewState("DETAIL"); }}>
+                            <tr key={p.id} className={`hover:bg-slate-50 border-b border-slate-100 ${(p as any).supplierId === supplierId || (p as any).supplier?.id === supplierId ? 'bg-blue-50' : ''}`}>
                                 <td className="font-bold text-erp-navy">{p.poNumber || p.id}</td>
                                 <td className="font-bold text-slate-700">{(p as any).buyer?.name || (p as any).org?.name || "ProcurePro"}</td>
                                 <td className="text-center font-mono text-slate-500">{p.createdAt ? new Date(p.createdAt).toLocaleDateString("vi-VN") : "N/A"}</td>
@@ -292,7 +331,12 @@ export default function SupplierPO() {
                                 </td>
                                 <td className="text-center font-mono text-[10px] text-slate-400">{(p as any).supplierId?.substring(0, 8) || (p as any).supplier?.id?.substring(0, 8) || "N/A"}</td>
                                 <td className="text-right">
-                                    <button className="text-[10px] font-black uppercase tracking-widest text-erp-blue p-2 rounded hover:bg-blue-50">Xem</button>
+                                    <button 
+                                        onClick={() => openModal(p)}
+                                        className="text-[10px] font-black uppercase tracking-widest text-erp-blue p-2 rounded hover:bg-blue-50 flex items-center gap-1"
+                                    >
+                                        <Eye size={12}/> Xem
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -306,6 +350,153 @@ export default function SupplierPO() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Modal Chi tiết PO */}
+            {isModalOpen && selectedPO && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-6 border-b border-slate-200 bg-slate-50 rounded-t-2xl">
+                            <div>
+                                <h2 className="text-xl font-black text-erp-navy tracking-tight">Chi tiết Purchase Order</h2>
+                                <p className="text-sm text-slate-500">{selectedPO.poNumber || selectedPO.id}</p>
+                            </div>
+                            <button 
+                                onClick={closeModal}
+                                className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
+                            >
+                                <X size={20} className="text-slate-500"/>
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6 space-y-6">
+                            {/* Status & Info */}
+                            <div className="flex justify-between items-start">
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-bold text-slate-600">Trạng thái:</span>
+                                        <span className={`${selectedPO.status === "ISSUED" || selectedPO.status === "PENDING" ? "bg-red-50 text-red-600 border border-red-200" : selectedPO.status === "REJECTED" ? "bg-red-100 text-red-700 border border-red-300" : "bg-emerald-50 text-emerald-600 border-none"} font-black uppercase px-3 py-1 rounded text-xs tracking-widest`}>
+                                            {selectedPO.status === "ISSUED" || selectedPO.status === "PENDING" ? "Cần Confirm" : selectedPO.status === "REJECTED" ? "Đã Từ chối" : "Đã Ack"}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-slate-600"><strong>Ngày tạo:</strong> {selectedPO.createdAt ? new Date(selectedPO.createdAt).toLocaleDateString("vi-VN") : "N/A"}</p>
+                                    <p className="text-sm text-slate-600"><strong>Bên mua:</strong> {(selectedPO as any).buyer?.name || (selectedPO as any).org?.name || "ProcurePro"}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm font-bold text-erp-navy">Tổng tiền:</p>
+                                    <p className="text-2xl font-black text-erp-navy">{Number((selectedPO as any).totalAmount || (selectedPO as any).total || 0).toLocaleString()} ₫</p>
+                                </div>
+                            </div>
+
+                            {/* PO Items */}
+                            <div className="border border-slate-200 rounded-xl overflow-hidden">
+                                <div className="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy">Danh sách sản phẩm</h3>
+                                    {/* Debug info */}
+                                    <span className="text-[10px] text-slate-400">
+                                        items: {selectedPO.items?.length || 0} | 
+                                        products: {(selectedPO as any).products?.length || 0} | 
+                                        poLines: {(selectedPO as any).poLines?.length || 0}
+                                    </span>
+                                </div>
+                                <table className="w-full text-sm">
+                                    <thead className="bg-slate-100">
+                                        <tr>
+                                            <th className="p-3 text-left font-bold text-slate-600">Sản phẩm</th>
+                                            <th className="p-3 text-center font-bold text-slate-600">Số lượng</th>
+                                            <th className="p-3 text-center font-bold text-slate-600">Đơn vị</th>
+                                            <th className="p-3 text-right font-bold text-slate-600">Đơn giá</th>
+                                            <th className="p-3 text-right font-bold text-slate-600">Thành tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {(() => {
+                                            // Try different possible item property names
+                                            const items = selectedPO.items || (selectedPO as any).products || (selectedPO as any).poLines || (selectedPO as any).lines || [];
+                                            if (items.length === 0) {
+                                                return (
+                                                    <tr>
+                                                        <td colSpan={5} className="p-4 text-center text-slate-400">
+                                                            Không có dữ liệu sản phẩm
+                                                            <div className="text-[10px] text-slate-300 mt-1">
+                                                                Debug: items={(selectedPO as any).items?.length}, products={(selectedPO as any).products?.length}, poLines={(selectedPO as any).poLines?.length}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            }
+                                            return items.map((item: any, idx: number) => (
+                                                <tr key={item.id || idx} className="border-b border-slate-100">
+                                                    <td className="p-3">{item.description || item.productName || item.product?.name || "Sản phẩm"}</td>
+                                                    <td className="p-3 text-center">{item.qty || item.quantity || 0}</td>
+                                                    <td className="p-3 text-center">{item.unit || item.uom || "pcs"}</td>
+                                                    <td className="p-3 text-right">{Number(item.estimatedPrice || item.unitPrice || item.price || 0).toLocaleString()} ₫</td>
+                                                    <td className="p-3 text-right font-bold">{Number((item.qty || item.quantity || 0) * (item.estimatedPrice || item.unitPrice || item.price || 0)).toLocaleString()} ₫</td>
+                                                </tr>
+                                            ));
+                                        })()}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Notes */}
+                            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                                <div className="flex items-center gap-2 text-amber-700 font-bold text-sm mb-1">
+                                    <AlertTriangle size={16}/>
+                                    Ghi chú quan trọng
+                                </div>
+                                <p className="text-sm text-amber-600">Vui lòng kiểm tra kỹ thông tin trước khi xác nhận. Sau khi xác nhận, PO sẽ được chuyển sang trạng thái đã Ack và bạn sẽ chịu trách nhiệm thực hiện giao hàng đúng hạn.</p>
+                            </div>
+                        </div>
+
+                        {/* Footer - Action Buttons */}
+                        <div className="flex justify-between items-center p-6 border-t border-slate-200 bg-slate-50 rounded-b-2xl">
+                            <button 
+                                onClick={closeModal}
+                                className="px-4 py-2 text-slate-600 font-bold text-sm hover:bg-slate-200 rounded-lg transition-colors"
+                            >
+                                Đóng
+                            </button>
+                            
+                            <div className="flex gap-3">
+                                {selectedPO.status === "REJECTED" ? (
+                                    <div className="flex items-center gap-2 text-red-600 font-bold text-sm">
+                                        <XCircle size={16}/> Đã Từ chối PO
+                                    </div>
+                                ) : selectedPO.status === "ACKNOWLEDGED" || selectedPO.status === "CONFIRMED" ? (
+                                    <>
+                                        <button 
+                                            onClick={handleShipModal}
+                                            className="px-6 py-3 bg-erp-navy hover:bg-erp-blue text-white font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg"
+                                        >
+                                            <Truck size={14}/> Báo Giao Hàng
+                                        </button>
+                                        <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm bg-emerald-50 px-4 py-2 rounded-lg">
+                                            <CheckCircle size={16}/> Đã Confirm
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button 
+                                            onClick={handleRejectModal}
+                                            className="px-6 py-3 border-2 border-red-200 text-red-600 hover:bg-red-50 font-black uppercase tracking-widest text-xs rounded-xl transition-colors flex items-center gap-2"
+                                        >
+                                            <XCircle size={14}/> Từ chối
+                                        </button>
+                                        <button 
+                                            onClick={handleConfirmModal}
+                                            className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-md shadow-emerald-500/20"
+                                        >
+                                            <CheckCircle size={16}/> Xác nhận PO
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
