@@ -104,6 +104,7 @@ const navigation = [
         roles: ["SUPPLIER"],
         items: [
             { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/supplier/dashboard", roles: ["SUPPLIER"] },
+            { name: "Quản lý Sản phẩm", icon: ShoppingBag, path: "/supplier/products", roles: ["SUPPLIER"] },
             { name: "Yêu cầu báo giá (RFQ)", icon: FolderTree, path: "/supplier/rfq", roles: ["SUPPLIER"] },
             { name: "Đơn đặt hàng (PO)", icon: ShoppingCart, path: "/supplier/po", roles: ["SUPPLIER"] },
             { name: "Hợp đồng & Ký kết", icon: ShieldCheck, path: "/procurement/contracts", roles: ["SUPPLIER"] },
