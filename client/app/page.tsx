@@ -856,10 +856,6 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="mb-10">
-                    <BudgetHeatmap />
-                </div>
-
                 {/* Search & Filter Toolbar */}
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
                     <div className="flex items-center gap-4">
