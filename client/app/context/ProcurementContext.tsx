@@ -53,6 +53,11 @@ export interface RFQ {
     title?: string; createdAt?: string; items?: PRItem[]; supplierIds?: string[];
     type: "RFQ" | "PO_CONFIRMATION";
     price?: number; stock?: number; leadTime?: number; note?: string;
+    deadline?: string;
+    description?: string;
+    pr?: PR;
+    createdBy?: { fullName?: string; name?: string; email?: string };
+    suppliers?: { supplierId: string; supplier?: { name?: string } }[];
 }
 
 export interface GRN {
@@ -84,6 +89,7 @@ export interface ProcurementState {
     simulation: SimulationState;
     contracts: Contract[]; disputes: Dispute[]; auditLogs: AuditLog[]; 
     supplierEvaluations: SupplierEvaluation[];
+    isAuthChecking: boolean;
 }
 
 export interface ProcurementContextType extends ProcurementState {
@@ -100,6 +106,11 @@ export interface ProcurementContextType extends ProcurementState {
     createPOFromPR: (prId: string, vendorId?: string) => Promise<boolean>;
     ackPO: (id: string) => Promise<boolean>;
     shipPO: (id: string) => Promise<boolean>;
+    fetchPOById: (id: string) => Promise<PO | null>;
+    confirmPO: (id: string) => Promise<PO | null>;
+    submitPO: (id: string) => Promise<PO | null>;
+    fetchSupplierPOs: (supplierId: string) => Promise<PO[]>;
+    rejectPO: (id: string) => Promise<PO | null>;
     createRFQ: (d: CreateRfqDto) => Promise<RFQ | null>;
     createRFQConsolidated: (d: ConsolidateRfqDto) => Promise<boolean>;
     awardQuotation: (id: string, supplierId: string) => Promise<boolean>;
@@ -172,7 +183,7 @@ export interface ProcurementContextType extends ProcurementState {
     fetchMyDeptBudgets: () => Promise<BudgetAllocation[]>;
     fetchBudgetAllocationById: (id: string) => Promise<BudgetAllocation | null>;
     fetchBudgetOverrideById: (id: string) => Promise<BudgetOverride | null>;
-    createQuote: (d: CreateQuoteDto) => Promise<boolean>;
+    createQuote: (d: CreateQuoteDto) => Promise<Quotation | null>;
     fetchQuotationsByRfq: (rfqId: string) => Promise<Quotation[]>;
     fetchQuotationById: (id: string) => Promise<Quotation | null>;
     submitQuotation: (id: string) => Promise<boolean>;
@@ -194,6 +205,10 @@ export interface ProcurementContextType extends ProcurementState {
     respondCounterOffer: (id: string, response: 'ACCEPT' | 'REJECT', notes?: string) => Promise<boolean>;
     deleteRFQ: (id: string) => Promise<boolean>;
     updateRFQStatus: (id: string, status: RfqStatus) => Promise<boolean>;
+    fetchRFQById: (id: string) => Promise<RFQ | null>;
+    fetchSuppliersByRFQ: (rfqId: string) => Promise<User[]>;
+    analyzeQuotationWithAI: (quotationId: string) => Promise<unknown>;
+    fetchMySupplierRFQs: () => Promise<RFQ[]>;
     fetchContractById: (id: string) => Promise<Contract | null>;
     updateContract: (id: string, d: Partial<Contract>) => Promise<boolean>;
     removeContract: (id: string) => Promise<boolean>;
@@ -206,6 +221,8 @@ export interface ProcurementContextType extends ProcurementState {
     fetchInvoiceById: (id: string) => Promise<Invoice | null>;
     updateInvoice: (id: string, d: UpdateInvoiceDto) => Promise<boolean>;
     removeInvoice: (id: string) => Promise<boolean>;
+    fetchInvoices: () => Promise<Invoice[]>;
+    runMatching: (id: string) => Promise<Invoice | null>;
     createPayment: (d: CreatePaymentDto) => Promise<boolean>;
     completePayment: (id: string) => Promise<boolean>;
     fetchPayments: () => Promise<Payment[]>;
@@ -238,7 +255,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         costCenters: [], budgetPeriods: [], budgetAllocations: [], budgetOverrides: [], organizations: [], 
         products: [], categories: [], quoteRequests: [], loadingMyPrs: false,
         simulation: { workflow: null, step: 0, isActive: false },
-        contracts: [], disputes: [], auditLogs: [], supplierEvaluations: []
+        contracts: [], disputes: [], auditLogs: [], supplierEvaluations: [],
+        isAuthChecking: true
     });
 
     const notify = useCallback((message: string, type: Notification['type'] = 'info') => {
@@ -273,7 +291,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             const [
                 periodsResp, allocsResp, prsResp, myPrsResp, approvalsResp, 
                 orgsResp, deptsResp, usersResp, productsResp, categoriesResp, 
-                ccResp, posResp, rfqsResp, grnsResp, invoicesResp,
+                ccResp, posResp, posAllResp, rfqsResp, grnsResp, invoicesResp,
                 contractsResp, disputesResp
             ] = await Promise.all([
                 apiFetch('/budgets/periods'),
@@ -288,6 +306,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 apiFetch('/products/categories'),
                 apiFetch('/cost-centers'),
                 apiFetch('/purchase-orders'),
+                apiFetch('/purchase-orders/all'),
                 apiFetch('/request-for-quotations'),
                 apiFetch('/grn'),
                 apiFetch('/invoices'),
@@ -373,6 +392,25 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             if (posResp && posResp.ok) {
                 const res = await posResp.json();
                 const data = res.data || res;
+                if (Array.isArray(data)) {
+                    // Merge với posAll nếu có
+                    let allData = data;
+                    if (posAllResp && posAllResp.ok) {
+                        const allRes = await posAllResp.json();
+                        const allPosData = allRes.data || allRes;
+                        if (Array.isArray(allPosData)) {
+                            // Merge và loại bỏ trùng lặp
+                            const existingIds = new Set(data.map((p: PO) => p.id));
+                            const newPos = allPosData.filter((p: PO) => !existingIds.has(p.id));
+                            allData = [...data, ...newPos];
+                        }
+                    }
+                    setState(prev => ({ ...prev, pos: allData }));
+                }
+            } else if (posAllResp && posAllResp.ok) {
+                // Nếu posResp lỗi nhưng posAllResp ok
+                const res = await posAllResp.json();
+                const data = res.data || res;
                 if (Array.isArray(data)) setState(prev => ({ ...prev, pos: data }));
             }
             if (rfqsResp && rfqsResp.ok) {
@@ -427,6 +465,38 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             setState(prev => ({ ...prev, loadingMyPrs: false }));
         }
     }, [apiFetch]);
+
+    // Restore user from cookies on mount
+    const refreshDataRef = useRef(refreshData);
+    useEffect(() => {
+        refreshDataRef.current = refreshData;
+    }, [refreshData]);
+    
+    useEffect(() => {
+        const restoreUserFromCookies = () => {
+            try {
+                const token = Cookies.get('token');
+                const userJson = Cookies.get('user');
+                
+                if (token && userJson) {
+                    const user = JSON.parse(userJson);
+                    setState(prev => ({ ...prev, currentUser: user, isAuthChecking: false }));
+                    // Refresh data in background
+                    refreshDataRef.current().catch(() => {});
+                } else {
+                    setState(prev => ({ ...prev, isAuthChecking: false }));
+                }
+            } catch {
+                // Invalid user data in cookies, clear them
+                Cookies.remove('token');
+                Cookies.remove('user');
+                setState(prev => ({ ...prev, isAuthChecking: false }));
+            }
+        };
+
+        restoreUserFromCookies();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const login = useCallback(async (email: string, password?: string) => {
         try {
@@ -552,9 +622,20 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData, notify]);
 
     const ackPO = useCallback(async (id: string) => {
-        const resp = await apiFetch(`/purchase-orders/${id}/confirm`, { method: 'POST' });
+        const resp = await apiFetch(`/purchase-orders/${id}/acknowledge`, { method: 'POST' });
         if (resp.ok) { notify("Đã xác nhận đơn hàng", "success"); await refreshData(); return true; }
         return false;
+    }, [apiFetch, refreshData, notify]);
+
+    const rejectPO = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/purchase-orders/${id}/reject`, { method: 'POST' });
+        if (resp.ok) { 
+            notify("Đã từ chối đơn hàng", "success"); 
+            await refreshData(); 
+            const res = await resp.json();
+            return res.data || res;
+        }
+        return null;
     }, [apiFetch, refreshData, notify]);
 
     const shipPO = useCallback(async (id: string) => {
@@ -917,10 +998,15 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch]);
 
     // ========== Quotations ==========
-    const createQuote = useCallback(async (d: CreateQuoteDto) => {
+    const createQuote = useCallback(async (d: CreateQuoteDto): Promise<Quotation | null> => {
         const resp = await apiFetch(`/request-for-quotations/${d.rfqId}/quotations`, { method: 'POST', body: JSON.stringify(d) });
-        if (resp.ok) { notify("Tạo báo giá thành công", "success"); await refreshData(); return true; }
-        return false;
+        if (resp.ok) { 
+            const res = await resp.json();
+            notify("Tạo báo giá thành công", "success"); 
+            await refreshData(); 
+            return res.data || res; 
+        }
+        return null;
     }, [apiFetch, refreshData, notify]);
 
     const fetchQuotationsByRfq = useCallback(async (rfqId: string) => {
@@ -1056,6 +1142,37 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
+    const fetchRFQById = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/request-for-quotations/${id}`);
+        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        return null;
+    }, [apiFetch]);
+
+    const fetchSuppliersByRFQ = useCallback(async (rfqId: string) => {
+        const resp = await apiFetch(`/request-for-quotations/${rfqId}/suppliers`);
+        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        return [];
+    }, [apiFetch]);
+
+    const analyzeQuotationWithAI = useCallback(async (quotationId: string) => {
+        const resp = await apiFetch(`/request-for-quotations/quotations/${quotationId}/analyze`, { method: 'POST' });
+        if (resp.ok) { 
+            notify("Đã phân tích báo giá bằng AI", "success");
+            const res = await resp.json();
+            return res.data || res; 
+        }
+        return null;
+    }, [apiFetch, notify]);
+
+    const fetchMySupplierRFQs = useCallback(async () => {
+        const resp = await apiFetch('/request-for-quotations/my-supplier-rfqs');
+        if (resp.ok) {
+            const res = await resp.json();
+            return res.data || res;
+        }
+        return [];
+    }, [apiFetch]);
+
     // ========== Contracts ==========
     const fetchContractById = useCallback(async (id: string) => {
         const resp = await apiFetch(`/contracts/${id}`);
@@ -1169,6 +1286,56 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return [];
     }, [apiFetch]);
 
+    // ========== PO ==========
+    const fetchPOById = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/purchase-orders/${id}`);
+        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        return null;
+    }, [apiFetch]);
+
+    const fetchSupplierPOs = useCallback(async (supplierId: string) => {
+        const resp = await apiFetch(`/purchase-orders/supplier/${supplierId}`);
+        if (resp.ok) { const res = await resp.json(); return res.data || res || []; }
+        return [];
+    }, [apiFetch]);
+
+    const confirmPO = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/purchase-orders/${id}/confirm`, { method: 'POST' });
+        if (resp.ok) { 
+            notify("Đã xác nhận đơn hàng", "success"); 
+            const res = await resp.json();
+            return res.data || res; 
+        }
+        return null;
+    }, [apiFetch, notify]);
+
+    const submitPO = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/purchase-orders/${id}/submit`, { method: 'POST' });
+        if (resp.ok) { 
+            notify("Đã gửi đơn hàng phê duyệt", "success"); 
+            const res = await resp.json();
+            return res.data || res; 
+        }
+        return null;
+    }, [apiFetch, notify]);
+
+    // ========== Invoices ==========
+    const fetchInvoices = useCallback(async () => {
+        const resp = await apiFetch('/invoices');
+        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        return [];
+    }, [apiFetch]);
+
+    const runMatching = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/invoices/${id}/run-matching`, { method: 'POST' });
+        if (resp.ok) { 
+            notify("Đã thực hiện đối soát 3 bên", "success"); 
+            const res = await resp.json();
+            return res.data || res; 
+        }
+        return null;
+    }, [apiFetch, notify]);
+
     // ========== Supplier KPI ==========
     const evaluateSupplierKPI = useCallback(async (supplierId: string) => {
         const resp = await apiFetch(`/supplier-kpis/evaluate/${supplierId}`, { method: 'POST' });
@@ -1250,7 +1417,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         addBudgetAllocation, submitAllocation, approveAllocation, rejectAllocation, distributeAnnualBudget, reconcileQuarter,
         approveOverride, rejectOverride, convertQuoteToPR,
         removeNotification, notify,
-        createPO, createPOFromPR, ackPO, shipPO,
+        createPO, createPOFromPR, ackPO, shipPO, fetchPOById, confirmPO, submitPO, fetchSupplierPOs, rejectPO,
         createRFQ, createRFQConsolidated: async () => true, awardQuotation,
         addDept, updateDept, removeDept,
         addUser, updateUser, removeUser,
@@ -1285,13 +1452,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         // Counter Offers
         createCounterOffer, fetchCounterOffersByQuotation, fetchCounterOfferById, respondCounterOffer,
         // RFQ Management
-        deleteRFQ, updateRFQStatus,
+        deleteRFQ, updateRFQStatus, fetchRFQById, fetchSuppliersByRFQ, analyzeQuotationWithAI, fetchMySupplierRFQs,
         // Contracts
         fetchContractById, updateContract, removeContract, submitContractForApproval, updateContractMilestone, fetchContractsBySupplier,
         // GRN
         fetchGRNById, updateGRNStatus, confirmGRN,
         // Invoices
-        fetchInvoiceById, updateInvoice, removeInvoice,
+        fetchInvoiceById, updateInvoice, removeInvoice, fetchInvoices, runMatching,
         // Payments
         createPayment, completePayment, fetchPayments, fetchPaymentById,
         // Reviews

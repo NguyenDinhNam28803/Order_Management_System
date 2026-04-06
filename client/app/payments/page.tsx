@@ -3,31 +3,23 @@
 import { useEffect, useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
 import { ArrowRight, ShieldCheck, History } from "lucide-react";
-import { paymentAPI } from "../utils/api-client";
-
-interface Payment {
-    id: string;
-    invoiceId?: string;
-    supplierName?: string;
-    amount: number;
-    status: "SCHEDULED" | "COMPLETED" | "PENDING";
-    paymentDate: string;
-    createdAt?: string;
-}
+import { useProcurement } from "../context/ProcurementContext";
+import { Payment } from "../types/api-types";
 
 export default function PaymentsPage() {
     const [payments, setPayments] = useState<Payment[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [totalAmount, setTotalAmount] = useState(0);
+    const { fetchPayments, notify } = useProcurement();
 
     useEffect(() => {
-        const fetchPayments = async () => {
+        const fetch = async () => {
             try {
                 setLoading(true);
-                const data = await paymentAPI.list();
+                const data = await fetchPayments();
                 setPayments(data || []);
-                const total = (data || []).reduce((sum: number, p: Payment) => sum + (p.amount || 0), 0);
+                const total = (data || []).reduce((sum: number, p: Payment) => sum + (Number(p.amount) || 0), 0);
                 setTotalAmount(total);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to load payments');
@@ -37,8 +29,8 @@ export default function PaymentsPage() {
             }
         };
 
-        fetchPayments();
-    }, []);
+        fetch();
+    }, [fetchPayments]);
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -94,7 +86,7 @@ export default function PaymentsPage() {
                                             return (
                                                 <tr key={payment.id}>
                                                     <td className="font-mono font-bold">{payment.id}</td>
-                                                    <td className="font-bold">{payment.supplierName || 'N/A'}</td>
+                                                    <td className="font-bold">{(payment as any).supplierName || 'N/A'}</td>
                                                     <td className="font-black text-erp-navy">{formatCurrency(payment.amount)}</td>
                                                     <td>
                                                         <span className={`status-pill ${statusDisplay.class}`}>
@@ -145,7 +137,7 @@ export default function PaymentsPage() {
                                     <div className="h-8 w-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center"><ShieldCheck size={16} /></div>
                                     <div className="flex-1">
                                         <div className="text-[10px] font-bold text-erp-navy">Thanh toán {payment.id}</div>
-                                        <div className="text-[9px] text-slate-400">{new Date(payment.paymentDate).toLocaleDateString('vi-VN')} - Thành công</div>
+                                        <div className="text-[9px] text-slate-400">{new Date((payment as any).paymentDate || payment.createdAt).toLocaleDateString('vi-VN')} - Thành công</div>
                                     </div>
                                     <div className="text-[10px] font-black text-erp-navy">-{formatCurrency(payment.amount)}</div>
                                 </div>

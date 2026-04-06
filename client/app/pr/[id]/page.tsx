@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { prAPI } from '@/app/utils/api-client';
+import { useProcurement } from '@/app/context/ProcurementContext';
 import { PR, PRItem } from '@/app/types/api-types';
 
 export default function PRDetailPage() {
   const params = useParams();
   const prId = params.id as string;
+  const { fetchPrDetail, submitPR, notify } = useProcurement();
   const [pr, setPR] = useState<PR | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +18,7 @@ export default function PRDetailPage() {
     const fetch = async () => {
       try {
         setLoading(true);
-        const data = await prAPI.getById(prId);
+        const data = await fetchPrDetail(prId);
         setPR(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load PR');
@@ -27,17 +28,14 @@ export default function PRDetailPage() {
     };
 
     if (prId) fetch();
-  }, [prId]);
+  }, [prId, fetchPrDetail]);
 
   const handleSubmit = async () => {
     if (!pr) return;
     try {
       setSubmitting(true);
-      // Get reviewers - in real app, this would be from form
-      const reviewers: string[] = []; // TODO: select from UI
-      const updated = await prAPI.submit(prId, reviewers);
-      setPR(updated);
-      alert('PR submitted for approval');
+      await submitPR(prId);
+      notify('PR submitted for approval', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit PR');
     } finally {

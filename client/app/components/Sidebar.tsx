@@ -5,7 +5,7 @@ import {
     LayoutDashboard, ShoppingCart, CheckSquare, Truck,
     FileCheck, ShieldAlert, Users, Settings, LogOut,
     FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers,
-    ShieldCheck, MessageSquare, History
+    ShieldCheck, MessageSquare, History, FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,6 +41,7 @@ const navigation = [
         roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"],
         items: [
             { name: "Đơn đặt hàng (PO)", icon: ShoppingBag, path: "/procurement/pos", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Quản lý Báo giá", icon: FileText, path: "/procurement/quotations", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
             { name: "Quản lý Hợp đồng", icon: ShieldCheck, path: "/procurement/contracts", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
             { name: "Khiếu nại & Tranh chấp", icon: MessageSquare, path: "/procurement/disputes", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
             { name: "Theo dõi giao hàng", icon: Truck, path: "/procurement/delivery", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },

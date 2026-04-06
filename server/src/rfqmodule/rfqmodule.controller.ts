@@ -19,6 +19,7 @@ import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { AwardRfqDto } from './dto/award-rfq.dto';
 import { RolesGuard, Roles } from '../common/roles.guard';
 import { UserRole, RfqStatus } from '@prisma/client';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('Request for Quotation (RFQ)')
 @Controller('request-for-quotations')
@@ -51,7 +52,7 @@ export class RfqmoduleController {
     summary: 'Tạo yêu cầu báo giá mới',
     description: 'Tạo một yêu cầu báo giá mới từ một đơn hàng mua sắm',
   })
-  async create(@Body() createRfqDto: CreateRfqDto, @Request() req: any) {
+  async create(@Body() createRfqDto: CreateRfqDto, @Request() req: { user: JwtPayload }) {
     return this.rfqService.create(createRfqDto, req.user);
   }
 
@@ -65,8 +66,24 @@ export class RfqmoduleController {
     summary: 'Lấy tất cả yêu cầu báo giá cho tổ chức',
     description: 'Trả về danh sách tất cả yêu cầu báo giá cho tổ chức hiện tại',
   })
-  async findAll(@Request() req: any) {
+  async findAll(@Request() req: { user: JwtPayload }) {
+    console.log('User:', req.user);
     return this.rfqService.findAll(req.user);
+  }
+
+  /**
+   * Lấy danh sách tất cả RFQ mà nhà cung cấp hiện tại được mời tham gia
+   * @param req Thông tin người dùng để xác định nhà cung cấp
+   * @returns Danh sách các RFQ cho nhà cung cấp
+   */
+  @Get('my-supplier-rfqs')
+  @Roles(UserRole.SUPPLIER, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({
+    summary: 'Lấy RFQ cho nhà cung cấp',
+    description: 'Trả về danh sách tất cả RFQ mà nhà cung cấp hiện tại được mời tham gia',
+  })
+  async findRfqBySupplier(@Request() req: { user: JwtPayload }) {
+    return this.rfqService.findRfqBySupplier(req.user.orgId);
   }
 
   /**

@@ -1,26 +1,35 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
-import { Inbox, FileText, UploadCloud, Send, MessageSquare, ChevronDown, CheckCircle, Info } from "lucide-react";
+import { Inbox, FileText, UploadCloud, Send, ChevronDown, CheckCircle } from "lucide-react";
 
 import { useProcurement, RFQ, PR, PRItem } from "../../context/ProcurementContext";
 import type { CreateQuoteDto } from "../../types/api-types";
 
 export default function SupplierRFQ() {
-    const { currentUser, rfqs, prs, createQuote, notify } = useProcurement();
+    const { currentUser, prs, createQuote, notify, fetchMySupplierRFQs, submitQuotation } = useProcurement();
     const [viewState, setViewState] = useState<"LIST" | "DETAIL">("LIST");
     const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
+    const [myRfqs, setMyRfqs] = useState<RFQ[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadRFQs = async () => {
+            setLoading(true);
+            const rfqs = await fetchMySupplierRFQs();
+            setMyRfqs(rfqs);
+            setLoading(false);
+        };
+        loadRFQs();
+    }, [fetchMySupplierRFQs]);
     
-    // Filter RFQs for this supplier and status is SENT (Initial)
-    const openRfqs = rfqs.filter((r: RFQ) =>
-        (r.status === "SENT" || r.status === "OPEN") && 
-        (r.vendor?.toLowerCase().includes(currentUser?.name?.toLowerCase() || "") || 
-        (r.vendor?.toLowerCase().includes(currentUser?.fullName?.toLowerCase() || "") ||
-        (currentUser?.role === "PLATFORM_ADMIN")))
+    // Filter RFQs with status SENT or OPEN for display
+    const openRfqs = myRfqs.filter((r: RFQ) =>
+        r.status === "SENT" || r.status === "OPEN" || r.status === "PENDING"
     );
     
-    const activeRFQRaw = selectedRfqId ? rfqs.find((r: RFQ) => r.id === selectedRfqId) : (openRfqs.length > 0 ? openRfqs[0] : null);
+    const activeRFQRaw = selectedRfqId ? myRfqs.find((r: RFQ) => r.id === selectedRfqId) : (openRfqs.length > 0 ? openRfqs[0] : null);
     const relatedPR = activeRFQRaw ? prs.find((p: PR) => p.id === activeRFQRaw.prId || p.prNumber === activeRFQRaw.prId) : null;
     const activeRFQ = activeRFQRaw ? { 
         ...activeRFQRaw, 
@@ -31,7 +40,7 @@ export default function SupplierRFQ() {
     const [leadTime, setLeadTime] = useState("");
     const [paymentTerms, setPaymentTerms] = useState("Net 30");
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!activeRFQ) return;
         
         let total = 0;
@@ -49,18 +58,34 @@ export default function SupplierRFQ() {
             leadTimeDays: Number(leadTime) || 0,
             totalPrice: total,
             items: activeRFQ.items ? activeRFQ.items.map((item: PRItem) => ({
-                prItemId: item.id || "",
-                quantity: item.qty || 0,
+                rfqItemId: item.id || "",
                 unitPrice: pricesObj[item.id || ""] || 0,
-                price: pricesObj[item.id || ""] || 0,
+                qtyOffered: Number(item.qty) || 0,
             })) : [],
         };
 
-        createQuote(payload);
+        const newQuote = await createQuote(payload);
         
-        notify(`Báo giá cho RFQ ${activeRFQ.id} đã được gửi thành công!`, "success");
+        if (newQuote && newQuote.id) {
+            await submitQuotation(newQuote.id);
+            notify(`Báo giá cho RFQ ${activeRFQ.id} đã được gửi thành công!`, "success");
+        } else {
+            notify("Có lỗi khi gửi báo giá", "error");
+        }
+        
         setViewState("LIST");
     };
+
+    if (loading) {
+        return (
+            <main className="pt-16 px-8 pb-12">
+                <DashboardHeader breadcrumbs={["Nhà cung cấp", "Danh sách Yêu cầu báo giá"]} />
+                <div className="mt-8 flex items-center justify-center min-h-75">
+                    <div className="text-slate-400 font-bold uppercase tracking-widest">Đang tải...</div>
+                </div>
+            </main>
+        );
+    }
 
     if (viewState === "DETAIL" && activeRFQ) {
         return (
@@ -70,15 +95,20 @@ export default function SupplierRFQ() {
                 <div className="mt-8 mb-6 flex justify-between items-end">
                     <div>
                         <div className="flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                            <span className="bg-red-500 text-white px-2 py-1 rounded">Sắp hết hạn</span> Hạn nộp: {new Date().toLocaleDateString()}
+                            <span className={`px-2 py-1 rounded text-white ${activeRFQ.deadline && new Date(activeRFQ.deadline) < new Date() ? 'bg-red-500' : 'bg-blue-500'}`}>
+                                {activeRFQ.deadline && new Date(activeRFQ.deadline) < new Date() ? 'Đã hết hạn' : activeRFQ.status}
+                            </span>
+                            Hạn nộp: {activeRFQ.deadline ? new Date(activeRFQ.deadline).toLocaleDateString('vi-VN') : 'Không có hạn'}
                         </div>
-                        <h1 className="text-3xl font-black text-erp-navy tracking-tight">{activeRFQ.id} - Phụ kiện tự động hóa</h1>
-                        <p className="text-sm font-bold text-slate-500 mt-1">Từ: Cửa hàng trung tâm</p>
+                        <h1 className="text-3xl font-black text-erp-navy tracking-tight">{activeRFQ.rfqNumber || activeRFQ.id}</h1>
+                        <p className="text-xl font-bold text-erp-blue mt-1">{activeRFQ.title || activeRFQ.pr?.title || "Yêu cầu báo giá"}</p>
+                        <p className="text-sm font-bold text-slate-500 mt-1">Từ: {activeRFQ.pr && activeRFQ.pr.department ? (typeof activeRFQ.pr.department === 'object' ? activeRFQ.pr.department.name : activeRFQ.pr.department) : "Không xác định"}</p>
                     </div>
                     <div className="text-right">
                         <div className="text-[10px] font-black uppercase text-erp-blue tracking-widest bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 shadow-sm inline-flex items-center gap-2">
                             <Inbox size={14}/> RFQ
                         </div>
+                        <div className="text-xs text-slate-400 mt-2">Mã: {activeRFQ.id}</div>
                     </div>
                 </div>
 
@@ -93,23 +123,23 @@ export default function SupplierRFQ() {
                             <div className="space-y-3">
                                 <div className="flex justify-between">
                                     <span className="text-[10px] font-bold text-slate-400 uppercase">Mã PR</span>
-                                    <span className="text-xs font-black text-erp-navy">{relatedPR?.prNumber || "N/A"}</span>
+                                    <span className="text-xs font-black text-erp-navy">{activeRFQ.pr?.prNumber || "N/A"}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-[10px] font-bold text-slate-400 uppercase">Người yêu cầu</span>
                                     <span className="text-xs font-bold text-slate-700">
-                                        {typeof relatedPR?.requester === 'object' ? relatedPR.requester.fullName : (relatedPR?.requester || "Buyer Admin")}
+                                        {activeRFQ.pr?.requester?.fullName || activeRFQ.pr?.requester?.name || activeRFQ.createdBy?.fullName || activeRFQ.createdBy?.name || "N/A"}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-[10px] font-bold text-slate-400 uppercase">Phòng ban</span>
                                     <span className="text-xs font-bold text-slate-700">
-                                        {relatedPR ? (typeof relatedPR.department === 'string' ? relatedPR.department : relatedPR.department?.name) || "Bộ phận hạ tầng" : "N/A"}
+                                        {activeRFQ.pr?.department ? (typeof activeRFQ.pr.department === 'object' ? activeRFQ.pr.department.name : activeRFQ.pr.department) : "N/A"}
                                     </span>
                                 </div>
                                 <div className="pt-2 mt-2 border-t border-slate-50">
-                                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Mục đích mua sắm</div>
-                                    <p className="text-xs font-medium text-slate-600 italic">&quot;{activeRFQ?.title || relatedPR?.title || "Mua sắm trang thiết bị định kỳ"}&quot;</p>
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Mô tả / Mục đích</div>
+                                    <p className="text-xs font-medium text-slate-600 italic">&quot;{activeRFQ.description || activeRFQ.pr?.title || activeRFQ.title || "Không có mô tả"}&quot;</p>
                                 </div>
                             </div>
                         </div>
@@ -328,7 +358,7 @@ export default function SupplierRFQ() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="font-mono text-slate-400 text-[10px]">{r.createdAt ? new Date(r.createdAt).toLocaleString() : 'N/A'}</td>
+                                    <td className="font-mono text-slate-400 text-[10px]">{r.leadTime ? new Date(r.leadTime).toLocaleString() : (r.createdAt ? new Date(r.createdAt).toLocaleString() : 'N/A')}</td>
                                     <td className="text-center">
                                         <span className="bg-red-50 text-red-600 border border-red-100 font-black uppercase text-[9px] px-2 py-1 rounded-lg tracking-widest animate-pulse">20h 15m</span>
                                     </td>

@@ -124,6 +124,25 @@ export class PoRepository {
     });
   }
 
+  async findBySupplier(supplierId: string) {
+    return this.prisma.purchaseOrder.findMany({
+      where: { supplierId },
+      include: { 
+        items: true,
+        supplier: true, 
+        buyer: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getAll() {
+    return this.prisma.purchaseOrder.findMany({
+      include: { supplier: true, buyer: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findOne(id: string) {
     return this.prisma.purchaseOrder.findUnique({
       where: { id },

@@ -1,18 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { invoiceAPI } from '@/app/utils/api-client';
+import { useProcurement } from '@/app/context/ProcurementContext';
 import Link from 'next/link';
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { fetchInvoices, notify } = useProcurement();
 
   useEffect(() => {
-    const fetchInvoices = async () => {
+    const fetch = async () => {
       try {
-        const data = await invoiceAPI.list();
+        const data = await fetchInvoices();
         setInvoices(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load invoices');
@@ -21,8 +22,8 @@ export default function InvoicesPage() {
       }
     };
 
-    fetchInvoices();
-  }, []);
+    fetch();
+  }, [fetchInvoices]);
 
   if (loading) return <div className="p-8">Loading invoices...</div>;
 

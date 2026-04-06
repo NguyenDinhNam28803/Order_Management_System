@@ -117,7 +117,7 @@ interface QAThreadData {
   attachments?: string[];
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // ==========================================
 // PR ENDPOINTS

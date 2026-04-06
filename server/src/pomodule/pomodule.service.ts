@@ -39,6 +39,10 @@ export class PomoduleService {
     return this.repository.create(createPoDto, user.sub, orgId, poNumber);
   }
 
+  async getAll() {
+    return this.repository.getAll();
+  }
+
   /**
    * Tạo PO từ một PR đã được duyệt hoàn toàn
    * @param prId ID của Purchase Requisition
@@ -196,6 +200,10 @@ export class PomoduleService {
 
   async findAll(orgId: string) {
     return this.repository.findAll(orgId);
+  }
+
+  async findBySupplier(supplierId: string) {
+    return this.repository.findBySupplier(supplierId);
   }
 
   async findOne(id: string) {

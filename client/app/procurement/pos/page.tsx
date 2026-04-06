@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 import { useProcurement, PoStatus, Organization, PR, RFQ, PO, POItem } from "../../context/ProcurementContext";
-import { poAPI } from "../../utils/api-client";
 
 interface POMockData extends PO {
     vendorId: string;
@@ -18,10 +17,13 @@ interface POMockData extends PO {
     prId?: string;
     rfqId?: string;
     escrowLocked?: boolean;
+    supplier?: { id?: string; name?: string };
+    supplierId?: string;
+    totalAmount?: string | number;
 }
 
 export default function POManagementPage() {
-    const { organizations } = useProcurement();
+    const { organizations, pos } = useProcurement();
     const [view, setView] = useState<"list" | "create">("list");
     const [selectedPO, setSelectedPO] = useState<POMockData | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -29,23 +31,14 @@ export default function POManagementPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetch = async () => {
-            try {
-                const data = await poAPI.list();
-                const mapped = (data || []).map((p: any) => ({
-                    ...p,
-                    vendorId: p.vendor,
-                    vendorName: organizations?.find((o: any) => o.id === p.vendor)?.name || 'Unknown'
-                }));
-                setAllPOs(mapped);
-            } catch (err) {
-                console.error('Error:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetch();
-    }, [organizations]);
+        const mapped = (pos || []).map((p: any) => ({
+            ...p,
+            vendorId: p.vendor,
+            vendorName: organizations?.find((o: any) => o.id === p.vendor)?.name || 'Unknown'
+        }));
+        setAllPOs(mapped);
+        setLoading(false);
+    }, [pos, organizations]);
 
     const filteredPOs = allPOs.filter(po => 
         po.poNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -148,8 +141,8 @@ export default function POManagementPage() {
                                                 </td>
                                                 <td className="px-8 py-6">
                                                     <div className="flex flex-col">
-                                                        <span className="font-bold text-slate-700 text-sm">{po.vendorName}</span>
-                                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">ID: {po.vendorId ? po.vendorId.substring(0, 8) : "N/A"}...</span>
+                                                        <span className="font-bold text-slate-700 text-sm">{po.supplier?.name || 'N/A'}</span>
+                                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">ID: {po.supplier?.id?.substring(0, 8) || po.supplierId?.substring(0, 8) || "N/A"}...</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-6">
@@ -165,7 +158,7 @@ export default function POManagementPage() {
                                                     </span>
                                                 </td>
                                                 <td className="px-8 py-6">
-                                                    <span className="font-black text-erp-navy text-base">{po.total.toLocaleString()} ₫</span>
+                                                    <span className="font-black text-erp-navy text-base">{Number(po.totalAmount || po.total || 0).toLocaleString()} ₫</span>
                                                 </td>
                                                 <td className="px-8 py-6">
                                                     <div className="flex items-center gap-2 group/escrow cursor-help">
@@ -492,8 +485,8 @@ function PODetailDrawer({ po, onClose }: { po: POMockData, onClose: () => void }
                              <div className="w-1 h-3 bg-erp-blue rounded-full"></div> NHÀ CUNG CẤP
                         </h4>
                         <div className="relative z-10">
-                            <div className="text-xl font-black text-erp-navy mb-1">{po.vendorName}</div>
-                            <div className="text-xs font-bold text-slate-500">ID: {po.vendorId}</div>
+                            <div className="text-xl font-black text-erp-navy mb-1">{po.supplier?.name || 'N/A'}</div>
+                            <div className="text-xs font-bold text-slate-500">ID: {po.supplier?.id?.substring(0, 8) || po.supplierId?.substring(0, 8)}</div>
                         </div>
                     </div>
 
@@ -514,26 +507,33 @@ function PODetailDrawer({ po, onClose }: { po: POMockData, onClose: () => void }
                         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
                              <div className="w-1 h-3 bg-emerald-500 rounded-full"></div> CHI TIẾT HẠNG MỤC
                         </h4>
-                        <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
-                            <table className="w-full text-left text-xs">
-                                <thead className="bg-slate-50 border-b border-slate-100">
-                                    <tr className="font-black text-slate-400 uppercase tracking-tighter">
-                                        <th className="px-5 py-4">Mô tả</th>
-                                        <th className="px-5 py-4 text-center">SL</th>
-                                        <th className="px-5 py-4 text-right">Đơn giá</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-50">
-                                    {po.items.map((item: POItem) => (
-                                        <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                                            <td className="px-5 py-4 font-bold text-erp-navy">{item.description}</td>
-                                            <td className="px-5 py-4 text-center font-black text-slate-400">{item.qty}</td>
-                                            <td className="px-5 py-4 text-right font-black text-slate-700">{(item as any).estimatedPrice?.toLocaleString() || 0} ₫</td>
+                        {po.items && po.items.length > 0 ? (
+                            <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="bg-slate-50 border-b border-slate-100">
+                                        <tr className="font-black text-slate-400 uppercase tracking-tighter">
+                                            <th className="px-5 py-4">Mô tả</th>
+                                            <th className="px-5 py-4 text-center">SL</th>
+                                            <th className="px-5 py-4 text-right">Đơn giá</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-50">
+                                        {po.items.map((item: POItem) => (
+                                            <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                                                <td className="px-5 py-4 font-bold text-erp-navy">{item.description}</td>
+                                                <td className="px-5 py-4 text-center font-black text-slate-400">{item.qty}</td>
+                                                <td className="px-5 py-4 text-right font-black text-slate-700">{(item as any).estimatedPrice?.toLocaleString() || 0} ₫</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 text-center">
+                                <p className="text-sm text-slate-400">Không có chi tiết hạng mục</p>
+                                <p className="text-xs text-slate-300 mt-1">PO được tạo tự động từ RFQ</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Escrow Status */}
@@ -555,7 +555,7 @@ function PODetailDrawer({ po, onClose }: { po: POMockData, onClose: () => void }
                 <div className="p-8 border-t border-slate-100 bg-slate-50 flex flex-col gap-6">
                     <div className="flex justify-between items-center">
                         <span className="text-xs font-black text-slate-400 uppercase tracking-widest">TỔNG THANH TOÁN:</span>
-                        <span className="text-3xl font-black text-erp-blue tracking-tighter">{po.total.toLocaleString()} ₫</span>
+                        <span className="text-3xl font-black text-erp-blue tracking-tighter">{Number(po.totalAmount || po.total).toLocaleString()} ₫</span>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <button className="py-4 border border-slate-200 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all">Gửi lại thông báo</button>

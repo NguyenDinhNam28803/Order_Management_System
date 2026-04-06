@@ -603,6 +603,42 @@ export class RfqmoduleService {
    * @param awardedById ID của người thực hiện trao thầu
    * @returns Thông tin RFQ sau khi trao thầu
    */
+  async findRfqBySupplier(supplierId: string) {
+    const rfqSuppliers = await this.prisma.rfqSupplier.findMany({
+      where: { supplierId },
+      include: {
+        rfq: {
+          include: {
+            items: true,
+            pr: {
+              include: {
+                department: true,
+              },
+            },
+            createdBy: true,
+            suppliers: {
+              include: {
+                supplier: true,
+              },
+            },
+            quotations: {
+              where: { supplierId },
+            },
+          },
+        },
+      },
+      orderBy: { invitedAt: 'desc' },
+    });
+
+    return rfqSuppliers.map((rs) => ({
+      ...rs.rfq,
+      supplierStatus: rs.status,
+      invitedAt: rs.invitedAt,
+      respondedAt: rs.respondedAt,
+      hasQuotation: rs.rfq.quotations.length > 0,
+    }));
+  }
+
   async awardQuotation(
     rfqId: string,
     quotationId: string,

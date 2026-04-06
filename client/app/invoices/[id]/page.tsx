@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { invoiceAPI } from '@/app/utils/api-client';
+import { useProcurement } from '@/app/context/ProcurementContext';
 
 export default function InvoiceDetailPage() {
   const params = useParams();
   const invoiceId = params.id as string;
+  const { fetchInvoiceById, runMatching, payInvoice, notify } = useProcurement();
   const [invoice, setInvoice] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +16,7 @@ export default function InvoiceDetailPage() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const data = await invoiceAPI.getById(invoiceId);
+        const data = await fetchInvoiceById(invoiceId);
         setInvoice(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load invoice');
@@ -25,14 +26,14 @@ export default function InvoiceDetailPage() {
     };
 
     if (invoiceId) fetch();
-  }, [invoiceId]);
+  }, [invoiceId, fetchInvoiceById]);
 
   const handleRunMatching = async () => {
     try {
       setProcessing(true);
-      const updated = await invoiceAPI.runMatching(invoiceId);
+      const updated = await runMatching(invoiceId);
       setInvoice(updated);
-      alert('3-Way Matching completed');
+      notify('3-Way Matching completed', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to run matching');
     } finally {
@@ -44,9 +45,9 @@ export default function InvoiceDetailPage() {
     if (window.confirm('Confirm payment for this invoice?')) {
       try {
         setProcessing(true);
-        const updated = await invoiceAPI.pay(invoiceId);
+        const updated = await payInvoice(invoiceId);
         setInvoice(updated);
-        alert('Payment scheduled successfully');
+        notify('Payment scheduled successfully', 'success');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to process payment');
       } finally {

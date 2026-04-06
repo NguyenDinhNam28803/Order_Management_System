@@ -492,9 +492,9 @@ export interface CreateQuoteDto {
     validityDays?: number;
     notes?: string;
     items?: Array<{
-        prItemId: string;
+        rfqItemId: string;
         unitPrice: number;
-        quantity: number;
+        qtyOffered?: number;
     }>;
 }
 

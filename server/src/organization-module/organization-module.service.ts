@@ -49,6 +49,7 @@ export class OrganizationModuleService {
         users: true,
         costCenters: true,
         departments: true,
+        rfqSuppliers: true,
       },
     });
     if (!org) {

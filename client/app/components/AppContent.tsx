@@ -8,20 +8,35 @@ import ToastContainer from "./Toast";
 import SimulationPanel from "./SimulationPanel";
 
 export default function AppContent({ children }: { children: React.ReactNode }) {
-    const { currentUser, notifications, removeNotification } = useProcurement();
+    const { currentUser, notifications, removeNotification, isAuthChecking } = useProcurement();
     const pathname = usePathname();
     const router = useRouter();
 
     const isWhiteListed = pathname === "/login" || pathname === "/register";
 
     useEffect(() => {
+        // Wait for auth check to complete before redirecting
+        if (isAuthChecking) return;
+        
         if (!currentUser && !isWhiteListed) {
             router.push("/login");
         }
         if (currentUser && isWhiteListed) {
             router.push("/");
         }
-    }, [currentUser, isWhiteListed, router]);
+    }, [currentUser, isAuthChecking, isWhiteListed, router]);
+
+    // Show loading while checking auth
+    if (isAuthChecking) {
+        return (
+            <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="h-8 w-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+                    <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">Đang kiểm tra...</span>
+                </div>
+            </div>
+        );
+    }
 
     if (!currentUser && !isWhiteListed) return null;
 

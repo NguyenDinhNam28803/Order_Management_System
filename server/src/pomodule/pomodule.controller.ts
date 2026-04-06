@@ -56,6 +56,21 @@ export class PomoduleController {
   }
 
   /**
+   * Nhà cung cấp xác nhận đơn hàng (ACK)
+   * @param id ID của đơn hàng cần xác nhận
+   * @returns Đơn hàng sau khi đã được xác nhận
+   */
+  @Post(':id/acknowledge')
+  @ApiOperation({
+    summary: 'Nhà cung cấp xác nhận đơn hàng (ACK)',
+    description: 'Nhà cung cấp xác nhận đồng ý thực hiện đơn hàng, chuyển trạng thái sang ACKNOWLEDGED',
+  })
+  @Roles(UserRole.SUPPLIER, UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
+  acknowledgePo(@Param('id') id: string) {
+    return this.poService.confirmPo(id);
+  }
+
+  /**
    * Xác nhận đơn hàng, chuyển trạng thái sang CONFIRMED
    * @param id ID của đơn hàng cần xác nhận
    * @returns Đơn hàng sau khi đã được xác nhận
@@ -106,12 +121,23 @@ export class PomoduleController {
     return this.poService.submit(id);
   }
 
+  @Get('supplier/:supplierId')
+  @ApiOperation({
+    summary: 'Lấy danh sách PO cho nhà cung cấp',
+    description: 'Trả về danh sách tất cả đơn hàng của một nhà cung cấp cụ thể',
+  })
+  @Roles(UserRole.SUPPLIER, UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
+  findBySupplier(@Param('supplierId') supplierId: string) {
+    return this.poService.findBySupplier(supplierId);
+  }
+
   /**
    * Lấy danh sách tất cả các đơn đặt hàng của tổ chức hiện tại
    * @param req Thông tin người dùng để xác định tổ chức
    * @returns Danh sách các đơn đặt hàng
    */
   @Get()
+  @Roles(UserRole.SUPPLIER, UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Lấy tất cả đơn hàng cho tổ chức',
     description: 'Trả về danh sách tất cả đơn hàng cho tổ chức hiện tại',
@@ -119,6 +145,16 @@ export class PomoduleController {
   findAll(@Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.poService.findAll(req.user.orgId);
+  }
+
+  @Get('all')
+  @Roles(UserRole.SUPPLIER, UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({
+    summary: 'Lấy tất cả đơn hàng',
+    description: 'Trả về danh sách tất cả đơn hàng',
+  })
+  getAll() {
+    return this.poService.getAll();
   }
 
   /**

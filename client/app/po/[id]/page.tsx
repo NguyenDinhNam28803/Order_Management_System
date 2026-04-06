@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { poAPI } from '@/app/utils/api-client';
+import { useProcurement } from '@/app/context/ProcurementContext';
 
 export default function PODetailPage() {
   const params = useParams();
   const router = useRouter();
   const poId = params.id as string;
+  const { fetchPOById, confirmPO, submitPO, notify } = useProcurement();
   const [po, setPO] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +17,7 @@ export default function PODetailPage() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const data = await poAPI.getById(poId);
+        const data = await fetchPOById(poId);
         setPO(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load PO');
@@ -26,14 +27,14 @@ export default function PODetailPage() {
     };
 
     if (poId) fetch();
-  }, [poId]);
+  }, [poId, fetchPOById]);
 
   const handleConfirm = async () => {
     try {
       setSubmitting(true);
-      const updated = await poAPI.confirm(poId);
+      const updated = await confirmPO(poId);
       setPO(updated);
-      alert('PO confirmed successfully');
+      notify('PO confirmed successfully', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to confirm PO');
     } finally {
@@ -44,9 +45,9 @@ export default function PODetailPage() {
   const handleSubmit = async () => {
     try {
       setSubmitting(true);
-      const updated = await poAPI.submit(poId);
+      const updated = await submitPO(poId);
       setPO(updated);
-      alert('PO submitted to approver');
+      notify('PO submitted to approver', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit PO');
     } finally {

@@ -75,7 +75,12 @@ export class RfqRepository {
   async findAll(orgId: string) {
     return this.prisma.rfqRequest.findMany({
       where: { orgId },
-      include: { pr: true, createdBy: true },
+      include: { 
+        pr: true, 
+        createdBy: true,
+        suppliers: true,
+        organization: true,
+      },
       orderBy: { createdAt: 'desc' },
     });
   }

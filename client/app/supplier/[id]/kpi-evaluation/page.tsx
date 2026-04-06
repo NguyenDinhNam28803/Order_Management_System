@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { supplierKPIAPI } from '@/app/utils/api-client';
+import { useProcurement } from '@/app/context/ProcurementContext';
 
 interface KPIMetric {
   metric: string;
@@ -14,6 +14,7 @@ interface KPIMetric {
 export default function SupplierKPIPage() {
   const params = useParams();
   const supplierId = params.id as string;
+  const { evaluateSupplierKPI, fetchSupplierKPIReport, notify } = useProcurement();
   const [kpiData, setKPIData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,7 @@ export default function SupplierKPIPage() {
   useEffect(() => {
     const fetchKPI = async () => {
       try {
-        const report = await supplierKPIAPI.getReport(supplierId);
+        const report = await fetchSupplierKPIReport(supplierId);
         setKPIData(report);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load KPI report');
@@ -32,14 +33,14 @@ export default function SupplierKPIPage() {
     };
 
     if (supplierId) fetchKPI();
-  }, [supplierId]);
+  }, [supplierId, fetchSupplierKPIReport]);
 
   const handleEvaluate = async () => {
     try {
       setEvaluating(true);
-      const result = await supplierKPIAPI.evaluate(supplierId);
+      const result = await evaluateSupplierKPI(supplierId);
       setKPIData(result);
-      alert('Supplier evaluation completed');
+      notify('Supplier evaluation completed', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to evaluate supplier');
     } finally {
