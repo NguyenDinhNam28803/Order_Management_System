@@ -189,25 +189,25 @@ export default function CreateRFQPage() {
     // Mock fallback data
     const getMockSuggestions = (): AiSupplierSuggestion[] => [
         {
-            id: "ai-supp-1",
-            name: "Thiên Long Digital",
-            email: "contact@thienlong.vn",
+            id: "6c7f4a14-9238-419c-ba0f-fa8da8eb0253",
+            name: "Hanoi Hardware Hub",
+            email: "sales@hanoihardware.vn",
             matchScore: 95,
             reasons: ["Đã từng cung cấp sản phẩm tương tự", "Giá cả cạnh tranh", "Đánh giá cao về chất lượng"],
             historicalData: { avgPrice: 1200000, deliveryRate: 98, qualityScore: 4.8 }
         },
         {
-            id: "ai-supp-2",
-            name: "FPT Information System",
-            email: "sales@fpt-is.vn",
+            id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            name: "FPT Shop",
+            email: "support@fptshop.com.vn",
             matchScore: 88,
             reasons: ["Chuyên về thiết bị IT", "Hỗ trợ kỹ thuật tốt", "Bảo hành dài hạn"],
             historicalData: { avgPrice: 1350000, deliveryRate: 95, qualityScore: 4.6 }
         },
         {
-            id: "ai-supp-3",
-            name: "Hanoi Hardware",
-            email: "order@hnhardware.vn",
+            id: "b2c3d4e5-f6a7-8901-2345-6789abcdef1",
+            name: "FPT Software",
+            email: "sales@fpt.com.vn",
             matchScore: 82,
             reasons: ["Giao hàng nhanh", "Chi phí vận chuyển thấp", "Uy tín trong khu vực"],
             historicalData: { avgPrice: 1100000, deliveryRate: 92, qualityScore: 4.3 }
@@ -313,33 +313,35 @@ export default function CreateRFQPage() {
     }
 
     return (
-        <main className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-700 bg-[#0F1117] min-h-screen text-[#F8FAFC]">
-            <header className="flex items-center justify-between mb-10">
-                <div className="flex items-center gap-6">
-                    <button onClick={() => router.back()} className="h-14 w-14 bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#64748B] hover:text-[#F8FAFC] hover:border-[#3B82F6]/30 transition-all shadow-xl shadow-black/20 active:scale-95">
-                        <ChevronLeft size={24} />
-                    </button>
-                    <div>
-                        <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase">TẠO YÊU CẦU BÁO GIÁ (RFQ)</h1>
-                        <nav className="flex items-center gap-2 mt-1">
-                            <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">Nghiệp vụ Thu mua</span>
-                            <span className="h-1 w-1 bg-[#64748B] rounded-full"></span>
-                            <span className="text-[10px] font-black text-[#3B82F6] uppercase tracking-widest">Tạo mới RFQ</span>
-                        </nav>
+        <main className="animate-in fade-in slide-in-from-bottom-4 duration-700 bg-[#0F1117] min-h-screen text-[#F8FAFC]">
+            <div className="p-8">
+                <header className="flex items-center justify-between mb-10 max-w-[1600px] mx-auto">
+                    <div className="flex items-center gap-6">
+                        <button onClick={() => router.back()} className="h-14 w-14 bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#64748B] hover:text-[#F8FAFC] hover:border-[#3B82F6]/30 transition-all shadow-xl shadow-black/20 active:scale-95">
+                            <ChevronLeft size={24} />
+                        </button>
+                        <div>
+                            <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase">TẠO YÊU CẦU BÁO GIÁ (RFQ)</h1>
+                            <nav className="flex items-center gap-2 mt-1">
+                                <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">Nghiệp vụ Thu mua</span>
+                                <span className="h-1 w-1 bg-[#64748B] rounded-full"></span>
+                                <span className="text-[10px] font-black text-[#3B82F6] uppercase tracking-widest">Tạo mới RFQ</span>
+                            </nav>
+                        </div>
                     </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <div className="text-right">
-                        <div className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">Phiên làm việc</div>
-                        <div className="text-sm font-black text-[#F8FAFC] uppercase">{currentUser?.name}</div>
+                    <div className="flex items-center gap-4">
+                        <div className="text-right">
+                            <div className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">Phiên làm việc</div>
+                            <div className="text-sm font-black text-[#F8FAFC] uppercase">{currentUser?.name}</div>
+                        </div>
+                        <div className="h-12 w-12 rounded-xl bg-[#161922] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#F8FAFC] font-black">
+                            {currentUser?.name?.substring(0,2).toUpperCase()}
+                        </div>
                     </div>
-                    <div className="h-12 w-12 rounded-xl bg-[#161922] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#F8FAFC] font-black">
-                        {currentUser?.name?.substring(0,2).toUpperCase()}
-                    </div>
-                </div>
-            </header>
+                </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div className="max-w-[1600px] mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Left side: PR Info Summary */}
                 <div className="lg:col-span-1 space-y-8">
                     <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-black/20 overflow-hidden">
@@ -709,6 +711,8 @@ export default function CreateRFQPage() {
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
                 </div>
             </div>
         </main>
