@@ -56,6 +56,7 @@ export class GrnRepository {
           select: { poNumber: true, supplier: { select: { name: true } } },
         },
         receivedBy: { select: { fullName: true } },
+        items: true, // Include items for 3-way matching
         _count: { select: { items: true } },
       },
       orderBy: { createdAt: 'desc' },

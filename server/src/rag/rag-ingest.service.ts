@@ -14,7 +14,16 @@ type SourceTable =
   | 'supplier_invoices'
   | 'payments'
   | 'contracts'
-  | 'supplier_kpi_scores';
+  | 'supplier_kpi_scores'
+  | 'users'
+  | 'departments'
+  | 'organizations'
+  | 'grn_items'
+  | 'invoice_items'
+  | 'budget_allocations'
+  | 'pr_items'
+  | 'disputes'
+  | 'notifications';
 
 @Injectable()
 export class RagIngestService {
@@ -209,6 +218,73 @@ export class RagIngestService {
             buyerOrg: true,
           },
         });
+      case 'users':
+        return this.prisma.user.findMany({
+          include: {
+            organization: true,
+            department: true,
+          },
+        });
+      case 'departments':
+        return this.prisma.department.findMany({
+          include: {
+            organization: true,
+            head: true,
+          },
+        });
+      case 'organizations':
+        return this.prisma.organization.findMany({
+          include: {
+            users: true,
+            costCenters: true,
+            departments: true,
+          },
+        });
+      case 'grn_items':
+        return this.prisma.grnItem.findMany({
+          include: {
+            grn: true,
+            poItem: true,
+          },
+        });
+      case 'invoice_items':
+        return this.prisma.invoiceItem.findMany({
+          include: {
+            invoice: true,
+            poItem: true,
+            grnItem: true,
+          },
+        });
+      case 'budget_allocations':
+        return this.prisma.budgetAllocation.findMany({
+          include: {
+            budgetPeriod: true,
+            costCenter: true,
+            department: true,
+          },
+        });
+      case 'pr_items':
+        return this.prisma.prItem.findMany({
+          include: {
+            pr: true,
+            product: true,
+          },
+        });
+      case 'disputes':
+        return this.prisma.dispute.findMany({
+          include: {
+            po: true,
+            grn: true,
+            invoice: true,
+            openedBy: true,
+          },
+        });
+      case 'notifications':
+        return this.prisma.notification.findMany({
+          include: {
+            recipient: true,
+          },
+        });
     }
   }
 
@@ -338,6 +414,120 @@ export class RagIngestService {
           `Tỉ lệ hoàn thành: ${record.fulfillmentRate}`,
           `Phân hạng: ${record.tier}`,
           `Ghi chú: ${record.notes ?? ''}`,
+        ].join('. ');
+
+      case 'users':
+        return [
+          `Nhân viên: ${record.fullName}`,
+          `Email: ${record.email}`,
+          `Chức vụ: ${record.jobTitle ?? 'N/A'}`,
+          `Phòng ban: ${record.department?.name ?? 'N/A'}`,
+          `Tổ chức: ${record.organization?.name ?? 'N/A'}`,
+          `Vai trò: ${record.role}`,
+          `Trạng thái: ${record.isActive ? 'Hoạt động' : 'Không hoạt động'}`,
+        ].join('. ');
+
+      case 'departments':
+        return [
+          `Phòng ban: ${record.name}`,
+          `Mã: ${record.code}`,
+          `Tổ chức: ${record.organization?.name ?? 'N/A'}`,
+          `Trưởng phòng: ${record.head?.fullName ?? 'Chưa có'}`,
+          `Ngân sách năm: ${record.budgetAnnual?.toLocaleString('vi-VN')} VND`,
+          `Đã dùng: ${record.budgetUsed?.toLocaleString('vi-VN')} VND`,
+        ].join('. ');
+
+      case 'organizations':
+        return [
+          `Tổ chức: ${record.name}`,
+          `Mã: ${record.code}`,
+          `Tên pháp lý: ${record.legalName ?? 'N/A'}`,
+          `Mã số thuế: ${record.taxCode ?? 'N/A'}`,
+          `Loại: ${record.companyType}`,
+          `Ngành nghề: ${record.industry ?? 'N/A'}`,
+          `Địa chỉ: ${record.address ?? 'N/A'}`,
+          `Email: ${record.email ?? 'N/A'}`,
+          `Điện thoại: ${record.phone ?? 'N/A'}`,
+          `Trạng thái KYC: ${record.kycStatus}`,
+          `Phân hạng NCC: ${record.supplierTier}`,
+          `Trust Score: ${record.trustScore}`,
+        ].join('. ');
+
+      case 'grn_items':
+        return [
+          `GRN Item: ${record.id}`,
+          `GRN: ${record.grn?.grnNumber ?? 'N/A'}`,
+          `Số lượng nhận: ${record.receivedQty}`,
+          `Số lượng đạt: ${record.acceptedQty}`,
+          `Số lượng từ chối: ${record.rejectedQty}`,
+          `Kết quả QC: ${record.qcResult}`,
+          `Lý do từ chối: ${record.rejectionReason ?? 'Không có'}`,
+          `Ghi chú QC: ${record.qcNotes ?? 'N/A'}`,
+          `Số lô: ${record.batchNumber ?? 'N/A'}`,
+          `Hạn sử dụng: ${record.expiryDate?.toLocaleDateString('vi-VN') ?? 'N/A'}`,
+        ].join('. ');
+
+      case 'invoice_items':
+        return [
+          `Invoice Item: ${record.id}`,
+          `Hóa đơn: ${record.invoice?.invoiceNumber ?? 'N/A'}`,
+          `Mô tả: ${record.description ?? 'N/A'}`,
+          `Số lượng: ${record.qty}`,
+          `Đơn giá: ${record.unitPrice?.toLocaleString('vi-VN')} VND`,
+          `Tổng: ${record.total?.toLocaleString('vi-VN')} VND`,
+          `Trạng thái đối soát: ${record.matchStatus}`,
+        ].join('. ');
+
+      case 'budget_allocations':
+        return [
+          `Phân bổ ngân sách: ${record.id}`,
+          `Kỳ ngân sách: ${record.budgetPeriod?.fiscalYear} - ${record.budgetPeriod?.periodType} ${record.budgetPeriod?.periodNumber}`,
+          `Phòng ban: ${record.department?.name ?? 'N/A'}`,
+          `Cost Center: ${record.costCenter?.name ?? 'N/A'}`,
+          `Ngân sách phân bổ: ${record.allocatedAmount?.toLocaleString('vi-VN')} VND`,
+          `Đã cam kết: ${record.committedAmount?.toLocaleString('vi-VN')} VND`,
+          `Đã chi tiêu: ${record.spentAmount?.toLocaleString('vi-VN')} VND`,
+          `Còn lại: ${(record.allocatedAmount - record.committedAmount - record.spentAmount)?.toLocaleString('vi-VN')} VND`,
+          `Trạng thái: ${record.status}`,
+        ].join('. ');
+
+      case 'pr_items':
+        return [
+          `PR Item: ${record.id}`,
+          `PR: ${record.pr?.prNumber ?? 'N/A'}`,
+          `Sản phẩm: ${record.product?.name ?? record.productDesc}`,
+          `SKU: ${record.sku ?? 'N/A'}`,
+          `Số lượng: ${record.qty} ${record.unit}`,
+          `Giá ước tính: ${record.estimatedPrice?.toLocaleString('vi-VN')} VND`,
+          `Danh mục: ${record.category?.name ?? 'N/A'}`,
+        ].join('. ');
+
+      case 'disputes':
+        return [
+          `Tranh chấp: ${record.disputeNumber}`,
+          `Loại: ${record.type}`,
+          `Trạng thái: ${record.status}`,
+          `PO: ${record.po?.poNumber ?? 'N/A'}`,
+          `GRN: ${record.grn?.grnNumber ?? 'N/A'}`,
+          `Hóa đơn: ${record.invoice?.invoiceNumber ?? 'N/A'}`,
+          `Người mở: ${record.openedBy?.fullName ?? 'N/A'}`,
+          `Mô tả: ${record.description}`,
+          `Số tiền yêu cầu: ${record.claimedAmount?.toLocaleString('vi-VN') ?? 'N/A'} VND`,
+          `Số tiền giải quyết: ${record.resolutionAmount?.toLocaleString('vi-VN') ?? 'N/A'} VND`,
+          `Ghi chú giải quyết: ${record.resolutionNote ?? 'N/A'}`,
+        ].join('. ');
+
+      case 'notifications':
+        return [
+          `Thông báo: ${record.subject ?? 'N/A'}`,
+          `Người nhận: ${record.recipient?.fullName ?? 'N/A'}`,
+          `Loại sự kiện: ${record.eventType}`,
+          `Kênh: ${record.channel}`,
+          `Nội dung: ${record.body}`,
+          `Trạng thái: ${record.status}`,
+          `Độ ưu tiên: ${record.priority}`,
+          `Đã gửi: ${record.sentAt?.toLocaleString('vi-VN') ?? 'Chưa'}`,
+          `Đã đọc: ${record.readAt?.toLocaleString('vi-VN') ?? 'Chưa'}`,
         ].join('. ');
 
       default:

@@ -41,7 +41,7 @@ export interface Notification {
 }
 
 export interface POItem {
-    id: string; description: string; qty: number; estimatedPrice: number;
+    id: string; description: string; qty: number; estimatedPrice?: number; unitPrice?: number; total?: number;
 }
 
 export interface PO {
@@ -62,6 +62,7 @@ export interface RFQ {
 
 export interface GRN {
     id: string; grnNumber: string; poId: string; receivedItems: Record<string, number>; createdAt: string;
+    items?: { id: string; poItemId: string; acceptedQty?: number; receivedQty?: number }[];
 }
 
 export interface Invoice {

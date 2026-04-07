@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
 import { FileText, Calculator, FileCheck, Search, Info, Send, UploadCloud } from "lucide-react";
 
@@ -42,7 +42,7 @@ export default function SupplierInvoice() {
                 id: item.id,
                 desc: item.description,
                 expected: item.qty,
-                received: matchingGrn.receivedItems[item.id] || 0,
+                received: matchingGrn?.receivedItems?.[item?.id] || 0,
                 price: item.estimatedPrice || 0
             })).filter((i) => i.received > 0);
             
@@ -61,9 +61,26 @@ export default function SupplierInvoice() {
     const currentPO = allPos.find((p) => p.id === selectedPO);
     const currentGRN = grns.find((g: GRN) => g.poId === currentPO?.id);
     
+    // Debug log
+    console.log("currentPO:", currentPO?.id);
+    console.log("currentGRN:", currentGRN?.id, currentGRN?.grnNumber);
+    
     const [invoiceItems, setInvoiceItems] = useState<{ [key: string]: number }>({});
     const [vat, setVat] = useState(10);
     const [invoiceNo, setInvoiceNo] = useState("");
+
+    // Reset invoice items when selectedPO changes
+    useEffect(() => {
+        if (currentPO?.items) {
+            const initialItems: { [key: string]: number } = {};
+            currentPO.items.forEach(item => {
+                initialItems[item.id] = item.qty || 0;
+            });
+            setInvoiceItems(initialItems);
+        } else {
+            setInvoiceItems({});
+        }
+    }, [selectedPO, currentPO?.id]);
 
     const handleQtyChange = (itemId: string, qty: string, maxQty: number) => {
         let val = Number(qty);
@@ -71,9 +88,17 @@ export default function SupplierInvoice() {
         setInvoiceItems(prev => ({ ...prev, [itemId]: val }));
     };
 
+    // Debug: log currentPO items
+    console.log("currentPO items:", currentPO?.items);
+
     const subTotal = currentPO?.items.reduce((sum, item) => {
-        const qty = invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.qty; // Default auto fill max
-        return sum + (qty * item.estimatedPrice);
+        const qty = invoiceItems[item.id] ?? 0;
+        // PO items có unitPrice và total, không có estimatedPrice
+        const rawPrice = item.unitPrice ?? item.total;
+        const price = typeof rawPrice === 'number' ? rawPrice : Number(rawPrice) || 0;
+        const lineTotal = qty * price;
+        console.log(`Item ${item.id}: qty=${qty}, rawPrice=${rawPrice}, parsedPrice=${price}, lineTotal=${lineTotal}`);
+        return sum + lineTotal;
     }, 0) || 0;
 
     const vatAmount = subTotal * (vat / 100);
@@ -85,17 +110,22 @@ export default function SupplierInvoice() {
             return;
         }
         
-        // Build invoice items from current PO items
-        const items = currentPO.items.map(item => ({
-            poItemId: item.id,
-            description: item.description,
-            qty: Number(invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.qty) || 0,
-            unitPrice: Number(item.estimatedPrice) || 0
-        })).filter(item => item.qty > 0);
+        // Build invoice items from current PO items with grnItemId for 3-way matching
+        const items = currentPO.items.map(item => {
+            // Find corresponding GRN item by poItemId
+            const grnItem = currentGRN?.items?.find((g: {poItemId?: string}) => g.poItemId === item.id);
+            return {
+                poItemId: item.id,
+                grnItemId: grnItem?.id,
+                description: item.description,
+                qty: Number(invoiceItems[item.id]) || 0,
+                unitPrice: Number(item.unitPrice ?? item.total) || 0
+            };
+        }).filter(item => item.qty > 0);
         
         const payload = {
             poId: currentPO.id,
-            grnId: currentGRN?.id,
+            grnId: currentGRN?.id || deliverablePOs.find(p => p.id === currentPO.id)?.grn || '',
             invoiceNumber: invoiceNo,
             supplierId: currentUser?.orgId || '',
             orgId: currentPO.orgId || '',
@@ -106,6 +136,8 @@ export default function SupplierInvoice() {
             invoiceDate: new Date().toISOString().split('T')[0],
             items: items
         };
+        
+        console.log("Invoice payload:", payload);
         
         createInvoice(payload);
         alert(`Đã xuất Hóa đơn ${invoiceNo} (Invoice) cho ${currentPO.id} thành công!`);
@@ -180,20 +212,20 @@ export default function SupplierInvoice() {
                                                     <td className="text-right">
                                                         <div className="inline-flex flex-col items-end">
                                                             <span className="font-black text-[#94A3B8] bg-[#0F1117] px-2 py-0.5 rounded text-[10px] mb-1 border border-[rgba(148,163,184,0.1)]">{item.qty} {item.qty < item.qty && <span className="text-rose-400 ml-1">(! thiếu)</span>}</span>
-                                                            <span className="text-[9px] text-[#64748B]">@ {(item.estimatedPrice)}</span>
+                                                            <span className="text-[9px] text-[#64748B]">@ {(item.unitPrice ?? item.total)}</span>
                                                         </div>
                                                     </td>
                                                     <td className="border-l-2 border-emerald-500/20 p-2 bg-emerald-500/5">
                                                         <input 
                                                             type="number" 
                                                             className="w-full bg-bg-primary border-border rounded-lg px-3 py-2 text-right font-black text-emerald-400 focus:outline-none focus:border-emerald-500/30" 
-                                                            value={invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.qty}
+                                                            value={invoiceItems[item.id] ?? 0}
                                                             max={item.qty}
                                                             onChange={e => handleQtyChange(item.id, e.target.value, item.qty)}
                                                         />
                                                     </td>
                                                     <td className="text-right font-black text-text-primary text-sm p-4 bg-bg-primary/50">
-                                                        {((invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.qty) * item.estimatedPrice)} ₫
+                                                        {((invoiceItems[item.id] ?? 0) * (Number(item.unitPrice ?? item.total) || 0)).toLocaleString()} ₫
                                                     </td>
                                                 </tr>
                                             ))}

@@ -68,8 +68,15 @@ export class InvoiceModuleController {
   @Post(':id/run-matching')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Chạy lại đối soát 3 bên' })
-  runMatching(@Param('id') id: string) {
-    return this.invoiceModuleService.runThreeWayMatching(id);
+  async runMatching(@Param('id') id: string) {
+    await this.invoiceModuleService.runThreeWayMatching(id);
+    // Return updated invoice with matching results
+    const invoice = await this.invoiceModuleService.findOne(id);
+    return {
+      success: true,
+      message: 'Đối soát 3 bên đã hoàn thành',
+      data: invoice,
+    };
   }
 
   /**

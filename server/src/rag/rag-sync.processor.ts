@@ -26,6 +26,15 @@ export class RagSyncProcessor {
       'payments',
       'contracts',
       'supplier_kpi_scores',
+      'users',
+      'departments',
+      'organizations',
+      'grn_items',
+      'invoice_items',
+      'budget_allocations',
+      'pr_items',
+      'disputes',
+      'notifications',
     ] as const;
 
     for (const table of tables) {

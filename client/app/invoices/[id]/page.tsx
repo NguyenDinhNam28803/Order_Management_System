@@ -18,11 +18,13 @@ import {
   CreditCard
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function InvoiceDetailPage() {
   const params = useParams();
   const invoiceId = params.id as string;
   const { fetchInvoiceById, runMatching, payInvoice, notify } = useProcurement();
+  const router = useRouter();
   const [invoice, setInvoice] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +52,7 @@ export default function InvoiceDetailPage() {
       const updated = await runMatching(invoiceId);
       setInvoice(updated);
       notify('3-Way Matching completed', 'success');
+      router.push('/finance/invoices');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to run matching');
     } finally {
@@ -64,6 +67,7 @@ export default function InvoiceDetailPage() {
         const updated = await payInvoice(invoiceId);
         setInvoice(updated);
         notify('Payment scheduled successfully', 'success');
+        router.push('/finance/invoices');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to process payment');
       } finally {

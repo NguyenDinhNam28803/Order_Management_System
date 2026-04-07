@@ -83,7 +83,12 @@ export class InvoiceModuleService {
         }
       }
 
-      return updatedInvoice;
+      return {
+        ...updatedInvoice,
+        subtotal: Number(updatedInvoice.subtotal),
+        taxRate: updatedInvoice.taxRate ? Number(updatedInvoice.taxRate) : null,
+        totalAmount: Number(updatedInvoice.totalAmount),
+      };
     });
   }
 
@@ -128,7 +133,19 @@ export class InvoiceModuleService {
       data: { status: PoStatus.INVOICED },
     });
 
-    return invoice;
+    // Serialize Decimal to number
+    return {
+      ...invoice,
+      subtotal: Number(invoice.subtotal),
+      taxRate: invoice.taxRate ? Number(invoice.taxRate) : null,
+      totalAmount: Number(invoice.totalAmount),
+      items: invoice.items?.map(item => ({
+        ...item,
+        qty: Number(item.qty),
+        unitPrice: Number(item.unitPrice),
+        total: Number(item.total),
+      })),
+    };
   }
 
   /**
@@ -147,7 +164,21 @@ export class InvoiceModuleService {
       },
     });
 
-    if (!invoice) return;
+    if (!invoice) {
+      this.logger.warn(`[3-Way] Invoice ${invoiceId} not found`);
+      return;
+    }
+    
+    // Lấy chi tiết GRN nếu chưa có (fallback)
+    if (!invoice.grn?.items && invoice.grnId) {
+      const grnWithItems = await this.prisma.goodsReceipt.findUnique({
+        where: { id: invoice.grnId },
+        include: { items: true },
+      });
+      if (grnWithItems) {
+        invoice.grn = grnWithItems;
+      }
+    }
 
     // Cấu hình dung sai (Có thể chuyển sang SystemConfig sau này)
     const QTY_TOLERANCE_PCT = 0.02; // 2% cho số lượng
@@ -159,7 +190,19 @@ export class InvoiceModuleService {
 
     for (const invItem of invoice.items) {
       const poItem = invItem.poItem;
-      const grnItem = invItem.grnItem;
+      let grnItem = invItem.grnItem;
+      
+      // Fallback: if grnItemId is null but grn exists, find by poItemId
+      if (!grnItem && invoice.grn?.items) {
+        grnItem = invoice.grn.items.find(g => g.poItemId === invItem.poItemId) || null;
+        if (!grnItem) {
+          // Try matching by id as fallback
+          const byId = invoice.grn.items.find(g => g.id === invItem.poItemId);
+          if (byId) {
+            grnItem = byId;
+          }
+        }
+      }
 
       const itemMatch: MatchingItemResult = {
         poItemId: invItem.poItemId,
@@ -168,19 +211,26 @@ export class InvoiceModuleService {
         variance: 0,
       };
 
-      // 1. Kiểm tra số lượng: Invoice Qty <= GRN Received Qty * (1 + Tolerance)
+      // 1. Kiểm tra số lượng: Invoice Qty <= GRN Accepted Qty * (1 + Tolerance)
+      // Lý do: Phải dùng acceptedQty (sau QC) thay vì receivedQty (trước QC)
+      // để đảm bảo chỉ thanh toán cho hàng đạt chuẩn
       if (grnItem) {
         const invQty = Number(invItem.qty);
+        const acceptedQty = Number(grnItem.acceptedQty);
         const receivedQty = Number(grnItem.receivedQty);
-        const maxAllowedQty = receivedQty * (1 + QTY_TOLERANCE_PCT);
+        
+        // Nếu acceptedQty = 0, dùng receivedQty (trường hợp chưa QC)
+        const effectiveQty = acceptedQty > 0 ? acceptedQty : receivedQty;
+        const maxAllowedQty = effectiveQty * (1 + QTY_TOLERANCE_PCT);
 
         itemMatch.qtyMatch = invQty <= maxAllowedQty;
         if (!itemMatch.qtyMatch) {
-          exceptionReason += `Dòng ${invItem.poItemId}: Số lượng hóa đơn (${invQty}) vượt quá nhận kho (${receivedQty}) quá mức cho phép. `;
+          exceptionReason += `Dòng ${invItem.poItemId}: Số lượng hóa đơn (${invQty}) vượt quá số lượng đạt chuẩn (${effectiveQty}) sau QC (max: ${maxAllowedQty.toFixed(2)}). `;
         }
       } else {
         itemMatch.qtyMatch = false;
-        exceptionReason += `Dòng ${invItem.poItemId}: Không tìm thấy thông tin nhận kho (GRN). `;
+        exceptionReason += `Dòng ${invItem.poItemId}: Không tìm thấy thông tin nhận kho (GRN). Kiểm tra grnItemId trong invoice item. `;
+        this.logger.warn(`[3-Way] Missing grnItem for invoice item ${invItem.id}, poItemId: ${invItem.poItemId}`);
       }
 
       // 2. Kiểm tra đơn giá: Invoice Price <= PO Price * (1 + Tolerance)
@@ -239,10 +289,25 @@ export class InvoiceModuleService {
     if (orgId) data.buyerOrg = { connect: { id: orgId } };
     if (grnId) data.grn = { connect: { id: grnId } };
 
-    return this.prisma.supplierInvoice.update({
+    const updated = await this.prisma.supplierInvoice.update({
       where: { id },
       data,
+      include: { items: true },
     });
+    
+    // Serialize Decimal to number
+    return {
+      ...updated,
+      subtotal: Number(updated.subtotal),
+      taxRate: updated.taxRate ? Number(updated.taxRate) : null,
+      totalAmount: Number(updated.totalAmount),
+      items: updated.items?.map(item => ({
+        ...item,
+        qty: Number(item.qty),
+        unitPrice: Number(item.unitPrice),
+        total: Number(item.total),
+      })),
+    };
   }
 
   async remove(id: string) {
@@ -252,16 +317,43 @@ export class InvoiceModuleService {
   }
 
   async findAll(orgId: string) {
-    return this.prisma.supplierInvoice.findMany({
+    const invoices = await this.prisma.supplierInvoice.findMany({
       where: { orgId },
-      include: { po: true, supplier: true },
+      include: { po: true, supplier: true, items: true },
     });
+    // Serialize Decimal to number
+    return invoices.map(inv => ({
+      ...inv,
+      subtotal: Number(inv.subtotal),
+      taxRate: inv.taxRate ? Number(inv.taxRate) : null,
+      totalAmount: Number(inv.totalAmount),
+      items: inv.items?.map(item => ({
+        ...item,
+        qty: Number(item.qty),
+        unitPrice: Number(item.unitPrice),
+        total: Number(item.total),
+      })),
+    }));
   }
 
   async findOne(id: string) {
-    return this.prisma.supplierInvoice.findUnique({
+    const inv = await this.prisma.supplierInvoice.findUnique({
       where: { id },
       include: { po: true, supplier: true, items: true },
     });
+    if (!inv) return null;
+    // Serialize Decimal to number
+    return {
+      ...inv,
+      subtotal: Number(inv.subtotal),
+      taxRate: inv.taxRate ? Number(inv.taxRate) : null,
+      totalAmount: Number(inv.totalAmount),
+      items: inv.items?.map(item => ({
+        ...item,
+        qty: Number(item.qty),
+        unitPrice: Number(item.unitPrice),
+        total: Number(item.total),
+      })),
+    };
   }
 }
