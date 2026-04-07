@@ -56,7 +56,8 @@ export default function QuoteRequestPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+        <main className="animate-in fade-in duration-500 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <div className="px-6 py-6 space-y-6">
             <header className="flex justify-between items-center bg-[#161922] p-6 rounded-2xl shadow-sm border border-[rgba(148,163,184,0.1)]">
                 <div>
                     <h1 className="text-2xl font-black text-[#3B82F6] tracking-tight">Yêu cầu báo giá</h1>
@@ -252,6 +253,7 @@ export default function QuoteRequestPage() {
                     )}
                 </div>
             </div>
+        </div>
         </main>
     );
 }

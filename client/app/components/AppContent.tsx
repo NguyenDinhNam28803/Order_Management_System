@@ -56,7 +56,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
             {/* Main Content Area - Responsive width */}
             <div className="flex-1 flex flex-col h-screen overflow-hidden ml-16 transform-gpu transition-all duration-300">
                 <main className="flex-1 overflow-y-auto bg-[#0F1117] relative">
-                    <div className="max-w-screen-2xl mx-auto p-8 pb-32">
+                    <div className="w-full p-6 pb-32">
                         {children}
                     </div>
                 </main>

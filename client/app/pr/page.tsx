@@ -181,10 +181,10 @@ export default function PRPage() {
     ];
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+        <main className="animate-in fade-in duration-500 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
             <DashboardHeader breadcrumbs={["Nghiệp vụ", "PR", "Danh sách PR"]} />
 
-            <header className="mt-8 flex items-center justify-between border-b border-[rgba(148,163,184,0.1)] pb-8 mb-8">
+            <header className="mt-8 flex items-center justify-between border-b border-[rgba(148,163,184,0.1)] pb-8 mb-8 px-6">
                 <div>
                     <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">
                         {currentUser?.role === "PROCUREMENT" ? "Toàn bộ Yêu cầu PR" : "Yêu cầu mua sắm của tôi"}
@@ -201,7 +201,7 @@ export default function PRPage() {
                 )}
             </header>
 
-            <div className="bg-[#161922] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 overflow-hidden">
+            <div className="bg-[#161922] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 overflow-hidden mx-6">
                 <div className="p-5 bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <div className="text-xs font-black text-[#64748B] uppercase tracking-widest px-2">Bộ lọc nhanh</div>
