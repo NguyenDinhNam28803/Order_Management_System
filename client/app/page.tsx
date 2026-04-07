@@ -323,10 +323,10 @@ export default function Dashboard() {
     function ActionRequired({ items, onConvert }: { items: QuoteRequest[]; onConvert: (id: string) => Promise<void> }) {
         if (items.length === 0) return null;
         return (
-            <div className="bg-amber-500/10 rounded-[40px] p-10 border border-amber-500/20 mb-12 shadow-inner">
+            <div className="bg-[#161922] rounded-[40px] p-10 border border-[rgba(148,163,184,0.1)] mb-12 shadow-2xl shadow-[#3B82F6]/5">
                 <div className="flex items-center gap-3 mb-8">
-                    <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></div>
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-400 leading-none">CẦN HÀNH ĐỘNG NGAY ({items.length})</h3>
+                    <div className="h-2 w-2 rounded-full bg-[#3B82F6] animate-pulse"></div>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F8FAFC] leading-none">CẦN HÀNH ĐỘNG NGAY ({items.length})</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {items.map((qr) => (
@@ -350,9 +350,9 @@ export default function Dashboard() {
         };
 
         return (
-            <div className="bg-[#161922] p-6 rounded-[32px] border border-amber-500/20 flex items-center justify-between shadow-xl shadow-amber-500/5 hover:-translate-y-1 transition-all duration-300 group">
+            <div className="bg-[#0F1117] p-6 rounded-[32px] border border-[rgba(148,163,184,0.1)] flex items-center justify-between shadow-xl shadow-[#3B82F6]/5 hover:-translate-y-1 transition-all duration-300 group">
                 <div className="flex items-center gap-4">
-                    <div className="p-4 bg-amber-500/10 text-amber-400 rounded-[20px] group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
+                    <div className="p-4 bg-[#3B82F6]/10 text-[#3B82F6] rounded-[20px] group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
                     <div>
                         <h4 className="text-xs font-black text-[#F8FAFC] uppercase mb-1">{qr.qrNumber} ĐÃ CÓ BÁO GIÁ</h4>
                         <p className="text-[10px] text-[#64748B] font-bold uppercase tracking-tight opacity-70">Nhà cung cấp đã nộp giá. Chuyển sang PR để duyệt mua hàng.</p>
@@ -363,7 +363,13 @@ export default function Dashboard() {
                     disabled={isConverting}
                     className="px-8 py-4 bg-[#3B82F6] hover:bg-emerald-500 text-white text-[10px] font-black uppercase tracking-[0.1em] rounded-2xl shadow-xl shadow-[#3B82F6]/20 transition-all flex items-center gap-2 disabled:opacity-50"
                 >
-                    {isConverting ? <Loader2 className="animate-spin" size={14} /> : <>Chuyển sang PR <ArrowRight size={14} /></>}
+                    {isConverting ? (
+                        <Loader2 className="animate-spin" size={14} />
+                    ) : (
+                        <>
+                            Chuyển sang PR <ArrowRight size={14} />
+                        </>
+                    )}
                 </button>
             </div>
         );

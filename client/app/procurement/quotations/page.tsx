@@ -125,12 +125,12 @@ export default function QuotationManagementPage() {
             key: "rfqNumber",
             render: (row: RFQ) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-erp-navy/10 flex items-center justify-center text-erp-navy border border-erp-navy/20">
+                    <div className="h-10 w-10 rounded-xl bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6] border border-[#3B82F6]/20">
                         <FileText size={20} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-black text-erp-navy tracking-tight">{row.rfqNumber || row.id.substring(0, 8)}</span>
-                        <span className="text-[9px] text-slate-400 font-bold uppercase">{formatDate(row.createdAt)}</span>
+                        <span className="font-black text-[#F8FAFC] tracking-tight">{row.rfqNumber || row.id.substring(0, 8)}</span>
+                        <span className="text-[9px] text-[#64748B] font-bold uppercase">{formatDate(row.createdAt)}</span>
                     </div>
                 </div>
             )
@@ -140,8 +140,8 @@ export default function QuotationManagementPage() {
             key: "title",
             render: (row: RFQ) => (
                 <div className="flex flex-col max-w-xs">
-                    <span className="font-black text-slate-700 truncate">{row.title || "Không có tiêu đề"}</span>
-                    <span className="text-[10px] text-slate-400 truncate">{row.description?.substring(0, 50) || ""}...</span>
+                    <span className="font-black text-[#94A3B8] truncate">{row.title || "Không có tiêu đề"}</span>
+                    <span className="text-[10px] text-[#64748B] truncate">{row.description?.substring(0, 50) || ""}...</span>
                 </div>
             )
         },
@@ -151,7 +151,7 @@ export default function QuotationManagementPage() {
             render: (row: RFQ) => (
                 <div className="flex items-center gap-2">
                     <Calendar size={14} className="text-rose-400" />
-                    <span className="text-xs font-black text-rose-600">{formatDate(row.deadline)}</span>
+                    <span className="text-xs font-black text-rose-400">{formatDate(row.deadline)}</span>
                 </div>
             )
         },
@@ -160,14 +160,14 @@ export default function QuotationManagementPage() {
             render: (row: RFQ) => (
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                            <Users size={16} className="text-blue-500" />
+                        <div className="h-8 w-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center">
+                            <Users size={16} className="text-[#3B82F6]" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-sm font-black text-blue-600">
+                            <span className="text-sm font-black text-[#3B82F6]">
                                 {row.suppliers?.length || 0} nhà cung cấp
                             </span>
-                            <span className="text-[9px] text-slate-400">Đã mời tham gia</span>
+                            <span className="text-[9px] text-[#64748B]">Đã mời tham gia</span>
                         </div>
                     </div>
                 </div>
@@ -184,7 +184,7 @@ export default function QuotationManagementPage() {
                 <div className="flex items-center gap-2">
                     <button 
                         onClick={() => setSelectedRFQ(row)}
-                        className="inline-flex items-center gap-2 bg-erp-navy text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-erp-navy/90 transition-all shadow-lg shadow-erp-navy/20 active:scale-95"
+                        className="inline-flex items-center gap-2 bg-[#3B82F6] text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#2563EB] transition-all shadow-lg shadow-[#3B82F6]/20 active:scale-95"
                     >
                         <Eye size={14} /> Xem báo giá
                     </button>
@@ -197,7 +197,7 @@ export default function QuotationManagementPage() {
                                     refreshData();
                                 }
                             }}
-                            className="inline-flex items-center gap-2 bg-amber-100 text-amber-600 px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-amber-200 transition-all"
+                            className="inline-flex items-center gap-2 bg-amber-500/10 text-amber-400 px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-amber-500/20 transition-all border border-amber-500/20"
                             title="Đóng RFQ"
                         >
                             <X size={14} />
@@ -215,13 +215,13 @@ export default function QuotationManagementPage() {
             key: "supplier",
             render: (row: Quotation) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-xl bg-linear-to-br from-emerald-50 to-teal-50 flex items-center justify-center text-emerald-600 border border-emerald-100 shadow-sm">
+                    <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
                         <Building2 size={22} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-black text-slate-800 text-sm">{row.supplier?.name || "Chưa có tên"}</span>
-                        <div className="flex items-center gap-2 text-[10px] text-slate-400">
-                            <span className="bg-slate-100 px-2 py-0.5 rounded ">{row.supplierId.substring(0, 8)}</span>
+                        <span className="font-black text-[#F8FAFC] text-sm">{row.supplier?.name || "Chưa có tên"}</span>
+                        <div className="flex items-center gap-2 text-[10px] text-[#64748B]">
+                            <span className="bg-[#0F1117] px-2 py-0.5 rounded border border-[rgba(148,163,184,0.1)]">{row.supplierId.substring(0, 8)}</span>
                             {row.supplier?.email && (
                                 <span className="flex items-center gap-1">
                                     <Mail size={10} /> {row.supplier.email}
@@ -237,8 +237,8 @@ export default function QuotationManagementPage() {
             key: "totalPrice",
             render: (row: Quotation) => (
                 <div className="text-right">
-                    <div className=" font-black text-emerald-600 text-sm">{formatVND(row.totalPrice)} ₫</div>
-                    <div className="text-[9px] text-slate-400 font-black uppercase">Total</div>
+                    <div className=" font-black text-emerald-400 text-sm">{formatVND(row.totalPrice)} ₫</div>
+                    <div className="text-[9px] text-[#64748B] font-black uppercase">Total</div>
                 </div>
             )
         },
@@ -247,8 +247,8 @@ export default function QuotationManagementPage() {
             key: "leadTimeDays",
             render: (row: Quotation) => (
                 <div className="flex items-center gap-1">
-                    <Clock size={14} className="text-slate-400" />
-                    <span className="text-xs font-bold text-slate-600">{row.leadTimeDays} ngày</span>
+                    <Clock size={14} className="text-[#64748B]" />
+                    <span className="text-xs font-bold text-[#94A3B8]">{row.leadTimeDays} ngày</span>
                 </div>
             )
         },
@@ -259,23 +259,23 @@ export default function QuotationManagementPage() {
                 <div className="flex items-center gap-2">
                     {row.aiScore ? (
                         <>
-                            <Sparkles size={14} className={row.aiScore >= 80 ? "text-amber-400" : "text-purple-400"} />
+                            <Sparkles size={14} className={row.aiScore >= 80 ? "text-amber-400" : "text-violet-400"} />
                             <div className="flex flex-col">
-                                <span className={`text-xs font-black ${row.aiScore >= 80 ? "text-amber-600" : "text-purple-600"}`}>
+                                <span className={`text-xs font-black ${row.aiScore >= 80 ? "text-amber-400" : "text-violet-400"}`}>
                                     {row.aiScore}/100
                                 </span>
-                                <div className="w-16 bg-slate-200 rounded-full h-1">
+                                <div className="w-16 bg-[#1A1D23] rounded-full h-1">
                                     <div 
-                                        className={`h-1 rounded-full ${row.aiScore >= 80 ? "bg-amber-500" : "bg-purple-500"}`}
+                                        className={`h-1 rounded-full ${row.aiScore >= 80 ? "bg-amber-500" : "bg-violet-500"}`}
                                         style={{ width: `${row.aiScore}%` }}
                                     />
                                 </div>
                             </div>
                         </>
                     ) : analyzingRFQ === selectedRFQ?.id ? (
-                        <span className="text-[10px] text-purple-400 font-bold animate-pulse">Đang phân tích...</span>
+                        <span className="text-[10px] text-violet-400 font-bold animate-pulse">Đang phân tích...</span>
                     ) : (
-                        <span className="text-[10px] text-slate-300 font-bold">Chưa đánh giá</span>
+                        <span className="text-[10px] text-[#64748B] font-bold">Chưa đánh giá</span>
                     )}
                 </div>
             )
@@ -284,8 +284,8 @@ export default function QuotationManagementPage() {
             label: "Điều kiện",
             render: (row: Quotation) => (
                 <div className="flex flex-col text-[10px]">
-                    <span className="text-slate-500">TT: {row.paymentTerms || "N/A"}</span>
-                    <span className="text-slate-500">GH: {row.deliveryTerms || "N/A"}</span>
+                    <span className="text-[#94A3B8]">TT: {row.paymentTerms || "N/A"}</span>
+                    <span className="text-[#94A3B8]">GH: {row.deliveryTerms || "N/A"}</span>
                 </div>
             )
         },
@@ -295,7 +295,7 @@ export default function QuotationManagementPage() {
                 <div className="flex items-center justify-end gap-2">
                     <button 
                         onClick={() => setViewQuotation(row)}
-                        className="inline-flex items-center gap-2 bg-slate-100 text-slate-600 px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all"
+                        className="inline-flex items-center gap-2 bg-[#1A1D23] text-[#64748B] px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#0F1117] transition-all border border-[rgba(148,163,184,0.1)]"
                         title="Xem chi tiết"
                     >
                         <Eye size={14} />
@@ -303,18 +303,18 @@ export default function QuotationManagementPage() {
                     {row.status === 'SUBMITTED' && (
                         <button 
                             onClick={() => setAwardModal(row)}
-                            className="inline-flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+                            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
                         >
                             <Award size={14} /> Trao thầu
                         </button>
                     )}
                     {row.status === 'ACCEPTED' && (
-                        <span className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-600 px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest">
+                        <span className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest border border-emerald-500/20">
                             <CheckCircle size={14} /> Đã trao
                         </span>
                     )}
                     {row.status === 'REJECTED' && (
-                        <span className="inline-flex items-center gap-2 bg-red-100 text-red-600 px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest">
+                        <span className="inline-flex items-center gap-2 bg-rose-500/10 text-rose-400 px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest border border-rose-500/20">
                             <AlertCircle size={14} /> Từ chối
                         </span>
                     )}
@@ -343,11 +343,11 @@ export default function QuotationManagementPage() {
             {/* Header */}
             <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
                 <div>
-                    <h1 className="text-4xl font-black text-erp-navy tracking-tighter uppercase mb-2">
+                    <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase mb-2">
                         {selectedRFQ ? `BÁO GIÁ CHO RFQ` : "QUẢN LÝ BÁO GIÁ"}
                     </h1>
-                    <p className="text-slate-400 font-bold text-sm tracking-tight flex items-center gap-2 uppercase">
-                        <ShieldAlert size={14} className="text-erp-blue" /> 
+                    <p className="text-[#64748B] font-bold text-sm tracking-tight flex items-center gap-2 uppercase">
+                        <ShieldAlert size={14} className="text-[#3B82F6]" /> 
                         {selectedRFQ ? selectedRFQ.title || "Xem xét và trao thầu" : "Chọn RFQ để xem báo giá"}
                     </p>
                 </div>
@@ -355,23 +355,23 @@ export default function QuotationManagementPage() {
                     {selectedRFQ ? (
                         <button 
                             onClick={() => setSelectedRFQ(null)}
-                            className="inline-flex items-center gap-2 bg-slate-100 text-slate-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                            className="inline-flex items-center gap-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#1A1D23] transition-all shadow-sm"
                         >
                             <ArrowLeft size={16} /> Quay lại danh sách RFQ
                         </button>
                     ) : (
                         <div className="relative grow md:w-80">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]" size={18} />
                             <input 
                                 type="text"
                                 placeholder="Tìm kiếm RFQ..."
-                                className="erp-input w-full pl-12 h-14 rounded-2xl!"
+                                className="w-full pl-12 pr-6 py-5 h-14 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#F8FAFC] placeholder:text-[#64748B] focus:ring-2 focus:ring-[#3B82F6] transition-all"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
                     )}
-                    <button className="h-14 w-14 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-500 shadow-xl shadow-slate-200/20 hover:bg-slate-50 transition-all shrink-0">
+                    <button className="h-14 w-14 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#64748B] shadow-xl shadow-[#3B82F6]/5 hover:bg-[#1A1D23] transition-all shrink-0">
                         <ListFilter size={20} />
                     </button>
                 </div>
@@ -381,13 +381,13 @@ export default function QuotationManagementPage() {
             {selectedRFQ && rfqStats.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     {rfqStats.map((stat) => (
-                        <div key={stat.label} className="bg-white p-6 rounded-4xl border border-slate-100 shadow-xl shadow-slate-200/20 flex items-center gap-4 group hover:border-erp-blue transition-all">
+                        <div key={stat.label} className="bg-[#161922] p-6 rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 flex items-center gap-4 group hover:border-[#3B82F6]/20 transition-all">
                             <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                                 <stat.icon size={24} />
                             </div>
                             <div>
-                                <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">{stat.label}</div>
-                                <div className="text-2xl font-black text-erp-navy">{stat.value}</div>
+                                <div className="text-[10px] uppercase font-black tracking-widest text-[#64748B] mb-1">{stat.label}</div>
+                                <div className="text-2xl font-black text-[#F8FAFC]">{stat.value}</div>
                             </div>
                         </div>
                     ))}
@@ -396,60 +396,60 @@ export default function QuotationManagementPage() {
 
             {/* Analyzing Indicator */}
             {analyzingRFQ && (
-                <div className="bg-purple-50 border border-purple-100 rounded-2xl p-4 mb-6 flex items-center gap-3">
-                    <Sparkles size={20} className="text-purple-500 animate-pulse" />
-                    <span className="text-sm font-bold text-purple-700">AI đang phân tích các báo giá...</span>
+                <div className="bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-2xl p-4 mb-6 flex items-center gap-3">
+                    <Sparkles size={20} className="text-[#3B82F6] animate-pulse" />
+                    <span className="text-sm font-bold text-[#F8FAFC]">AI đang phân tích các báo giá...</span>
                 </div>
             )}
 
             {/* Award Modal */}
             {awardModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F1117]/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-[#161922] rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
                         <div className="bg-emerald-600 px-8 py-6 text-white flex justify-between items-center">
                             <div>
                                 <h3 className="text-xl font-black uppercase tracking-tight">Trao thầu</h3>
                                 <p className="text-emerald-100 text-xs font-bold uppercase mt-1 tracking-widest">Xác nhận chọn nhà cung cấp</p>
                             </div>
-                            <button onClick={() => setAwardModal(null)} className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all font-black">×</button>
+                            <button onClick={() => setAwardModal(null)} className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all font-black text-white">×</button>
                         </div>
                         <div className="p-8 space-y-6">
-                            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                            <div className="bg-[#0F1117] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="h-12 w-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+                                    <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
                                         <Award size={24} />
                                     </div>
                                     <div>
-                                        <div className="font-black text-slate-700">{awardModal.supplier?.name || awardModal.supplierId}</div>
-                                        <div className="text-[10px] text-slate-400 font-bold uppercase">Nhà cung cấp được chọn</div>
+                                        <div className="font-black text-[#F8FAFC]">{awardModal.supplier?.name || awardModal.supplierId}</div>
+                                        <div className="text-[10px] text-[#64748B] font-bold uppercase">Nhà cung cấp được chọn</div>
                                     </div>
                                 </div>
                                 
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div>
-                                        <span className="text-[10px] font-black uppercase text-slate-400">Giá báo:</span>
-                                        <div className=" font-black text-emerald-600">{formatVND(awardModal.totalPrice)} ₫</div>
+                                        <span className="text-[10px] font-black uppercase text-[#64748B]">Giá báo:</span>
+                                        <div className=" font-black text-emerald-400">{formatVND(awardModal.totalPrice)} ₫</div>
                                     </div>
                                     <div>
-                                        <span className="text-[10px] font-black uppercase text-slate-400">Lead time:</span>
-                                        <div className="font-black text-slate-700">{awardModal.leadTimeDays} ngày</div>
+                                        <span className="text-[10px] font-black uppercase text-[#64748B]">Lead time:</span>
+                                        <div className="font-black text-[#F8FAFC]">{awardModal.leadTimeDays} ngày</div>
                                     </div>
                                     {awardModal.aiScore && (
                                         <div>
-                                            <span className="text-[10px] font-black uppercase text-slate-400">AI Score:</span>
-                                            <div className="font-black text-purple-600">{awardModal.aiScore}/100</div>
+                                            <span className="text-[10px] font-black uppercase text-[#64748B]">AI Score:</span>
+                                            <div className="font-black text-violet-400">{awardModal.aiScore}/100</div>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="text-sm text-slate-500">
+                            <div className="text-sm text-[#64748B]">
                                 <p className="mb-2">Bạn có chắc chắn muốn trao thầu cho nhà cung cấp này?</p>
-                                <p className="text-[10px] text-slate-400">Sau khi trao thầu, các báo giá khác cho RFQ này sẽ bị đóng.</p>
+                                <p className="text-[10px] text-[#94A3B8]">Sau khi trao thầu, các báo giá khác cho RFQ này sẽ bị đóng.</p>
                             </div>
 
                             <div className="flex gap-4 pt-4">
-                                <button onClick={() => setAwardModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-slate-100 text-slate-400 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">Hủy bỏ</button>
+                                <button onClick={() => setAwardModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#1A1D23] text-[#64748B] font-black text-xs uppercase tracking-widest hover:bg-[#0F1117] transition-all border border-[rgba(148,163,184,0.1)]">Hủy bỏ</button>
                                 <button 
                                     onClick={() => handleAward(awardModal)}
                                     className="flex-1 px-6 py-4 rounded-2xl bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
@@ -464,25 +464,25 @@ export default function QuotationManagementPage() {
 
             {/* View Quotation Detail Modal */}
             {viewQuotation && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-300">
-                        <div className="bg-erp-navy px-8 py-6 text-white flex justify-between items-center shrink-0">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F1117]/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-[#161922] rounded-3xl w-full max-w-2xl shadow-2xl max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
+                        <div className="bg-[#3B82F6] px-8 py-6 text-white flex justify-between items-center shrink-0">
                             <div>
                                 <h3 className="text-xl font-black uppercase tracking-tight">Chi tiết Báo giá</h3>
                                 <p className="text-blue-100 text-xs font-bold uppercase mt-1 tracking-widest">Thông tin chi tiết từ nhà cung cấp</p>
                             </div>
-                            <button onClick={() => setViewQuotation(null)} className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all font-black">×</button>
+                            <button onClick={() => setViewQuotation(null)} className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all font-black text-white">×</button>
                         </div>
                         <div className="p-8 space-y-6 overflow-y-auto">
                             {/* Supplier Info */}
-                            <div className="flex items-center gap-4 pb-6 border-b border-slate-100">
-                                <div className="h-16 w-16 rounded-2xl bg-linear-to-br from-emerald-50 to-teal-50 flex items-center justify-center text-emerald-600 border border-emerald-100 shadow-sm">
+                            <div className="flex items-center gap-4 pb-6 border-b border-[rgba(148,163,184,0.1)]">
+                                <div className="h-16 w-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
                                     <Building2 size={32} />
                                 </div>
                                 <div>
-                                    <div className="font-black text-slate-800 text-lg">{viewQuotation.supplier?.name || "Chưa có tên"}</div>
-                                    <div className="flex items-center gap-3 text-sm text-slate-500 mt-1">
-                                        <span className="bg-slate-100 px-2 py-0.5 rounded ">{viewQuotation.supplierId.substring(0, 8)}</span>
+                                    <div className="font-black text-[#F8FAFC] text-lg">{viewQuotation.supplier?.name || "Chưa có tên"}</div>
+                                    <div className="flex items-center gap-3 text-sm text-[#64748B] mt-1">
+                                        <span className="bg-[#0F1117] px-2 py-0.5 rounded border border-[rgba(148,163,184,0.1)]">{viewQuotation.supplierId.substring(0, 8)}</span>
                                         {viewQuotation.supplier?.email && (
                                             <span className="flex items-center gap-1">
                                                 <Mail size={12} /> {viewQuotation.supplier.email}
@@ -497,55 +497,55 @@ export default function QuotationManagementPage() {
 
                             {/* Key Metrics */}
                             <div className="grid grid-cols-3 gap-4">
-                                <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
-                                    <div className="text-[10px] font-black uppercase text-emerald-600 mb-1">Tổng giá trị</div>
-                                    <div className=" font-black text-emerald-700 text-xl">{formatVND(viewQuotation.totalPrice)} ₫</div>
+                                <div className="bg-emerald-500/10 rounded-2xl p-4 border border-emerald-500/20">
+                                    <div className="text-[10px] font-black uppercase text-emerald-400 mb-1">Tổng giá trị</div>
+                                    <div className=" font-black text-emerald-400 text-xl">{formatVND(viewQuotation.totalPrice)} ₫</div>
                                 </div>
-                                <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
-                                    <div className="text-[10px] font-black uppercase text-blue-600 mb-1">Lead Time</div>
-                                    <div className="font-black text-blue-700 text-xl">{viewQuotation.leadTimeDays} ngày</div>
+                                <div className="bg-[#3B82F6]/10 rounded-2xl p-4 border border-[#3B82F6]/20">
+                                    <div className="text-[10px] font-black uppercase text-[#3B82F6] mb-1">Lead Time</div>
+                                    <div className="font-black text-[#3B82F6] text-xl">{viewQuotation.leadTimeDays} ngày</div>
                                 </div>
-                                <div className="bg-purple-50 rounded-2xl p-4 border border-purple-100">
-                                    <div className="text-[10px] font-black uppercase text-purple-600 mb-1">AI Score</div>
-                                    <div className="font-black text-purple-700 text-xl">
+                                <div className="bg-violet-500/10 rounded-2xl p-4 border border-violet-500/20">
+                                    <div className="text-[10px] font-black uppercase text-violet-400 mb-1">AI Score</div>
+                                    <div className="font-black text-violet-400 text-xl">
                                         {viewQuotation.aiScore ? `${viewQuotation.aiScore}/100` : "Chưa có"}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Terms */}
-                            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                                <div className="text-[10px] font-black uppercase text-slate-400 mb-4">Điều khoản</div>
+                            <div className="bg-[#0F1117] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                <div className="text-[10px] font-black uppercase text-[#64748B] mb-4">Điều khoản</div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <span className="text-xs text-slate-500">Thanh toán:</span>
-                                        <div className="font-bold text-slate-700">{viewQuotation.paymentTerms || "N/A"}</div>
+                                        <span className="text-xs text-[#64748B]">Thanh toán:</span>
+                                        <div className="font-bold text-[#F8FAFC]">{viewQuotation.paymentTerms || "N/A"}</div>
                                     </div>
                                     <div>
-                                        <span className="text-xs text-slate-500">Giao hàng:</span>
-                                        <div className="font-bold text-slate-700">{viewQuotation.deliveryTerms || "N/A"}</div>
+                                        <span className="text-xs text-[#64748B]">Giao hàng:</span>
+                                        <div className="font-bold text-[#F8FAFC]">{viewQuotation.deliveryTerms || "N/A"}</div>
                                     </div>
                                     <div>
-                                        <span className="text-xs text-slate-500">Hiệu lực:</span>
-                                        <div className="font-bold text-slate-700">{viewQuotation.validityDays || "N/A"} ngày</div>
+                                        <span className="text-xs text-[#64748B]">Hiệu lực:</span>
+                                        <div className="font-bold text-[#F8FAFC]">{viewQuotation.validityDays || "N/A"} ngày</div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* AI Response */}
-                            <div className="bg-linear-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100">
+                            <div className="bg-violet-500/5 rounded-2xl p-6 border border-violet-500/20">
                                 <div className="flex items-center gap-2 mb-4">
-                                    <Sparkles size={16} className="text-indigo-600" />
-                                    <div className="text-[10px] font-black uppercase text-indigo-600 tracking-widest">Phân tích AI</div>
+                                    <Sparkles size={16} className="text-violet-400" />
+                                    <div className="text-[10px] font-black uppercase text-violet-400 tracking-widest">Phân tích AI</div>
                                 </div>
                                 <div className="space-y-3">
                                     <div className="flex items-start gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
-                                            <TrendingUp size={14} className="text-indigo-600" />
+                                        <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0">
+                                            <TrendingUp size={14} className="text-violet-400" />
                                         </div>
                                         <div>
-                                            <div className="text-xs font-bold text-slate-700">Đánh giá giá cả</div>
-                                            <p className="text-xs text-slate-500 mt-0.5">
+                                            <div className="text-xs font-bold text-[#F8FAFC]">Đánh giá giá cả</div>
+                                            <p className="text-xs text-[#64748B] mt-0.5">
                                                 {viewQuotation.aiScore && viewQuotation.aiScore >= 80 
                                                     ? "Giá cả cạnh tranh tốt, thấp hơn 15% so với thị trường" 
                                                     : viewQuotation.aiScore && viewQuotation.aiScore >= 60
@@ -555,12 +555,12 @@ export default function QuotationManagementPage() {
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
-                                            <Clock size={14} className="text-purple-600" />
+                                        <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center shrink-0">
+                                            <Clock size={14} className="text-[#3B82F6]" />
                                         </div>
                                         <div>
-                                            <div className="text-xs font-bold text-slate-700">Đánh giá lead time</div>
-                                            <p className="text-xs text-slate-500 mt-0.5">
+                                            <div className="text-xs font-bold text-[#F8FAFC]">Đánh giá lead time</div>
+                                            <p className="text-xs text-[#64748B] mt-0.5">
                                                 {viewQuotation.leadTimeDays <= 7 
                                                     ? "Thời gian giao hàng nhanh, đáp ứng yêu cầu khẩn" 
                                                     : viewQuotation.leadTimeDays <= 14
@@ -570,12 +570,12 @@ export default function QuotationManagementPage() {
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-                                            <ShieldCheck size={14} className="text-emerald-600" />
+                                        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                                            <ShieldCheck size={14} className="text-emerald-400" />
                                         </div>
                                         <div>
-                                            <div className="text-xs font-bold text-slate-700">Rủi ro & Khuyến nghị</div>
-                                            <p className="text-xs text-slate-500 mt-0.5">
+                                            <div className="text-xs font-bold text-[#F8FAFC]">Rủi ro & Khuyến nghị</div>
+                                            <p className="text-xs text-[#64748B] mt-0.5">
                                                 {viewQuotation.aiScore && viewQuotation.aiScore >= 80 
                                                     ? "Nhà cung cấp đáng tin cậy, nên trao thầu" 
                                                     : viewQuotation.aiScore && viewQuotation.aiScore >= 60
@@ -585,12 +585,12 @@ export default function QuotationManagementPage() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-4 pt-4 border-t border-indigo-100">
+                                <div className="mt-4 pt-4 border-t border-violet-500/20">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase">Tổng điểm AI</span>
+                                        <span className="text-[10px] font-bold text-[#64748B] uppercase">Tổng điểm AI</span>
                                         <span className={`text-sm font-black ${
-                                            (viewQuotation.aiScore || 0) >= 80 ? 'text-emerald-600' : 
-                                            (viewQuotation.aiScore || 0) >= 60 ? 'text-amber-600' : 'text-red-600'
+                                            (viewQuotation.aiScore || 0) >= 80 ? 'text-emerald-400' : 
+                                            (viewQuotation.aiScore || 0) >= 60 ? 'text-amber-400' : 'text-red-400'
                                         }`}>
                                             {viewQuotation.aiScore ? `${viewQuotation.aiScore}/100` : "Chưa có"}
                                         </span>
@@ -600,15 +600,15 @@ export default function QuotationManagementPage() {
 
                             {/* Notes */}
                             {viewQuotation.notes && (
-                                <div className="bg-amber-50 rounded-2xl p-4 border border-amber-100">
-                                    <div className="text-[10px] font-black uppercase text-amber-600 mb-2">Ghi chú từ NCC</div>
-                                    <p className="text-sm text-amber-800">{viewQuotation.notes}</p>
+                                <div className="bg-amber-500/10 rounded-2xl p-4 border border-amber-500/20">
+                                    <div className="text-[10px] font-black uppercase text-amber-400 mb-2">Ghi chú từ NCC</div>
+                                    <p className="text-sm text-amber-400">{viewQuotation.notes}</p>
                                 </div>
                             )}
 
                             {/* Action Buttons */}
                             <div className="flex gap-4 pt-4">
-                                <button onClick={() => setViewQuotation(null)} className="flex-1 px-6 py-4 rounded-2xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">
+                                <button onClick={() => setViewQuotation(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#1A1D23] text-[#64748B] font-black text-xs uppercase tracking-widest hover:bg-[#0F1117] transition-all border border-[rgba(148,163,184,0.1)]">
                                     Đóng
                                 </button>
                                 {viewQuotation.status === 'SUBMITTED' && (
@@ -629,26 +629,26 @@ export default function QuotationManagementPage() {
             )}
 
             {/* Table */}
-            <div className="bg-white rounded-[40px] border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
+            <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
                 {selectedRFQ ? (
                     // Show quotations for selected RFQ
                     loading ? (
                         <div className="py-32 text-center">
-                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-slate-50 text-slate-200 mb-6 animate-pulse">
+                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#64748B] mb-6 animate-pulse">
                                 <TrendingUp size={40} />
                             </div>
-                            <h3 className="text-xl font-black text-erp-navy mb-2 uppercase tracking-tight">Đang tải báo giá...</h3>
+                            <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-tight">Đang tải báo giá...</h3>
                         </div>
                     ) : (
                         <>
                             <ERPTable columns={quotationColumns} data={quotations} />
                             {quotations.length === 0 && (
                                 <div className="py-32 text-center">
-                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-slate-50 text-slate-200 mb-6">
+                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#64748B] mb-6">
                                         <AlertCircle size={40} />
                                     </div>
-                                    <h3 className="text-xl font-black text-erp-navy mb-2 uppercase tracking-tight">Chưa có báo giá nào</h3>
-                                    <p className="text-slate-400 font-medium">RFQ này chưa nhận được báo giá từ nhà cung cấp.</p>
+                                    <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-tight">Chưa có báo giá nào</h3>
+                                    <p className="text-[#64748B] font-medium">RFQ này chưa nhận được báo giá từ nhà cung cấp.</p>
                                 </div>
                             )}
                         </>
@@ -665,11 +665,11 @@ export default function QuotationManagementPage() {
 
 function RFQStatusPill({ status }: { status: string }) {
     const config: Record<string, { bg: string, text: string }> = {
-        'DRAFT': { bg: 'bg-slate-100', text: 'text-slate-500' },
-        'PUBLISHED': { bg: 'bg-blue-100', text: 'text-blue-600' },
-        'CLOSED': { bg: 'bg-amber-100', text: 'text-amber-600' },
-        'AWARDED': { bg: 'bg-emerald-100', text: 'text-emerald-600' },
-        'CANCELLED': { bg: 'bg-red-100', text: 'text-red-600' },
+        'DRAFT': { bg: 'bg-[#1A1D23]', text: 'text-[#64748B]' },
+        'PUBLISHED': { bg: 'bg-[#3B82F6]/10', text: 'text-[#3B82F6]' },
+        'CLOSED': { bg: 'bg-amber-500/10', text: 'text-amber-400' },
+        'AWARDED': { bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
+        'CANCELLED': { bg: 'bg-rose-500/10', text: 'text-rose-400' },
     };
 
     const style = config[status] || config['DRAFT'];
@@ -682,7 +682,7 @@ function RFQStatusPill({ status }: { status: string }) {
     };
     
     return (
-        <span className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text}`}>
+        <span className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border border-[rgba(148,163,184,0.1)]`}>
             {label[status] || status}
         </span>
     );
@@ -690,12 +690,12 @@ function RFQStatusPill({ status }: { status: string }) {
 
 function StatusPill({ status }: { status: string }) {
     const config: Record<string, { bg: string, text: string }> = {
-        'DRAFT': { bg: 'bg-slate-100', text: 'text-slate-500' },
-        'SUBMITTED': { bg: 'bg-blue-100', text: 'text-blue-600' },
-        'UNDER_REVIEW': { bg: 'bg-amber-100', text: 'text-amber-600' },
-        'ACCEPTED': { bg: 'bg-emerald-100', text: 'text-emerald-600' },
-        'REJECTED': { bg: 'bg-red-100', text: 'text-red-600' },
-        'EXPIRED': { bg: 'bg-gray-100', text: 'text-gray-500' },
+        'DRAFT': { bg: 'bg-[#1A1D23]', text: 'text-[#64748B]' },
+        'SUBMITTED': { bg: 'bg-[#3B82F6]/10', text: 'text-[#3B82F6]' },
+        'UNDER_REVIEW': { bg: 'bg-amber-500/10', text: 'text-amber-400' },
+        'ACCEPTED': { bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
+        'REJECTED': { bg: 'bg-rose-500/10', text: 'text-rose-400' },
+        'EXPIRED': { bg: 'bg-[#1A1D23]', text: 'text-[#64748B]' },
     };
 
     const style = config[status] || config['DRAFT'];
@@ -709,7 +709,7 @@ function StatusPill({ status }: { status: string }) {
     };
     
     return (
-        <span className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text}`}>
+        <span className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border border-[rgba(148,163,184,0.1)]`}>
             {label[status] || status}
         </span>
     );

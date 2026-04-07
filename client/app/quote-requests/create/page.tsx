@@ -69,8 +69,8 @@ export default function CreateQuoteRequestPage() {
                     <ArrowLeft size={20} />
                 </Link>
                 <div>
-                    <h1 className="text-2xl font-black text-erp-navy tracking-tight">Tạo yêu cầu báo giá mới</h1>
-                    <p className="text-sm text-slate-500 font-bold italic">Gửi danh sách yêu cầu tới Thu mua để cập nhật báo giá nhanh nhất</p>
+                    <h1 className="text-2xl font-black text-[#F8FAFC] tracking-tight">Tạo yêu cầu báo giá mới</h1>
+                    <p className="text-sm text-[#94A3B8] font-bold italic">Gửi danh sách yêu cầu tới Thu mua để cập nhật báo giá nhanh nhất</p>
                 </div>
             </header>
 
@@ -87,7 +87,7 @@ export default function CreateQuoteRequestPage() {
                                     <input 
                                         type="text"
                                         placeholder="Ví dụ: Báo giá linh kiện..."
-                                        className="w-full bg-slate-50 border-none rounded-xl px-6 py-4 text-sm font-bold focus:ring-2 focus:ring-erp-blue transition-all"
+                                        className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl px-6 py-4 text-sm font-bold text-[#F8FAFC] placeholder:text-[#64748B] focus:ring-2 focus:ring-[#3B82F6] transition-all"
                                         value={formData.title}
                                         onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                                     />
@@ -102,7 +102,7 @@ export default function CreateQuoteRequestPage() {
                                                 type="text"
                                                 readOnly
                                                 placeholder="Chọn ngày..."
-                                                className="w-full bg-slate-50 border-none rounded-xl px-6 py-4 text-sm font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-erp-blue transition-all"
+                                                className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl px-6 py-4 text-sm font-bold text-[#F8FAFC] placeholder:text-[#64748B] group-focus-within/date:ring-2 group-focus-within/date:ring-[#3B82F6] transition-all"
                                                 value={formData.requiredDate ? (() => {
                                                     const [y, m, d] = formData.requiredDate.split('-');
                                                     return `${d}-${m}-${y}`;
@@ -129,7 +129,7 @@ export default function CreateQuoteRequestPage() {
                                 </label>
                                 <textarea 
                                     placeholder="Nêu rõ mục đích và các yêu cầu kỹ thuật đặc biệt nếu có..."
-                                    className="w-full bg-slate-50 border-none rounded-xl px-6 py-4 text-sm font-medium h-32 resize-none placeholder:italic placeholder:font-normal focus:ring-2 focus:ring-erp-blue transition-all"
+                                    className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl px-6 py-4 text-sm font-medium h-32 resize-none placeholder:italic placeholder:font-normal text-[#F8FAFC] placeholder:text-[#64748B] focus:ring-2 focus:ring-[#3B82F6] transition-all"
                                     value={formData.description}
                                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                                 />
@@ -152,13 +152,13 @@ export default function CreateQuoteRequestPage() {
 
                             <div className="space-y-4">
                                 {items.map((item, idx) => (
-                                    <div key={idx} className="group relative grid grid-cols-12 gap-x-4 p-5 bg-slate-50 rounded-2xl border border-transparent hover:border-erp-blue shadow-sm transition-all animate-in fade-in slide-in-from-top-2">
+                                    <div key={idx} className="group relative grid grid-cols-12 gap-x-4 p-5 bg-[#0F1117] rounded-2xl border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/20 shadow-sm transition-all animate-in fade-in slide-in-from-top-2">
                                         <div className="col-span-12 lg:col-span-6 space-y-1.5">
                                             <label className="text-[10px] font-black uppercase tracking-tighter text-[#64748B] ml-1">Tên mặt hàng/Mục đích</label>
                                             <input 
                                                 type="text"
                                                 placeholder="Nhập tên mặt hàng..."
-                                                className="w-full bg-white border border-slate-100 rounded-lg px-4 py-2 text-xs font-bold focus:ring-2 focus:ring-erp-blue"
+                                                className="w-full bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-2 text-xs font-bold text-[#F8FAFC] placeholder:text-[#64748B] focus:ring-2 focus:ring-[#3B82F6]"
                                                 value={item.productName}
                                                 onChange={(e) => updateItem(idx, "productName", e.target.value)}
                                             />
@@ -167,7 +167,7 @@ export default function CreateQuoteRequestPage() {
                                             <label className="text-[10px] font-black uppercase tracking-tighter text-[#64748B] flex items-center gap-1 justify-center"><Hash size={10} /> Số lượng</label>
                                             <input 
                                                 type="number"
-                                                className="w-full bg-white border border-slate-100 rounded-lg px-4 py-2 text-xs font-bold text-center focus:ring-2 focus:ring-erp-blue"
+                                                className="w-full bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-2 text-xs font-bold text-center text-[#F8FAFC] focus:ring-2 focus:ring-[#3B82F6]"
                                                 value={item.qty}
                                                 onChange={(e) => updateItem(idx, "qty", parseInt(e.target.value))}
                                             />
@@ -176,7 +176,7 @@ export default function CreateQuoteRequestPage() {
                                             <label className="text-[10px] font-black uppercase tracking-tighter text-[#64748B] flex items-center gap-1 justify-center"><Layers size={10} /> Đơn vị</label>
                                             <input 
                                                 type="text"
-                                                className="w-full bg-white border border-slate-100 rounded-lg px-4 py-2 text-xs font-bold text-center focus:ring-2 focus:ring-erp-blue uppercase"
+                                                className="w-full bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-2 text-xs font-bold text-center text-[#F8FAFC] placeholder:text-[#64748B] focus:ring-2 focus:ring-[#3B82F6] uppercase"
                                                 placeholder="Cái/Bộ..."
                                                 value={item.unit}
                                                 onChange={(e) => updateItem(idx, "unit", e.target.value)}
@@ -185,7 +185,7 @@ export default function CreateQuoteRequestPage() {
                                         <div className="col-span-12 lg:col-span-1 flex items-end justify-center pb-1">
                                             <button 
                                                 onClick={() => removeItem(idx)}
-                                                className="p-2 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                className="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-all"
                                             >
                                                 <Trash2 size={18} />
                                             </button>
@@ -209,7 +209,7 @@ export default function CreateQuoteRequestPage() {
                             <button 
                                 onClick={() => handleAction(true)}
                                 disabled={!isValid}
-                                className={`w-full flex items-center justify-center gap-3 bg-white text-erp-navy font-black py-4 rounded-xl shadow-xl transition-all active:scale-95 ${!isValid ? 'opacity-50 cursor-not-allowed' : 'hover:bg-erp-blue hover:text-white'}`}
+                                className={`w-full flex items-center justify-center gap-3 bg-[#3B82F6] text-white font-black py-4 rounded-xl shadow-xl transition-all active:scale-95 ${!isValid ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2563EB]'}`}
                             >
                                 <Send size={20} />
                                 Gửi đi ngay
@@ -217,7 +217,7 @@ export default function CreateQuoteRequestPage() {
                             <button 
                                 onClick={() => handleAction(false)}
                                 disabled={!isValid}
-                                className={`w-full flex items-center justify-center gap-3 bg-white/10 text-white font-black py-4 rounded-xl hover:bg-white/20 transition-all active:scale-95 border border-white/10 ${!isValid ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                className={`w-full flex items-center justify-center gap-3 bg-[#1A1D23] text-[#94A3B8] font-black py-4 rounded-xl hover:bg-[#0F1117] transition-all active:scale-95 border border-[rgba(148,163,184,0.1)] ${!isValid ? 'opacity-30 cursor-not-allowed' : ''}`}
                             >
                                 <Save size={20} />
                                 Lưu bản nháp

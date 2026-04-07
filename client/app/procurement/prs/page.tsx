@@ -339,20 +339,6 @@ export default function ProcurementControlPage() {
                 </div>
             )}
 
-            {/* Table */}
-            <div className="bg-white rounded-[40px] border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
-                <ERPTable columns={columns} data={filteredPRs} />
-                {filteredPRs.length === 0 && (
-                    <div className="py-32 text-center bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl mt-6">
-                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0F1117] text-[#64748B] mb-6 border border-[rgba(148,163,184,0.1)]">
-                            <AlertCircle size={40} />
-                        </div>
-                        <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-tight">Không tìm thấy yêu cầu nào</h3>
-                        <p className="text-[#64748B] font-medium">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm của bạn.</p>
-                    </div>
-                )}
-            </div>
-
         </div>
     );
 }

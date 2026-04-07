@@ -43,15 +43,15 @@ export default function QuoteRequestPage() {
     const getStatusInfo = (status: QuoteRequestStatus) => {
         switch (status) {
             case QuoteRequestStatus.DRAFT:
-                return { label: "Nháp", color: "bg-slate-100 text-slate-600", icon: FileText };
+                return { label: "Nháp", color: "bg-[#1A1D23] text-[#64748B] border border-[rgba(148,163,184,0.1)]", icon: FileText };
             case QuoteRequestStatus.SUBMITTED:
-                return { label: "Đã gửi Thu mua", color: "bg-blue-100 text-blue-600", icon: ClipboardList };
+                return { label: "Đã gửi Thu mua", color: "bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20", icon: ClipboardList };
             case QuoteRequestStatus.PROCESSING:
-                return { label: "Đang hỏi giá NCC", color: "bg-orange-100 text-orange-600", icon: Clock };
+                return { label: "Đang hỏi giá NCC", color: "bg-amber-500/10 text-amber-400 border border-amber-500/20", icon: Clock };
             case QuoteRequestStatus.COMPLETED:
-                return { label: "Đã có báo giá", color: "bg-emerald-100 text-emerald-600", icon: BadgeCheck };
+                return { label: "Đã có báo giá", color: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20", icon: BadgeCheck };
             default:
-                return { label: status, color: "bg-slate-100 text-slate-600", icon: FileText };
+                return { label: status, color: "bg-[#1A1D23] text-[#64748B] border border-[rgba(148,163,184,0.1)]", icon: FileText };
         }
     };
 
