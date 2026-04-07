@@ -20,7 +20,7 @@ import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface
 @Controller('purchase-orders')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+@Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.PLATFORM_ADMIN, UserRole.SUPPLIER)
 export class PomoduleController {
   constructor(private readonly poService: PomoduleService) {}
 

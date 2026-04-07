@@ -81,13 +81,14 @@ export default function CreateGRN() {
         if (!activePO) return;
         
         try {
-            const receivedItems: Record<string, number> = {};
-            activePO.items.forEach((item) => {
-               receivedItems[item.id] = Number(recvData[item.id].actual) || 0;
-            });
+            // Transform receivedItems Record into items array format expected by server
+            const items = activePO.items.map((item) => ({
+                poItemId: item.id,
+                receivedQty: Number(recvData[item.id].actual) || 0
+            }));
 
-            // 1. Tạo GRN trước để có ID
-            const grnSuccess = await createGRN({ poId: activePO.id, receivedItems });
+            // 1. Tạo GRN với đúng định dạng server yêu cầu
+            const grnSuccess = await createGRN({ poId: activePO.id, items });
             
             if (grnSuccess) {
                 // 2. Tìm GRN vừa tạo (thông thường createGRN nên trả về object GRN, 

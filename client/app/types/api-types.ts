@@ -498,9 +498,14 @@ export interface CreateQuoteDto {
     }>;
 }
 
-export interface CreateGrnDto extends Record<string, unknown> {
+export interface CreateGrnItem {
+    poItemId: string;
+    receivedQty: number;
+}
+
+export interface CreateGrnDto {
     poId: string;
-    receivedItems: Record<string, number>;
+    items: CreateGrnItem[];
 }
 
 export interface CreateInvoiceDto extends Record<string, unknown> {
