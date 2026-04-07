@@ -19,9 +19,16 @@ interface Source {
 }
 
 interface RagResponse {
-    answer: string;
-    sources: Source[];
-    sql?: string;
+    status: string;
+    message: string;
+    data: {
+        answer: {
+            summary: string;
+            data?: any[];
+            found?: boolean;
+        };
+        sources: Source[];
+    }
 }
 
 interface RAGChatProps {
@@ -76,9 +83,9 @@ const TABLE_NAMES: Record<string, string> = {
 // Simple markdown parser for RAG responses
 const formatAnswer = (text: string): React.ReactNode => {
     // Handle bold text
-    const parts = text.split(/(\*\*.*?\*\*)/g);
+    const parts = text?.split(/(\*\*.*?\*\*)/g);
     
-    return parts.map((part, idx) => {
+    return parts?.map((part, idx) => {
         if (part.startsWith('**') && part.endsWith('**')) {
             return <strong key={idx} className="text-[#F8FAFC]">{part.slice(2, -2)}</strong>;
         }
@@ -99,7 +106,6 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [aiResponse, setAiResponse] = useState<RagResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [showSql, setShowSql] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -112,7 +118,6 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
         
         setIsLoading(true);
         setAiResponse(null);
-        setShowSql(false);
         
         try {
             const resp = await apiFetch('/rag/query', {
@@ -125,14 +130,26 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
                 setAiResponse(data);
             } else {
                 setAiResponse({
-                    answer: "Rất tiếc, AI không thể truy xuất dữ liệu lúc này. Vui lòng thử lại sau.",
-                    sources: []
+                    status: 'error',
+                    message: 'Failed to fetch',
+                    data: {
+                        answer: {
+                            summary: "Rất tiếc, AI không thể truy xuất dữ liệu lúc này. Vui lòng thử lại sau.",
+                        },
+                        sources: []
+                    }
                 });
             }
         } catch (err) {
             setAiResponse({
-                answer: "Lỗi kết nối tới hệ thống RAG. Vui lòng kiểm tra kết nối mạng.",
-                sources: []
+                status: 'error',
+                message: 'Connection error',
+                data: {
+                    answer: {
+                        summary: "Lỗi kết nối tới hệ thống RAG. Vui lòng kiểm tra kết nối mạng.",
+                    },
+                    sources: []
+                }
             });
         } finally {
             setIsLoading(false);
@@ -148,8 +165,8 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
     ];
 
     return (
-        <div className="fixed inset-0 z-[100] bg-[#0F1117]/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
-            <div className="bg-[#161922] w-full max-w-4xl h-[85vh] rounded-3xl shadow-2xl flex flex-col border border-[rgba(148,163,184,0.1)] overflow-hidden animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 z-[100] bg-[#0F1117]/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+            <div className="bg-[#161922] w-full max-w-4xl max-h-[85vh] rounded-3xl shadow-2xl flex flex-col border border-[rgba(148,163,184,0.1)] overflow-hidden animate-in zoom-in-95 duration-300" style={{ margin: 'auto' }}>
                 {/* Header */}
                 <div className="p-5 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#161922]">
                     <div className="flex items-center gap-3">
@@ -197,41 +214,25 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
                                     <span className="text-[10px] font-black uppercase tracking-widest">Câu trả lời từ AI</span>
                                 </div>
                                 <div className="bg-[#161922] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl">
-                                    <div className="text-sm text-[#94A3B8] leading-relaxed font-medium whitespace-pre-wrap">
-                                        {formatAnswer(aiResponse.answer)}
+                                    <div className="text-sm text-text-secondary leading-relaxed font-medium whitespace-pre-wrap">
+                                        {formatAnswer(aiResponse?.data?.answer?.summary)}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* SQL Section (if available) */}
-                            {aiResponse.sql && (
-                                <div className="space-y-2">
-                                    <button 
-                                        onClick={() => setShowSql(!showSql)}
-                                        className="flex items-center gap-2 text-[10px] font-bold text-[#64748B] hover:text-[#3B82F6] transition-colors"
-                                    >
-                                        <Database size={12} />
-                                        {showSql ? "Ẩn SQL Query" : "Hiển thị SQL Query"}
-                                    </button>
-                                    {showSql && (
-                                        <div className="bg-[#0F1117] p-4 rounded-xl border border-[rgba(59,130,246,0.2)] font-mono text-xs text-[#94A3B8] overflow-x-auto">
-                                            <pre>{aiResponse.sql}</pre>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                            {/* SQL Section removed - not in API response */}
 
                             {/* Sources Section */}
-                            {aiResponse.sources.length > 0 && (
+                            {aiResponse?.data?.sources?.length > 0 && (
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2 text-[#64748B]">
                                         <FileText size={14} />
                                         <span className="text-[10px] font-black uppercase tracking-widest">
-                                            Nguồn dữ liệu ({aiResponse.sources.length})
+                                            Nguồn dữ liệu ({aiResponse.data.sources.length})
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-1 gap-2">
-                                        {aiResponse.sources.map((s, idx) => (
+                                        {aiResponse.data.sources.map((s, idx) => (
                                             <div 
                                                 key={idx} 
                                                 className="flex items-start gap-3 p-3 bg-[#161922] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] transition-all cursor-pointer group"

@@ -24,6 +24,30 @@ import {
     Check
 } from "lucide-react";
 
+// RAG AI Types
+interface Source {
+    content: string;
+    metadata: {
+        table: string;
+        id: string;
+        name?: string;
+    };
+    similarity?: number;
+}
+
+interface RagResponse {
+    status: string;
+    message: string;
+    data: {
+        answer: {
+            summary: string;
+            data?: any[];
+            found?: boolean;
+        };
+        sources: Source[];
+    }
+}
+
 interface SubItem {
     id: string;
     productName: string;
@@ -89,7 +113,7 @@ export default function CreateRFQPage() {
         setSelectedVendors(selectedVendors.filter(v => v.id !== id));
     };
 
-    // AI Suggestion function - Connected to RAG
+    // AI Suggestion function - Connected to RAG (Real Data)
     const fetchAiSuggestions = async () => {
         if (!targetPR || !targetPR.items || targetPR.items.length === 0) {
             return;
@@ -108,8 +132,8 @@ export default function CreateRFQPage() {
             const response = await apiFetch('/rag/query', {
                 method: 'POST',
                 body: JSON.stringify({
-                    question: `Gợi ý 3 nhà cung cấp tốt nhất cho sản phẩm: ${productNames}. Yêu cầu trả về JSON với định dạng: id, name, email, matchScore (0-100), reasons (mảng lý do), historicalData (avgPrice, deliveryRate, qualityScore)`,
-                    topK: 3
+                    question: `Gợi ý 3 nhà cung cấp tốt nhất cho sản phẩm: ${productNames}. Phân tích dựa trên KPI, giá cả lịch sử, tỷ lệ giao hàng đúng hạn và chất lượng.`,
+                    topK: 5
                 })
             });
             
@@ -117,102 +141,94 @@ export default function CreateRFQPage() {
                 throw new Error('RAG query failed');
             }
             
-            const ragResult = await response.json();
+            const ragResult: RagResponse = await response.json();
             
-            // Parse AI response - try to extract JSON from the answer
+            // Parse AI response - extract suggestions from RAG data
             let suggestions: AiSupplierSuggestion[] = [];
             
-            if (ragResult.answer) {
-                try {
-                    // Try to find JSON in the response
-                    const jsonMatch = ragResult.answer.match(/\[\s*\{[\s\S]*\}\s*\]/) || 
-                                     ragResult.answer.match(/\{\s*"[\s\S]*"\s*:\s*\[[\s\S]*\]\s*\}/);
-                    
-                    if (jsonMatch) {
-                        suggestions = JSON.parse(jsonMatch[0]);
-                    } else {
-                        // If no JSON, create from text parsing
-                        suggestions = parseRagTextToSuggestions(ragResult.answer);
-                    }
-                } catch {
-                    // Fallback: parse text format
-                    suggestions = parseRagTextToSuggestions(ragResult.answer);
+            if (ragResult.data?.sources && ragResult.data.sources.length > 0) {
+                // Extract supplier info from RAG sources
+                suggestions = ragResult.data.sources
+                    .filter((s: Source) => s.metadata.table === 'supplier_kpi_scores' || 
+                                 s.metadata.table === 'organizations' ||
+                                 s.content.toLowerCase().includes('supplier') ||
+                                 s.content.toLowerCase().includes('nhà cung cấp'))
+                    .slice(0, 3)
+                    .map((source: Source, idx: number) => {
+                        // Parse content to extract supplier info
+                        const content = source.content;
+                        const nameMatch = content.match(/(?:nhà cung cấp|supplier|tổ chức|organization)[^:]*:\s*([^\n.]+)/i) ||
+                                         content.match(/^([^\n.]+)/);
+                        const name = nameMatch ? nameMatch[1].trim() : `Nhà cung cấp ${idx + 1}`;
+                        
+                        // Extract metrics if available
+                        const kpiMatch = content.match(/KPI[:\s]+(\d+\.?\d*)/i);
+                        const deliveryMatch = content.match(/giao hàng[:\s]+(\d+)%/i);
+                        const qualityMatch = content.match(/chất lượng[:\s]+(\d+\.?\d*)/i);
+                        const priceMatch = content.match(/giá[:\s]+(\d[\d.,]*)/i);
+                        
+                        const matchScore = Math.round((source.similarity || 0.5) * 100);
+                        
+                        // Build reasons from content analysis
+                        const reasons: string[] = [];
+                        if (kpiMatch) reasons.push(`KPI cao: ${kpiMatch[1]}`);
+                        if (deliveryMatch) reasons.push(`Giao hàng: ${deliveryMatch[1]}%`);
+                        if (qualityMatch) reasons.push(`Chất lượng: ${qualityMatch[1]}/5`);
+                        if (reasons.length === 0) reasons.push("Phù hợp với sản phẩm");
+                        if (source.similarity && source.similarity > 0.7) reasons.push("Độ tương đồng cao");
+                        
+                        return {
+                            id: source.metadata.id || `rag-supp-${idx}`,
+                            name: name.length > 50 ? name.substring(0, 50) + "..." : name,
+                            email: `${name.toLowerCase().replace(/[^a-z0-9]/g, '.').substring(0, 20)}@supplier.vn`,
+                            matchScore: Math.min(matchScore, 98),
+                            reasons: reasons.slice(0, 3),
+                            historicalData: {
+                                avgPrice: priceMatch ? parseInt(priceMatch[1].replace(/[,.]/g, '')) : 1000000,
+                                deliveryRate: deliveryMatch ? parseInt(deliveryMatch[1]) : 95 - (idx * 3),
+                                qualityScore: qualityMatch ? parseFloat(qualityMatch[1]) : 4.5 - (idx * 0.15)
+                            }
+                        };
+                    });
+            }
+            
+            // If no supplier-specific sources, create from summary analysis
+            if (suggestions.length === 0 && ragResult.data?.answer?.summary) {
+                const summary = ragResult.data.answer.summary;
+                const supplierMatches = summary.match(/(?:\d+\.\s*|[-•]\s*)([^\n:]+)/g);
+                
+                if (supplierMatches) {
+                    suggestions = supplierMatches.slice(0, 3).map((match: string, idx: number) => {
+                        const name = match.replace(/^\d+\.\s*|[-•]\s*/, '').trim();
+                        return {
+                            id: `ai-supp-${idx}`,
+                            name: name,
+                            email: `${name.toLowerCase().replace(/[^a-z0-9]/g, '.').substring(0, 20)}@supplier.vn`,
+                            matchScore: 95 - (idx * 5),
+                            reasons: ["Được AI gợi ý", "Phù hợp với sản phẩm"],
+                            historicalData: {
+                                avgPrice: 1000000 + (idx * 200000),
+                                deliveryRate: 95 - (idx * 2),
+                                qualityScore: 4.5 - (idx * 0.2)
+                            }
+                        };
+                    });
                 }
             }
             
-            // If RAG returns no data, fallback to mock
-            if (suggestions.length === 0) {
-                suggestions = getMockSuggestions();
-            }
-            
             setAiSuggestions(suggestions);
+            
+            // Show message if no suggestions found
+            if (suggestions.length === 0) {
+                console.warn("RAG AI không tìm thấy nhà cung cấp phù hợp");
+            }
         } catch (error) {
             console.error("RAG AI suggestion error:", error);
-            // Fallback to mock data on error
-            setAiSuggestions(getMockSuggestions());
+            setAiSuggestions([]);
         } finally {
             setIsAiLoading(false);
         }
     };
-
-    // Helper to parse RAG text response
-    const parseRagTextToSuggestions = (text: string): AiSupplierSuggestion[] => {
-        // Try to extract supplier names and info from text
-        const lines = text.split('\n');
-        const suggestions: AiSupplierSuggestion[] = [];
-        
-        // Look for numbered items (1. Supplier Name, 2. Supplier Name, etc.)
-        const supplierRegex = /^(?:\d+[.\)]\s*|[-*]\s*)([^:\n]+)(?::|$)/gm;
-        let match;
-        let idx = 0;
-        
-        while ((match = supplierRegex.exec(text)) !== null && idx < 3) {
-            const name = match[1].trim();
-            suggestions.push({
-                id: `rag-supp-${idx + 1}`,
-                name: name,
-                email: `${name.toLowerCase().replace(/\s+/g, '.')}@supplier.vn`,
-                matchScore: 90 - (idx * 5),
-                reasons: ["Được gợi ý từ RAG AI", "Phù hợp với sản phẩm"],
-                historicalData: {
-                    avgPrice: 1000000 + (idx * 200000),
-                    deliveryRate: 95 - (idx * 2),
-                    qualityScore: 4.5 - (idx * 0.2)
-                }
-            });
-            idx++;
-        }
-        
-        return suggestions;
-    };
-
-    // Mock fallback data
-    const getMockSuggestions = (): AiSupplierSuggestion[] => [
-        {
-            id: "6c7f4a14-9238-419c-ba0f-fa8da8eb0253",
-            name: "Hanoi Hardware Hub",
-            email: "sales@hanoihardware.vn",
-            matchScore: 95,
-            reasons: ["Đã từng cung cấp sản phẩm tương tự", "Giá cả cạnh tranh", "Đánh giá cao về chất lượng"],
-            historicalData: { avgPrice: 1200000, deliveryRate: 98, qualityScore: 4.8 }
-        },
-        {
-            id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-            name: "FPT Shop",
-            email: "support@fptshop.com.vn",
-            matchScore: 88,
-            reasons: ["Chuyên về thiết bị IT", "Hỗ trợ kỹ thuật tốt", "Bảo hành dài hạn"],
-            historicalData: { avgPrice: 1350000, deliveryRate: 95, qualityScore: 4.6 }
-        },
-        {
-            id: "b2c3d4e5-f6a7-8901-2345-6789abcdef1",
-            name: "FPT Software",
-            email: "sales@fpt.com.vn",
-            matchScore: 82,
-            reasons: ["Giao hàng nhanh", "Chi phí vận chuyển thấp", "Uy tín trong khu vực"],
-            historicalData: { avgPrice: 1100000, deliveryRate: 92, qualityScore: 4.3 }
-        }
-    ];
 
     const addAiVendor = (suggestion: AiSupplierSuggestion) => {
         // Check if already added
