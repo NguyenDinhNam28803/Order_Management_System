@@ -290,44 +290,46 @@ export default function ProcurementControlPage() {
                             <div className="bg-[#0F1117] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex justify-between items-center mb-4">
                                     <span className="text-[#64748B] font-bold text-sm">Nhà cung cấp:</span>
-                                        <span className="text-[#F8FAFC] font-black">{confirmModal.preferredSupplierId || "NCC mặc định"}</span>
+                                    <span className="text-[#3B82F6] font-black uppercase tracking-tight">{confirmModal.preferredSupplierId || "NCC mặc định"}</span>
+                                </div>
+                                <div className="pt-4 border-t border-[rgba(148,163,184,0.05)]">
+                                    <label className="text-[10px] font-black uppercase text-[#64748B] mb-2 block tracking-widest">Số lượng yêu cầu</label>
+                                    <div className="p-4 bg-[#161922] rounded-xl text-xs font-black text-[#F8FAFC] border border-[rgba(148,163,184,0.1)] uppercase">
+                                        {confirmModal.items?.[0]?.qty} {confirmModal.items?.[0]?.unit}
                                     </div>
-                                <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Số lượng</label>
-                                    <div className="p-3 bg-slate-50 rounded-xl text-xs font-bold text-erp-navy border border-slate-100">{confirmModal.items?.[0]?.qty} {confirmModal.items?.[0]?.unit}</div>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Nhà cung cấp ưu tiên</label>
-                                <select className="erp-input w-full" defaultValue={confirmModal.preferredSupplierId}>
+                                <label className="text-[10px] font-black uppercase text-[#64748B] mb-2 block tracking-widest">Nhà cung cấp ưu tiên</label>
+                                <select className="erp-input w-full h-12 font-bold" defaultValue={confirmModal.preferredSupplierId}>
                                     <option value="6c7f4a14-9238-419c-ba0f-fa8da8eb0253">ABC Supplier (VnEconomy)</option>
-                                    <option value="SUP-002">Hanoi Hardware</option>
-                                    <option value="SUP-003">Saigon Tech</option>
+                                    <option value="SUP-002">Hòa Phát Furniture</option>
+                                    <option value="SUP-003">Thiên Long Digital</option>
                                 </select>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Giá xác nhận (VNĐ)</label>
-                                    <input type="number" className="erp-input w-full" defaultValue={confirmModal.items?.[0]?.estimatedPrice} />
+                                    <label className="text-[10px] font-black uppercase text-[#64748B] mb-2 block tracking-widest">Giá xác nhận (VNĐ)</label>
+                                    <input type="number" className="erp-input w-full h-12 font-bold" defaultValue={confirmModal.items?.[0]?.estimatedPrice} />
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Lead time (Ngày)</label>
-                                    <input type="number" className="erp-input w-full" defaultValue="3" />
+                                    <label className="text-[10px] font-black uppercase text-[#64748B] mb-2 block tracking-widest">Lead time (Ngày)</label>
+                                    <input type="number" className="erp-input w-full h-12 font-bold" defaultValue="3" />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Ghi chú xác nhận</label>
-                                <textarea className="erp-input w-full h-20 py-3" placeholder="Nhập ghi chú cho NCC..."></textarea>
+                                <label className="text-[10px] font-black uppercase text-[#64748B] mb-2 block tracking-widest">Ghi chú xác nhận</label>
+                                <textarea className="erp-input w-full h-24 py-4 font-bold" placeholder="Nhập ghi chú cho NCC..."></textarea>
                             </div>
 
                             <div className="flex gap-4 pt-4">
-                                <button onClick={() => setConfirmModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-slate-100 text-slate-400 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">Hủy bỏ</button>
+                                <button onClick={() => setConfirmModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#0F1117] text-[#64748B] font-black text-xs uppercase tracking-widest hover:text-[#F8FAFC] border border-[rgba(148,163,184,0.1)] transition-all">Hủy bỏ</button>
                                 <button 
                                     onClick={() => handleConfirmCatalog(confirmModal)}
-                                    className="flex-1 px-6 py-4 rounded-2xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 active:scale-95"
+                                    className="flex-1 px-6 py-4 rounded-2xl bg-[#3B82F6] text-white font-black text-xs uppercase tracking-widest hover:bg-[#2563EB] transition-all shadow-xl shadow-[#3B82F6]/20 active:scale-95"
                                 >
                                     Gửi xác nhận
                                 </button>
@@ -341,12 +343,12 @@ export default function ProcurementControlPage() {
             <div className="bg-white rounded-[40px] border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
                 <ERPTable columns={columns} data={filteredPRs} />
                 {filteredPRs.length === 0 && (
-                    <div className="py-32 text-center">
-                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-slate-50 text-slate-200 mb-6">
+                    <div className="py-32 text-center bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl mt-6">
+                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0F1117] text-[#64748B] mb-6 border border-[rgba(148,163,184,0.1)]">
                             <AlertCircle size={40} />
                         </div>
-                        <h3 className="text-xl font-black text-erp-navy mb-2 uppercase tracking-tight">Không tìm thấy yêu cầu nào</h3>
-                        <p className="text-slate-400 font-medium">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm của bạn.</p>
+                        <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-tight">Không tìm thấy yêu cầu nào</h3>
+                        <p className="text-[#64748B] font-medium">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm của bạn.</p>
                     </div>
                 )}
             </div>
@@ -356,17 +358,17 @@ export default function ProcurementControlPage() {
 }
 
 function StatusPill({ status }: { status: string }) {
-    const config: Record<string, { bg: string, text: string }> = {
-        'DRAFT': { bg: 'bg-slate-100', text: 'text-slate-500' },
-        'PENDING_APPROVAL': { bg: 'bg-amber-100', text: 'text-amber-600' },
-        'APPROVED': { bg: 'bg-emerald-100', text: 'text-emerald-600' },
-        'REJECTED': { bg: 'bg-red-100', text: 'text-red-600' },
-        'IN_SOURCING': { bg: 'bg-blue-100', text: 'text-blue-600' },
+    const config: Record<string, { bg: string, text: string, border: string }> = {
+        'DRAFT': { bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/20' },
+        'PENDING_APPROVAL': { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
+        'APPROVED': { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
+        'REJECTED': { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
+        'IN_SOURCING': { bg: 'bg-[#3B82F6]/10', text: 'text-[#3B82F6]', border: 'border-[#3B82F6]/20' },
     };
 
     const style = config[status] || config['DRAFT'];
     return (
-        <span className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text}`}>
+        <span className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border ${style.border}`}>
             {status}
         </span>
     );

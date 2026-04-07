@@ -137,6 +137,9 @@ export interface ProcurementContextType extends ProcurementState {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateCostCenter: (id: string, d: any) => Promise<boolean>;
     removeCostCenter: (id: string) => Promise<boolean>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fetchCostCenter: (id: string) => Promise<CostCenter | null>;
+    fetchMyDeptCostCenters: () => Promise<any>;
     addBudgetPeriod: (d: CreateBudgetPeriodPayload) => Promise<boolean>;
     addBudgetAllocation: (d: CreateBudgetAllocationPayload) => Promise<BudgetAllocation | null>;
     submitAllocation: (id: string) => Promise<boolean>;
@@ -144,7 +147,6 @@ export interface ProcurementContextType extends ProcurementState {
     rejectAllocation: (id: string, reason: string) => Promise<boolean>;
     distributeAnnualBudget: (costCenterId: string, fiscalYear: number) => Promise<boolean>;
     reconcileQuarter: (costCenterId: string, fiscalYear: number, quarter: number) => Promise<boolean>;
-    fetchCostCenter: (id: string) => Promise<CostCenter | null>;
     fetchQuarterlyAllocation: (cc: string, year: number, quarter: number) => Promise<BudgetAllocation | null>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addQuoteRequest: (d: any) => Promise<QuoteRequest | null>;
@@ -766,15 +768,44 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return null;
     }, [apiFetch]);
 
+    const fetchMyDeptCostCenters = useCallback(async () => {
+        const resp = await apiFetch('/cost-centers/department');
+        if (resp.ok) { 
+            const res = await resp.json(); 
+            const data = res.data || res;
+            if (Array.isArray(data)) {
+                setState(prev => ({ ...prev, costCenters: data }));
+            }
+            return data; 
+        }
+        return [];
+    }, [apiFetch]);
+
     const addCostCenter = useCallback(async (d: CreateCostCenterPayload) => {
         const resp = await apiFetch('/cost-centers', { method: 'POST', body: JSON.stringify(d) });
-        if (resp.ok) { notify("Đã thêm Cost Center", "success"); await refreshData(); return true; }
+        if (resp.ok) { 
+            notify("Đã thêm Cost Center", "success"); 
+            await refreshData(); 
+            return true; 
+        } else {
+            const errRes = await resp.json().catch(() => ({}));
+            const msg = Array.isArray(errRes.message) ? errRes.message[0] : (errRes.message || "Lỗi khi tạo Cost Center");
+            notify(msg, "error");
+        }
         return false;
     }, [apiFetch, refreshData, notify]);
 
     const updateCostCenter = useCallback(async (id: string, d: UpdateCostCenterPayload) => {
         const resp = await apiFetch(`/cost-centers/${id}`, { method: 'PATCH', body: JSON.stringify(d) });
-        if (resp.ok) { notify("Đã cập nhật Cost Center", "success"); await refreshData(); return true; }
+        if (resp.ok) { 
+            notify("Đã cập nhật Cost Center", "success"); 
+            await refreshData(); 
+            return true; 
+        } else {
+            const errRes = await resp.json().catch(() => ({}));
+            const msg = Array.isArray(errRes.message) ? errRes.message[0] : (errRes.message || "Lỗi khi cập nhật Cost Center");
+            notify(msg, "error");
+        }
         return false;
     }, [apiFetch, refreshData, notify]);
 
@@ -1424,7 +1455,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         addOrganization, updateOrganization, removeOrganization,
         addProduct, updateProduct, removeProduct,
         addCategory, updateCategory, removeCategory,
-        addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter,
+        addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchMyDeptCostCenters,
         addBudgetPeriod, updateBudgetPeriod, removeBudgetPeriod,
         updateBudgetAllocation, removeBudgetAllocation,
         fetchQuarterlyAllocation,

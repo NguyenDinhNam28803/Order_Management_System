@@ -50,57 +50,13 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
         <div className="flex h-screen overflow-hidden bg-[#0F1117]">
             <ToastContainer />
 
-            {/* Sidebar - Dark Theme */}
+            {/* Sidebar - Fixed on left */}
             <Sidebar />
             
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col overflow-hidden ml-16 transform-gpu transition-all duration-300">
-                {/* Enterprise Header - Dark Glassmorphism */}
-                <header className="h-16 bg-[#161922]/80 backdrop-blur-xl border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between px-6 z-10">
-                    {/* Breadcrumb / Module Title */}
-                    <div className="flex items-center gap-3">
-                        <div className="h-2 w-2 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></div>
-                        <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">
-                            {pathname === "/" ? "Dashboard" : pathname.split('/').filter(Boolean)[0]?.toUpperCase()}
-                        </span>
-                        {pathname !== "/" && (
-                            <>
-                                <span className="text-[#64748B]">/</span>
-                                <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">
-                                    {pathname.split('/').filter(Boolean).pop()?.toUpperCase()}
-                                </span>
-                            </>
-                        )}
-                    </div>
-
-                    {/* Right Actions */}
-                    <div className="flex items-center gap-3">
-                        {/* Smart Search Trigger */}
-                        <SmartSearch />
-                        
-                        {/* Notification Inbox */}
-                        <NotificationInbox />
-                        
-                        {/* User Profile */}
-                        <div className="flex items-center gap-3 pl-4 border-l border-[rgba(148,163,184,0.1)]">
-                            <div className="flex flex-col text-right">
-                                <span className="text-[11px] font-black text-[#F8FAFC] leading-none mb-0.5 uppercase tracking-tight">
-                                    {currentUser?.name || currentUser?.fullName}
-                                </span>
-                                <span className="text-[9px] font-bold text-[#64748B] uppercase tracking-tighter">
-                                    {currentUser?.role}
-                                </span>
-                            </div>
-                            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center text-white text-[11px] font-black shadow-lg shadow-[#3B82F6]/20 cursor-pointer hover:scale-105 active:scale-95 transition-all">
-                                {currentUser?.fullName?.substring(0, 2).toUpperCase() || "U"}
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                {/* Main Content Area - Dark */}
-                <main className="flex-1 overflow-y-auto p-6 bg-[#0F1117]">
-                    <div className="max-w-screen-2xl mx-auto pb-12">
+            {/* Main Content Area - Responsive width */}
+            <div className="flex-1 flex flex-col h-screen overflow-hidden ml-16 transform-gpu transition-all duration-300">
+                <main className="flex-1 overflow-y-auto bg-[#0F1117] relative">
+                    <div className="max-w-screen-2xl mx-auto p-8 pb-32">
                         {children}
                     </div>
                 </main>

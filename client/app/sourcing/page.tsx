@@ -88,18 +88,18 @@ export default function SourcingPage() {
 
             <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
                 <div>
-                    <h1 className="text-4xl font-black text-erp-navy tracking-tighter uppercase mb-2">QUẢN LÝ NGUỒN HÀNG (SOURCING)</h1>
-                    <p className="text-slate-400 font-bold text-sm tracking-tight flex items-center gap-2">
+                    <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase mb-2">QUẢN LÝ NGUỒN HÀNG (SOURCING)</h1>
+                    <p className="text-[#64748B] font-bold text-sm tracking-tight flex items-center gap-2">
                         <Zap size={14} className="text-amber-500 fill-amber-500" /> 
                         Tối ưu hóa quy trình chọn nhà cung cấp và quản lý RFQ/PO
                     </p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 bg-slate-100 text-slate-600 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">
+                    <button className="flex items-center gap-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#1A1D23] transition-all">
                         <Filter size={16} /> Bộ lọc nâng cao
                     </button>
                     <Link href="/sourcing/rfq-create">
-                        <button className="flex items-center gap-2 bg-erp-navy text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-erp-navy/20 hover:scale-105 active:scale-95 transition-all">
+                        <button className="flex items-center gap-2 bg-[#3B82F6] text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#3B82F6]/20 hover:scale-105 active:scale-95 transition-all">
                             <PlusIcon size={16} /> Tạo RFQ thủ công
                         </button>
                     </Link>
@@ -108,20 +108,20 @@ export default function SourcingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 {stats.map((stat) => (
-                    <div key={stat.label} className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-2xl shadow-erp-navy/[0.03] flex items-center gap-6 group hover:border-erp-blue/20 hover:shadow-erp-blue/[0.04] transition-all duration-500">
-                        <div className={`w-16 h-16 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500`}>
+                    <div key={stat.label} className="bg-[#161922] p-8 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 flex items-center gap-6 group hover:border-[#3B82F6]/20 transition-all duration-500">
+                        <div className={`w-16 h-16 rounded-2xl ${stat.bg.replace('-50', '-500/10')} ${stat.color} flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500`}>
                             <stat.icon size={28} />
                         </div>
                         <div>
-                            <div className="text-[10px] uppercase font-black tracking-[0.2em] text-slate-400 mb-1.5">{stat.label}</div>
-                            <div className="text-3xl font-black text-erp-navy tracking-tight">{stat.value}</div>
+                            <div className="text-[10px] uppercase font-black tracking-[0.2em] text-[#64748B] mb-1.5">{stat.label}</div>
+                            <div className="text-3xl font-black text-[#F8FAFC] tracking-tight">{stat.value}</div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
-                <div className="flex bg-slate-50/50 border-b border-slate-100 p-2 gap-2 overflow-x-auto">
+            <div className="bg-[#161922] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
+                <div className="flex bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)] p-2 gap-2 overflow-x-auto">
                     <TabButton active={activeTab === "quote-requests"} onClick={() => setActiveTab("quote-requests")} label="Yêu cầu Báo giá" count={quoteRequests.filter(q => ['SUBMITTED', 'PROCESSING', 'QUOTED'].includes(q.status)).length} />
                     <TabButton active={activeTab === "catalog-prs"} onClick={() => setActiveTab("catalog-prs")} label="Xác nhận Catalog" count={approvedPRs.filter(p => p.type === 'CATALOG').length} />
                     <TabButton active={activeTab === "sourcing-prs"} onClick={() => setActiveTab("sourcing-prs")} label="Báo giá RFQ" count={approvedPRs.filter(p => p.type !== 'CATALOG').length} />
@@ -161,26 +161,27 @@ export default function SourcingPage() {
                     {activeTab === "purchase-orders" && (
                         <POManagement pos={pos} />
                     )}
-
                     {activeTab === "active-rfqs" && (
-                        <div className="p-20 text-center text-slate-400 font-black uppercase tracking-widest text-xs">
-                            <Send size={40} className="mx-auto mb-4 opacity-20" />
-                            Danh sách RFQ đang chờ nhà cung cấp phản hồi.
+                        <div className="p-24 text-center text-[#64748B] font-black uppercase tracking-[0.2em] text-xs flex flex-col items-center gap-6">
+                            <div className="w-20 h-20 bg-[#0F1117] rounded-3xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#3B82F6]/50 shadow-inner">
+                                <Send size={32} />
+                            </div>
+                            <span>Danh sách RFQ đang chờ nhà cung cấp phản hồi.</span>
                         </div>
                     )}
 
                     {activeTab === "suppliers" && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
                             {suppliersList.map(supplier => (
-                                <div key={supplier.id} className="border border-slate-100 p-6 rounded-3xl hover:shadow-xl hover:shadow-slate-200/50 transition-all cursor-pointer group bg-slate-50/20">
+                                <div key={supplier.id} className="border border-[rgba(148,163,184,0.1)] p-6 rounded-3xl hover:border-[#3B82F6]/30 transition-all cursor-pointer group bg-[#161922]/50 shadow-lg shadow-black/5 hover:bg-[#161922]/80">
                                     <div className="flex justify-between items-start mb-6">
-                                        <div className="w-12 h-12 rounded-2xl bg-white shadow-md flex items-center justify-center font-black text-erp-navy uppercase">
+                                        <div className="w-12 h-12 rounded-2xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)] flex items-center justify-center font-black text-[#F8FAFC] uppercase text-sm shadow-inner group-hover:bg-[#3B82F6]/10 transition-colors">
                                             {supplier.name.substring(0, 1)}
                                         </div>
                                     </div>
-                                    <h4 className="font-black text-erp-navy mb-1 uppercase tracking-tight">{supplier.name}</h4>
-                                    <p className="text-[10px] text-slate-500 font-medium mb-4">Email: {supplier.email || "supplier@abc.com.vn"}</p>
-                                    <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
+                                    <h4 className="font-black text-[#F8FAFC] mb-1 uppercase tracking-tight text-sm">{supplier.name}</h4>
+                                    <p className="text-[10px] text-[#64748B] font-bold mb-4 uppercase tracking-[0.05em]">Email: {supplier.email || "supplier@abc.com.vn"}</p>
+                                    <div className="flex gap-2 mt-4 pt-4 border-t border-[rgba(148,163,184,0.05)]">
                                         <button 
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -190,7 +191,7 @@ export default function SourcingPage() {
                                                     notify(`Đã mời ${supplier.name} báo giá`, "success");
                                                 }
                                             }}
-                                            className="flex-1 bg-erp-navy text-white py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-erp-blue transition-all"
+                                            className="flex-1 bg-[#3B82F6] text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#2563EB] transition-all shadow-lg shadow-[#3B82F6]/20"
                                         >
                                             Mời báo giá
                                         </button>
@@ -210,7 +211,7 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
         <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
                 <thead>
-                    <tr className="bg-slate-50/30 text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100">
+                    <tr className="bg-[#0F1117] text-[10px] font-black uppercase tracking-widest text-[#64748B] border-b border-[rgba(148,163,184,0.1)]">
                         <th className="px-6 py-4">Thông tin PR</th>
                         <th className="px-6 py-4 text-center">Bộ phận</th>
                         <th className="px-6 py-4 text-right">Giá trị (Est.)</th>
@@ -219,24 +220,24 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
                 </thead>
                 <tbody>
                     {data.length > 0 ? data.map((pr) => (
-                        <tr key={pr.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                        <tr key={pr.id} className="border-b border-[rgba(148,163,184,0.05)] hover:bg-[#0F1117]/50 transition-colors">
                             <td className="px-6 py-5">
                                 <div className="flex flex-col">
-                                    <span className="font-black text-erp-navy mb-0.5 uppercase">{pr.prNumber || pr.id.substring(0,8)}</span>
-                                    <span className="text-xs text-slate-500 font-bold">{pr.title}</span>
+                                    <span className="font-black text-[#F8FAFC] mb-0.5 uppercase">{pr.prNumber || pr.id.substring(0,8)}</span>
+                                    <span className="text-xs text-[#94A3B8] font-bold">{pr.title}</span>
                                 </div>
                             </td>
                             <td className="px-6 py-5 text-center">
-                                <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-black uppercase">{pr.deptId || pr.requester?.fullName?.substring(0,2)}</span>
+                                <span className="text-[10px] bg-[#0F1117] text-[#64748B] border border-[rgba(148,163,184,0.1)] px-2 py-0.5 rounded-full font-black uppercase">{pr.deptId || pr.requester?.fullName?.substring(0,2)}</span>
                             </td>
-                            <td className="px-6 py-5 text-right  font-black text-erp-blue">
+                            <td className="px-6 py-5 text-right font-black text-[#3B82F6]">
                                 {(pr.totalEstimate || 0).toLocaleString()} ₫
                             </td>
                             <td className="px-6 py-5 text-center">
                                 <button 
                                     onClick={() => onAction(pr.id)}
                                     className={`inline-flex items-center gap-2 px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${
-                                        type === 'CATALOG' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-500 hover:text-white'
+                                        type === 'CATALOG' ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 hover:bg-[#10B981] hover:text-white'
                                     }`}
                                     disabled={isProcessing}
                                 >
@@ -263,10 +264,10 @@ function TabButton({ active, onClick, label, count }: { active: boolean, onClick
         <button 
             onClick={onClick}
             className={`px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 whitespace-nowrap ${
-                active ? "bg-white text-erp-navy shadow-md" : "text-slate-400 hover:text-slate-600"
+                active ? "bg-[#161922] text-[#3B82F6] shadow-lg shadow-[#3B82F6]/5" : "text-[#64748B] hover:text-[#94A3B8]"
             }`}
         >
-            {label} {count !== undefined && <span className={`px-2 py-0.5 rounded-full text-[9px] ${active ? "bg-erp-blue text-white" : "bg-slate-200 text-slate-500"}`}>{count}</span>}
+            {label} {count !== undefined && <span className={`px-2 py-0.5 rounded-full text-[9px] ${active ? "bg-[#3B82F6] text-white" : "bg-[#0F1117] text-[#64748B] border border-[rgba(148,163,184,0.1)]"}`}>{count}</span>}
         </button>
     );
 }
@@ -295,38 +296,45 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
             {!processingId ? (
                 <div className="space-y-4">
                     {quoteRequests.map((qr) => (
-                        <div key={qr.id} className="bg-white border border-slate-100 rounded-2xl p-6 flex justify-between items-center shadow-sm">
+                        <div key={qr.id} className="bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl p-6 flex justify-between items-center shadow-lg shadow-[#3B82F6]/5">
                             <div className="flex gap-4 items-center">
-                                <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center font-black text-slate-400 text-xs">{qr.qrNumber.split('-').pop()}</div>
+                                <div className="w-10 h-10 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center font-black text-[#64748B] text-xs">{qr.qrNumber.split('-').pop()}</div>
                                 <div>
-                                    <h4 className="font-black text-erp-navy text-sm">{qr.title}</h4>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{qr.status}</span>
+                                    <h4 className="font-black text-[#F8FAFC] text-sm uppercase">{qr.title}</h4>
+                                    <span className={`text-[10px] font-bold uppercase tracking-widest ${qr.status === 'QUOTED' ? 'text-emerald-400' : 'text-amber-400'}`}>{qr.status}</span>
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                {qr.status === 'SUBMITTED' && <button onClick={() => handleStartProcessing(qr)} className="bg-erp-navy text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase">Tiếp nhận</button>}
-                                {qr.status === 'PROCESSING' && <button onClick={() => handleOpenEdit(qr)} className="bg-orange-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase">Nhập giá</button>}
+                                {qr.status === 'SUBMITTED' && <button onClick={() => handleStartProcessing(qr)} className="bg-[#3B82F6] text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-[#3B82F6]/20">Tiếp nhận</button>}
+                                {qr.status === 'PROCESSING' && <button onClick={() => handleOpenEdit(qr)} className="bg-amber-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-amber-500/20">Nhập giá</button>}
                             </div>
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="p-6 bg-slate-50 rounded-2xl">
-                    <h3 className="font-black text-erp-navy uppercase mb-6">NHẬP GIÁ: {editData?.qrNumber}</h3>
-                    {editData?.items.map((item, idx: number) => (
-                        <div key={idx} className="bg-white p-4 rounded-xl border border-slate-100 mb-4 grid grid-cols-2 gap-4">
-                            <div><label className="text-[9px] font-black uppercase text-slate-400 block mb-1">Mặt hàng</label><div className="text-xs font-bold">{item.productName}</div></div>
-                            <div>
-                                <label className="text-[9px] font-black uppercase text-slate-400 block mb-1">Đơn giá</label>
-                                <input type="number" className="erp-input w-full h-10 text-xs" onChange={(e) => handleUpdateItem(idx, 'unitPrice', Number(e.target.value))} />
-                                <select className="erp-input w-full h-10 text-xs mt-2" onChange={(e) => handleUpdateItem(idx, 'supplierName', e.target.value)}>
-                                    <option value="">NCC</option>
-                                    {suppliers.map((s) => <option key={s.id} value={s.name}>{s.name}</option>)}
-                                </select>
+                <div className="p-8 bg-[#0F1117] rounded-3xl border border-[rgba(148,163,184,0.1)]">
+                    <h3 className="font-black text-[#F8FAFC] uppercase mb-8 flex items-center gap-3">
+                        <Zap size={20} className="text-amber-500" /> Nhập giá: <span className="text-[#3B82F6]">{editData?.qrNumber}</span>
+                    </h3>
+                    <div className="space-y-4">
+                        {editData?.items.map((item, idx: number) => (
+                            <div key={idx} className="bg-[#161922] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] grid grid-cols-1 md:grid-cols-2 gap-6 hover:border-[#3B82F6]/20 transition-all">
+                                <div>
+                                    <label className="text-[10px] font-black uppercase text-[#64748B] block mb-2 tracking-widest">Mặt hàng yêu cầu</label>
+                                    <div className="text-sm font-black text-[#F8FAFC] p-4 bg-[#0F1117] rounded-xl border border-[rgba(148,163,184,0.05)] uppercase">{item.productName}</div>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase text-[#64748B] block tracking-widest">Thanh toán & Nhà cung cấp</label>
+                                    <input type="number" placeholder="Nhập đơn giá mới..." className="erp-input w-full h-12 text-sm font-bold" onChange={(e) => handleUpdateItem(idx, 'unitPrice', Number(e.target.value))} />
+                                    <select className="erp-input w-full h-12 text-sm font-bold" onChange={(e) => handleUpdateItem(idx, 'supplierName', e.target.value)}>
+                                        <option value="">Chọn Nhà cung cấp...</option>
+                                        {suppliers.map((s) => <option key={s.id} value={s.name}>{s.name}</option>)}
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                    <button onClick={handleComplete} className="bg-emerald-500 text-white w-full py-4 rounded-xl font-black uppercase text-xs tracking-widest">Gửi báo giá</button>
+                        ))}
+                    </div>
+                    <button onClick={handleComplete} className="mt-8 bg-emerald-500 hover:bg-emerald-600 text-white w-full py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-emerald-500/20 transition-all active:scale-[0.98]">Gửi báo giá hoàn tất</button>
                 </div>
             )}
         </div>
@@ -337,14 +345,17 @@ function POManagement({ pos }: { pos: PO[] | null }) {
     return (
         <div className="p-8 space-y-4">
             {(pos || []).map((po) => (
-                <div key={po.id} className="bg-white border border-slate-100 rounded-3xl p-6 flex justify-between items-center group">
-                    <div className="flex gap-4 items-center">
-                        <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center font-black text-slate-400 text-lg group-hover:bg-erp-navy group-hover:text-white transition-all">{po.poNumber.split('-').pop()}</div>
+                <div key={po.id} className="bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-[32px] p-6 flex justify-between items-center group hover:border-[#3B82F6]/20 transition-all shadow-lg shadow-[#3B82F6]/5">
+                    <div className="flex gap-6 items-center">
+                        <div className="w-16 h-16 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center font-black text-[#64748B] text-lg group-hover:bg-[#3B82F6] group-hover:text-white transition-all shadow-inner">{po.poNumber.split('-').pop()}</div>
                         <div>
-                            <h4 className="font-black text-erp-navy">{po.vendor}</h4>
-                            <span className="text-[10px] font-bold text-erp-blue uppercase tracking-widest">{(po.total || 0).toLocaleString()} ₫ | {po.status}</span>
+                            <h4 className="font-black text-[#F8FAFC] text-base uppercase tracking-tight">{po.vendor}</h4>
+                            <span className="text-[11px] font-black text-[#3B82F6] uppercase tracking-[0.1em]">{(po.total || 0).toLocaleString()} ₫ | {po.status.replace(/_/g, ' ')}</span>
                         </div>
                     </div>
+                    <button className="p-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-[#3B82F6] hover:border-[#3B82F6]/30 rounded-xl transition-all shadow-sm">
+                        <ChevronRight size={18} />
+                    </button>
                 </div>
             ))}
         </div>

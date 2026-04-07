@@ -6,7 +6,7 @@ import Select from "react-select";
 import { formatVND } from "../../utils/formatUtils";
 import { useProcurement, Product, BudgetAllocation, PR } from "../../context/ProcurementContext";
 import { CostCenter, CreatePrDto, CurrencyCode, BudgetAllocationStatus } from "@/app/types/api-types";
-import { Trash2, FileText, Wallet, BarChart3, TrendingUp, PieChart, CheckCircle2, Loader2, XCircle, ArrowLeft } from "lucide-react";
+import { Trash2, FileText, Wallet, BarChart3, TrendingUp, PieChart, CheckCircle2, Loader2, XCircle, ArrowLeft, Activity, ChevronDown, ShoppingCart, AlertTriangle, Zap, Bot, Sparkles } from "lucide-react";
 import DashboardHeader from "../../components/DashboardHeader";
 
 // --- Components ---
@@ -45,50 +45,50 @@ const BudgetAllocationCard = ({
     return (
         <div
             onClick={onClick}
-            className={`group relative cursor-pointer rounded-xl border-2 p-5 transition-all duration-200 shadow-sm
+            className={`group relative cursor-pointer rounded-[32px] border-2 p-6 transition-all duration-300 shadow-xl
                 ${isSelected
-                    ? "border-indigo-600 bg-indigo-50/30"
-                    : "border-slate-100 bg-white hover:border-indigo-300 hover:bg-slate-50"
+                    ? "border-[#3B82F6] bg-[#3B82F6]/5 shadow-[#3B82F6]/10 scale-[1.02]"
+                    : "border-[rgba(148,163,184,0.1)] bg-[#0F1117] hover:border-[#3B82F6]/30 hover:bg-[#161922]"
                 }`}
         >
-            <div className="flex items-start justify-between gap-3 mb-4">
-                <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${isSelected ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-500 group-hover:bg-indigo-100 group-hover:text-indigo-600"}`}>
+            <div className="flex items-start justify-between gap-3 mb-6">
+                <div className="flex items-center gap-4">
+                    <div className={`p-3 rounded-2xl transition-all ${isSelected ? "bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/30" : "bg-[#161922] text-[#64748B] group-hover:text-[#3B82F6]"}`}>
                         <Wallet size={16} />
                     </div>
                     <div>
-                        <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{String(allocation.notes || "Ngân sách")}</div>
-                        <div className={`text-sm font-bold mt-0.5 ${isSelected ? "text-indigo-900" : "text-slate-900"}`}>
-                            {formatVND(total)} <span className="text-[10px] font-medium opacity-50">{String(allocation.currency || "VND")}</span>
+                        <div className="text-[9px] font-black uppercase tracking-[0.2em] text-[#64748B] mb-0.5">{String(allocation.notes || "Hạng mục ngân sách")}</div>
+                        <div className={`text-sm font-black tracking-tight ${isSelected ? "text-[#F8FAFC]" : "text-[#94A3B8]"}`}>
+                            {formatVND(total)} <span className="text-[10px] font-bold opacity-30 uppercase ml-1">{String(allocation.currency || "VND")}</span>
                         </div>
                     </div>
                 </div>
                 <AllocationStatusBadge status={allocation.status as BudgetAllocationStatus} />
             </div>
 
-            <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="grid grid-cols-3 gap-3 mb-6">
                 {[
-                    { label: "Đã chi",     value: spent,     color: "text-slate-600" },
-                    { label: "Cam kết",    value: committed, color: "text-indigo-500" },
-                    { label: "Còn lại",    value: remaining, color: isOver ? "text-red-500" : "text-emerald-600" },
-                ].map(({ label, value, color }) => (
-                    <div key={label} className="bg-slate-50 rounded-lg p-2 text-center border border-slate-100">
-                        <div className="text-[8px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">{label}</div>
-                        <div className={`text-[10px] font-bold ${color}`}>
+                    { label: "Đã chi",     value: spent,     color: "text-[#64748B]", bg: "bg-[#0F1117]" },
+                    { label: "Cam kết",    value: committed, color: "text-[#3B82F6]", bg: "bg-[#3B82F6]/5" },
+                    { label: "Còn lại",    value: remaining, color: isOver ? "text-rose-400" : "text-emerald-400", bg: isOver ? "bg-rose-500/5" : "bg-emerald-500/5" },
+                ].map(({ label, value, color, bg }) => (
+                    <div key={label} className={`${bg} rounded-2xl p-3 text-center border border-[rgba(148,163,184,0.05)]`}>
+                        <div className="text-[7px] font-black uppercase tracking-widest text-[#64748B] mb-1">{label}</div>
+                        <div className={`text-[10px] font-black ${color} tracking-tight`}>
                             {formatVND(Math.abs(value))}
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="space-y-1">
-                <div className="flex justify-between items-center text-[9px] font-medium text-slate-500">
-                    <span>Sử dụng</span>
-                    <span className={isOver ? "text-red-500" : "text-indigo-600"}>{usedPct.toFixed(1)}%</span>
+            <div className="space-y-2">
+                <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest">
+                    <span className="text-[#64748B]">Mức sử dụng</span>
+                    <span className={isOver ? "text-rose-400" : "text-[#3B82F6]"}>{usedPct.toFixed(1)}%</span>
                 </div>
-                <div className="budget-meter">
-                    <div className="meter-spent" style={{ width: `${Math.min(100, (spent / total) * 100)}%` }} />
-                    <div className={isOver ? "bg-red-400" : "meter-committed"} style={{ width: `${Math.min(100 - (spent / total) * 100, (committed / total) * 100)}%` }} />
+                <div className="h-1.5 w-full bg-[#161922] rounded-full overflow-hidden flex shadow-inner">
+                    <div className="h-full bg-blue-500 transition-all duration-1000" style={{ width: `${Math.min(100, (spent / total) * 100)}%` }} />
+                    <div className={`${isOver ? "bg-rose-400" : "bg-indigo-400 opacity-60"} h-full transition-all duration-1000`} style={{ width: `${Math.min(100 - (spent / total) * 100, (committed / total) * 100)}%` }} />
                 </div>
             </div>
         </div>
@@ -116,47 +116,51 @@ const BudgetAllocationsPanel = ({
     const totalRemaining  = totalAllocated - totalSpent - totalCommitted;
 
     return (
-        <div className="erp-card">
-            <h3 className="section-title">
-                <BarChart3 size={16} /> Phân bổ Ngân sách
-            </h3>
+        <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
+            <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117]/50">
+                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F8FAFC] flex items-center gap-3">
+                     <PieChart size={16} className="text-[#3B82F6]" /> Phân bổ Ngân sách Chi tiết
+                 </h3>
+            </div>
 
-            {filtered.length > 0 && (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    {[
-                        { icon: <Wallet size={14} />, label: "Tổng cấp phát",  value: totalAllocated,  color: "text-slate-900",     bg: "bg-slate-50" },
-                        { icon: <TrendingUp size={14} />, label: "Đã tiêu thụ", value: totalSpent,      color: "text-slate-600",    bg: "bg-slate-50" },
-                        { icon: <PieChart size={14} />,   label: "Đang cam kết", value: totalCommitted, color: "text-indigo-600",    bg: "bg-indigo-50" },
-                        { icon: <CheckCircle2 size={14} />, label: "Còn khả dụng", value: totalRemaining, color: totalRemaining < 0 ? "text-red-600" : "text-emerald-600", bg: totalRemaining < 0 ? "bg-red-50" : "bg-emerald-50" },
-                    ].map(({ icon, label, value, color, bg }) => (
-                        <div key={label} className={`${bg} rounded-xl p-4 border border-slate-100 shadow-sm`}>
-                            <p className={`flex items-center gap-1.5 opacity-60 text-[8px] font-bold uppercase tracking-widest text-slate-500 mb-1`}>
-                                {icon} {label}
-                            </p>
-                            <div className={`text-sm font-bold ${color}`}>
-                                {formatVND(value)}
+            <div className="p-10">
+                {filtered.length > 0 && (
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                        {[
+                            { icon: <Wallet size={14} />, label: "Tổng cấp phát",  value: totalAllocated,  color: "text-[#F8FAFC]",     bg: "bg-[#0F1117]" },
+                            { icon: <TrendingUp size={14} />, label: "Đã tiêu thụ", value: totalSpent,      color: "text-[#94A3B8]",    bg: "bg-[#0F1117]" },
+                            { icon: <Sparkles size={14} />,   label: "Đang cam kết", value: totalCommitted, color: "text-[#3B82F6]",    bg: "bg-[#3B82F6]/5" },
+                            { icon: <CheckCircle2 size={14} />, label: "Còn khả dụng", value: totalRemaining, color: totalRemaining < 0 ? "text-rose-400" : "text-emerald-400", bg: totalRemaining < 0 ? "bg-rose-500/5" : "bg-emerald-500/5" },
+                        ].map(({ icon, label, value, color, bg }) => (
+                            <div key={label} className={`${bg} rounded-[32px] p-6 border border-[rgba(148,163,184,0.05)] shadow-sm hover:translate-y-[-2px] transition-all`}>
+                                <p className={`flex items-center gap-2 opacity-60 text-[8px] font-black uppercase tracking-widest text-[#64748B] mb-2`}>
+                                    {icon} {label}
+                                </p>
+                                <div className={`text-sm font-black ${color} tracking-tight`}>
+                                    {formatVND(value)}
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        ))}
+                    </div>
+                )}
 
-            {filtered.length === 0 ? (
-                <div className="py-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                    <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">Không có ngân sách khả dụng</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {filtered.map(allocation => (
-                        <BudgetAllocationCard
-                            key={allocation.id}
-                            allocation={allocation}
-                            isSelected={selectedAllocationId === allocation.id}
-                            onClick={() => onSelect(allocation.id)}
-                        />
-                    ))}
-                </div>
-            )}
+                {filtered.length === 0 ? (
+                    <div className="py-20 text-center bg-[#0F1117] rounded-[32px] border border-dashed border-[rgba(148,163,184,0.1)]">
+                        <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest opacity-50">Không tìm thấy dữ liệu ngân sách cho trung tâm chi phí này</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {filtered.map(allocation => (
+                            <BudgetAllocationCard
+                                key={allocation.id}
+                                allocation={allocation}
+                                isSelected={selectedAllocationId === allocation.id}
+                                onClick={() => onSelect(allocation.id)}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
@@ -329,53 +333,86 @@ export default function CreatePRPage() {
     };
 
     return (
-        <main className="pt-20 px-8 pb-12 bg-slate-50 min-h-screen animate-in fade-in duration-500">
+        <div className="animate-in fade-in duration-700 space-y-12">
             <DashboardHeader breadcrumbs={["Nghiệp vụ", "Yêu cầu mua sắm", "Tạo mới PR"]} />
 
-            <div className="mt-8 flex justify-between items-center mb-10 border-b border-slate-200 pb-8">
+            {/* PAGE HEADER SECTION */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-[rgba(148,163,184,0.1)] pb-10">
                 <div>
-                   <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Tạo Phiếu Yêu Cầu (PR)</h1>
-                   <p className="text-slate-500 text-sm mt-1">Lập kế hoạch mua sắm và xin phê duyệt ngân sách tập trung.</p>
+                   <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase mb-2">Tạo Phiếu Yêu Cầu (PR)</h1>
+                   <p className="text-sm font-bold text-[#64748B] tracking-tight uppercase">
+                      Xin chào, <span className="text-[#3B82F6]">{currentUser?.name || currentUser?.fullName}</span> – Hệ thống AI Procurement đang hỗ trợ bạn lập kế hoạch.
+                   </p>
                 </div>
-                <div className="flex gap-3">
-                    <button className="btn-secondary" onClick={() => router.push("/pr")}>Hủy bỏ</button>
-                    <button className="btn-primary" onClick={handleSubmit} disabled={isSubmitting}>
+                <div className="flex gap-4">
+                    <button className="px-8 py-4 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1A1D23] transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
+                    <button 
+                        className="px-10 py-4 bg-[#3B82F6] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl shadow-[#3B82F6]/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3" 
+                        onClick={handleSubmit} 
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
                         {isSubmitting ? "Đang xử lý..." : "Gửi Phê Duyệt"}
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-8">
-                    <div className="erp-card">
-                        <div className="form-grid">
-                            <div className="md:col-span-2 form-group">
-                                <label className="erp-label">Tiêu đề yêu cầu</label>
+            <div className="grid grid-cols-1 xl:grid-cols-10 gap-10">
+                {/* LEFT CONTENT — 60% */}
+                <div className="xl:col-span-6 space-y-10">
+                    
+                    {/* FORM SECTION 1 — THÔNG TIN CHUNG */}
+                    <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
+                        <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117]/50">
+                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F8FAFC] flex items-center gap-3">
+                                 <Activity size={16} className="text-[#3B82F6]" /> Thông tin chung
+                             </h3>
+                        </div>
+                        <div className="p-10 space-y-8">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Tiêu đề yêu cầu</label>
                                 <input 
-                                    className="erp-input shadow-sm" 
+                                    className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 transition-all placeholder:text-[#64748B]/50" 
                                     placeholder="Nhập tên dịch vụ/sản phẩm cần mua sắm..."
                                     value={form.title} 
                                     onChange={e => setForm({ ...form, title: e.target.value })} 
                                 />
-                                {submissionStatus === 'error' && !form.title && <span className="erp-error">Tiêu đề không được để trống</span>}
+                                {submissionStatus === 'error' && !form.title && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">Tiêu đề không được để trống</span>}
                             </div>
-                            <div className="form-group">
-                                <label className="erp-label">Trung tâm chi phí (Cost Center)</label>
-                                <select className="erp-input shadow-sm" value={form.costCenterId} onChange={e => setForm({ ...form, costCenterId: e.target.value })}>
-                                    <option value="">-- Chọn trung tâm chi phí --</option>
-                                    {filteredCostCenters.map(cc => (
-                                        <option key={cc.id} value={cc.id}>{String(cc.code)} - {String(cc.name)}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="form-group">
-                                <label className="erp-label">Độ ưu tiên</label>
-                                <select className="erp-input shadow-sm" value={form.priority} onChange={e => setForm({ ...form, priority: Number(e.target.value) })}>
-                                    <option value={1}>Thấp</option>
-                                    <option value={2}>Bình thường</option>
-                                    <option value={3}>Gấp (Cần xử lý nhanh)</option>
-                                    <option value={4}>Khẩn cấp (SLA 4h)</option>
-                                </select>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Trung tâm chi phí</label>
+                                    <div className="relative">
+                                        <select 
+                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#94A3B8] appearance-none cursor-pointer focus:ring-2 focus:ring-[#3B82F6]/20 transition-all" 
+                                            value={form.costCenterId} 
+                                            onChange={e => setForm({ ...form, costCenterId: e.target.value })}
+                                        >
+                                            <option value="" className="bg-[#161922]">-- Chọn trung tâm chi phí --</option>
+                                            {filteredCostCenters.map(cc => (
+                                                <option key={cc.id} value={cc.id} className="bg-[#161922]">{String(cc.code)} - {String(cc.name)}</option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" size={16} />
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Độ ưu tiên</label>
+                                    <div className="relative">
+                                        <select 
+                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#94A3B8] appearance-none cursor-pointer focus:ring-2 focus:ring-[#3B82F6]/20 transition-all"
+                                            value={form.priority} 
+                                            onChange={e => setForm({ ...form, priority: Number(e.target.value) })}
+                                        >
+                                            <option value={1} className="bg-[#161922]">THẤP</option>
+                                            <option value={2} className="bg-[#161922]">BÌNH THƯỜNG</option>
+                                            <option value={3} className="bg-[#161922]">GẤP (ƯU TIÊN)</option>
+                                            <option value={4} className="bg-[#161922]">KHẨN CẤP (SLA 4H)</option>
+                                        </select>
+                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" size={16} />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -387,166 +424,242 @@ export default function CreatePRPage() {
                         onSelect={setSelectedAllocationId}
                     />
 
-                    <div className="erp-card">
-                        <h3 className="section-title">
-                           <FileText size={16} /> Danh mục hàng hóa đề xuất
-                        </h3>
-                        <div className="mb-6">
-                            <label className="erp-label">Tìm kiếm & Thêm sản phẩm</label>
-                            <Select
-                                placeholder="Gõ tên sản phẩm, mã SKU..."
-                                options={products.map(p => ({ label: p.name, value: p.id }))}
-                                onChange={(opt) => opt && addItem(opt)}
-                                styles={{
-                                    control: (base) => ({
-                                        ...base,
-                                        borderRadius: '8px',
-                                        borderColor: '#e2e8f0',
-                                        padding: '4px',
-                                        boxShadow: 'none',
-                                        '&:hover': { borderColor: '#cbd5e1' }
-                                    })
-                                }}
-                            />
+                    {/* FORM SECTION 3 — DANH MỤC HÀNG HÓA */}
+                    <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
+                        <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117]/50 flex justify-between items-center">
+                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F8FAFC] flex items-center gap-3">
+                                 <ShoppingCart size={16} className="text-[#3B82F6]" /> Danh mục hàng hóa đề xuất
+                             </h3>
                         </div>
-                        
-                        <div className="overflow-hidden rounded-xl border border-slate-200">
-                            <table className="erp-table border-none">
-                                <thead>
-                                    <tr>
-                                        <th>Sản phẩm / Mô tả</th>
-                                        <th className="text-center">Số lượng</th>
-                                        <th className="text-right">Đơn giá tham chiếu</th>
-                                        <th className="text-right">Thành tiền</th>
-                                        <th className="w-10"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {form.items.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={5} className="py-12 text-center text-slate-400 italic">Chưa có sản phẩm nào được chọn</td>
+                        <div className="p-10">
+                            <div className="mb-8 space-y-3">
+                                <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Tìm kiếm & Thêm sản phẩm</label>
+                                <Select
+                                    placeholder="Gõ tên sản phẩm, mã SKU..."
+                                    options={products.map(p => ({ label: p.name, value: p.id }))}
+                                    onChange={(opt) => opt && addItem(opt)}
+                                    styles={{
+                                        control: (base) => ({
+                                            ...base,
+                                            borderRadius: '16px',
+                                            borderColor: 'rgba(148,163,184,0.15)',
+                                            background: '#0F1117',
+                                            padding: '8px',
+                                            boxShadow: 'none',
+                                            '&:hover': { borderColor: 'rgba(148,163,184,0.3)' }
+                                        }),
+                                        menu: (base) => ({
+                                            ...base,
+                                            background: '#161922',
+                                            border: '1px solid rgba(148,163,184,0.1)',
+                                            borderRadius: '16px',
+                                            overflow: 'hidden'
+                                        }),
+                                        option: (base, state) => ({
+                                            ...base,
+                                            background: state.isFocused ? 'rgba(59,130,246,0.1)' : 'transparent',
+                                            color: '#F8FAFC',
+                                            fontSize: '12px',
+                                            fontWeight: '700',
+                                            padding: '12px 20px'
+                                        }),
+                                        singleValue: (base) => ({
+                                            ...base,
+                                            color: '#F8FAFC'
+                                        }),
+                                        input: (base) => ({
+                                            ...base,
+                                            color: '#F8FAFC'
+                                        }),
+                                        placeholder: (base) => ({
+                                            ...base,
+                                            color: '#64748B'
+                                        })
+                                    }}
+                                />
+                            </div>
+                            
+                            <div className="overflow-hidden rounded-3xl border border-[rgba(148,163,184,0.1)] bg-[#0F1117]">
+                                <table className="w-full text-left">
+                                    <thead>
+                                        <tr className="bg-[#161922] text-[9px] font-black text-[#64748B] border-b border-[rgba(148,163,184,0.1)] uppercase tracking-[0.1em]">
+                                            <th className="px-8 py-5">Sản phẩm / Mô tả</th>
+                                            <th className="px-8 py-5 text-center">Số lượng</th>
+                                            <th className="px-8 py-5 text-right">Đơn giá tham chiếu</th>
+                                            <th className="px-8 py-5 text-right">Thành tiền</th>
+                                            <th className="px-8 py-5 w-20 text-center"></th>
                                         </tr>
-                                    ) : (
-                                        form.items.map((item, i) => (
-                                            <tr key={i}>
-                                                <td className="font-semibold text-slate-800">{item.productDesc}</td>
-                                                <td className="text-center">
-                                                    <input 
-                                                        type="number" 
-                                                        className="w-20 text-center erp-input py-1 px-2 h-9" 
-                                                        value={item.qty} 
-                                                        onChange={e => {
-                                                            const items = [...form.items];
-                                                            items[i].qty = parseInt(e.target.value) || 0;
-                                                            setForm({ ...form, items });
-                                                        }} 
-                                                    />
-                                                </td>
-                                                <td className="text-right font-medium text-slate-500">{formatVND(item.estimatedPrice)}</td>
-                                                <td className="text-right font-bold text-indigo-600">{formatVND(item.qty * item.estimatedPrice)}</td>
-                                                <td className="text-center">
-                                                    <button 
-                                                        className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                                        onClick={() => setForm({ ...form, items: form.items.filter((_, idx) => idx !== i) })}
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </td>
+                                    </thead>
+                                    <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                                        {form.items.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={5} className="py-20 text-center text-[10px] font-black text-[#64748B] uppercase tracking-widest italic">Chưa có sản phẩm nào được chọn</td>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
+                                        ) : (
+                                            form.items.map((item, i) => (
+                                                <tr key={i} className="hover:bg-[#161922]/50 transition-colors">
+                                                    <td className="px-8 py-6 font-black text-[#F8FAFC] text-xs transition-colors">{item.productDesc}</td>
+                                                    <td className="px-8 py-6 text-center">
+                                                        <input 
+                                                            type="number" 
+                                                            className="w-20 text-center bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-xl py-2 px-3 text-xs font-black text-[#F8FAFC] focus:outline-none focus:ring-1 focus:ring-[#3B82F6]/50" 
+                                                            value={item.qty} 
+                                                            onChange={e => {
+                                                                const items = [...form.items];
+                                                                items[i].qty = parseInt(e.target.value) || 0;
+                                                                setForm({ ...form, items });
+                                                            }} 
+                                                        />
+                                                    </td>
+                                                    <td className="px-8 py-6 text-right font-bold text-[#64748B] text-[11px]">{formatVND(item.estimatedPrice)}</td>
+                                                    <td className="px-8 py-6 text-right font-black text-[#3B82F6] text-sm tracking-tight">{formatVND(item.qty * item.estimatedPrice)}</td>
+                                                    <td className="px-8 py-6 text-center">
+                                                        <button 
+                                                            className="p-3 text-[#64748B] hover:text-rose-400 hover:bg-rose-500/10 rounded-2xl transition-all"
+                                                            onClick={() => setForm({ ...form, items: form.items.filter((_, idx) => idx !== i) })}
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-6">
-                    <div className="erp-card bg-white sticky top-24">
-                        <h3 className="section-title">Tổng quan Ngân sách</h3>
-                        <div className="space-y-6">
-                            <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <div className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Trung tâm:</div>
-                                <div className="text-xs font-bold text-indigo-900 bg-white px-2 py-1 rounded shadow-sm border border-slate-200">
-                                    {activeCC ? String(activeCC.code) : "Chưa chọn"}
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="flex justify-between">
-                                    <div className="text-xs font-medium text-slate-500">Khả dụng (Quý {currentQuarter}):</div>
-                                    <div className="text-sm font-bold text-slate-900">
-                                        {formatVND(remainingBudget)}
-                                    </div>
-                                </div>
-                                <div className="flex justify-between">
-                                    <div className="text-xs font-medium text-slate-500">Tổng giá trị PR:</div>
-                                    <div className="text-sm font-bold text-indigo-600">
-                                        -{formatVND(totalEstimate)}
-                                    </div>
-                                </div>
-                                <div className="h-px bg-slate-100 w-full" />
-                                <div className={`p-4 rounded-xl border ${remainingBudget - totalEstimate < 0 ? "bg-red-50 border-red-100 text-red-700" : "bg-emerald-50 border-emerald-100 text-emerald-700"}`}>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider opacity-70">Còn lại sau PR</span>
-                                    <div className="text-2xl font-bold tracking-tight">
-                                        {formatVND(Math.abs(remainingBudget - totalEstimate))}
-                                    </div>
-                                </div>
-                                
-                                {remainingBudget - totalEstimate < 0 && (
-                                    <div className="flex gap-2 p-3 bg-amber-50 rounded-xl border border-amber-100 text-amber-700">
-                                        <XCircle size={16} className="shrink-0" />
-                                        <p className="text-[10px] font-medium leading-tight">Yêu cầu này vượt quá ngân sách khả dụng. Việc phê duyệt có thể bị kéo dài.</p>
-                                    </div>
-                                )}
+                {/* RIGHT SIDEBAR — 40% */}
+                <div className="xl:col-span-4">
+                    <div className="sticky top-24 space-y-8">
+                        {/* TOTAL CARD */}
+                        <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/10 p-10 overflow-hidden relative group">
+                            <div className="absolute top-0 right-0 p-10 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                                <Wallet size={200} />
                             </div>
                             
-                            <button 
-                                className="w-full btn-primary py-3.5 shadow-lg shadow-indigo-200" 
-                                onClick={handleSubmit} 
-                                disabled={isSubmitting}
-                            >
-                                {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : "Gửi Phê Duyệt"}
-                            </button>
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B82F6] mb-10 flex items-center gap-3">
+                                <PieChart size={16} /> Tổng quan Ngân sách
+                            </h3>
+                            
+                            <div className="space-y-8 relative">
+                                <div className="flex justify-between items-center p-6 bg-[#0F1117] rounded-[32px] border border-[rgba(148,163,184,0.1)]">
+                                    <div className="text-[10px] font-black text-[#64748B] uppercase tracking-[0.2em]">Trung tâm:</div>
+                                    <div className="text-[10px] font-black text-[#F8FAFC] bg-[#161922] px-4 py-2 rounded-xl border border-[#3B82F6]/10 shadow-lg tracking-widest">
+                                        {activeCC ? String(activeCC.code) : "CHƯA CHỌN"}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-6 px-4">
+                                    <div className="flex justify-between items-end">
+                                        <div className="text-[11px] font-bold text-[#64748B] uppercase tracking-tight">Khả dụng (Quý {currentQuarter}):</div>
+                                        <div className="text-lg font-black text-[#F8FAFC] tracking-tighter">
+                                            {formatVND(remainingBudget)} ₫
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-end">
+                                        <div className="text-[11px] font-bold text-[#64748B] uppercase tracking-tight">Tổng giá trị PR:</div>
+                                        <div className="text-lg font-black text-rose-400 tracking-tighter">
+                                            -{formatVND(totalEstimate)} ₫
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="h-px bg-[rgba(148,163,184,0.1)]" />
+                                    
+                                    <div className={`p-8 rounded-[40px] border-2 transition-all duration-500 ${remainingBudget - totalEstimate < 0 ? "bg-rose-500/10 border-rose-500/20 shadow-rose-500/5" : "bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5"}`}>
+                                        <div className="flex items-center gap-3 mb-2 opacity-70">
+                                            <div className={`h-2 w-2 rounded-full ${remainingBudget - totalEstimate < 0 ? "bg-rose-500" : "bg-emerald-500"}`}></div>
+                                            <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${remainingBudget - totalEstimate < 0 ? "text-rose-400" : "text-emerald-400"}`}>CÒN LẠI SAU PR</span>
+                                        </div>
+                                        <div className={`text-4xl font-black tracking-tighter ${remainingBudget - totalEstimate < 0 ? "text-rose-400" : "text-emerald-400"}`}>
+                                            {formatVND(Math.abs(remainingBudget - totalEstimate))} <span className="text-lg opacity-50">₫</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {remainingBudget - totalEstimate < 0 && (
+                                        <div className="flex gap-4 p-6 bg-amber-500/10 rounded-3xl border border-amber-500/20 text-amber-400 animate-pulse">
+                                            <AlertTriangle size={24} className="shrink-0" />
+                                            <p className="text-[10px] font-black uppercase leading-tight tracking-tight">Cảnh báo: PR vượt quá ngân sách khả dụng. Việc phê duyệt có thể bị CEO/CFO kiểm soát chặt chẽ hơn.</p>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <button 
+                                    className="w-full py-6 mt-6 bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-black uppercase tracking-[0.2em] rounded-[32px] shadow-2xl shadow-[#3B82F6]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 group/btn" 
+                                    onClick={handleSubmit} 
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} className="group-hover:fill-white transition-all" />}
+                                    {isSubmitting ? "Đang xử lý khởi tạo..." : "Xác nhận & Gửi Approval"}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* HELPER CARD */}
+                        <div className="bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] rounded-[40px] p-10 text-white shadow-2xl shadow-[#3B82F6]/20 relative overflow-hidden group">
+                             <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-125 transition-transform duration-700">
+                                 <Bot size={80} />
+                             </div>
+                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-white/80">AI Procurement Tip</h4>
+                             <p className="text-base font-bold leading-tight mb-2 pr-12">Hệ thống AI vừa kiểm soát giá tham chiếu.</p>
+                             <p className="text-xs font-medium text-white/70">
+                                Chúng tôi đã đối chiếu giá từ 4 nhà cung cấp định kỳ để đảm bảo PR này nằm trong khung giá tối ưu nhất.
+                             </p>
                         </div>
                     </div>
                 </div>
             </div>
 
+            {/* STATUS OVERLAY */}
             {submissionStatus !== 'idle' && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white p-8 rounded-2xl text-center shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0F1117]/80 backdrop-blur-xl animate-in fade-in duration-500">
+                    <div className="bg-[#161922] p-12 rounded-[40px] text-center shadow-2xl max-w-sm w-full border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-300">
                         {submissionStatus === 'loading' && (
-                            <div className="py-8">
-                                <Loader2 size={48} className="animate-spin mx-auto text-indigo-600 mb-4" />
-                                <h3 className="font-bold text-slate-900">Đang khởi tạo yêu cầu...</h3>
-                                <p className="text-slate-500 text-xs mt-2">Vui lòng chờ trong giây lát</p>
+                            <div className="py-10 space-y-6">
+                                <div className="h-20 w-20 border-8 border-[#3B82F6]/20 border-t-[#3B82F6] rounded-full animate-spin mx-auto shadow-xl shadow-[#3B82F6]/10"></div>
+                                <div>
+                                    <h3 className="text-lg font-black text-[#F8FAFC] uppercase tracking-tighter">Đang khởi tạo yêu cầu...</h3>
+                                    <p className="text-[#64748B] text-[10px] font-bold uppercase tracking-[0.2em] mt-3 animate-pulse">Vui lòng chờ trong giây lát</p>
+                                </div>
                             </div>
                         )}
                         {submissionStatus === 'success' && (
-                            <div className="py-8">
-                                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <CheckCircle2 size={32} />
+                            <div className="py-12 space-y-8">
+                                <div className="w-28 h-28 bg-[#10B981] rounded-[35px] flex items-center justify-center mx-auto shadow-2xl shadow-emerald-500/20 animate-bounce-subtle">
+                                    <CheckCircle2 size={56} className="text-white" />
                                 </div>
-                                <h3 className="font-bold text-slate-900">Thành công!</h3>
-                                <p className="text-slate-500 text-xs mt-2">Yêu cầu đã được gửi vào quy trình phê duyệt.</p>
+                                <div className="space-y-3">
+                                    <h3 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase">Thành công!</h3>
+                                    <p className="text-[#94A3B8] text-[13px] font-bold leading-relaxed px-6">
+                                        Đã khởi tạo PR và đẩy vào quy trình phê duyệt đa cấp thành công.
+                                    </p>
+                                </div>
                             </div>
                         )}
                         {submissionStatus === 'error' && (
-                            <div className="py-8">
-                                <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <XCircle size={32} />
+                            <div className="py-12 space-y-8">
+                                <div className="w-28 h-28 bg-rose-500 rounded-[35px] flex items-center justify-center mx-auto shadow-2xl shadow-rose-500/20">
+                                    <XCircle size={56} className="text-white" />
                                 </div>
-                                <h3 className="font-bold text-slate-900 text-red-600">Xảy ra lỗi</h3>
-                                <p className="text-slate-500 text-xs mt-2">{errorMessage}</p>
+                                <div className="space-y-3">
+                                    <h3 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase">Xảy ra lỗi</h3>
+                                    <p className="text-rose-400 text-[13px] font-bold px-6 leading-relaxed">{errorMessage}</p>
+                                </div>
                             </div>
                         )}
                         {submissionStatus !== 'loading' && (
-                            <button onClick={() => setSubmissionStatus('idle')} className="w-full mt-6 btn-secondary py-2">Quay lại</button>
+                            <button 
+                                onClick={() => setSubmissionStatus('idle')} 
+                                className="w-full mt-6 py-4 bg-[#0F1117] text-[#94A3B8] font-black text-[10px] uppercase tracking-widest rounded-2xl border border-[rgba(148,163,184,0.1)] hover:bg-[#1A1D23] transition-all"
+                            >
+                                Quay lại chỉnh sửa
+                            </button>
                         )}
                     </div>
                 </div>
             )}
-        </main>
+        </div>
     );
 }

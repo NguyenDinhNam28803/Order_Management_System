@@ -86,7 +86,7 @@ export default function Dashboard() {
         ];
 
         return (
-            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <div className="animate-in fade-in duration-500">
                 {/* HEADER */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
                     <div>
@@ -301,7 +301,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         );
     };
 
@@ -392,7 +392,7 @@ export default function Dashboard() {
         const usagePercent = Math.round((totalUsed / totalAllocated) * 100);
 
         return (
-            <main className="animate-in fade-in duration-700 bg-[#0F1117] -m-8 p-8 min-h-screen text-[#F8FAFC]">
+            <div className="animate-in fade-in duration-700">
                 <div className="flex justify-between items-end mb-10">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -575,7 +575,7 @@ export default function Dashboard() {
                         </table>
                     </div>
                 </div>
-            </main>
+            </div>
         );
     };
 
@@ -586,7 +586,7 @@ export default function Dashboard() {
         const openPos = (pos || []).filter(po => po.status === "ISSUED" || po.status === "PARTIALLY_RECEIVED");
 
         return (
-            <main className="animate-in fade-in duration-700 bg-[#0F1117] -m-8 p-8 min-h-screen text-[#F8FAFC]">
+            <div className="animate-in fade-in duration-700">
                 <div className="flex justify-between items-end mb-10">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -758,7 +758,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         );
     };
 
@@ -773,7 +773,7 @@ export default function Dashboard() {
         const pendingPRValue = myPendingPRs.reduce((sum: number, pr) => sum + (Number(pr.totalEstimate) || 0), 0);
 
         return (
-            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <div className="animate-in fade-in duration-500">
                 <div className="flex justify-between items-end mb-8">
                     <div>
                         <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Khu vực Quản lý Phê duyệt</h1>
@@ -979,7 +979,7 @@ export default function Dashboard() {
                         </table>
                     </div>
                 </div>
-            </main>
+            </div>
         );
     };
 
@@ -989,7 +989,7 @@ export default function Dashboard() {
         const myOrg = (organizations || []).find(o => o.id === currentUser?.orgId);
         
         return (
-            <main className="animate-in fade-in duration-700 bg-[#0F1117] -m-8 p-8 min-h-screen text-[#F8FAFC]">
+            <div className="animate-in fade-in duration-700">
                 <div className="flex justify-between items-end mb-10">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -1074,7 +1074,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         );
     };
 

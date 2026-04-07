@@ -8,7 +8,7 @@ import { CostCenter } from "@/app/types/api-types";
 import DashboardHeader from "../../components/DashboardHeader";
 
 export default function CostCentersPage() {
-    const { costCenters, departments, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, notify, currentUser } = useProcurement();
+    const { costCenters, departments, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchMyDeptCostCenters, refreshData, notify, currentUser } = useProcurement();
     
     const [showModal, setShowModal] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
@@ -16,19 +16,34 @@ export default function CostCentersPage() {
     const [isLoadingDetail, setIsLoadingDetail] = useState(false);
     const [editingCC, setEditingCC] = useState<CostCenter | null>(null);
     
-    const [formData, setFormData] = useState<{
-        code: string;
-        name: string;
-        deptId: string;
-        budgetAnnual: number;
-        currency: CurrencyCode;
-    }>({
+    const [formData, setFormData] = useState({
         code: "",
         name: "",
         deptId: "",
         budgetAnnual: 0,
         currency: CurrencyCode.VND
     });
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedDeptId, setSelectedDeptId] = useState("");
+    const [isMyDept, setIsMyDept] = useState(false);
+
+    const filteredCostCenters = costCenters?.filter((cc: CostCenter) => {
+        const matchesSearch = cc.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                             cc.code.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesDept = !selectedDeptId || cc.deptId === selectedDeptId;
+        return matchesSearch && matchesDept;
+    });
+
+    const toggleMyDept = async () => {
+        if (!isMyDept) {
+            await fetchMyDeptCostCenters();
+            setIsMyDept(true);
+        } else {
+            await refreshData();
+            setIsMyDept(false);
+        }
+    };
 
     const handleOpenModal = (cc?: CostCenter) => {
         if (cc) {
@@ -98,8 +113,7 @@ export default function CostCentersPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-bg-primary text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Admin", "Cost Centers"]} />
+        <div className="animate-in fade-in duration-500">
             <DashboardHeader breadcrumbs={["Hệ thống", "Quản trị", "Trung tâm chi phí"]} />
 
             <div className="mt-8 flex justify-between items-center mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
@@ -121,13 +135,35 @@ export default function CostCentersPage() {
                         <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Hệ thống:</span>
                         <div className="status-pill status-approved py-0.5 px-3">{costCenters?.length || 0} Đơn vị</div>
                     </div>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B]" size={14} />
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm mã hoặc tên..."
-                            className="erp-input pl-10 py-2 text-xs w-72 h-10 shadow-sm bg-[#0F1117] border-[rgba(148,163,184,0.1)] text-[#F8FAFC] placeholder:text-[#64748B]"
-                        />
+                    <div className="flex items-center gap-4">
+                        <button 
+                            onClick={toggleMyDept}
+                            className={`text-[10px] font-black px-4 py-2 rounded-xl transition-all border ${isMyDept ? 'bg-[#3B82F6] text-white border-[#3B82F6]' : 'bg-transparent text-[#64748B] border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30'}`}
+                        >
+                            {isMyDept ? "PHÒNG BAN CỦA TÔI" : "TẤT CẢ ĐƠN VỊ"}
+                        </button>
+
+                        <select
+                            value={selectedDeptId}
+                            onChange={(e) => setSelectedDeptId(e.target.value)}
+                            className="erp-input py-2 text-[10px] font-bold w-48 shadow-sm bg-[#0F1117] border-[rgba(148,163,184,0.1)] text-[#F8FAFC] outline-none"
+                        >
+                            <option value="">Tất cả phòng ban</option>
+                            {departments?.map(dept => (
+                                <option key={dept.id} value={dept.id}>{dept.name}</option>
+                            ))}
+                        </select>
+
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B]" size={14} />
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm mã hoặc tên..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="erp-input pl-10 py-2 text-xs w-64 h-10 shadow-sm bg-[#0F1117] border-[rgba(148,163,184,0.1)] text-[#F8FAFC] placeholder:text-[#64748B]"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -143,9 +179,11 @@ export default function CostCentersPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {costCenters?.map((cc: CostCenter) => {
+                            {filteredCostCenters?.map((cc: CostCenter) => {
                                 const dept = departments.find(d => d.id === cc.deptId);
-                                const usagePercent = cc.budgetAnnual > 0 ? (cc.budgetUsed / cc.budgetAnnual) * 100 : 0;
+                                const annual = Number(cc.budgetAnnual) || 0;
+                                const used = Number(cc.budgetUsed) || 0;
+                                const usagePercent = annual > 0 ? (used / annual) * 100 : 0;
 
                                 return (
                                     <tr key={cc.id} className="hover:bg-[#0F1117]/50 transition-colors border-b border-[rgba(148,163,184,0.1)]">
@@ -289,7 +327,7 @@ export default function CostCentersPage() {
                                             value={formatVND(formData.budgetAnnual)}
                                             onChange={(e) => setFormData({ ...formData, budgetAnnual: parseMoney(e.target.value) })}
                                             type="text"
-                                            className="erp-input"
+                                            className="erp-input font-bold text-[#3B82F6]"
                                         />
                                     </div>
                                     <div className="form-group">
@@ -414,6 +452,6 @@ export default function CostCentersPage() {
                     </div>
                 </div>
             )}
-        </main>
+        </div>
     );
 }

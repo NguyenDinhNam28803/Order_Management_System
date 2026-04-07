@@ -295,7 +295,7 @@ export default function ProductAdminPage() {
     );
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+        <div className="animate-in fade-in duration-500">
             <DashboardHeader breadcrumbs={["Admin", "Sản phẩm"]} />
             
             <div className="mt-8 flex items-center justify-between mb-8">
@@ -631,6 +631,6 @@ export default function ProductAdminPage() {
                     </div>
                 </div>
             )}
-        </main>
+        </div>
     );
 }

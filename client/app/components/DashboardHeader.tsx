@@ -50,7 +50,7 @@ export default function ERPHeader({ breadcrumbs = ["Tài chính", "Khoản phả
     };
 
     return (
-        <header className="fixed top-0 right-0 z-[60] flex h-16 w-[calc(100%-16rem)] items-center justify-between border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117]/80 px-8 backdrop-blur-md">
+        <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-[rgba(148,163,184,0.1)] bg-[#161922]/80 px-8 backdrop-blur-xl">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#64748B]">
                 <Home size={14} className="text-[#64748B]" />

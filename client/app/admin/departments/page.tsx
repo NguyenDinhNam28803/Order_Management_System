@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Building2, Plus, Edit2, Trash2, Users, Search } from "lucide-react";
 import { useProcurement, Department, User } from "../../context/ProcurementContext";
 import { Organization, CreateDepartmentPayload, UpdateDepartmentPayload } from "@/app/types/api-types";
+import DashboardHeader from "../../components/DashboardHeader";
 
 export default function DepartmentsPage() {
     const { departments, users, addDept, updateDept, removeDept, organizations, currentUser } = useProcurement();
@@ -70,7 +71,8 @@ export default function DepartmentsPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+        <div className="animate-in fade-in duration-500">
+            <DashboardHeader breadcrumbs={["Hệ thống", "Quản trị", "Cơ cấu Phòng ban"]} />
             <div className="flex justify-between items-end mb-10">
                 <div>
                     <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase">Quản lý Phòng ban</h1>
@@ -193,37 +195,37 @@ export default function DepartmentsPage() {
                             <p className="text-xs text-[#64748B] font-bold uppercase tracking-widest mb-10">CẤU CƠ TỔ CHỨC HỆ THỐNG</p>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Mã phòng ban</label>
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label className="erp-label">Mã phòng ban</label>
                                         <input
                                             value={formData.code}
                                             onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                                             type="text"
                                             placeholder="VD: IT-DEPT"
-                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold text-[#F8FAFC] focus:border-[#3B82F6]/30 focus:bg-[#161922] outline-none transition-all placeholder:text-[#64748B]"
+                                            className="erp-input"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Tên phòng ban</label>
+                                    <div className="form-group">
+                                        <label className="erp-label">Tên phòng ban</label>
                                         <input
                                             required
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             type="text"
                                             placeholder="VD: Phòng Công nghệ Thông tin"
-                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold text-[#F8FAFC] focus:border-[#3B82F6]/30 focus:bg-[#161922] outline-none transition-all placeholder:text-[#64748B]"
+                                            className="erp-input"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Thuộc Tổ chức/Công ty</label>
+                                <div className="form-group">
+                                    <label className="erp-label">Thuộc Tổ chức/Công ty</label>
                                     <select
                                         required
                                         value={formData.orgId}
                                         onChange={(e) => setFormData({ ...formData, orgId: e.target.value })}
-                                        className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold text-[#F8FAFC] focus:border-[#3B82F6]/30 focus:bg-[#161922] outline-none transition-all"
+                                        className="erp-input"
                                     >
                                         <option value="">Chọn tổ chức</option>
                                         {organizations?.map((org: Organization) => (
@@ -232,48 +234,50 @@ export default function DepartmentsPage() {
                                     </select>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Ngân sách hàng năm (Budget)</label>
-                                    <div className="relative">
-                                        <input
-                                            required
-                                            value={formData.budgetAnnual}
-                                            onChange={(e) => setFormData({ ...formData, budgetAnnual: Number(e.target.value) })}
-                                            type="number"
-                                            placeholder="0"
-                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold text-[#F8FAFC] focus:border-[#3B82F6]/30 focus:bg-[#161922] outline-none transition-all placeholder:text-[#64748B]"
-                                        />
-                                        <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#64748B]">VND</span>
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label className="erp-label">Ngân sách hàng năm (Budget)</label>
+                                        <div className="relative">
+                                            <input
+                                                required
+                                                value={formData.budgetAnnual}
+                                                onChange={(e) => setFormData({ ...formData, budgetAnnual: Number(e.target.value) })}
+                                                type="number"
+                                                placeholder="0"
+                                                className="erp-input pr-12 font-bold text-[#3B82F6]"
+                                            />
+                                            <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#64748B]">VND</span>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">Trưởng bộ phận</label>
-                                    <select
-                                        value={formData.headUserId}
-                                        onChange={(e) => setFormData({ ...formData, headUserId: e.target.value })}
-                                        className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold text-[#F8FAFC] focus:border-[#3B82F6]/30 focus:bg-[#161922] outline-none transition-all"
-                                    >
-                                        <option value="">Chưa chỉ định</option>
-                                        {users?.filter((u: User) => editingDept && u.deptId === editingDept.id).map((u: User) => (
-                                            <option key={u.id} value={u.id}>{u.fullName || u.name} ({u.email})</option>
-                                        ))}
-                                    </select>
+                                    <div className="form-group">
+                                        <label className="erp-label">Trưởng bộ phận</label>
+                                        <select
+                                            value={formData.headUserId}
+                                            onChange={(e) => setFormData({ ...formData, headUserId: e.target.value })}
+                                            className="erp-input"
+                                        >
+                                            <option value="">Chưa chỉ định</option>
+                                            {users?.filter((u: User) => editingDept && u.deptId === editingDept.id).map((u: User) => (
+                                                <option key={u.id} value={u.id}>{u.fullName || u.name} ({u.email})</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div className="flex gap-4 pt-6">
                                     <button
                                         type="button"
                                         onClick={() => setShowModal(false)}
-                                        className="flex-1 px-8 py-4 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-3xl font-black text-[#64748B] uppercase tracking-widest hover:bg-[#161922] transition-colors"
+                                        className="btn-secondary flex-1 py-4 uppercase tracking-widest text-xs"
                                     >
-                                        Hủy
+                                        Hủy bỏ
                                     </button>
                                     <button
                                         type="submit"
-                                        className="flex-1 px-8 py-4 bg-[#3B82F6] text-white rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-[#3B82F6]/20 hover:scale-[1.02] transition-all"
+                                        className="btn-primary flex-1 py-4 uppercase tracking-widest text-xs"
                                     >
-                                        {editingDept ? "Lưu thay đổi" : "Tạo phòng ban"}
+                                        {editingDept ? "Lưu thay đổi" : "Khởi tạo Phòng ban"}
                                     </button>
                                 </div>
                             </form>
@@ -281,6 +285,6 @@ export default function DepartmentsPage() {
                     </div>
                 </div>
             )}
-        </main>
+        </div>
     );
 }
