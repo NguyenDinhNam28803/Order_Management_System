@@ -11,6 +11,7 @@ import { PoStatus, PrStatus, DocumentType } from '@prisma/client';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
 import { SupplierKpimoduleService } from '../supplier-kpimodule/supplier-kpimodule.service';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
+import { AutomationService } from '../common/automation/automation.service';
 
 @Injectable()
 export class PomoduleService {
@@ -20,6 +21,7 @@ export class PomoduleService {
     private readonly approvalService: ApprovalModuleService,
     private readonly supplierKpiService: SupplierKpimoduleService,
     private readonly budgetService: BudgetModuleService,
+    private readonly automationService: AutomationService,
   ) {}
 
   async create(createPoDto: CreatePoDto, user: JwtPayload) {
@@ -146,6 +148,14 @@ export class PomoduleService {
     if (!po) throw new NotFoundException('PO not found');
 
     const updatedPo = await this.repository.confirmPoFromSupplier(poId);
+
+    // Trigger automation to create GRN draft
+    try {
+      await this.automationService.handlePoSupplierAccepted(poId, po.supplierId);
+    } catch (automationError) {
+      console.error('Failed to create GRN draft automatically:', automationError);
+      // Don't fail the confirmation if automation fails
+    }
 
     try {
       await this.supplierKpiService.evaluateSupplierPerformance(

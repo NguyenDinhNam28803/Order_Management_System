@@ -300,23 +300,23 @@ export default function CreateRFQPage() {
 
     if (isSuccess) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <div className="bg-white p-12 rounded-[40px] shadow-2xl text-center max-w-md animate-in zoom-in duration-500">
-                    <div className="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="min-h-screen flex items-center justify-center bg-[#0F1117]">
+                <div className="bg-[#161922] p-12 rounded-[40px] shadow-2xl text-center max-w-md animate-in zoom-in duration-500 border border-[rgba(148,163,184,0.1)]">
+                    <div className="w-24 h-24 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
                         <CheckCircle2 size={48} />
                     </div>
-                    <h2 className="text-3xl font-black text-erp-navy mb-2 uppercase">THÀNH CÔNG!</h2>
-                    <p className="text-slate-500 font-medium">Yêu cầu báo giá đã được gửi tới {selectedVendors.length} nhà cung cấp.</p>
+                    <h2 className="text-3xl font-black text-[#F8FAFC] mb-2 uppercase">THÀNH CÔNG!</h2>
+                    <p className="text-[#94A3B8] font-medium">Yêu cầu báo giá đã được gửi tới {selectedVendors.length} nhà cung cấp.</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <main className="animate-in fade-in duration-500 min-h-screen bg-[#0F1117] text-[#F8FAFC] px-6 py-6">
+        <main className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-700 bg-[#0F1117] min-h-screen text-[#F8FAFC]">
             <header className="flex items-center justify-between mb-10">
                 <div className="flex items-center gap-6">
-                    <button onClick={() => router.back()} className="h-14 w-14 bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#64748B] hover:text-[#3B82F6] hover:border-[#3B82F6]/30 transition-all shadow-xl active:scale-95">
+                    <button onClick={() => router.back()} className="h-14 w-14 bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#64748B] hover:text-[#F8FAFC] hover:border-[#3B82F6]/30 transition-all shadow-xl shadow-black/20 active:scale-95">
                         <ChevronLeft size={24} />
                     </button>
                     <div>
@@ -333,7 +333,7 @@ export default function CreateRFQPage() {
                         <div className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">Phiên làm việc</div>
                         <div className="text-sm font-black text-[#F8FAFC] uppercase">{currentUser?.name}</div>
                     </div>
-                    <div className="h-12 w-12 rounded-xl bg-[#161922] flex items-center justify-center text-[#3B82F6] font-black border border-[rgba(148,163,184,0.1)]">
+                    <div className="h-12 w-12 rounded-xl bg-[#161922] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#F8FAFC] font-black">
                         {currentUser?.name?.substring(0,2).toUpperCase()}
                     </div>
                 </div>
@@ -342,8 +342,8 @@ export default function CreateRFQPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Left side: PR Info Summary */}
                 <div className="lg:col-span-1 space-y-8">
-                    <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-xl overflow-hidden">
-                        <div className="bg-[#1A1D23] p-8 text-[#F8FAFC]">
+                    <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-black/20 overflow-hidden">
+                        <div className="bg-[#0F1117] p-8 text-[#F8FAFC] border-b border-[rgba(148,163,184,0.1)]">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="h-10 w-10 bg-[#3B82F6]/10 rounded-xl flex items-center justify-center border border-[#3B82F6]/20">
                                     <FileText size={20} className="text-[#3B82F6]" />
@@ -364,7 +364,7 @@ export default function CreateRFQPage() {
                             </div>
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-[#64748B] font-bold uppercase text-[10px] tracking-widest">Ước tính (VNĐ)</span>
-                                <span className="text-[#3B82F6] font-black">{(Number(targetPR.totalEstimate) || 0).toLocaleString()} ₫</span>
+                                <span className="text-[#F8FAFC] font-black ">{(Number(targetPR.totalEstimate) || 0).toLocaleString()} ₫</span>
                             </div>
                             
                             <div className="pt-6 border-t border-[rgba(148,163,184,0.1)]">
@@ -373,8 +373,8 @@ export default function CreateRFQPage() {
                                     {(targetPR.items || []).map((item: PRItem, idx: number) => (
                                         <div key={idx} className="flex justify-between items-start">
                                             <div className="flex flex-col">
-                                                <span className="text-[11px] font-black text-[#F8FAFC]">{item.productId || "Sản phẩm " + (idx+1)}</span>
-                                                <span className="text-[10px] text-[#94A3B8] font-bold">{item.qty} {item.unit}</span>
+                                                <span className="text-[11px] font-black text-[#94A3B8]">{item.productId || "Sản phẩm " + (idx+1)}</span>
+                                                <span className="text-[10px] text-[#64748B] font-bold">{item.qty} {item.unit}</span>
                                             </div>
                                             <span className="text-[11px] font-black text-[#64748B]">{(Number(item.estimatedPrice) || 0).toLocaleString()}</span>
                                         </div>
@@ -384,8 +384,8 @@ export default function CreateRFQPage() {
                         </div>
                     </div>
 
-                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-[32px] p-8 flex items-start gap-4">
-                        <div className="h-10 w-10 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center shrink-0">
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-[32px] p-8 flex items-start gap-4">
+                        <div className="h-10 w-10 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center shrink-0 border border-amber-500/20">
                             <Info size={20} />
                         </div>
                         <div>

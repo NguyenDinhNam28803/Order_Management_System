@@ -28,8 +28,103 @@ export class AutomationService {
 
     if (docType === DocumentType.PURCHASE_REQUISITION) {
       await this.routePrApprovalFlow(docId);
-    } else if (docType === DocumentType.PURCHASE_ORDER) {
-      await this.autoCreateGrnFromPo(docId);
+    }
+    // Note: GRN creation is now handled after supplier accepts PO, not immediately after PO approval
+  }
+
+  /**
+   * Xử lý khi Nhà cung cấp chấp nhận PO
+   * Tạo GRN draft để bộ phận kho chuẩn bị nhận hàng
+   */
+  async handlePoSupplierAccepted(poId: string, supplierId: string) {
+    this.logger.log(
+      `Supplier ${supplierId} accepted PO ${poId}. Creating draft GRN...`,
+    );
+
+    try {
+      const po = await this.prisma.purchaseOrder.findUnique({
+        where: { id: poId },
+        include: { 
+          items: true,
+          supplier: true,
+        },
+      });
+
+      if (!po) {
+        this.logger.error(`PO ${poId} not found`);
+        return;
+      }
+
+      // Kiểm tra PO đã ở trạng thái ACKNOWLEDGED (NCC đã chấp nhận)
+      if (po.status !== PoStatus.ACKNOWLEDGED) {
+        this.logger.warn(
+          `PO ${po.poNumber} status is ${po.status}, expected ACKNOWLEDGED`,
+        );
+      }
+
+      // Kiểm tra xem đã có GRN draft nào cho PO này chưa
+      const existingGrn = await this.prisma.goodsReceipt.findFirst({
+        where: { 
+          poId: po.id,
+          status: GrnStatus.DRAFT,
+        },
+      });
+
+      if (existingGrn) {
+        this.logger.warn(
+          `Draft GRN ${existingGrn.grnNumber} already exists for PO ${po.poNumber}`,
+        );
+        return existingGrn;
+      }
+
+      // Tạo GRN draft
+      const grnNumber = `GRN-DRAFT-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+
+      const grn = await this.prisma.goodsReceipt.create({
+        data: {
+          grnNumber,
+          poId: po.id,
+          orgId: po.orgId,
+          // supplierId field doesn't exist in GoodsReceipt model
+          receivedById: po.buyerId, // Gán người mua làm người nhận tạm thời
+          status: GrnStatus.DRAFT,
+          notes: `GRN draft được tạo tự động sau khi NCC ${po.supplier?.name || supplierId} chấp nhận PO ${po.poNumber}. Bộ phận kho cần cập nhật khi hàng về thực tế.`,
+          items: {
+            create: po.items.map((item, index) => ({
+              poItemId: item.id,
+              lineNumber: index + 1,
+              receivedQty: item.qty, // Số lượng dự kiến nhận = số lượng đặt
+              acceptedQty: 0, // Chưa nhận thực tế
+              rejectedQty: 0,
+              qcResult: QcResult.PENDING,
+              notes: `Chờ nhận hàng thực tế từ NCC`,
+            })),
+          },
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      // Cập nhật trạng thái PO sang GRN_CREATED
+      await this.prisma.purchaseOrder.update({
+        where: { id: po.id },
+        data: { status: PoStatus.GRN_CREATED },
+      });
+
+      this.logger.log(
+        `Draft GRN ${grn.grnNumber} created successfully for PO ${po.poNumber}. Items count: ${po.items.length}`,
+      );
+
+      // TODO: Gửi thông báo cho bộ phận kho
+      // await this.notificationService.notifyWarehouseTeam(po, grn);
+
+      return grn;
+    } catch (error) {
+      this.logger.error(
+        `Failed to create draft GRN for PO ${poId}: ${error!}`,
+      );
+      throw error;
     }
   }
 
