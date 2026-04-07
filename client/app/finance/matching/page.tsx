@@ -32,7 +32,7 @@ export default function FinanceMatching() {
     // Mock Dynamic Data: Let's assume exception if invoice total doesn't match PO total
     const isException = false;
 
-    const items: MatchItem[] = po?.items.map((item: POItem) => {
+    const items: MatchItem[] = po?.items?.map((item: POItem) => {
         const grnQty = grn?.receivedItems[item.id] || 0;
         return {
             id: item.id,

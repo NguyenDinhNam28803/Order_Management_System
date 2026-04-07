@@ -13,7 +13,10 @@ export class PrismaService
     // 1. Khởi tạo Connection Pool từ thư viện 'pg'
     const pool = new Pool({
       connectionString: configService.get<string>('DATABASE_URL'),
-      max: 20, // Tăng giới hạn lên 20 kết nối để đủ cho 11 API gọi song song
+      max: 50, // Tăng giới hạn lên 50 kết nối
+      idleTimeoutMillis: 30000, // Đóng kết nối idle sau 30s
+      connectionTimeoutMillis: 2000, // Timeout kết nối mới sau 2s
+      allowExitOnIdle: true, // Cho phép thoát khi idle
     });
 
     // 2. Khởi tạo Adapter cho Prisma 7.0

@@ -508,11 +508,31 @@ export interface CreateGrnDto {
     items: CreateGrnItem[];
 }
 
+export interface CreateInvoiceItem {
+    poItemId: string;
+    grnItemId?: string;
+    description: string;
+    qty: number;
+    unitPrice: number;
+}
+
 export interface CreateInvoiceDto extends Record<string, unknown> {
     poId: string;
+    grnId?: string;
     invoiceNumber: string;
-    amount: number;
-    vendor: string;
+    supplierId: string;
+    orgId: string;
+    subtotal: number;
+    taxRate?: number;
+    totalAmount: number;
+    currency?: string;
+    invoiceDate: string;
+    dueDate?: string;
+    paymentTerms?: string;
+    eInvoiceUrl?: string;
+    eInvoiceRef?: string;
+    notes?: string;
+    items?: CreateInvoiceItem[];
 }
 
 export type CreateOrganizationPayload = Omit<

@@ -21,15 +21,23 @@ interface DeliverablePO {
 }
 
 export default function SupplierInvoice() {
-    const { pos, grns, createInvoice } = useProcurement();
+    const { allPos, grns, createInvoice, currentUser } = useProcurement();
     const router = useRouter();
+
+    console.log("allPos", allPos);
     
     const [selectedPO, setSelectedPO] = useState("");
     
-    // Create data based on pos and grns for POs in RECEIVED status
-    const deliverablePOs = pos.map((p: PO) => {
+    // Get supplier's orgId from current user
+    const supplierOrgId = currentUser?.orgId;
+    
+    // Lọc từ allPos (tất cả PO trong hệ thống) theo supplierId và status SHIPPED/IN_PROGRESS
+    const deliverablePOs = allPos.map((p: PO) => {
+        // Filter by supplierId (orgId of current user) and SHIPPED/IN_PROGRESS status
+        if (p.supplierId !== supplierOrgId) return null;
+        
         const matchingGrn = grns.find((g: GRN) => g.poId === p.id);
-        if (matchingGrn && p.status === "RECEIVED") {
+        if (matchingGrn && (p.status === "SHIPPED" || p.status === "IN_PROGRESS")) {
             const receivedItems = (p.items || []).map((item) => ({
                 id: item.id,
                 desc: item.description,
@@ -48,7 +56,9 @@ export default function SupplierInvoice() {
         return null;
     }).filter((p): p is DeliverablePO => p !== null);
 
-    const currentPO = deliverablePOs.find((p) => p.id === selectedPO);
+    console.log("deliverablePOs", deliverablePOs);
+
+    const currentPO = allPos.find((p) => p.id === selectedPO);
     
     const [invoiceItems, setInvoiceItems] = useState<{ [key: string]: number }>({});
     const [vat, setVat] = useState(10);
@@ -60,9 +70,9 @@ export default function SupplierInvoice() {
         setInvoiceItems(prev => ({ ...prev, [itemId]: val }));
     };
 
-    const subTotal = currentPO?.receivedItems.reduce((sum, item) => {
-        const qty = invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.received; // Default auto fill max
-        return sum + (qty * item.price);
+    const subTotal = currentPO?.items.reduce((sum, item) => {
+        const qty = invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.qty; // Default auto fill max
+        return sum + (qty * item.estimatedPrice);
     }, 0) || 0;
 
     const vatAmount = subTotal * (vat / 100);
@@ -73,7 +83,29 @@ export default function SupplierInvoice() {
             alert("Vui lòng nhập Số HĐ");
             return;
         }
-        createInvoice({ poId: currentPO.id, vendor: currentPO.vendor, amount: totalAmount, invoiceNumber: invoiceNo });
+        
+        // Build invoice items from current PO items
+        const items = currentPO.items.map(item => ({
+            poItemId: item.id,
+            description: item.description,
+            qty: Number(invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.qty) || 0,
+            unitPrice: Number(item.estimatedPrice) || 0
+        })).filter(item => item.qty > 0);
+        
+        const payload = {
+            poId: currentPO.id,
+            invoiceNumber: invoiceNo,
+            supplierId: currentUser?.orgId || '',
+            orgId: currentPO.orgId || '', // Buyer's organization (from PO)
+            subtotal: subTotal,
+            taxRate: vat,
+            totalAmount: totalAmount,
+            currency: 'VND',
+            invoiceDate: new Date().toISOString().split('T')[0],
+            items: items
+        };
+        
+        createInvoice(payload);
         alert(`Đã xuất Hóa đơn ${invoiceNo} (Invoice) cho ${currentPO.id} thành công!`);
         router.push("/supplier/dashboard");
     }
@@ -82,8 +114,8 @@ export default function SupplierInvoice() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
             <DashboardHeader breadcrumbs={["Bàn làm việc B2B", "Gửi hóa đơn"]} />
 
-            <div className="mt-8 mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4">
-                <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight flex items-center gap-3">
+            <div className="mt-8 mb-8 border-b border-border pb-4">
+                <h1 className="text-3xl font-black text-text-primary tracking-tight flex items-center gap-3">
                     Khởi tạo Hóa đơn VAT Điện tử <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu thu & Đối soát</span>
                 </h1>
                 <p className="text-sm text-[#94A3B8] mt-1">Hệ thống áp dụng 3-way Matching. NCC chỉ xuất hóa đơn cho các mặt hàng đã được kho (Buyer) xác nhận thực nhận (GRN).</p>
@@ -100,9 +132,9 @@ export default function SupplierInvoice() {
                             onChange={(e) => setSelectedPO(e.target.value)}
                         >
                             <option value="">-- Chọn đơn đã hoàn tất nhập kho --</option>
-                            {deliverablePOs.map((po) => <option key={po.id} value={po.id}>{po.id} (Kho xác nhận đủ)</option>)}
+                            {allPos.map((po) => <option key={po.id} value={po.id}>{po.poNumber} (Kho xác nhận đủ)</option>)}
                         </select>
-                        {selectedPO && <div className="text-[10px] font-black uppercase text-emerald-400 tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded-lg ml-auto border border-emerald-500/20">Kho Locked: {currentPO?.grn}</div>}
+                        {selectedPO && <div className="text-[10px] font-black uppercase text-emerald-400 tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded-lg ml-auto border border-emerald-500/20">Kho Locked: {currentPO?.status === 'SHIPPED' || currentPO?.status === 'IN_PROGRESS' ? 'Yes' : 'No'}</div>}
                     </div>
 
                     {selectedPO ? (
@@ -140,26 +172,26 @@ export default function SupplierInvoice() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {currentPO?.receivedItems.map((item) => (
+                                            {currentPO?.items.map((item) => (
                                                 <tr key={item.id} className="border-b border-[rgba(148,163,184,0.1)] hover:bg-[#0F1117] group">
-                                                    <td className="font-bold text-[#F8FAFC]">{item.desc}</td>
+                                                    <td className="font-bold text-[#F8FAFC]">{item.description}</td>
                                                     <td className="text-right">
                                                         <div className="inline-flex flex-col items-end">
-                                                            <span className="font-black text-[#94A3B8] bg-[#0F1117] px-2 py-0.5 rounded text-[10px] mb-1 border border-[rgba(148,163,184,0.1)]">{item.received} {item.received < item.expected && <span className="text-rose-400 ml-1">(! thiếu)</span>}</span>
-                                                            <span className="text-[9px] text-[#64748B]">@ {(item.price).toLocaleString()}</span>
+                                                            <span className="font-black text-[#94A3B8] bg-[#0F1117] px-2 py-0.5 rounded text-[10px] mb-1 border border-[rgba(148,163,184,0.1)]">{item.qty} {item.qty < item.qty && <span className="text-rose-400 ml-1">(! thiếu)</span>}</span>
+                                                            <span className="text-[9px] text-[#64748B]">@ {(item.estimatedPrice)}</span>
                                                         </div>
                                                     </td>
                                                     <td className="border-l-2 border-emerald-500/20 p-2 bg-emerald-500/5">
                                                         <input 
                                                             type="number" 
-                                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-lg px-3 py-2 text-right font-black text-emerald-400 focus:outline-none focus:border-emerald-500/30" 
-                                                            value={invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.received}
-                                                            max={item.received}
-                                                            onChange={e => handleQtyChange(item.id, e.target.value, item.received)}
+                                                            className="w-full bg-bg-primary border-border rounded-lg px-3 py-2 text-right font-black text-emerald-400 focus:outline-none focus:border-emerald-500/30" 
+                                                            value={invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.qty}
+                                                            max={item.qty}
+                                                            onChange={e => handleQtyChange(item.id, e.target.value, item.qty)}
                                                         />
                                                     </td>
-                                                    <td className="text-right font-black text-[#F8FAFC] text-sm p-4 bg-[#0F1117]/50">
-                                                        {((invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.received) * item.price).toLocaleString()} ₫
+                                                    <td className="text-right font-black text-text-primary text-sm p-4 bg-bg-primary/50">
+                                                        {((invoiceItems[item.id] !== undefined ? invoiceItems[item.id] : item.qty) * item.estimatedPrice)} ₫
                                                     </td>
                                                 </tr>
                                             ))}

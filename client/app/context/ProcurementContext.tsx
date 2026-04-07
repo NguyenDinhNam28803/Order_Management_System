@@ -45,7 +45,7 @@ export interface POItem {
 }
 
 export interface PO {
-    id: string; poNumber: string; vendor: string; items: POItem[]; status: PoStatus | string; total: number; createdAt?: string;
+    id: string; poNumber: string; vendor: string; supplierId?: string; orgId?: string; items: POItem[]; status: PoStatus | string; total: number; createdAt?: string;
 }
 
 export interface RFQ {
@@ -81,7 +81,7 @@ export interface SimulationState {
 }
 
 export interface ProcurementState {
-    currentUser: User | null; prs: PR[]; myPrs: PR[]; pos: PO[]; rfqs: RFQ[]; grns: GRN[]; invoices: Invoice[]; 
+    currentUser: User | null; prs: PR[]; myPrs: PR[]; pos: PO[]; allPos: PO[]; rfqs: RFQ[]; grns: GRN[]; invoices: Invoice[]; 
     budgets: BudgetStats | null; users: User[]; departments: Department[]; notifications: Notification[]; 
     approvals: ApprovalWorkflow[]; costCenters: CostCenter[]; budgetPeriods: BudgetPeriod[]; 
     budgetAllocations: BudgetAllocation[]; budgetOverrides: BudgetOverride[]; organizations: Organization[]; products: Product[]; 
@@ -252,7 +252,7 @@ const ProcurementContext = createContext<ProcurementContextType | undefined>(und
 
 export function ProcurementProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<ProcurementState>({
-        currentUser: null, prs: [], myPrs: [], pos: [], rfqs: [], grns: [], invoices: [], 
+        currentUser: null, prs: [], myPrs: [], pos: [], allPos: [], rfqs: [], grns: [], invoices: [], 
         budgets: null, users: [], departments: [], notifications: [], approvals: [], 
         costCenters: [], budgetPeriods: [], budgetAllocations: [], budgetOverrides: [], organizations: [], 
         products: [], categories: [], quoteRequests: [], loadingMyPrs: false,
@@ -395,25 +395,14 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 const res = await posResp.json();
                 const data = res.data || res;
                 if (Array.isArray(data)) {
-                    // Merge với posAll nếu có
-                    let allData = data;
-                    if (posAllResp && posAllResp.ok) {
-                        const allRes = await posAllResp.json();
-                        const allPosData = allRes.data || allRes;
-                        if (Array.isArray(allPosData)) {
-                            // Merge và loại bỏ trùng lặp
-                            const existingIds = new Set(data.map((p: PO) => p.id));
-                            const newPos = allPosData.filter((p: PO) => !existingIds.has(p.id));
-                            allData = [...data, ...newPos];
-                        }
-                    }
-                    setState(prev => ({ ...prev, pos: allData }));
+                    setState(prev => ({ ...prev, pos: data }));
                 }
-            } else if (posAllResp && posAllResp.ok) {
-                // Nếu posResp lỗi nhưng posAllResp ok
+            }
+            if (posAllResp && posAllResp.ok) {
+                // Lưu tất cả PO trong hệ thống vào allPos (riêng biệt với pos)
                 const res = await posAllResp.json();
                 const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, pos: data }));
+                if (Array.isArray(data)) setState(prev => ({ ...prev, allPos: data }));
             }
             if (rfqsResp && rfqsResp.ok) {
                 const res = await rfqsResp.json();
