@@ -137,7 +137,7 @@ export class PomoduleController {
    * @returns Danh sách các đơn đặt hàng
    */
   @Get()
-  @Roles(UserRole.SUPPLIER, UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN, UserRole.DEPT_APPROVER, UserRole.FINANCE)
+  @Roles(UserRole.SUPPLIER, UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN, UserRole.DEPT_APPROVER, UserRole.FINANCE, UserRole.WAREHOUSE)
   @ApiOperation({
     summary: 'Lấy tất cả đơn hàng cho tổ chức',
     description: 'Trả về danh sách tất cả đơn hàng cho tổ chức hiện tại',
@@ -148,7 +148,7 @@ export class PomoduleController {
   }
 
   @Get('all')
-  @Roles(UserRole.SUPPLIER, UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN, UserRole.FINANCE, UserRole.DEPT_APPROVER)
+  @Roles(UserRole.SUPPLIER, UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN, UserRole.FINANCE, UserRole.DEPT_APPROVER, UserRole.WAREHOUSE)
   @ApiOperation({
     summary: 'Lấy tất cả đơn hàng',
     description: 'Trả về danh sách tất cả đơn hàng',

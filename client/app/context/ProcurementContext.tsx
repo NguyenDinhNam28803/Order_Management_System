@@ -284,37 +284,57 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return fetch(`${baseUrl}${url}`, { ...options, headers });
     }, []);
 
+    // Helper function to run promises in batches with delay
+    const runInBatches = async <T,>(
+        factories: (() => Promise<T>)[],
+        batchSize: number
+    ): Promise<T[]> => {
+        const results: T[] = [];
+        for (let i = 0; i < factories.length; i += batchSize) {
+            const batch = factories.slice(i, i + batchSize);
+            const batchResults = await Promise.all(batch.map(fn => fn()));
+            results.push(...batchResults);
+            if (i + batchSize < factories.length) {
+                await new Promise(resolve => setTimeout(resolve, 150));
+            }
+        }
+        return results;
+    };
+
     const refreshData = useCallback(async () => {
         setState(prev => ({ ...prev, loadingMyPrs: true }));
         try {
             const userJson = Cookies.get('user');
             const user = userJson ? JSON.parse(userJson) : null;
             
+            // Split API calls into batches of 5 to avoid overwhelming the connection pool
+            const apiCalls = [
+                () => apiFetch('/budgets/periods'),
+                () => apiFetch('/budgets/allocations'),
+                () => apiFetch('/procurement-requests'),
+                () => apiFetch('/procurement-requests/my'),
+                () => apiFetch('/approvals/pending'),
+                () => apiFetch('/organizations'),
+                () => apiFetch('/departments'),
+                () => apiFetch('/users'),
+                () => apiFetch('/products'),
+                () => apiFetch('/products/categories'),
+                () => apiFetch('/cost-centers'),
+                () => apiFetch('/purchase-orders'),
+                () => apiFetch('/purchase-orders/all'),
+                () => apiFetch('/request-for-quotations'),
+                () => apiFetch('/grn'),
+                () => apiFetch('/invoices'),
+                () => apiFetch('/contracts'),
+                () => apiFetch('/disputes')
+            ];
+            
             const [
                 periodsResp, allocsResp, prsResp, myPrsResp, approvalsResp, 
                 orgsResp, deptsResp, usersResp, productsResp, categoriesResp, 
                 ccResp, posResp, posAllResp, rfqsResp, grnsResp, invoicesResp,
                 contractsResp, disputesResp
-            ] = await Promise.all([
-                apiFetch('/budgets/periods'),
-                apiFetch('/budgets/allocations'),
-                apiFetch('/procurement-requests'),
-                apiFetch('/procurement-requests/my'),
-                apiFetch('/approvals/pending'),
-                apiFetch('/organizations'),
-                apiFetch('/departments'),
-                apiFetch('/users'),
-                apiFetch('/products'),
-                apiFetch('/products/categories'),
-                apiFetch('/cost-centers'),
-                apiFetch('/purchase-orders'),
-                apiFetch('/purchase-orders/all'),
-                apiFetch('/request-for-quotations'),
-                apiFetch('/grn'),
-                apiFetch('/invoices'),
-                apiFetch('/contracts'),
-                apiFetch('/disputes')
-            ]);
+            ] = await runInBatches(apiCalls, 2);
 
             if (user && ["FINANCE", "DIRECTOR", "CEO", "PLATFORM_ADMIN"].includes(user.role)) {
                 const overridesResp = await apiFetch('/budgets/overrides');
@@ -1188,6 +1208,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         const resp = await apiFetch('/request-for-quotations/my-supplier-rfqs');
         if (resp.ok) {
             const res = await resp.json();
+            console.log("My supplier RFQs:", res.data);
             return res.data || res;
         }
         return [];
@@ -1428,8 +1449,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         notify("Đã gửi yêu cầu báo giá", "success");
         return true;
     }, [notify]);
-
-    useEffect(() => { refreshData(); }, [refreshData]);
 
     const contextValue: ProcurementContextType = {
         ...state,

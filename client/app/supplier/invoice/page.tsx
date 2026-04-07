@@ -59,6 +59,7 @@ export default function SupplierInvoice() {
     console.log("deliverablePOs", deliverablePOs);
 
     const currentPO = allPos.find((p) => p.id === selectedPO);
+    const currentGRN = grns.find((g: GRN) => g.poId === currentPO?.id);
     
     const [invoiceItems, setInvoiceItems] = useState<{ [key: string]: number }>({});
     const [vat, setVat] = useState(10);
@@ -94,9 +95,10 @@ export default function SupplierInvoice() {
         
         const payload = {
             poId: currentPO.id,
+            grnId: currentGRN?.id,
             invoiceNumber: invoiceNo,
             supplierId: currentUser?.orgId || '',
-            orgId: currentPO.orgId || '', // Buyer's organization (from PO)
+            orgId: currentPO.orgId || '',
             subtotal: subTotal,
             taxRate: vat,
             totalAmount: totalAmount,

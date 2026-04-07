@@ -33,7 +33,7 @@ export class GrnmoduleController {
   }
 
   @Get()
-  @Roles(UserRole.WAREHOUSE, UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.WAREHOUSE, UserRole.FINANCE, UserRole.PLATFORM_ADMIN, UserRole.FINANCE)
   @ApiOperation({ summary: 'Lấy danh sách phiếu nhập kho' })
   findAll(@Request() req: any) {
     return this.grnmoduleService.findAll(req.user as JwtPayload);

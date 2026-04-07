@@ -13,12 +13,12 @@ export default function SupplierPO() {
     const [selectedPO, setSelectedPO] = useState<PO | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     
-    const { currentUser, pos, ackPO, shipPO, rejectPO, notify, fetchPOById } = useProcurement();
+    const { currentUser, pos, allPos, ackPO, shipPO, rejectPO, notify, fetchPOById } = useProcurement();
     
     // Lọc thủ công từ global pos state
-    const supplierId = currentUser?.id || "";
-    let supplierPOs = pos.filter((p) => (p as any).supplierId === supplierId || (p as any).supplier?.id === supplierId);
-    
+    const supplierId = currentUser?.orgId || "";
+    let supplierPOs = allPos.filter((p) => (p as PO).supplierId === supplierId);
+    console.log("supplierPOs", supplierPOs)
     // Debug: Nếu không tìm thấy PO nào, hiển thị tất cả để kiểm tra
     const [showAll, setShowAll] = useState(false);
     if (supplierPOs.length === 0 && pos.length > 0 && !showAll) {

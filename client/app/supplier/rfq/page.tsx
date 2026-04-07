@@ -17,16 +17,26 @@ export default function SupplierRFQ() {
     useEffect(() => {
         const loadRFQs = async () => {
             setLoading(true);
-            const rfqs = await fetchMySupplierRFQs();
-            setMyRfqs(rfqs);
-            setLoading(false);
+            try {
+                console.log("Fetching RFQs for supplier:", currentUser?.orgId);
+                const rfqs = await fetchMySupplierRFQs();
+                console.log("Received RFQs:", rfqs);
+                setMyRfqs(rfqs);
+            } catch (error) {
+                console.error("Error fetching RFQs:", error);
+                notify("Có lỗi khi tải danh sách RFQ", "error");
+            } finally {
+                setLoading(false);
+            }
         };
-        loadRFQs();
-    }, [fetchMySupplierRFQs]);
+        if (currentUser?.orgId) {
+            loadRFQs();
+        }
+    }, [fetchMySupplierRFQs, currentUser?.orgId]);
     
     // Filter RFQs with status SENT or OPEN for display
     const openRfqs = myRfqs.filter((r: RFQ) =>
-        r.status === "SENT" || r.status === "OPEN" || r.status === "PENDING"
+        r.status == "SENT" || r.status == "OPEN" || r.status == "PENDING"
     );
     
     const activeRFQRaw = selectedRfqId ? myRfqs.find((r: RFQ) => r.id === selectedRfqId) : (openRfqs.length > 0 ? openRfqs[0] : null);
@@ -78,10 +88,11 @@ export default function SupplierRFQ() {
 
     if (loading) {
         return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
                 <DashboardHeader breadcrumbs={["Nhà cung cấp", "Danh sách Yêu cầu báo giá"]} />
-                <div className="mt-8 flex items-center justify-center min-h-75">
-                    <div className="text-slate-400 font-bold uppercase tracking-widest">Đang tải...</div>
+                <div className="mt-8 flex flex-col items-center justify-center min-h-[400px]">
+                    <div className="w-12 h-12 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <div className="text-slate-400 font-bold uppercase tracking-widest">Đang tải danh sách RFQ...</div>
                 </div>
             </main>
         );
@@ -320,8 +331,12 @@ export default function SupplierRFQ() {
                 </div>
                 <div className="flex gap-4">
                      <div className="p-4 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-xl">
-                          <div className="text-[9px] font-black text-[#64748B] uppercase tracking-[0.2em] mb-1">OPEN QUOTES</div>
+                          <div className="text-[9px] font-black text-[#64748B] uppercase tracking-[0.2em] mb-1">RFQ Chờ báo giá</div>
                           <div className="text-2xl font-black text-[#F8FAFC]">{openRfqs.length}</div>
+                     </div>
+                     <div className="p-4 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-xl">
+                          <div className="text-[9px] font-black text-[#64748B] uppercase tracking-[0.2em] mb-1">Tổng RFQ</div>
+                          <div className="text-2xl font-black text-[#3B82F6]">{myRfqs.length}</div>
                      </div>
                 </div>
             </div>
@@ -340,7 +355,7 @@ export default function SupplierRFQ() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
-                            {openRfqs.map((r) => {
+                            {myRfqs.map((r: any) => {
                                 const prDetail = prs.find((p) => p.id === r.prId);
                                 const customerName = prDetail ? (typeof prDetail.department === 'string' ? prDetail.department : prDetail.department?.name) || "ProcurePro Network" : "ProcurePro Network";
                                 
@@ -398,11 +413,19 @@ export default function SupplierRFQ() {
                                     </tr>
                                 );
                             })}
-                            {openRfqs.length === 0 && (
+                            {myRfqs.length === 0 && (
                                 <tr>
                                     <td colSpan={6} className="text-center py-32">
-                                         <div className="text-[#64748B] font-black uppercase tracking-[0.4em] text-sm animate-pulse">
-                                             HÒM THƯ (RFQ) TRỐNG • CHỜ KẾ HOẠCH MỚI
+                                         <div className="flex flex-col items-center gap-4">
+                                             <div className="w-20 h-20 bg-[#161922] rounded-full flex items-center justify-center">
+                                                 <Inbox size={32} className="text-[#64748B]" />
+                                             </div>
+                                             <div className="text-[#64748B] font-black uppercase tracking-[0.2em] text-sm">
+                                                 KHÔNG CÓ RFQ NÀO
+                                             </div>
+                                             <p className="text-[#94A3B8] text-xs max-w-md">
+                                                 Bạn chưa được mời tham gia báo giá nào. Hệ thống sẽ tự động thông báo khi có RFQ phù hợp.
+                                             </p>
                                          </div>
                                     </td>
                                 </tr>

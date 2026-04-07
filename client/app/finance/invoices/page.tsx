@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
 import DashboardHeader from "@/app/components/DashboardHeader";
-import { FileText, Search, CheckCircle2, Clock, AlertCircle, ArrowRight, FileCheck } from "lucide-react";
+import { FileText, Search, CheckCircle2, Clock, AlertCircle, ArrowRight, FileCheck, XCircle, CreditCard } from "lucide-react";
 import { formatVND } from "@/app/utils/formatUtils";
 
 export default function FinanceInvoicesPage() {
@@ -13,11 +13,15 @@ export default function FinanceInvoicesPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState<string>("ALL");
 
+    console.log(invoices);
+
     // Filter invoices
-    const filteredInvoices = invoices.filter((inv) => {
+    const filteredInvoices = invoices.filter((inv: any) => {
         const matchesSearch = 
             inv.invoiceNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            inv.supplier?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             inv.vendor?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            inv.po?.poNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             inv.poId?.toLowerCase().includes(searchTerm.toLowerCase());
         
         const matchesStatus = statusFilter === "ALL" || inv.status === statusFilter;
@@ -27,15 +31,22 @@ export default function FinanceInvoicesPage() {
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case "MATCHED":
             case "APPROVED":
+            case "AUTO_APPROVED":
                 return <CheckCircle2 size={16} className="text-emerald-400" />;
-            case "PENDING":
+            case "MATCHED":
+                return <CheckCircle2 size={16} className="text-blue-400" />;
             case "SUBMITTED":
+            case "PENDING":
+            case "MATCHING":
                 return <Clock size={16} className="text-amber-400" />;
+            case "EXCEPTION_REVIEW":
+                return <AlertCircle size={16} className="text-orange-400" />;
             case "REJECTED":
             case "DISPUTED":
-                return <AlertCircle size={16} className="text-rose-400" />;
+                return <XCircle size={16} className="text-rose-400" />;
+            case "PAID":
+                return <CreditCard size={16} className="text-blue-400" />;
             default:
                 return <FileText size={16} className="text-[#64748B]" />;
         }
@@ -43,22 +54,29 @@ export default function FinanceInvoicesPage() {
 
     const getStatusClass = (status: string) => {
         switch (status) {
-            case "MATCHED":
             case "APPROVED":
+            case "AUTO_APPROVED":
                 return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-            case "PENDING":
+            case "MATCHED":
+                return "bg-blue-500/10 text-blue-400 border-blue-500/20";
             case "SUBMITTED":
+            case "PENDING":
+            case "MATCHING":
                 return "bg-amber-500/10 text-amber-400 border-amber-500/20";
+            case "EXCEPTION_REVIEW":
+                return "bg-orange-500/10 text-orange-400 border-orange-500/20";
             case "REJECTED":
             case "DISPUTED":
                 return "bg-rose-500/10 text-rose-400 border-rose-500/20";
+            case "PAID":
+                return "bg-blue-500/10 text-blue-400 border-blue-500/20";
             default:
                 return "bg-[#0F1117] text-[#64748B] border-[rgba(148,163,184,0.1)]";
         }
     };
 
     const handleViewMatching = (invoiceId: string) => {
-        router.push(`/finance/matching?id=${invoiceId}`);
+        router.push(`/invoices/${invoiceId}`);
     };
 
     return (
@@ -89,16 +107,19 @@ export default function FinanceInvoicesPage() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <select
+                        <select
                         className="erp-input w-full md:w-48"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
                         <option value="ALL">Tất cả trạng thái</option>
                         <option value="SUBMITTED">Chờ đối soát</option>
+                        <option value="MATCHING">Đang đối soát</option>
                         <option value="MATCHED">Đã đối soát</option>
                         <option value="APPROVED">Đã duyệt</option>
+                        <option value="AUTO_APPROVED">Tự động duyệt</option>
                         <option value="PAID">Đã thanh toán</option>
+                        <option value="EXCEPTION_REVIEW">Lỗi đối soát</option>
                         <option value="REJECTED">Từ chối</option>
                     </select>
                 </div>
@@ -128,7 +149,7 @@ export default function FinanceInvoicesPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredInvoices.map((inv) => (
+                                filteredInvoices.map((inv: any) => (
                                     <tr key={inv.id} className="hover:bg-[#0F1117]/50 transition-all group">
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-3">
@@ -142,26 +163,38 @@ export default function FinanceInvoicesPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
-                                            <span className="font-medium text-[#F8FAFC]">{inv.vendor}</span>
+                                            <span className="font-medium text-[#F8FAFC]">{inv.supplier?.name || inv.vendor}</span>
+                                            {inv.supplier?.code && (
+                                                <p className="text-xs text-[#64748B]">{inv.supplier.code}</p>
+                                            )}
                                         </td>
                                         <td className="px-6 py-5">
                                             <span className="text-xs font-black text-[#64748B] uppercase tracking-tight bg-[#0F1117] px-2 py-1 rounded border border-[rgba(148,163,184,0.1)]">
-                                                {inv.poId?.slice(0, 8)}...
+                                                {inv.po?.poNumber || inv.poId?.slice(0, 8)}...
                                             </span>
+                                            {inv.grnId && (
+                                                <p className="text-xs text-emerald-400 mt-1">GRN: {inv.grnId.slice(0, 8)}...</p>
+                                            )}
                                         </td>
                                         <td className="px-6 py-5 text-right">
                                             <span className="font-black text-[#F8FAFC]">
-                                                {formatVND(inv.amount)}
+                                                {formatVND(parseFloat(inv.totalAmount || inv.amount || 0))}
                                             </span>
+                                            <p className="text-xs text-[#64748B]">{inv.currency}</p>
                                         </td>
                                         <td className="px-6 py-5 text-center">
-                                            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold ${getStatusClass(inv.status as string)}`}>
-                                                {getStatusIcon(inv.status as string)}
+                                            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold ${getStatusClass(inv.status)}`}>
+                                                {getStatusIcon(inv.status)}
                                                 {inv.status}
                                             </div>
+                                            {inv.exceptionReason && (
+                                                <p className="text-xs text-orange-400 mt-1 truncate max-w-[150px]" title={inv.exceptionReason}>
+                                                    ⚠️ Lỗi đối soát
+                                                </p>
+                                            )}
                                         </td>
                                         <td className="px-6 py-5 text-center text-sm text-[#94A3B8]">
-                                            {new Date(inv.createdAt).toLocaleDateString("vi-VN")}
+                                            {new Date(inv.invoiceDate || inv.createdAt).toLocaleDateString("vi-VN")}
                                         </td>
                                         <td className="px-6 py-5 text-right">
                                             <button
@@ -169,7 +202,7 @@ export default function FinanceInvoicesPage() {
                                                 className="inline-flex items-center gap-2 px-4 py-2 bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 text-[#3B82F6] rounded-lg text-xs font-bold transition-colors border border-[#3B82F6]/20"
                                             >
                                                 <FileCheck size={14} />
-                                                {inv.status === "SUBMITTED" || inv.status === "PENDING" 
+                                                {inv.status === "SUBMITTED" || inv.status === "PENDING" || inv.status === "MATCHING" 
                                                     ? "Đối soát" 
                                                     : "Xem chi tiết"}
                                                 <ArrowRight size={14} />
@@ -192,19 +225,19 @@ export default function FinanceInvoicesPage() {
                 <div className="bg-[#161922] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Chờ đối soát</p>
                     <p className="text-2xl font-black text-amber-400">
-                        {invoices.filter(i => i.status === "SUBMITTED" || i.status === "PENDING").length}
+                        {invoices.filter((i: any) => i.status === "SUBMITTED" || i.status === "PENDING" || i.status === "MATCHING").length}
                     </p>
                 </div>
                 <div className="bg-[#161922] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
-                    <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Đã đối soát</p>
-                    <p className="text-2xl font-black text-emerald-400">
-                        {invoices.filter(i => i.status === "MATCHED" || i.status === "APPROVED").length}
+                    <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Lỗi đối soát</p>
+                    <p className="text-2xl font-black text-orange-400">
+                        {invoices.filter((i: any) => i.status === "EXCEPTION_REVIEW").length}
                     </p>
                 </div>
                 <div className="bg-[#161922] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Tổng giá trị</p>
                     <p className="text-xl font-black text-[#F8FAFC]">
-                        {formatVND(invoices.reduce((sum, i) => sum + (i.amount || 0), 0))}
+                        {formatVND(invoices.reduce((sum, i: any) => sum + parseFloat(i.totalAmount || i.amount || 0), 0))}
                     </p>
                 </div>
             </div>

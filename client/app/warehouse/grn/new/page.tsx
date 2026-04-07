@@ -35,20 +35,21 @@ interface QcDataItem {
 }
 
 export default function CreateGRN() {
-    const { pos, createGRN } = useProcurement();
+    const { pos, allPos, createGRN } = useProcurement();
     const router = useRouter();
 
     const [poLookup, setPoLookup] = useState("");
     const [activePO, setActivePO] = useState<PO | null>(null);
 
     const handleSearch = () => {
-        const found = pos.find((p) => (p.id.includes(poLookup.trim())) && p.status === "SHIPPED");
+        const found = allPos.find((p) => (p.id.includes(poLookup.trim())) && p.status === "SHIPPED");
+        console.log(found)
         if (found) {
             setActivePO(found);
             // Initialize forms
             const initialRecv: Record<string, RecvDataItem> = {};
             const initialQC: Record<string, QcDataItem> = {};
-            found.items.forEach((i: POItem) => {
+            found.items?.forEach((i: POItem) => {
                 initialRecv[i.id] = { pList: i.qty, actual: i.qty, note: "" };
                 initialQC[i.id] = { status: "PASS", failQty: 0, reason: "", action: "", proof: false };
             });
@@ -186,7 +187,7 @@ export default function CreateGRN() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                                    {activePO.items.map((item) => {
+                                                    {activePO.items?.map((item) => {
                                         const rData = recvData[item.id];
                                         if (!rData) return null;
                                         const { diff, pct, isHigh } = calculateVariance(item.qty, rData.actual);
@@ -231,7 +232,7 @@ export default function CreateGRN() {
                         </div>
                         
                         <div className="divide-y divide-[rgba(148,163,184,0.1)] bg-[#161922]">
-                            {activePO.items.map((item) => {
+                            {activePO.items?.map((item) => {
                                 const qData = qcData[item.id];
                                 if (!qData) return null;
                                 
@@ -346,23 +347,23 @@ export default function CreateGRN() {
                                     <div className="flex justify-between border-b border-[rgba(148,163,184,0.1)] pb-2">
                                         <span>Tổng SL Nhận:</span>
                                         <span className="text-[#F8FAFC] text-base">
-                                            {activePO.items.reduce((sum: number, i) => sum + (recvData[i.id]?.actual||0), 0)}
+                                            {activePO.items?.reduce((sum: number, i) => sum + (recvData[i.id]?.actual||0), 0)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between border-b border-rose-500/30 pb-2 text-rose-400">
                                         <span>Tổng SL Lỗi/Từ chối:</span>
                                         <span className="text-rose-400 text-base">
-                                            {activePO.items.reduce((sum: number, i) => sum + (qcData[i.id]?.failQty||0), 0)}
+                                            {activePO.items?.reduce((sum: number, i) => sum + (qcData[i.id]?.failQty||0), 0)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between border-b border-[rgba(148,163,184,0.1)] pb-2 col-span-2 mt-2">
                                         <span className="uppercase tracking-widest text-[10px] text-[#64748B]">Tỷ lệ Pass (Kho):</span>
                                         <span className="text-emerald-400 text-xl flex items-center gap-1">
                                             {(() => {
-                                                const total = activePO.items.reduce((sum: number, i) => sum + (recvData[i.id]?.actual||0), 0);
-                                                const fail = activePO.items.reduce((sum: number, i) => sum + (qcData[i.id]?.failQty||0), 0);
+                                                const total = activePO.items?.reduce((sum: number, i) => sum + (recvData[i.id]?.actual||0), 0);
+                                                const fail = activePO.items?.reduce((sum: number, i) => sum + (qcData[i.id]?.failQty||0), 0);
                                                 if (total===0) return "0%";
-                                                return `${((total - fail)/total * 100).toFixed(0)}%`;
+                                                return `${((total - fail)/total * 100)}%`;
                                             })()}
                                         </span>
                                     </div>

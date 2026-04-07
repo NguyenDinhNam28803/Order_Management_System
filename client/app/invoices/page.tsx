@@ -15,8 +15,10 @@ export default function InvoicesPage() {
       try {
         const data = await fetchInvoices();
         setInvoices(data);
+        notify('Invoices loaded successfully');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load invoices');
+        notify('Failed to load invoices');
       } finally {
         setLoading(false);
       }

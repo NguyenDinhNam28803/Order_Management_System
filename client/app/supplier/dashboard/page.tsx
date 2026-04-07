@@ -78,9 +78,40 @@ const initialRFQs: RFQ[] = [
 ];
 
 export default function SupplierDashboard() {
-  const { rfqs: contextRfqs, quoteRequests: contextQRs, currentUser, organizations, updateQuoteRequest } = useProcurement();
+  const { rfqs: contextRfqs, quoteRequests: contextQRs, currentUser, organizations, updateQuoteRequest, fetchMySupplierRFQs } = useProcurement();
   
-  // Use local state for mock RFQs that were already there, 
+  // State for real API RFQs
+  const [apiRfqs, setApiRfqs] = useState<RFQ[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Fetch real RFQs from API
+  useEffect(() => {
+    const loadRFQs = async () => {
+      if (!currentUser?.orgId) return;
+      setLoading(true);
+      try {
+        const rfqs = await fetchMySupplierRFQs();
+        // Map API response to dashboard RFQ format
+        const mappedRfqs = rfqs.map((r: any) => ({
+          rfqId: r.rfqNumber || r.id.substring(0, 8),
+          projectName: r.title || `Yêu cầu báo giá #${r.rfqNumber || r.id.substring(0, 8)}`,
+          status: r.status === "SENT" ? "Pending" : (r.status === "QUOTATION_RECEIVED" ? "Quoted" : "Pending"),
+          createdAt: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : "Vừa xong",
+          items: r.items?.map((item: any) => ({
+            id: item.id || "ITM-" + Math.random().toString(36).substring(7),
+            name: item.productName || item.productDesc || "Sản phẩm",
+            quantity: item.qty || 1
+          })) || []
+        } as RFQ));
+        setApiRfqs(mappedRfqs);
+      } catch (error) {
+        console.error("Error fetching RFQs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadRFQs();
+  }, [fetchMySupplierRFQs, currentUser?.orgId]); 
   // plus merge with context RFQs that belong to this supplier
   const [localRfqs, setLocalRfqs] = useState<RFQ[]>(initialRFQs);
   const [activeTab, setActiveTab] = useState<"Pending" | "Quoted" | "Rejected" | "CatalogConfirmation">("Pending");
@@ -138,11 +169,11 @@ export default function SupplierDashboard() {
       } as RFQ;
     });
 
-    const combined = [...relevantContextQRs, ...relevantContextRfqs, ...localRfqs];
+    const combined = [...apiRfqs, ...relevantContextQRs, ...relevantContextRfqs, ...localRfqs];
     const unique = combined.filter((v, i, a) => a.findIndex(t => t.rfqId === v.rfqId) === i);
     
     return unique;
-  }, [contextRfqs, contextQRs, localRfqs, currentUser?.orgId, organizations]);
+  }, [apiRfqs, contextRfqs, contextQRs, localRfqs, currentUser?.orgId, organizations]);
 
   const [rfqs, setRfqs] = useState<RFQ[]>([]);
   
@@ -357,14 +388,25 @@ export default function SupplierDashboard() {
             </tr>
           </thead>
           <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
-            {currentRFQs.length > 0 ? currentRFQs.map(rfq => {
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="py-20 text-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin"></div>
+                    <p className="font-black uppercase tracking-[0.2em] text-xs text-[#64748B]">Đang tải danh sách RFQ...</p>
+                  </div>
+                </td>
+              </tr>
+            ) : currentRFQs.length > 0 ? currentRFQs.map(rfq => {
               const isSimulation = rfq.rfqId.includes("SIM");
+              const isApiData = !isSimulation && !rfq.rfqId.startsWith("RFQ-2024");
               return (
                 <tr key={rfq.rfqId} className={`group hover:bg-[#0F1117]/50 transition-colors ${isSimulation ? 'bg-[#3B82F6]/5' : ''}`}>
                   <td className="font-black text-[#F8FAFC] py-4 px-6">
                     <div className="flex items-center gap-2">
                        {rfq.rfqId}
                        {isSimulation && <span className="bg-[#3B82F6] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
+                       {isApiData && <span className="bg-emerald-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">API</span>}
                     </div>
                   </td>
                   <td className="py-4 px-6">
