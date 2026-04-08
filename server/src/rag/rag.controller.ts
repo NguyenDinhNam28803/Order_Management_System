@@ -1,18 +1,25 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import type { Queue } from 'bull';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RagQueryService, RagResult } from './rag-query.service';
 import { RagIngestService } from './rag-ingest.service';
 import { RAG_SYNC_QUEUE } from './rag-sync.processor';
 import { QueryRequiredDto } from './dto/rag-query.dto';
+import { RagPrGeneratorService } from './rag-pr-generator.service';
+import { GeneratePrDraftDto, PrDraftResponse } from './dto/generate-pr-draft.dto';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('RAG (Retrieval-Augmented Generation)')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JWT-auth')
 @Controller('rag')
 export class RagController {
   constructor(
     private readonly query: RagQueryService,
     private readonly ingest: RagIngestService,
+    private readonly prGenerator: RagPrGeneratorService,
     @InjectQueue(RAG_SYNC_QUEUE) private readonly syncQueue: Queue,
   ) {}
 
@@ -55,5 +62,34 @@ export class RagController {
   async triggerFullSync() {
     await this.syncQueue.add('sync-all', {}, { attempts: 3 });
     return { message: 'Sync job queued' };
+  }
+
+  @Post('generate-pr-draft')
+  @ApiOperation({
+    summary: 'Tạo PR Draft bằng AI (RAG)',
+    description: `Sử dụng AI và RAG để phân tích yêu cầu của người dùng và tạo PR Draft.
+    
+    Hệ thống sẽ:
+    1. Tìm kiếm sản phẩm/danh mục liên quan từ Vector DB
+    2. Gợi ý nhà cung cấp phù hợp
+    3. Tạo PR Draft với items, giá ước tính, cost center đề xuất
+    
+    Người dùng có thể xem trước, chỉnh sửa và submit PR.`,
+  })
+  @ApiBody({ type: GeneratePrDraftDto })
+  @ApiResponse({
+    status: 200,
+    description: 'PR Draft được tạo thành công',
+    type: Object,
+  })
+  async generatePrDraft(
+    @Body() body: GeneratePrDraftDto,
+    @Request() req: { user: JwtPayload },
+  ): Promise<PrDraftResponse> {
+    // Lấy orgId từ body hoặc từ JWT token (đã được set bởi auth middleware)
+    // const user = (req as any).user as JwtPayload | undefined;
+    // const orgId = body.orgId || user?.orgId || '';
+    console.log('orgId:', req.user?.orgId);
+    return this.prGenerator.generatePrDraft(body.prompt, req.user?.orgId);
   }
 }

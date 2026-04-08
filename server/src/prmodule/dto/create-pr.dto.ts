@@ -34,6 +34,11 @@ export class CreatePrItemDto {
   @IsOptional()
   categoryId?: string;
 
+  @ApiPropertyOptional({ example: 'Electronics' })
+  @IsString()
+  @IsOptional()
+  categoryName?: string;
+
   @ApiProperty({ example: 5 })
   @IsNumber()
   @IsNotEmpty()
@@ -76,9 +81,15 @@ export class CreatePrDto {
   @IsOptional()
   justification?: string;
 
-  @ApiPropertyOptional({ example: '2026-04-01' })
-  @Transform(({ value }) => (value === '' ? undefined : value))
-  @Type(() => Date)
+  @ApiPropertyOptional({ example: '2026-04-01', description: 'ISO date string or Date object' })
+  @Transform(({ value }) => {
+    if (!value || value === '') return undefined;
+    // Accept both Date object and ISO string from AI
+    if (typeof value === 'string') {
+      return new Date(value);
+    }
+    return value instanceof Date ? value : new Date(value);
+  })
   @IsDate()
   @IsOptional()
   requiredDate?: Date;

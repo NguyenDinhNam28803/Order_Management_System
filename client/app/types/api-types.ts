@@ -429,6 +429,7 @@ export interface CreatePrItemDto {
     productDesc: string;
     sku?: string;
     categoryId?: string;
+    categoryName?: string;
     qty: number;
     unit?: string;
     estimatedPrice: number;
