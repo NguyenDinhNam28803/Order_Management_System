@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
-import DashboardHeader from "@/app/components/DashboardHeader";
 import { FileText, Search, CheckCircle2, Clock, AlertCircle, ArrowRight, FileCheck, XCircle, CreditCard } from "lucide-react";
 import { formatVND } from "@/app/utils/formatUtils";
 
@@ -81,7 +80,6 @@ export default function FinanceInvoicesPage() {
 
     return (
         <div className="animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Tài chính", "Quản lý Hóa đơn"]} />
 
             <div className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
                 <div>

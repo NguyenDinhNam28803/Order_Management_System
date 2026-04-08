@@ -1,14 +1,11 @@
 "use client";
 
 import React from "react";
-import DashboardHeader from "../components/DashboardHeader";
 import { Settings, Shield, Bell, Database, Save } from "lucide-react";
 
 export default function SettingsPage() {
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Hệ thống", "Cài đặt"]} />
-
             <div className="mt-8 mb-12">
                 <h1 className="text-2xl font-black text-[#F8FAFC] tracking-tight">Cài đặt hệ thống</h1>
                 <p className="text-sm text-text-secondary mt-1">Cấu hình tham số nghiệp vụ và bảo mật toàn hệ thống.</p>

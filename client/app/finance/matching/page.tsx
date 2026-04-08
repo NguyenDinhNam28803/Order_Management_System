@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import DashboardHeader from "../../components/DashboardHeader";
 import { FileCheck, ShieldAlert, CheckCircle2, AlertTriangle, ArrowLeft, Send, Calendar, CreditCard } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -69,7 +68,6 @@ export default function FinanceMatching() {
 
     return (
         <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Kế toán", "Bàn làm việc Kế Toán", "3-Way Matching Queue", "Invoice Detail"]} />
             
             <div className="mt-8 mb-6 flex flex-col md:flex-row justify-between items-start md:items-end border-b border-[rgba(148,163,184,0.1)] pb-4">
                 <div className="flex items-center gap-4">

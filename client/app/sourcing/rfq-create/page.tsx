@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PR, PRItem, useProcurement } from "../../context/ProcurementContext";
-import DashboardHeader from "../../components/DashboardHeader";
 import { 
     FileText, ShoppingBag, Send, 
     ArrowLeft, Plus, Trash2, 
@@ -133,8 +132,6 @@ export default function RFQCreatePage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ", "Sourcing", "Tạo RFQ thủ công"]} />
-
             <div className="mt-8 flex justify-between items-end mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4">
                 <div className="flex items-center gap-6">
                     <button 

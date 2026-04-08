@@ -17,6 +17,11 @@ export class SupplierKpimoduleService {
    * Tính toán và đánh giá KPI nhà cung cấp bằng AI
    */
   async evaluateSupplierPerformance(supplierId: string, buyerOrgId: string) {
+    // Validate required fields
+    if (!buyerOrgId) {
+      throw new Error('buyerOrgId is required for supplier evaluation');
+    }
+
     // 1. Lấy thông tin nhà cung cấp
     const supplier = await this.prisma.organization.findUnique({
       where: { id: supplierId },
@@ -185,17 +190,49 @@ export class SupplierKpimoduleService {
       },
     });
 
+    // Convert Decimal values to numbers for JSON serialization
     return {
-      kpiScore,
+      kpiScore: {
+        ...kpiScore,
+        otdScore: Number(kpiScore.otdScore),
+        qualityScore: Number(kpiScore.qualityScore),
+        priceScore: Number(kpiScore.priceScore),
+        manualScore: Number(kpiScore.manualScore),
+      },
       aiInsights: aiEvaluation,
     };
   }
 
   async getSupplierReport(supplierId: string, buyerOrgId: string) {
-    return this.prisma.supplierKpiScore.findMany({
+    const scores = await this.prisma.supplierKpiScore.findMany({
       where: { supplierId, buyerOrgId },
-      orderBy: { periodYear: 'desc' },
+      orderBy: [{ periodYear: 'desc' }, { periodQuarter: 'desc' }],
       take: 4,
+    });
+    
+    // Convert Decimal to number for JSON serialization
+    return scores.map(score => {
+      const otdScore = Number(score.otdScore);
+      const qualityScore = Number(score.qualityScore);
+      const priceScore = Number(score.priceScore);
+      const manualScore = Number(score.manualScore);
+      
+      // Calculate overall score (weighted average)
+      const overallScore = Math.round(
+        (otdScore * 0.3 + qualityScore * 0.3 + priceScore * 0.2 + manualScore * 0.2) * 10
+      ) / 10;
+      
+      return {
+        ...score,
+        otdScore,
+        qualityScore,
+        priceScore,
+        manualScore,
+        invoiceAccuracy: Number(score.invoiceAccuracy),
+        fulfillmentRate: Number(score.fulfillmentRate),
+        responseTimeScore: Number(score.responseTimeScore),
+        overallScore,
+      };
     });
   }
 }

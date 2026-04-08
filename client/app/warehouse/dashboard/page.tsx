@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import DashboardHeader from "../../components/DashboardHeader";
 import { Package, Truck, AlertTriangle, CheckCircle2, RotateCcw, Info, Box } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -39,8 +38,6 @@ export default function WarehouseDashboard() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Kho vận", "Dashboard Kho"]} />
-
             <div className="mt-8 mb-8 pb-6 border-b border-[rgba(148,163,184,0.1)]">
                 <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Dashboard Warehouse</h1>
                 <p className="text-sm text-[#94A3B8] mt-1">Quản lý lịch giao nhận hàng hóa & Kiểm định chất lượng ngõ vào (Inbound).</p>

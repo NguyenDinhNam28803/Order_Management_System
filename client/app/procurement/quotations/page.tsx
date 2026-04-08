@@ -5,7 +5,6 @@ import { useProcurement, RFQ } from "../../context/ProcurementContext";
 import { Quotation, QuotationItem, RfqStatus } from "@/app/types/api-types";
 import { ERPTableColumn } from "../../components/shared/ERPTable";
 import { formatVND } from "../../utils/formatUtils";
-import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable from "../../components/shared/ERPTable";
 import { 
     Search, ListFilter, ArrowRight, ArrowLeft,
@@ -338,8 +337,6 @@ export default function QuotationManagementPage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ Thu mua", selectedRFQ ? `RFQ: ${selectedRFQ.rfqNumber || selectedRFQ.id.substring(0, 8)}` : "Quản lý Báo giá (Quotations)"]} />
-
             {/* Header */}
             <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
                 <div>

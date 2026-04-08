@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import DashboardHeader from "../components/DashboardHeader";
 import { FileText, Lock, Search, Filter, ArrowRight, ShieldCheck, FileCheck, Send, DownloadCloud, UploadCloud, Eye, CheckCircle } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -158,7 +157,6 @@ export default function POPage() {
     if (isCreateMode) {
         return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-                <DashboardHeader breadcrumbs={["Nghiệp vụ tài chính", "PO", "Khởi tạo Đơn mua hàng"]} />
 
                 <div className="mt-8 flex justify-between items-end mb-8 border-b border-slate-200 pb-4">
                     <div>
@@ -390,7 +388,6 @@ export default function POPage() {
     // Default LIST view
     return (
         <main className="pt-16 px-8 pb-12">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ tài chính", "Đơn mua hàng (PO)"]} />
 
             <div className="mt-8 flex justify-between items-end mb-8">
                 <div>

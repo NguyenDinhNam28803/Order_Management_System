@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import DashboardHeader from "../../components/DashboardHeader";
 import { Inbox, FileText, UploadCloud, Send, ChevronDown, CheckCircle } from "lucide-react";
 
 import { useProcurement, RFQ, PR, PRItem } from "../../context/ProcurementContext";
@@ -89,7 +88,6 @@ export default function SupplierRFQ() {
     if (loading) {
         return (
             <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-                <DashboardHeader breadcrumbs={["Nhà cung cấp", "Danh sách Yêu cầu báo giá"]} />
                 <div className="mt-8 flex flex-col items-center justify-center min-h-[400px]">
                     <div className="w-12 h-12 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin mb-4"></div>
                     <div className="text-slate-400 font-bold uppercase tracking-widest">Đang tải danh sách RFQ...</div>
@@ -101,8 +99,6 @@ export default function SupplierRFQ() {
     if (viewState === "DETAIL" && activeRFQ) {
         return (
         <main className="animate-in fade-in duration-700 p-8 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-                <DashboardHeader breadcrumbs={["Bàn làm việc B2B", "Chi tiết RFQ"]} />
-                
                 <div className="mt-12 mb-10 flex justify-between items-end">
                     <div>
                         <div className="flex items-center gap-3 mb-4 text-[10px] font-black uppercase tracking-[0.2em]">
@@ -319,8 +315,6 @@ export default function SupplierRFQ() {
 
     return (
         <main className="animate-in fade-in duration-700 pt-16 px-12 pb-20 bg-[#0F1117] min-h-screen text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Nhà cung cấp", "Hòm thư Thư mời báo giá"]} />
-            
             <div className="mt-16 mb-12 flex justify-between items-end">
                 <div>
                     <h1 className="text-5xl font-black text-[#F8FAFC] tracking-tighter uppercase mb-4 leading-none">THƯ MỜI THẦU (RFQ)</h1>

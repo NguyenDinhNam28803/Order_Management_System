@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Plus, Edit2, Trash2, Search, MapPin, Hash, Building2 } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
 import { Organization } from "@/app/types/api-types";
-import DashboardHeader from "../../components/DashboardHeader";
 
 export default function OrganizationsPage() {
     const { organizations, addOrganization, updateOrganization, removeOrganization, refreshData } = useProcurement();
@@ -72,7 +71,6 @@ export default function OrganizationsPage() {
 
     return (
         <div className="animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Hệ thống", "Quản trị", "Tổ chức & Pháp nhân"]} />
             <div className="flex justify-between items-end mb-10">
                 <div>
                     <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase">Quản lý Tổ chức</h1>

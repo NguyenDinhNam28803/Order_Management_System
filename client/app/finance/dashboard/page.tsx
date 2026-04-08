@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import DashboardHeader from "../../components/DashboardHeader";
 import { 
     FileCheck, ShieldAlert, CalendarClock, TrendingDown, Search, 
     CheckCircle2, ArrowRight, BarChart3, PieChart, Activity,
@@ -32,7 +31,6 @@ export default function FinanceDashboard() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Kế toán", "Bàn làm việc Kế Toán", "3-Way Matching Queue"]} />
 
             {/* Header Section */}
             <div className="mt-8 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[rgba(148,163,184,0.1)]">

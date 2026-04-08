@@ -7,7 +7,6 @@ import {
     Eye, Edit3, CheckCircle, Clock, AlertTriangle,
     ArrowLeft, Split, MessageSquare, Save, Ship, FileText
 } from "lucide-react";
-import DashboardHeader from "../../components/DashboardHeader";
 
 // --- Mock Data ---
 interface AmendmentMock {
@@ -52,8 +51,6 @@ export default function AmendmentsPage() {
 
     return (
         <main className="min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Quản lý Đơn hàng", "Điều chỉnh PO (Amendments)"]} />
-
             <div className="p-8 max-w-[1600px] mx-auto">
                 {view === "list" ? (
                     <div className="space-y-8 animate-in fade-in duration-500">

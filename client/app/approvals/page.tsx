@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import DashboardHeader from "../components/DashboardHeader";
 import { 
     CheckSquare, XCircle, CheckCircle2, Eye, FileText, AlertTriangle, 
     History, ArrowLeft, MessageSquareWarning, Paperclip, Check, Loader2,
@@ -105,7 +104,6 @@ export default function ApprovalsPage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Phê duyệt"]} />
 
             <div className="flex flex-1 overflow-hidden">
                 {/* Left Sidebar: Inbox List */}

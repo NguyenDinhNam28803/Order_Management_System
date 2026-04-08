@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useProcurement } from '@/app/context/ProcurementContext';
-import DashboardHeader from '@/app/components/DashboardHeader';
 import { 
   FileText, 
   CheckCircle2, 
@@ -154,9 +153,7 @@ export default function InvoiceDetailPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0F1117]">
-      <DashboardHeader breadcrumbs={["Tài chính", "Hóa đơn", invoice.invoiceNumber]} />
-      
+    <div className="min-h-screen bg-bg-primary">      
       <div className="p-6 max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">

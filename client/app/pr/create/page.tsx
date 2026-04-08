@@ -7,7 +7,6 @@ import { formatVND } from "../../utils/formatUtils";
 import { useProcurement, Product, BudgetAllocation, PR } from "../../context/ProcurementContext";
 import { CostCenter, CreatePrDto, CurrencyCode, BudgetAllocationStatus } from "@/app/types/api-types";
 import { Trash2, FileText, Wallet, BarChart3, TrendingUp, PieChart, CheckCircle2, Loader2, XCircle, ArrowLeft, Activity, ChevronDown, ShoppingCart, AlertTriangle, Zap, Bot, Sparkles } from "lucide-react";
-import DashboardHeader from "../../components/DashboardHeader";
 
 // --- Components ---
 
@@ -334,8 +333,6 @@ export default function CreatePRPage() {
 
     return (
         <div className="animate-in fade-in duration-700 space-y-12">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ", "Yêu cầu mua sắm", "Tạo mới PR"]} />
-
             {/* PAGE HEADER SECTION */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-[rgba(148,163,184,0.1)] pb-10">
                 <div>

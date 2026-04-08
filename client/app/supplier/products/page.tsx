@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useProcurement, Product, ProductCategory } from "../../context/ProcurementContext";
 import { CreateProductDtoShort, CurrencyCode, ProductType } from "../../types/api-types";
-import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
 import { 
     Plus, Search, Edit2, Trash2, 
@@ -193,8 +192,6 @@ export default function SupplierProductsPage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Bàn làm việc B2B", "Quản lý Sản phẩm"]} />
-            
             <div className="mt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                 <div>
                     <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tight">Danh mục Sản phẩm</h1>

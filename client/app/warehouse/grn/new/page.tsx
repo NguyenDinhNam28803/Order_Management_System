@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import DashboardHeader from "../../../components/DashboardHeader";
 import { Search, Package, AlertTriangle, FileCheck, CheckCircle2, RotateCcw, UploadCloud, FileText } from "lucide-react";
 
 import { useProcurement } from "../../../context/ProcurementContext";
@@ -120,8 +119,6 @@ export default function CreateGRN() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Kho vận", "Kiểm định Nhập Kho", "Tạo GRN & QC"]} />
-
             <div className="mt-8 mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight flex items-center gap-3">

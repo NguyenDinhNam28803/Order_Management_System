@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useProcurement, Organization } from "../../context/ProcurementContext";
-import DashboardHeader from "../../components/DashboardHeader";
 import { 
     Truck, Plus, Search, 
     Trash2, CheckCircle2, XCircle, Star, 
@@ -74,8 +73,6 @@ export default function SupplierManagementPage() {
 
     return (
         <div className="animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Hệ thống", "Quản trị", "Đối tác & Nhà cung cấp"]} />
-
             <div className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
                 <div>
                     <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase mb-2">Quản lý Nhà cung cấp</h1>

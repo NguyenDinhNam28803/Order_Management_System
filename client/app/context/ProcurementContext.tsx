@@ -1380,20 +1380,34 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     // ========== Supplier KPI ==========
     const evaluateSupplierKPI = useCallback(async (supplierId: string) => {
-        const resp = await apiFetch(`/supplier-kpis/evaluate/${supplierId}`, { method: 'POST' });
+        const orgId = state.currentUser?.orgId;
+        const resp = await apiFetch(`/supplier-kpis/evaluate/${supplierId}`, { 
+            method: 'POST',
+            body: JSON.stringify({ orgId })
+        });
         if (resp.ok) { 
             notify("Đánh giá KPI thành công", "success"); 
             const res = await resp.json();
-            return res.data || res; 
+            const data = res.data || res;
+            // Merge aiInsights.overallScore into kpiScore for display
+            if (data?.kpiScore && data?.aiInsights?.overallScore) {
+                data.kpiScore.overallScore = data.aiInsights.overallScore;
+            }
+            return data?.kpiScore || data; 
         }
         return null;
-    }, [apiFetch, notify]);
+    }, [apiFetch, notify, state.currentUser]);
 
     const fetchSupplierKPIReport = useCallback(async (supplierId: string) => {
-        const resp = await apiFetch(`/supplier-kpis/report/${supplierId}`);
+        const orgId = state.currentUser?.orgId;
+        console.log(orgId);
+        const resp = await apiFetch(`/supplier-kpis/report/${supplierId}`, {
+            method: 'POST', // Changed to POST to send body
+            body: JSON.stringify({ orgId })
+        });
         if (resp.ok) { const res = await resp.json(); return res.data || res; }
         return [];
-    }, [apiFetch]);
+    }, [apiFetch, state.currentUser]);
 
     // ========== Audit Logs ==========
     const fetchAuditLogsByEntity = useCallback(async (type: string, id: string) => {

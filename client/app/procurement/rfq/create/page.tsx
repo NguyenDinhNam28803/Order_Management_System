@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PR, PRItem, useProcurement, Organization, CompanyType, KycStatus } from "../../../context/ProcurementContext";
-import DashboardHeader from "../../../components/DashboardHeader";
 import { 
     FileText, 
     User, 

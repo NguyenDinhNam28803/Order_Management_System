@@ -6,7 +6,6 @@ import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
 import { Plus, FileText, Send,  Check, X } from "lucide-react";
 import Link from "next/link";
 import { ApprovalWorkflow } from "../context/ProcurementContext";
-import DashboardHeader from "../components/DashboardHeader";
 
 export default function PRPage() {
     const { prs, myPrs, currentUser, actionApproval, costCenters, approvals, submitPR } = useProcurement();
@@ -182,8 +181,6 @@ export default function PRPage() {
 
     return (
         <main className="animate-in fade-in duration-500 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ", "PR", "Danh sách PR"]} />
-
             <header className="mt-8 flex items-center justify-between border-b border-[rgba(148,163,184,0.1)] pb-8 mb-8 px-6">
                 <div>
                     <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">

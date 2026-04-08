@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Building2, Plus, Edit2, Trash2, Users, Search } from "lucide-react";
 import { useProcurement, Department, User } from "../../context/ProcurementContext";
 import { Organization, CreateDepartmentPayload, UpdateDepartmentPayload } from "@/app/types/api-types";
-import DashboardHeader from "../../components/DashboardHeader";
 
 export default function DepartmentsPage() {
     const { departments, users, addDept, updateDept, removeDept, organizations, currentUser } = useProcurement();
@@ -72,7 +71,6 @@ export default function DepartmentsPage() {
 
     return (
         <div className="animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Hệ thống", "Quản trị", "Cơ cấu Phòng ban"]} />
             <div className="flex justify-between items-end mb-10">
                 <div>
                     <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase">Quản lý Phòng ban</h1>

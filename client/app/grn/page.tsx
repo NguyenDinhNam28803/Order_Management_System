@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import DashboardHeader from "../components/DashboardHeader";
 import { Truck, Package, Camera, CheckCircle2, AlertTriangle, Search, ArrowRight, TrendingUp, Clock, Star } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
@@ -39,8 +38,6 @@ export default function GRNPage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Kho vận", "GRN"]} />
-
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-erp-navy tracking-tight">Nhập kho & Kiểm định (GRN)</h1>

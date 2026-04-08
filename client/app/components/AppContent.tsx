@@ -7,6 +7,7 @@ import Sidebar from "./Sidebar";
 import ToastContainer from "./Toast";
 import SmartSearch from "./SmartSearch";
 import NotificationInbox from "./NotificationInbox";
+import GlobalAISearch from "./GlobalAISearch";
 
 export default function AppContent({ children }: { children: React.ReactNode }) {
     const { currentUser, isAuthChecking } = useProcurement();
@@ -52,7 +53,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
             {/* Sidebar - Fixed on left */}
             <Sidebar />
-            
+
             {/* Main Content Area - Responsive width */}
             <div className="flex-1 flex flex-col h-screen overflow-hidden ml-16 transform-gpu transition-all duration-300">
                 <main className="flex-1 overflow-y-auto bg-[#0F1117] relative">
@@ -61,6 +62,9 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
                     </div>
                 </main>
             </div>
+
+            {/* Global AI Search - Available on all pages */}
+            <GlobalAISearch />
         </div>
     );
 }

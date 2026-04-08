@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DashboardHeader from "../components/DashboardHeader";
 import { ArrowRight, ShieldCheck, History } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { Payment } from "../types/api-types";
@@ -55,8 +54,6 @@ export default function PaymentsPage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Kế toán", "Thanh toán"]} />
-
             {error && (
                 <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
                     {error}

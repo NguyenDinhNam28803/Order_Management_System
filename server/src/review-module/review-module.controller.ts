@@ -13,13 +13,16 @@ import {
   CreateSupplierManualReviewDto,
 } from './dto/review.dto';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Review & Rating Management')
 @ApiBearerAuth('JWT-auth')
 @Controller('reviews')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
 export class ReviewModuleController {
   constructor(private readonly reviewModuleService: ReviewModuleService) {}
 

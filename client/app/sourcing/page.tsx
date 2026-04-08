@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { PR, useProcurement, QuoteRequestStatus, QuoteRequest, Organization, PO } from "../context/ProcurementContext";
-import DashboardHeader from "../components/DashboardHeader";
 import { 
     Filter, ArrowRight, 
     FileText, ShoppingBag, 
@@ -84,8 +83,6 @@ export default function SourcingPage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ", "Sourcing", "RFQ Market"]} />
-
             <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
                 <div>
                     <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase mb-2">QUẢN LÝ NGUỒN HÀNG (SOURCING)</h1>

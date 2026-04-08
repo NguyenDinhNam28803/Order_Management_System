@@ -7,7 +7,6 @@ import {
     X, Edit3, CheckCircle, Clock, ArrowLeft,
     TrendingUp, ShieldCheck, Box, Activity
 } from "lucide-react";
-import DashboardHeader from "../../components/DashboardHeader";
 
 // --- Mock Data ---
 interface DeliveryMock {
@@ -60,8 +59,6 @@ export default function DeliveryTrackingPage() {
 
     return (
         <div className="min-h-screen bg-slate-50/30">
-            <DashboardHeader breadcrumbs={["Quản lý Đơn hàng", "Theo dõi giao hàng"]} />
-
             <div className="p-8 max-w-[1600px] mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
                     <div>

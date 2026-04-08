@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import DashboardHeader from "../components/DashboardHeader";
 import { ShieldAlert, CheckCircle2, XCircle, ArrowRight, Lock, FileCheck, Info } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
@@ -24,8 +23,6 @@ export default function MatchingPage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Nghiệp vụ", "Matching"]} />
-
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Đối soát 3 bên (3-Way Match)</h1>

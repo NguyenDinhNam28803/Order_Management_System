@@ -5,7 +5,6 @@ import { Plus, Edit2, Trash2, Search, DollarSign, Building, Eye, X } from "lucid
 import { useProcurement, Department, CurrencyCode } from "../../context/ProcurementContext";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
 import { CostCenter } from "@/app/types/api-types";
-import DashboardHeader from "../../components/DashboardHeader";
 
 export default function CostCentersPage() {
     const { costCenters, departments, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchMyDeptCostCenters, refreshData, notify, currentUser } = useProcurement();
@@ -114,7 +113,6 @@ export default function CostCentersPage() {
 
     return (
         <div className="animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Hệ thống", "Quản trị", "Trung tâm chi phí"]} />
 
             <div className="mt-8 flex justify-between items-center mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
                 <div>

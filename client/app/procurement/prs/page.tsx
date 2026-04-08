@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import { useProcurement, PR, PRItem } from "../../context/ProcurementContext";
 import { ERPTableColumn } from "../../components/shared/ERPTable";
 import { formatVND } from "../../utils/formatUtils";
-import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable from "../../components/shared/ERPTable";
 import { 
     Search, ListFilter, ArrowRight, 
@@ -212,8 +211,6 @@ export default function ProcurementControlPage() {
 
     return (
         <div className="min-h-screen bg-[#0F1117] p-6">
-            <DashboardHeader breadcrumbs={["Quản lý thu mua", "Danh sách PR chờ xử lý"]} />
-            
             <main className="max-w-[1600px] mx-auto space-y-6 animate-in fade-in duration-500">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

@@ -8,7 +8,6 @@ import {
     X, Check, AlertCircle, ShoppingCart, 
     Trash, PlusCircle, MinusCircle, Clock
 } from "lucide-react";
-import DashboardHeader from "../../components/DashboardHeader";
 import { useProcurement, PoStatus, Organization, PR, RFQ, PO, POItem } from "../../context/ProcurementContext";
 
 interface POMockData extends PO {
@@ -58,8 +57,6 @@ export default function POManagementPage() {
 
     return (
         <div className="min-h-screen bg-[#0F1117]">
-            <DashboardHeader breadcrumbs={["Quản lý Đơn hàng", "Đơn đặt hàng (PO)"]} />
-
             <div className="p-8 max-w-[1600px] mx-auto">
                 {view === "list" ? (
                     <div className="space-y-8 animate-in fade-in duration-500">

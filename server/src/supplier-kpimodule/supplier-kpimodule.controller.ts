@@ -1,8 +1,8 @@
 import {
   Controller,
-  Get,
   Post,
   Param,
+  Body,
   UseGuards,
   Request,
 } from '@nestjs/common';
@@ -38,10 +38,16 @@ export class SupplierKpimoduleController {
   evaluate(
     @Param('supplierId') supplierId: string,
     @Request() req: JwtPayload,
+    @Body() body?: { orgId?: string },
   ) {
+    // Use orgId from body as fallback if not in JWT
+    const buyerOrgId = req.orgId || body?.orgId;
+    if (!buyerOrgId) {
+      throw new Error('orgId is required. Please provide orgId in request body or ensure user has an organization assigned.');
+    }
     return this.supplierKpimoduleService.evaluateSupplierPerformance(
       supplierId,
-      req.orgId,
+      buyerOrgId,
     );
   }
 
@@ -51,7 +57,7 @@ export class SupplierKpimoduleController {
    * @param req Thông tin người dùng
    * @returns Danh sách các bản ghi KPI gần nhất
    */
-  @Get('report/:supplierId')
+  @Post('report/:supplierId')
   @ApiOperation({
     summary: 'Lấy báo cáo KPI nhà cung cấp',
     description:
@@ -60,10 +66,16 @@ export class SupplierKpimoduleController {
   getReport(
     @Param('supplierId') supplierId: string,
     @Request() user: JwtPayload,
+    @Body() body?: { orgId?: string },
   ) {
+    // Use orgId from body as fallback if not in JWT
+    const buyerOrgId = user.orgId || body?.orgId;
+    if (!buyerOrgId) {
+      throw new Error('orgId is required. Please provide orgId in request body or ensure user has an organization assigned.');
+    }
     return this.supplierKpimoduleService.getSupplierReport(
       supplierId,
-      user.orgId,
+      buyerOrgId,
     );
   }
 }

@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Search, Layers, Building2, ChevronRight, Hash, Globe, CheckCircle2, AlertCircle } from "lucide-react";
 import { useProcurement, ProductCategory } from "../../context/ProcurementContext";
 import { Organization, CreateCategoryDto, UpdateCategoryDto } from "../../types/api-types";
-import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
 
 export default function CategoriesPage() {
@@ -175,7 +174,6 @@ export default function CategoriesPage() {
 
     return (
         <div className="animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Admin", "Quản lý Danh mục"]} />
 
             <div className="flex justify-between items-end mb-10 mt-6">
                 <div>

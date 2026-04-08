@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import DashboardHeader from "../../components/DashboardHeader";
 import { Package, DownloadCloud, FileText, CheckCircle, AlertTriangle, Truck, Clock, RefreshCcw, Send, XCircle, Search, Eye, X } from "lucide-react";
 
 import { useProcurement, PO } from "../../context/ProcurementContext";
@@ -122,8 +121,6 @@ export default function SupplierPO() {
     if (viewState === "DETAIL" && po) {
         return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-bg-primary text-[#F8FAFC]">
-                <DashboardHeader breadcrumbs={["Bàn làm việc B2B", "Quản lý PO", "PO Detail"]} />
-                
                 <div className="mt-8 mb-6 flex justify-between items-end">
                     <div>
                         <div className="flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-widest text-[#64748B]">
@@ -259,7 +256,6 @@ export default function SupplierPO() {
 
     return (
         <main className="pt-16 px-8 pb-12 bg-[#0F1117] min-h-screen text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Nhà cung cấp", "Hợp đồng - Purchase Order"]} />
             <div className="mt-8 mb-4 flex justify-between items-center">
                 <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Hợp đồng mua bán từ Buyer</h1>
                 <div className="flex gap-2 items-center">

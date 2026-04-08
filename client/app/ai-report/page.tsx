@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import DashboardHeader from "../components/DashboardHeader";
 import { Zap, AlertTriangle, CheckCircle2, Shield, Info, ArrowRight, ArrowLeft, Send, FileText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -35,8 +34,6 @@ export default function AIReportPage() {
 
     return (
         <main className="pt-16 px-8 pb-12">
-            <DashboardHeader breadcrumbs={["Yêu cầu mua sắm", "Phân tích AI", "PR-2026-002"]} />
-
             <div className="mt-8 flex justify-between items-end mb-8">
                 <div>
                     <h1 className="text-3xl font-black text-erp-navy tracking-tight flex items-center gap-3">

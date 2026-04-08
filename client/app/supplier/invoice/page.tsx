@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import DashboardHeader from "../../components/DashboardHeader";
 import { FileText, Calculator, FileCheck, Search, Info, Send, UploadCloud } from "lucide-react";
 
 import { useProcurement, PO, GRN } from "../../context/ProcurementContext";
@@ -146,8 +145,6 @@ export default function SupplierInvoice() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <DashboardHeader breadcrumbs={["Bàn làm việc B2B", "Gửi hóa đơn"]} />
-
             <div className="mt-8 mb-8 border-b border-border pb-4">
                 <h1 className="text-3xl font-black text-text-primary tracking-tight flex items-center gap-3">
                     Khởi tạo Hóa đơn VAT Điện tử <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu thu & Đối soát</span>
