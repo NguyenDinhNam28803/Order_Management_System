@@ -348,13 +348,13 @@ export default function SupplierDashboard() {
 
   const renderRFQList = () => (
     <div className="animate-in fade-in duration-500">
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="mb-8 lg:flex items-end justify-between">
         <div>
-          <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Yêu cầu báo giá (RFQs)</h1>
-          <p className="text-[#64748B] font-medium text-sm mt-1">Quản lý và phản hồi các yêu cầu báo giá từ đối tác.</p>
+          <h1 className="text-4xl font-black tracking-tight text-[#F8FAFC] mb-2 uppercase">YÊU CẦU BÁO GIÁ (RFQs)</h1>
+          <p className="text-[#64748B] font-medium">Quản lý và phản hồi các yêu cầu báo giá từ đối tác.</p>
         </div>
-        
-        <div className="flex bg-[#161922] p-1.5 rounded-xl border border-[rgba(148,163,184,0.1)]">
+        <div className="flex gap-3 mt-4 lg:mt-0">
+          <div className="flex bg-[#161922] p-1.5 rounded-xl border border-[rgba(148,163,184,0.1)]">
           <button 
             onClick={() => setActiveTab("Pending")}
             className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:text-[#F8FAFC]'}`}
@@ -373,8 +373,9 @@ export default function SupplierDashboard() {
           >
             Đã báo giá
           </button>
+          </div>
         </div>
-      </div>
+      </header>
 
       <div className="bg-[#161922] rounded-2xl overflow-hidden shadow-xl shadow-[#3B82F6]/5 border border-[rgba(148,163,184,0.1)]">
         <table className="w-full text-left">

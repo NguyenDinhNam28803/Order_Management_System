@@ -88,11 +88,11 @@ export default function Dashboard() {
         ];
 
         return (
-            <div className="animate-in fade-in duration-500 px-6">
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
                 {/* HEADER */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
                     <div>
-                        <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase mb-1">KHU VỰC LÀM VIỆC CÁ NHÂN</h1>
+                        <h1 className="text-4xl font-black tracking-tighter text-[#F8FAFC] mb-2 uppercase">KHU VỰC LÀM VIỆC CÁ NHÂN</h1>
                         <p className="text-sm font-bold text-[#64748B] tracking-tight">
                             Xin chào, <span className="text-[#3B82F6]">{currentUser.name || currentUser.fullName}</span> – Hệ thống AI Procurement đã sẵn sàng.
                         </p>
@@ -143,7 +143,7 @@ export default function Dashboard() {
                             )}
                          </div>
                     </div>
-                </div>
+                </header>
 
                 {/* HÀNG 1 — Stats Cards with Charts */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -193,7 +193,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* HÀNG 2 — Charts */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
                     <DonutChart 
                         title="Phân Bổ Trạng Thái PR"
                         data={[
@@ -365,7 +365,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </main>
         );
     };
 

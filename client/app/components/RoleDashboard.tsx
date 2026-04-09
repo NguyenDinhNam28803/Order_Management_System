@@ -7,47 +7,7 @@ import {
   Target, Zap, TrendingDown, Calendar, ArrowUpRight
 } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
-
-// Role-based Dashboard Widgets
-
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  change?: number;
-  icon: React.ReactNode;
-  trend?: "up" | "down" | "neutral";
-  color: "blue" | "emerald" | "violet" | "amber" | "rose";
-}
-
-const StatCard = ({ title, value, change, icon, trend = "neutral", color }: StatCardProps) => {
-  const colorClasses = {
-    blue: "from-blue-500/20 to-blue-600/10 text-blue-400",
-    emerald: "from-emerald-500/20 to-emerald-600/10 text-emerald-400",
-    violet: "from-violet-500/20 to-violet-600/10 text-violet-400",
-    amber: "from-amber-500/20 to-amber-600/10 text-amber-400",
-    rose: "from-rose-500/20 to-rose-600/10 text-rose-400"
-  };
-
-  return (
-    <div className="glass-card p-5 hover:scale-[1.02] transition-transform duration-300">
-      <div className="flex items-start justify-between mb-4">
-        <div className={`p-3 rounded-xl bg-gradient-to-br ${colorClasses[color]}`}>
-          {icon}
-        </div>
-        {change !== undefined && (
-          <div className={`flex items-center gap-1 text-xs font-semibold ${
-            trend === "up" ? "text-emerald-400" : trend === "down" ? "text-rose-400" : "text-[#64748B]"
-          }`}>
-            {trend === "up" ? <ArrowUpRight size={14} /> : trend === "down" ? <TrendingDown size={14} /> : null}
-            {change > 0 ? "+" : ""}{change}%
-          </div>
-        )}
-      </div>
-      <h3 className="text-[#64748B] text-xs font-semibold uppercase tracking-wider mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-[#F8FAFC]">{value}</p>
-    </div>
-  );
-};
+import { StatsCard } from "./charts";
 
 // CEO/Director Dashboard
 export function CEODashboard() {
@@ -57,37 +17,33 @@ export function CEODashboard() {
     <div className="space-y-6 animate-fade-in">
       {/* Strategic Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
+        <StatsCard 
           title="Tổng Chi tiêu YTD" 
           value="12.5B ₫" 
-          change={12.5} 
-          trend="up"
-          icon={<DollarSign size={20} />}
-          color="emerald"
+          trend={{ value: 12.5, isPositive: true }}
+          icon={DollarSign}
+          color="green"
         />
-        <StatCard 
+        <StatsCard 
           title="Budget Còn lại" 
           value="3.2B ₫" 
-          change={-5.2}
-          trend="down"
-          icon={<PieChart size={20} />}
+          trend={{ value: 5.2, isPositive: false }}
+          icon={PieChart}
           color="blue"
         />
-        <StatCard 
+        <StatsCard 
           title="Chờ Phê duyệt" 
-          value="24" 
-          change={8}
-          trend="up"
-          icon={<Clock size={20} />}
+          value={24} 
+          trend={{ value: 8, isPositive: true }}
+          icon={Clock}
           color="amber"
         />
-        <StatCard 
+        <StatsCard 
           title="Nhà Cung cấp Active" 
-          value="156" 
-          change={3}
-          trend="up"
-          icon={<Users size={20} />}
-          color="violet"
+          value={156} 
+          trend={{ value: 3, isPositive: true }}
+          icon={Users}
+          color="purple"
         />
       </div>
 
@@ -186,29 +142,29 @@ export function FinanceDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
+        <StatsCard 
           title="PO Value Chờ Duyệt" 
           value="5.8B ₫" 
-          icon={<DollarSign size={20} />}
+          icon={DollarSign}
           color="amber"
         />
-        <StatCard 
+        <StatsCard 
           title="Invoice Chờ Matching" 
-          value="18" 
-          icon={<CheckCircle size={20} />}
+          value={18} 
+          icon={CheckCircle}
           color="blue"
         />
-        <StatCard 
+        <StatsCard 
           title="Overdue Alerts" 
-          value="7" 
-          icon={<AlertTriangle size={20} />}
-          color="rose"
+          value={7} 
+          icon={AlertTriangle}
+          color="red"
         />
-        <StatCard 
+        <StatsCard 
           title="Thanh toán Đã lên lịch" 
-          value="12" 
-          icon={<Calendar size={20} />}
-          color="emerald"
+          value={12} 
+          icon={Calendar}
+          color="green"
         />
       </div>
 
@@ -244,32 +200,30 @@ export function ProcurementDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
+        <StatsCard 
           title="PR Chờ Xử lý" 
-          value="32" 
-          change={-12}
-          trend="down"
-          icon={<Package size={20} />}
+          value={32} 
+          trend={{ value: 12, isPositive: false }}
+          icon={Package}
           color="amber"
         />
-        <StatCard 
+        <StatsCard 
           title="PO Đã Tạo" 
-          value="156" 
-          change={24}
-          trend="up"
-          icon={<CheckCircle size={20} />}
-          color="emerald"
+          value={156} 
+          trend={{ value: 24, isPositive: true }}
+          icon={CheckCircle}
+          color="green"
         />
-        <StatCard 
+        <StatsCard 
           title="Vendor Active" 
-          value="48" 
-          icon={<Users size={20} />}
-          color="violet"
+          value={48} 
+          icon={Users}
+          color="purple"
         />
-        <StatCard 
+        <StatsCard 
           title="GRN Chờ Nhận" 
-          value="8" 
-          icon={<Zap size={20} />}
+          value={8} 
+          icon={Zap}
           color="blue"
         />
       </div>
@@ -314,23 +268,23 @@ export function StaffDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard 
+        <StatsCard 
           title="PR Của Tôi" 
-          value="8" 
-          icon={<Package size={20} />}
+          value={8} 
+          icon={Package}
           color="blue"
         />
-        <StatCard 
+        <StatsCard 
           title="Chờ Phê duyệt" 
-          value="3" 
-          icon={<Clock size={20} />}
+          value={3} 
+          icon={Clock}
           color="amber"
         />
-        <StatCard 
+        <StatsCard 
           title="Đã Hoàn thành" 
-          value="24" 
-          icon={<CheckCircle size={20} />}
-          color="emerald"
+          value={24} 
+          icon={CheckCircle}
+          color="green"
         />
       </div>
 
@@ -367,29 +321,29 @@ export function WarehouseDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
+        <StatsCard 
           title="Đơn Chờ Nhận" 
-          value="12" 
-          icon={<Package size={20} />}
+          value={12} 
+          icon={Package}
           color="amber"
         />
-        <StatCard 
+        <StatsCard 
           title="Đang Kiểm định" 
-          value="5" 
-          icon={<CheckCircle size={20} />}
+          value={5} 
+          icon={CheckCircle}
           color="blue"
         />
-        <StatCard 
+        <StatsCard 
           title="Hoàn thành Hôm nay" 
-          value="28" 
-          icon={<Zap size={20} />}
-          color="emerald"
+          value={28} 
+          icon={Zap}
+          color="green"
         />
-        <StatCard 
+        <StatsCard 
           title="Cảnh báo Chất lượng" 
-          value="2" 
-          icon={<AlertTriangle size={20} />}
-          color="rose"
+          value={2} 
+          icon={AlertTriangle}
+          color="red"
         />
       </div>
 

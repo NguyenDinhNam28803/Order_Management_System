@@ -3,6 +3,7 @@
 import React from "react";
 import { Package, Truck, AlertTriangle, CheckCircle2, RotateCcw, Info, Box } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { StatsCard } from "../../components/charts";
 
 interface PO {
     id: string;
@@ -38,53 +39,49 @@ export default function WarehouseDashboard() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <div className="mt-8 mb-8 pb-6 border-b border-[rgba(148,163,184,0.1)]">
-                <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Dashboard Warehouse</h1>
-                <p className="text-sm text-[#94A3B8] mt-1">Quản lý lịch giao nhận hàng hóa & Kiểm định chất lượng ngõ vào (Inbound).</p>
+            <header className="mb-8 lg:flex items-end justify-between">
+                <div>
+                    <h1 className="text-4xl font-black tracking-tight text-[#F8FAFC] mb-2 uppercase">DASHBOARD WAREHOUSE</h1>
+                    <p className="text-[#64748B] font-medium">Quản lý lịch giao nhận hàng hóa & Kiểm định chất lượng ngõ vào (Inbound).</p>
+                </div>
+            </header>
+
+            {/* KPI Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <StatsCard 
+                    title="Đã Nhận Hàng Hôm Nay" 
+                    value={12} 
+                    subValue="12 chuyến"
+                    icon={Package}
+                    color="green"
+                    trend={{ value: 8, isPositive: true }}
+                />
+                <StatsCard 
+                    title="Chờ Kiểm Tra QC" 
+                    value={5} 
+                    subValue="5 đơn đang chờ"
+                    icon={Box}
+                    color="amber"
+                />
+                <StatsCard 
+                    title="Tỷ Lệ Pass QC" 
+                    value="98.5%" 
+                    subValue="+1.2% so với tháng trước"
+                    icon={CheckCircle2}
+                    color="blue"
+                    trend={{ value: 1.2, isPositive: true }}
+                />
+                <StatsCard 
+                    title="Return / Reject" 
+                    value={3} 
+                    subValue="Lỗi: Đóng gói hỏng"
+                    icon={RotateCcw}
+                    color="red"
+                    trend={{ value: 2, isPositive: false }}
+                />
             </div>
 
-            {/* KPI Cards (7.1) */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div className="bg-[#161922] p-6 rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5">
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20"><Package size={24} /></div>
-                        <span className="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">Today</span>
-                    </div>
-                    <div className="text-3xl font-black text-[#F8FAFC]">12 <span className="text-sm font-bold text-[#94A3B8] uppercase">Chuyến</span></div>
-                    <div className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest mt-1">Đã nhận hàng hôm nay</div>
-                </div>
-
-                <div className="bg-[#161922] p-6 rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5">
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20"><Box size={24} /></div>
-                        <span className="flex items-center gap-1 text-[10px] font-black uppercase text-amber-400 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">
-                            <AlertTriangle size={10}/> Chờ xử lý
-                        </span>
-                    </div>
-                    <div className="text-3xl font-black text-[#F8FAFC]">5 <span className="text-sm font-bold text-[#94A3B8] uppercase">Đơn</span></div>
-                    <div className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest mt-1">Đang chờ kiểm tra QC</div>
-                </div>
-
-                <div className="bg-[#161922] p-6 rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5">
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-[#3B82F6]/10 text-[#3B82F6] rounded-xl border border-[#3B82F6]/20"><CheckCircle2 size={24} /></div>
-                    </div>
-                    <div className="text-3xl font-black text-[#F8FAFC]">98.5<span className="text-sm font-bold text-[#94A3B8]">%</span></div>
-                    <div className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest mt-1">Tỷ lệ Pass QC (Tháng)</div>
-                    <div className="text-[10px] text-emerald-400 mt-2 font-medium">+1.2% So với tháng trước</div>
-                </div>
-
-                <div className="bg-[#161922] p-6 rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5">
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20"><RotateCcw size={24} /></div>
-                    </div>
-                    <div className="text-3xl font-black text-[#F8FAFC]">3</div>
-                    <div className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest mt-1">Lần Return / Reject</div>
-                    <div className="text-[10px] text-rose-400 mt-2 font-medium">Lỗi chủ yếu: Đóng gói hỏng</div>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {/* Sắp giao hàng (7.1) */}
                 <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 !p-0 overflow-hidden flex flex-col">
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#0F1117]">

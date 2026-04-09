@@ -34,13 +34,10 @@ export default function FinanceDashboard() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
 
             {/* Header Section */}
-            <div className="mt-8 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[rgba(148,163,184,0.1)]">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-[#F8FAFC] tracking-tight flex items-center gap-3">
-                        AP Command Center
-                        <span className="bg-[#3B82F6]/10 text-[#3B82F6] text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-[#3B82F6]/20">Live</span>
-                    </h1>
-                    <p className="text-sm font-medium text-[#64748B] mt-1">Hệ thống quản trị khoản phải trả & Đối soát 3 bên tự động tích hợp AI.</p>
+                    <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase mb-2">AP COMMAND CENTER</h1>
+                    <p className="text-sm font-bold text-[#64748B]">Hệ thống quản trị khoản phải trả & Đối soát 3 bên tự động tích hợp AI.</p>
                 </div>
                 <div className="flex gap-3">
                     <button className="flex items-center gap-2 px-4 py-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-[#94A3B8] hover:bg-[#1A1D23] transition-all shadow-sm">
@@ -53,7 +50,7 @@ export default function FinanceDashboard() {
             </div>
 
             {/* KPI Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <StatsCard 
                     title="Hóa Đơn Chờ Matching" 
                     value={activeInvoices.length} 
@@ -95,7 +92,7 @@ export default function FinanceDashboard() {
             </div>
 
             {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
                 <DonutChart 
                     title="Phân Bổ Trạng Thái Hóa Đơn"
                     data={[
@@ -118,12 +115,12 @@ export default function FinanceDashboard() {
             </div>
 
             {/* Analytics Section: Heatmap */}
-            <div className="mb-8">
+            <div className="mb-6">
                 <BudgetHeatmap />
             </div>
 
             {/* Invoices Interface */}
-            <div className="bg-[#161922] rounded-3xl overflow-hidden border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5">
+            <div className="bg-[#161922] rounded-[40px] overflow-hidden border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5">
                 <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#161922]">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-[#0F1117] text-[#3B82F6] rounded-xl border border-[rgba(148,163,184,0.1)]">
