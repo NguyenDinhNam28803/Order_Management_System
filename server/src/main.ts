@@ -92,7 +92,10 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: 'http://localhost:3000', // Đảm bảo khớp với URL của client
+    origin: [
+      'http://localhost:3000',
+      'http://procuresmart.io.vn:3000/',
+    ], // Đảm bảo khớp với URL của client
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true, // Quan trọng: Cho phép gửi/nhận cookie
   });

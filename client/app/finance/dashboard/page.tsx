@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
 import BudgetHeatmap from "../../components/BudgetHeatmap";
+import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
 
 export default function FinanceDashboard() {
     const router = useRouter();
@@ -51,37 +52,68 @@ export default function FinanceDashboard() {
                 </div>
             </div>
 
-            {/* KPI Metrics */}
+            {/* KPI Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-8">
-                <MetricCard 
-                    icon={<FileCheck size={20} />} 
-                    label="Hóa đơn chờ Matching" 
+                <StatsCard 
+                    title="Hóa Đơn Chờ Matching" 
                     value={activeInvoices.length} 
-                    unit="Invoices"
-                    color="indigo"
+                    subValue={`${(activeInvoices.filter(i => i.status === 'EXCEPTION').length)} exceptions`}
+                    icon={FileCheck}
+                    color="blue"
+                    trend={{ value: 5, isPositive: false }}
                 />
-                <MetricCard 
-                    icon={<ShieldAlert size={20} />} 
-                    label="Exception Cần xử lý" 
+                <StatsCard 
+                    title="Exception Cần Xử Lý" 
                     value={activeInvoices.filter((i) => i.status === 'EXCEPTION').length} 
-                    unit="Alerts"
-                    color="rose"
-                    onClick={() => setActiveTab("EXCEPTION")}
+                    subValue="Cần xử lý ngay"
+                    icon={ShieldAlert}
+                    color="red"
+                    trend={{ value: 12, isPositive: true }}
                 />
-                <MetricCard 
-                    icon={<CalendarClock size={20} />} 
-                    label="Lệnh chi chờ giải ngân" 
+                <StatsCard 
+                    title="Lệnh Chi Chờ Giải Ngân" 
                     value={invoices.filter(i => i.status === "APPROVED").length} 
-                    unit="Transations"
+                    subValue={formatVND(pendingPaymentAmount)}
+                    icon={CalendarClock}
                     color="amber"
-                    subValue={`${formatVND(pendingPaymentAmount)} ₫`}
-                />
-                <MetricCard 
-                    icon={<TrendingDown size={20} />} 
-                    label="Tổng quyết toán tháng" 
+                >
+                    <div className="mt-2">
+                        <div className="flex justify-between text-[10px] text-[#94A3B8] mb-1">
+                            <span>Trung bình/xử lý</span>
+                            <span>{formatVND(pendingPaymentAmount / Math.max(invoices.filter(i => i.status === "APPROVED").length, 1))}</span>
+                        </div>
+                    </div>
+                </StatsCard>
+                <StatsCard 
+                    title="Tổng Quyết Toán Tháng" 
                     value={formatVND(totalSpentThisMonth)} 
-                    unit="VNĐ"
-                    color="emerald"
+                    subValue="Tháng này"
+                    icon={TrendingDown}
+                    color="green"
+                    trend={{ value: 8, isPositive: true }}
+                />
+            </div>
+
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <DonutChart 
+                    title="Phân Bổ Trạng Thái Hóa Đơn"
+                    data={[
+                        { label: 'Pending', value: invoices.filter(i => i.status === 'PENDING').length, color: '#F59E0B' },
+                        { label: 'Matched', value: invoices.filter(i => i.status === 'MATCHED').length, color: '#10B981' },
+                        { label: 'Exception', value: invoices.filter(i => i.status === 'EXCEPTION').length, color: '#EF4444' },
+                        { label: 'Paid', value: invoices.filter(i => i.status === 'PAID').length, color: '#8B5CF6' },
+                    ]}
+                    centerLabel="Tổng HĐ"
+                    centerValue={invoices.length.toString()}
+                />
+                <SimpleBarChart 
+                    title="Thanh Toán Theo Trạng Thái"
+                    data={[
+                        { label: 'Chờ matching', value: invoices.filter(i => i.status === 'PENDING').reduce((sum, i) => sum + (Number(i.amount) || 0), 0), color: '#F59E0B' },
+                        { label: 'Đã matching', value: invoices.filter(i => i.status === 'MATCHED').reduce((sum, i) => sum + (Number(i.amount) || 0), 0), color: '#3B82F6' },
+                        { label: 'Đã thanh toán', value: totalSpentThisMonth, color: '#10B981' },
+                    ]}
                 />
             </div>
 

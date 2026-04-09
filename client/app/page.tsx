@@ -11,10 +11,12 @@ import {
 import { useProcurement, PR, Organization, QuoteRequest, BudgetAllocation, DocumentType } from "./context/ProcurementContext";
 import { formatVND } from "./utils/formatUtils";
 import BudgetHeatmap from "./components/BudgetHeatmap";
+import { SimpleBarChart, DonutChart, StatsCard } from "./components/charts";
 
 export default function Dashboard() {
     const { budgets, prs, myPrs, currentUser, loadingMyPrs, approvals, actionApproval, refreshData, notify, fetchPrDetail, budgetAllocations, budgetPeriods, rfqs, pos, quoteRequests, createPRFromQuoteRequest, costCenters, departments, organizations } = useProcurement();
     const availableBudget = (budgets?.allocated || 0) - (budgets?.committed || 0) - (budgets?.spent || 0);
+    const currentQuarter = Math.floor(new Date().getMonth() / 3) + 1;
 
     // Calculate Dynamic Quarterly Remaining Budget for the Department
     const departmentId = currentUser?.deptId || (currentUser?.department as { id: string })?.id;
@@ -143,12 +145,74 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* HÀNG 1 — Metric Summaries */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    <MetricCard title="Chờ duyệt" value={pendingPRsCount} icon={<Clock size={20} />} color="bg-amber-500" />
-                    <MetricCard title="Đã duyệt" value={approvedPRsCount} icon={<CheckCircle size={20} />} color="bg-emerald-500" />
-                    <MetricCard title="PO thực thi" value={1} icon={<ShoppingCart size={20} />} color="bg-blue-500" />
-                    <MetricCard title="Hàng sắp về" value={2} icon={<Package size={20} />} color="bg-purple-600" />
+                {/* HÀNG 1 — Stats Cards with Charts */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <StatsCard 
+                        title="PR Chờ Duyệt" 
+                        value={pendingPRsCount} 
+                        subValue={`${formatVND(personalPRs.filter(pr => pr.status === 'PENDING_APPROVAL').reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0))}`}
+                        icon={Clock}
+                        color="amber"
+                        trend={{ value: 12, isPositive: false }}
+                    />
+                    <StatsCard 
+                        title="PR Đã Duyệt" 
+                        value={approvedPRsCount} 
+                        subValue={`${formatVND(personalPRs.filter(pr => pr.status === 'APPROVED' || pr.status === 'PO_CREATED').reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0))}`}
+                        icon={CheckCircle}
+                        color="green"
+                        trend={{ value: 8, isPositive: true }}
+                    />
+                    <StatsCard 
+                        title="Ngân Sách Còn Lại" 
+                        value={formatVND(availableBudget)} 
+                        subValue={`Quý ${currentQuarter}/${new Date().getFullYear()}`}
+                        icon={DollarSign}
+                        color="blue"
+                    >
+                        <div className="mt-2">
+                            <div className="flex justify-between text-[10px] text-text-secondary mb-1">
+                                <span>Đã dùng</span>
+                                <span>{((budgets?.allocated ? (budgets.committed + budgets.spent) / budgets.allocated * 100 : 0)).toFixed(1)}%</span>
+                            </div>
+                            <div className="h-1.5 bg-bg-primary rounded-full overflow-hidden">
+                                <div 
+                                    className="h-full bg-[#3B82F6] rounded-full" 
+                                    style={{ width: `${Math.min(budgets?.allocated ? ((budgets.committed + budgets.spent) / budgets.allocated) * 100 : 0, 100)}%` }}
+                                />
+                            </div>
+                        </div>
+                    </StatsCard>
+                    <StatsCard 
+                        title="Giá Trị PR Hoàn Thành" 
+                        value={`${personalPRs.filter(pr => pr.status === 'COMPLETED').reduce((sum, pr) => sum + ((pr.totalEstimate || 0)), 0).toLocaleString('vi-VN')} đ`}
+                        subValue="Tổng dự toán đã hoàn thành"
+                        icon={ArrowUpRight}
+                        color="purple"
+                    />
+                </div>
+
+                {/* HÀNG 2 — Charts */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <DonutChart 
+                        title="Phân Bổ Trạng Thái PR"
+                        data={[
+                            { label: 'Chờ duyệt', value: pendingPRsCount, color: '#F59E0B' },
+                            { label: 'Đã duyệt', value: approvedPRsCount, color: '#10B981' },
+                            { label: 'Từ chối', value: personalPRs.filter(pr => pr.status === 'REJECTED').length, color: '#EF4444' },
+                            { label: 'Hoàn thành', value: personalPRs.filter(pr => pr.status === 'COMPLETED').length, color: '#8B5CF6' },
+                        ]}
+                        centerLabel="Tổng PR"
+                        centerValue={personalPRs.length.toString()}
+                    />
+                    <SimpleBarChart 
+                        title="Chi Tiêu Theo Tháng"
+                        data={[
+                            { label: 'Tháng 1', value: personalPRs.filter(pr => new Date(pr.createdAt).getMonth() === 0).reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0), color: '#3B82F6' },
+                            { label: 'Tháng 2', value: personalPRs.filter(pr => new Date(pr.createdAt).getMonth() === 1).reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0), color: '#3B82F6' },
+                            { label: 'Tháng 3', value: personalPRs.filter(pr => new Date(pr.createdAt).getMonth() === 2).reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0), color: '#3B82F6' },
+                        ]}
+                    />
                 </div>
 
                 {/* HÀNG 2 — Action Required (Condition-based) */}

@@ -21,7 +21,7 @@ export class RagPrGeneratorService {
     this.fptModel = this.configService.get<string>('FPT_LLM_MODEL') ?? 'SaoLa4-medium';
   }
 
-  async generatePrDraft(prompt: string, orgId: string): Promise<PrDraftResponse> {
+  async generatePrDraft(prompt: string, orgId: string, user?: any): Promise<PrDraftResponse> {
     try {
       // 1. Retrieve relevant data from RAG
       const queryVector = await this.embedding.embed(prompt);
@@ -96,7 +96,7 @@ export class RagPrGeneratorService {
       // Also get products from RAG (vector search) as supplementary
       const ragProductIds = new Set(chunks.filter(c => c.source_table === 'products').map(c => c.source_id));
 
-      // 2. Get cost centers for the org (skip if no valid orgId)
+      // 2. Get cost centers and budget allocation for the org
       const costCenters = orgId
         ? await this.prisma.costCenter.findMany({
             where: { orgId },
@@ -105,8 +105,12 @@ export class RagPrGeneratorService {
           })
         : [];
 
-      // 3. Build context for LLM
-      const { context, allProducts } = this.buildContext(chunks, costCenters, dbProducts);
+      // 4. Determine price limit based on user role
+      const priceLimit = this.getPriceLimitByRole(user?.role);
+      console.log(`[RAG] User role: ${user?.role}, Price limit: ${priceLimit.toLocaleString('vi-VN')} VND`);
+
+      // 5. Build context for LLM
+      const { context, allProducts } = this.buildContext(chunks, costCenters, dbProducts, priceLimit, user);
 
       // 4. Call LLM to generate PR
       const draftPr = await this.callLlmForPrGeneration(prompt, context, allProducts);
@@ -148,7 +152,21 @@ export class RagPrGeneratorService {
     }
   }
 
-  private buildContext(chunks: any[], costCenters: any[], additionalProducts: any[] = []): { context: string; allProducts: any[] } {
+  private getPriceLimitByRole(role?: string): number {
+    const limits: Record<string, number> = {
+      'REQUESTER': 10000000,      // 10 triệu
+      'EMPLOYEE': 10000000,       // 10 triệu
+      'USER': 10000000,           // 10 triệu
+      'MANAGER': 30000000,        // 30 triệu (Trưởng phòng)
+      'DEPARTMENT_HEAD': 30000000,// 30 triệu
+      'DIRECTOR': 100000000,      // 100 triệu (Giám đốc)
+      'CEO': Infinity,            // Không giới hạn
+      'ADMIN': Infinity,          // Không giới hạn
+    };
+    return limits[role?.toUpperCase() || ''] || 10000000; // Default 10M
+  }
+
+  private buildContext(chunks: any[], costCenters: any[], additionalProducts: any[] = [], priceLimit: number = 10000000, user?: any): { context: string; allProducts: any[] } {
     const ragProducts = chunks.filter(c => c.source_table === 'products');
     // Merge RAG products with additional DB products, avoid duplicates
     const seenIds = new Set(ragProducts.map(p => p.source_id));
@@ -195,6 +213,15 @@ ${suppliers.map((s, i) => {
 
 ## COST CENTERS (Trung tâm chi phí hiện có):
 ${costCenters.map((c, i) => `${i + 1}. ${c.name} (ID: ${c.id}, Code: ${c.code})`).join('\n') || 'Không có cost center'}
+
+## USER INFO (Thông tin người tạo PR):
+- Role: ${user?.role || 'REQUESTER'}
+- Email: ${user?.email || 'N/A'}
+
+## PRICE LIMIT (Giới hạn giá PR theo chức vụ):
+- **TỐI ĐA cho PR này**: ${priceLimit === Infinity ? 'Không giới hạn' : priceLimit.toLocaleString('vi-VN') + ' VND'}
+- Vai trò: ${user?.role || 'REQUESTER'}
+- Lưu ý: PR vượt quá giới hạn sẽ bị từ chối bởi hệ thống
 `;
 
     return { context, allProducts };
@@ -216,8 +243,16 @@ ${costCenters.map((c, i) => `${i + 1}. ${c.name} (ID: ${c.id}, Code: ${c.code})`
    - "categoryName": Tên danh mục từ context
 3. Chỉ tạo items mới (productId=null) khi KHÔNG có sản phẩm phù hợp trong context
 4. Map từ khóa từ yêu cầu người dùng với tên sản phẩm trong context (fuzzy matching)
-5. Ước tính giá hợp lý dựa trên thị trường (VND)
-6. Gợi ý cost center phù hợp nếu có thể
+5. **GIỚI HẠN GIÁ THEO CHỨC VỤ**: Tổng giá trị PR (totalEstimate) KHÔNG ĐƯỢC VƯỢT QUÁ giới hạn trong PRICE LIMIT:
+   - REQUESTER/EMPLOYEE: Tối đa 10 triệu VND
+   - MANAGER/DEPARTMENT_HEAD: Tối đa 30 triệu VND
+   - DIRECTOR: Tối đa 100 triệu VND
+   - CEO/ADMIN: Không giới hạn
+6. Nếu yêu cầu của user vượt quá giới hạn, AI PHẢI:
+   - Điều chỉnh số lượng xuống để phù hợp giới hạn
+   - HOẶC đề xuất sản phẩm thay thế rẻ hơn
+   - GIẢI THÍCH rõ trong reasoning tại sao phải điều chỉnh
+7. Gợi ý cost center phù hợp nếu có thể
 
 ## VÍ DỤ MAP:
 - User yêu cầu "bút" → Tìm sản phẩm có "bút" trong tên trong context

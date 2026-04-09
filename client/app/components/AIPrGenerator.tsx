@@ -164,7 +164,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
@@ -172,16 +172,16 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#0F1117] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-2xl overflow-hidden flex flex-col">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-bg-primary rounded-2xl border border-border shadow-2xl overflow-hidden flex flex-col">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[rgba(148,163,184,0.1)]">
+        <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-r from-[#3B82F6] to-accent-violet flex items-center justify-center">
               <Wand2 size={20} className="text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#F8FAFC]">AI Tạo PR Draft</h2>
+              <h2 className="text-xl font-bold text-text-primary">AI Tạo PR Draft</h2>
               <p className="text-sm text-[#64748B]">Mô tả nhu cầu, AI sẽ tạo PR cho bạn</p>
             </div>
           </div>

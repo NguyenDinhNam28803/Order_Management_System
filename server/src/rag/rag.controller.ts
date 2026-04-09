@@ -87,9 +87,7 @@ export class RagController {
     @Request() req: { user: JwtPayload },
   ): Promise<PrDraftResponse> {
     // Lấy orgId từ body hoặc từ JWT token (đã được set bởi auth middleware)
-    // const user = (req as any).user as JwtPayload | undefined;
-    // const orgId = body.orgId || user?.orgId || '';
-    console.log('orgId:', req.user?.orgId);
-    return this.prGenerator.generatePrDraft(body.prompt, req.user?.orgId);
+    console.log('orgId:', req.user?.orgId, 'role:', req.user?.role);
+    return this.prGenerator.generatePrDraft(body.prompt, req.user?.orgId, req.user);
   }
 }

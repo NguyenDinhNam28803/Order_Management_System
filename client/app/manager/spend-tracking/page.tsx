@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { TrendingUp, PieChart, Wallet, ArrowRight, Calendar, Building, Filter, Download } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
+import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
 
 export default function SpendTrackingPage() {
     const { budgetAllocations, costCenters, currentUser } = useProcurement();
@@ -65,45 +66,80 @@ export default function SpendTrackingPage() {
                 </div>
             </header>
 
-            {/* Metric Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                <div className="bg-[#161922] rounded-3xl p-8 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform"><TrendingUp size={64} className="text-[#3B82F6]" /></div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-4">Ngân sách được duyệt</p>
-                    <h3 className="text-2xl font-black text-[#F8FAFC]">{formatVND(stats.allocated)}</h3>
-                    <div className="mt-4 flex items-center gap-2 text-emerald-400 text-[10px] font-black uppercase tracking-widest leading-none">
-                        <ArrowRight size={14} /> 100% CỦA KỲ
-                    </div>
-                </div>
-
-                <div className="bg-[#161922] rounded-3xl p-8 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform"><PieChart size={64} className="text-[#3B82F6]" /></div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-4">Đã cam kết (Committed)</p>
-                    <h3 className="text-2xl font-black text-[#3B82F6]">{formatVND(stats.committed)}</h3>
-                    <div className="mt-2 text-[#3B82F6] text-[10px] font-black italic">
-                        Chiếm {(stats.allocated > 0 ? (stats.committed / stats.allocated) * 100 : 0).toFixed(1)}% ngân sách
-                    </div>
-                </div>
-
-                <div className="bg-[#161922] rounded-3xl p-8 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform"><Wallet size={64} className="text-[#3B82F6]" /></div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-4">Đã chi tiêu (Spent)</p>
-                    <h3 className="text-2xl font-black text-[#F8FAFC]">{formatVND(stats.spent)}</h3>
-                    <div className="mt-2 text-[#64748B] text-[10px] font-black italic">
-                        Thanh toán thực tế
-                    </div>
-                </div>
-
-                <div className={`rounded-3xl p-8 border shadow-xl shadow-[#3B82F6]/5 relative overflow-hidden group ${remainingPct < 10 ? 'bg-rose-500/10 border-rose-500/20' : 'bg-[#161922] border-[rgba(148,163,184,0.1)]'}`}>
-                    <p className={`text-[10px] font-black uppercase tracking-widest mb-4 ${remainingPct < 10 ? 'text-rose-400' : 'text-[#64748B]'}`}>Còn lại</p>
-                    <h3 className={`text-2xl font-black ${remainingPct < 10 ? 'text-rose-400' : 'text-emerald-400'}`}>{formatVND(remaining)}</h3>
-                    <div className="mt-4 flex items-center gap-2 text-[10px] font-black">
-                        <div className="h-1.5 flex-1 bg-[#0F1117] rounded-full overflow-hidden">
-                            <div className={`h-full rounded-full ${remainingPct < 10 ? 'bg-rose-400' : 'bg-emerald-400'}`} style={{width: `${Math.max(0, remainingPct)}%`}} />
+            {/* Stats Cards with Charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatsCard 
+                    title="Ngân Sách Được Duyệt"
+                    value={formatVND(stats.allocated)}
+                    subValue="100% của kỳ"
+                    icon={TrendingUp}
+                    color="blue"
+                    trend={{ value: 0, isPositive: true }}
+                />
+                <StatsCard 
+                    title="Đã Cam Kết"
+                    value={formatVND(stats.committed)}
+                    subValue={`${(stats.allocated > 0 ? (stats.committed / stats.allocated) * 100 : 0).toFixed(1)}% ngân sách`}
+                    icon={PieChart}
+                    color="amber"
+                >
+                    <div className="mt-2">
+                        <div className="flex justify-between text-[10px] text-[#94A3B8] mb-1">
+                            <span>Tiến độ</span>
+                            <span>{(stats.allocated > 0 ? (stats.committed / stats.allocated) * 100 : 0).toFixed(0)}%</span>
                         </div>
-                        <span className={remainingPct < 10 ? 'text-rose-400' : 'text-emerald-400'}>{Math.max(0, Math.round(remainingPct))}%</span>
+                        <div className="h-1.5 bg-[#0F1117] rounded-full overflow-hidden">
+                            <div className="h-full bg-[#F59E0B] rounded-full" style={{ width: `${Math.min((stats.allocated > 0 ? (stats.committed / stats.allocated) * 100 : 0), 100)}%` }} />
+                        </div>
                     </div>
-                </div>
+                </StatsCard>
+                <StatsCard 
+                    title="Đã Chi Tiêu"
+                    value={formatVND(stats.spent)}
+                    subValue="Thanh toán thực tế"
+                    icon={Wallet}
+                    color="green"
+                    trend={{ value: 5, isPositive: false }}
+                />
+                <StatsCard 
+                    title="Còn Lại"
+                    value={formatVND(remaining)}
+                    subValue={`${Math.max(0, Math.round(remainingPct))}% ngân sách`}
+                    icon={ArrowRight}
+                    color={remainingPct < 10 ? 'red' : 'purple'}
+                >
+                    <div className="mt-2">
+                        <div className="flex justify-between text-[10px] text-[#94A3B8] mb-1">
+                            <span>Còn lại</span>
+                            <span className={remainingPct < 10 ? 'text-rose-400' : 'text-emerald-400'}>{Math.max(0, Math.round(remainingPct))}%</span>
+                        </div>
+                        <div className="h-1.5 bg-[#0F1117] rounded-full overflow-hidden">
+                            <div className={`h-full rounded-full ${remainingPct < 10 ? 'bg-rose-400' : 'bg-emerald-400'}`} style={{ width: `${Math.max(0, Math.min(remainingPct, 100))}%` }} />
+                        </div>
+                    </div>
+                </StatsCard>
+            </div>
+
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <DonutChart 
+                    title="Phân Bổ Ngân Sách"
+                    data={[
+                        { label: 'Đã chi', value: stats.spent, color: '#10B981' },
+                        { label: 'Cam kết', value: stats.committed - stats.spent, color: '#3B82F6' },
+                        { label: 'Còn lại', value: remaining, color: remaining < 0 ? '#EF4444' : '#8B5CF6' },
+                    ]}
+                    centerLabel="Tổng"
+                    centerValue={formatVND(stats.allocated)}
+                />
+                <SimpleBarChart 
+                    title="Chi Tiêu Theo Cost Center"
+                    data={filteredAllocations.slice(0, 5).map(a => ({
+                        label: costCenters.find(cc => cc.id === a.costCenterId)?.code || 'Unknown',
+                        value: (Number(a.spentAmount) + Number(a.committedAmount)),
+                        color: ((Number(a.spentAmount) + Number(a.committedAmount)) / (Number(a.allocatedAmount) || 1)) > 0.8 ? '#EF4444' : '#3B82F6'
+                    }))}
+                />
             </div>
 
             {/* Allocation Table Detail */}
