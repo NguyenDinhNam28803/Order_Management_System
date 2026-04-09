@@ -281,7 +281,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const baseUrl = 'http://localhost:5000';
+        // process.env.NEXT_PUBLIC_API_URL ||
         return fetch(`${baseUrl}${url}`, { ...options, headers });
     }, []);
 
@@ -1389,23 +1390,78 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             notify("Đánh giá KPI thành công", "success"); 
             const res = await resp.json();
             const data = res.data || res;
-            // Merge aiInsights.overallScore into kpiScore for display
-            if (data?.kpiScore && data?.aiInsights?.overallScore) {
-                data.kpiScore.overallScore = data.aiInsights.overallScore;
-            }
-            return data?.kpiScore || data; 
+            const kpiScore = data?.kpiScore || data;
+            const aiInsights = data?.aiInsights;
+            
+            // Map API tier values to UI expected values
+            const tierMap: Record<string, string> = {
+                'STRATEGIC': 'GOLD',
+                'PREFERRED': 'SILVER',
+                'APPROVED': 'BRONZE',
+                'PROVISIONAL': 'BRONZE',
+                'BLACKLISTED': 'BRONZE',
+            };
+            
+            // Transform API data to match UI expected structure
+            return {
+                ...kpiScore,
+                score: aiInsights?.overallScore ?? kpiScore?.overallScore ?? kpiScore?.otdScore ?? 0,
+                quarter: `Q${kpiScore?.periodQuarter || 1} ${kpiScore?.periodYear || 2026}`,
+                tier: tierMap[kpiScore?.tier] || 'BRONZE',
+                supplier: kpiScore?.supplier || { id: supplierId, name: 'Nhà cung cấp' },
+                metrics: {
+                    onTimeDelivery: { score: kpiScore?.otdScore ?? 0 },
+                    qualityScore: { score: kpiScore?.qualityScore ?? 0 },
+                    priceCompetitiveness: { score: kpiScore?.priceScore ?? 0 },
+                    invoiceAccuracy: { score: parseFloat(kpiScore?.invoiceAccuracy) || 0 },
+                    responsiveness: { score: parseFloat(kpiScore?.responseTimeScore) || 0 },
+                    orderFulfillment: { score: parseFloat(kpiScore?.fulfillmentRate) || 0 },
+                },
+                aiInsights,
+            }; 
         }
         return null;
     }, [apiFetch, notify, state.currentUser]);
 
     const fetchSupplierKPIReport = useCallback(async (supplierId: string) => {
         const orgId = state.currentUser?.orgId;
-        console.log(orgId);
         const resp = await apiFetch(`/supplier-kpis/report/${supplierId}`, {
             method: 'POST', // Changed to POST to send body
             body: JSON.stringify({ orgId })
         });
-        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        if (resp.ok) { 
+            const res = await resp.json(); 
+            const data = res.data || res;
+            // Handle both single object and array responses
+            const items = Array.isArray(data) ? data : [data];
+            const tierMap: Record<string, string> = {
+                'STRATEGIC': 'GOLD',
+                'PREFERRED': 'SILVER',
+                'APPROVED': 'BRONZE',
+                'PROVISIONAL': 'BRONZE',
+                'BLACKLISTED': 'BRONZE',
+            };
+            return items.map((item: any) => {
+                const kpiScore = item?.kpiScore || item;
+                const aiInsights = item?.aiInsights;
+                return {
+                    ...kpiScore,
+                    score: aiInsights?.overallScore ?? kpiScore?.overallScore ?? kpiScore?.otdScore ?? 0,
+                    quarter: `Q${kpiScore?.periodQuarter || 1} ${kpiScore?.periodYear || 2026}`,
+                    tier: tierMap[kpiScore?.tier] || 'BRONZE',
+                    supplier: kpiScore?.supplier || { id: supplierId, name: 'Nhà cung cấp' },
+                    metrics: {
+                        onTimeDelivery: { score: kpiScore?.otdScore ?? 0 },
+                        qualityScore: { score: kpiScore?.qualityScore ?? 0 },
+                        priceCompetitiveness: { score: kpiScore?.priceScore ?? 0 },
+                        invoiceAccuracy: { score: parseFloat(kpiScore?.invoiceAccuracy) || 0 },
+                        responsiveness: { score: parseFloat(kpiScore?.responseTimeScore) || 0 },
+                        orderFulfillment: { score: parseFloat(kpiScore?.fulfillmentRate) || 0 },
+                    },
+                    aiInsights,
+                };
+            });
+        }
         return [];
     }, [apiFetch, state.currentUser]);
 

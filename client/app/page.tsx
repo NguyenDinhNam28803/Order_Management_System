@@ -98,16 +98,16 @@ export default function Dashboard() {
                         </p>
                     </div>
                     <div className="flex items-center gap-4 relative">
-                         <Link href="/quote-requests/create" className="px-6 py-4 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1A1D23] transition-all shadow-sm">
+                         <Link href="/quote-requests/create" className="px-4 py-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1A1D23] transition-all shadow-sm">
                              + Tạo yêu cầu báo giá
                          </Link>
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-10 py-5 bg-[#3B82F6] text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-[#3B82F6]/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
+                                className="px-5 py-2.5 bg-[#3B82F6] text-white rounded-xl font-black text-xs uppercase tracking-[0.15em] shadow-lg shadow-[#3B82F6]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 group"
                             >
                                 + Tạo PR mới
-                                <ChevronDown size={18} className={`transition-transform duration-300 ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown size={16} className={`transition-transform duration-300 ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
                             
                             {isSimDropdownOpen && (
@@ -233,7 +233,7 @@ export default function Dashboard() {
                                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F8FAFC] flex items-center gap-3 leading-none">
                                      <FileText size={16} className="text-[#3B82F6]" /> Danh sách PR của tôi (gần nhất)
                                  </h3>
-                                 <Link href="/pr" className="text-[9px] font-black uppercase text-[#3B82F6] hover:underline bg-[#0F1117] px-4 py-2 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm transition-all hover:scale-105 active:scale-95">Xem tất cả ›</Link>
+                                 <Link href="/pr" className="text-[9px] font-black uppercase text-[#3B82F6] hover:underline bg-[#0F1117] px-3 py-1.5 rounded-lg border border-[rgba(148,163,184,0.1)] shadow-sm transition-all hover:scale-105 active:scale-95">Xem tất cả ›</Link>
                              </div>
                              <div className="overflow-x-auto">
                                  <table className="w-full text-left">
@@ -325,7 +325,7 @@ export default function Dashboard() {
                                                         const success = await createPRFromQuoteRequest(qr.id);
                                                         if (success) await refreshData();
                                                     }} 
-                                                    className="px-4 py-2 bg-[#3B82F6] text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-95 shadow-lg shadow-[#3B82F6]/10"
+                                                    className="px-3 py-1.5 bg-[#3B82F6] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-95 shadow-md shadow-[#3B82F6]/10"
                                                   >
                                                     CHUYỂN SANG PR
                                                   </button>
@@ -591,11 +591,11 @@ export default function Dashboard() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]" size={14} />
                             <input type="text" placeholder="Tìm kiếm chứng từ..." className="pl-10 pr-6 py-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-medium w-64 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/10 transition-all text-[#F8FAFC] placeholder:text-[#64748B]"/>
                         </div>
-                        <button className="flex items-center gap-2 px-4 py-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-xl text-[9px] font-black uppercase tracking-widest text-[#94A3B8] hover:bg-[#1A1D23] transition-all shadow-sm">
-                            Lọc theo Phòng ban <ChevronDown size={14} />
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-lg text-[9px] font-black uppercase tracking-widest text-[#94A3B8] hover:bg-[#1A1D23] transition-all shadow-sm">
+                            Lọc <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2 bg-[#3B82F6] text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-[#2563EB] transition-all shadow-lg shadow-[#3B82F6]/20">
-                            <Zap size={14} /> Xuất Báo cáo
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#3B82F6] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#2563EB] transition-all shadow-md shadow-[#3B82F6]/20">
+                            <Zap size={14} /> Xuất
                         </button>
                     </div>
                 </div>
@@ -747,7 +747,13 @@ export default function Dashboard() {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="text-[#64748B] font-medium">{formatDate(pr.requiredDate)}</td>
+                                                    <td className="text-[#64748B] font-medium">
+                                                        {pr.requiredDate ? (
+                                                            formatDate(pr.requiredDate)
+                                                        ) : (
+                                                            <span className="text-[#64748B]/50 italic">--/--/--</span>
+                                                        )}
+                                                    </td>
                                                     <td className="text-center">
                                                         <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${pr.priority === 1 ? 'bg-rose-500/10 text-rose-400' : 'bg-amber-500/10 text-amber-400'}`}>
                                                             {pr.priority === 1 ? 'CAO' : 'VỪA'}
@@ -758,14 +764,14 @@ export default function Dashboard() {
                                                         {pr.type === "CATALOG" ? (
                                                             <button 
                                                                 onClick={() => setConfirmModal(pr)}
-                                                                className="inline-flex items-center justify-center whitespace-nowrap min-w-[120px] px-4 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wide rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-500/10"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-blue-600 text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-blue-700 transition-all shadow-sm"
                                                             >
                                                                 Xác nhận giá
                                                             </button>
                                                         ) : (
                                                             <Link 
                                                                 href={`/procurement/rfq/create?prId=${pr.id}`} 
-                                                                className="inline-flex items-center justify-center whitespace-nowrap min-w-[120px] px-4 py-2 bg-[#3B82F6] text-white text-[10px] font-black uppercase tracking-wide rounded-xl hover:bg-[#2563EB] transition-all shadow-md shadow-[#3B82F6]/10"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#3B82F6] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#2563EB] transition-all shadow-sm"
                                                             >
                                                                 Lấy Báo Giá
                                                             </Link>
@@ -815,7 +821,7 @@ export default function Dashboard() {
                                                     </td>
                                                     <td className="text-right font-black text-[#F8FAFC] text-sm">{formatVND(po.total)} ₫</td>
                                                     <td className="text-right pl-2 pr-6">
-                                                        <button className="inline-flex items-center justify-center whitespace-nowrap min-w-[100px] px-4 py-2 border border-amber-500/20 text-amber-400 text-[10px] font-black uppercase tracking-wide rounded-xl hover:bg-amber-500/10 transition-all">Đốc thúc</button>
+                                                        <button className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 border border-amber-500/20 text-amber-400 text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-amber-500/10 transition-all">Đốc thúc</button>
                                                     </td>
                                                 </tr>
                                             );

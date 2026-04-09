@@ -298,6 +298,7 @@ export default function CreatePRPage() {
             title: form.title.trim(),
             description: form.description,
             justification: form.justification,
+            requiredDate: form.requiredDate || undefined,
             priority: Number(form.priority),
             currency: form.currency,
             costCenterId: form.costCenterId,
@@ -342,9 +343,9 @@ export default function CreatePRPage() {
                    </p>
                 </div>
                 <div className="flex gap-4">
-                    <button className="px-8 py-4 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1A1D23] transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
+                    <button className="px-5 py-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1A1D23] transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
                     <button 
-                        className="px-10 py-4 bg-[#3B82F6] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl shadow-[#3B82F6]/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3" 
+                        className="px-6 py-2.5 bg-[#3B82F6] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#3B82F6]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2" 
                         onClick={handleSubmit} 
                         disabled={isSubmitting}
                     >

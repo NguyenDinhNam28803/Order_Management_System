@@ -486,7 +486,7 @@ export default function CreateRFQPage() {
                                     type="button"
                                     onClick={fetchAiSuggestions}
                                     disabled={isAiLoading}
-                                    className="flex items-center gap-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-violet-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white px-4 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-all shadow-md shadow-violet-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isAiLoading ? (
                                         <>
@@ -591,7 +591,7 @@ export default function CreateRFQPage() {
                                                             type="button"
                                                             onClick={() => addAiVendor(suggestion)}
                                                             disabled={addedAiVendors.has(suggestion.id)}
-                                                            className={`shrink-0 px-4 py-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all ${
+                                                            className={`shrink-0 px-3 py-1.5 rounded-lg font-black text-xs uppercase tracking-wider transition-all ${
                                                                 addedAiVendors.has(suggestion.id)
                                                                     ? 'bg-emerald-500/10 text-emerald-400 cursor-default'
                                                                     : 'bg-violet-500 hover:bg-violet-400 text-white shadow-lg shadow-violet-500/20'
@@ -719,10 +719,10 @@ export default function CreateRFQPage() {
                             <button 
                                 type="submit" 
                                 disabled={isSubmitting || selectedVendors.length === 0}
-                                className="bg-[#3B82F6] hover:bg-[#2563EB] text-white px-12 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-2xl shadow-[#3B82F6]/20 transition-all active:scale-95 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="bg-[#3B82F6] hover:bg-[#2563EB] text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-[#3B82F6]/20 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isSubmitting ? "Đang xử lý..." : "PHÁT HÀNH RFQ"}
-                                <Send size={18} />
+                                <Send size={16} />
                             </button>
                         </div>
                     </form>

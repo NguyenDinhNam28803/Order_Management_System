@@ -29,7 +29,7 @@ export class SupplierKpimoduleController {
    * @returns Kết quả đánh giá KPI và phân tích từ AI
    */
   @Post('evaluate/:supplierId')
-  @Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.PLATFORM_ADMIN, UserRole.SUPPLIER)
   @ApiOperation({
     summary: 'Kích hoạt AI đánh giá nhà cung cấp',
     description:

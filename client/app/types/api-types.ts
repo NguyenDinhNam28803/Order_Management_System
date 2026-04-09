@@ -785,10 +785,19 @@ export interface Quotation {
     notes?: string;
     status: QuotationStatus;
     aiScore?: number;
+    aiAnalysis?: AIAnalysisResult;
     createdAt: string;
     updatedAt?: string;
     items?: QuotationItem[];
     supplier?: Organization;
+}
+
+export interface AIAnalysisResult {
+    score: number;
+    assessment: string;
+    pros: string[];
+    cons: string[];
+    recommendation: "ACCEPT" | "REJECT" | "NEGOTIATE" | string;
 }
 
 export interface QuotationItem {

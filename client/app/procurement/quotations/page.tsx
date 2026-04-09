@@ -8,10 +8,11 @@ import { formatVND } from "../../utils/formatUtils";
 import ERPTable from "../../components/shared/ERPTable";
 import { 
     Search, ListFilter, ArrowRight, ArrowLeft,
-    FileText, CheckCircle, Award, Send, 
+    FileText, CheckCircle, CheckCircle2, Award, Send, 
     ShieldAlert, AlertCircle, TrendingUp, 
     Star, Clock, DollarSign, Sparkles, Users, Calendar,
-    Eye, X, RotateCcw, Building2, Mail, Phone, ShieldCheck
+    Eye, X, RotateCcw, Building2, Mail, Phone, ShieldCheck,
+    ThumbsUp, ThumbsDown, MessageSquare, Bot, Target
 } from "lucide-react";
 
 export default function QuotationManagementPage() {
@@ -529,71 +530,169 @@ export default function QuotationManagementPage() {
                                 </div>
                             </div>
 
-                            {/* AI Response */}
-                            <div className="bg-violet-500/5 rounded-2xl p-6 border border-violet-500/20">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <Sparkles size={16} className="text-violet-400" />
-                                    <div className="text-[10px] font-black uppercase text-violet-400 tracking-widest">Phân tích AI</div>
-                                </div>
-                                <div className="space-y-3">
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0">
-                                            <TrendingUp size={14} className="text-violet-400" />
+                            {/* AI Analysis Section */}
+                            {viewQuotation.aiAnalysis ? (
+                                <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                    {/* AI Header with Score */}
+                                    <div className="flex items-center justify-between mb-6 pb-6 border-b border-[rgba(148,163,184,0.1)]">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-12 w-12 rounded-xl bg-violet-500/10 flex items-center justify-center border border-violet-500/20">
+                                                <Bot size={24} className="text-violet-400" />
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-black text-[#F8FAFC] flex items-center gap-2">
+                                                    Phân tích AI
+                                                    <Sparkles size={14} className="text-violet-400" />
+                                                </div>
+                                                <div className="text-xs text-[#64748B]">Đánh giá tự động bởi hệ thống</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className="text-xs font-bold text-[#F8FAFC]">Đánh giá giá cả</div>
-                                            <p className="text-xs text-[#64748B] mt-0.5">
-                                                {viewQuotation.aiScore && viewQuotation.aiScore >= 80 
-                                                    ? "Giá cả cạnh tranh tốt, thấp hơn 15% so với thị trường" 
-                                                    : viewQuotation.aiScore && viewQuotation.aiScore >= 60
-                                                        ? "Giá cả tương đương thị trường"
-                                                        : "Giá cả cao hơn thị trường 10-20%"}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center shrink-0">
-                                            <Clock size={14} className="text-[#3B82F6]" />
-                                        </div>
-                                        <div>
-                                            <div className="text-xs font-bold text-[#F8FAFC]">Đánh giá lead time</div>
-                                            <p className="text-xs text-[#64748B] mt-0.5">
-                                                {viewQuotation.leadTimeDays <= 7 
-                                                    ? "Thời gian giao hàng nhanh, đáp ứng yêu cầu khẩn" 
-                                                    : viewQuotation.leadTimeDays <= 14
-                                                        ? "Thời gian giao hàng trung bình"
-                                                        : "Thời gian giao hàng dài, cần cân nhắc"}
-                                            </p>
+                                        <div className="text-right">
+                                            <div className={`text-3xl font-black ${
+                                                viewQuotation.aiAnalysis.score >= 80 ? 'text-emerald-400' : 
+                                                viewQuotation.aiAnalysis.score >= 60 ? 'text-amber-400' : 
+                                                viewQuotation.aiAnalysis.score >= 40 ? 'text-orange-400' : 'text-rose-400'
+                                            }`}>
+                                                {viewQuotation.aiAnalysis.score}<span className="text-lg">/10</span>
+                                            </div>
+                                            <div className="text-xs text-[#64748B] mt-1">Điểm đánh giá</div>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
-                                            <ShieldCheck size={14} className="text-emerald-400" />
-                                        </div>
-                                        <div>
-                                            <div className="text-xs font-bold text-[#F8FAFC]">Rủi ro & Khuyến nghị</div>
-                                            <p className="text-xs text-[#64748B] mt-0.5">
-                                                {viewQuotation.aiScore && viewQuotation.aiScore >= 80 
-                                                    ? "Nhà cung cấp đáng tin cậy, nên trao thầu" 
-                                                    : viewQuotation.aiScore && viewQuotation.aiScore >= 60
-                                                        ? "Cân nhắc đàm phán thêm về giá hoặc lead time"
-                                                        : "Cần thẩm định kỹ hoặc tìm nhà cung cấp khác"}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="mt-4 pt-4 border-t border-violet-500/20">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-[10px] font-bold text-[#64748B] uppercase">Tổng điểm AI</span>
-                                        <span className={`text-sm font-black ${
-                                            (viewQuotation.aiScore || 0) >= 80 ? 'text-emerald-400' : 
-                                            (viewQuotation.aiScore || 0) >= 60 ? 'text-amber-400' : 'text-red-400'
+
+                                    {/* Recommendation Badge */}
+                                    <div className="mb-6">
+                                        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl font-black text-sm border ${
+                                            viewQuotation.aiAnalysis.recommendation === 'ACCEPT' 
+                                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
+                                            viewQuotation.aiAnalysis.recommendation === 'REJECT'
+                                                ? 'bg-rose-500/10 text-rose-400 border-rose-500/30' :
+                                                'bg-amber-500/10 text-amber-400 border-amber-500/30'
                                         }`}>
-                                            {viewQuotation.aiScore ? `${viewQuotation.aiScore}/100` : "Chưa có"}
-                                        </span>
+                                            <Target size={16} />
+                                            {viewQuotation.aiAnalysis.recommendation === 'ACCEPT' && 'ĐỀ XUẤT CHẤP NHẬN'}
+                                            {viewQuotation.aiAnalysis.recommendation === 'REJECT' && 'ĐỀ XUẤT TỪ CHỐI'}
+                                            {viewQuotation.aiAnalysis.recommendation === 'NEGOTIATE' && 'ĐỀ XUẤT ĐÀM PHÁN'}
+                                            {!['ACCEPT', 'REJECT', 'NEGOTIATE'].includes(viewQuotation.aiAnalysis.recommendation) && viewQuotation.aiAnalysis.recommendation}
+                                        </div>
+                                    </div>
+
+                                    {/* Assessment */}
+                                    <div className="mb-6">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <MessageSquare size={14} className="text-[#64748B]" />
+                                            <div className="text-[10px] font-black uppercase text-[#64748B] tracking-widest">Đánh giá tổng quan</div>
+                                        </div>
+                                        <p className="text-sm text-[#94A3B8] leading-relaxed bg-[#0F1117] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                                            {viewQuotation.aiAnalysis.assessment}
+                                        </p>
+                                    </div>
+
+                                    {/* Pros and Cons Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {/* Pros */}
+                                        <div className="bg-emerald-500/5 rounded-xl p-4 border border-emerald-500/20">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <div className="h-6 w-6 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                                                    <ThumbsUp size={12} className="text-emerald-400" />
+                                                </div>
+                                                <div className="text-[10px] font-black uppercase text-emerald-400 tracking-widest">Ưu điểm</div>
+                                            </div>
+                                            <ul className="space-y-2">
+                                                {viewQuotation.aiAnalysis.pros.map((pro, idx) => (
+                                                    <li key={idx} className="flex items-start gap-2 text-xs text-[#94A3B8]">
+                                                        <CheckCircle2 size={14} className="text-emerald-400 shrink-0 mt-0.5" />
+                                                        <span>{pro}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        {/* Cons */}
+                                        <div className="bg-rose-500/5 rounded-xl p-4 border border-rose-500/20">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <div className="h-6 w-6 rounded-lg bg-rose-500/10 flex items-center justify-center">
+                                                    <ThumbsDown size={12} className="text-rose-400" />
+                                                </div>
+                                                <div className="text-[10px] font-black uppercase text-rose-400 tracking-widest">Nhược điểm</div>
+                                            </div>
+                                            <ul className="space-y-2">
+                                                {viewQuotation.aiAnalysis.cons.map((con, idx) => (
+                                                    <li key={idx} className="flex items-start gap-2 text-xs text-[#94A3B8]">
+                                                        <AlertCircle size={14} className="text-rose-400 shrink-0 mt-0.5" />
+                                                        <span>{con}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            ) : (
+                                /* Fallback when no AI analysis */
+                                <div className="bg-violet-500/5 rounded-2xl p-6 border border-violet-500/20">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Sparkles size={16} className="text-violet-400" />
+                                        <div className="text-[10px] font-black uppercase text-violet-400 tracking-widest">Phân tích AI</div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0">
+                                                <TrendingUp size={14} className="text-violet-400" />
+                                            </div>
+                                            <div>
+                                                <div className="text-xs font-bold text-[#F8FAFC]">Đánh giá giá cả</div>
+                                                <p className="text-xs text-[#64748B] mt-0.5">
+                                                    {viewQuotation.aiScore && viewQuotation.aiScore >= 8 
+                                                        ? "Giá cả cạnh tranh tốt, thấp hơn 15% so với thị trường" 
+                                                        : viewQuotation.aiScore && viewQuotation.aiScore >= 6
+                                                            ? "Giá cả tương đương thị trường"
+                                                            : "Giá cả cao hơn thị trường 10-20%"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center shrink-0">
+                                                <Clock size={14} className="text-[#3B82F6]" />
+                                            </div>
+                                            <div>
+                                                <div className="text-xs font-bold text-[#F8FAFC]">Đánh giá lead time</div>
+                                                <p className="text-xs text-[#64748B] mt-0.5">
+                                                    {viewQuotation.leadTimeDays <= 7 
+                                                        ? "Thời gian giao hàng nhanh, đáp ứng yêu cầu khẩn" 
+                                                        : viewQuotation.leadTimeDays <= 14
+                                                            ? "Thời gian giao hàng trung bình"
+                                                            : "Thời gian giao hàng dài, cần cân nhắc"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                                                <ShieldCheck size={14} className="text-emerald-400" />
+                                            </div>
+                                            <div>
+                                                <div className="text-xs font-bold text-[#F8FAFC]">Rủi ro & Khuyến nghị</div>
+                                                <p className="text-xs text-[#64748B] mt-0.5">
+                                                    {viewQuotation.aiScore && viewQuotation.aiScore >= 8 
+                                                        ? "Nhà cung cấp đáng tin cậy, nên trao thầu" 
+                                                        : viewQuotation.aiScore && viewQuotation.aiScore >= 6
+                                                            ? "Cân nhắc đàm phán thêm về giá hoặc lead time"
+                                                            : "Cần thẩm định kỹ hoặc tìm nhà cung cấp khác"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 pt-4 border-t border-violet-500/20">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[10px] font-bold text-[#64748B] uppercase">Tổng điểm AI</span>
+                                            <span className={`text-sm font-black ${
+                                                (viewQuotation.aiScore || 0) >= 8 ? 'text-emerald-400' : 
+                                                (viewQuotation.aiScore || 0) >= 6 ? 'text-amber-400' : 'text-rose-400'
+                                            }`}>
+                                                {viewQuotation.aiScore ? `${viewQuotation.aiScore}/10` : "Chưa có"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Notes */}
                             {viewQuotation.notes && (

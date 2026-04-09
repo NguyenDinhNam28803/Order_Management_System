@@ -46,7 +46,16 @@ export default function LoginPage() {
         try {
             const success = await login(email, password);
             if (success) {
-                router.push("/");
+                // Get user from cookie to check role
+                const userCookie = Cookies.get('user');
+                const user = userCookie ? JSON.parse(userCookie) : null;
+                
+                // Redirect based on role
+                if (user?.role === 'SUPPLIER') {
+                    router.push("/supplier");
+                } else {
+                    router.push("/");
+                }
             } else {
                 setError("Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.");
                 setIsLoading(false);

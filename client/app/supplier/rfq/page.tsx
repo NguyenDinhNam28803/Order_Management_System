@@ -301,9 +301,9 @@ export default function SupplierRFQ() {
                                 <p className="text-[11px] font-bold text-emerald-300/80 max-w-sm tracking-tight leading-relaxed">Tôi cam kết các thông tin báo giá là chính xác và tuân thủ quy tắc ứng xử B2B của hệ thống ProcurePro.</p>
                             </div>
                             <div className="relative z-10 flex gap-4 w-full md:w-auto">
-                                <button className="flex-1 px-8 h-14 border border-emerald-700/50 hover:bg-emerald-800 text-emerald-100 font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl transition-colors">Lưu bản nháp</button>
-                                <button onClick={handleSubmit} className="flex-1 px-10 h-14 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 shadow-xl shadow-emerald-500/20 font-black uppercase tracking-[0.2em] text-xs rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-105 active:scale-95 group/btn">
-                                     SUBMIT QUOTE <Send size={16} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                                <button className="flex-1 px-5 h-10 border border-emerald-700/50 hover:bg-emerald-800 text-emerald-100 font-black uppercase tracking-[0.15em] text-[10px] rounded-xl transition-colors">Lưu nháp</button>
+                                <button onClick={handleSubmit} className="flex-1 px-6 h-10 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 shadow-lg shadow-emerald-500/20 font-black uppercase tracking-[0.15em] text-xs rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 group/btn">
+                                     GỬI BÁO GIÁ <Send size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
                                 </button>
                             </div>
                         </div>
