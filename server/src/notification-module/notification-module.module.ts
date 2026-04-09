@@ -23,6 +23,6 @@ import { EmailProcessor } from './email.processor';
     SmsService,
     EmailProcessor,
   ],
-  exports: [NotificationModuleService],
+  exports: [NotificationModuleService, EmailService],
 })
 export class NotificationModuleModule {}

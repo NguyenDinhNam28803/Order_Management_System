@@ -128,15 +128,15 @@ export default function InvoiceDetailPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#0F1117] p-8">
+    <div className="min-h-screen bg-bg-primary p-8">
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3B82F6]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
       </div>
     </div>
   );
   
   if (error) return (
-    <div className="min-h-screen bg-[#0F1117] p-8">
+    <div className="min-h-screen bg-bg-primary p-8">
       <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-6 text-rose-400">
         <AlertCircle className="inline mr-2" size={20} />
         Lỗi: {error}
@@ -145,7 +145,7 @@ export default function InvoiceDetailPage() {
   );
   
   if (!invoice) return (
-    <div className="min-h-screen bg-[#0F1117] p-8">
+    <div className="min-h-screen bg-bg-primary p-8">
       <div className="bg-slate-500/10 border border-slate-500/20 rounded-xl p-6 text-slate-400">
         Không tìm thấy hóa đơn
       </div>
@@ -155,35 +155,93 @@ export default function InvoiceDetailPage() {
   return (
     <div className="min-h-screen bg-bg-primary">      
       <div className="p-6 max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
+        {/* Breadcrumb & Back */}
+        <div className="mb-6">
           <Link 
             href="/finance/invoices" 
-            className="inline-flex items-center gap-2 text-[#64748B] hover:text-[#F8FAFC] transition-colors mb-4"
+            className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors"
           >
             <ArrowLeft size={16} />
-            <span className="text-sm font-medium">Quay lại danh sách</span>
+            <span className="text-sm font-medium">Quay lại danh sách hóa đơn</span>
           </Link>
-          
-          <div className="flex items-center justify-between">
+        </div>
+
+        {/* Header Card with Key Info */}
+        <div className="bg-bg-secondary rounded-2xl border border-border p-6 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            {/* Left: Icon & Title */}
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-[#3B82F6]/10 flex items-center justify-center">
-                <FileText size={28} className="text-[#3B82F6]" />
+              <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center">
+                <FileText size={28} className="text-blue-500" />
               </div>
               <div>
-                <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">
-                  Hóa đơn {invoice.invoiceNumber}
+                <h1 className="text-3xl font-black text-text-primary tracking-tight">
+                  {invoice.invoiceNumber}
                 </h1>
-                <p className="text-[#64748B] text-sm mt-1">
-                  ID: {invoice.id}
+                <p className="text-text-secondary text-sm mt-1">
+                  ID: {invoice.id.slice(0, 8)}... | Ngày: {formatDate(invoice.invoiceDate)}
                 </p>
               </div>
             </div>
             
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-bold ${getStatusClass(invoice.status)}`}>
-              {getStatusIcon(invoice.status)}
-              {invoice.status}
+            {/* Right: Status & Amount */}
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-text-secondary text-sm">Tổng thanh toán</p>
+                <p className="text-blue-400 font-black text-2xl">
+                  {formatCurrency(invoice.totalAmount)} {invoice.currency}
+                </p>
+              </div>
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-bold ${getStatusClass(invoice.status)}`}>
+                {getStatusIcon(invoice.status)}
+                {invoice.status}
+              </div>
             </div>
+          </div>
+
+          {/* Quick Actions Row */}
+          <div className="flex flex-wrap gap-3 mt-6 pt-6 border-t border-border">
+            {invoice.status === 'SUBMITTED' && (
+              <button
+                onClick={handleRunMatching}
+                disabled={processing}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                <RefreshCw size={16} className={processing ? 'animate-spin' : ''} />
+                {processing ? 'Đang xử lý...' : 'Chạy đối soát 3 bên'}
+              </button>
+            )}
+            
+            {(invoice.status === 'APPROVED' || invoice.status === 'AUTO_APPROVED') && (
+              <button
+                onClick={handlePay}
+                disabled={processing}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                <CreditCard size={16} />
+                {processing ? 'Đang xử lý...' : 'Thanh toán ngay'}
+              </button>
+            )}
+
+            {invoice.po && (
+              <Link 
+                href={`/purchase-orders/${invoice.po.id}`}
+                className="inline-flex items-center gap-2 bg-bg-primary hover:bg-bg-secondary border border-border text-text-primary px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors"
+              >
+                <ShoppingCart size={16} />
+                Xem PO liên kết
+              </Link>
+            )}
+
+            {invoice.grnId && (
+              <Link 
+                href={`/warehouse/grn/${invoice.grnId}`}
+                className="inline-flex items-center gap-2 bg-bg-primary hover:bg-bg-secondary border border-border text-text-primary px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors"
+              >
+                <CheckCircle2 size={16} />
+                Xem GRN
+              </Link>
+            )}
           </div>
         </div>
 
@@ -192,7 +250,7 @@ export default function InvoiceDetailPage() {
           <div className="mb-6 p-5 bg-rose-500/10 border border-rose-500/20 rounded-xl">
             <div className="flex items-start gap-3">
               <AlertCircle size={20} className="text-rose-400 shrink-0 mt-0.5" />
-              <div>
+              <div className="flex-1">
                 <h3 className="font-bold text-rose-400 mb-1">Lỗi đối soát 3 bên</h3>
                 <p className="text-rose-300/80 text-sm">{invoice.exceptionReason}</p>
               </div>
@@ -202,80 +260,65 @@ export default function InvoiceDetailPage() {
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Left Column - Invoice Details */}
+          {/* Left Column - Main Content */}
           <div className="xl:col-span-2 space-y-6">
-            {/* Invoice Info Card */}
-            <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] p-6">
-              <h2 className="text-lg font-black text-[#F8FAFC] mb-6 flex items-center gap-2">
-                <FileText size={18} className="text-[#3B82F6]" />
-                Thông tin Hóa đơn
+            {/* Invoice Details Card */}
+            <div className="bg-bg-secondary rounded-2xl border border-border p-6">
+              <h2 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
+                <FileText size={18} className="text-blue-500" />
+                Chi tiết Hóa đơn
               </h2>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                <div>
-                  <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Số hóa đơn</label>
-                  <p className="text-[#F8FAFC] font-semibold mt-1">{invoice.invoiceNumber}</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="p-4 bg-bg-primary rounded-xl">
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Số hóa đơn</label>
+                  <p className="text-text-primary font-semibold mt-2">{invoice.invoiceNumber}</p>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Ngày hóa đơn</label>
-                  <p className="text-[#F8FAFC] font-semibold mt-1">{formatDate(invoice.invoiceDate)}</p>
+                <div className="p-4 bg-bg-primary rounded-xl">
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Ngày hóa đơn</label>
+                  <p className="text-text-primary font-semibold mt-2">{formatDate(invoice.invoiceDate)}</p>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Tiền tệ</label>
-                  <p className="text-[#F8FAFC] font-semibold mt-1">{invoice.currency}</p>
+                <div className="p-4 bg-bg-primary rounded-xl">
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Tiền tệ</label>
+                  <p className="text-text-primary font-semibold mt-2">{invoice.currency}</p>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Tổng tiền trước thuế</label>
-                  <p className="text-[#F8FAFC] font-semibold mt-1">{formatCurrency(invoice.subtotal)} {invoice.currency}</p>
+                <div className="p-4 bg-bg-primary rounded-xl">
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Thuế suất</label>
+                  <p className="text-text-primary font-semibold mt-2">{invoice.taxRate}%</p>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Thuế suất</label>
-                  <p className="text-[#F8FAFC] font-semibold mt-1">{invoice.taxRate}%</p>
+                
+                <div className="p-4 bg-bg-primary rounded-xl md:col-span-2">
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Tổng tiền trước thuế</label>
+                  <p className="text-text-primary font-semibold mt-2">{formatCurrency(invoice.subtotal)} {invoice.currency}</p>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Tiền thuế</label>
-                  <p className="text-[#F8FAFC] font-semibold mt-1">{formatCurrency(invoice.taxAmount)} {invoice.currency}</p>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Tổng thanh toán</label>
-                  <p className="text-[#3B82F6] font-black text-xl mt-1">{formatCurrency(invoice.totalAmount)} {invoice.currency}</p>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">GRN liên kết</label>
-                  <p className="text-[#F8FAFC] font-semibold mt-1">
-                    {invoice.grnId ? (
-                      <Link href={`/warehouse/grn/${invoice.grnId}`} className="text-[#3B82F6] hover:underline">
-                        {invoice.grnId.slice(0, 8)}...
-                      </Link>
-                    ) : (
-                      <span className="text-rose-400">Chưa liên kết</span>
-                    )}
-                  </p>
+                <div className="p-4 bg-bg-primary rounded-xl md:col-span-2">
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Tiền thuế</label>
+                  <p className="text-text-primary font-semibold mt-2">{formatCurrency(invoice.taxAmount)} {invoice.currency}</p>
                 </div>
               </div>
             </div>
 
             {/* Matching Results */}
             {invoice.matchingResult && invoice.matchingResult.length > 0 && (
-              <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] p-6">
-                <h2 className="text-lg font-black text-[#F8FAFC] mb-6 flex items-center gap-2">
-                  <RefreshCw size={18} className="text-[#3B82F6]" />
+              <div className="bg-bg-secondary rounded-2xl border border-border p-6">
+                <h2 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
+                  <RefreshCw size={18} className="text-blue-500" />
                   Kết quả Đối soát 3 bên
                 </h2>
                 
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-[rgba(148,163,184,0.1)]">
-                        <th className="text-left py-3 px-4 text-xs font-bold text-[#64748B] uppercase">PO Item ID</th>
-                        <th className="text-center py-3 px-4 text-xs font-bold text-[#64748B] uppercase">Số lượng</th>
-                        <th className="text-center py-3 px-4 text-xs font-bold text-[#64748B] uppercase">Đơn giá</th>
-                        <th className="text-right py-3 px-4 text-xs font-bold text-[#64748B] uppercase">Chênh lệch</th>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-3 px-4 text-xs font-bold text-text-secondary uppercase">PO Item ID</th>
+                        <th className="text-center py-3 px-4 text-xs font-bold text-text-secondary uppercase">Số lượng</th>
+                        <th className="text-center py-3 px-4 text-xs font-bold text-text-secondary uppercase">Đơn giá</th>
+                        <th className="text-right py-3 px-4 text-xs font-bold text-text-secondary uppercase">Chênh lệch</th>
                       </tr>
                     </thead>
                     <tbody>
                       {invoice.matchingResult.map((result: any, idx: number) => (
-                        <tr key={idx} className="border-b border-[rgba(148,163,184,0.05)]">
+                        <tr key={idx} className="border-b border-border/50">
                           <td className="py-3 px-4 text-text-primary font-mono text-sm">
                             {result.poItemId?.slice(0, 8)}...
                           </td>
@@ -293,7 +336,7 @@ export default function InvoiceDetailPage() {
                               <XCircle size={16} className="text-rose-400 mx-auto" />
                             )}
                           </td>
-                          <td className="py-3 px-4 text-right text-[#F8FAFC]">
+                          <td className="py-3 px-4 text-right text-text-primary">
                             {result.variance}%
                           </td>
                         </tr>
@@ -305,159 +348,162 @@ export default function InvoiceDetailPage() {
             )}
 
             {/* Timeline */}
-            <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] p-6">
-              <h2 className="text-lg font-black text-[#F8FAFC] mb-6 flex items-center gap-2">
-                <Calendar size={18} className="text-[#3B82F6]" />
-                Timeline
+            <div className="bg-bg-secondary rounded-2xl border border-border p-6">
+              <h2 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
+                <Calendar size={18} className="text-blue-500" />
+                Timeline xử lý
               </h2>
               
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${invoice.createdAt ? 'bg-emerald-500/10' : 'bg-slate-500/10'}`}>
-                    <FileText size={16} className={invoice.createdAt ? 'text-emerald-400' : 'text-slate-400'} />
-                  </div>
-                  <div>
-                    <p className="text-[#F8FAFC] font-semibold">Tạo hóa đơn</p>
-                    <p className="text-[#64748B] text-sm">{formatDate(invoice.createdAt)}</p>
-                  </div>
-                </div>
+              <div className="relative">
+                {/* Vertical Line */}
+                <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-border"></div>
                 
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${invoice.matchedAt ? 'bg-amber-500/10' : 'bg-slate-500/10'}`}>
-                    <RefreshCw size={16} className={invoice.matchedAt ? 'text-amber-400' : 'text-slate-400'} />
+                <div className="space-y-6 relative">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center relative z-10 ${invoice.createdAt ? 'bg-emerald-500/10' : 'bg-slate-500/10'}`}>
+                      <FileText size={16} className={invoice.createdAt ? 'text-emerald-400' : 'text-slate-400'} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-text-primary font-semibold">Tạo hóa đơn</p>
+                      <p className="text-text-secondary text-sm">{formatDate(invoice.createdAt)}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[#F8FAFC] font-semibold">Đối soát 3 bên</p>
-                    <p className="text-[#64748B] text-sm">{formatDate(invoice.matchedAt)}</p>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center relative z-10 ${invoice.matchedAt ? 'bg-amber-500/10' : 'bg-slate-500/10'}`}>
+                      <RefreshCw size={16} className={invoice.matchedAt ? 'text-amber-400' : 'text-slate-400'} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-text-primary font-semibold">Đối soát 3 bên</p>
+                      <p className="text-text-secondary text-sm">{formatDate(invoice.matchedAt) || 'Chưa đối soát'}</p>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${invoice.approvedAt ? 'bg-emerald-500/10' : 'bg-slate-500/10'}`}>
-                    <CheckCircle2 size={16} className={invoice.approvedAt ? 'text-emerald-400' : 'text-slate-400'} />
+                  
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center relative z-10 ${invoice.approvedAt ? 'bg-emerald-500/10' : 'bg-slate-500/10'}`}>
+                      <CheckCircle2 size={16} className={invoice.approvedAt ? 'text-emerald-400' : 'text-slate-400'} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-text-primary font-semibold">Phê duyệt</p>
+                      <p className="text-text-secondary text-sm">{formatDate(invoice.approvedAt) || 'Chưa phê duyệt'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[#F8FAFC] font-semibold">Phê duyệt</p>
-                    <p className="text-[#64748B] text-sm">{formatDate(invoice.approvedAt) || 'Chưa phê duyệt'}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${invoice.paidAt ? 'bg-blue-500/10' : 'bg-slate-500/10'}`}>
-                    <CreditCard size={16} className={invoice.paidAt ? 'text-blue-400' : 'text-slate-400'} />
-                  </div>
-                  <div>
-                    <p className="text-[#F8FAFC] font-semibold">Thanh toán</p>
-                    <p className="text-[#64748B] text-sm">{formatDate(invoice.paidAt) || 'Chưa thanh toán'}</p>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center relative z-10 ${invoice.paidAt ? 'bg-blue-500/10' : 'bg-slate-500/10'}`}>
+                      <CreditCard size={16} className={invoice.paidAt ? 'text-blue-400' : 'text-slate-400'} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-text-primary font-semibold">Thanh toán</p>
+                      <p className="text-text-secondary text-sm">{formatDate(invoice.paidAt) || 'Chưa thanh toán'}</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column - PO & Supplier */}
+          {/* Right Column - Related Info */}
           <div className="space-y-6">
             {/* PO Card */}
             {invoice.po && (
-              <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] p-6">
-                <h2 className="text-lg font-black text-[#F8FAFC] mb-6 flex items-center gap-2">
-                  <ShoppingCart size={18} className="text-[#3B82F6]" />
+              <div className="bg-bg-secondary rounded-2xl border border-border p-6">
+                <h2 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
+                  <ShoppingCart size={18} className="text-blue-500" />
                   Thông tin PO
                 </h2>
                 
                 <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Số PO</label>
-                    <p className="text-[#F8FAFC] font-semibold mt-1">{invoice.po.poNumber}</p>
+                  <div className="p-3 bg-bg-primary rounded-xl">
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Số PO</label>
+                    <p className="text-text-primary font-semibold mt-1">{invoice.po.poNumber}</p>
                   </div>
-                  <div>
-                    <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Trạng thái PO</label>
-                    <p className="text-[#F8FAFC] font-semibold mt-1">{invoice.po.status}</p>
+                  <div className="p-3 bg-bg-primary rounded-xl">
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Trạng thái PO</label>
+                    <p className="text-text-primary font-semibold mt-1">{invoice.po.status}</p>
                   </div>
-                  <div>
-                    <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Tổng tiền PO</label>
-                    <p className="text-[#F8FAFC] font-semibold mt-1">
+                  <div className="p-3 bg-bg-primary rounded-xl">
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Tổng tiền PO</label>
+                    <p className="text-text-primary font-semibold mt-1">
                       {formatCurrency(invoice.po.totalAmount)} {invoice.po.currency}
                     </p>
                   </div>
-                  <div>
-                    <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Ngày giao hàng</label>
-                    <p className="text-[#F8FAFC] font-semibold mt-1">{formatDate(invoice.po.deliveryDate)}</p>
+                  <div className="p-3 bg-bg-primary rounded-xl">
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Ngày giao hàng</label>
+                    <p className="text-text-primary font-semibold mt-1">{formatDate(invoice.po.deliveryDate)}</p>
                   </div>
-                  <Link 
-                    href={`/purchase-orders/${invoice.po.id}`}
-                    className="inline-flex items-center gap-2 text-[#3B82F6] hover:text-[#60A5FA] text-sm font-semibold mt-2"
-                  >
-                    Xem chi tiết PO →
-                  </Link>
                 </div>
               </div>
             )}
 
             {/* Supplier Card */}
             {invoice.supplier && (
-              <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] p-6">
-                <h2 className="text-lg font-black text-[#F8FAFC] mb-6 flex items-center gap-2">
-                  <Building2 size={18} className="text-[#3B82F6]" />
+              <div className="bg-bg-secondary rounded-2xl border border-border p-6">
+                <h2 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
+                  <Building2 size={18} className="text-blue-500" />
                   Nhà cung cấp
                 </h2>
                 
                 <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Tên công ty</label>
-                    <p className="text-[#F8FAFC] font-semibold mt-1">{invoice.supplier.name}</p>
+                  <div className="p-3 bg-bg-primary rounded-xl">
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Tên công ty</label>
+                    <p className="text-text-primary font-semibold mt-1">{invoice.supplier.name}</p>
                   </div>
-                  <div>
-                    <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Mã NCC</label>
-                    <p className="text-[#F8FAFC] font-semibold mt-1">{invoice.supplier.code}</p>
+                  <div className="p-3 bg-bg-primary rounded-xl">
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Mã NCC</label>
+                    <p className="text-text-primary font-semibold mt-1">{invoice.supplier.code}</p>
                   </div>
-                  <div>
-                    <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Mã số thuế</label>
-                    <p className="text-[#F8FAFC] font-semibold mt-1">{invoice.supplier.taxCode}</p>
+                  <div className="p-3 bg-bg-primary rounded-xl">
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Mã số thuế</label>
+                    <p className="text-text-primary font-semibold mt-1">{invoice.supplier.taxCode}</p>
                   </div>
-                  <div>
-                    <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Xếp hạng</label>
-                    <p className="text-[#F8FAFC] font-semibold mt-1">{invoice.supplier.supplierTier}</p>
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Trust Score</label>
-                    <p className="text-emerald-400 font-semibold mt-1">{invoice.supplier.trustScore}/100</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-bg-primary rounded-xl">
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Xếp hạng</label>
+                      <p className="text-text-primary font-semibold mt-1">{invoice.supplier.supplierTier}</p>
+                    </div>
+                    <div className="p-3 bg-bg-primary rounded-xl">
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Trust Score</label>
+                      <p className="text-emerald-400 font-semibold mt-1">{invoice.supplier.trustScore}/100</p>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Actions */}
-            <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] p-6">
-              <h2 className="text-lg font-black text-[#F8FAFC] mb-4">Thao tác</h2>
+            {/* Status Info */}
+            <div className="bg-bg-secondary rounded-2xl border border-border p-6">
+              <h2 className="text-lg font-black text-text-primary mb-4">Trạng thái</h2>
               
               <div className="space-y-3">
-                {invoice.status === 'SUBMITTED' && (
-                  <button
-                    onClick={handleRunMatching}
-                    disabled={processing}
-                    className="w-full bg-[#3B82F6] hover:bg-[#2563EB] text-white px-4 py-3 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    <RefreshCw size={16} className={processing ? 'animate-spin' : ''} />
-                    {processing ? 'Đang xử lý...' : 'Chạy đối soát 3 bên'}
-                  </button>
-                )}
-                
-                {(invoice.status === 'APPROVED' || invoice.status === 'AUTO_APPROVED') && (
-                  <button
-                    onClick={handlePay}
-                    disabled={processing}
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-3 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    <CreditCard size={16} />
-                    {processing ? 'Đang xử lý...' : 'Thanh toán'}
-                  </button>
-                )}
-                
                 {invoice.status === 'EXCEPTION_REVIEW' && (
                   <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
                     <p className="text-rose-400 text-sm font-semibold text-center">
                       Cần xử lý lỗi đối soát trước khi thanh toán
+                    </p>
+                  </div>
+                )}
+
+                {invoice.status === 'PAID' && (
+                  <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                    <p className="text-blue-400 text-sm font-semibold text-center">
+                      Đã thanh toán thành công
+                    </p>
+                  </div>
+                )}
+
+                {(invoice.status === 'APPROVED' || invoice.status === 'AUTO_APPROVED') && (
+                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                    <p className="text-emerald-400 text-sm font-semibold text-center">
+                      Sẵn sàng thanh toán
+                    </p>
+                  </div>
+                )}
+
+                {invoice.status === 'SUBMITTED' && (
+                  <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                    <p className="text-amber-400 text-sm font-semibold text-center">
+                      Chờ đối soát 3 bên
                     </p>
                   </div>
                 )}

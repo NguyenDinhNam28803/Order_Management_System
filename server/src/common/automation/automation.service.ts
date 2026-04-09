@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RfqmoduleService } from '../../rfqmodule/rfqmodule.service';
+import { EmailService } from '../../notification-module/email.service';
 import {
   DocumentType,
   PrStatus,
@@ -11,13 +12,25 @@ import {
   PriceVolatility,
 } from '@prisma/client';
 
+interface AutomationConfig {
+  contractThreshold: number;
+  defaultContractDays: number;
+  autoSendEmail: boolean;
+}
+
 @Injectable()
 export class AutomationService {
   private readonly logger = new Logger(AutomationService.name);
+  private config: AutomationConfig = {
+    contractThreshold: 50000000,
+    defaultContractDays: 365,
+    autoSendEmail: true,
+  };
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly rfqService: RfqmoduleService,
+    private readonly emailService: EmailService,
   ) {}
 
   /**
@@ -384,6 +397,44 @@ export class AutomationService {
         }
 
         this.logger.log(`PO ${po.poNumber} created and budget committed.`);
+
+        // 6. Kiểm tra tạo hợp đồng tự động nếu PO đạt ngưỡng
+        const poTotal = Number(quotation.totalPrice);
+        if (poTotal >= this.config.contractThreshold) {
+          this.logger.log(
+            `PO ${po.poNumber} value ${poTotal.toLocaleString('vi-VN')} VND exceeds threshold. Triggering contract automation...`,
+          );
+          // Gọi sau transaction để tránh deadlock
+          setImmediate(() => {
+            this.processPOAutomation(po.id)
+              .then((result) => {
+                if (result?.contractCreated) {
+                  this.logger.log(
+                    `Auto-created contract ${result.contractNumber} for PO ${po.poNumber}`,
+                  );
+                  console.log("Tạo hợp đồng thành công !")
+                } else {
+                  this.logger.warn(
+                    `Contract not created for PO ${po.poNumber}: ${result?.message}`,
+                  );
+                  console.log("Tạo hợp đồng thất bại !")
+                }
+              })
+              .catch((err) => {
+                this.logger.error(
+                  `Error in contract automation for PO ${po.poNumber}: ${err.message}`,
+                );
+                console.log("Tạo hợp đồng thất bại !");
+                console.log(err);
+              });
+          });
+        } else {
+          this.logger.log(
+            `PO ${po.poNumber} value ${poTotal.toLocaleString('vi-VN')} VND below contract threshold ${this.config.contractThreshold.toLocaleString('vi-VN')} VND`,
+          );
+        }
+
+        return po;
       });
     } catch (error) {
       this.logger.error(
@@ -535,5 +586,221 @@ export class AutomationService {
     } catch (error) {
       this.logger.error(`Failed to auto-create RFQ from PR ${prId}: ${error!}`);
     }
+  }
+
+  /**
+   * PO Automation: Tạo contract tự động khi PO đạt ngưỡng giá
+   */
+  async processPOAutomation(poId: string) {
+    try {
+      const po = await this.prisma.purchaseOrder.findUnique({
+        where: { id: poId },
+        include: {
+          supplier: true,
+          items: true,
+        },
+      });
+
+      if (!po) {
+        return { success: false, message: `PO not found: ${poId}` };
+      }
+
+      const totalAmount = Number(po.totalAmount);
+      this.logger.log(`Processing PO ${po.poNumber} with value: ${totalAmount}`);
+
+      if (totalAmount < this.config.contractThreshold) {
+        return {
+          success: true,
+          poId: po.id,
+          contractCreated: false,
+          message: `PO ${po.poNumber} below threshold ${this.config.contractThreshold.toLocaleString('vi-VN')} VND`,
+        };
+      }
+
+      if (po.contractId) {
+        const existingContract = await this.prisma.contract.findUnique({
+          where: { id: po.contractId },
+        });
+        if (existingContract) {
+          return {
+            success: true,
+            poId: po.id,
+            contractCreated: false,
+            contractId: existingContract.id,
+            message: `PO ${po.poNumber} already has contract ${existingContract.contractNumber}`,
+          };
+        }
+      }
+
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + this.config.defaultContractDays);
+
+      const contractNumber = await this.generateContractNumber(po.orgId);
+
+      const contract = await this.prisma.contract.create({
+        data: {
+          contractNumber,
+          title: `Contract from ${po.poNumber}`,
+          description: `Auto-generated contract from PO ${po.poNumber} value ${totalAmount.toLocaleString('vi-VN')} VND`,
+          orgId: po.orgId,
+          supplierId: po.supplierId,
+          value: totalAmount,
+          currency: po.currency || 'VND',
+          startDate,
+          endDate,
+          status: 'DRAFT',
+          milestones: {
+            create: [
+              {
+                title: 'Contract Signing',
+                description: 'Both parties sign the contract',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                paymentPct: 0,
+                status: 'PENDING',
+              },
+              {
+                title: 'First Delivery',
+                description: 'Initial delivery as per PO',
+                dueDate: po.deliveryDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                paymentPct: 30,
+                status: 'PENDING',
+              },
+              {
+                title: 'Final Payment',
+                description: 'Final payment upon completion',
+                dueDate: endDate,
+                paymentPct: 70,
+                status: 'PENDING',
+              },
+            ],
+          },
+        },
+      });
+
+      await this.prisma.purchaseOrder.update({
+        where: { id: po.id },
+        data: { contractId: contract.id },
+      });
+
+      this.logger.log(`Created contract ${contract.contractNumber} from PO ${po.poNumber}`);
+
+      let emailSent = false;
+      if (this.config.autoSendEmail && po.supplier?.email) {
+        emailSent = await this.sendContractNotificationEmail(contract.id, po, totalAmount);
+      }
+
+      return {
+        success: true,
+        poId: po.id,
+        poNumber: po.poNumber,
+        contractCreated: true,
+        contractId: contract.id,
+        contractNumber: contract.contractNumber,
+        message: `Created contract ${contract.contractNumber} from PO ${po.poNumber}${emailSent ? ' and sent email' : ''}`,
+        emailSent,
+      };
+    } catch (error) {
+      this.logger.error(`PO Automation error: ${error.message}`, error.stack);
+      return { success: false, message: `Error: ${error.message}` };
+    }
+  }
+
+  async sendContractEmail(contractId: string) {
+    const contract = await this.prisma.contract.findUnique({
+      where: { id: contractId },
+      include: {
+        supplierOrg: true,
+        purchaseOrders: {
+          include: { supplier: true },
+          take: 1,
+        },
+      },
+    });
+
+    if (!contract) {
+      throw new Error(`Contract not found: ${contractId}`);
+    }
+
+    const po = contract.purchaseOrders?.[0];
+    if (!po) {
+      throw new Error('No PO linked to contract');
+    }
+
+    const emailSent = await this.sendContractNotificationEmail(
+      contractId,
+      po,
+      Number(contract.value || 0)
+    );
+
+    return {
+      success: emailSent,
+      contractId,
+      message: emailSent ? 'Email sent' : 'Failed to send email',
+    };
+  }
+
+  private async generateContractNumber(orgId: string): Promise<string> {
+    const year = new Date().getFullYear();
+    const count = await this.prisma.contract.count({ where: { orgId } });
+    return `CTR-${year}-${String(count + 1).padStart(4, '0')}`;
+  }
+
+  private async sendContractNotificationEmail(
+    contractId: string,
+    po: any,
+    totalAmount: number,
+  ): Promise<boolean> {
+    try {
+      const contract = await this.prisma.contract.findUnique({
+        where: { id: contractId },
+        include: { supplierOrg: true },
+      });
+
+      const supplierEmail = contract?.supplierOrg?.email || po?.supplier?.email;
+      if (!supplierEmail) {
+        this.logger.warn('Cannot send email: missing supplier info');
+        return false;
+      }
+
+      const { subject, body } = this.generateContractEmailContent(contract, po, totalAmount);
+
+      await this.emailService.sendEmail(
+        supplierEmail,
+        subject,
+        body,
+      );
+
+      this.logger.log(`Sent contract email to ${supplierEmail}`);
+      return true;
+    } catch (error) {
+      this.logger.error(`Email error: ${error.message}`, error.stack);
+      return false;
+    }
+  }
+
+  private generateContractEmailContent(contract: any, po: any, totalAmount: number) {
+    const subject = `New Contract ${contract.contractNumber} - Value ${Number(contract.value || 0).toLocaleString('vi-VN')} VND`;
+
+    const body = `
+Dear ${contract.supplierOrg?.name || 'Supplier'},
+
+A new contract has been created from PO ${po.poNumber}:
+
+CONTRACT DETAILS:
+- Number: ${contract.contractNumber}
+- Title: ${contract.title}
+- Value: ${Number(contract.value || 0).toLocaleString('vi-VN')} ${contract.currency}
+- Start: ${contract.startDate?.toLocaleDateString('vi-VN')}
+- End: ${contract.endDate?.toLocaleDateString('vi-VN')}
+- Status: Pending signature
+
+Please login to view and sign the contract.
+
+Best regards,
+Procurement System
+    `;
+
+    return { subject, body };
   }
 }

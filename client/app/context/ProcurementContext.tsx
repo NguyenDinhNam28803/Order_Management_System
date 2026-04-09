@@ -105,6 +105,7 @@ export interface ProcurementContextType extends ProcurementState {
     fetchPrDetail: (id: string) => Promise<PR | null>;
     createPO: (d: CreatePoDto) => Promise<boolean>;
     createPOFromPR: (prId: string, vendorId?: string) => Promise<boolean>;
+    processPOAutomation: (poId: string) => Promise<{ success: boolean; contractCreated?: boolean; message: string } | null>;
     ackPO: (id: string) => Promise<boolean>;
     shipPO: (id: string) => Promise<boolean>;
     fetchPOById: (id: string) => Promise<PO | null>;
@@ -281,7 +282,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const baseUrl = 'http://localhost:5000';
         // process.env.NEXT_PUBLIC_API_URL ||
         return fetch(`${baseUrl}${url}`, { ...options, headers });
     }, []);
@@ -630,8 +631,28 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             method: 'POST', 
             body: JSON.stringify({ prId, supplierId }) 
         });
-        if (resp.ok) { notify("Tạo PO từ PR thành công!", "success"); await refreshData(); return true; }
-        return false;
+        if (resp.ok) { 
+            const result = await resp.json();
+            notify("Tạo đơn hàng từ PR thành công!", "success"); 
+            await refreshData(); 
+            return result.data || result; 
+        }
+        return null;
+    }, [apiFetch, refreshData, notify]);
+
+    const processPOAutomation = useCallback(async (poId: string) => {
+        const resp = await apiFetch(`/po-automation/process/${poId}`, { method: 'POST' });
+        if (resp.ok) { 
+            const result = await resp.json();
+            if (result.contractCreated) {
+                notify(result.message, "success");
+            } else {
+                notify(result.message, "info");
+            }
+            await refreshData();
+            return result;
+        }
+        return null;
     }, [apiFetch, refreshData, notify]);
 
     const ackPO = useCallback(async (id: string) => {
@@ -1527,7 +1548,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         addBudgetAllocation, submitAllocation, approveAllocation, rejectAllocation, distributeAnnualBudget, reconcileQuarter,
         approveOverride, rejectOverride, convertQuoteToPR,
         removeNotification, notify,
-        createPO, createPOFromPR, ackPO, shipPO, fetchPOById, confirmPO, submitPO, fetchSupplierPOs, rejectPO,
+        createPO, createPOFromPR, processPOAutomation, ackPO, shipPO, fetchPOById, confirmPO, submitPO, fetchSupplierPOs, rejectPO,
         createRFQ, createRFQConsolidated: async () => true, awardQuotation,
         addDept, updateDept, removeDept,
         addUser, updateUser, removeUser,

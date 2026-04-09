@@ -6,12 +6,12 @@ import {
     Filter, ArrowRight, 
     FileText, ShoppingBag, 
     Zap, TrendingUp, 
-    Package, Send, CheckCircle, X, ChevronRight} from "lucide-react";
+    Package, Send, CheckCircle, X, ChevronRight, Bot} from "lucide-react";
 import Link from "next/link";
 import { RFQ } from "../context/ProcurementContext";
 
 export default function SourcingPage() {
-    const { prs, rfqs, pos, currentUser, refreshData, notify, createRFQ, createPOFromPR, organizations, quoteRequests, updateQuoteRequest, submitQuoteRequest, sendQuoteRequestToSupplier } = useProcurement();
+    const { prs, rfqs, pos, currentUser, refreshData, notify, createRFQ, createPOFromPR, organizations, quoteRequests, updateQuoteRequest, submitQuoteRequest, sendQuoteRequestToSupplier, processPOAutomation } = useProcurement();
     const [activeTab, setActiveTab] = useState("quote-requests");
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -63,8 +63,31 @@ export default function SourcingPage() {
             const pr = prs.find(p => p.id === prId);
             const targetSupplier = organizations.find(o => o.id === pr?.preferredSupplierId) || suppliersList[0];
             if (!targetSupplier) return;
+            
             const success = await createPOFromPR(prId, targetSupplier.id);
-            if (success) notify(`Đã tạo PO nhanh cho NCC ${targetSupplier.name}`, "success");
+            if (success) {
+                notify(`Đã tạo PO nhanh cho NCC ${targetSupplier.name}`, "success");
+                
+                // Refresh to get latest data
+                await refreshData();
+                
+                // Fetch all POs to find the newly created one
+                const posResp = await fetch('/api/purchase-orders');
+                if (posResp.ok) {
+                    const allPOs = await posResp.json();
+                    const newPO = allPOs.find((p: any) => p.prId === prId);
+                    if (newPO?.id) {
+                        const poTotal = Number(newPO.totalAmount || newPO.total || 0);
+                        if (poTotal >= 50000000) {
+                            notify(`PO ${newPO.poNumber} đạt ngưỡng 50M VND. Đang tạo hợp đồng...`, "info");
+                            const result = await processPOAutomation(newPO.id);
+                            if (result?.contractCreated) {
+                                notify(result.message, "success");
+                            }
+                        }
+                    }
+                }
+            }
         } finally {
             setIsProcessing(false);
         }
