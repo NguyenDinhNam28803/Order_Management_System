@@ -291,7 +291,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                   <div>
                     <h4 className="text-sm font-medium text-[#94A3B8] mb-3">Danh sách items ({draft.items?.length})</h4>
                     <div className="overflow-x-auto rounded-xl border border-[rgba(148,163,184,0.1)]">
-                      <table className="w-full text-sm">
+                      <table className="erp-table text-xs m-0">
                         <thead className="bg-[#161922]">
                           <tr>
                             <th className="px-4 py-3 text-left text-[#94A3B8] font-medium">#</th>

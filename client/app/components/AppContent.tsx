@@ -6,8 +6,8 @@ import { useProcurement } from "../context/ProcurementContext";
 import Sidebar from "./Sidebar";
 import ToastContainer from "./Toast";
 import SmartSearch from "./SmartSearch";
-import NotificationInbox from "./NotificationInbox";
 import GlobalAISearch from "./GlobalAISearch";
+import Topbar from "./Topbar";
 
 export default function AppContent({ children }: { children: React.ReactNode }) {
     const { currentUser, isAuthChecking } = useProcurement();
@@ -56,6 +56,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
             {/* Main Content Area - Responsive width */}
             <div className="flex-1 flex flex-col h-screen overflow-hidden ml-16 transform-gpu transition-all duration-300">
+                <Topbar />
                 <main className="flex-1 overflow-y-auto bg-[#0F1117] relative">
                     <div className="w-full p-6 pb-32">
                         {children}

@@ -116,9 +116,17 @@ export default function DisputesPage() {
                                     </div>
                                 )}
                             </div>
-                            <button className="flex items-center gap-1.5 text-[#3B82F6] font-bold text-sm hover:underline">
-                                Xem chi tiết & Thảo luận <ArrowUpRight size={16} />
-                            </button>
+                            <div className="flex items-center gap-4">
+                                <button className="flex items-center gap-1.5 text-[#3B82F6] font-bold text-xs hover:underline">
+                                    Xem chi tiết & Thảo luận <ArrowUpRight size={14} />
+                                </button>
+                                {d.status === DisputeStatus.OPEN && (
+                                    <>
+                                        <button className="text-amber-500 hover:text-amber-400 font-bold text-xs" title="Sửa">Sửa</button>
+                                        <button className="text-rose-500 hover:text-rose-400 font-bold text-xs" title="Xóa">Xóa</button>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )) : (

@@ -112,7 +112,11 @@ export class PrmoduleService {
         }
       } else if (totalAmount >= 30000000 && totalAmount < 100000000) {
         // Chỉ Director trở lên mới được tạo PR từ 30tr - 100tr
-        const allowedRoles: UserRole[] = [UserRole.DIRECTOR, UserRole.CEO, UserRole.REQUESTER];
+        const allowedRoles: UserRole[] = [
+          UserRole.DIRECTOR,
+          UserRole.CEO,
+          UserRole.REQUESTER,
+        ];
         if (!allowedRoles.includes(role)) {
           throw new BadRequestException(
             'Hạn mức khởi tạo của bạn tối đa là 30 triệu VND.',

@@ -114,7 +114,7 @@ export default function DepartmentsPage() {
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-xs">
+                    <table className="erp-table text-xs">
                         <thead>
                             <tr className="bg-[#0F1117]">
                                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B] text-left">Mã & Tên Phòng ban</th>

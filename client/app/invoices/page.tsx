@@ -36,7 +36,7 @@ export default function InvoicesPage() {
       {error && <div className="mb-4 p-4 bg-red-100 text-red-600 rounded">{error}</div>}
 
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+        <table className="erp-table text-xs">
           <thead>
             <tr className="bg-gray-100">
               <th className="border p-3 text-left">Invoice #</th>
@@ -66,10 +66,20 @@ export default function InvoicesPage() {
                     {inv.status}
                   </span>
                 </td>
-                <td className="border p-3 text-center">
+                <td className="border p-3 text-center flex items-center justify-center gap-2">
                   <Link href={`/invoices/${inv.id}`} className="text-blue-600 hover:underline">
                     View
                   </Link>
+                  {inv.status === 'DRAFT' && (
+                    <>
+                      <button className="text-amber-500 hover:text-amber-700 mx-1">
+                        Edit
+                      </button>
+                      <button className="text-red-500 hover:text-red-700 mx-1">
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}

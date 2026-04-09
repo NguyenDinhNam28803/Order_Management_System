@@ -159,12 +159,26 @@ export default function PRPage() {
                         ) : (
                             <>
                                 {row.status === 'DRAFT' && (
-                                    <button 
-                                        onClick={() => submitPR(row.id)}
-                                        className="py-1.5 px-4 text-[11px] whitespace-nowrap bg-[#3B82F6] text-white rounded-lg font-bold uppercase tracking-wider shadow-lg shadow-[#3B82F6]/20 hover:bg-[#2563EB] transition-all flex items-center gap-2"
-                                    >
-                                        <Send size={14} /> Gửi duyệt
-                                    </button>
+                                    <>
+                                        <button 
+                                            className="p-1.5 rounded-lg bg-[#0F1117] text-[#64748B] hover:text-amber-500 hover:bg-amber-500/10 border border-[rgba(148,163,184,0.1)] transition-all shadow-sm"
+                                            title="Sửa PR"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                                        </button>
+                                        <button 
+                                            className="p-1.5 rounded-lg bg-[#0F1117] text-[#64748B] hover:text-rose-500 hover:bg-rose-500/10 border border-[rgba(148,163,184,0.1)] transition-all shadow-sm"
+                                            title="Xóa PR"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+                                        </button>
+                                        <button 
+                                            onClick={() => submitPR(row.id)}
+                                            className="py-1.5 px-4 text-[11px] whitespace-nowrap bg-[#3B82F6] text-white rounded-lg font-bold uppercase tracking-wider shadow-lg shadow-[#3B82F6]/20 hover:bg-[#2563EB] transition-all flex items-center gap-2"
+                                        >
+                                            <Send size={14} /> Gửi duyệt
+                                        </button>
+                                    </>
                                 )}
                                 {row.status.includes('PENDING') && (
                                     <span className="text-[10px] font-bold text-[#64748B] bg-[#0F1117] px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)]">

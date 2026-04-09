@@ -53,7 +53,7 @@ export default function POApprovalsPage() {
             </header>
 
             <div className="bg-[#161922] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#3B82F6]/5">
-                <table className="w-full text-left border-collapse">
+                <table className="erp-table text-xs">
                     <thead>
                         <tr className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]">
                             <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Mã PO</th>

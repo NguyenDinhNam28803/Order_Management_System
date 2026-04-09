@@ -106,7 +106,7 @@ export default function POManagementPage() {
                         {/* PO List Table */}
                         <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left border-collapse">
+                                <table className="erp-table text-xs">
                                     <thead>
                                         <tr className="bg-[#0F1117] text-[10px] uppercase font-black tracking-widest text-[#64748B] border-b border-[rgba(148,163,184,0.1)]">
                                             <th className="px-8 py-6">Mã PO</th>
@@ -506,7 +506,7 @@ function PODetailDrawer({ po, onClose }: { po: POMockData, onClose: () => void }
                         </h4>
                         {po.items && po.items.length > 0 ? (
                             <div className="bg-[#161922] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-sm">
-                                <table className="w-full text-left text-xs">
+                                <table className="erp-table text-xs">
                                     <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]">
                                         <tr className="font-black text-[#64748B] uppercase tracking-tighter">
                                             <th className="px-5 py-4">Mô tả</th>

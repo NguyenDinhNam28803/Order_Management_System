@@ -103,7 +103,7 @@ export default function WarehouseDashboard() {
                             <tbody>
                                 {incomingPOs.map((po, idx) => (
                                     <tr key={idx} className="cursor-pointer hover:bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]" onClick={() => router.push(`/warehouse/grn/new?po=${po.id}`)}>
-                                        <td className="font-bold text-[#F8FAFC]">{po.id}</td>
+                                        <td className="font-bold text-[#F8FAFC]">{po.id.replace('PO-', '#PO-')}</td>
                                         <td className="font-bold text-[#94A3B8]">{po.vendor}</td>
                                         <td>
                                             <div className="truncate w-32 font-medium text-[#F8FAFC]">{po.items}</div>
@@ -145,7 +145,7 @@ export default function WarehouseDashboard() {
                             <tbody>
                                 {draftGRNs.map((grn, idx) => (
                                     <tr key={idx} className="border-b border-[rgba(148,163,184,0.1)] hover:bg-[#0F1117]">
-                                        <td className="font-bold text-[#F8FAFC]">{grn.id}</td>
+                                        <td className="font-bold text-[#F8FAFC]">{grn.id.replace('GRN-', '#GRN-')}</td>
                                         <td className="font-bold text-[#94A3B8]">
                                             {grn.poId} <br/>
                                             <span className="font-normal text-[10px] text-[#64748B]">{grn.vendor}</span>

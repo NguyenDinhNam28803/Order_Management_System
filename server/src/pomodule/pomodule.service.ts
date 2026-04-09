@@ -151,9 +151,15 @@ export class PomoduleService {
 
     // Trigger automation to create GRN draft
     try {
-      await this.automationService.handlePoSupplierAccepted(poId, po.supplierId);
+      await this.automationService.handlePoSupplierAccepted(
+        poId,
+        po.supplierId,
+      );
     } catch (automationError) {
-      console.error('Failed to create GRN draft automatically:', automationError);
+      console.error(
+        'Failed to create GRN draft automatically:',
+        automationError,
+      );
       // Don't fail the confirmation if automation fails
     }
 

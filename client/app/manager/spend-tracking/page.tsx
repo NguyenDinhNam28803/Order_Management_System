@@ -152,7 +152,7 @@ export default function SpendTrackingPage() {
                     </button>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="erp-table text-xs">
                         <thead>
                             <tr className="bg-[#0F1117]">
                                 <th className="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Cost Center</th>

@@ -29,7 +29,12 @@ export class SupplierKpimoduleController {
    * @returns Kết quả đánh giá KPI và phân tích từ AI
    */
   @Post('evaluate/:supplierId')
-  @Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.PLATFORM_ADMIN, UserRole.SUPPLIER)
+  @Roles(
+    UserRole.PROCUREMENT,
+    UserRole.FINANCE,
+    UserRole.PLATFORM_ADMIN,
+    UserRole.SUPPLIER,
+  )
   @ApiOperation({
     summary: 'Kích hoạt AI đánh giá nhà cung cấp',
     description:
@@ -43,7 +48,9 @@ export class SupplierKpimoduleController {
     // Use orgId from body as fallback if not in JWT
     const buyerOrgId = req.orgId || body?.orgId;
     if (!buyerOrgId) {
-      throw new Error('orgId is required. Please provide orgId in request body or ensure user has an organization assigned.');
+      throw new Error(
+        'orgId is required. Please provide orgId in request body or ensure user has an organization assigned.',
+      );
     }
     return this.supplierKpimoduleService.evaluateSupplierPerformance(
       supplierId,
@@ -71,7 +78,9 @@ export class SupplierKpimoduleController {
     // Use orgId from body as fallback if not in JWT
     const buyerOrgId = user.orgId || body?.orgId;
     if (!buyerOrgId) {
-      throw new Error('orgId is required. Please provide orgId in request body or ensure user has an organization assigned.');
+      throw new Error(
+        'orgId is required. Please provide orgId in request body or ensure user has an organization assigned.',
+      );
     }
     return this.supplierKpimoduleService.getSupplierReport(
       supplierId,

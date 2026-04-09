@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useProcurement } from '@/app/context/ProcurementContext';
+import { ArrowLeft, CheckCircle2, Clock, FileText, Send, Building2, User, FileDigit, Calendar } from 'lucide-react';
 
 export default function PODetailPage() {
   const params = useParams();
@@ -59,96 +60,138 @@ export default function PODetailPage() {
   if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
   if (!po) return <div className="p-8">PO not found</div>;
 
-  return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">Purchase Order: {po.poNumber}</h1>
+  const getStatusDisplay = (status: string) => {
+    switch (status) {
+        case 'CONFIRMED': return { label: 'Đã xác nhận', class: 'status-approved' };
+        case 'DRAFT': return { label: 'Bản nháp', class: 'status-draft' };
+        default: return { label: status, class: 'status-info' };
+    }
+  };
 
-      <div className="grid grid-cols-3 gap-4 mb-8 p-6 bg-gray-50 rounded-lg">
+  return (
+    <div className="max-w-7xl mx-auto">
+      {/* Header with Breadcrumbs */}
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <label className="text-sm text-gray-600">PO Number</label>
-          <p className="text-lg font-semibold">{po.poNumber}</p>
-        </div>
-        <div>
-          <label className="text-sm text-gray-600">Status</label>
-          <p className="text-lg font-semibold">
-            <span className={`px-3 py-1 rounded ${
-              po.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' :
-              po.status === 'DRAFT' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-gray-100'
-            }`}>
-              {po.status}
+          <button 
+            onClick={() => router.back()} 
+            className="flex items-center gap-2 text-xs font-bold text-[#64748B] hover:text-[#3B82F6] transition-colors mb-4 uppercase tracking-widest"
+          >
+            <ArrowLeft size={14} /> Quay lại danh sách
+          </button>
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Chi tiết Đơn hàng (PO)</h1>
+            <span className={`status-pill ${getStatusDisplay(po.status).class}`}>
+              {getStatusDisplay(po.status).label}
             </span>
-          </p>
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-gray-600">Date</label>
-          <p className="text-lg">{new Date(po.createdAt).toLocaleDateString()}</p>
-        </div>
-        <div>
-          <label className="text-sm text-gray-600">Supplier</label>
-          <p className="text-lg">{po.supplier?.name}</p>
-        </div>
-        <div>
-          <label className="text-sm text-gray-600">From PR</label>
-          <p className="text-lg cursor-pointer text-blue-600 hover:underline" 
-             onClick={() => router.push(`/pr/${po.prId}`)}>
-            {po.pr?.prNumber}
-          </p>
-        </div>
-        <div>
-          <label className="text-sm text-gray-600">Total Amount</label>
-          <p className="text-lg font-semibold">{po.totalAmount?.toLocaleString('vi-VN')} VND</p>
+        <div className="flex gap-4">
+          {po.status === 'DRAFT' && (
+            <>
+              <button
+                onClick={handleConfirm}
+                disabled={submitting}
+                className="btn-success w-full md:w-auto text-xs uppercase tracking-widest"
+              >
+                {submitting ? <Clock size={16} className="animate-spin" /> : <CheckCircle2 size={16} />} 
+                Xác nhận PO
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="btn-primary w-full md:w-auto text-xs uppercase tracking-widest shadow-xl shadow-[#3B82F6]/20"
+              >
+                {submitting ? <Clock size={16} className="animate-spin" /> : <Send size={16} />}
+                Gửi phê duyệt
+              </button>
+            </>
+          )}
+          {po.status === 'CONFIRMED' && (
+            <div className="text-emerald-400 font-bold bg-[#10B981]/10 px-4 py-2 rounded-xl border border-[#10B981]/30 flex items-center gap-2 text-sm">
+              <CheckCircle2 size={16} /> PO Đã xác nhận - Sẵn sàng giao hàng
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Line Items</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2 erp-card space-y-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+            <FileText size={160} />
+          </div>
+          <h3 className="section-title">Thông tin Đơn hàng</h3>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]"><FileDigit size={12}/> Mã PO</div>
+              <p className="text-sm font-bold text-[#F8FAFC]">{po.poNumber || po.id.split('-').pop()}</p>
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]"><Building2 size={12}/> Nhà Cung Cấp</div>
+              <p className="text-sm font-bold text-[#94A3B8]">{po.supplier?.name || "N/A"}</p>
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]">PR Tham Chiếu</div>
+              <p className="text-sm font-bold text-[#3B82F6] cursor-pointer hover:underline" onClick={() => router.push(`/pr/${po.prId}`)}>
+                {po.pr?.prNumber || po.prId}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]"><Calendar size={12}/> Ngày Tạo</div>
+              <p className="text-sm font-bold text-[#94A3B8]">{new Date(po.createdAt).toLocaleDateString('vi-VN')}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="erp-card flex flex-col justify-between relative overflow-hidden">
+           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#3B82F6]/5 rounded-full blur-2xl"></div>
+           <div>
+              <h3 className="section-title">Tổng Mua Tiêu Chuẩn</h3>
+              <div className="text-4xl font-black text-[#F8FAFC] mt-2 tracking-tight">
+                  {po.totalAmount?.toLocaleString('vi-VN')} <span className="text-xl text-[#3B82F6]">VND</span>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      <div className="erp-card p-0 overflow-hidden">
+        <div className="p-5 border-b border-[rgba(148,163,184,0.1)]">
+          <h3 className="section-title m-0">Chi tiết sản phẩm</h3>
+        </div>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+          <table className="erp-table text-xs">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="border p-3 text-left">Product</th>
-                <th className="border p-3 text-right">Qty</th>
-                <th className="border p-3 text-right">Unit Price</th>
-                <th className="border p-3 text-right">Total</th>
+              <tr>
+                <th className="w-12 text-center text-[10px] font-black uppercase tracking-widest text-[#64748B]">STT</th>
+                <th className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">Sản phẩm / Dịch vụ</th>
+                <th className="text-right w-24 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Số lượng</th>
+                <th className="text-right w-40 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Đơn giá</th>
+                <th className="text-right w-48 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Tổng cộng</th>
               </tr>
             </thead>
             <tbody>
-              {po.items?.map((item: any) => (
-                <tr key={item.id} className="border">
-                  <td className="border p-3">{item.product?.name}</td>
-                  <td className="border p-3 text-right">{item.quantity}</td>
-                  <td className="border p-3 text-right">{item.unitPrice?.toLocaleString('vi-VN')} VND</td>
-                  <td className="border p-3 text-right">{item.lineTotal?.toLocaleString('vi-VN')} VND</td>
+              {po.items && po.items.length > 0 ? po.items.map((item: any, idx: number) => (
+                <tr key={item.id}>
+                  <td className="text-center font-bold text-[#64748B]">{idx + 1}</td>
+                  <td className="font-bold text-[#F8FAFC]">{item.product?.name || "N/A"}</td>
+                  <td className="text-right font-bold text-[#3B82F6]">{item.quantity}</td>
+                  <td className="text-right font-semibold text-[#94A3B8]">
+                    {item.unitPrice?.toLocaleString('vi-VN')} ₫
+                  </td>
+                  <td className="text-right font-black text-emerald-400">
+                    {item.lineTotal?.toLocaleString('vi-VN')} ₫
+                  </td>
                 </tr>
-              ))}
+              )) : (
+                <tr>
+                   <td colSpan={5} className="py-12 text-center text-[#64748B] font-bold text-xs uppercase tracking-widest">
+                      Không có mặt hàng nào
+                   </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
-      </div>
-
-      <div className="flex gap-4">
-        {po.status === 'DRAFT' && (
-          <>
-            <button
-              onClick={handleConfirm}
-              disabled={submitting}
-              className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-50"
-            >
-              {submitting ? 'Confirming...' : 'Confirm PO'}
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-            >
-              {submitting ? 'Submitting...' : 'Submit for Approval'}
-            </button>
-          </>
-        )}
-        {po.status === 'CONFIRMED' && (
-          <div className="text-green-600 font-semibold">✅ PO Confirmed - Ready for Delivery</div>
-        )}
       </div>
     </div>
   );

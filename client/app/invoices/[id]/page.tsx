@@ -307,7 +307,7 @@ export default function InvoiceDetailPage() {
                 </h2>
                 
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="erp-table text-xs">
                     <thead>
                       <tr className="border-b border-border">
                         <th className="text-left py-3 px-4 text-xs font-bold text-text-secondary uppercase">PO Item ID</th>

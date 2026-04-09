@@ -72,7 +72,7 @@ export default function AmendmentsPage() {
 
                         <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left">
+                                <table className="erp-table text-xs">
                                     <thead>
                                         <tr className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)] text-[9px] font-black text-[#64748B] uppercase tracking-widest">
                                             <th className="px-8 py-5">Mã PO</th>

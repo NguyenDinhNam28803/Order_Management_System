@@ -160,7 +160,7 @@ export default function FinanceDashboard() {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="erp-table text-xs">
                         <thead className="bg-[#0F1117] text-[10px] font-black uppercase tracking-widest text-[#64748B]">
                             <tr className="border-b border-[rgba(148,163,184,0.1)]">
                                 <th className="px-6 py-4 text-left">Mã định danh INV</th>

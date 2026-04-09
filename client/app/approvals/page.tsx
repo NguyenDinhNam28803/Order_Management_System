@@ -260,7 +260,7 @@ export default function ApprovalsPage() {
 
                                             <h3 className="text-xs font-bold text-[#64748B] uppercase tracking-widest mb-4">Chi tiết hàng hóa / dịch vụ</h3>
                                             <div className="overflow-hidden border border-[rgba(148,163,184,0.1)] rounded-xl">
-                                                <table className="w-full text-left text-xs">
+                                                <table className="erp-table text-xs">
                                                     <thead>
                                                         <tr className="bg-[#0F1117] text-[#64748B] font-bold border-b border-[rgba(148,163,184,0.1)] uppercase tracking-tighter">
                                                             <th className="px-5 py-4">Mô tả</th>

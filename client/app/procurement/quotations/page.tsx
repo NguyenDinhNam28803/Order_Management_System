@@ -6,17 +6,17 @@ import { Quotation, QuotationItem, RfqStatus } from "@/app/types/api-types";
 import { ERPTableColumn } from "../../components/shared/ERPTable";
 import { formatVND } from "../../utils/formatUtils";
 import ERPTable from "../../components/shared/ERPTable";
-import { 
+import {
     Search, ListFilter, ArrowRight, ArrowLeft,
-    FileText, CheckCircle, CheckCircle2, Award, Send, 
-    ShieldAlert, AlertCircle, TrendingUp, 
+    FileText, CheckCircle, CheckCircle2, Award, Send,
+    ShieldAlert, AlertCircle, TrendingUp,
     Star, Clock, DollarSign, Sparkles, Users, Calendar,
     Eye, X, RotateCcw, Building2, Mail, Phone, ShieldCheck,
     ThumbsUp, ThumbsDown, MessageSquare, Bot, Target
 } from "lucide-react";
 
 export default function QuotationManagementPage() {
-    const { rfqs, currentUser, notify, awardQuotation, fetchQuotationsByRfq, analyzeQuotationWithAI, refreshData, updateRFQStatus, organizations } = useProcurement();
+    const { rfqs, currentUser, notify, awardQuotation, fetchQuotationsByRfq, analyzeQuotationWithAI, refreshData, updateRFQStatus, organizations, createCounterOffer, fetchCounterOffersByQuotation, fetchQAThreadsBySupplier, createQAThread } = useProcurement();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedRFQ, setSelectedRFQ] = useState<RFQ | null>(null);
     const [quotations, setQuotations] = useState<Quotation[]>([]);
@@ -24,6 +24,12 @@ export default function QuotationManagementPage() {
     const [analyzingRFQ, setAnalyzingRFQ] = useState<string | null>(null);
     const [awardModal, setAwardModal] = useState<Quotation | null>(null);
     const [viewQuotation, setViewQuotation] = useState<Quotation | null>(null);
+    const [activeModalTab, setActiveModalTab] = useState<'AI' | 'QA' | 'NEGOTIATION'>('AI');
+    const [counterOffersList, setCounterOffersList] = useState<any[]>([]);
+    const [qaThreadsList, setQaThreadsList] = useState<any[]>([]);
+    const [newMsg, setNewMsg] = useState('');
+    const [newPrice, setNewPrice] = useState('');
+    const [counterOfferNote, setCounterOfferNote] = useState('');
 
     // Load quotations when RFQ is selected
     useEffect(() => {
@@ -60,6 +66,14 @@ export default function QuotationManagementPage() {
 
     const handleViewQuotation = async (quotation: Quotation) => {
         setViewQuotation(quotation);
+        setActiveModalTab('AI');
+        try {
+            const cos = await fetchCounterOffersByQuotation(quotation.id);
+            setCounterOffersList(cos || []);
+            const qas = await fetchQAThreadsBySupplier(quotation.rfqId, quotation.supplierId);
+            setQaThreadsList(qas || []);
+        } catch (e) { }
+
         // Only analyze if no AI analysis yet
         if (!quotation.aiAnalysis && quotation.status === 'SUBMITTED') {
             try {
@@ -71,8 +85,8 @@ export default function QuotationManagementPage() {
                         aiScore: (aiResult as any).score ? ((aiResult as any).score * 10) : undefined
                     } : null);
                     // Also update in quotations list
-                    setQuotations(prev => prev.map(q => 
-                        q.id === quotation.id 
+                    setQuotations(prev => prev.map(q =>
+                        q.id === quotation.id
                             ? { ...q, aiAnalysis: aiResult as Quotation['aiAnalysis'], aiScore: (aiResult as any).score ? ((aiResult as any).score * 10) : undefined }
                             : q
                     ));
@@ -191,14 +205,14 @@ export default function QuotationManagementPage() {
             label: "Thao tác",
             render: (row: RFQ) => (
                 <div className="flex items-center gap-2">
-                    <button 
+                    <button
                         onClick={() => setSelectedRFQ(row)}
                         className="inline-flex items-center gap-2 bg-[#3B82F6] text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#2563EB] transition-all shadow-lg shadow-[#3B82F6]/20 active:scale-95"
                     >
                         <Eye size={14} /> Xem báo giá
                     </button>
                     {row.status === 'PUBLISHED' && (
-                        <button 
+                        <button
                             onClick={async () => {
                                 if (confirm('Bạn có chắc muốn đóng RFQ này?')) {
                                     await updateRFQStatus(row.id, RfqStatus.CLOSED);
@@ -274,7 +288,7 @@ export default function QuotationManagementPage() {
                                     {row.aiScore}/100
                                 </span>
                                 <div className="w-16 bg-[#1A1D23] rounded-full h-1">
-                                    <div 
+                                    <div
                                         className={`h-1 rounded-full ${row.aiScore >= 80 ? "bg-amber-500" : "bg-violet-500"}`}
                                         style={{ width: `${row.aiScore}%` }}
                                     />
@@ -298,11 +312,11 @@ export default function QuotationManagementPage() {
                 </div>
             )
         },
-        {   
+        {
             label: "Thao tác",
             render: (row: Quotation) => (
                 <div className="flex items-center justify-end gap-2">
-                    <button 
+                    <button
                         onClick={() => handleViewQuotation(row)}
                         className="inline-flex items-center gap-2 bg-[#1A1D23] text-[#64748B] px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#0F1117] transition-all border border-[rgba(148,163,184,0.1)]"
                         title="Xem chi tiết"
@@ -310,7 +324,7 @@ export default function QuotationManagementPage() {
                         <Eye size={14} />
                     </button>
                     {row.status === 'SUBMITTED' && (
-                        <button 
+                        <button
                             onClick={() => setAwardModal(row)}
                             className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
                         >
@@ -354,13 +368,13 @@ export default function QuotationManagementPage() {
                         {selectedRFQ ? `BÁO GIÁ CHO RFQ` : "QUẢN LÝ BÁO GIÁ"}
                     </h1>
                     <p className="text-[#64748B] font-bold text-sm tracking-tight flex items-center gap-2 uppercase">
-                        <ShieldAlert size={14} className="text-[#3B82F6]" /> 
+                        <ShieldAlert size={14} className="text-[#3B82F6]" />
                         {selectedRFQ ? selectedRFQ.title || "Xem xét và trao thầu" : "Chọn RFQ để xem báo giá"}
                     </p>
                 </div>
                 <div className="flex gap-4 w-full md:w-auto">
                     {selectedRFQ ? (
-                        <button 
+                        <button
                             onClick={() => setSelectedRFQ(null)}
                             className="inline-flex items-center gap-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#1A1D23] transition-all shadow-sm"
                         >
@@ -369,7 +383,7 @@ export default function QuotationManagementPage() {
                     ) : (
                         <div className="relative grow md:w-80">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]" size={18} />
-                            <input 
+                            <input
                                 type="text"
                                 placeholder="Tìm kiếm RFQ..."
                                 className="w-full pl-12 pr-6 py-5 h-14 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#F8FAFC] placeholder:text-[#64748B] focus:ring-2 focus:ring-[#3B82F6] transition-all"
@@ -431,7 +445,7 @@ export default function QuotationManagementPage() {
                                         <div className="text-[10px] text-[#64748B] font-bold uppercase">Nhà cung cấp được chọn</div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div>
                                         <span className="text-[10px] font-black uppercase text-[#64748B]">Giá báo:</span>
@@ -457,7 +471,7 @@ export default function QuotationManagementPage() {
 
                             <div className="flex gap-4 pt-4">
                                 <button onClick={() => setAwardModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#1A1D23] text-[#64748B] font-black text-xs uppercase tracking-widest hover:bg-[#0F1117] transition-all border border-[rgba(148,163,184,0.1)]">Hủy bỏ</button>
-                                <button 
+                                <button
                                     onClick={() => handleAward(awardModal)}
                                     className="flex-1 px-6 py-4 rounded-2xl bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
                                 >
@@ -473,7 +487,7 @@ export default function QuotationManagementPage() {
             {viewQuotation && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F1117]/90 backdrop-blur-sm animate-in fade-in duration-300">
                     <div className="bg-[#0F1117] rounded-3xl w-full max-w-4xl shadow-2xl shadow-black/50 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.2)] overflow-hidden">
-                        
+
                         {/* Header */}
                         <div className="bg-gradient-to-r from-[#1A1D23] to-[#161922] px-8 py-5 flex justify-between items-center border-b border-[rgba(148,163,184,0.1)] shrink-0">
                             <div className="flex items-center gap-4">
@@ -494,140 +508,228 @@ export default function QuotationManagementPage() {
                         </div>
 
                         <div className="flex flex-1 overflow-hidden">
-                            {/* Left Panel - AI Analysis */}
-                            <div className="flex-1 p-6 overflow-y-auto">
-                                {viewQuotation.aiAnalysis ? (
-                                    <>
-                                        {/* AI Score Card */}
-                                        <div className="mb-6 rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.15)]">
-                                            <div className={`px-6 py-4 ${
-                                                viewQuotation.aiAnalysis.recommendation === 'ACCEPT' ? 'bg-emerald-500/10' :
-                                                viewQuotation.aiAnalysis.recommendation === 'REJECT' ? 'bg-rose-500/10' :
-                                                'bg-amber-500/10'
-                                            }`}>
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`h-14 w-14 rounded-xl flex items-center justify-center border ${
-                                                            viewQuotation.aiAnalysis.recommendation === 'ACCEPT' ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' :
-                                                            viewQuotation.aiAnalysis.recommendation === 'REJECT' ? 'bg-rose-500/20 border-rose-500/30 text-rose-400' :
-                                                            'bg-amber-500/20 border-amber-500/30 text-amber-400'
+                            {/* Left Panel */}
+                            <div className="flex-1 overflow-y-auto flex flex-col bg-[#0F1117]">
+                                {/* Horizontal Tabs */}
+                                <div className="flex px-6 pt-4 border-b border-[rgba(148,163,184,0.1)] gap-6 shrink-0 bg-[#0F1117]">
+                                    <button onClick={() => setActiveModalTab('AI')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${activeModalTab === 'AI' ? 'border-[#3B82F6] text-[#3B82F6]' : 'border-transparent text-[#64748B] hover:text-[#F8FAFC]'}`}>Phân tích AI</button>
+                                    <button onClick={() => setActiveModalTab('QA')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'QA' ? 'border-[#3B82F6] text-[#3B82F6]' : 'border-transparent text-[#64748B] hover:text-[#F8FAFC]'}`}>Trao đổi (Q&A) <span className="bg-[#3B82F6]/20 text-[#3B82F6] px-1.5 py-0.5 rounded text-[9px]">{qaThreadsList?.length || 0}</span></button>
+                                    <button onClick={() => setActiveModalTab('NEGOTIATION')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'NEGOTIATION' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-[#64748B] hover:text-[#F8FAFC]'}`}>Đàm phán Giá <span className="bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded text-[9px]">{counterOffersList?.length || 0}</span></button>
+                                </div>
+                                <div className="p-6 flex-1 overflow-y-auto">
+                                    {activeModalTab === 'AI' && (
+                                        viewQuotation.aiAnalysis ? (
+                                            <>
+                                                {/* AI Score Card */}
+                                                <div className="mb-6 rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.15)]">
+                                                    <div className={`px-6 py-4 ${viewQuotation.aiAnalysis.recommendation === 'ACCEPT' ? 'bg-emerald-500/10' :
+                                                            viewQuotation.aiAnalysis.recommendation === 'REJECT' ? 'bg-rose-500/10' :
+                                                                'bg-amber-500/10'
                                                         }`}>
-                                                            <Bot size={28} />
-                                                        </div>
-                                                        <div>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-xs font-black text-[#64748B] uppercase tracking-wider">Phân tích AI</span>
-                                                                <Sparkles size={12} className="text-violet-400" />
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={`h-14 w-14 rounded-xl flex items-center justify-center border ${viewQuotation.aiAnalysis.recommendation === 'ACCEPT' ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' :
+                                                                        viewQuotation.aiAnalysis.recommendation === 'REJECT' ? 'bg-rose-500/20 border-rose-500/30 text-rose-400' :
+                                                                            'bg-amber-500/20 border-amber-500/30 text-amber-400'
+                                                                    }`}>
+                                                                    <Bot size={28} />
+                                                                </div>
+                                                                <div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-xs font-black text-[#64748B] uppercase tracking-wider">Phân tích AI</span>
+                                                                        <Sparkles size={12} className="text-violet-400" />
+                                                                    </div>
+                                                                    <div className={`text-2xl font-black ${viewQuotation.aiAnalysis.score >= 7 ? 'text-emerald-400' :
+                                                                            viewQuotation.aiAnalysis.score >= 5 ? 'text-amber-400' :
+                                                                                'text-rose-400'
+                                                                        }`}>
+                                                                        {viewQuotation.aiAnalysis.score}<span className="text-base text-[#64748B]">/10</span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div className={`text-2xl font-black ${
-                                                                viewQuotation.aiAnalysis.score >= 7 ? 'text-emerald-400' :
-                                                                viewQuotation.aiAnalysis.score >= 5 ? 'text-amber-400' :
-                                                                'text-rose-400'
-                                                            }`}>
-                                                                {viewQuotation.aiAnalysis.score}<span className="text-base text-[#64748B]">/10</span>
+                                                            <div className={`px-4 py-2 rounded-xl font-black text-sm border ${viewQuotation.aiAnalysis.recommendation === 'ACCEPT'
+                                                                    ? 'bg-emerald-500 text-white border-emerald-500' :
+                                                                    viewQuotation.aiAnalysis.recommendation === 'REJECT'
+                                                                        ? 'bg-rose-500 text-white border-rose-500' :
+                                                                        'bg-amber-500 text-black border-amber-500'
+                                                                }`}>
+                                                                {viewQuotation.aiAnalysis.recommendation === 'ACCEPT' && 'CHẤP NHẬN'}
+                                                                {viewQuotation.aiAnalysis.recommendation === 'REJECT' && 'TỪ CHỐI'}
+                                                                {viewQuotation.aiAnalysis.recommendation === 'NEGOTIATE' && 'ĐÀM PHÁN'}
+                                                                {!['ACCEPT', 'REJECT', 'NEGOTIATE'].includes(viewQuotation.aiAnalysis.recommendation) && viewQuotation.aiAnalysis.recommendation}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className={`px-4 py-2 rounded-xl font-black text-sm border ${
-                                                        viewQuotation.aiAnalysis.recommendation === 'ACCEPT' 
-                                                            ? 'bg-emerald-500 text-white border-emerald-500' :
-                                                        viewQuotation.aiAnalysis.recommendation === 'REJECT'
-                                                            ? 'bg-rose-500 text-white border-rose-500' :
-                                                            'bg-amber-500 text-black border-amber-500'
-                                                    }`}>
-                                                        {viewQuotation.aiAnalysis.recommendation === 'ACCEPT' && 'CHẤP NHẬN'}
-                                                        {viewQuotation.aiAnalysis.recommendation === 'REJECT' && 'TỪ CHỐI'}
-                                                        {viewQuotation.aiAnalysis.recommendation === 'NEGOTIATE' && 'ĐÀM PHÁN'}
-                                                        {!['ACCEPT', 'REJECT', 'NEGOTIATE'].includes(viewQuotation.aiAnalysis.recommendation) && viewQuotation.aiAnalysis.recommendation}
+
+                                                    {/* Assessment */}
+                                                    <div className="p-5 bg-[#161922]">
+                                                        <div className="flex items-start gap-3">
+                                                            <div className="h-8 w-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center shrink-0">
+                                                                <MessageSquare size={16} className="text-[#3B82F6]" />
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-[10px] font-black uppercase text-[#64748B] tracking-wider mb-1">Đánh giá tổng quan</div>
+                                                                <p className="text-sm text-[#94A3B8] leading-relaxed">{viewQuotation.aiAnalysis.assessment}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Pros & Cons */}
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    {/* Pros */}
+                                                    {viewQuotation.aiAnalysis.pros?.length > 0 && (
+                                                        <div className="rounded-2xl p-5 bg-emerald-500/5 border border-emerald-500/20">
+                                                            <div className="flex items-center gap-2 mb-4">
+                                                                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                                                                    <ThumbsUp size={16} className="text-emerald-400" />
+                                                                </div>
+                                                                <div className="text-xs font-black uppercase text-emerald-400 tracking-wider">Ưu điểm</div>
+                                                            </div>
+                                                            <ul className="space-y-3">
+                                                                {viewQuotation.aiAnalysis.pros.map((pro, idx) => (
+                                                                    <li key={idx} className="flex items-start gap-2 text-sm text-[#94A3B8]">
+                                                                        <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                                                                        <span className="leading-relaxed">{pro}</span>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Cons */}
+                                                    {viewQuotation.aiAnalysis.cons?.length > 0 && (
+                                                        <div className="rounded-2xl p-5 bg-rose-500/5 border border-rose-500/20">
+                                                            <div className="flex items-center gap-2 mb-4">
+                                                                <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
+                                                                    <ThumbsDown size={16} className="text-rose-400" />
+                                                                </div>
+                                                                <div className="text-xs font-black uppercase text-rose-400 tracking-wider">Nhược điểm</div>
+                                                            </div>
+                                                            <ul className="space-y-3">
+                                                                {viewQuotation.aiAnalysis.cons.map((con, idx) => (
+                                                                    <li key={idx} className="flex items-start gap-2 text-sm text-[#94A3B8]">
+                                                                        <AlertCircle size={16} className="text-rose-400 shrink-0 mt-0.5" />
+                                                                        <span className="leading-relaxed">{con}</span>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            /* No AI Analysis */
+                                            <div className="h-full flex flex-col items-center justify-center text-center p-8">
+                                                <div className="h-20 w-20 rounded-3xl bg-[#3B82F6]/10 flex items-center justify-center mb-4">
+                                                    <Sparkles size={36} className="text-[#3B82F6]" />
+                                                </div>
+                                                <h4 className="text-lg font-black text-[#F8FAFC] mb-2">Chưa có phân tích AI</h4>
+                                                <p className="text-sm text-[#64748B] max-w-xs">Hệ thống sẽ tự động phân tích báo giá này trong giây lát...</p>
+                                            </div>
+                                        ))}
+
+                                    {activeModalTab === 'QA' && (
+                                        <div className="flex flex-col h-full">
+                                            <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+                                                {qaThreadsList.map((qa, idx) => (
+                                                    <div key={idx} className="bg-[#161922] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                                        <div className="flex gap-2">
+                                                            <div className="h-8 w-8 bg-[#3B82F6]/10 rounded-xl flex items-center justify-center text-[#3B82F6] shrink-0 font-black text-xs">Q</div>
+                                                            <div className="flex-1">
+                                                                <div className="text-[10px] text-[#64748B] mb-1">MUA HÀNG HỎI</div>
+                                                                <p className="text-sm text-[#F8FAFC]">{qa.question}</p>
+                                                            </div>
+                                                        </div>
+                                                        {qa.answer && (
+                                                            <div className="flex gap-2 mt-4 pt-4 border-t border-[rgba(148,163,184,0.1)]">
+                                                                <div className="h-8 w-8 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-400 shrink-0 font-black text-xs">A</div>
+                                                                <div className="flex-1">
+                                                                    <div className="text-[10px] text-[#64748B] mb-1">NCC TRẢ LỜI</div>
+                                                                    <p className="text-sm text-[#F8FAFC]">{qa.answer}</p>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                                {qaThreadsList.length === 0 && <p className="text-center text-[#64748B] p-4 text-xs font-bold uppercase">Chưa có câu hỏi nào</p>}
+                                            </div>
+                                            <div className="mt-auto flex gap-2">
+                                                <input value={newMsg} onChange={(e) => setNewMsg(e.target.value)} type="text" placeholder="Nhập câu hỏi cho NCC..." className="flex-1 bg-[#161922] border border-[rgba(148,163,184,0.2)] rounded-xl px-4 py-3 text-sm text-[#F8FAFC] focus:ring-2 outline-none" />
+                                                <button onClick={async () => {
+                                                    if (!newMsg) return;
+                                                    await createQAThread(viewQuotation.rfqId, { question: newMsg, supplierId: viewQuotation.supplierId });
+                                                    setNewMsg('');
+                                                    const qas = await fetchQAThreadsBySupplier(viewQuotation.rfqId, viewQuotation.supplierId);
+                                                    setQaThreadsList(qas || []);
+                                                }} className="bg-[#3B82F6] text-white px-5 rounded-xl font-black text-xs uppercase hover:bg-blue-600 transition-all">Gửi</button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {activeModalTab === 'NEGOTIATION' && (
+                                        <div className="flex flex-col h-full">
+                                            <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl mb-6">
+                                                <div className="flex items-start gap-3 text-amber-400">
+                                                    <AlertCircle size={20} className="shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <h4 className="font-black text-sm uppercase">Cơ chế Counter-Offer (Trả giá)</h4>
+                                                        <p className="text-xs mt-1 text-amber-400/80">Bạn có thể gửi một mức giá kỳ vọng mới. Nếu NCC đồng ý, báo giá sẽ tự động cập nhật về giá thiết lập mới.</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            
-                                            {/* Assessment */}
-                                            <div className="p-5 bg-[#161922]">
-                                                <div className="flex items-start gap-3">
-                                                    <div className="h-8 w-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center shrink-0">
-                                                        <MessageSquare size={16} className="text-[#3B82F6]" />
+                                            <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+                                                {counterOffersList.map((co, idx) => (
+                                                    <div key={idx} className="bg-[#161922] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                                        <div className="flex justify-between items-center mb-3">
+                                                            <div className="text-[10px] uppercase font-black text-[#64748B]">BẠN ĐỀ XUẤT</div>
+                                                            <StatusPill status={co.status} />
+                                                        </div>
+                                                        <div className="text-2xl font-black text-emerald-400 mb-2">{formatVND(co.proposedPrice)} ₫</div>
+                                                        {co.buyerNote && <p className="text-xs text-[#94A3B8] italic">"{co.buyerNote}"</p>}
+                                                    </div>
+                                                ))}
+                                                {counterOffersList.length === 0 && <p className="text-center text-[#64748B] p-4 text-xs font-bold uppercase">Chưa có đề xuất đàm phán</p>}
+                                            </div>
+                                            <div className="mt-auto bg-[#161922] p-4 rounded-2xl border border-[rgba(148,163,184,0.2)]">
+                                                <div className="grid grid-cols-2 gap-4 mb-3">
+                                                    <div>
+                                                        <label className="text-[10px] font-black uppercase text-[#64748B] block mb-1">Mức giá đề xuất</label>
+                                                        <input value={newPrice} onChange={(e) => setNewPrice(e.target.value)} type="number" placeholder="Ví dụ: 45000000" className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.2)] rounded-xl px-4 py-2 text-sm text-[#F8FAFC] font-black outline-none" />
                                                     </div>
                                                     <div>
-                                                        <div className="text-[10px] font-black uppercase text-[#64748B] tracking-wider mb-1">Đánh giá tổng quan</div>
-                                                        <p className="text-sm text-[#94A3B8] leading-relaxed">{viewQuotation.aiAnalysis.assessment}</p>
+                                                        <label className="text-[10px] font-black uppercase text-[#64748B] block mb-1">Ghi chú (Tùy chọn)</label>
+                                                        <input value={counterOfferNote} onChange={(e) => setCounterOfferNote(e.target.value)} type="text" placeholder="Lý do..." className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.2)] rounded-xl px-4 py-2 text-sm text-[#F8FAFC] outline-none" />
                                                     </div>
                                                 </div>
+                                                <button onClick={async () => {
+                                                    if (!newPrice) return;
+                                                    await createCounterOffer(viewQuotation.id, { proposedPrice: Number(newPrice), notes: counterOfferNote });
+                                                    setNewPrice(''); setCounterOfferNote('');
+                                                    const cos = await fetchCounterOffersByQuotation(viewQuotation.id);
+                                                    setCounterOffersList(cos || []);
+                                                }} className="w-full py-3 bg-emerald-600 text-white rounded-xl font-black text-xs uppercase hover:bg-emerald-700 transition-all shadow-lg active:scale-95">Gửi Đề xuất Đàm phán</button>
                                             </div>
                                         </div>
+                                    )}
+                                </div>
 
-                                        {/* Pros & Cons */}
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {/* Pros */}
-                                            {viewQuotation.aiAnalysis.pros?.length > 0 && (
-                                                <div className="rounded-2xl p-5 bg-emerald-500/5 border border-emerald-500/20">
-                                                    <div className="flex items-center gap-2 mb-4">
-                                                        <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                                                            <ThumbsUp size={16} className="text-emerald-400" />
-                                                        </div>
-                                                        <div className="text-xs font-black uppercase text-emerald-400 tracking-wider">Ưu điểm</div>
-                                                    </div>
-                                                    <ul className="space-y-3">
-                                                        {viewQuotation.aiAnalysis.pros.map((pro, idx) => (
-                                                            <li key={idx} className="flex items-start gap-2 text-sm text-[#94A3B8]">
-                                                                <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                                                                <span className="leading-relaxed">{pro}</span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-                                            
-                                            {/* Cons */}
-                                            {viewQuotation.aiAnalysis.cons?.length > 0 && (
-                                                <div className="rounded-2xl p-5 bg-rose-500/5 border border-rose-500/20">
-                                                    <div className="flex items-center gap-2 mb-4">
-                                                        <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
-                                                            <ThumbsDown size={16} className="text-rose-400" />
-                                                        </div>
-                                                        <div className="text-xs font-black uppercase text-rose-400 tracking-wider">Nhược điểm</div>
-                                                    </div>
-                                                    <ul className="space-y-3">
-                                                        {viewQuotation.aiAnalysis.cons.map((con, idx) => (
-                                                            <li key={idx} className="flex items-start gap-2 text-sm text-[#94A3B8]">
-                                                                <AlertCircle size={16} className="text-rose-400 shrink-0 mt-0.5" />
-                                                                <span className="leading-relaxed">{con}</span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </>
-                                ) : (
-                                    /* No AI Analysis */
-                                    <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                                        <div className="h-20 w-20 rounded-3xl bg-[#3B82F6]/10 flex items-center justify-center mb-4">
-                                            <Sparkles size={36} className="text-[#3B82F6]" />
-                                        </div>
-                                        <h4 className="text-lg font-black text-[#F8FAFC] mb-2">Chưa có phân tích AI</h4>
-                                        <p className="text-sm text-[#64748B] max-w-xs">Hệ thống sẽ tự động phân tích báo giá này trong giây lát...</p>
-                                    </div>
-                                )}
-                            </div>
+                                {/* Right Panel - Quotation Details */}
+                                <div className="w-80 bg-[#161922] border-l border-[rgba(148,163,184,0.1)] p-6 overflow-y-auto">
+                                    <div className="text-xs font-black uppercase text-[#64748B] tracking-wider mb-4">Chi tiết báo giá</div>
 
-                            {/* Right Panel - Quotation Details */}
-                            <div className="w-80 bg-[#161922] border-l border-[rgba(148,163,184,0.1)] p-6 overflow-y-auto">
-                                <div className="text-xs font-black uppercase text-[#64748B] tracking-wider mb-4">Chi tiết báo giá</div>
-                                
-                                <div className="space-y-4">
-                                    <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
-                                        <div className="text-[10px] text-[#64748B] uppercase mb-1">Tổng giá trị</div>
-                                        <div className="text-xl font-black text-emerald-400">{formatVND(viewQuotation.totalPrice)} ₫</div>
-                                    </div>
-                                    
-                                    <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
-                                        <div className="text-[10px] text-[#64748B] uppercase mb-1">Lead Time</div>
-                                        <div className="text-xl font-black text-[#3B82F6]">{viewQuotation.leadTimeDays} <span className="text-sm text-[#64748B]">ngày</span></div>
-                                    </div>
-                                    
-                                    {/* <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
+                                    <div className="space-y-4">
+                                        <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
+                                            <div className="text-[10px] text-[#64748B] uppercase mb-1">Tổng giá trị</div>
+                                            <div className="text-xl font-black text-emerald-400">{formatVND(viewQuotation.totalPrice)} ₫</div>
+                                        </div>
+
+                                        <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
+                                            <div className="text-[10px] text-[#64748B] uppercase mb-1">Lead Time</div>
+                                            <div className="text-xl font-black text-[#3B82F6]">{viewQuotation.leadTimeDays} <span className="text-sm text-[#64748B]">ngày</span></div>
+                                        </div>
+
+                                        {/* <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
                                         <div className="text-[10px] text-[#64748B] uppercase mb-1">Thanh toán</div>
                                         <div className="text-sm font-bold text-[#F8FAFC]">{viewQuotation.paymentTerms || "N/A"}</div>
                                     </div>
@@ -636,79 +738,91 @@ export default function QuotationManagementPage() {
                                         <div className="text-[10px] text-[#64748B] uppercase mb-1">Giao hàng</div>
                                         <div className="text-sm font-bold text-[#F8FAFC]">{viewQuotation.deliveryTerms || "N/A"}</div>
                                     </div> */}
-                                    
-                                    {viewQuotation.validityDays && (
-                                        <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
-                                            <div className="text-[10px] text-[#64748B] uppercase mb-1">Hiệu lực</div>
-                                            <div className="text-sm font-bold text-[#F8FAFC]">{viewQuotation.validityDays} ngày</div>
+
+                                        {viewQuotation.validityDays && (
+                                            <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
+                                                <div className="text-[10px] text-[#64748B] uppercase mb-1">Hiệu lực</div>
+                                                <div className="text-sm font-bold text-[#F8FAFC]">{viewQuotation.validityDays} ngày</div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {viewQuotation.notes && (
+                                        <div className="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                                            <div className="text-[10px] font-black uppercase text-amber-400 mb-2">Ghi chú từ NCC</div>
+                                            <p className="text-sm text-amber-400">{viewQuotation.notes}</p>
                                         </div>
                                     )}
                                 </div>
+                            </div>
 
-                                {viewQuotation.notes && (
-                                    <div className="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                                        <div className="text-[10px] font-black uppercase text-amber-400 mb-2">Ghi chú từ NCC</div>
-                                        <p className="text-sm text-amber-400">{viewQuotation.notes}</p>
-                                    </div>
+                            {/* Footer Actions */}
+                            <div className="px-6 py-4 bg-[#161922] border-t border-[rgba(148,163,184,0.1)] flex justify-between items-center shrink-0">
+                                <button
+                                    onClick={() => setViewQuotation(null)}
+                                    className="px-6 py-3 rounded-xl bg-[#0F1117] text-[#64748B] font-black text-xs uppercase tracking-wider hover:text-[#F8FAFC] transition-all border border-[rgba(148,163,184,0.2)]"
+                                >
+                                    Đóng
+                                </button>
+                                {viewQuotation.status === 'SUBMITTED' && (
+                                    <button
+                                        onClick={() => {
+                                            setViewQuotation(null);
+                                            setAwardModal(viewQuotation);
+                                        }}
+                                        className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-black text-xs uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+                                    >
+                                        <Award size={16} /> Trao thầu
+                                    </button>
                                 )}
                             </div>
                         </div>
+                    </div>
+                    )
 
-                        {/* Footer Actions */}
-                        <div className="px-6 py-4 bg-[#161922] border-t border-[rgba(148,163,184,0.1)] flex justify-between items-center shrink-0">
-                            <button 
-                                onClick={() => setViewQuotation(null)} 
-                                className="px-6 py-3 rounded-xl bg-[#0F1117] text-[#64748B] font-black text-xs uppercase tracking-wider hover:text-[#F8FAFC] transition-all border border-[rgba(148,163,184,0.2)]"
-                            >
-                                Đóng
-                            </button>
-                            {viewQuotation.status === 'SUBMITTED' && (
-                                <button 
-                                    onClick={() => {
-                                        setViewQuotation(null);
-                                        setAwardModal(viewQuotation);
-                                    }}
-                                    className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-black text-xs uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
-                                >
-                                    <Award size={16} /> Trao thầu
-                                </button>
-                            )}
-                        </div>
+                    {/* Table */}
+                    <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
+                        {selectedRFQ ? (
+                            // Show quotations for selected RFQ
+                            loading ? (
+                                <div className="py-32 text-center">
+                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#64748B] mb-6 animate-pulse">
+                                        <TrendingUp size={40} />
+                                    </div>
+                                    <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-tight">Đang tải báo giá...</h3>
+                                </div>
+                            ) : (
+                                <>
+                                    <ERPTable columns={quotationColumns} data={quotations} />
+                                    {quotations.length === 0 && (
+                                        <div className="py-32 text-center">
+                                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#64748B] mb-6">
+                                                <AlertCircle size={40} />
+                                            </div>
+                                            <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-tight">Chưa có báo giá nào</h3>
+                                            <p className="text-[#64748B] font-medium">RFQ này chưa nhận được báo giá từ nhà cung cấp.</p>
+                                        </div>
+                                    )}
+                                </>
+                            )
+                        ) : (
+                            // Show RFQ list
+                            <>
+                                <ERPTable columns={rfqColumns} data={filteredRFQs} />
+                                {filteredRFQs.length === 0 && (
+                                    <div className="py-32 text-center">
+                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#64748B] mb-6">
+                                            <Search size={40} />
+                                        </div>
+                                        <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-tight">Không có RFQ nào</h3>
+                                        <p className="text-[#64748B] font-medium">Chưa có yêu cầu báo giá nào trong hệ thống.</p>
+                                    </div>
+                                )}
+                            </>
+                        )}
                     </div>
                 </div>
             )}
-
-            {/* Table */}
-            <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
-                {selectedRFQ ? (
-                    // Show quotations for selected RFQ
-                    loading ? (
-                        <div className="py-32 text-center">
-                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#64748B] mb-6 animate-pulse">
-                                <TrendingUp size={40} />
-                            </div>
-                            <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-tight">Đang tải báo giá...</h3>
-                        </div>
-                    ) : (
-                        <>
-                            <ERPTable columns={quotationColumns} data={quotations} />
-                            {quotations.length === 0 && (
-                                <div className="py-32 text-center">
-                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#64748B] mb-6">
-                                        <AlertCircle size={40} />
-                                    </div>
-                                    <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-tight">Chưa có báo giá nào</h3>
-                                    <p className="text-[#64748B] font-medium">RFQ này chưa nhận được báo giá từ nhà cung cấp.</p>
-                                </div>
-                            )}
-                        </>
-                    )
-                ) : (
-                    // Show RFQ list
-                    <ERPTable columns={rfqColumns} data={filteredRFQs} />
-                )}
-            </div>
-
         </main>
     );
 }
@@ -730,7 +844,7 @@ function RFQStatusPill({ status }: { status: string }) {
         'AWARDED': 'ĐÃ TRAO THẦU',
         'CANCELLED': 'ĐÃ HỦY',
     };
-    
+
     return (
         <span className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border border-[rgba(148,163,184,0.1)]`}>
             {label[status] || status}
@@ -757,7 +871,7 @@ function StatusPill({ status }: { status: string }) {
         'REJECTED': 'BỊ TỪ CHỐI',
         'EXPIRED': 'HẾT HẠN',
     };
-    
+
     return (
         <span className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border border-[rgba(148,163,184,0.1)]`}>
             {label[status] || status}

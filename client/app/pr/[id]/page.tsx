@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useProcurement } from '@/app/context/ProcurementContext';
 import { PR, PRItem } from '@/app/types/api-types';
+import { ArrowLeft, Clock, FileText, Send, Building2, User, FileDigit, Calendar } from 'lucide-react';
+import Link from 'next/link';
 
 export default function PRDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const prId = params.id as string;
   const { fetchPrDetail, submitPR, notify } = useProcurement();
   const [pr, setPR] = useState<PR | null>(null);
@@ -47,76 +50,142 @@ export default function PRDetailPage() {
   if (error) return <div className="p-8 text-rose-400">Error: {error}</div>;
   if (!pr) return <div className="p-8 text-[#F8FAFC]">PR not found</div>;
 
-  return (
-    <div className="container mx-auto p-8 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-      <h1 className="text-3xl font-bold mb-6 text-[#F8FAFC]">PR Details: {pr.prNumber}</h1>
+  const getStatusDisplay = (status: string) => {
+    switch (status) {
+        case 'APPROVED': return { label: 'Đã phê duyệt', class: 'status-approved' };
+        case 'DRAFT': return { label: 'Bản nháp', class: 'status-draft' };
+        case 'PENDING_APPROVAL': return { label: 'Chờ duyệt', class: 'status-pending' };
+        default: return { label: status, class: 'status-info' };
+    }
+  };
 
-      <div className="grid grid-cols-2 gap-6 mb-8 p-6 bg-[#161922] rounded-lg border border-[rgba(148,163,184,0.1)]">
+  return (
+    <div className="max-w-7xl mx-auto">
+      {/* Header with Breadcrumbs */}
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <label className="text-sm text-[#64748B]">Request Number</label>
-          <p className="text-lg font-semibold text-[#F8FAFC]">{pr.prNumber}</p>
+          <button 
+            onClick={() => router.back()} 
+            className="flex items-center gap-2 text-xs font-bold text-[#64748B] hover:text-[#3B82F6] transition-colors mb-4 uppercase tracking-widest"
+          >
+            <ArrowLeft size={14} /> Quay lại danh sách
+          </button>
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Chi tiết Yêu cầu (PR)</h1>
+            <span className={`status-pill ${getStatusDisplay(pr.status).class}`}>
+              {getStatusDisplay(pr.status).label}
+            </span>
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[#64748B]">Status</label>
-          <p className="text-lg font-semibold text-[#F8FAFC]">{pr.status}</p>
+        {pr.status === 'DRAFT' && (
+          <button
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="btn-primary w-full md:w-auto text-xs uppercase tracking-widest shadow-xl shadow-[#3B82F6]/20"
+          >
+            {submitting ? (
+              <><Clock size={16} className="animate-spin" /> Đang gửi...</>
+            ) : (
+              <><Send size={16} /> Trình phê duyệt</>
+            )}
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2 erp-card space-y-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+            <FileText size={160} />
+          </div>
+          <h3 className="section-title">Thông tin chung</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]"><FileDigit size={12}/> Mã Yêu Cầu</div>
+              <p className="text-sm font-bold text-[#F8FAFC]">{pr.prNumber || pr.id.split('-')[0].toUpperCase()}</p>
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]"><Building2 size={12}/> Bộ Phận</div>
+              <p className="text-sm font-bold text-[#94A3B8] uppercase">{pr.deptId || "N/A"}</p>
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]"><User size={12}/> Người Yêu Cầu</div>
+              <p className="text-sm font-bold text-[#94A3B8]">{pr.requester?.fullName || "Chưa cập nhật"}</p>
+            </div>
+            <div className="space-y-1 md:col-span-3">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Mục Đích / Tiêu Đề</div>
+              <p className="text-base font-bold text-[#F8FAFC]">{pr.title || "Yêu cầu mua sắm vật tư"}</p>
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[#64748B]">Department</label>
-          <p className="text-lg text-[#94A3B8]">{pr.deptId}</p>
-        </div>
-        <div>
-          <label className="text-sm text-[#64748B]">Requestor</label>
-          <p className="text-lg text-[#94A3B8]">{pr.requester?.fullName}</p>
-        </div>
-        <div>
-          <label className="text-sm text-[#64748B]">Created Date</label>
-          <p className="text-lg text-[#94A3B8]">{new Date(pr.createdAt).toLocaleDateString()}</p>
-        </div>
-        <div>
-          <label className="text-sm text-[#64748B]">Total Amount</label>
-          <p className="text-lg font-semibold text-emerald-400">{pr.totalEstimate?.toLocaleString('vi-VN')} VND</p>
+
+        <div className="erp-card flex flex-col justify-between relative overflow-hidden">
+           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#10B981]/5 rounded-full blur-2xl"></div>
+           <div>
+              <h3 className="section-title">Tổng Giá Trị (Dự kiến)</h3>
+              <div className="text-4xl font-black text-emerald-400 mt-2 tracking-tight">
+                  {pr.totalEstimate?.toLocaleString('vi-VN')} <span className="text-xl">VND</span>
+              </div>
+           </div>
+           
+           <div className="mt-8 space-y-3 pt-4 border-t border-[rgba(148,163,184,0.1)]">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-[#64748B] font-bold flex items-center gap-1"><Calendar size={14}/> Ngày tạo:</span>
+                <span className="text-[#F8FAFC] font-semibold">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-[#64748B] font-bold flex items-center gap-1"><FileText size={14}/> Số lượng SP:</span>
+                <span className="text-[#F8FAFC] font-semibold">{pr.items?.length || 0} mặt hàng</span>
+              </div>
+           </div>
         </div>
       </div>
 
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4 text-[#F8FAFC]">Items</h2>
+      <div className="erp-card p-0 overflow-hidden">
+        <div className="p-5 border-b border-[rgba(148,163,184,0.1)]">
+          <h3 className="section-title m-0">Danh sách Danh Mục Hàng Hoá</h3>
+        </div>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+          <table className="erp-table text-xs">
             <thead>
-              <tr className="bg-[#161922]">
-                <th className="border border-[rgba(148,163,184,0.1)] p-3 text-left text-[#64748B]">Product</th>
-                <th className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#64748B]">Qty</th>
-                <th className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#64748B]">Unit Price</th>
-                <th className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#64748B]">Total</th>
+              <tr>
+                <th className="w-12 text-center text-[10px] font-black uppercase tracking-widest text-[#64748B]">STT</th>
+                <th className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">Sản phẩm / Dịch vụ</th>
+                <th className="text-right w-24 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Số lượng</th>
+                <th className="text-right w-40 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Đơn giá (Ước tính)</th>
+                <th className="text-right w-48 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Thành tiền</th>
               </tr>
             </thead>
             <tbody>
-              {pr.items?.map((item: PRItem) => (
-                <tr key={item.id} className="border border-[rgba(148,163,184,0.1)]">
-                  <td className="border border-[rgba(148,163,184,0.1)] p-3 text-[#F8FAFC]">{item.productName || item.description}</td>
-                  <td className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#94A3B8]">{item.qty}</td>
-                  <td className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#94A3B8]">
-                    {item.unit?.toLocaleString()} VND
+              {pr.items && pr.items.length > 0 ? pr.items.map((item: PRItem, idx) => (
+                <tr key={item.id}>
+                  <td className="text-center font-bold text-[#64748B]">{idx + 1}</td>
+                  <td>
+                    <div className="font-bold text-[#F8FAFC]">{item.productName || "Sản phẩm Dịch vụ"}</div>
+                    {(item.description && item.description !== item.productName) && (
+                      <div className="text-[10px] text-[#94A3B8] mt-1">{item.description}</div>
+                    )}
                   </td>
-                  <td className="border border-[rgba(148,163,184,0.1)] p-3 text-right text-[#F8FAFC] font-semibold">
-                    {(item.qty * item.estimatedPrice)?.toLocaleString('vi-VN')} VND
+                  <td className="text-right font-bold text-[#3B82F6]">
+                    {item.qty} <span className="text-[9px] text-[#64748B] ml-1 uppercase">{item.unit || "Cái"}</span>
+                  </td>
+                  <td className="text-right font-semibold text-[#94A3B8]">
+                    {item.estimatedPrice?.toLocaleString('vi-VN')} ₫
+                  </td>
+                  <td className="text-right font-black text-emerald-400">
+                    {(item.qty * (item.estimatedPrice || 0)).toLocaleString('vi-VN')} ₫
                   </td>
                 </tr>
-              ))}
+              )) : (
+                <tr>
+                   <td colSpan={5} className="py-12 text-center text-[#64748B] font-bold text-xs uppercase tracking-widest">
+                      Không có mặt hàng nào được tìm thấy
+                   </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
-
-      {pr.status === 'DRAFT' && (
-        <button
-          onClick={handleSubmit}
-          disabled={submitting}
-          className="bg-[#3B82F6] text-white px-6 py-2 rounded hover:bg-[#2563EB] disabled:opacity-50 transition-colors"
-        >
-          {submitting ? 'Submitting...' : 'Submit For Approval'}
-        </button>
-      )}
     </div>
-  );
+  )
 }

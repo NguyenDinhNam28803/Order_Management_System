@@ -292,7 +292,7 @@ export default function RFQCreatePage() {
                         </div>
 
                         <div className="overflow-x-auto -mx-8">
-                            <table className="w-full">
+                            <table className="erp-table text-xs">
                                 <thead>
                                     <tr className="bg-[#0F1117]">
                                         <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-[#64748B] border-b border-[rgba(148,163,184,0.1)]">Sản phẩm</th>

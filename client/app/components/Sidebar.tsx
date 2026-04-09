@@ -6,7 +6,7 @@ import {
     FileCheck, ShieldAlert, Users, Settings, LogOut,
     FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers,
     ShieldCheck, MessageSquare, History, FileText,
-    Bell, Inbox, Command, Star, UserCircle
+    Bell, Inbox, Command, Star, UserCircle, Zap, Brain
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -113,6 +113,7 @@ const navigation: NavGroup[] = [
             { name: "Quản lý Phòng ban", icon: Building, path: "/admin/departments", roles: ["PLATFORM_ADMIN"] },
             { name: "Quản lý Cost Center", icon: ShieldAlert, path: "/admin/cost-centers", roles: ["PLATFORM_ADMIN"] },
             { name: "Nhật ký hệ thống", icon: History, path: "/admin/audit-logs", roles: ["PLATFORM_ADMIN"] },
+            { name: "AI Admin / RAG Sync", icon: Brain, path: "/admin/ai-sync", roles: ["PLATFORM_ADMIN"] },
             { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["PLATFORM_ADMIN"] },
         ]
     },

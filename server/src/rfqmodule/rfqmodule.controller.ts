@@ -52,7 +52,10 @@ export class RfqmoduleController {
     summary: 'Tạo yêu cầu báo giá mới',
     description: 'Tạo một yêu cầu báo giá mới từ một đơn hàng mua sắm',
   })
-  async create(@Body() createRfqDto: CreateRfqDto, @Request() req: { user: JwtPayload }) {
+  async create(
+    @Body() createRfqDto: CreateRfqDto,
+    @Request() req: { user: JwtPayload },
+  ) {
     return this.rfqService.create(createRfqDto, req.user);
   }
 
@@ -80,7 +83,8 @@ export class RfqmoduleController {
   @Roles(UserRole.SUPPLIER, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Lấy RFQ cho nhà cung cấp',
-    description: 'Trả về danh sách tất cả RFQ mà nhà cung cấp hiện tại được mời tham gia',
+    description:
+      'Trả về danh sách tất cả RFQ mà nhà cung cấp hiện tại được mời tham gia',
   })
   async findRfqBySupplier(@Request() req: { user: JwtPayload }) {
     return this.rfqService.findRfqBySupplier(req.user.orgId);

@@ -78,7 +78,7 @@ export default function AuditLogsPage() {
 
             <div className="bg-[#161922] rounded-2xl shadow-xl shadow-[#3B82F6]/5 border border-[rgba(148,163,184,0.1)] overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="erp-table text-xs">
                         <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)] text-[#64748B] text-xs uppercase tracking-wider">
                             <tr>
                                 <th className="px-6 py-4 font-black">Thời gian</th>

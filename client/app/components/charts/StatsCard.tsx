@@ -19,11 +19,11 @@ interface StatsCardProps {
 }
 
 const colorClasses = {
-  blue: "from-[#3B82F6]/20 to-[#3B82F6]/5 text-[#3B82F6]",
-  green: "from-emerald-500/20 to-emerald-500/5 text-emerald-400",
-  amber: "from-amber-500/20 to-amber-500/5 text-amber-400",
-  red: "from-rose-500/20 to-rose-500/5 text-rose-400",
-  purple: "from-purple-500/20 to-purple-500/5 text-purple-400",
+  blue: "bg-[#0F1117] border-[#3B82F6]/30 text-[#3B82F6]",
+  green: "bg-[#0F1117] border-emerald-500/30 text-emerald-400",
+  amber: "bg-[#0F1117] border-amber-500/30 text-amber-400",
+  red: "bg-[#0F1117] border-rose-500/30 text-rose-400",
+  purple: "bg-[#0F1117] border-purple-500/30 text-purple-400",
 };
 
 const iconBgClasses = {
@@ -46,7 +46,7 @@ export default function StatsCard({
 }: StatsCardProps) {
   return (
     <div
-      className={`bg-gradient-to-br ${colorClasses[color]} rounded-xl p-4 border border-[rgba(148,163,184,0.1)] relative overflow-hidden ${className}`}
+      className={`${colorClasses[color]} rounded-2xl p-4 border relative overflow-hidden ${className}`}
     >
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-3">

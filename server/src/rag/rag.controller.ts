@@ -1,14 +1,30 @@
-import { Body, Controller, Param, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import type { Queue } from 'bull';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RagQueryService, RagResult } from './rag-query.service';
 import { RagIngestService } from './rag-ingest.service';
 import { RAG_SYNC_QUEUE } from './rag-sync.processor';
 import { QueryRequiredDto } from './dto/rag-query.dto';
 import { RagPrGeneratorService } from './rag-pr-generator.service';
-import { GeneratePrDraftDto, PrDraftResponse } from './dto/generate-pr-draft.dto';
+import {
+  GeneratePrDraftDto,
+  PrDraftResponse,
+} from './dto/generate-pr-draft.dto';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('RAG (Retrieval-Augmented Generation)')
@@ -88,6 +104,10 @@ export class RagController {
   ): Promise<PrDraftResponse> {
     // Lấy orgId từ body hoặc từ JWT token (đã được set bởi auth middleware)
     console.log('orgId:', req.user?.orgId, 'role:', req.user?.role);
-    return this.prGenerator.generatePrDraft(body.prompt, req.user?.orgId, req.user);
+    return this.prGenerator.generatePrDraft(
+      body.prompt,
+      req.user?.orgId,
+      req.user,
+    );
   }
 }

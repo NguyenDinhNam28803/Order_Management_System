@@ -127,9 +127,9 @@ export class PoRepository {
   async findBySupplier(supplierId: string) {
     return this.prisma.purchaseOrder.findMany({
       where: { supplierId },
-      include: { 
+      include: {
         items: true,
-        supplier: true, 
+        supplier: true,
         buyer: true,
       },
       orderBy: { createdAt: 'desc' },
@@ -138,10 +138,10 @@ export class PoRepository {
 
   async getAll() {
     return this.prisma.purchaseOrder.findMany({
-      include: { 
-        supplier: true, 
+      include: {
+        supplier: true,
         buyer: true,
-        items: true
+        items: true,
       },
       orderBy: { createdAt: 'desc' },
     });

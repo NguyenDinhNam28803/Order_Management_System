@@ -57,7 +57,7 @@ export class AutomationService {
     try {
       const po = await this.prisma.purchaseOrder.findUnique({
         where: { id: poId },
-        include: { 
+        include: {
           items: true,
           supplier: true,
         },
@@ -77,7 +77,7 @@ export class AutomationService {
 
       // Kiểm tra xem đã có GRN draft nào cho PO này chưa
       const existingGrn = await this.prisma.goodsReceipt.findFirst({
-        where: { 
+        where: {
           poId: po.id,
           status: GrnStatus.DRAFT,
         },
@@ -134,9 +134,7 @@ export class AutomationService {
 
       return grn;
     } catch (error) {
-      this.logger.error(
-        `Failed to create draft GRN for PO ${poId}: ${error!}`,
-      );
+      this.logger.error(`Failed to create draft GRN for PO ${poId}: ${error!}`);
       throw error;
     }
   }
@@ -412,19 +410,19 @@ export class AutomationService {
                   this.logger.log(
                     `Auto-created contract ${result.contractNumber} for PO ${po.poNumber}`,
                   );
-                  console.log("Tạo hợp đồng thành công !")
+                  console.log('Tạo hợp đồng thành công !');
                 } else {
                   this.logger.warn(
                     `Contract not created for PO ${po.poNumber}: ${result?.message}`,
                   );
-                  console.log("Tạo hợp đồng thất bại !")
+                  console.log('Tạo hợp đồng thất bại !');
                 }
               })
               .catch((err) => {
                 this.logger.error(
                   `Error in contract automation for PO ${po.poNumber}: ${err.message}`,
                 );
-                console.log("Tạo hợp đồng thất bại !");
+                console.log('Tạo hợp đồng thất bại !');
                 console.log(err);
               });
           });
@@ -606,7 +604,9 @@ export class AutomationService {
       }
 
       const totalAmount = Number(po.totalAmount);
-      this.logger.log(`Processing PO ${po.poNumber} with value: ${totalAmount}`);
+      this.logger.log(
+        `Processing PO ${po.poNumber} with value: ${totalAmount}`,
+      );
 
       if (totalAmount < this.config.contractThreshold) {
         return {
@@ -662,7 +662,9 @@ export class AutomationService {
               {
                 title: 'First Delivery',
                 description: 'Initial delivery as per PO',
-                dueDate: po.deliveryDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                dueDate:
+                  po.deliveryDate ||
+                  new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
                 paymentPct: 30,
                 status: 'PENDING',
               },
@@ -683,11 +685,17 @@ export class AutomationService {
         data: { contractId: contract.id },
       });
 
-      this.logger.log(`Created contract ${contract.contractNumber} from PO ${po.poNumber}`);
+      this.logger.log(
+        `Created contract ${contract.contractNumber} from PO ${po.poNumber}`,
+      );
 
       let emailSent = false;
       if (this.config.autoSendEmail && po.supplier?.email) {
-        emailSent = await this.sendContractNotificationEmail(contract.id, po, totalAmount);
+        emailSent = await this.sendContractNotificationEmail(
+          contract.id,
+          po,
+          totalAmount,
+        );
       }
 
       return {
@@ -730,7 +738,7 @@ export class AutomationService {
     const emailSent = await this.sendContractNotificationEmail(
       contractId,
       po,
-      Number(contract.value || 0)
+      Number(contract.value || 0),
     );
 
     return {
@@ -763,13 +771,13 @@ export class AutomationService {
         return false;
       }
 
-      const { subject, body } = this.generateContractEmailContent(contract, po, totalAmount);
-
-      await this.emailService.sendEmail(
-        supplierEmail,
-        subject,
-        body,
+      const { subject, body } = this.generateContractEmailContent(
+        contract,
+        po,
+        totalAmount,
       );
+
+      await this.emailService.sendEmail(supplierEmail, subject, body);
 
       this.logger.log(`Sent contract email to ${supplierEmail}`);
       return true;
@@ -779,7 +787,11 @@ export class AutomationService {
     }
   }
 
-  private generateContractEmailContent(contract: any, po: any, totalAmount: number) {
+  private generateContractEmailContent(
+    contract: any,
+    po: any,
+    totalAmount: number,
+  ) {
     const subject = `New Contract ${contract.contractNumber} - Value ${Number(contract.value || 0).toLocaleString('vi-VN')} VND`;
 
     const body = `

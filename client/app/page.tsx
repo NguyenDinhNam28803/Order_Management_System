@@ -145,51 +145,56 @@ export default function Dashboard() {
                     </div>
                 </header>
 
-                {/* HÀNG 1 — Stats Cards with Charts */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <StatsCard 
-                        title="PR Chờ Duyệt" 
-                        value={pendingPRsCount} 
-                        subValue={`${formatVND(personalPRs.filter(pr => pr.status === 'PENDING_APPROVAL').reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0))}`}
-                        icon={Clock}
-                        color="amber"
-                        trend={{ value: 12, isPositive: false }}
-                    />
-                    <StatsCard 
-                        title="PR Đã Duyệt" 
-                        value={approvedPRsCount} 
-                        subValue={`${formatVND(personalPRs.filter(pr => pr.status === 'APPROVED' || pr.status === 'PO_CREATED').reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0))}`}
-                        icon={CheckCircle}
-                        color="green"
-                        trend={{ value: 8, isPositive: true }}
-                    />
-                    <StatsCard 
-                        title="Ngân Sách Còn Lại" 
-                        value={formatVND(availableBudget)} 
-                        subValue={`Quý ${currentQuarter}/${new Date().getFullYear()}`}
-                        icon={DollarSign}
-                        color="blue"
-                    >
-                        <div className="mt-2">
-                            <div className="flex justify-between text-[10px] text-text-secondary mb-1">
-                                <span>Đã dùng</span>
-                                <span>{((budgets?.allocated ? (budgets.committed + budgets.spent) / budgets.allocated * 100 : 0)).toFixed(1)}%</span>
+                {/* HÀNG 1 — Stats Cards with Reports/Spend Style */}
+                <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6 mb-6">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
+                        <Activity size={14} className="text-[#3B82F6]" /> Tổng quan hoạt động
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <StatsCard
+                            title="PR Chờ Duyệt"
+                            value={pendingPRsCount}
+                            subValue={`${formatVND(personalPRs.filter(pr => pr.status === 'PENDING_APPROVAL').reduce((sum, pr) => sum + (Number(pr.totalEstimate) || 0), 0))} đ`}
+                            icon={Clock}
+                            color="amber"
+                            trend={{ value: 12, isPositive: false }}
+                        />
+                        <StatsCard
+                            title="PR Đã Duyệt"
+                            value={approvedPRsCount}
+                            subValue={`${formatVND(personalPRs.filter(pr => pr.status === 'APPROVED' || pr.status === 'PO_CREATED').reduce((sum, pr) => sum + (Number(pr.totalEstimate) || 0), 0))} đ`}
+                            icon={CheckCircle}
+                            color="green"
+                            trend={{ value: 8, isPositive: true }}
+                        />
+                        <StatsCard
+                            title="Ngân Sách Còn Lại"
+                            value={formatVND(availableBudget)}
+                            subValue={`Quý ${currentQuarter}/${new Date().getFullYear()}`}
+                            icon={DollarSign}
+                            color="blue"
+                        >
+                            <div className="mt-2">
+                                <div className="flex justify-between text-[10px] text-text-secondary mb-1">
+                                    <span>Đã dùng</span>
+                                    <span>{((budgets?.allocated ? (budgets.committed + budgets.spent) / budgets.allocated * 100 : 0)).toFixed(1)}%</span>
+                                </div>
+                                <div className="h-1.5 bg-bg-primary rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-[#3B82F6] rounded-full"
+                                        style={{ width: `${Math.min(budgets?.allocated ? ((budgets.committed + budgets.spent) / budgets.allocated) * 100 : 0, 100)}%` }}
+                                    />
+                                </div>
                             </div>
-                            <div className="h-1.5 bg-bg-primary rounded-full overflow-hidden">
-                                <div 
-                                    className="h-full bg-[#3B82F6] rounded-full" 
-                                    style={{ width: `${Math.min(budgets?.allocated ? ((budgets.committed + budgets.spent) / budgets.allocated) * 100 : 0, 100)}%` }}
-                                />
-                            </div>
-                        </div>
-                    </StatsCard>
-                    <StatsCard 
-                        title="Giá Trị PR Hoàn Thành" 
-                        value={`${personalPRs.filter(pr => pr.status === 'COMPLETED').reduce((sum, pr) => sum + ((pr.totalEstimate || 0)), 0).toLocaleString('vi-VN')} đ`}
-                        subValue="Tổng dự toán đã hoàn thành"
-                        icon={ArrowUpRight}
-                        color="purple"
-                    />
+                        </StatsCard>
+                        <StatsCard
+                            title="Giá Trị PR Hoàn Thành"
+                            value={`${formatVND(personalPRs.filter(pr => pr.status === 'COMPLETED').reduce((sum, pr) => sum + (Number(pr.totalEstimate) || 0), 0))} đ`}
+                            subValue="Tổng dự toán đã hoàn thành"
+                            icon={ArrowUpRight}
+                            color="purple"
+                        />
+                    </div>
                 </div>
 
                 {/* HÀNG 2 — Charts */}
@@ -236,7 +241,7 @@ export default function Dashboard() {
                                  <Link href="/pr" className="text-[9px] font-black uppercase text-[#3B82F6] hover:underline bg-[#0F1117] px-3 py-1.5 rounded-lg border border-[rgba(148,163,184,0.1)] shadow-sm transition-all hover:scale-105 active:scale-95">Xem tất cả ›</Link>
                              </div>
                              <div className="overflow-x-auto">
-                                 <table className="w-full text-left">
+                                 <table className="erp-table text-xs text-left">
                                      <thead>
                                          <tr className="bg-[#0F1117] text-[9px] font-black text-[#64748B] border-b border-[rgba(148,163,184,0.1)] uppercase tracking-widest">
                                              <th className="px-8 py-5">Số PR</th>
@@ -1230,7 +1235,7 @@ export default function Dashboard() {
                                 <div className="space-y-4">
                                     <h3 className="text-[10px] font-black text-[#64748B] uppercase">Danh sách hàng hóa</h3>
                                     <div className="border border-[rgba(148,163,184,0.1)] rounded-2xl overflow-hidden">
-                                        <table className="w-full text-left text-xs">
+                                        <table className="erp-table text-xs text-left">
                                             <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]">
                                                 <tr><th className="p-4 uppercase font-black text-[#64748B]">Sản phẩm</th><th className="p-4 text-center">SL</th><th className="p-4 text-right">Giá</th></tr>
                                             </thead>

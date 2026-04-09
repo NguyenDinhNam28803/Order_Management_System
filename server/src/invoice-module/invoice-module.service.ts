@@ -139,7 +139,7 @@ export class InvoiceModuleService {
       subtotal: Number(invoice.subtotal),
       taxRate: invoice.taxRate ? Number(invoice.taxRate) : null,
       totalAmount: Number(invoice.totalAmount),
-      items: invoice.items?.map(item => ({
+      items: invoice.items?.map((item) => ({
         ...item,
         qty: Number(item.qty),
         unitPrice: Number(item.unitPrice),
@@ -168,7 +168,7 @@ export class InvoiceModuleService {
       this.logger.warn(`[3-Way] Invoice ${invoiceId} not found`);
       return;
     }
-    
+
     // Lấy chi tiết GRN nếu chưa có (fallback)
     if (!invoice.grn?.items && invoice.grnId) {
       const grnWithItems = await this.prisma.goodsReceipt.findUnique({
@@ -191,13 +191,15 @@ export class InvoiceModuleService {
     for (const invItem of invoice.items) {
       const poItem = invItem.poItem;
       let grnItem = invItem.grnItem;
-      
+
       // Fallback: if grnItemId is null but grn exists, find by poItemId
       if (!grnItem && invoice.grn?.items) {
-        grnItem = invoice.grn.items.find(g => g.poItemId === invItem.poItemId) || null;
+        grnItem =
+          invoice.grn.items.find((g) => g.poItemId === invItem.poItemId) ||
+          null;
         if (!grnItem) {
           // Try matching by id as fallback
-          const byId = invoice.grn.items.find(g => g.id === invItem.poItemId);
+          const byId = invoice.grn.items.find((g) => g.id === invItem.poItemId);
           if (byId) {
             grnItem = byId;
           }
@@ -218,7 +220,7 @@ export class InvoiceModuleService {
         const invQty = Number(invItem.qty);
         const acceptedQty = Number(grnItem.acceptedQty);
         const receivedQty = Number(grnItem.receivedQty);
-        
+
         // Nếu acceptedQty = 0, dùng receivedQty (trường hợp chưa QC)
         const effectiveQty = acceptedQty > 0 ? acceptedQty : receivedQty;
         const maxAllowedQty = effectiveQty * (1 + QTY_TOLERANCE_PCT);
@@ -230,7 +232,9 @@ export class InvoiceModuleService {
       } else {
         itemMatch.qtyMatch = false;
         exceptionReason += `Dòng ${invItem.poItemId}: Không tìm thấy thông tin nhận kho (GRN). Kiểm tra grnItemId trong invoice item. `;
-        this.logger.warn(`[3-Way] Missing grnItem for invoice item ${invItem.id}, poItemId: ${invItem.poItemId}`);
+        this.logger.warn(
+          `[3-Way] Missing grnItem for invoice item ${invItem.id}, poItemId: ${invItem.poItemId}`,
+        );
       }
 
       // 2. Kiểm tra đơn giá: Invoice Price <= PO Price * (1 + Tolerance)
@@ -294,14 +298,14 @@ export class InvoiceModuleService {
       data,
       include: { items: true },
     });
-    
+
     // Serialize Decimal to number
     return {
       ...updated,
       subtotal: Number(updated.subtotal),
       taxRate: updated.taxRate ? Number(updated.taxRate) : null,
       totalAmount: Number(updated.totalAmount),
-      items: updated.items?.map(item => ({
+      items: updated.items?.map((item) => ({
         ...item,
         qty: Number(item.qty),
         unitPrice: Number(item.unitPrice),
@@ -322,12 +326,12 @@ export class InvoiceModuleService {
       include: { po: true, supplier: true, items: true },
     });
     // Serialize Decimal to number
-    return invoices.map(inv => ({
+    return invoices.map((inv) => ({
       ...inv,
       subtotal: Number(inv.subtotal),
       taxRate: inv.taxRate ? Number(inv.taxRate) : null,
       totalAmount: Number(inv.totalAmount),
-      items: inv.items?.map(item => ({
+      items: inv.items?.map((item) => ({
         ...item,
         qty: Number(item.qty),
         unitPrice: Number(item.unitPrice),
@@ -348,7 +352,7 @@ export class InvoiceModuleService {
       subtotal: Number(inv.subtotal),
       taxRate: inv.taxRate ? Number(inv.taxRate) : null,
       totalAmount: Number(inv.totalAmount),
-      items: inv.items?.map(item => ({
+      items: inv.items?.map((item) => ({
         ...item,
         qty: Number(item.qty),
         unitPrice: Number(item.unitPrice),

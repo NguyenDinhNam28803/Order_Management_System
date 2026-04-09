@@ -12,12 +12,16 @@ import { StatsCard } from "./charts";
 // CEO/Director Dashboard
 export function CEODashboard() {
   const { pos, prs } = useProcurement();
-  
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Strategic Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard 
+      <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-[#3B82F6]" /> Tổng quan chiến lược
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard 
           title="Tổng Chi tiêu YTD" 
           value="12.5B ₫" 
           trend={{ value: 12.5, isPositive: true }}
@@ -38,13 +42,14 @@ export function CEODashboard() {
           icon={Clock}
           color="amber"
         />
-        <StatsCard 
-          title="Nhà Cung cấp Active" 
-          value={156} 
+        <StatsCard
+          title="Nhà Cung cấp Active"
+          value={156}
           trend={{ value: 3, isPositive: true }}
           icon={Users}
           color="purple"
         />
+        </div>
       </div>
 
       {/* Spend Heatmap */}
@@ -141,8 +146,12 @@ export function CEODashboard() {
 export function FinanceDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard 
+      <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-[#3B82F6]" /> Kiểm soát tài chính
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard 
           title="PO Value Chờ Duyệt" 
           value="5.8B ₫" 
           icon={DollarSign}
@@ -160,12 +169,13 @@ export function FinanceDashboard() {
           icon={AlertTriangle}
           color="red"
         />
-        <StatsCard 
-          title="Thanh toán Đã lên lịch" 
-          value={12} 
+        <StatsCard
+          title="Thanh toán Đã lên lịch"
+          value={12}
           icon={Calendar}
           color="green"
         />
+        </div>
       </div>
 
       <div className="glass-card p-6">
@@ -199,8 +209,12 @@ export function FinanceDashboard() {
 export function ProcurementDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard 
+      <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-[#3B82F6]" /> Pipeline thu mua
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard
           title="PR Chờ Xử lý" 
           value={32} 
           trend={{ value: 12, isPositive: false }}
@@ -220,12 +234,13 @@ export function ProcurementDashboard() {
           icon={Users}
           color="purple"
         />
-        <StatsCard 
-          title="GRN Chờ Nhận" 
-          value={8} 
+        <StatsCard
+          title="GRN Chờ Nhận"
+          value={8}
           icon={Zap}
           color="blue"
         />
+        </div>
       </div>
 
       {/* PR → PO Pipeline */}
@@ -267,8 +282,12 @@ export function ProcurementDashboard() {
 export function StaffDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatsCard 
+      <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-[#3B82F6]" /> Tổng quan công việc
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <StatsCard
           title="PR Của Tôi" 
           value={8} 
           icon={Package}
@@ -280,12 +299,13 @@ export function StaffDashboard() {
           icon={Clock}
           color="amber"
         />
-        <StatsCard 
-          title="Đã Hoàn thành" 
-          value={24} 
+        <StatsCard
+          title="Đã Hoàn thành"
+          value={24}
           icon={CheckCircle}
           color="green"
         />
+        </div>
       </div>
 
       <div className="glass-card p-6">
@@ -320,8 +340,12 @@ export function StaffDashboard() {
 export function WarehouseDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard 
+      <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-[#3B82F6]" /> Hoạt động kho
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard
           title="Đơn Chờ Nhận" 
           value={12} 
           icon={Package}
@@ -339,12 +363,13 @@ export function WarehouseDashboard() {
           icon={Zap}
           color="green"
         />
-        <StatsCard 
-          title="Cảnh báo Chất lượng" 
-          value={2} 
+        <StatsCard
+          title="Cảnh báo Chất lượng"
+          value={2}
           icon={AlertTriangle}
           color="red"
         />
+        </div>
       </div>
 
       <div className="glass-card p-6">

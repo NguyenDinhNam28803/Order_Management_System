@@ -378,7 +378,7 @@ export default function SupplierDashboard() {
       </header>
 
       <div className="bg-[#161922] rounded-2xl overflow-hidden shadow-xl shadow-[#3B82F6]/5 border border-[rgba(148,163,184,0.1)]">
-        <table className="w-full text-left">
+        <table className="erp-table text-xs text-left">
           <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]">
             <tr className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">
               <th className="w-32 py-4 px-6">Mã RFQ</th>

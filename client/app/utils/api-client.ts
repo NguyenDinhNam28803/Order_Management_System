@@ -120,6 +120,35 @@ interface QAThreadData {
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // ==========================================
+// GENERIC API FETCH
+// ==========================================
+export const apiFetch = async (url: string, options: RequestInit = {}) => {
+    const token = typeof document !== 'undefined' ? document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : '';
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...(options.headers as Record<string, string> || {}),
+    };
+
+    const res = await fetch(`${API_BASE}${url}`, {
+        ...options,
+        headers,
+    });
+
+    if (!res.ok) {
+        const error = await res.text();
+        throw new Error(error || `Request failed: ${res.status}`);
+    }
+
+    // Parse JSON if response has content, otherwise return null
+    const contentType = res.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+        return await res.json();
+    }
+    return null;
+};
+
+// ==========================================
 // PR ENDPOINTS
 // ==========================================
 export const prAPI = {

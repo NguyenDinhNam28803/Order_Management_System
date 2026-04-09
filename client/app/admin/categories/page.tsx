@@ -101,12 +101,12 @@ export default function CategoriesPage() {
             key: "name",
             render: (row) => (
                 <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-sm">
+                    <div className="h-12 w-12 rounded-2xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#3B82F6] shadow-sm">
                         <Layers size={22} />
                     </div>
                     <div>
-                        <div className="text-sm font-black text-erp-navy tracking-tight">{row.name}</div>
-                        <div className="text-[10px] font-black text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded mt-1 w-fit uppercase">
+                        <div className="text-sm font-black text-[#F8FAFC] tracking-tight">{row.name}</div>
+                        <div className="text-[10px] font-black text-[#3B82F6] bg-[#3B82F6]/10 px-2 py-0.5 rounded mt-1 w-fit uppercase">
                             CODE: {row.code}
                         </div>
                     </div>
@@ -120,8 +120,8 @@ export default function CategoriesPage() {
                 const org = organizations.find(o => o.id === row.orgId);
                 return (
                     <div className="flex items-center gap-2">
-                        <Building2 size={14} className="text-slate-400" />
-                        <span className="text-xs font-bold text-slate-600">{org?.name || "Global / N/A"}</span>
+                        <Building2 size={14} className="text-[#64748B]" />
+                        <span className="text-xs font-bold text-[#F8FAFC]">{org?.name || "Global / N/A"}</span>
                     </div>
                 );
             }
@@ -130,7 +130,7 @@ export default function CategoriesPage() {
             label: "Mô tả",
             key: "description",
             render: (row) => (
-                <div className="max-w-xs text-[11px] text-slate-500 font-medium italic line-clamp-2">
+                <div className="max-w-xs text-[11px] text-[#64748B] font-medium italic line-clamp-2">
                     {row.description || "Không có mô tả..."}
                 </div>
             )
@@ -140,7 +140,7 @@ export default function CategoriesPage() {
             key: "isActive",
             render: (row) => (
                 <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider w-fit ${
-                    row.isActive ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-rose-50 text-rose-600 border border-rose-100"
+                    row.isActive ? "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20" : "bg-rose-500/10 text-rose-500 border border-rose-500/20"
                 }`}>
                     {row.isActive ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
                     {row.isActive ? "Hoạt động" : "Tạm ngưng"}
@@ -177,8 +177,8 @@ export default function CategoriesPage() {
 
             <div className="flex justify-between items-end mb-10 mt-6">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Quản lý Danh mục</h1>
-                    <p className="text-sm text-slate-500 mt-1 font-medium italic">PHÂN LOẠI NHÓM HÀNG HÓA VÀ DỊCH VỤ TRONG HỆ THỐNG</p>
+                    <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase">Quản lý Danh mục</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-medium italic">PHÂN LOẠI NHÓM HÀNG HÓA VÀ DỊCH VỤ TRONG HỆ THỐNG</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
@@ -188,28 +188,28 @@ export default function CategoriesPage() {
                 </button>
             </div>
 
-            <div className="bg-white rounded-[40px] border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
-                <div className="p-8 bg-slate-50/30 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
+                <div className="p-8 bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phân loại hàng hóa</span>
-                            <div className="text-2xl font-black text-erp-navy">{categories.length} <span className="text-xs text-slate-400 font-bold uppercase ml-1">Nhóm ngành</span></div>
+                            <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">Phân loại hàng hóa</span>
+                            <div className="text-2xl font-black text-[#F8FAFC]">{categories.length} <span className="text-xs text-[#64748B] font-bold uppercase ml-1">Nhóm ngành</span></div>
                         </div>
-                        <div className="h-10 w-px bg-slate-200 hidden md:block" />
-                        <div className="flex items-center gap-2 bg-indigo-50 px-4 py-2 rounded-2xl border border-indigo-100">
-                            <Globe size={14} className="text-indigo-500" />
-                            <span className="text-[10px] font-black text-indigo-600 uppercase tracking-tight">Cấu trúc đa chi nhánh</span>
+                        <div className="h-10 w-px bg-[rgba(148,163,184,0.1)] hidden md:block" />
+                        <div className="flex items-center gap-2 bg-[#3B82F6]/10 px-4 py-2 rounded-2xl border border-[#3B82F6]/20">
+                            <Globe size={14} className="text-[#3B82F6]" />
+                            <span className="text-[10px] font-black text-[#3B82F6] uppercase tracking-tight">Cấu trúc đa chi nhánh</span>
                         </div>
                     </div>
 
                     <div className="relative group w-full max-w-sm">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-erp-blue transition-colors" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B] group-focus-within:text-[#3B82F6] transition-colors" size={18} />
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Tìm kiếm mã hoặc tên danh mục..."
-                            className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-slate-100 rounded-[20px] text-xs font-bold focus:border-erp-blue focus:ring-0 outline-none transition-all placeholder:text-slate-300"
+                            className="w-full pl-12 pr-4 py-3.5 bg-[#161922] border-2 border-[rgba(148,163,184,0.1)] rounded-[20px] text-xs text-[#F8FAFC] font-bold focus:border-[#3B82F6] focus:ring-0 outline-none transition-all placeholder:text-[#64748B]"
                         />
                     </div>
                 </div>

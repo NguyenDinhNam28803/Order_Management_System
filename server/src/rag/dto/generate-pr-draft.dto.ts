@@ -3,7 +3,8 @@ import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class GeneratePrDraftDto {
   @ApiProperty({
-    example: 'Tôi cần mua 5 laptop Dell XPS 15 cho team dev mới, ngân sách khoảng 75 triệu',
+    example:
+      'Tôi cần mua 5 laptop Dell XPS 15 cho team dev mới, ngân sách khoảng 75 triệu',
     description: 'Mô tả yêu cầu mua hàng của người dùng',
   })
   @IsString()

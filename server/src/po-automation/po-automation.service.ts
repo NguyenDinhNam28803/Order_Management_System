@@ -23,7 +23,9 @@ export class POAutomationService {
     private readonly emailService: EmailService,
   ) {}
 
-  async updateConfig(config: Partial<AutomationConfig>): Promise<AutomationConfig> {
+  async updateConfig(
+    config: Partial<AutomationConfig>,
+  ): Promise<AutomationConfig> {
     this.config = { ...this.config, ...config };
     this.logger.log(`Config updated: ${JSON.stringify(this.config)}`);
     return this.config;
@@ -44,7 +46,9 @@ export class POAutomationService {
       }
 
       const totalAmount = Number(po.totalAmount);
-      this.logger.log(`Processing PO ${po.poNumber} with value: ${totalAmount}`);
+      this.logger.log(
+        `Processing PO ${po.poNumber} with value: ${totalAmount}`,
+      );
 
       if (totalAmount < this.config.contractThreshold) {
         return {
@@ -120,11 +124,17 @@ export class POAutomationService {
         data: { contractId: contract.id },
       });
 
-      this.logger.log(`Created contract ${contract.contractNumber} from PO ${po.poNumber}`);
+      this.logger.log(
+        `Created contract ${contract.contractNumber} from PO ${po.poNumber}`,
+      );
 
       let emailSent = false;
       if (this.config.autoSendEmail && po.supplier?.email) {
-        emailSent = await this.sendContractNotificationEmail(contract.id, po, totalAmount);
+        emailSent = await this.sendContractNotificationEmail(
+          contract.id,
+          po,
+          totalAmount,
+        );
       }
 
       return {
@@ -138,7 +148,10 @@ export class POAutomationService {
         emailSent,
       };
     } catch (error) {
-      this.logger.error(`Automation error for PO ${poId}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Automation error for PO ${poId}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -166,7 +179,7 @@ export class POAutomationService {
     const emailSent = await this.sendContractNotificationEmail(
       contractId,
       po,
-      Number(contract.value || 0)
+      Number(contract.value || 0),
     );
 
     return {
@@ -201,7 +214,7 @@ export class POAutomationService {
       const { subject, body, html } = this.generateContractEmailContent(
         contract,
         po,
-        totalAmount
+        totalAmount,
       );
 
       await this.emailService.sendEmail(
@@ -218,7 +231,11 @@ export class POAutomationService {
     }
   }
 
-  private generateContractEmailContent(contract: any, po: any, totalAmount: number) {
+  private generateContractEmailContent(
+    contract: any,
+    po: any,
+    totalAmount: number,
+  ) {
     const subject = `New Contract ${contract.contractNumber} - Value ${Number(contract.value || 0).toLocaleString('vi-VN')} VND`;
 
     const body = `

@@ -82,7 +82,7 @@ export default function PaymentsPage() {
                                             
                                             return (
                                                 <tr key={payment.id}>
-                                                    <td className=" font-bold">{payment.id}</td>
+                                                    <td className=" font-bold">#PAY-{payment.id.split('-')[0].toUpperCase()}</td>
                                                     <td className="font-bold">{(payment as any).supplierName || 'N/A'}</td>
                                                     <td className="font-black text-erp-navy">{formatCurrency(payment.amount)}</td>
                                                     <td>
@@ -90,10 +90,16 @@ export default function PaymentsPage() {
                                                             {statusDisplay.label}
                                                         </span>
                                                     </td>
-                                                    <td>
+                                                    <td className="flex items-center gap-2">
                                                         <button disabled={isCompleted} className={`${!isCompleted ? 'bg-erp-navy text-white hover:bg-erp-navy/90' : 'text-slate-300 bg-slate-100'} px-4 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 disabled:cursor-not-allowed`}>
                                                             {isCompleted ? 'Đã thanh toán' : 'Thanh toán'} <ArrowRight size={12} />
                                                         </button>
+                                                        {payment.status === 'PENDING' && (
+                                                            <>
+                                                                <button className="text-amber-500 hover:text-amber-700 mx-1" title="Sửa Thanh toán">Edit</button>
+                                                                <button className="text-red-500 hover:text-red-700 mx-1" title="Xóa Thanh toán">Delete</button>
+                                                            </>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             );

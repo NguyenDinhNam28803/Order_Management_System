@@ -84,30 +84,34 @@ export class CostCenterModuleService {
 
   async findAll(orgId: string) {
     if (!orgId) {
-        console.warn("[CostCenterModuleService] findAll called with missing orgId");
-        return [];
+      console.warn(
+        '[CostCenterModuleService] findAll called with missing orgId',
+      );
+      return [];
     }
-    
+
     try {
-        const results = await this.prisma.costCenter.findMany({
-          where: {
-            orgId,
-            isActive: true,
+      const results = await this.prisma.costCenter.findMany({
+        where: {
+          orgId,
+          isActive: true,
+        },
+        include: {
+          department: true,
+          budgetAllocations: {
+            include: { budgetPeriod: true },
+            take: 10,
+            orderBy: { createdAt: 'desc' },
           },
-          include: {
-            department: true,
-            budgetAllocations: {
-              include: { budgetPeriod: true },
-              take: 10,
-              orderBy: { createdAt: 'desc' }
-            },
-          },
-          orderBy: { createdAt: 'desc' },
-        });
-        return results.map((cc) => this.mapCostCenter(cc));
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+      return results.map((cc) => this.mapCostCenter(cc));
     } catch (error: any) {
-        console.error("[CostCenterModuleService] findAll error:", error);
-        throw new BadRequestException("Không thể tải danh sách trung tâm chi phí: " + error.message);
+      console.error('[CostCenterModuleService] findAll error:', error);
+      throw new BadRequestException(
+        'Không thể tải danh sách trung tâm chi phí: ' + error.message,
+      );
     }
   }
 

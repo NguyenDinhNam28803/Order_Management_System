@@ -209,19 +209,24 @@ export class SupplierKpimoduleService {
       orderBy: [{ periodYear: 'desc' }, { periodQuarter: 'desc' }],
       take: 4,
     });
-    
+
     // Convert Decimal to number for JSON serialization
-    return scores.map(score => {
+    return scores.map((score) => {
       const otdScore = Number(score.otdScore);
       const qualityScore = Number(score.qualityScore);
       const priceScore = Number(score.priceScore);
       const manualScore = Number(score.manualScore);
-      
+
       // Calculate overall score (weighted average)
-      const overallScore = Math.round(
-        (otdScore * 0.3 + qualityScore * 0.3 + priceScore * 0.2 + manualScore * 0.2) * 10
-      ) / 10;
-      
+      const overallScore =
+        Math.round(
+          (otdScore * 0.3 +
+            qualityScore * 0.3 +
+            priceScore * 0.2 +
+            manualScore * 0.2) *
+            10,
+        ) / 10;
+
       return {
         ...score,
         otdScore,

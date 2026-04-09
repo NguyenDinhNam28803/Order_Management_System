@@ -18,17 +18,23 @@ export class RagPrGeneratorService {
   ) {
     this.fptBaseUrl = this.configService.get<string>('FPT_AI_BASE_URL') ?? '';
     this.fptApiKey = this.configService.get<string>('FPT_AI_API_KEY') ?? '';
-    this.fptModel = this.configService.get<string>('FPT_LLM_MODEL') ?? 'SaoLa4-medium';
+    this.fptModel =
+      this.configService.get<string>('FPT_LLM_MODEL') ?? 'SaoLa4-medium';
   }
 
-  async generatePrDraft(prompt: string, orgId: string, user?: any): Promise<PrDraftResponse> {
+  async generatePrDraft(
+    prompt: string,
+    orgId: string,
+    user?: any,
+  ): Promise<PrDraftResponse> {
     try {
       // 1. Retrieve relevant data from RAG
       const queryVector = await this.embedding.embed(prompt);
       const vectorStr = `[${queryVector.join(',')}]`;
 
       // Query products, categories, suppliers from vector DB
-      const chunks = await this.prisma.$queryRawUnsafe<any[]>(`
+      const chunks = await this.prisma.$queryRawUnsafe<any[]>(
+        `
         SELECT 
           content,
           source_table,
@@ -39,23 +45,28 @@ export class RagPrGeneratorService {
         WHERE source_table IN ('products', 'product_categories', 'organizations', 'pr_items')
         ORDER BY embedding <=> $1::vector
         LIMIT 20
-      `, vectorStr);
+      `,
+        vectorStr,
+      );
 
       // ALWAYS search products directly from DB - this is the PRIMARY source
       let dbProducts: any[] = [];
       console.log(`[RAG] orgId:`, orgId);
       if (orgId) {
-        const searchTerms = prompt.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+        const searchTerms = prompt
+          .toLowerCase()
+          .split(/\s+/)
+          .filter((w) => w.length > 2);
         console.log(`[RAG] Searching DB with terms:`, searchTerms);
-        
+
         if (searchTerms.length > 0) {
           // Build OR conditions properly for Prisma
-          const orConditions = searchTerms.flatMap(term => [
+          const orConditions = searchTerms.flatMap((term) => [
             { name: { contains: term, mode: 'insensitive' as const } },
             { description: { contains: term, mode: 'insensitive' as const } },
             { sku: { contains: term, mode: 'insensitive' as const } },
           ]);
-          
+
           dbProducts = await this.prisma.product.findMany({
             where: {
               orgId,
@@ -87,14 +98,22 @@ export class RagPrGeneratorService {
             orderBy: { updatedAt: 'desc' },
           });
         }
-        console.log(`[RAG] Found ${dbProducts.length} products from DB:`, 
-          dbProducts.map(p => p.name));
+        console.log(
+          `[RAG] Found ${dbProducts.length} products from DB:`,
+          dbProducts.map((p) => p.name),
+        );
       } else {
-        console.log(`[RAG] Warning: No orgId provided, cannot search DB products`);
+        console.log(
+          `[RAG] Warning: No orgId provided, cannot search DB products`,
+        );
       }
-      
+
       // Also get products from RAG (vector search) as supplementary
-      const ragProductIds = new Set(chunks.filter(c => c.source_table === 'products').map(c => c.source_id));
+      const ragProductIds = new Set(
+        chunks
+          .filter((c) => c.source_table === 'products')
+          .map((c) => c.source_id),
+      );
 
       // 2. Get cost centers and budget allocation for the org
       const costCenters = orgId
@@ -107,26 +126,38 @@ export class RagPrGeneratorService {
 
       // 4. Determine price limit based on user role
       const priceLimit = this.getPriceLimitByRole(user?.role);
-      console.log(`[RAG] User role: ${user?.role}, Price limit: ${priceLimit.toLocaleString('vi-VN')} VND`);
+      console.log(
+        `[RAG] User role: ${user?.role}, Price limit: ${priceLimit.toLocaleString('vi-VN')} VND`,
+      );
 
       // 5. Build context for LLM
-      const { context, allProducts } = this.buildContext(chunks, costCenters, dbProducts, priceLimit, user);
+      const { context, allProducts } = this.buildContext(
+        chunks,
+        costCenters,
+        dbProducts,
+        priceLimit,
+        user,
+      );
 
       // 4. Call LLM to generate PR
-      const draftPr = await this.callLlmForPrGeneration(prompt, context, allProducts);
+      const draftPr = await this.callLlmForPrGeneration(
+        prompt,
+        context,
+        allProducts,
+      );
 
       return {
         ...draftPr,
         sources: [
           ...chunks
-            .filter(c => c.similarity > 0.6)
-            .map(c => ({
+            .filter((c) => c.similarity > 0.6)
+            .map((c) => ({
               table: c.source_table,
               id: c.source_id,
               name: c.metadata?.name || c.metadata?.productDesc || 'Unknown',
               similarity: parseFloat(Number(c.similarity).toFixed(3)),
             })),
-          ...dbProducts.map(p => ({
+          ...dbProducts.map((p) => ({
             table: 'products' as const,
             id: p.id,
             name: p.name,
@@ -154,62 +185,85 @@ export class RagPrGeneratorService {
 
   private getPriceLimitByRole(role?: string): number {
     const limits: Record<string, number> = {
-      'REQUESTER': 10000000,      // 10 triệu
-      'EMPLOYEE': 10000000,       // 10 triệu
-      'USER': 10000000,           // 10 triệu
-      'MANAGER': 30000000,        // 30 triệu (Trưởng phòng)
-      'DEPARTMENT_HEAD': 30000000,// 30 triệu
-      'DIRECTOR': 100000000,      // 100 triệu (Giám đốc)
-      'CEO': Infinity,            // Không giới hạn
-      'ADMIN': Infinity,          // Không giới hạn
+      REQUESTER: 10000000, // 10 triệu
+      EMPLOYEE: 10000000, // 10 triệu
+      USER: 10000000, // 10 triệu
+      MANAGER: 30000000, // 30 triệu (Trưởng phòng)
+      DEPARTMENT_HEAD: 30000000, // 30 triệu
+      DIRECTOR: 100000000, // 100 triệu (Giám đốc)
+      CEO: Infinity, // Không giới hạn
+      ADMIN: Infinity, // Không giới hạn
     };
     return limits[role?.toUpperCase() || ''] || 10000000; // Default 10M
   }
 
-  private buildContext(chunks: any[], costCenters: any[], additionalProducts: any[] = [], priceLimit: number = 10000000, user?: any): { context: string; allProducts: any[] } {
-    const ragProducts = chunks.filter(c => c.source_table === 'products');
+  private buildContext(
+    chunks: any[],
+    costCenters: any[],
+    additionalProducts: any[] = [],
+    priceLimit: number = 10000000,
+    user?: any,
+  ): { context: string; allProducts: any[] } {
+    const ragProducts = chunks.filter((c) => c.source_table === 'products');
     // Merge RAG products with additional DB products, avoid duplicates
-    const seenIds = new Set(ragProducts.map(p => p.source_id));
-    const dbProducts = additionalProducts.filter(p => !seenIds.has(p.id));
-    const allProducts = [...ragProducts, ...dbProducts.map(p => ({
-      source_id: p.id,
-      metadata: {
-        name: p.name,
-        description: p.description,
-        sku: p.sku,
-        categoryName: p.category?.name,
-        categoryId: p.categoryId,
-      },
-    }))];
-    
-    const categories = chunks.filter(c => c.source_table === 'product_categories');
-    const suppliers = chunks.filter(c => c.source_table === 'organizations');
+    const seenIds = new Set(ragProducts.map((p) => p.source_id));
+    const dbProducts = additionalProducts.filter((p) => !seenIds.has(p.id));
+    const allProducts = [
+      ...ragProducts,
+      ...dbProducts.map((p) => ({
+        source_id: p.id,
+        metadata: {
+          name: p.name,
+          description: p.description,
+          sku: p.sku,
+          categoryName: p.category?.name,
+          categoryId: p.categoryId,
+        },
+      })),
+    ];
+
+    const categories = chunks.filter(
+      (c) => c.source_table === 'product_categories',
+    );
+    const suppliers = chunks.filter((c) => c.source_table === 'organizations');
 
     const context = `
 ## PRODUCTS (Sản phẩm có trong hệ thống):
-${allProducts.map((p, i) => {
-  const meta = p.metadata || {};
-  return `${i + 1}. ${meta.name || 'N/A'} (ID: ${p.source_id})
+${
+  allProducts
+    .map((p, i) => {
+      const meta = p.metadata || {};
+      return `${i + 1}. ${meta.name || 'N/A'} (ID: ${p.source_id})
    - Mô tả: ${meta.description || 'N/A'}
    - SKU: ${meta.sku || 'N/A'}
    - Danh mục: ${meta.categoryName || 'N/A'}
    - Danh mục ID: ${meta.categoryId || 'N/A'}
    - Giá tham khảo: ${meta.price || 'N/A'}`;
-}).join('\n') || 'Không có sản phẩm phù hợp'}
+    })
+    .join('\n') || 'Không có sản phẩm phù hợp'
+}
 
 ## CATEGORIES (Danh mục sản phẩm):
-${categories.map((c, i) => {
-  const meta = c.metadata || {};
-  return `${i + 1}. ${meta.name || 'N/A'} (ID: ${c.source_id})`;
-}).join('\n') || 'Không có danh mục phù hợp'}
+${
+  categories
+    .map((c, i) => {
+      const meta = c.metadata || {};
+      return `${i + 1}. ${meta.name || 'N/A'} (ID: ${c.source_id})`;
+    })
+    .join('\n') || 'Không có danh mục phù hợp'
+}
 
 ## SUPPLIERS (Nhà cung cấp):
-${suppliers.map((s, i) => {
-  const meta = s.metadata || {};
-  return `${i + 1}. ${meta.name || 'N/A'} (ID: ${s.source_id})
+${
+  suppliers
+    .map((s, i) => {
+      const meta = s.metadata || {};
+      return `${i + 1}. ${meta.name || 'N/A'} (ID: ${s.source_id})
    - Loại: ${meta.companyType || 'N/A'}
    - Tier: ${meta.supplierTier || 'N/A'}`;
-}).join('\n') || 'Không có nhà cung cấp phù hợp'}
+    })
+    .join('\n') || 'Không có nhà cung cấp phù hợp'
+}
 
 ## COST CENTERS (Trung tâm chi phí hiện có):
 ${costCenters.map((c, i) => `${i + 1}. ${c.name} (ID: ${c.id}, Code: ${c.code})`).join('\n') || 'Không có cost center'}
@@ -324,25 +378,29 @@ ${costCenters.map((c, i) => `${i + 1}. ${c.name} (ID: ${c.id}, Code: ${c.code})`
       const parsed = JSON.parse(jsonStr);
 
       // Validate and enrich items with context data if AI missed fields
-      const validatedItems = (parsed.items || []).map((item: any, idx: number) => {
-        // If AI returned productId but missing sku/category, try to find from context
-        if (item.productId && (!item.sku || !item.categoryId)) {
-          const contextProduct = allProducts.find(p => p.source_id === item.productId);
-          if (contextProduct?.metadata) {
-            const meta = contextProduct.metadata;
-            return {
-              ...item,
-              sku: item.sku || meta.sku || null,
-              categoryId: item.categoryId || meta.categoryId || null,
-              categoryName: item.categoryName || meta.categoryName || null,
-            };
+      const validatedItems = (parsed.items || []).map(
+        (item: any, idx: number) => {
+          // If AI returned productId but missing sku/category, try to find from context
+          if (item.productId && (!item.sku || !item.categoryId)) {
+            const contextProduct = allProducts.find(
+              (p) => p.source_id === item.productId,
+            );
+            if (contextProduct?.metadata) {
+              const meta = contextProduct.metadata;
+              return {
+                ...item,
+                sku: item.sku || meta.sku || null,
+                categoryId: item.categoryId || meta.categoryId || null,
+                categoryName: item.categoryName || meta.categoryName || null,
+              };
+            }
           }
-        }
-        return {
-          lineNumber: idx + 1,
-          ...item,
-        };
-      });
+          return {
+            lineNumber: idx + 1,
+            ...item,
+          };
+        },
+      );
 
       return {
         success: true,

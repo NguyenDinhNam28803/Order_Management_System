@@ -229,7 +229,7 @@ export default function SourcingPage() {
 function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type: string, onAction: (id: string) => void, isProcessing: boolean }) {
     return (
         <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-sm">
+            <table className="erp-table text-xs">
                 <thead>
                     <tr className="bg-[#0F1117] text-[10px] font-black uppercase tracking-widest text-[#64748B] border-b border-[rgba(148,163,184,0.1)]">
                         <th className="px-6 py-4">Thông tin PR</th>

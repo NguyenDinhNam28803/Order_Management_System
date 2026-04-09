@@ -149,7 +149,7 @@ export default function ContractsPage() {
             {/* Table */}
             <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="erp-table text-xs">
                         <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]">
                             <tr>
                                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Số hợp đồng</th>
@@ -188,13 +188,30 @@ export default function ContractsPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">{getStatusBadge(c.status)}</td>
-                                    <td className="px-6 py-4 text-right">
+                                    <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
                                         <Link 
                                             href={`/procurement/contracts/${c.id}`}
                                             className="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-[#0F1117] text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30 transition-all"
+                                            title="Xem chi tiết"
                                         >
                                             <Eye size={18} />
                                         </Link>
+                                        {c.status === ContractStatus.DRAFT && (
+                                            <>
+                                                <button 
+                                                    className="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-[#0F1117] text-[#64748B] hover:text-amber-500 hover:bg-amber-500/10 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all"
+                                                    title="Sửa hợp đồng"
+                                                >
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                                </button>
+                                                <button 
+                                                    className="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-[#0F1117] text-[#64748B] hover:text-rose-500 hover:bg-rose-500/10 border border-[rgba(148,163,184,0.1)] hover:border-rose-500/30 transition-all"
+                                                    title="Xóa hợp đồng"
+                                                >
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                </button>
+                                            </>
+                                        )}
                                     </td>
                                 </tr>
                             )) : (

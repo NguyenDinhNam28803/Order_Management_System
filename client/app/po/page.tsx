@@ -419,9 +419,9 @@ export default function POPage() {
                     <tbody>
                         {pos.length > 0 ? pos.map((po) => (
                             <tr key={po.id} className="hover:bg-slate-50">
-                                <td className="font-bold text-erp-navy flex items-center gap-2"><FileText size={14} className="text-erp-blue"/> {po.id}</td>
+                                <td className="font-bold text-erp-navy flex items-center gap-2"><FileText size={14} className="text-erp-blue"/> {po.poNumber || po.id.split('-').pop()}</td>
                                 <td className="font-bold text-slate-700">{po.vendor}</td>
-                                <td className=" font-black text-right text-erp-blue text-sm">{po.total.toLocaleString()} ₫</td>
+                                <td className=" font-black text-right text-erp-blue text-sm">{po.total} ₫</td>
                                 <td className="text-slate-500 text-xs text-center">{formatDate(po.createdAt)}</td>
                                 <td className="text-center">
                                     <div className="inline-flex items-center gap-1 text-[10px] font-black text-erp-navy bg-slate-100 px-2 py-1 rounded uppercase tracking-tighter">
@@ -437,6 +437,12 @@ export default function POPage() {
                                 </td>
                                 <td className="text-right">
                                     <div className="flex justify-end items-center gap-2">
+                                        {po.status === "DRAFT" && (
+                                            <>
+                                                <button className="p-1.5 text-slate-400 hover:bg-amber-100 hover:text-amber-600 rounded-lg transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
+                                                <button className="p-1.5 text-slate-400 hover:bg-rose-100 hover:text-rose-600 rounded-lg transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg></button>
+                                            </>
+                                        )}
                                         {po.status === "SHIPPED" && (
                                             <button
                                                 onClick={() => router.push("/warehouse/dashboard")}

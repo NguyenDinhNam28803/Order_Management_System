@@ -9,10 +9,7 @@ import { RagSyncProcessor, RAG_SYNC_QUEUE } from './rag-sync.processor';
 import { RagPrGeneratorService } from './rag-pr-generator.service';
 
 @Module({
-  imports: [
-    BullModule.registerQueue({ name: RAG_SYNC_QUEUE }),
-    ConfigModule,
-  ],
+  imports: [BullModule.registerQueue({ name: RAG_SYNC_QUEUE }), ConfigModule],
   controllers: [RagController],
   providers: [
     EmbeddingService,

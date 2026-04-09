@@ -187,7 +187,7 @@ export default function BudgetAllocationPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="erp-table text-xs">
             <thead>
               <tr className="bg-[#0F1117]">
                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Trung tâm chi phí (CC)</th>

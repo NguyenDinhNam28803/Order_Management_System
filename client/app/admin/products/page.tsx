@@ -164,12 +164,12 @@ export default function ProductAdminPage() {
             key: "name",
             render: (row: Product) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200 uppercase font-black text-[10px]">
+                    <div className="h-10 w-10 rounded-xl bg-[#0F1117] flex items-center justify-center text-[#64748B] border border-[rgba(148,163,184,0.1)] uppercase font-black text-[10px]">
                         {row.name.substring(0,2)}
                     </div>
                     <div>
-                        <div className="font-bold text-erp-navy leading-tight">{row.name}</div>
-                        <div className="text-[10px] text-slate-400  tracking-tighter uppercase">{row.sku}</div>
+                        <div className="font-bold text-[#F8FAFC] leading-tight">{row.name}</div>
+                        <div className="text-[10px] text-[#64748B] tracking-tighter uppercase">{row.sku}</div>
                     </div>
                 </div>
             )
@@ -179,7 +179,7 @@ export default function ProductAdminPage() {
             key: "category",
             render: (row: Product) => (
                 <div className="flex flex-col gap-1">
-                    <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-200 w-fit">
+                    <span className="px-3 py-1 rounded-full bg-[#0F1117] text-[#64748B] text-[10px] font-black uppercase tracking-widest border border-[rgba(148,163,184,0.1)] w-fit">
                         {row.category?.name || "N/A"}
                     </span>
                     <span className={`text-[9px] font-bold uppercase tracking-tight ${row.type === ProductType.CATALOG ? 'text-emerald-500' : 'text-amber-500'}`}>
@@ -191,13 +191,13 @@ export default function ProductAdminPage() {
         {
             label: "Đơn vị",
             key: "unit",
-            render: (row: Product) => <span className="text-xs font-bold text-slate-500 uppercase">{row.unit || "PCS"}</span>
+            render: (row: Product) => <span className="text-xs font-bold text-[#64748B] uppercase">{row.unit || "PCS"}</span>
         },
         {
             label: "Giá tham khảo",
             key: "unitPriceRef",
             render: (row: Product) => (
-                <div className=" font-black text-erp-navy text-sm">
+                <div className="font-black text-[#F8FAFC] text-sm">
                     {Number(row.unitPriceRef || 0).toLocaleString()} ₫
                 </div>
             )
@@ -207,7 +207,7 @@ export default function ProductAdminPage() {
             key: "isActive",
             render: (row: Product) => (
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${
-                    row.isActive ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-red-50 text-red-600 border border-red-100"
+                    row.isActive ? "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20" : "bg-rose-500/10 text-rose-500 border border-rose-500/20"
                 }`}>
                     <div className={`h-1.5 w-1.5 rounded-full ${row.isActive ? "bg-emerald-500" : "bg-red-500"}`} />
                     {row.isActive ? "Đang bán" : "Ngừng bán"}
@@ -242,15 +242,15 @@ export default function ProductAdminPage() {
         {
             label: "Mã",
             key: "code",
-            render: (row: ProductCategory) => <span className=" text-xs font-bold text-erp-navy">{row.code}</span>
+            render: (row: ProductCategory) => <span className=" text-xs font-bold text-[#F8FAFC]">{row.code}</span>
         },
         {
             label: "Tên danh mục",
             key: "name",
             render: (row: ProductCategory) => (
                 <div className="flex items-center gap-2">
-                    <Layers size={14} className="text-slate-400" />
-                    <span className="font-bold text-slate-700">{row.name}</span>
+                    <Layers size={14} className="text-[#64748B]" />
+                    <span className="font-bold text-[#F8FAFC]">{row.name}</span>
                 </div>
             )
         },
@@ -297,8 +297,8 @@ export default function ProductAdminPage() {
         <div className="animate-in fade-in duration-500">            
             <div className="mt-8 flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Quản lý kho hàng & Danh mục</h1>
-                    <p className="text-sm text-slate-500 mt-1 font-bold">DỮ LIỆU SẢN PHẨM SOURCE TỪ HỆ THỐNG TRUNG TÂM</p>
+                    <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase">Quản lý kho hàng & Danh mục</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-bold">DỮ LIỆU SẢN PHẨM SOURCE TỪ HỆ THỐNG TRUNG TÂM</p>
                 </div>
                 <div className="flex gap-4">
                     <button 
@@ -322,18 +322,18 @@ export default function ProductAdminPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-8">
-                <div className="bg-white rounded-4xl border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
+                <div className="bg-[#161922] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
                     {/* Toolbar */}
-                    <div className="p-6 border-b border-slate-50 bg-slate-50/30 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="flex gap-1 p-1 bg-white border border-slate-200 rounded-2xl w-fit">
+                    <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117] flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="flex gap-1 p-1 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl w-fit">
                             {["Sản phẩm", "Danh mục"].map(tab => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                                         activeTab === tab 
-                                        ? "bg-erp-navy text-white shadow-lg" 
-                                        : "text-slate-400 hover:text-erp-navy hover:bg-slate-50"
+                                        ? "bg-[#3B82F6] text-[#F8FAFC] shadow-lg shadow-[#3B82F6]/20" 
+                                        : "text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10"
                                     }`}
                                 >
                                     {tab}
@@ -343,9 +343,9 @@ export default function ProductAdminPage() {
 
                         <div className="flex items-center gap-4 flex-1 max-w-md">
                             <div className="relative flex-1 group">
-                                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-erp-blue transition-colors" />
+                                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B] group-focus-within:text-[#3B82F6] transition-colors" />
                                 <input 
-                                    className="erp-input w-full pl-12 font-bold focus:border-erp-blue" 
+                                    className="erp-input w-full pl-12 font-bold focus:border-[#3B82F6] bg-[#0F1117] text-[#F8FAFC]" 
                                     placeholder={`Tìm kiếm ${activeTab.toLowerCase()}...`}
                                     value={searchTerm}
                                     onChange={e => setSearchTerm(e.target.value)}
@@ -365,16 +365,16 @@ export default function ProductAdminPage() {
 
                 {/* Stats Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white p-8 rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all text-center">
+                    <div className="bg-[#161922] p-8 rounded-4xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#3B82F6]/30 transition-all text-center">
                         <div className="flex-1">
-                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Mục sản phẩm</div>
-                            <div className="text-3xl font-black text-erp-navy">{products.length}</div>
+                            <div className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-1">Mục sản phẩm</div>
+                            <div className="text-3xl font-black text-[#F8FAFC]">{products.length}</div>
                         </div>
                     </div>
-                    <div className="bg-white p-8 rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all text-center">
+                    <div className="bg-[#161922] p-8 rounded-4xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#3B82F6]/30 transition-all text-center">
                         <div className="flex-1">
-                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Danh mục cấp 1</div>
-                            <div className="text-3xl font-black text-erp-navy">{categories.length}</div>
+                            <div className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-1">Danh mục cấp 1</div>
+                            <div className="text-3xl font-black text-[#F8FAFC]">{categories.length}</div>
                         </div>
                     </div>
                 </div>

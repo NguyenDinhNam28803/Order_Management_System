@@ -81,7 +81,10 @@ export class CreatePrDto {
   @IsOptional()
   justification?: string;
 
-  @ApiPropertyOptional({ example: '2026-04-01', description: 'ISO date string or Date object' })
+  @ApiPropertyOptional({
+    example: '2026-04-01',
+    description: 'ISO date string or Date object',
+  })
   @Transform(({ value }) => {
     if (!value || value === '') return undefined;
     // Accept both Date object and ISO string from AI

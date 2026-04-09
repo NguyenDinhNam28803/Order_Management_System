@@ -174,7 +174,7 @@ export default function SupplierPO() {
                                         <div><strong className="text-[#F8FAFC]">TO:</strong> {po.vendor}<br/><strong className="text-[#F8FAFC]">ATTN:</strong> Account Manager</div>
                                         <div><strong className="text-[#F8FAFC]">PO#:</strong> {po.id}<br/><strong className="text-[#F8FAFC]">DATE:</strong> {po.createdAt}</div>
                                     </div>
-                                    <table className="w-full text-xs font-sans mb-8">
+                                    <table className="erp-table text-xs font-sans mb-8">
                                         <thead><tr className="bg-[#0F1117]"><th className="p-2 text-left text-[#64748B]">Item</th><th className="p-2 text-center text-[#64748B]">Qty</th><th className="p-2 text-right text-[#64748B]">Price</th></tr></thead>
                                         <tbody>
                                             {po.items?.map((i) => (
@@ -303,7 +303,7 @@ export default function SupplierPO() {
             </div>
 
             <div className="bg-[#161922] rounded-3xl overflow-hidden shadow-xl shadow-[#3B82F6]/5 border border-[rgba(148,163,184,0.1)]">
-                <table className="w-full text-xs">
+                <table className="erp-table text-xs">
                     <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]">
                         <tr className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">
                             <th className="py-4 px-6 text-left">Số PO</th>
@@ -393,7 +393,7 @@ export default function SupplierPO() {
                                         items: {selectedPO.items?.length || 0} | products: {(selectedPO as any).products?.length || 0} | poLines: {(selectedPO as any).poLines?.length || 0}
                                     </span>
                                 </div>
-                                <table className="w-full text-sm">
+                                <table className="erp-table text-sm">
                                     <thead className="bg-[#161922]">
                                         <tr className="text-[#64748B]">
                                             <th className="p-3 text-left font-bold">Sản phẩm</th>

@@ -10,7 +10,7 @@ export interface ERPTableColumn<T> {
 
 export default function ERPTable<T>({ columns, data }: { columns: ERPTableColumn<T>[], data: T[] }) {
     return (
-        <div className="overflow-x-auto w-full scrollbar-thin scrollbar-thumb-slate-200 rounded-xl overflow-hidden">
+        <div className="overflow-x-auto w-full scrollbar-thin scrollbar-thumb-[#64748B]/30 rounded-xl overflow-hidden">
             <table className="erp-table border-none rounded-none">
                 <thead>
                     <tr>

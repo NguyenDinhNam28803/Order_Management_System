@@ -675,7 +675,7 @@ export default function ProcurementSupplierDetailPage() {
                         <h2 className="text-xl font-black text-[#F8FAFC] uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
                         
                         <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
-                            <table className="w-full">
+                            <table className="erp-table text-xs">
                                 <thead className="bg-[#0F1117]">
                                     <tr>
                                         <th className="px-6 py-4 text-left text-xs font-black text-[#64748B] uppercase">Kỳ</th>
@@ -761,7 +761,7 @@ export default function ProcurementSupplierDetailPage() {
                         </div>
                         
                         <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
-                            <table className="w-full">
+                            <table className="erp-table text-xs">
                                 <thead className="bg-[#0F1117]">
                                     <tr>
                                         <th className="px-6 py-4 text-left text-xs font-black text-[#64748B] uppercase">PO Number</th>
