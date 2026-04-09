@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Lock, Mail, ArrowRight, ShieldCheck, Zap } from "lucide-react";
+import { Lock, Mail, ArrowRight, ShieldCheck, Zap, ChevronLeft, ChevronRight } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
@@ -14,6 +14,23 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [currentPage, setCurrentPage] = useState(0);
+
+    const demoUsers = [
+        { name: "IT Requester", email: "it.requester@innhub.com", role: "REQUESTER" },
+        { name: "Dept Approver", email: "it.manager@innhub.com", role: "DEPT_APPROVER" },
+        { name: "Director", email: "director@innhub.com", role: "DIRECTOR" },
+        { name: "CEO", email: "ceo@innhub.com", role: "CEO" },
+        { name: "CFO (Finance)", email: "cfo@innhub.com", role: "FINANCE" },
+        { name: "System Admin", email: "admin@innhub.com", role: "ADMIN" },
+        { name: "Procurement", email: "proc.officer@innhub.com", role: "PROCUREMENT" },
+        { name: "Supplier", email: "sales@hoanggia-vpp.vn", role: "SUPPLIER" },
+        { name: "Supplier Manager", email: "manager@hoanggia-vpp.vn", role: "SUPPLIER" }
+    ];
+
+    const ITEMS_PER_PAGE = 6;
+    const totalPages = Math.ceil(demoUsers.length / ITEMS_PER_PAGE);
+    const paginatedUsers = demoUsers.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
 
     const token = Cookies.get('accessToken');
     if (token) {
@@ -54,7 +71,7 @@ export default function LoginPage() {
                         <ShieldCheck size={40} className="text-white" />
                     </div>
                     <h1 className="text-6xl font-black text-white tracking-tighter mb-4 uppercase leading-none">
-                        Procure<span className="text-blue-500">Pro</span>
+                        Procure<span className="text-blue-500">Smart</span>
                     </h1>
                     <p className="text-slate-400 text-lg font-medium mb-12 max-w-md">
                         Hệ thống Quản trị Mua sắm & Chuỗi cung ứng tập trung dành cho doanh nghiệp Enterprise.
@@ -65,17 +82,8 @@ export default function LoginPage() {
                             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Tài khoản Demo (Quick Login):</div>
                             <div className="text-[10px] font-black text-blue-500 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">{users?.length || 0} Roles available</div>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                            {[
-                                { name: "IT Requester", email: "it.requester@innhub.com", role: "REQUESTER" },
-                                { name: "Dept Approver", email: "it.manager@innhub.com", role: "DEPT_APPROVER" },
-                                { name: "Director", email: "director@innhub.com", role: "DIRECTOR" },
-                                { name: "CEO", email: "ceo@innhub.com", role: "CEO" },
-                                { name: "CFO (Finance)", email: "cfo@innhub.com", role: "FINANCE" },
-                                { name: "System Admin", email: "admin@innhub.com", role: "ADMIN" },
-                                { name: "Procurement", email: "proc.officer@innhub.com", role: "PROCUREMENT" },
-                                { name: "Supplier", email: "supplier@abc.com.vn", role: "SUPPLIER" }
-                            ].map((u, idx) => (
+                        <div className="grid grid-cols-2 gap-3 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+                            {paginatedUsers.map((u, idx) => (
                                 <button
                                     key={idx}
                                     type="button"
@@ -91,13 +99,36 @@ export default function LoginPage() {
                                 </button>
                             ))}
                         </div>
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
+                                <button
+                                    type="button"
+                                    onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                                    disabled={currentPage === 0}
+                                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronLeft size={14} /> Trang trước
+                                </button>
+                                <span className="text-xs font-bold text-slate-500">
+                                    {currentPage + 1} / {totalPages}
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
+                                    disabled={currentPage === totalPages - 1}
+                                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    Trang sau <ChevronRight size={14} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Login Form Section */}
                 <div className="w-full max-w-md mx-auto animate-in fade-in slide-in-from-right-12 duration-700">
                     <div className="md:hidden text-center mb-10">
-                        <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">PROCURE<span className="text-blue-500">PRO</span></h1>
+                        <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">PROCURE<span className="text-blue-500">SMART</span></h1>
                         <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Enterprise ERP System</p>
                     </div>
 

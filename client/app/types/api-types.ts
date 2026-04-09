@@ -392,7 +392,7 @@ export interface User {
     name?: string;
     fullName?: string;
     role: UserRole | string;
-    department?: string | { id: string; name: string };
+    department?: string | { id: string; name: string; code?: string };
     deptId?: string;
     orgId?: string;
     jobTitle?: string;
@@ -400,6 +400,9 @@ export interface User {
     isActive?: boolean;
     avatarUrl?: string;
     icon?: string;
+    phone?: string;
+    createdAt?: string | Date;
+    organization?: { id: string; name: string; code: string; companyType?: string };
 }
 
 // --- DTOs ---

@@ -2,9 +2,61 @@
 
 import React, { useState } from "react";
 import { useProcurement } from "../../context/ProcurementContext";
-import { FileText, Eye, CheckCircle, Clock, XCircle, Search, Filter, Plus } from "lucide-react";
+import { 
+    FileText, 
+    Eye, 
+    CheckCircle2, 
+    Clock, 
+    XCircle, 
+    Search, 
+    Filter, 
+    Plus,
+    ShieldCheck,
+    AlertCircle,
+    Calendar,
+    DollarSign,
+    Building2
+} from "lucide-react";
 import Link from "next/link";
 import { ContractStatus, CurrencyCode } from "../../types/api-types";
+
+const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; icon: React.ReactNode }> = {
+    ACTIVE: {
+        label: "Đang hiệu lực",
+        bg: "bg-emerald-500/10",
+        text: "text-emerald-400",
+        border: "border-emerald-500/30",
+        icon: <CheckCircle2 size={12}/>
+    },
+    PENDING_APPROVAL: {
+        label: "Chờ duyệt",
+        bg: "bg-amber-500/10",
+        text: "text-amber-400",
+        border: "border-amber-500/30",
+        icon: <Clock size={12}/>
+    },
+    DRAFT: {
+        label: "Bản nháp",
+        bg: "bg-slate-500/10",
+        text: "text-slate-400",
+        border: "border-slate-500/30",
+        icon: <FileText size={12}/>
+    },
+    EXPIRED: {
+        label: "Hết hạn",
+        bg: "bg-orange-500/10",
+        text: "text-orange-400",
+        border: "border-orange-500/30",
+        icon: <AlertCircle size={12}/>
+    },
+    TERMINATED: {
+        label: "Đã chấm dứt",
+        bg: "bg-rose-500/10",
+        text: "text-rose-400",
+        border: "border-rose-500/30",
+        icon: <XCircle size={12}/>
+    }
+};
 
 export default function ContractsPage() {
     const { contracts, loadingMyPrs } = useProcurement();
@@ -12,116 +64,161 @@ export default function ContractsPage() {
     const [statusFilter, setStatusFilter] = useState<string>("ALL");
 
     const filteredContracts = contracts.filter(c => {
-        const matchSearch = c.contractNumber.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          c.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchSearch = c.contractNumber?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          c.title?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchStatus = statusFilter === "ALL" || c.status === statusFilter;
         return matchSearch && matchStatus;
     });
 
     const getStatusBadge = (status: ContractStatus) => {
-        switch (status) {
-            case ContractStatus.ACTIVE:
-                return <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1"><CheckCircle size={12}/> Đang hiệu lực</span>;
-            case ContractStatus.PENDING_APPROVAL:
-                return <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium flex items-center gap-1"><Clock size={12}/> Chờ duyệt</span>;
-            case ContractStatus.DRAFT:
-                return <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium flex items-center gap-1"><FileText size={12}/> Bản nháp</span>;
-            case ContractStatus.EXPIRED:
-                return <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium flex items-center gap-1"><Clock size={12}/> Hết hạn</span>;
-            case ContractStatus.TERMINATED:
-                return <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium flex items-center gap-1"><XCircle size={12}/> Đã chấm dứt</span>;
-            default:
-                return <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">{status}</span>;
-        }
+        const config = STATUS_CONFIG[status] || STATUS_CONFIG.DRAFT;
+        return (
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${config.bg} ${config.text} ${config.border}`}>
+                {config.icon}
+                {config.label}
+            </span>
+        );
     };
 
     return (
-        <div className="p-6 space-y-6">
-            <div className="flex justify-between items-center">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117]">
+            {/* Header */}
+            <div className="mt-4 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Quản lý Hợp đồng</h1>
-                    <p className="text-gray-500 text-sm">Quản lý và theo dõi các thỏa thuận thu mua với nhà cung cấp</p>
+                    <h1 className="text-2xl font-black text-[#F8FAFC] tracking-tight">Quản lý Hợp đồng</h1>
+                    <p className="text-sm text-[#94A3B8] mt-1">Quản lý và theo dõi các thỏa thuận thu mua với nhà cung cấp</p>
                 </div>
-                <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all shadow-md">
+                <button className="flex items-center gap-2 bg-[#3B82F6] hover:bg-[#2563EB] text-white px-4 py-2.5 rounded-xl font-bold shadow-lg shadow-[#3B82F6]/20 transition-all">
                     <Plus size={18} /> Tạo hợp đồng mới
                 </button>
             </div>
 
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center">
-                <div className="flex-1 min-w-75 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input 
-                        type="text" 
-                        placeholder="Tìm theo số hợp đồng, tiêu đề..." 
-                        className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                <div className="flex items-center gap-2">
-                    <Filter size={18} className="text-gray-400" />
-                    <select 
-                        className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <option value="ALL">Tất cả trạng thái</option>
-                        <option value={ContractStatus.DRAFT}>Bản nháp</option>
-                        <option value={ContractStatus.PENDING_APPROVAL}>Chờ duyệt</option>
-                        <option value={ContractStatus.ACTIVE}>Đang hiệu lực</option>
-                        <option value={ContractStatus.EXPIRED}>Hết hạn</option>
-                        <option value={ContractStatus.TERMINATED}>Đã chấm dứt</option>
-                    </select>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                {[
+                    { label: "Tổng hợp đồng", value: contracts.length, icon: FileText, color: "text-blue-400", bg: "bg-blue-500/10" },
+                    { label: "Đang hiệu lực", value: contracts.filter(c => c.status === "ACTIVE").length, icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+                    { label: "Chờ duyệt", value: contracts.filter(c => c.status === "PENDING_APPROVAL").length, icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10" },
+                    { label: "Hết hạn sắp tới", value: contracts.filter(c => c.status === "EXPIRED").length, icon: AlertCircle, color: "text-orange-400", bg: "bg-orange-500/10" }
+                ].map((stat, idx) => (
+                    <div key={idx} className="bg-[#161922] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                        <div className="flex items-center gap-3">
+                            <div className={`h-10 w-10 rounded-lg ${stat.bg} flex items-center justify-center`}>
+                                <stat.icon className={stat.color} size={20} />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-wider text-[#64748B]">{stat.label}</p>
+                                <p className="text-xl font-black text-[#F8FAFC]">{stat.value}</p>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Filters */}
+            <div className="bg-[#161922] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 mb-6">
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1 relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]" size={18} />
+                        <input 
+                            type="text" 
+                            placeholder="Tìm theo số hợp đồng, tiêu đề..." 
+                            className="w-full pl-11 pr-4 py-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#3B82F6]/50 focus:bg-[#161922] transition-all"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Filter size={18} className="text-[#64748B]" />
+                        <select 
+                            className="bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-sm font-bold text-[#F8FAFC] focus:outline-none focus:border-[#3B82F6]/50 focus:bg-[#161922] transition-all min-w-[160px]"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <option value="ALL">Tất cả trạng thái</option>
+                            <option value={ContractStatus.DRAFT}>Bản nháp</option>
+                            <option value={ContractStatus.PENDING_APPROVAL}>Chờ duyệt</option>
+                            <option value={ContractStatus.ACTIVE}>Đang hiệu lực</option>
+                            <option value={ContractStatus.EXPIRED}>Hết hạn</option>
+                            <option value={ContractStatus.TERMINATED}>Đã chấm dứt</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase">
-                        <tr>
-                            <th className="px-6 py-4 font-semibold">Số hợp đồng</th>
-                            <th className="px-6 py-4 font-semibold">Tiêu đề / Đối tác</th>
-                            <th className="px-6 py-4 font-semibold text-center">Giá trị</th>
-                            <th className="px-6 py-4 font-semibold">Thời hạn</th>
-                            <th className="px-6 py-4 font-semibold">Trạng thái</th>
-                            <th className="px-6 py-4 font-semibold text-right">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50 text-gray-700">
-                        {filteredContracts.length > 0 ? filteredContracts.map((c) => (
-                            <tr key={c.id} className="hover:bg-gray-50 transition-colors group">
-                                <td className="px-6 py-4 font-medium text-blue-600">#{c.contractNumber}</td>
-                                <td className="px-6 py-4">
-                                    <div className="font-semibold text-gray-800">{c.title}</div>
-                                    <div className="text-xs text-gray-500">{c.supplier?.name || "N/A"}</div>
-                                </td>
-                                <td className="px-6 py-4 text-center font-bold text-gray-800">
-                                    {new Intl.NumberFormat('vi-VN').format(c.totalValue)} {c.currency}
-                                </td>
-                                <td className="px-6 py-4 text-sm">
-                                    <div className="text-gray-600">{new Date(c.startDate).toLocaleDateString('vi-VN')}</div>
-                                    <div className="text-gray-400 text-xs">- {new Date(c.endDate).toLocaleDateString('vi-VN')}</div>
-                                </td>
-                                <td className="px-6 py-4">{getStatusBadge(c.status)}</td>
-                                <td className="px-6 py-4 text-right">
-                                    <Link 
-                                        href={`/procurement/contracts/${c.id}`}
-                                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors inline-block"
-                                    >
-                                        <Eye size={20} />
-                                    </Link>
-                                </td>
-                            </tr>
-                        )) : (
+            {/* Table */}
+            <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#3B82F6]/5 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]">
                             <tr>
-                                <td colSpan={6} className="px-6 py-10 text-center text-gray-400 italic">
-                                    {loadingMyPrs ? "Đang tải dữ liệu..." : "Không tìm thấy hợp đồng nào."}
-                                </td>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Số hợp đồng</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Tiêu đề / Đối tác</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B] text-center">Giá trị</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Thời hạn</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B]">Trạng thái</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#64748B] text-right">Thao tác</th>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                            {filteredContracts.length > 0 ? filteredContracts.map((c) => (
+                                <tr key={c.id} className="hover:bg-[rgba(59,130,246,0.05)] transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <span className="font-bold text-[#3B82F6]">#{c.contractNumber}</span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="font-bold text-[#F8FAFC]">{c.title}</div>
+                                        <div className="flex items-center gap-1 text-xs text-[#64748B] mt-1">
+                                            <Building2 size={12} />
+                                            {c.supplier?.name || "N/A"}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        <div className="font-bold text-[#F8FAFC]">
+                                            {new Intl.NumberFormat('vi-VN').format(c.totalValue || 0)} {c.currency}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-2 text-sm text-[#94A3B8]">
+                                            <Calendar size={14} className="text-[#64748B]" />
+                                            <div>
+                                                <div className="text-[#F8FAFC]">{new Date(c.startDate).toLocaleDateString('vi-VN')}</div>
+                                                <div className="text-[#64748B] text-xs">- {new Date(c.endDate).toLocaleDateString('vi-VN')}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">{getStatusBadge(c.status)}</td>
+                                    <td className="px-6 py-4 text-right">
+                                        <Link 
+                                            href={`/procurement/contracts/${c.id}`}
+                                            className="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-[#0F1117] text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30 transition-all"
+                                        >
+                                            <Eye size={18} />
+                                        </Link>
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-16 text-center">
+                                        {loadingMyPrs ? (
+                                            <div className="flex items-center justify-center gap-2 text-[#94A3B8]">
+                                                <Clock size={18} className="animate-spin" />
+                                                <span>Đang tải dữ liệu...</span>
+                                            </div>
+                                        ) : (
+                                            <div className="text-[#64748B]">
+                                                <FileText className="mx-auto h-12 w-12 mb-3 opacity-30" />
+                                                <p className="font-medium">Không tìm thấy hợp đồng nào</p>
+                                                <p className="text-sm mt-1">Thử điều chỉnh bộ lọc hoặc tìm kiếm với từ khóa khác</p>
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        </main>
     );
 }

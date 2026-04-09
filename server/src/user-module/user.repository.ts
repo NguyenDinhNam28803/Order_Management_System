@@ -57,6 +57,15 @@ export class UserRepository {
           select: {
             id: true,
             name: true,
+            code: true,
+          },
+        },
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            companyType: true,
           },
         },
       },

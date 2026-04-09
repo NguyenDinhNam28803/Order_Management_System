@@ -6,7 +6,7 @@ import {
     FileCheck, ShieldAlert, Users, Settings, LogOut,
     FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers,
     ShieldCheck, MessageSquare, History, FileText,
-    Bell, Inbox, Command, Star
+    Bell, Inbox, Command, Star, UserCircle
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -157,10 +157,10 @@ export default function Sidebar() {
             {/* Logo Section */}
             <div className="flex h-16 items-center px-4 border-b border-[rgba(148,163,184,0.1)] shrink-0">
                 <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center shrink-0 shadow-lg shadow-[#3B82F6]/30">
-                    <span className="text-white text-xs font-bold">PP</span>
+                    <span className="text-white text-xs font-bold">PS</span>
                 </div>
                 <span className="ml-4 text-sm font-black tracking-tight text-[#F8FAFC] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    PROCURE<span className="text-[#3B82F6]">PRO</span>
+                    PROCURE<span className="text-[#3B82F6]">SMART</span>
                 </span>
             </div>
 
@@ -224,7 +224,7 @@ export default function Sidebar() {
 
             {/* Logout / User Info Footer */}
             <div className="absolute bottom-0 w-full border-t border-[rgba(148,163,184,0.1)] bg-[#161922] p-3">
-                <div className="flex items-center gap-3 mb-2">
+                <Link href="/users/profile" className="flex items-center gap-3 mb-2 p-2 hover:bg-[rgba(59,130,246,0.1)] rounded-xl transition-colors cursor-pointer group/profile">
                     <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center font-black text-white text-xs shrink-0 shadow-lg shadow-[#3B82F6]/20">
                         {currentUser?.fullName?.substring(0, 2).toUpperCase() || "GU"}
                     </div>
@@ -238,7 +238,8 @@ export default function Sidebar() {
                             </span>
                         </div>
                     </div>
-                </div>
+                    <UserCircle size={16} className="ml-auto opacity-0 group-hover/profile:opacity-100 text-[#60A5FA] shrink-0" />
+                </Link>
                 <button 
                     onClick={logout}
                     className="flex w-full items-center gap-3 p-3 text-xs font-bold uppercase tracking-wider text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors group/logout"
