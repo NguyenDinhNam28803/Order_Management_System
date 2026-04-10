@@ -27,12 +27,16 @@ export default function DonutChart({
   const total = data.reduce((sum, d) => sum + d.value, 0);
   let currentAngle = 0;
 
-  const segments = data.map((item) => {
-    const angle = (item.value / total) * 360;
-    const startAngle = currentAngle;
-    currentAngle += angle;
-    return { ...item, startAngle, angle };
-  });
+  // Handle empty data or zero total
+  const hasData = data.length > 0 && total > 0;
+  const segments = hasData
+    ? data.map((item) => {
+        const angle = (item.value / total) * 360;
+        const startAngle = currentAngle;
+        currentAngle += angle;
+        return { ...item, startAngle, angle };
+      })
+    : [];
 
   const polarToCartesian = (cx: number, cy: number, radius: number, angle: number) => {
     const rad = ((angle - 90) * Math.PI) / 180;
@@ -82,18 +86,22 @@ export default function DonutChart({
             )}
           </div>
         </div>
-        <div className="flex-1 space-y-2">
-          {segments.map((seg, idx) => (
-            <div key={idx} className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: seg.color }} />
-                <span className="text-[#94A3B8]">{seg.label}</span>
+        <div className="flex-1 space-y-2 min-w-0">
+          {!hasData ? (
+            <div className="text-xs text-[#64748B] italic">Không có dữ liệu</div>
+          ) : (
+            segments.map((seg, idx) => (
+              <div key={idx} className="flex items-center justify-between text-xs gap-4">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: seg.color }} />
+                  <span className="text-[#94A3B8] truncate">{seg.label}</span>
+                </div>
+                <span className="text-[#F8FAFC] font-medium flex-shrink-0">
+                  {total > 0 ? ((seg.value / total) * 100).toFixed(1) : 0}%
+                </span>
               </div>
-              <span className="text-[#F8FAFC] font-medium">
-                {((seg.value / total) * 100).toFixed(1)}%
-              </span>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

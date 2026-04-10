@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Lock, Mail, ArrowRight, ShieldCheck, Zap, ChevronLeft, ChevronRight } from "lucide-react";
+import { Lock, Mail, ArrowRight, ShieldCheck, Zap, ChevronLeft, ChevronRight, PanelRightOpen, PanelRightClose, X } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
@@ -15,6 +15,7 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [currentPage, setCurrentPage] = useState(0);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const demoUsers = [
         { name: "IT Requester", email: "it.requester@innhub.com", role: "REQUESTER" },
@@ -73,75 +74,85 @@ export default function LoginPage() {
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full"></div>
             <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full"></div>
 
-            <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 relative z-10 items-center">
-                {/* Visual Section */}
-                <div className="hidden md:block pr-8 animate-in fade-in slide-in-from-left-12 duration-700">
-                    <div className="inline-flex items-center justify-center h-20 w-20 bg-blue-600 rounded-3xl shadow-2xl shadow-blue-500/30 mb-8 border border-white/10">
-                        <ShieldCheck size={40} className="text-white" />
-                    </div>
-                    <h1 className="text-6xl font-black text-white tracking-tighter mb-4 uppercase leading-none">
-                        Procure<span className="text-blue-500">Smart</span>
-                    </h1>
-                    <p className="text-slate-400 text-lg font-medium mb-12 max-w-md">
-                        Hệ thống Quản trị Mua sắm & Chuỗi cung ứng tập trung dành cho doanh nghiệp Enterprise.
-                    </p>
+            {/* Toggle Sidebar Button */}
+            <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="fixed top-6 right-6 z-50 p-3 bg-[#161922] border border-white/10 rounded-2xl text-slate-400 hover:text-white hover:border-blue-500/50 transition-all shadow-lg"
+            >
+                {sidebarOpen ? <PanelRightClose size={20} /> : <PanelRightOpen size={20} />}
+            </button>
 
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Tài khoản Demo (Quick Login):</div>
-                            <div className="text-[10px] font-black text-blue-500 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">{users?.length || 0} Roles available</div>
+            {/* Collapsible Demo Accounts Sidebar */}
+            <div className={`fixed top-0 right-0 h-full w-80 bg-[#0f1525]/95 backdrop-blur-xl border-l border-white/10 z-40 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className="p-6 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 className="text-sm font-black text-white uppercase tracking-widest">Demo Accounts</h3>
+                            <p className="text-[10px] text-slate-500 mt-1">{users?.length || 0} roles available</p>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
-                            {paginatedUsers.map((u, idx) => (
-                                <button
-                                    key={idx}
-                                    type="button"
-                                    onClick={() => { setEmail(u.email); setPassword("password123"); }}
-                                    className="bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/40 p-4 rounded-2xl text-left transition-all group relative overflow-hidden active:scale-95"
-                                >
-                                    <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-100 transition-opacity">
-                                        <Zap size={12} className="text-blue-400" />
+                        <button 
+                            onClick={() => setSidebarOpen(false)}
+                            className="p-2 hover:bg-white/5 rounded-xl transition-colors"
+                        >
+                            <X size={18} className="text-slate-400" />
+                        </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
+                        {demoUsers.map((u, idx) => (
+                            <button
+                                key={idx}
+                                type="button"
+                                onClick={() => { setEmail(u.email); setPassword("password123"); setSidebarOpen(false); }}
+                                className="w-full bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/40 p-4 rounded-2xl text-left transition-all group relative overflow-hidden active:scale-95"
+                            >
+                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Zap size={12} className="text-blue-400" />
+                                </div>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                                        <span className="text-xs font-black text-blue-400">{u.name.charAt(0)}</span>
                                     </div>
-                                    <div className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1 truncate">{u.role}</div>
-                                    <div className="text-sm font-black text-white group-hover:text-blue-100 truncate">{u.name}</div>
-                                    <div className="text-[10px] text-slate-500 truncate mt-1">{u.email}</div>
-                                </button>
-                            ))}
-                        </div>
-                        {totalPages > 1 && (
-                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
-                                <button
-                                    type="button"
-                                    onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
-                                    disabled={currentPage === 0}
-                                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    <ChevronLeft size={14} /> Trang trước
-                                </button>
-                                <span className="text-xs font-bold text-slate-500">
-                                    {currentPage + 1} / {totalPages}
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
-                                    disabled={currentPage === totalPages - 1}
-                                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    Trang sau <ChevronRight size={14} />
-                                </button>
-                            </div>
-                        )}
+                                    <div className="text-[9px] font-black text-blue-400 uppercase tracking-widest">{u.role}</div>
+                                </div>
+                                <div className="text-sm font-black text-white group-hover:text-blue-100 truncate">{u.name}</div>
+                                <div className="text-[10px] text-slate-500 truncate mt-1">{u.email}</div>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                        <p className="text-[10px] text-slate-500 text-center">Click account to auto-fill credentials</p>
                     </div>
                 </div>
+            </div>
 
-                {/* Login Form Section */}
-                <div className="w-full max-w-md mx-auto animate-in fade-in slide-in-from-right-12 duration-700">
-                    <div className="md:hidden text-center mb-10">
-                        <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">PROCURE<span className="text-blue-500">SMART</span></h1>
-                        <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Enterprise ERP System</p>
+            {/* Overlay when sidebar is open */}
+            {sidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
+            {/* Main Content - Centered Login Form */}
+            <div className="w-full max-w-md mx-auto relative z-10">
+                {/* Logo Header */}
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center h-16 w-16 bg-blue-600 rounded-2xl shadow-2xl shadow-blue-500/30 mb-6 border border-white/10">
+                        <ShieldCheck size={32} className="text-white" />
                     </div>
+                    <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">
+                        Procure<span className="text-blue-500">Smart</span>
+                    </h1>
+                    <p className="text-slate-400 text-sm font-medium">
+                        Enterprise Procurement & Supply Chain Management
+                    </p>
+                </div>
 
-                    <div className="bg-[#0f1525] border border-white/10 rounded-[40px] p-10 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group">
+                {/* Login Form */}
+                <div className="w-full animate-in fade-in zoom-in-95 duration-500">
+                    <div className="bg-[#0f1525] border border-white/10 rounded-[32px] p-8 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
 
                         <div className="mb-10">
@@ -227,10 +238,6 @@ export default function LoginPage() {
                         <Link href="/terms" className="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-slate-400 transition-colors">Điều khoản</Link>
                     </div>
                 </div>
-            </div>
-
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-800">Antigravity Engine v2.0</p>
             </div>
         </div>
     );

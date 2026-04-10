@@ -31,6 +31,7 @@ export default function Dashboard() {
     const [selectedPRDetails, setSelectedPRDetails] = React.useState<PR | null>(null);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [confirmModal, setConfirmModal] = React.useState<PR | null>(null);
+    const [isSimDropdownOpen, setIsSimDropdownOpen] = React.useState(false);
     const { confirmCatalogPrice } = useProcurement();
 
     const formatDate = (ds?: string) => {
@@ -81,7 +82,6 @@ export default function Dashboard() {
         const personalPRs = myPrs || [];
         const pendingPRsCount = personalPRs.filter((pr) => pr.status === 'PENDING_APPROVAL' || pr.status === 'SUBMITTED' || pr.status === 'UNDER_REVIEW').length;
         const approvedPRsCount = personalPRs.filter((pr) => pr.status === 'APPROVED' || pr.status === 'PO_CREATED' || pr.status === 'COMPLETED').length;
-        const [isSimDropdownOpen, setIsSimDropdownOpen] = React.useState(false);
 
         const notifications = [
             { id: 1, message: "PR-2026-001 được duyệt – Giám đốc vừa phê duyệt phiếu yêu cầu vật tư của bạn", time: "10M", type: "success" }
@@ -89,25 +89,28 @@ export default function Dashboard() {
 
         return (
             <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-                {/* HEADER */}
-                <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
-                    <div>
-                        <h1 className="text-4xl font-black tracking-tighter text-[#F8FAFC] mb-2 uppercase">KHU VỰC LÀM VIỆC CÁ NHÂN</h1>
-                        <p className="text-sm font-bold text-[#64748B] tracking-tight">
-                            Xin chào, <span className="text-[#3B82F6]">{currentUser.name || currentUser.fullName}</span> – Hệ thống AI Procurement đã sẵn sàng.
-                        </p>
+                {/* HEADER - Minimal Clean Design */}
+                <header className="flex items-center justify-between mb-6 pb-4 border-b border-[rgba(148,163,184,0.1)]">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-[#161922] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                            <span className="text-lg font-black text-[#3B82F6]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-black text-[#F8FAFC] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
+                            <p className="text-xs text-[#64748B]">{currentUser?.role} • {typeof currentUser?.department === 'object' ? (currentUser.department as { name: string })?.name : (currentUser?.department || 'Phòng ban')}</p>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-4 relative">
-                         <Link href="/quote-requests/create" className="px-4 py-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1A1D23] transition-all shadow-sm">
-                             + Tạo yêu cầu báo giá
+                    <div className="flex items-center gap-3">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] rounded-xl font-bold text-xs hover:bg-[#1A1D23] hover:text-[#F8FAFC] transition-all">
+                             + Báo giá
                          </Link>
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-5 py-2.5 bg-[#3B82F6] text-white rounded-xl font-black text-xs uppercase tracking-[0.15em] shadow-lg shadow-[#3B82F6]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 group"
+                                className="px-4 py-2.5 bg-[#3B82F6] text-white rounded-xl font-bold text-xs hover:bg-[#2563EB] transition-all flex items-center gap-2"
                             >
-                                + Tạo PR mới
-                                <ChevronDown size={16} className={`transition-transform duration-300 ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
+                                + Tạo PR
+                                <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
                             
                             {isSimDropdownOpen && (
@@ -468,15 +471,64 @@ export default function Dashboard() {
 
         return (
             <div className="animate-in fade-in duration-700 px-6">
-                <div className="flex justify-between items-end mb-10">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748B]">Hệ thống Quản trị Tổng thể</span>
+                {/* HEADER - With PR Creation for CFO/Director */}
+                <header className="flex items-center justify-between mb-6 pb-4 border-b border-[rgba(148,163,184,0.1)]">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-[#161922] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                            <span className="text-lg font-black text-[#3B82F6]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
-                        <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tight">Tài chính Vĩ mô</h1>
+                        <div>
+                            <h1 className="text-lg font-black text-[#F8FAFC] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
+                            <p className="text-xs text-[#64748B]">{currentUser?.role} • Tài chính Vĩ mô</p>
+                        </div>
                     </div>
-                </div>
+                    <div className="flex items-center gap-3">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] rounded-xl font-bold text-xs hover:bg-[#1A1D23] hover:text-[#F8FAFC] transition-all">
+                             + Báo giá
+                         </Link>
+                         <div className="relative">
+                            <button 
+                                onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
+                                className="px-4 py-2.5 bg-[#3B82F6] text-white rounded-xl font-bold text-xs hover:bg-[#2563EB] transition-all flex items-center gap-2"
+                            >
+                                + Tạo PR
+                                <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            
+                            {isSimDropdownOpen && (
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#161922] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                        <div className="p-3 bg-[#3B82F6]/10 text-[#3B82F6] rounded-xl"><Plus size={18} /></div>
+                                        <div>
+                                            <div className="text-[10px] font-black uppercase text-[#F8FAFC] mb-1 tracking-widest">Tạo quy trình thủ công</div>
+                                            <div className="text-[9px] text-[#64748B] font-bold uppercase leading-tight">Vào PR trực tiếp</div>
+                                        </div>
+                                    </Link>
+                                    <button 
+                                        onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
+                                        className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                    >
+                                        <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl"><Zap size={18} /></div>
+                                        <div>
+                                             <div className="text-[10px] font-black uppercase text-[#F8FAFC] mb-1 tracking-widest">Giả lập Catalog</div>
+                                             <div className="text-[9px] text-[#64748B] font-bold uppercase leading-tight">Demo full-flow từ Catalog</div>
+                                        </div>
+                                    </button>
+                                    <button 
+                                        onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
+                                        className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors w-full text-left"
+                                    >
+                                        <div className="p-3 bg-purple-500/10 text-purple-400 rounded-xl"><RotateCcw size={18} /></div>
+                                        <div>
+                                            <div className="text-[10px] font-black uppercase text-[#F8FAFC] mb-1 tracking-widest">Giả lập Non-Catalog</div>
+                                            <div className="text-[9px] text-[#64748B] font-bold uppercase leading-tight">Demo full-flow từ PR</div>
+                                        </div>
+                                    </button>
+                                </div>
+                            )}
+                         </div>
+                    </div>
+                </header>
 
                 {/* Financial Summary Widgets */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
@@ -855,12 +907,64 @@ export default function Dashboard() {
 
         return (
             <div className="animate-in fade-in duration-500 px-6">
-                <div className="flex justify-between items-end mb-8">
-                    <div>
-                        <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Khu vực Quản lý Phê duyệt</h1>
-                        <p className="text-sm text-[#64748B] mt-1">Xin chào, {currentUser?.name || currentUser?.fullName} - Bạn có {pendingPRCount} yêu cầu chờ xử lý.</p>
+                {/* HEADER - With PR Creation for Director/CEO */}
+                <header className="flex items-center justify-between mb-6 pb-4 border-b border-[rgba(148,163,184,0.1)]">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-[#161922] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                            <span className="text-lg font-black text-[#3B82F6]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-black text-[#F8FAFC] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
+                            <p className="text-xs text-[#64748B]">{currentUser?.role} • {typeof currentUser?.department === 'object' ? (currentUser.department as { name: string })?.name : (currentUser?.department || 'Phòng ban')}</p>
+                        </div>
                     </div>
-                </div>
+                    <div className="flex items-center gap-3">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] rounded-xl font-bold text-xs hover:bg-[#1A1D23] hover:text-[#F8FAFC] transition-all">
+                             + Báo giá
+                         </Link>
+                         <div className="relative">
+                            <button 
+                                onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
+                                className="px-4 py-2.5 bg-[#3B82F6] text-white rounded-xl font-bold text-xs hover:bg-[#2563EB] transition-all flex items-center gap-2"
+                            >
+                                + Tạo PR
+                                <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            
+                            {isSimDropdownOpen && (
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#161922] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                        <div className="p-3 bg-[#3B82F6]/10 text-[#3B82F6] rounded-xl"><Plus size={18} /></div>
+                                        <div>
+                                            <div className="text-[10px] font-black uppercase text-[#F8FAFC] mb-1 tracking-widest">Tạo quy trình thủ công</div>
+                                            <div className="text-[9px] text-[#64748B] font-bold uppercase leading-tight">Vào PR trực tiếp</div>
+                                        </div>
+                                    </Link>
+                                    <button 
+                                        onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
+                                        className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                    >
+                                        <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl"><Zap size={18} /></div>
+                                        <div>
+                                             <div className="text-[10px] font-black uppercase text-[#F8FAFC] mb-1 tracking-widest">Giả lập Catalog</div>
+                                             <div className="text-[9px] text-[#64748B] font-bold uppercase leading-tight">Demo full-flow từ Catalog</div>
+                                        </div>
+                                    </button>
+                                    <button 
+                                        onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
+                                        className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors w-full text-left"
+                                    >
+                                        <div className="p-3 bg-purple-500/10 text-purple-400 rounded-xl"><RotateCcw size={18} /></div>
+                                        <div>
+                                            <div className="text-[10px] font-black uppercase text-[#F8FAFC] mb-1 tracking-widest">Giả lập Non-Catalog</div>
+                                            <div className="text-[9px] text-[#64748B] font-bold uppercase leading-tight">Demo full-flow từ PR</div>
+                                        </div>
+                                    </button>
+                                </div>
+                            )}
+                         </div>
+                    </div>
+                </header>
 
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
