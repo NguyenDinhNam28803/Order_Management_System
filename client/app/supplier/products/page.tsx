@@ -156,27 +156,29 @@ export default function SupplierProductsPage() {
             label: "Trạng thái",
             key: "isActive",
             render: (row: Product) => (
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                    row.isActive ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-red-50 text-red-600 border border-red-100"
-                }`}>
-                    <div className={`h-1.5 w-1.5 rounded-full ${row.isActive ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`} />
-                    {row.isActive ? "Đang bán" : "Ngừng bán"}
-                </span>
+                <div className="min-w-[90px]">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider ${
+                        row.isActive ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                    }`}>
+                        <div className={`h-1.5 w-1.5 rounded-full ${row.isActive ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`} />
+                        {row.isActive ? "Đang bán" : "Ngừng bán"}
+                    </span>
+                </div>
             )
         },
         {
             label: "Thao tác",
             render: (row: Product) => (
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                     <button 
-                        className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all border border-transparent hover:border-indigo-100"
+                        className="p-1.5 text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 rounded-lg border border-transparent hover:border-[#3B82F6]/20 transition-all"
                         onClick={() => {
                             setEditingProduct(row);
                             setIsModalOpen(true);
                         }}
                         title="Chỉnh sửa"
                     >
-                        <Edit2 size={16} />
+                        <Edit2 size={14} />
                     </button>
                     <button 
                         className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100"

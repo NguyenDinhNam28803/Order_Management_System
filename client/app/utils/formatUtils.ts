@@ -21,3 +21,43 @@ export const formatVND = (val: number | string | undefined | null, includeSymbol
 export const parseMoney = (val: string) => {
     return parseFloat(val.replace(/,/g, '')) || 0;
 };
+
+/**
+ * Maps English status to Vietnamese
+ */
+export const statusMap: Record<string, string> = {
+    // PR Status
+    'DRAFT': 'Nháp',
+    'PENDING': 'Chờ duyệt',
+    'PENDING_APPROVAL': 'Chờ phê duyệt',
+    'SUBMITTED': 'Đã gửi',
+    'UNDER_REVIEW': 'Đang xem xét',
+    'APPROVED': 'Đã duyệt',
+    'REJECTED': 'Từ chối',
+    'CANCELLED': 'Đã hủy',
+    'COMPLETED': 'Hoàn thành',
+    'PO_CREATED': 'Đã tạo PO',
+    'IN_SOURCING': 'Đang báo giá',
+    
+    // PO Status
+    'ISSUED': 'Đã phát hành',
+    'ACKNOWLEDGED': 'Đã xác nhận',
+    'CONFIRMED': 'Đã confirm',
+    'SHIPPED': 'Đã giao',
+    'IN_TRANSIT': 'Đang vận chuyển',
+    'PARTIAL': 'Giao một phần',
+    'RECEIVED': 'Đã nhận',
+    'INVOICED': 'Đã lập hóa đơn',
+    'PAID': 'Đã thanh toán',
+    'ORDERED': 'Đã đặt hàng',
+    
+    // RFQ Status
+    'OPEN': 'Mở',
+    'CLOSED': 'Đã đóng',
+    'AWARDED': 'Đã trao thưởng',
+};
+
+export const getStatusLabel = (status: string | undefined): string => {
+    if (!status) return 'Không xác định';
+    return statusMap[status] || status.replace(/_/g, ' ');
+};

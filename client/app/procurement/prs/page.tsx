@@ -170,9 +170,9 @@ export default function ProcurementControlPage() {
             render: (row: PR) => <StatusPill status={row.status} />
         },
         {
-            label: "Xử lý Thu mua",
+            label: "Xử lý",
             render: (row: PR) => (
-                <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end gap-1">
                     {row.status === 'APPROVED' && row.type === 'CATALOG' && (
                         <button 
                             onClick={() => setConfirmModal(row)}
@@ -341,18 +341,26 @@ export default function ProcurementControlPage() {
 }
 
 function StatusPill({ status }: { status: string }) {
-    const config: Record<string, { bg: string, text: string, border: string }> = {
-        'DRAFT': { bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/20' },
-        'PENDING_APPROVAL': { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
-        'APPROVED': { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
-        'REJECTED': { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
-        'IN_SOURCING': { bg: 'bg-[#3B82F6]/10', text: 'text-[#3B82F6]', border: 'border-[#3B82F6]/20' },
+    const config: Record<string, { bg: string, text: string, border: string, label: string }> = {
+        'DRAFT': { bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/20', label: 'Nháp' },
+        'PENDING': { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', label: 'Chờ duyệt' },
+        'PENDING_APPROVAL': { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', label: 'Chờ phê duyệt' },
+        'SUBMITTED': { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20', label: 'Đã gửi' },
+        'UNDER_REVIEW': { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/20', label: 'Đang xem xét' },
+        'APPROVED': { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20', label: 'Đã duyệt' },
+        'REJECTED': { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20', label: 'Từ chối' },
+        'CANCELLED': { bg: 'bg-gray-500/10', text: 'text-gray-400', border: 'border-gray-500/20', label: 'Đã hủy' },
+        'COMPLETED': { bg: 'bg-cyan-500/10', text: 'text-cyan-400', border: 'border-cyan-500/20', label: 'Hoàn thành' },
+        'IN_SOURCING': { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20', label: 'Đang báo giá' },
+        'PO_CREATED': { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/20', label: 'Đã tạo PO' },
     };
 
-    const style = config[status] || config['DRAFT'];
+    const style = config[status] || { ...config['DRAFT'], label: status.replace(/_/g, ' ') };
     return (
-        <span className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border ${style.border}`}>
-            {status}
-        </span>
+        <div className="min-w-[110px]">
+            <span className={`inline-block px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border ${style.border}`}>
+                {style.label}
+            </span>
+        </div>
     );
 }

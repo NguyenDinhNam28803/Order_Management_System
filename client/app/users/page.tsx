@@ -249,23 +249,34 @@ export default function UsersPage() {
                                         </div>
                                     </td>
                                     <td>
-                                        <span className={`status-pill status-${(user.role || 'guest').toLowerCase()}`}>
-                                            <ShieldCheck size={10} className="mr-1" /> {user.role}
-                                        </span>
-                                    </td>
-                                    <td className="text-center">
-                                        <div className="flex items-center justify-center gap-2">
-                                            <div className={`h-2 w-2 rounded-full ${user.isActive === false ? 'bg-red-400' : 'bg-emerald-500 animate-pulse'}`}></div>
-                                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-widest">
-                                                {user.isActive === false ? "LOCKED" : "ACTIVE"}
+                                        <div className="min-w-[100px]">
+                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${
+                                                user.role === 'ADMIN' || user.role === 'PLATFORM_ADMIN' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                                                user.role === 'DIRECTOR' || user.role === 'CEO' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                                                user.role === 'PROCUREMENT' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                                                user.role === 'FINANCE' || user.role === 'CFO' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                                user.role === 'REQUESTER' ? 'bg-slate-500/10 text-slate-400 border border-slate-500/20' :
+                                                'bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20'
+                                            }`}>
+                                                <ShieldCheck size={10} /> {user.role}
                                             </span>
                                         </div>
                                     </td>
                                     <td className="text-center">
-                                        <div className="flex justify-center gap-3">
+                                        <div className="min-w-[80px]">
+                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${
+                                                user.isActive === false ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                            }`}>
+                                                <div className={`h-1.5 w-1.5 rounded-full ${user.isActive === false ? 'bg-rose-500' : 'bg-emerald-500 animate-pulse'}`}></div>
+                                                {user.isActive === false ? "Khóa" : "Hoạt động"}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="text-center">
+                                        <div className="flex justify-center gap-1">
                                             <button 
                                                 onClick={() => handleOpenModal(user)}
-                                                className="h-9 w-9 flex items-center justify-center bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-[#3B82F6] hover:border-[#3B82F6]/30 rounded-xl transition-all shadow-sm"
+                                                className="p-1.5 text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 rounded-lg border border-transparent hover:border-[#3B82F6]/20 transition-all"
                                             >
                                                 <Edit2 size={14} />
                                             </button>

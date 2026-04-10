@@ -217,9 +217,9 @@ export default function DeliveryTrackingPage() {
                                             <td className="px-6 py-5 text-right">
                                                 <button 
                                                     onClick={(e) => { e.stopPropagation(); setSelectedPO(del); }}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-lg text-[10px] font-black uppercase text-[#3B82F6] hover:bg-[#3B82F6]/20 transition-all"
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-lg text-[10px] font-black uppercase text-[#3B82F6] hover:bg-[#3B82F6]/20 transition-all"
                                                 >
-                                                    <Eye size={14} /> Chi tiết
+                                                    <Eye size={12} />
                                                 </button>
                                             </td>
                                         </tr>

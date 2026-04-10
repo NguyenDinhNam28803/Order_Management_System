@@ -6,6 +6,7 @@ import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
 import { Plus, FileText, Send,  Check, X } from "lucide-react";
 import Link from "next/link";
 import { ApprovalWorkflow } from "../context/ProcurementContext";
+import { getStatusLabel } from "../utils/formatUtils";
 
 export default function PRPage() {
     const { prs, myPrs, currentUser, actionApproval, costCenters, approvals, submitPR } = useProcurement();
@@ -97,19 +98,30 @@ export default function PRPage() {
         },
         { 
             label: "Trạng thái", 
-            key: "status", 
+            key: "status",
             render: (row: PR) => {
                 const status = row.status || 'DRAFT';
-                let cls = 'px-2 py-0.5 rounded text-[10px] font-bold uppercase border ';
-                if (status === 'DRAFT') cls += 'bg-[#161922] text-[#64748B] border-[rgba(148,163,184,0.1)]';
-                if (status.includes('PENDING')) cls += 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20';
-                if (status === 'APPROVED') cls += 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-                if (status === 'REJECTED') cls += 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+                const statusConfig: Record<string, { bg: string; text: string; border: string }> = {
+                    'DRAFT': { bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/20' },
+                    'PENDING': { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
+                    'PENDING_APPROVAL': { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
+                    'SUBMITTED': { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20' },
+                    'UNDER_REVIEW': { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/20' },
+                    'APPROVED': { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
+                    'REJECTED': { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
+                    'CANCELLED': { bg: 'bg-gray-500/10', text: 'text-gray-400', border: 'border-gray-500/20' },
+                    'COMPLETED': { bg: 'bg-cyan-500/10', text: 'text-cyan-400', border: 'border-cyan-500/20' },
+                    'PO_CREATED': { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/20' },
+                    'IN_SOURCING': { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20' },
+                };
+                const style = statusConfig[status] || statusConfig['DRAFT'];
                 
                 return (
-                    <span className={cls}>
-                        {status.replace(/_/g, ' ')}
-                    </span>
+                    <div className="min-w-[100px]">
+                        <span className={`inline-block px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider ${style.bg} ${style.text} border ${style.border}`}>
+                            {getStatusLabel(status)}
+                        </span>
+                    </div>
                 );
             }
         },
@@ -133,56 +145,56 @@ export default function PRPage() {
                 };
                 
                 return (
-                    <div className="flex gap-2 justify-end pr-4">
+                    <div className="flex gap-1 justify-end items-center">
                         <Link 
                             href={`/pr/${row.id}`}
-                            className="p-1.5 rounded-lg bg-[#0F1117] text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 border border-[rgba(148,163,184,0.1)] transition-all shadow-sm"
+                            className="p-1 rounded bg-[#0F1117] text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 border border-[rgba(148,163,184,0.1)] transition-all"
                             title="Xem chi tiết PR"
                         >
-                            <FileText size={16} />
+                            <FileText size={14} />
                         </Link>
                         {activeTab === "Phê duyệt" ? (
-                            <div className="flex gap-1.5">
+                            <div className="flex gap-1">
                                 <button 
                                     onClick={() => handleAction(row.id, 'APPROVE')}
-                                    className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white border border-emerald-500/20 transition-all"
+                                    className="p-1 rounded bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white border border-emerald-500/20 transition-all"
                                 >
-                                    <Check size={16} />
+                                    <Check size={14} />
                                 </button>
                                 <button 
                                     onClick={() => handleAction(row.id, 'REJECT')}
-                                    className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white border border-rose-500/20 transition-all"
+                                    className="p-1 rounded bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white border border-rose-500/20 transition-all"
                                 >
-                                    <X size={16} />
+                                    <X size={14} />
                                 </button>
                             </div>
                         ) : (
                             <>
                                 {row.status === 'DRAFT' && (
-                                    <>
+                                    <div className="flex gap-1">
                                         <button 
-                                            className="p-1.5 rounded-lg bg-[#0F1117] text-[#64748B] hover:text-amber-500 hover:bg-amber-500/10 border border-[rgba(148,163,184,0.1)] transition-all shadow-sm"
+                                            className="p-1 rounded bg-[#0F1117] text-[#64748B] hover:text-amber-500 hover:bg-amber-500/10 border border-[rgba(148,163,184,0.1)] transition-all"
                                             title="Sửa PR"
                                         >
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                                         </button>
                                         <button 
-                                            className="p-1.5 rounded-lg bg-[#0F1117] text-[#64748B] hover:text-rose-500 hover:bg-rose-500/10 border border-[rgba(148,163,184,0.1)] transition-all shadow-sm"
+                                            className="p-1 rounded bg-[#0F1117] text-[#64748B] hover:text-rose-500 hover:bg-rose-500/10 border border-[rgba(148,163,184,0.1)] transition-all"
                                             title="Xóa PR"
                                         >
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
                                         </button>
                                         <button 
                                             onClick={() => submitPR(row.id)}
-                                            className="py-1.5 px-4 text-[11px] whitespace-nowrap bg-[#3B82F6] text-white rounded-lg font-bold uppercase tracking-wider shadow-lg shadow-[#3B82F6]/20 hover:bg-[#2563EB] transition-all flex items-center gap-2"
+                                            className="py-1 px-2 text-[10px] bg-[#3B82F6] text-white rounded font-bold uppercase tracking-wider hover:bg-[#2563EB] transition-all flex items-center gap-1"
                                         >
-                                            <Send size={14} /> Gửi duyệt
+                                            <Send size={12} />
                                         </button>
-                                    </>
+                                    </div>
                                 )}
                                 {row.status.includes('PENDING') && (
-                                    <span className="text-[10px] font-bold text-[#64748B] bg-[#0F1117] px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)]">
-                                        Đang thẩm định
+                                    <span className="text-[9px] font-bold text-[#64748B] bg-[#0F1117] px-2 py-1 rounded border border-[rgba(148,163,184,0.1)]">
+                                        Đang xử lý
                                     </span>
                                 )}
                             </>

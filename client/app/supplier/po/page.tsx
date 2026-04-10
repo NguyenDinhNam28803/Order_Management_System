@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Package, DownloadCloud, FileText, CheckCircle, AlertTriangle, Truck, Clock, RefreshCcw, Send, XCircle, Search, Eye, X } from "lucide-react";
 
 import { useProcurement, PO } from "../../context/ProcurementContext";
+import { getStatusLabel } from "../../utils/formatUtils";
 
 export default function SupplierPO() {
     const [viewState, setViewState] = useState<"LIST" | "DETAIL">("LIST");
@@ -322,7 +323,7 @@ export default function SupplierPO() {
                                 <td className="text-center text-[#64748B] py-4 px-6">{p.createdAt ? new Date(p.createdAt).toLocaleDateString("vi-VN") : "N/A"}</td>
                                 <td className="text-center py-4 px-6">
                                     <span className={`${p.status === "ISSUED" || p.status === "PENDING" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : p.status === "REJECTED" ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"} font-black uppercase px-2 py-1 rounded text-[9px] tracking-widest`}>
-                                        {p.status === "ISSUED" || p.status === "PENDING" ? "Cần Confirm" : p.status === "REJECTED" ? "Đã Từ chối" : "Đã Ack"}
+                                        {getStatusLabel(p.status)}
                                     </span>
                                 </td>
                                 <td className="text-center text-[10px] text-[#64748B] py-4 px-6">{(p as any).supplierId?.substring(0, 8) || (p as any).supplier?.id?.substring(0, 8) || "N/A"}</td>
@@ -373,7 +374,7 @@ export default function SupplierPO() {
                                     <div className="flex items-center gap-2">
                                         <span className="text-sm font-bold text-[#64748B]">Trạng thái:</span>
                                         <span className={`${selectedPO.status === "ISSUED" || selectedPO.status === "PENDING" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : selectedPO.status === "REJECTED" ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"} font-black uppercase px-3 py-1 rounded text-xs tracking-widest`}>
-                                            {selectedPO.status === "ISSUED" || selectedPO.status === "PENDING" ? "Cần Confirm" : selectedPO.status === "REJECTED" ? "Đã Từ chối" : "Đã Ack"}
+                                            {getStatusLabel(selectedPO.status)}
                                         </span>
                                     </div>
                                     <p className="text-sm text-[#94A3B8]"><strong className="text-[#F8FAFC]">Ngày tạo:</strong> {selectedPO.createdAt ? new Date(selectedPO.createdAt).toLocaleDateString("vi-VN") : "N/A"}</p>

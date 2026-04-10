@@ -139,23 +139,25 @@ export default function CategoriesPage() {
             label: "Trạng thái",
             key: "isActive",
             render: (row) => (
-                <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider w-fit ${
-                    row.isActive ? "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20" : "bg-rose-500/10 text-rose-500 border border-rose-500/20"
-                }`}>
-                    {row.isActive ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
-                    {row.isActive ? "Hoạt động" : "Tạm ngưng"}
+                <div className="min-w-[90px]">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider ${
+                        row.isActive ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                    }`}>
+                        {row.isActive ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
+                        {row.isActive ? "Hoạt động" : "Tạm ngưng"}
+                    </span>
                 </div>
             )
         },
         {
             label: "Thao tác",
             render: (row) => (
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                     <button 
                         onClick={() => handleOpenModal(row)}
-                        className="h-10 w-10 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-erp-blue hover:border-erp-blue/30 rounded-xl transition-all shadow-sm"
+                        className="p-1.5 text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 rounded-lg border border-transparent hover:border-[#3B82F6]/20 transition-all"
                     >
-                        <Edit2 size={16} />
+                        <Edit2 size={14} />
                     </button>
                     <button 
                         onClick={() => {

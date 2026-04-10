@@ -9,6 +9,7 @@ import {
     Package, Send, CheckCircle, X, ChevronRight, Bot} from "lucide-react";
 import Link from "next/link";
 import { RFQ } from "../context/ProcurementContext";
+import { getStatusLabel } from "../utils/formatUtils";
 
 export default function SourcingPage() {
     const { prs, rfqs, pos, currentUser, refreshData, notify, createRFQ, createPOFromPR, organizations, quoteRequests, updateQuoteRequest, submitQuoteRequest, sendQuoteRequestToSupplier, processPOAutomation } = useProcurement();
@@ -370,7 +371,7 @@ function POManagement({ pos }: { pos: PO[] | null }) {
                         <div className="w-16 h-16 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center font-black text-[#64748B] text-lg group-hover:bg-[#3B82F6] group-hover:text-white transition-all shadow-inner">{po.poNumber.split('-').pop()}</div>
                         <div>
                             <h4 className="font-black text-[#F8FAFC] text-base uppercase tracking-tight">{po.vendor}</h4>
-                            <span className="text-[11px] font-black text-[#3B82F6] uppercase tracking-[0.1em]">{(po.total || 0).toLocaleString()} ₫ | {po.status.replace(/_/g, ' ')}</span>
+                            <span className="text-[11px] font-black text-[#3B82F6] uppercase tracking-[0.1em]">{(po.total || 0).toLocaleString()} ₫ | {getStatusLabel(po.status)}</span>
                         </div>
                     </div>
                     <button className="p-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-[#3B82F6] hover:border-[#3B82F6]/30 rounded-xl transition-all shadow-sm">

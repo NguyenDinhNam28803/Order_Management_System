@@ -9,7 +9,7 @@ import {
     Search, ChevronDown, XCircle, RotateCcw, ArrowRight, ClipboardList, Edit3, Calendar, DollarSign
 } from "lucide-react";
 import { useProcurement, PR, Organization, QuoteRequest, BudgetAllocation, DocumentType } from "./context/ProcurementContext";
-import { formatVND } from "./utils/formatUtils";
+import { formatVND, getStatusLabel } from "./utils/formatUtils";
 import BudgetHeatmap from "./components/BudgetHeatmap";
 import { SimpleBarChart, DonutChart, StatsCard } from "./components/charts";
 
@@ -280,16 +280,16 @@ export default function Dashboard() {
                                                              pr.status.includes("PENDING") || pr.status === "SUBMITTED" ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
                                                              "bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20"
                                                          }`}>
-                                                             {pr.status.replace(/_/g, " ")}
+                                                             {getStatusLabel(pr.status)}
                                                          </span>
                                                      </td>
                                                      <td className="px-8 py-6 text-right">
-                                                         <div className="flex justify-end gap-2">
+                                                         <div className="flex justify-end gap-1">
                                                              {pr.status === "DRAFT" && (
-                                                                 <Link href={`/pr/edit/${pr.id}`} className="p-2.5 text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 rounded-xl transition-all"><Edit3 size={16} /></Link>
+                                                                 <Link href={`/pr/edit/${pr.id}`} className="p-1.5 text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 rounded-lg border border-transparent hover:border-[#3B82F6]/20 transition-all"><Edit3 size={14} /></Link>
                                                              )}
-                                                             <button disabled={loadingMyPrs} onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="p-2.5 text-[#64748B] hover:text-[#F8FAFC] hover:bg-[#1A1D23] rounded-xl transition-all">
-                                                                 <Eye size={16} />
+                                                             <button disabled={loadingMyPrs} onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="p-1.5 text-[#64748B] hover:text-[#F8FAFC] hover:bg-[#1A1D23] rounded-lg border border-transparent hover:border-[rgba(148,163,184,0.2)] transition-all">
+                                                                 <Eye size={14} />
                                                              </button>
                                                          </div>
                                                      </td>
@@ -626,9 +626,9 @@ export default function Dashboard() {
                                                 <td className="text-right font-black text-[#3B82F6] text-sm">{formatVND(b.allocatedAmount)} Đ</td>
                                                 <td className="text-[#64748B] italic text-[11px] font-medium">{b.notes || "Ngân sách định kỳ"}</td>
                                                 <td className="text-right px-8">
-                                                    <div className="flex justify-end gap-2">
-                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="btn-primary !py-2 !px-4 !text-[9px]">Duyệt định biên</button>
-                                                        <button onClick={() => actionApproval(b.workflowId, 'REJECT', 'Không hợp lệ')} className="p-2 border border-rose-500/20 text-rose-400 rounded-xl hover:bg-rose-500 hover:text-white transition-all"><XCircle size={14}/></button>
+                                                    <div className="flex justify-end gap-1">
+                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="py-1.5 px-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg font-black text-[9px] uppercase tracking-wider hover:bg-emerald-500 hover:text-white transition-all">Duyệt</button>
+                                                        <button onClick={() => actionApproval(b.workflowId, 'REJECT', 'Không hợp lệ')} className="p-1.5 border border-rose-500/20 text-rose-400 rounded-lg hover:bg-rose-500 hover:text-white transition-all"><XCircle size={12}/></button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -687,16 +687,22 @@ export default function Dashboard() {
                                         </td>
                                         <td className="text-right font-black text-[#F8FAFC] text-sm">{formatVND(pr.totalEstimate)} ₫</td>
                                         <td className="text-right px-8">
-                                            <div className="flex justify-end gap-1.5">
-                                                <button onClick={() => setSelectedPRDetails(pr)} className="p-2.5 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-[#3B82F6] hover:border-[#3B82F6]/20 rounded-xl transition-all shadow-sm"><Eye size={14}/></button>
-                                                <button onClick={() => handleQuickApprove(pr.workflowId)} className="p-2.5 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-emerald-400 hover:bg-emerald-500 hover:text-white rounded-xl transition-all shadow-sm"><CheckCircle size={14}/></button>
-                                                <button className="p-2.5 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-rose-400 hover:bg-rose-500 hover:text-white rounded-xl transition-all shadow-sm"><XCircle size={14}/></button>
-                                                <button className="p-2.5 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-amber-400 hover:bg-amber-500 hover:text-white rounded-xl transition-all shadow-sm"><RotateCcw size={14}/></button>
+                                            <div className="flex justify-end gap-1">
+                                                <button onClick={() => setSelectedPRDetails(pr)} className="p-1.5 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-[#3B82F6] hover:border-[#3B82F6]/20 rounded-lg transition-all"><Eye size={12}/></button>
+                                                <button onClick={() => handleQuickApprove(pr.workflowId)} className="p-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white rounded-lg transition-all"><CheckCircle size={12}/></button>
+                                                <button className="p-1.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white rounded-lg transition-all"><XCircle size={12}/></button>
                                             </div>
                                         </td>
                                     </tr>
                                 )) : (
-                                    <tr><td colSpan={7} className="py-20 text-center text-[#64748B] font-black uppercase tracking-widest text-[10px]">Queue trống - Mọi chứng từ đã được xử lý</td></tr>
+                                    <tr>
+                                        <td colSpan={7} className="py-20 text-center text-[#64748B] font-black uppercase text-[10px]">
+                                            <div className="flex flex-col items-center gap-3">
+                                                <div className="p-4 bg-[#1A1D23] rounded-full"><Bell size={24} className="text-[#64748B]" /></div>
+                                                Không có phiếu nào chờ duyệt
+                                            </div>
+                                        </td>
+                                    </tr>
                                 )}
                             </tbody>
                         </table>

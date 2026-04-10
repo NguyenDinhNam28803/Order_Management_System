@@ -204,12 +204,12 @@ export default function QuotationManagementPage() {
         {
             label: "Thao tác",
             render: (row: RFQ) => (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                     <button
                         onClick={() => setSelectedRFQ(row)}
-                        className="inline-flex items-center gap-2 bg-[#3B82F6] text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#2563EB] transition-all shadow-lg shadow-[#3B82F6]/20 active:scale-95"
+                        className="inline-flex items-center gap-1 bg-[#3B82F6] text-white px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider hover:bg-[#2563EB] transition-all"
                     >
-                        <Eye size={14} /> Xem báo giá
+                        <Eye size={12} /> Xem
                     </button>
                     {row.status === 'PUBLISHED' && (
                         <button
@@ -778,9 +778,10 @@ export default function QuotationManagementPage() {
                             </div>
                         </div>
                     </div>
-                    )
+                </div>
+            )}
 
-                    {/* Table */}
+            {/* Table */}
                     <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
                         {selectedRFQ ? (
                             // Show quotations for selected RFQ
@@ -821,34 +822,34 @@ export default function QuotationManagementPage() {
                             </>
                         )}
                     </div>
-                </div>
-            )}
         </main>
     );
 }
 
 function RFQStatusPill({ status }: { status: string }) {
-    const config: Record<string, { bg: string, text: string }> = {
-        'DRAFT': { bg: 'bg-[#1A1D23]', text: 'text-[#64748B]' },
-        'PUBLISHED': { bg: 'bg-[#3B82F6]/10', text: 'text-[#3B82F6]' },
-        'CLOSED': { bg: 'bg-amber-500/10', text: 'text-amber-400' },
-        'AWARDED': { bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
-        'CANCELLED': { bg: 'bg-rose-500/10', text: 'text-rose-400' },
+    const config: Record<string, { bg: string, text: string, border: string }> = {
+        'DRAFT': { bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/20' },
+        'PUBLISHED': { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20' },
+        'CLOSED': { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
+        'AWARDED': { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
+        'CANCELLED': { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
     };
 
     const style = config[status] || config['DRAFT'];
     const label: Record<string, string> = {
-        'DRAFT': 'NHÁP',
-        'PUBLISHED': 'ĐANG MỞ',
-        'CLOSED': 'ĐÃ ĐÓNG',
-        'AWARDED': 'ĐÃ TRAO THẦU',
-        'CANCELLED': 'ĐÃ HỦY',
+        'DRAFT': 'Nháp',
+        'PUBLISHED': 'Đang mở',
+        'CLOSED': 'Đã đóng',
+        'AWARDED': 'Đã trao thầu',
+        'CANCELLED': 'Đã hủy',
     };
 
     return (
-        <span className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border border-[rgba(148,163,184,0.1)]`}>
-            {label[status] || status}
-        </span>
+        <div className="min-w-[100px]">
+            <span className={`inline-block px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-wider ${style.bg} ${style.text} border ${style.border}`}>
+                {label[status] || status}
+            </span>
+        </div>
     );
 }
 
