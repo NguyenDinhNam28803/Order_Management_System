@@ -7,7 +7,7 @@ import {
   Command, TrendingUp
 } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
-import { getStatusLabel } from "../utils/statusLabels";
+import { getStatusLabel } from "../utils/formatUtils";
 
 interface SearchResult {
   id: string;
