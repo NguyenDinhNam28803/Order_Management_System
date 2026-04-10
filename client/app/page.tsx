@@ -671,7 +671,7 @@ export default function Dashboard() {
                                     <th className="text-right px-8">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                            <tbody className="divide-y divide-border">
                                 {cfoPendingPRs.length > 0 ? cfoPendingPRs.map((pr) => (
                                     <tr key={pr.id} className="hover:bg-[#0F1117]/50 transition-colors group">
                                         <td className="px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#3B82F6] bg-[#161922]"/></td>

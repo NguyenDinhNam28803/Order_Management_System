@@ -311,7 +311,6 @@ export default function SupplierPO() {
                             <th className="py-4 px-6 text-left">Bên Mua (Customer)</th>
                             <th className="py-4 px-6 text-center">Ngày tạo</th>
                             <th className="py-4 px-6 text-center">Tình trạng</th>
-                            <th className="py-4 px-6 text-center">Supplier ID</th>
                             <th className="py-4 px-6 text-right">Action</th>
                         </tr>
                     </thead>
@@ -326,7 +325,6 @@ export default function SupplierPO() {
                                         {getStatusLabel(p.status)}
                                     </span>
                                 </td>
-                                <td className="text-center text-[10px] text-[#64748B] py-4 px-6">{(p as any).supplierId?.substring(0, 8) || (p as any).supplier?.id?.substring(0, 8) || "N/A"}</td>
                                 <td className="text-right py-4 px-6">
                                     <button 
                                         onClick={() => openModal(p)}
@@ -339,7 +337,7 @@ export default function SupplierPO() {
                         ))}
                         {displayPOs.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="text-center py-12 text-[#64748B] font-bold uppercase tracking-widest">
+                                <td colSpan={5} className="text-center py-12 text-[#64748B] font-bold uppercase tracking-widest">
                                     Chưa có đơn hàng nào.
                                 </td>
                             </tr>

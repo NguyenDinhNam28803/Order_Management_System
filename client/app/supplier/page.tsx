@@ -27,6 +27,7 @@ import {
   Award,
   BarChart3,
   RefreshCcw,
+  Signature,
   Target,
   ShieldCheck
 } from "lucide-react";
@@ -290,7 +291,8 @@ export default function SupplierPortalPage() {
     const activePOs = myPOs.filter(p => !["CANCELLED", "COMPLETED", "REJECTED"].includes(p.status)).length;
     const totalValue = myPOs.reduce((sum, p) => sum + (p.total || 0), 0);
     const pendingInvoices = myPOs.filter(p => p.status === "SHIPPED" || p.status === "DELIVERED").length;
-    
+    const activeContracts = myContracts.filter(c => c.status === "ACTIVE").length;
+
     // Performance score from KPI data or default
     const performanceScore = kpiData?.overallScore || 0;
 
@@ -299,9 +301,10 @@ export default function SupplierPortalPage() {
       activePOs,
       totalValue,
       pendingInvoices,
-      performanceScore
+      performanceScore,
+      activeContracts
     };
-  }, [myRFQs, myPOs, kpiData]);
+  }, [myRFQs, myPOs, myContracts, kpiData]);
 
   // Recent items
   const recentRFQs = useMemo(() => {
@@ -404,7 +407,16 @@ export default function SupplierPortalPage() {
           subtitle="Hóa đơn đã gửi"
           icon={FileText}
           color="text-violet-400"
+          trend={5}
           onClick={() => router.push("/supplier/invoice")}
+        />
+        <StatCard
+          title="Hợp đồng hiệu lực"
+          value={stats.activeContracts}
+          subtitle="Hợp đồng đang active"
+          icon={Signature}
+          color="text-cyan-400"
+          onClick={() => router.push("/supplier/contracts")}
         />
         <StatCard
           title="Điểm hiệu suất"
@@ -426,30 +438,36 @@ export default function SupplierPortalPage() {
               <Sparkles size={18} className="text-[#3B82F6]" />
               <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">Thao tác nhanh</h2>
             </div>
-            <div className="grid grid-cols-4 gap-3">
-              <QuickAction 
-                icon={Send} 
-                label="Gửi báo giá" 
-                href="/supplier/rfq" 
-                color="bg-[#3B82F6]" 
+            <div className="grid grid-cols-5 gap-3">
+              <QuickAction
+                icon={Send}
+                label="Gửi báo giá"
+                href="/supplier/rfq"
+                color="bg-[#3B82F6]"
               />
-              <QuickAction 
-                icon={Package} 
-                label="Xác nhận PO" 
-                href="/supplier/po" 
-                color="bg-emerald-500" 
+              <QuickAction
+                icon={Package}
+                label="Xác nhận PO"
+                href="/supplier/po"
+                color="bg-emerald-500"
               />
-              <QuickAction 
-                icon={FileText} 
-                label="Gửi hóa đơn" 
-                href="/supplier/invoice" 
-                color="bg-amber-500" 
+              <QuickAction
+                icon={FileText}
+                label="Gửi hóa đơn"
+                href="/supplier/invoice"
+                color="bg-amber-500"
               />
-              <QuickAction 
-                icon={RefreshCcw} 
-                label="Cập nhật SP" 
-                href="/supplier/products" 
-                color="bg-violet-500" 
+              <QuickAction
+                icon={Signature}
+                label="Hợp đồng"
+                href="/supplier/contracts"
+                color="bg-cyan-500"
+              />
+              <QuickAction
+                icon={RefreshCcw}
+                label="Cập nhật SP"
+                href="/supplier/products"
+                color="bg-violet-500"
               />
             </div>
           </div>
