@@ -7,6 +7,7 @@ import {
   Command, TrendingUp
 } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
+import { getStatusLabel } from "../utils/statusLabels";
 
 interface SearchResult {
   id: string;
@@ -215,7 +216,7 @@ export default function SmartSearch() {
                           result.status === "ACTIVE" ? "bg-emerald-500/20 text-emerald-400" :
                           "bg-blue-500/20 text-blue-400"
                         }`}>
-                          {result.status}
+                          {getStatusLabel(result.status)}
                         </span>
                       )}
                     </div>

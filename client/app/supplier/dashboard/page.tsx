@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useProcurement, RFQ as ContextRFQ, Organization as ContextOrg, QuoteRequestStatus } from "../../context/ProcurementContext";
+import { useProcurement, RFQ as ContextRFQ, Organization as ContextOrg, QuoteRequestStatus } from "@/app/context/ProcurementContext";
+import { formatVND, getStatusLabel } from "@/app/utils/formatUtils";
 import { 
   Inbox, 
   FileText, 

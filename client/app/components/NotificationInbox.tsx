@@ -7,6 +7,7 @@ import {
   ShoppingCart, FileText, MoreHorizontal, Search
 } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
+import { getStatusLabel } from "../utils/formatUtils";
 
 interface ApprovalItem {
   id: string;
@@ -108,11 +109,11 @@ export default function NotificationInbox() {
       {/* Inbox Trigger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="relative p-2.5 rounded-xl bg-[#161922] border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] transition-all group"
+        className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] hover:text-[#3B82F6] hover:border-[rgba(59,130,246,0.3)] transition-all duration-200"
       >
-        <Inbox size={20} className="text-[#94A3B8] group-hover:text-[#3B82F6] transition-colors" />
+        <Inbox size={16} />
         {pendingCount > 0 && (
-          <span className="notification-badge">
+          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 flex items-center justify-center bg-rose-500 text-white text-[9px] font-bold rounded-full border border-[#0F1117]">
             {pendingCount > 9 ? "9+" : pendingCount}
           </span>
         )}
@@ -128,7 +129,7 @@ export default function NotificationInbox() {
           />
           
           {/* Inbox Panel */}
-          <div className="relative w-[480px] max-h-[80vh] glass-card overflow-hidden animate-slide-in">
+          <div className="relative w-[480px] max-h-[80vh] !bg-[#1a1d26] border border-[rgba(148,163,184,0.25)] rounded-2xl shadow-2xl shadow-black/90 overflow-hidden animate-slide-in z-50">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-[rgba(148,163,184,0.1)]">
               <div className="flex items-center gap-3">
@@ -160,7 +161,7 @@ export default function NotificationInbox() {
                       : "text-[#64748B] hover:text-[#94A3B8] hover:bg-[rgba(148,163,184,0.05)]"
                   }`}
                 >
-                  {f === "ALL" ? "Tất cả" : f === "PENDING" ? "Chờ duyệt" : "Đã duyệt"}
+                  {f === "ALL" ? "Tất cả" : getStatusLabel(f)}
                 </button>
               ))}
             </div>

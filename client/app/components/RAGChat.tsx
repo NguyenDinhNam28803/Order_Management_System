@@ -5,8 +5,103 @@ import {
     Sparkles, Send, X, Loader2, Bot, ExternalLink, FileText, 
     Database, Table2, BarChart3, User, Building2, Package, 
     ShoppingCart, Receipt, CreditCard, FileCheck, AlertCircle,
-    MessageSquare
+    MessageSquare, Wallet, TrendingUp, Users, Settings, Clock
 } from "lucide-react";
+import { useProcurement } from "../context/ProcurementContext";
+
+interface SuggestionItem {
+    text: string;
+    icon: React.ReactNode;
+}
+
+type UserRole = "REQUESTER" | "APPROVER" | "ACCOUNTANT" | "VENDOR" | "ADMIN" | "PROCUREMENT" | "FINANCE" | "DEPT_APPROVER" | "DIRECTOR" | "CEO";
+
+const ROLE_SUGGESTIONS: Record<string, SuggestionItem[]> = {
+    REQUESTER: [
+        { text: "Tổng ngân sách còn được sử dụng", icon: <Wallet size={12} /> },
+        { text: "Trạng thái PR của tôi", icon: <FileText size={12} /> },
+        { text: "Các hóa đơn chưa thanh toán", icon: <Receipt size={12} /> },
+        { text: "KPI chi tiêu năm nay", icon: <TrendingUp size={12} /> },
+        { text: "Lịch sử yêu cầu mua hàng", icon: <Clock size={12} /> },
+    ],
+    APPROVER: [
+        { text: "PR đang chờ phê duyệt của tôi", icon: <FileCheck size={12} /> },
+        { text: "Tổng giá trị PR cần duyệt", icon: <Wallet size={12} /> },
+        { text: "Top 3 nhà cung cấp theo chi phí", icon: <BarChart3 size={12} /> },
+        { text: "Các yêu cầu quá hạn", icon: <AlertCircle size={12} /> },
+        { text: "Lịch sử phê duyệt gần đây", icon: <Clock size={12} /> },
+    ],
+    DEPT_APPROVER: [
+        { text: "PR đang chờ phê duyệt của tôi", icon: <FileCheck size={12} /> },
+        { text: "Tổng giá trị PR cần duyệt", icon: <Wallet size={12} /> },
+        { text: "Top 3 nhà cung cấp theo chi phí", icon: <BarChart3 size={12} /> },
+        { text: "Các yêu cầu quá hạn", icon: <AlertCircle size={12} /> },
+        { text: "Lịch sử phê duyệt gần đây", icon: <Clock size={12} /> },
+    ],
+    DIRECTOR: [
+        { text: "PR đang chờ phê duyệt cấp cao", icon: <FileCheck size={12} /> },
+        { text: "Tổng giá trị cần phê duyệt", icon: <Wallet size={12} /> },
+        { text: "Báo cáo chi tiêu toàn công ty", icon: <BarChart3 size={12} /> },
+        { text: "Top nhà cung cấp chiến lược", icon: <TrendingUp size={12} /> },
+        { text: "Các hợp đồng sắp hết hạn", icon: <Clock size={12} /> },
+    ],
+    CEO: [
+        { text: "Tổng quan chi phí toàn hệ thống", icon: <Wallet size={12} /> },
+        { text: "Báo cáo chi tiêu theo quý", icon: <BarChart3 size={12} /> },
+        { text: "Top nhà cung cấp chiến lược", icon: <TrendingUp size={12} /> },
+        { text: "Các hợp đồng lớn sắp hết hạn", icon: <Clock size={12} /> },
+        { text: "Tỷ lệ tiết kiệm chi phí", icon: <TrendingUp size={12} /> },
+    ],
+    ACCOUNTANT: [
+        { text: "Các hóa đơn chưa ghi nhận", icon: <Receipt size={12} /> },
+        { text: "Khoảng cách giữa PO và Invoice", icon: <FileText size={12} /> },
+        { text: "Tổng chi phí phát sinh tháng này", icon: <Wallet size={12} /> },
+        { text: "Báo cáo chi tiêu theo phòng ban", icon: <BarChart3 size={12} /> },
+        { text: "Các khoản thanh toán sắp đến hạn", icon: <Clock size={12} /> },
+    ],
+    FINANCE: [
+        { text: "Các hóa đơn chưa ghi nhận", icon: <Receipt size={12} /> },
+        { text: "Khoảng cách giữa PO và Invoice", icon: <FileText size={12} /> },
+        { text: "Tổng chi phí phát sinh tháng này", icon: <Wallet size={12} /> },
+        { text: "Báo cáo chi tiêu theo phòng ban", icon: <BarChart3 size={12} /> },
+        { text: "Các khoản thanh toán sắp đến hạn", icon: <Clock size={12} /> },
+    ],
+    VENDOR: [
+        { text: "Các đơn hàng của tôi", icon: <ShoppingCart size={12} /> },
+        { text: "Trạng thái thanh toán", icon: <CreditCard size={12} /> },
+        { text: "Lịch sử giao dịch", icon: <Clock size={12} /> },
+        { text: "Tỷ lệ thanh toán đúng hạn", icon: <TrendingUp size={12} /> },
+        { text: "Đánh giá KPI của tôi", icon: <BarChart3 size={12} /> },
+    ],
+    SUPPLIER: [
+        { text: "Các đơn hàng của tôi", icon: <ShoppingCart size={12} /> },
+        { text: "Trạng thái thanh toán", icon: <CreditCard size={12} /> },
+        { text: "Lịch sử giao dịch", icon: <Clock size={12} /> },
+        { text: "Tỷ lệ thanh toán đúng hạn", icon: <TrendingUp size={12} /> },
+        { text: "Đánh giá KPI của tôi", icon: <BarChart3 size={12} /> },
+    ],
+    ADMIN: [
+        { text: "Tổng số user/vendor", icon: <Users size={12} /> },
+        { text: "Chi phí toàn hệ thống", icon: <Wallet size={12} /> },
+        { text: "Các PR bất thường", icon: <AlertCircle size={12} /> },
+        { text: "Cấu hình hệ thống", icon: <Settings size={12} /> },
+        { text: "Báo cáo hiệu suất hệ thống", icon: <BarChart3 size={12} /> },
+    ],
+    PROCUREMENT: [
+        { text: "RFQ đang chờ báo giá", icon: <MessageSquare size={12} /> },
+        { text: "Top nhà cung cấp theo KPI", icon: <BarChart3 size={12} /> },
+        { text: "Các PO sắp đến hạn giao", icon: <Clock size={12} /> },
+        { text: "Tổng giá trị đơn hàng tháng này", icon: <Wallet size={12} /> },
+        { text: "Nhà cung cấp tiềm năng mới", icon: <TrendingUp size={12} /> },
+    ],
+    DEFAULT: [
+        { text: "Tổng ngân sách IT năm 2026 còn bao nhiêu?", icon: <Table2 size={12} /> },
+        { text: "Top 3 nhà cung cấp có điểm KPI cao nhất", icon: <BarChart3 size={12} /> },
+        { text: "Trạng thái PR số PR-2026-0001", icon: <FileText size={12} /> },
+        { text: "Các hóa đơn đang chờ thanh toán", icon: <Receipt size={12} /> },
+        { text: "Số lượng hàng tồn kho đã nhập tháng này", icon: <Package size={12} /> },
+    ],
+};
 
 interface Source {
     content: string;
@@ -103,10 +198,30 @@ const formatAnswer = (text: string): React.ReactNode => {
 };
 
 export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
+    const { currentUser } = useProcurement();
     const [searchQuery, setSearchQuery] = useState("");
     const [aiResponse, setAiResponse] = useState<RagResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    // Get user role and suggestions
+    const userRole = currentUser?.role || "DEFAULT";
+    const roleSuggestions = ROLE_SUGGESTIONS[userRole] || ROLE_SUGGESTIONS.DEFAULT;
+    
+    // Role display mapping
+    const roleDisplayNames: Record<string, string> = {
+        REQUESTER: "Người yêu cầu",
+        APPROVER: "Người phê duyệt",
+        DEPT_APPROVER: "Trưởng phòng",
+        DIRECTOR: "Giám đốc",
+        CEO: "CEO",
+        ACCOUNTANT: "Kế toán",
+        FINANCE: "Tài chính",
+        VENDOR: "Nhà cung cấp",
+        SUPPLIER: "Nhà cung cấp",
+        ADMIN: "Quản trị viên",
+        PROCUREMENT: "Thu mua",
+    };
 
     useEffect(() => {
         inputRef.current?.focus();
@@ -156,13 +271,6 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
         }
     };
 
-    const suggestedQueries = [
-        { text: "Tổng ngân sách IT năm 2026 còn bao nhiêu?", icon: <Table2 size={12} /> },
-        { text: "Top 3 nhà cung cấp có điểm KPI cao nhất", icon: <BarChart3 size={12} /> },
-        { text: "Trạng thái PR số PR-2026-0001", icon: <FileText size={12} /> },
-        { text: "Các hóa đơn đang chờ thanh toán", icon: <Receipt size={12} /> },
-        { text: "Số lượng hàng tồn kho đã nhập tháng này", icon: <Package size={12} /> },
-    ];
 
     return (
         <div className="fixed inset-0 z-[100] bg-[#0F1117]/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
@@ -175,9 +283,14 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
                         </div>
                         <div>
                             <h2 className="text-sm font-bold text-[#F8FAFC]">AI Procurement Assistant</h2>
-                            <p className="text-[10px] text-[#64748B] flex items-center gap-1">
-                                <Database size={10} /> RAG • 20 bảng • Vector Search
-                            </p>
+                            <div className="flex items-center gap-2">
+                                <p className="text-[10px] text-[#64748B] flex items-center gap-1">
+                                    <Database size={10} /> RAG • 20 bảng • Vector Search
+                                </p>
+                                <span className="text-[9px] px-2 py-0.5 bg-[#3B82F6]/20 text-[#3B82F6] rounded-full border border-[#3B82F6]/30 font-medium">
+                                    {roleDisplayNames[userRole] || userRole}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <button 
@@ -273,16 +386,17 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
                                 </div>
                                 <h3 className="text-lg font-bold text-[#F8FAFC] mb-2">Hỏi AI về dữ liệu của bạn</h3>
                                 <p className="text-xs text-[#64748B] max-w-md mx-auto">
-                                    AI sẽ tìm kiếm qua 20 bảng dữ liệu (PO, GRN, Invoice, Budget, KPI...) để trả lời câu hỏi của bạn
+                                    Xin chào {roleDisplayNames[userRole] || userRole}! AI sẽ tìm kiếm qua 20 bảng dữ liệu để trả lời câu hỏi phù hợp với vai trò của bạn.
                                 </p>
                             </div>
                             
-                            <div className="grid grid-cols-1 gap-3 max-w-lg mx-auto">
-                                {suggestedQueries.map((item) => (
+                            <div className="grid grid-cols-1 gap-3 max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                {roleSuggestions.map((item: SuggestionItem, index: number) => (
                                     <button 
                                         key={item.text}
                                         onClick={() => setSearchQuery(item.text)}
                                         className="flex items-center gap-3 p-4 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm text-[#94A3B8] hover:border-[#3B82F6]/50 hover:bg-[#1A1D23] hover:text-[#F8FAFC] transition-all text-left group shadow-sm"
+                                        style={{ animationDelay: `${index * 100}ms` }}
                                     >
                                         <span className="text-[#64748B] group-hover:text-[#3B82F6] transition-colors">
                                             {item.icon}

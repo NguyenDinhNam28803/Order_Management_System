@@ -6,8 +6,8 @@ import {
     Search, X, Edit3, CheckCircle, Clock,
     Box, Activity, Filter, ChevronRight, ShoppingCart, User, Eye
 } from "lucide-react";
-import { useProcurement, PO } from "../../context/ProcurementContext";
-import { formatVND } from "../../utils/formatUtils";
+import { useProcurement } from "@/app/context/ProcurementContext";
+import { formatVND, getStatusLabel } from "@/app/utils/formatUtils";
 
 // --- Delivery Info Type (extends PO with delivery details) ---
 interface DeliveryInfo {

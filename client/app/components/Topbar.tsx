@@ -10,6 +10,7 @@ export default function Topbar() {
     const { currentUser } = useProcurement();
     const pathname = usePathname();
     const [showNotifications, setShowNotifications] = useState(false);
+    const [notificationCount, setNotificationCount] = useState(2); // Real-time count
 
     // Format pathname to breadcrumb
     const getBreadcrumb = () => {
@@ -38,19 +39,41 @@ export default function Topbar() {
                     />
                 </div>
 
-                {/* Notifications */}
+                {/* Notification Inbox */}
+                <NotificationInbox />
+
+                {/* System Notifications Bell */}
                 <div className="relative">
                     <button 
                         onClick={() => setShowNotifications(!showNotifications)}
-                        className="relative p-2 rounded-full border border-[rgba(148,163,184,0.1)] bg-[#161922] text-[#64748B] hover:text-[#F8FAFC] hover:border-[#3B82F6]/30 transition-all focus:outline-none"
+                        className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#3B82F6]/30 transition-all duration-200 focus:outline-none"
                     >
-                        <Bell size={18} />
-                        <span className="absolute top-0 right-0 w-2 h-2 bg-rose-500 rounded-full border border-[#0F1117] animate-pulse"></span>
+                        <Bell size={16} />
+                        {notificationCount > 0 && (
+                            <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 flex items-center justify-center bg-rose-500 text-white text-[9px] font-bold rounded-full border border-[#0F1117]">
+                                {notificationCount > 9 ? "9+" : notificationCount}
+                            </span>
+                        )}
                     </button>
                     {showNotifications && (
-                        <div className="absolute right-0 mt-2 w-80 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-xl shadow-black/50 overflow-hidden z-50">
-                            <div className="p-0">
-                                <NotificationInbox />
+                        <div className="absolute right-0 mt-2 w-80 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-xl shadow-black/50 overflow-hidden z-50">
+                            <div className="p-3 border-b border-[rgba(148,163,184,0.1)]">
+                                <h4 className="text-sm font-bold text-[#F8FAFC]">Thông báo hệ thống</h4>
+                                <p className="text-[10px] text-[#64748B]">{notificationCount} thông báo mới</p>
+                            </div>
+                            <div className="max-h-64 overflow-y-auto">
+                                {notificationCount === 0 ? (
+                                    <div className="text-xs text-[#64748B] text-center p-4">
+                                        Không có thông báo mới
+                                    </div>
+                                ) : (
+                                    Array.from({ length: notificationCount }).map((_, i) => (
+                                        <div key={i} className="p-3 border-b border-[rgba(148,163,184,0.05)] hover:bg-[rgba(59,130,246,0.05)] transition-colors cursor-pointer">
+                                            <p className="text-xs text-[#F8FAFC] font-medium">Thông báo hệ thống #{i + 1}</p>
+                                            <p className="text-[10px] text-[#64748B] mt-1">Vừa xong</p>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
                     )}

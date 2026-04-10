@@ -50,11 +50,58 @@ export const statusMap: Record<string, string> = {
     'INVOICED': 'Đã lập hóa đơn',
     'PAID': 'Đã thanh toán',
     'ORDERED': 'Đã đặt hàng',
+    'ACTIVE': 'Hoạt động',
     
     // RFQ Status
     'OPEN': 'Mở',
     'CLOSED': 'Đã đóng',
     'AWARDED': 'Đã trao thưởng',
+    'QUOTING': 'Đang báo giá',
+    'QUOTED': 'Đã báo giá',
+    'ACCEPTED': 'Đã chấp nhận',
+    'DECLINED': 'Từ chối',
+    
+    // Priority/Urgency
+    'URGENT': 'Khẩn cấp',
+    'OVERDUE': 'Quá hạn',
+    'HIGH': 'Cao',
+    'MEDIUM': 'Trung bình',
+    'LOW': 'Thấp',
+    'CRITICAL': 'Nghiêm trọng',
+    
+    // Document/Invoice Status
+    'UNPAID': 'Chưa thanh toán',
+    'PARTIAL_PAID': 'Thanh toán một phần',
+    'PROCESSING': 'Đang xử lý',
+    
+    // Approval Flow
+    'DEPT_APPROVED': 'Trưởng phòng đã duyệt',
+    'FINANCE_APPROVED': 'Tài chính đã duyệt',
+    'DIRECTOR_APPROVED': 'Giám đốc đã duyệt',
+    'CEO_APPROVED': 'CEO đã duyệt',
+    
+    // Contract Status
+    'EXPIRED': 'Hết hạn',
+    'EXPIRING': 'Sắp hết hạn',
+    'RENEWED': 'Đã gia hạn',
+    'TERMINATED': 'Đã chấm dứt',
+    
+    // Budget Status
+    'LOCKED': 'Đã khóa',
+    'UNLOCKED': 'Chưa khóa',
+    'REALLOCATED': 'Đã điều chỉnh',
+    
+    // Dispute Status
+    'RESOLVED': 'Đã giải quyết',
+    'ESCALATED': 'Đã leo thang',
+    
+    // General
+    'NEW': 'Mới',
+    'OLD': 'Cũ',
+    'DEFAULT': 'Mặc định',
+    'ALL': 'Tất cả',
+    'NONE': 'Không có',
+    'INACTIVE': 'Không hoạt động',
 };
 
 export const getStatusLabel = (status: string | undefined): string => {

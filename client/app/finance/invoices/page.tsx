@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
 import { FileText, Search, CheckCircle2, Clock, AlertCircle, ArrowRight, FileCheck, XCircle, CreditCard } from "lucide-react";
-import { formatVND } from "@/app/utils/formatUtils";
+import { formatVND, getStatusLabel } from "@/app/utils/formatUtils";
 
 export default function FinanceInvoicesPage() {
     const { invoices, pos } = useProcurement();
@@ -183,7 +183,7 @@ export default function FinanceInvoicesPage() {
                                         <td className="px-6 py-5 text-center">
                                             <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold ${getStatusClass(inv.status)}`}>
                                                 {getStatusIcon(inv.status)}
-                                                {inv.status}
+                                                {getStatusLabel(inv.status)}
                                             </div>
                                             {inv.exceptionReason && (
                                                 <p className="text-xs text-orange-400 mt-1 truncate max-w-[150px]" title={inv.exceptionReason}>

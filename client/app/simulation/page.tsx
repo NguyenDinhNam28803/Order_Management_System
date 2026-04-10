@@ -10,6 +10,7 @@ import {
     GitBranch, AlertCircle, Clock, Package, Wallet,
     CheckSquare, XSquare, RotateCcw, Eye, FileCheck
 } from "lucide-react";
+import { getStatusLabel } from "../utils/formatUtils";
 
 // --- Enhanced Types ---
 
@@ -454,6 +455,7 @@ const W2_STEPS: StepDetail[] = [
 function ShoppingCart({ size, className }: { size: number, className?: string }) { return <ShoppingBag size={size} className={className} />; }
 
 const StatusBadge = ({ status, type = "default" }: { status: string, type?: "default" | "success" | "warning" | "danger" | "info" }) => {
+    const translatedStatus = getStatusLabel(status);
     const colors = {
         default: "bg-slate-500/10 text-slate-400 border-slate-500/20",
         success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
@@ -464,7 +466,7 @@ const StatusBadge = ({ status, type = "default" }: { status: string, type?: "def
     
     return (
         <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${colors[type]}`}>
-            {status}
+            {translatedStatus}
         </span>
     );
 };

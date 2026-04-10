@@ -1328,7 +1328,7 @@ export default function Dashboard() {
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                     <div className="p-4 bg-[#0F1117] rounded-2xl border border-[rgba(148,163,184,0.1)] text-center">
                                         <div className="text-[9px] font-black uppercase text-[#64748B] mb-1">Trạng thái</div>
-                                        <span className={`status-pill status-${(selectedPRDetails.status || 'draft').toLowerCase()}`}>{selectedPRDetails.status}</span>
+                                        <span className={`status-pill status-${(selectedPRDetails.status || 'draft').toLowerCase()}`}>{getStatusLabel(selectedPRDetails.status)}</span>
                                     </div>
                                     <div className="p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-center">
                                         <div className="text-[9px] font-black uppercase text-amber-400 mb-1">Ngày cần hàng</div>
