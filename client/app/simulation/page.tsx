@@ -457,7 +457,7 @@ function ShoppingCart({ size, className }: { size: number, className?: string })
 const StatusBadge = ({ status, type = "default" }: { status: string, type?: "default" | "success" | "warning" | "danger" | "info" }) => {
     const translatedStatus = getStatusLabel(status);
     const colors = {
-        default: "bg-slate-500/10 text-slate-400 border-slate-500/20",
+        default: "bg-[#64748B]/10 text-[#94A3B8] border-[#64748B]/20",
         success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
         warning: "bg-amber-500/10 text-amber-400 border-amber-500/20",
         danger: "bg-rose-500/10 text-rose-400 border-rose-500/20",
@@ -953,7 +953,7 @@ export default function SimulationPage() {
                 <div className="fixed bottom-12 right-12 w-80 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-3xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="p-2 bg-purple-600 rounded-xl"><Bot size={18} className="text-white" /></div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-text-primary">AI Analyst</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[#F8FAFC]">AI Analyst</span>
                     </div>
                     <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
                         <p className="text-[11px] text-emerald-400/80 leading-relaxed font-medium">

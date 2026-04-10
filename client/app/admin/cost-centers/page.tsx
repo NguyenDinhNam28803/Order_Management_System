@@ -114,14 +114,14 @@ export default function CostCentersPage() {
     return (
         <div className="animate-in fade-in duration-500">
 
-            <div className="mt-8 flex justify-between items-center mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
+            <div className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
                 <div>
-                   <h1 className="text-3xl font-bold text-[#F8FAFC] tracking-tight">Quản lý Cost Center</h1>
-                   <p className="text-[#94A3B8] text-sm mt-1">Cấu hình các bộ phận và phân bổ ngân sách định mức hàng năm.</p>
+                    <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase">Quản lý Cost Center</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-medium italic">CẤU HÌNH BỘ PHẬN VÀ PHÂN BỔ NGÂN SÁCH ĐỊNH MỨC</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="btn-primary"
+                    className="flex items-center gap-2 bg-[#3B82F6] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#3B82F6]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm Cost Center
                 </button>

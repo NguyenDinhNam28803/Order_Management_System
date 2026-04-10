@@ -6,7 +6,8 @@ import {
     Building2, Lock, CreditCard, ArrowUpRight,
     ArrowDownRight, Activity, Zap, FileText, ShoppingCart, Eye, Plus, Trash2,
     Clock, CheckCircle, Package, AlertCircle, AlertTriangle, History, Bell, Send, Loader2,
-    Search, ChevronDown, XCircle, RotateCcw, ArrowRight, ClipboardList, Edit3, Calendar, DollarSign
+    Search, ChevronDown, XCircle, RotateCcw, ArrowRight, ClipboardList, Edit3, Calendar, DollarSign,
+    Wallet, FileCheck, PieChart, Truck, MessageSquare
 } from "lucide-react";
 import { useProcurement, PR, Organization, QuoteRequest, BudgetAllocation, DocumentType } from "./context/ProcurementContext";
 import { formatVND, getStatusLabel } from "./utils/formatUtils";
@@ -20,7 +21,7 @@ export default function Dashboard() {
 
     // Calculate Dynamic Quarterly Remaining Budget for the Department
     const departmentId = currentUser?.deptId || (currentUser?.department as { id: string })?.id;
-    const activeQuarterPeriod = (budgetPeriods || []).find(p => p.isActive && p.periodType === "QUARTER");
+    const activeQuarterPeriod = (budgetPeriods || []).find(p => p.isActive && p.periodType === "QUARTERLY");
     const deptAllocation = activeQuarterPeriod && departmentId
         ? (budgetAllocations || []).find(a => a.budgetPeriodId === activeQuarterPeriod.id && a.deptId === departmentId)
         : null;
@@ -33,6 +34,26 @@ export default function Dashboard() {
     const [confirmModal, setConfirmModal] = React.useState<PR | null>(null);
     const [isSimDropdownOpen, setIsSimDropdownOpen] = React.useState(false);
     const { confirmCatalogPrice } = useProcurement();
+
+    // Debug logging for budget data
+    React.useEffect(() => {
+        console.log("=== BUDGET DEBUG ===");
+        console.log("currentUser:", currentUser);
+        console.log("departmentId:", departmentId);
+        console.log("budgetPeriods:", budgetPeriods);
+        console.log("budgetAllocations:", budgetAllocations);
+        console.log("activeQuarterPeriod:", activeQuarterPeriod);
+        console.log("deptAllocation:", deptAllocation);
+        console.log("costCenters:", costCenters);
+    }, [currentUser, departmentId, budgetPeriods, budgetAllocations, activeQuarterPeriod, deptAllocation, costCenters]);
+
+    // Fetch budget data on mount for DEPT_APPROVER
+    React.useEffect(() => {
+        if (currentUser?.role === "DEPT_APPROVER" && !deptAllocation) {
+            console.log("Fetching budget data for DEPT_APPROVER...");
+            refreshData();
+        }
+    }, [currentUser?.role, currentUser?.deptId, refreshData, deptAllocation]);
 
     const formatDate = (ds?: string) => {
         if (!ds) return "N/A";
@@ -465,9 +486,24 @@ export default function Dashboard() {
         const pendingBudgetCount = pendingBudgets.length;
         const pendingBudgetValue = pendingBudgets.reduce((sum: number, b) => sum + (Number(b.allocatedAmount) || 0), 0);
 
-        const totalAllocated = budgets?.allocated || 10000000000;
-        const totalUsed = budgets?.spent || 4500000000;
-        const usagePercent = Math.round((totalUsed / totalAllocated) * 100);
+        // Calculate real financial data
+        const totalAllocated = (budgetAllocations || []).reduce((sum, b) => sum + (Number(b.allocatedAmount) || 0), 0);
+        const totalCommitted = (budgetAllocations || []).reduce((sum, b) => sum + (Number(b.committedAmount) || 0), 0);
+        const totalSpent = (budgetAllocations || []).reduce((sum, b) => sum + (Number(b.spentAmount) || 0), 0);
+        const totalUsed = totalCommitted + totalSpent;
+        const usagePercent = totalAllocated > 0 ? Math.round((totalUsed / totalAllocated) * 100) : 0;
+
+        // Calculate department breakdown for pie chart
+        const deptColors = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'];
+        const deptSpending = (departments || []).map((dept, idx) => {
+            const deptAllocs = (budgetAllocations || []).filter(b => b.deptId === dept.id);
+            const spent = deptAllocs.reduce((sum, b) => sum + (Number(b.spentAmount) || 0) + (Number(b.committedAmount) || 0), 0);
+            return { name: dept.name, spent, color: deptColors[idx % deptColors.length] };
+        }).filter(d => d.spent > 0).sort((a, b) => b.spent - a.spent).slice(0, 3);
+
+        // Weekly payment forecast - POs issued but not yet invoiced/paid
+        const pendingPayments = (pos || []).filter(po => po.status === 'ISSUED' || po.status === 'PARTIALLY_RECEIVED');
+        const weeklyForecast = pendingPayments.reduce((sum, po) => sum + (Number(po.total) || 0), 0);
 
         return (
             <div className="animate-in fade-in duration-700 px-6">
@@ -530,60 +566,74 @@ export default function Dashboard() {
                     </div>
                 </header>
 
-                {/* Financial Summary Widgets */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                    <div className="erp-card !p-8 bg-[#161922] shadow-sm border-none flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-6">Tổng Ngân Sách Công Ty</div>
-                        <div>
-                            <div className="text-3xl font-black text-emerald-400 mb-4">{formatVND(totalAllocated)} ₫</div>
-                            <div className="w-full h-1.5 bg-[#0F1117] rounded-full overflow-hidden mb-2">
-                                <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${usagePercent}%` }}></div>
+                {/* CFO Stat Cards - Clean Consistent Style */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    {/* Total Budget Card */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">Tổng Ngân Sách</span>
+                            <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                <Wallet size={20} className="text-emerald-400" />
                             </div>
-                            <div className="flex justify-between text-[9px] font-black uppercase">
-                                <span className="text-[#64748B]">{usagePercent}% đã dùng</span>
-                                <span className="text-emerald-400">{formatVND(totalAllocated - totalUsed)} ₫ còn lại</span>
-                            </div>
+                        </div>
+                        <div className="text-2xl font-black text-emerald-400 mb-2">{formatVND(totalAllocated)}</div>
+                        <div className="w-full h-1.5 bg-[#0F1117] rounded-full overflow-hidden mb-2">
+                            <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${usagePercent}%` }}></div>
+                        </div>
+                        <div className="flex justify-between text-[9px] font-black uppercase">
+                            <span className="text-[#64748B]">{usagePercent}% đã dùng</span>
+                            <span className="text-emerald-400">{formatVND(totalAllocated - totalUsed)} còn</span>
                         </div>
                     </div>
 
-                    <div className="erp-card !p-8 bg-[#161922] shadow-sm border-none flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-6">Dự kiến chi tiền (Tuần này)</div>
-                        <div>
-                            <div className="text-3xl font-black text-[#F8FAFC] mb-1">450,000,000 ₫</div>
-                            <div className="text-[10px] text-[#64748B] font-bold uppercase tracking-tight mt-2 flex items-center gap-2">
-                                <Activity size={12} className="text-[#3B82F6]" /> Cho các hóa đơn đã duyệt
+                    {/* Weekly Payment Forecast Card */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">Dự Kiến Chi Tuần Này</span>
+                            <div className="h-10 w-10 rounded-xl bg-[#3B82F6]/10 flex items-center justify-center">
+                                <Calendar size={20} className="text-[#3B82F6]" />
                             </div>
                         </div>
+                        <div className="text-2xl font-black text-[#F8FAFC] mb-1">{formatVND(weeklyForecast)}</div>
+                        <div className="text-sm font-bold text-[#3B82F6]">{pendingPayments.length} PO đang chờ thanh toán</div>
+                        <div className="text-[10px] text-[#64748B] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Dự kiến thanh toán trong 7 ngày tới</div>
                     </div>
 
-                    <div className="erp-card !p-8 bg-[#161922] shadow-sm border-none flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-6">Chờ CFO Duyệt (PR & Budget)</div>
-                        <div>
-                            <div className="flex items-baseline gap-2 mb-1">
-                                <div className="text-4xl font-black text-amber-400">{pendingPRCount + pendingBudgetCount}</div>
-                                <div className="text-[10px] font-black text-[#64748B] uppercase">Chứng từ</div>
+                    {/* Pending Approvals Card */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">Chờ CFO Duyệt</span>
+                            <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                                <FileCheck size={20} className="text-amber-400" />
                             </div>
-                            <div className="text-xl font-black text-amber-400">{formatVND(pendingPRValue + pendingBudgetValue)} ₫</div>
                         </div>
+                        <div className="text-2xl font-black text-amber-400 mb-1">{pendingPRCount + pendingBudgetCount}</div>
+                        <div className="text-sm font-bold text-[#94A3B8]">{formatVND(pendingPRValue + pendingBudgetValue)} cần phê duyệt</div>
+                        <div className="text-[10px] text-[#64748B] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">{pendingPRCount} PR • {pendingBudgetCount} Ngân sách</div>
                     </div>
 
-                    <div className="erp-card !p-8 bg-[#161922] shadow-sm border-none flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-6">Biểu đồ tiêu hao ngân sách</div>
-                        <div className="flex items-center gap-6">
-                            <div className="relative h-16 w-16 shrink-0">
-                                <svg className="h-16 w-16 -rotate-90">
-                                    <circle cx="32" cy="32" r="28" fill="transparent" stroke="#1A1D23" strokeWidth="8"/>
-                                    <circle cx="32" cy="32" r="28" fill="transparent" stroke="#10b981" strokeWidth="8" strokeDasharray="175" strokeDashoffset="40"/>
-                                    <circle cx="32" cy="32" r="28" fill="transparent" stroke="#3b82f6" strokeWidth="8" strokeDasharray="175" strokeDashoffset="120"/>
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-[#F8FAFC]">OPEX</div>
-                            </div>
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2"><div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div><span className="text-[9px] font-black text-[#64748B] uppercase">IT (65%)</span></div>
-                                <div className="flex items-center gap-2"><div className="h-1.5 w-1.5 rounded-full bg-blue-500"></div><span className="text-[9px] font-black text-[#64748B] uppercase">HR (20%)</span></div>
-                                <div className="flex items-center gap-2"><div className="h-1.5 w-1.5 rounded-full bg-[#64748B]"></div><span className="text-[9px] font-black text-[#64748B] uppercase">Marketing (15%)</span></div>
+                    {/* Department Spending Breakdown */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-purple-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">Top Chi Tiêu</span>
+                            <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                                <PieChart size={20} className="text-purple-400" />
                             </div>
                         </div>
+                        <div className="space-y-2">
+                            {deptSpending.length > 0 ? deptSpending.map((dept, idx) => (
+                                <div key={idx} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2 w-2 rounded-full" style={{ backgroundColor: dept.color }}></div>
+                                        <span className="text-xs font-bold text-[#F8FAFC]">{dept.name}</span>
+                                    </div>
+                                    <span className="text-xs font-bold text-[#94A3B8]">{formatVND(dept.spent).replace('₫', '')}</span>
+                                </div>
+                            )) : (
+                                <div className="text-xs text-[#64748B] italic">Chưa có dữ liệu chi tiêu</div>
+                            )}
+                        </div>
+                        <div className="text-[10px] text-[#64748B] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Chi tiêu theo phòng ban</div>
                     </div>
                 </div>
 
@@ -716,11 +766,18 @@ export default function Dashboard() {
         const prSourcingQueue = (prs || []).filter(pr => pr.status === "APPROVED");
         const activeRfqs = (rfqs || []).filter(rfq => rfq.status !== "COMPLETED" && rfq.status !== "CANCELLED");
         const poApprovalPending = (pos || []).filter(po => po.status === "PENDING_APPROVAL");
-        const openPos = (pos || []).filter(po => po.status === "ISSUED" || po.status === "PARTIALLY_RECEIVED");
+        // Show POs with SHIPPING or SHIPPED status as "đang giao"
+        const shippingPos = (pos || []).filter(po => po.status === "SHIPPING" || po.status === "SHIPPED" || po.status === "ISSUED" || po.status === "PARTIALLY_RECEIVED");
+
+        // Pagination for PR table
+        const [currentPrPage, setCurrentPrPage] = React.useState(1);
+        const prsPerPage = 5;
+        const totalPrPages = Math.ceil(prSourcingQueue.length / prsPerPage);
+        const paginatedPrs = prSourcingQueue.slice((currentPrPage - 1) * prsPerPage, currentPrPage * prsPerPage);
 
         return (
             <div className="animate-in fade-in duration-700 px-6">
-                <div className="flex justify-between items-end mb-10">
+                <div className="flex justify-between items-end mb-8">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse"></div>
@@ -730,38 +787,58 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* API Driven Summary Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                    <div className="erp-card !p-8 bg-[#161922] shadow-sm border-none flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-6">PR CHỜ TÌM NGUỒN</div>
-                        <div className="flex items-baseline gap-2">
-                            <div className="text-5xl font-black text-[#F8FAFC] tracking-tighter">{prSourcingQueue.length}</div>
-                            <div className="text-[11px] font-black text-[#64748B] uppercase">Yêu cầu</div>
+                {/* Procurement Stat Cards - Clean Consistent Style */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    {/* PR Sourcing Queue Card */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">PR Chờ Tìm Nguồn</span>
+                            <div className="h-10 w-10 rounded-xl bg-[#3B82F6]/10 flex items-center justify-center">
+                                <FileText size={20} className="text-[#3B82F6]" />
+                            </div>
                         </div>
+                        <div className="text-3xl font-black text-[#F8FAFC] mb-1">{prSourcingQueue.length}</div>
+                        <div className="text-sm font-bold text-[#94A3B8]">Yêu cầu cần xử lý</div>
+                        <div className="text-[10px] text-[#64748B] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Tạo RFQ để lấy báo giá</div>
                     </div>
 
-                    <div className="erp-card !p-8 bg-[#161922] shadow-sm border-none flex flex-col justify-between border-l-4 border-blue-500 group hover:shadow-xl transition-all duration-500">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-6 text-blue-400">BÁO GIÁ (RFQ) ĐANG XỬ LÝ</div>
-                        <div className="flex items-baseline gap-2">
-                            <div className="text-5xl font-black text-blue-400 tracking-tighter">{activeRfqs.length}</div>
-                            <div className="text-[11px] font-black text-blue-300/50 uppercase">Hồ sơ</div>
+                    {/* Active RFQs Card */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-blue-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">RFQ Đang Xử Lý</span>
+                            <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                                <MessageSquare size={20} className="text-blue-400" />
+                            </div>
                         </div>
+                        <div className="text-3xl font-black text-blue-400 mb-1">{activeRfqs.length}</div>
+                        <div className="text-sm font-bold text-[#94A3B8]">Hồ sơ báo giá</div>
+                        <div className="text-[10px] text-[#64748B] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Chờ phản hồi từ NCC</div>
                     </div>
 
-                    <div className="erp-card !p-8 bg-[#161922] shadow-sm border-none flex flex-col justify-between border-l-4 border-amber-500 group hover:shadow-xl transition-all duration-500">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-6 text-amber-400">PO CHỜ SẾP DUYỆT</div>
-                        <div className="flex items-baseline gap-2">
-                            <div className="text-5xl font-black text-amber-400 tracking-tighter">{poApprovalPending.length}</div>
-                            <div className="text-[11px] font-black text-amber-300/50 uppercase">Đơn hàng</div>
+                    {/* PO Pending Approval Card */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">PO Chờ Duyệt</span>
+                            <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                                <FileCheck size={20} className="text-amber-400" />
+                            </div>
                         </div>
+                        <div className="text-3xl font-black text-amber-400 mb-1">{poApprovalPending.length}</div>
+                        <div className="text-sm font-bold text-[#94A3B8]">Đơn hàng chờ phê duyệt</div>
+                        <div className="text-[10px] text-[#64748B] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Cần duyệt để gửi NCC</div>
                     </div>
 
-                    <div className="erp-card !p-8 bg-[#161922] shadow-sm border-none flex flex-col justify-between border-l-4 border-emerald-500 group hover:shadow-xl transition-all duration-500">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-6 text-emerald-400">PO ĐANG GIAO HÀNG</div>
-                        <div className="flex items-baseline gap-2">
-                            <div className="text-5xl font-black text-emerald-400 tracking-tighter">{openPos.length}</div>
-                            <div className="text-[11px] font-black text-emerald-300/50 uppercase">Active</div>
+                    {/* PO Shipping Card */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">PO Đang Giao</span>
+                            <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                <Truck size={20} className="text-emerald-400" />
+                            </div>
                         </div>
+                        <div className="text-3xl font-black text-emerald-400 mb-1">{shippingPos.length}</div>
+                        <div className="text-sm font-bold text-[#94A3B8]">Đơn hàng đang vận chuyển</div>
+                        <div className="text-[10px] text-[#64748B] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">SHIPPING • SHIPPED • ISSUED</div>
                     </div>
                 </div>
 
@@ -786,7 +863,7 @@ export default function Dashboard() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
-                                        {prs.map((pr) => {
+                                        {paginatedPrs.length > 0 ? paginatedPrs.map((pr) => {
                                             const isSimulation = pr.id?.includes("SIM");
                                             return (
                                                 <tr key={pr.id} className={`group hover:bg-[#0F1117]/50 transition-colors border-b border-[rgba(148,163,184,0.1)] ${isSimulation ? 'bg-[#3B82F6]/5 border-[#3B82F6]/20' : ''}`}>
@@ -842,17 +919,58 @@ export default function Dashboard() {
                                                     </td>
                                                 </tr>
                                             );
-                                        })}
+                                        }) : (
+                                            <tr><td colSpan={6} className="py-12 text-center text-[#64748B] font-black uppercase text-[10px]">Không có PR nào cần xử lý</td></tr>
+                                        )}
                                     </tbody>
                                 </table>
+                                {/* Pagination Navigation */}
+                                {totalPrPages > 1 && (
+                                    <div className="flex items-center justify-between px-6 py-4 bg-[#0F1117] border-t border-[rgba(148,163,184,0.1)]">
+                                        <div className="text-[10px] text-[#64748B]">
+                                            Hiển thị <span className="font-bold text-[#F8FAFC]">{paginatedPrs.length}</span> / <span className="font-bold text-[#F8FAFC]">{prSourcingQueue.length}</span> PR
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => setCurrentPrPage(p => Math.max(1, p - 1))}
+                                                disabled={currentPrPage === 1}
+                                                className="px-3 py-1.5 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-[#F8FAFC] hover:bg-[#1A1D23] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                            >
+                                                <ChevronDown size={12} className="rotate-90" /> Trước
+                                            </button>
+                                            <div className="flex items-center gap-1">
+                                                {Array.from({ length: totalPrPages }, (_, i) => i + 1).map(page => (
+                                                    <button
+                                                        key={page}
+                                                        onClick={() => setCurrentPrPage(page)}
+                                                        className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
+                                                            currentPrPage === page
+                                                                ? 'bg-[#3B82F6] text-white'
+                                                                : 'bg-[#161922] text-[#64748B] hover:text-[#F8FAFC] hover:bg-[#1A1D23]'
+                                                        }`}
+                                                    >
+                                                        {page}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <button
+                                                onClick={() => setCurrentPrPage(p => Math.min(totalPrPages, p + 1))}
+                                                disabled={currentPrPage === totalPrPages}
+                                                className="px-3 py-1.5 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-[#F8FAFC] hover:bg-[#1A1D23] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                            >
+                                                Sau <ChevronDown size={12} className="-rotate-90" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
 
-                    {/* PO Tracking */}
+                    {/* PO Tracking - Show SHIPPING/SHIPPED POs */}
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#F8FAFC]">TÌNH TRẠNG GIAO HÀNG (OPEN POs)</h3>
+                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#F8FAFC]">TÌNH TRẠNG GIAO HÀNG (ĐANG GIAO)</h3>
                             <Link href="/po" className="text-[10px] font-black text-[#3B82F6] hover:underline uppercase tracking-widest">PO Manager {">"}</Link>
                         </div>
                         <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#3B82F6]/5 border-none bg-[#161922]">
@@ -862,34 +980,73 @@ export default function Dashboard() {
                                         <tr className="bg-[#0F1117]">
                                             <th>MÃ PO</th>
                                             <th>NHÀ CUNG CẤP</th>
-                                            <th className="w-1/3">TIẾN ĐỘ</th>
+                                            <th>TRẠNG THÁI</th>
+                                            <th className="w-1/4">TIẾN ĐỘ</th>
                                             <th className="text-right">TỔNG TIỀN</th>
                                             <th className="text-right px-6">THAO TÁC</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
-                                        {openPos.length > 0 ? openPos.slice(0, 5).map((po) => {
-                                            const progress = po.status === "PARTIALLY_RECEIVED" ? 50 : 0;
+                                        {shippingPos.length > 0 ? shippingPos.slice(0, 5).map((po) => {
+                                            // Calculate progress based on status
+                                            const getProgress = (status: string) => {
+                                                switch(status) {
+                                                    case 'SHIPPED': return 75;
+                                                    case 'SHIPPING': return 50;
+                                                    case 'PARTIALLY_RECEIVED': return 25;
+                                                    case 'ISSUED': return 10;
+                                                    default: return 0;
+                                                }
+                                            };
+                                            const getStatusDisplay = (status: string) => {
+                                                switch(status) {
+                                                    case 'SHIPPED': return { label: 'Đã giao hàng', color: 'text-emerald-400', bg: 'bg-emerald-500/20' };
+                                                    case 'SHIPPING': return { label: 'Đang vận chuyển', color: 'text-blue-400', bg: 'bg-blue-500/20' };
+                                                    case 'PARTIALLY_RECEIVED': return { label: 'Nhận một phần', color: 'text-amber-400', bg: 'bg-amber-500/20' };
+                                                    case 'ISSUED': return { label: 'Đã gửi NCC', color: 'text-[#64748B]', bg: 'bg-[#64748B]/20' };
+                                                    default: return { label: status, color: 'text-[#64748B]', bg: 'bg-[#64748B]/20' };
+                                                }
+                                            };
+                                            const progress = getProgress(po.status);
+                                            const statusDisplay = getStatusDisplay(po.status);
                                             return (
                                                 <tr key={po.id} className="hover:bg-[#0F1117]/50 transition-colors group">
                                                     <td className="font-bold text-[#F8FAFC]">{po.poNumber || po.id.substring(0, 8)}</td>
                                                     <td className="font-semibold text-[#94A3B8] truncate max-w-[120px]">{typeof po.vendor === 'string' ? po.vendor : (po.vendor as Organization)?.name || "Vendor"}</td>
                                                     <td>
+                                                        <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-full ${statusDisplay.bg} ${statusDisplay.color}`}>
+                                                            {statusDisplay.label}
+                                                        </span>
+                                                    </td>
+                                                    <td>
                                                         <div className="flex items-center gap-3">
                                                             <div className="flex-1 h-1.5 bg-[#1A1D23] rounded-full overflow-hidden">
-                                                                <div className={`h-full transition-all duration-1000 bg-blue-500`} style={{ width: `${progress}%` }}></div>
+                                                                <div 
+                                                                    className={`h-full transition-all duration-1000 ${
+                                                                        po.status === 'SHIPPED' ? 'bg-emerald-500' :
+                                                                        po.status === 'SHIPPING' ? 'bg-blue-500' :
+                                                                        po.status === 'PARTIALLY_RECEIVED' ? 'bg-amber-500' :
+                                                                        'bg-[#64748B]'
+                                                                    }`} 
+                                                                    style={{ width: `${progress}%` }}
+                                                                ></div>
                                                             </div>
                                                             <span className="text-[9px] font-black text-[#64748B]">{progress}%</span>
                                                         </div>
                                                     </td>
                                                     <td className="text-right font-black text-[#F8FAFC] text-sm">{formatVND(po.total)} ₫</td>
                                                     <td className="text-right pl-2 pr-6">
-                                                        <button className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 border border-amber-500/20 text-amber-400 text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-amber-500/10 transition-all">Đốc thúc</button>
+                                                        <Link 
+                                                            href={`/po/${po.id}`}
+                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#3B82F6] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#2563EB] transition-all"
+                                                        >
+                                                            Chi tiết
+                                                        </Link>
                                                     </td>
                                                 </tr>
                                             );
                                         }) : (
-                                            <tr><td colSpan={5} className="py-20 text-center text-[#64748B] font-black uppercase text-[10px]">Chưa có đơn hàng đang giao</td></tr>
+                                            <tr><td colSpan={6} className="py-20 text-center text-[#64748B] font-black uppercase text-[10px]">Chưa có đơn hàng đang giao</td></tr>
                                         )}
                                     </tbody>
                                 </table>
@@ -972,80 +1129,275 @@ export default function Dashboard() {
                     </div>
                 </header>
 
-                {/* Summary Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                    <div className="erp-card !p-8 border-l-4 border-[rgba(148,163,184,0.1)] bg-[#161922] shadow-sm flex flex-col justify-between relative overflow-hidden">
-                        <div className="flex justify-between items-start mb-6">
-                            <div className="text-5xl font-black text-[#F8FAFC] mb-1">{pendingPRCount}</div>
-                            <AlertTriangle size={24} className="text-red-400" />
+                {/* Summary Cards - Clean Style */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    {/* Pending PRs Card */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">PR Chờ Duyệt</span>
+                            <div className="h-10 w-10 rounded-xl bg-[#3B82F6]/10 flex items-center justify-center">
+                                <FileText size={20} className="text-[#3B82F6]" />
+                            </div>
                         </div>
-                        <div>
-                            <div className="text-sm font-black text-[#3B82F6] mb-2">{formatVND(pendingPRValue)} ₫</div>
-                            <div className="text-[10px] text-[#64748B] font-black uppercase tracking-widest pt-3 border-t border-[rgba(148,163,184,0.1)]">Tổng giá trị chờ duyệt</div>
-                        </div>
+                        <div className="text-3xl font-black text-[#F8FAFC] mb-1">{pendingPRCount}</div>
+                        <div className="text-sm font-bold text-[#3B82F6]">{formatVND(pendingPRValue)}</div>
+                        <div className="text-[10px] text-[#64748B] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Tổng giá trị chờ phê duyệt</div>
                     </div>
 
-                    <div className="erp-card !p-8 border-l-4 border-emerald-500 bg-[#161922] shadow-sm flex flex-col justify-between">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-4">Ngân sách {typeof currentUser?.department === 'object' ? (currentUser.department as { name: string })?.name : (currentUser?.department || 'Phòng ban')} còn lại</div>
-                        <div>
-                            <div className="text-3xl font-black text-emerald-400 mb-2">{formatVND(quarterlyRemainingBudget)} ₫</div>
-                            <div className="text-[10px] text-[#64748B] font-black uppercase tracking-widest pt-3 border-t border-[rgba(148,163,184,0.1)]">Trong {activeQuarterPeriod ? `Q${activeQuarterPeriod.periodNumber} / ${activeQuarterPeriod.fiscalYear}` : 'Tháng / Quý'}</div>
+                    {/* Pending POs Card */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">Cảnh Báo Tồn Đọng</span>
+                            <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                                <AlertTriangle size={20} className="text-amber-400" />
+                            </div>
                         </div>
+                        <div className="text-3xl font-black text-amber-400 mb-1">{pendingPRCount}</div>
+                        <div className="text-sm font-bold text-[#94A3B8]">{pendingPRCount > 0 ? 'Cần xử lý ngay' : 'Không có tồn đọng'}</div>
+                        <div className="text-[10px] text-[#64748B] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Phiếu đang chờ bạn duyệt</div>
                     </div>
 
-                    <div className="erp-card !p-8 border-l-4 border-amber-500 bg-[#161922] shadow-sm flex flex-col justify-between">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-4">Cảnh báo tồn đọng</div>
-                        <div>
-                            <div className="text-4xl font-black text-amber-400 mb-2">{pendingPRCount}</div>
-                            <div className="text-[10px] text-[#64748B] font-black uppercase tracking-widest pt-3 border-t border-[rgba(148,163,184,0.1)]">{pendingPRCount} phiếu đang chờ bạn</div>
+                    {/* Quick Action Card */}
+                    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">Tạo PR Mới</span>
+                            <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                <Plus size={20} className="text-emerald-400" />
+                            </div>
                         </div>
-                    </div>
-
-                    {/* New Budget Widget */}
-                    <div className="erp-card !p-8 border-l-4 border-[#3B82F6] bg-[#161922] shadow-sm flex flex-col justify-between relative group hover:shadow-xl transition-all">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-4 flex justify-between">
-                            Ngân sách phòng ban
-                            <Link href="/manager/spend-tracking" className="text-[#3B82F6] hover:underline">Xem chi tiết →</Link>
-                        </div>
-                        <div>
-                            {deptAllocation ? (
-                                <>
-                                    <div className="flex justify-between items-end mb-2">
-                                        <div className="text-xl font-black text-[#F8FAFC]">
-                                            {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}%
-                                        </div>
-                                        <div className="text-[9px] font-black text-[#64748B] uppercase tracking-tighter italic">Đã dùng / Tổng</div>
-                                    </div>
-                                    <div className="w-full h-2 bg-[#0F1117] rounded-full overflow-hidden mb-4">
-                                        <div 
-                                            className={`h-full transition-all duration-1000 ${
-                                                ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.9 ? 'bg-red-500' :
-                                                ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.7 ? 'bg-orange-500' : 'bg-[#3B82F6]'
-                                            }`} 
-                                            style={{ width: `${Math.min(100, Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100))}%` }}
-                                        ></div>
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-2 border-t border-[rgba(148,163,184,0.1)] pt-3">
-                                        <div className="text-center">
-                                            <div className="text-[8px] font-black text-[#64748B] uppercase leading-none mb-1">Cam kết</div>
-                                            <div className="text-[10px] font-black text-[#3B82F6]">{formatVND(deptAllocation.committedAmount).replace('₫', '')}</div>
-                                        </div>
-                                        <div className="text-center border-x border-[rgba(148,163,184,0.1)]">
-                                            <div className="text-[8px] font-black text-[#64748B] uppercase leading-none mb-1">Đã chi</div>
-                                            <div className="text-[10px] font-black text-[#94A3B8]">{formatVND(deptAllocation.spentAmount).replace('₫', '')}</div>
-                                        </div>
-                                        <div className="text-center">
-                                            <div className="text-[8px] font-black text-[#64748B] uppercase leading-none mb-1">Còn lại</div>
-                                            <div className="text-[10px] font-black text-emerald-400">{formatVND(deptAllocation.allocatedAmount - deptAllocation.committedAmount - deptAllocation.spentAmount).replace('₫', '')}</div>
-                                        </div>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="py-2 text-center text-[10px] font-black text-[#64748B] uppercase tracking-widest italic">Chưa có dữ liệu ngân sách kỳ này</div>
-                            )}
-                        </div>
+                        <div className="text-lg font-black text-[#F8FAFC] mb-2">Tạo yêu cầu mua hàng</div>
+                        <button 
+                            onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
+                            className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+                        >
+                            + Tạo PR Ngay
+                        </button>
+                        <div className="text-[10px] text-[#64748B] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Bắt đầu quy trình mua hàng mới</div>
                     </div>
                 </div>
+
+                {/* Enhanced Budget Section for Department Head */}
+                {currentUser?.role === "DEPT_APPROVER" && (
+                    <div className="mb-8 space-y-6">
+                        {/* Budget Overview Header */}
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest flex items-center gap-2">
+                                <DollarSign size={18} className="text-emerald-400" />
+                                Tổng quan Ngân sách Phòng ban
+                            </h3>
+                            <div className="flex items-center gap-3">
+                                <span className="text-xs text-[#64748B]">
+                                    Kỳ ngân sách: <span className="text-[#F8FAFC] font-bold">{activeQuarterPeriod ? `Q${activeQuarterPeriod.periodNumber} ${activeQuarterPeriod.fiscalYear}` : 'Chưa thiết lập'}</span>
+                                </span>
+                                <Link href="/manager/spend-tracking" className="text-xs font-bold text-[#3B82F6] hover:text-[#60A5FA] flex items-center gap-1 bg-[#3B82F6]/10 px-3 py-1.5 rounded-lg border border-[#3B82F6]/20 transition-all">
+                                    Chi tiết chi tiêu <ArrowUpRight size={14} />
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Budget Stats Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {/* Total Allocated */}
+                            <div className="bg-[#161922] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30 transition-all">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">Tổng ngân sách</span>
+                                    <div className="h-8 w-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center">
+                                        <DollarSign size={16} className="text-[#3B82F6]" />
+                                    </div>
+                                </div>
+                                <div className="text-xl font-black text-[#F8FAFC]">
+                                    {deptAllocation ? formatVND(deptAllocation.allocatedAmount) : '---'}
+                                </div>
+                                <div className="text-[10px] text-[#64748B] mt-1">Được phân bổ cho kỳ này</div>
+                            </div>
+
+                            {/* Committed Amount */}
+                            <div className="bg-bg-secondary rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">Cam kết chi</span>
+                                    <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                                        <ShoppingCart size={16} className="text-amber-400" />
+                                    </div>
+                                </div>
+                                <div className="text-xl font-black text-amber-400">
+                                    {deptAllocation ? formatVND(deptAllocation.committedAmount) : '---'}
+                                </div>
+                                <div className="text-[10px] text-[#64748B] mt-1">PO đã tạo / Đang chờ</div>
+                            </div>
+
+                            {/* Spent Amount */}
+                            <div className="bg-bg-secondary rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-purple-500/30 transition-all">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">Đã chi thực tế</span>
+                                    <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                                        <CreditCard size={16} className="text-purple-400" />
+                                    </div>
+                                </div>
+                                <div className="text-xl font-black text-purple-400">
+                                    {deptAllocation ? formatVND(deptAllocation.spentAmount) : '---'}
+                                </div>
+                                <div className="text-[10px] text-[#64748B] mt-1">Thanh toán đã thực hiện</div>
+                            </div>
+
+                            {/* Remaining Budget */}
+                            <div className="bg-[#161922] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-[10px] font-black uppercase text-[#64748B] tracking-wider">Còn lại</span>
+                                    <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                                        <CheckCircle size={16} className="text-emerald-400" />
+                                    </div>
+                                </div>
+                                <div className="text-xl font-black text-emerald-400">
+                                    {deptAllocation ? formatVND(deptAllocation.allocatedAmount - deptAllocation.committedAmount - deptAllocation.spentAmount) : '---'}
+                                </div>
+                                <div className="text-[10px] text-[#64748B] mt-1">Có thể sử dụng</div>
+                            </div>
+                        </div>
+
+                        {/* Budget Utilization Progress & Alerts */}
+                        {deptAllocation && (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                {/* Main Progress Bar */}
+                                <div className="lg:col-span-2 bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h4 className="text-xs font-black text-[#F8FAFC] uppercase tracking-wider">Tỷ lệ sử dụng ngân sách</h4>
+                                        <span className={`text-sm font-black ${
+                                            ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.9 ? 'text-red-400' :
+                                            ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.75 ? 'text-amber-400' : 'text-emerald-400'
+                                        }`}>
+                                            {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}%
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Stacked Progress Bar */}
+                                    <div className="relative h-4 bg-[#0F1117] rounded-full overflow-hidden mb-4">
+                                        {/* Spent portion */}
+                                        <div 
+                                            className="absolute left-0 top-0 h-full bg-purple-500 transition-all duration-1000"
+                                            style={{ width: `${Math.min(100, (deptAllocation.spentAmount / deptAllocation.allocatedAmount) * 100)}%` }}
+                                        />
+                                        {/* Committed portion */}
+                                        <div 
+                                            className="absolute top-0 h-full bg-amber-500 transition-all duration-1000"
+                                            style={{ 
+                                                left: `${Math.min(100, (deptAllocation.spentAmount / deptAllocation.allocatedAmount) * 100)}%`,
+                                                width: `${Math.min(100 - (deptAllocation.spentAmount / deptAllocation.allocatedAmount) * 100, (deptAllocation.committedAmount / deptAllocation.allocatedAmount) * 100)}%` 
+                                            }}
+                                        />
+                                    </div>
+                                    
+                                    {/* Legend */}
+                                    <div className="flex items-center gap-6 text-[10px]">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3 rounded bg-purple-500" />
+                                            <span className="text-[#94A3B8]">Đã chi ({Math.round((deptAllocation.spentAmount / deptAllocation.allocatedAmount) * 100)}%)</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3 rounded bg-amber-500" />
+                                            <span className="text-[#94A3B8]">Cam kết ({Math.round((deptAllocation.committedAmount / deptAllocation.allocatedAmount) * 100)}%)</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3 rounded bg-[#0F1117] border border-[rgba(148,163,184,0.3)]" />
+                                            <span className="text-[#94A3B8]">Còn lại ({Math.round(((deptAllocation.allocatedAmount - deptAllocation.committedAmount - deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}%)</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Budget Alerts */}
+                                <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                    <h4 className="text-xs font-black text-[#F8FAFC] uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <AlertTriangle size={14} className="text-amber-400" />
+                                        Cảnh báo ngân sách
+                                    </h4>
+                                    <div className="space-y-3">
+                                        {((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.9 ? (
+                                            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                                                <div className="flex items-start gap-2">
+                                                    <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="text-xs font-bold text-red-400">Ngân sách sắp hết!</p>
+                                                        <p className="text-[10px] text-red-400/70 mt-1">Đã sử dụng {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}% ngân sách kỳ này.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.75 ? (
+                                            <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                                                <div className="flex items-start gap-2">
+                                                    <AlertCircle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="text-xs font-bold text-amber-400">Cảnh báo sử dụng</p>
+                                                        <p className="text-[10px] text-amber-400/70 mt-1">Đã sử dụng {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}% ngân sách.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                                                <div className="flex items-start gap-2">
+                                                    <CheckCircle size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="text-xs font-bold text-emerald-400">Ngân sách ổn định</p>
+                                                        <p className="text-[10px] text-emerald-400/70 mt-1">Còn {Math.round(100 - ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}% ngân sách chưa sử dụng.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        
+                                        {/* Pending PRs Impact */}
+                                        {pendingPRValue > 0 && (
+                                            <div className="p-3 bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-xl">
+                                                <div className="flex items-start gap-2">
+                                                    <FileText size={16} className="text-[#3B82F6] shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="text-xs font-bold text-[#3B82F6]">PR đang chờ duyệt</p>
+                                                        <p className="text-[10px] text-[#3B82F6]/70 mt-1">
+                                                            {myPendingPRs.length} PR ({formatVND(pendingPRValue)}) đang chờ phê duyệt sẽ ảnh hưởng đến ngân sách còn lại.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Cost Center Budget Breakdown */}
+                        {deptAllocation && costCenters && costCenters.length > 0 && (
+                            <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                <h4 className="text-xs font-black text-[#F8FAFC] uppercase tracking-wider mb-4">Phân bổ theo Cost Center</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {costCenters
+                                        .filter(cc => cc.deptId === departmentId)
+                                        .map(cc => {
+                                            const ccAllocations = (budgetAllocations || []).filter(a => a.costCenterId === cc.id && a.budgetPeriodId === activeQuarterPeriod?.id);
+                                            const ccTotal = ccAllocations.reduce((sum, a) => sum + a.allocatedAmount, 0);
+                                            const ccUsed = ccAllocations.reduce((sum, a) => sum + a.committedAmount + a.spentAmount, 0);
+                                            
+                                            return (
+                                                <div key={cc.id} className="p-4 bg-[#0F1117] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="text-xs font-bold text-[#F8FAFC]">{cc.code}</span>
+                                                        <span className="text-[10px] text-[#64748B]">{cc.name}</span>
+                                                    </div>
+                                                    <div className="text-sm font-black text-[#3B82F6] mb-2">{formatVND(ccTotal)}</div>
+                                                    <div className="h-1.5 bg-[#161922] rounded-full overflow-hidden">
+                                                        <div 
+                                                            className={`h-full rounded-full ${ccUsed / ccTotal > 0.9 ? 'bg-red-500' : ccUsed / ccTotal > 0.7 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                                                            style={{ width: `${Math.min(100, (ccUsed / ccTotal) * 100) || 0}%` }}
+                                                        />
+                                                    </div>
+                                                    <div className="flex justify-between mt-2 text-[10px] text-[#64748B]">
+                                                        <span>Đã dùng: {formatVND(ccUsed)}</span>
+                                                        <span>{ccTotal > 0 ? Math.round((ccUsed / ccTotal) * 100) : 0}%</span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Search & Filter Toolbar */}
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#161922] p-4 rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-sm">

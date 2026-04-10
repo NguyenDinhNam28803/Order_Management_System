@@ -165,9 +165,9 @@ export default function CategoriesPage() {
                                 removeCategory(row.id);
                             }
                         }}
-                        className="h-10 w-10 flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-rose-500 hover:border-rose-100 rounded-xl transition-all shadow-sm"
+                        className="h-9 w-9 flex items-center justify-center bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-rose-400 hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
                     >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                     </button>
                 </div>
             )
@@ -184,9 +184,9 @@ export default function CategoriesPage() {
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-erp-navy text-white px-8 py-4 rounded-[22px] font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-erp-navy/20 hover:scale-[1.03] transition-all active:scale-95"
+                    className="flex items-center gap-2 bg-[#3B82F6] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#3B82F6]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
-                    <Plus size={20} /> Thêm Danh mục mới
+                    <Plus size={18} /> Thêm Danh mục
                 </button>
             </div>
 
@@ -221,87 +221,77 @@ export default function CategoriesPage() {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-erp-navy/50 backdrop-blur-md p-4 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-white rounded-[45px] w-full max-w-xl overflow-hidden shadow-2xl border border-white/20">
-                        <div className="p-12">
-                            <div className="flex items-center gap-4 mb-8">
-                                <div className="h-14 w-14 rounded-3xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-                                    <Layers size={28} />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-black text-erp-navy uppercase leading-tight tracking-tight">
-                                        {editingCategory ? "Cập nhật Danh mục" : "Tạo Danh mục mới"}
-                                    </h2>
-                                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Product Category System</p>
-                                </div>
-                            </div>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F1117]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
+                    <div className="bg-[#161922] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-10">
+                            <h2 className="text-2xl font-black text-[#F8FAFC] uppercase mb-2 tracking-tight">
+                                {editingCategory ? "Cập nhật Danh mục" : "Thêm Danh mục mới"}
+                            </h2>
+                            <p className="text-xs text-[#64748B] font-bold uppercase tracking-widest mb-10">PHÂN LOẠI HÀNG HÓA</p>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mã Danh mục</label>
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label className="erp-label">Mã Danh mục</label>
                                         <input
                                             required
                                             value={formData.code}
                                             onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                                             type="text"
                                             placeholder="VD: STATIONERY"
-                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-6 py-4 text-sm font-bold focus:border-erp-blue focus:bg-white outline-none transition-all placeholder:text-slate-300"
+                                            className="erp-input"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tên Danh mục</label>
+                                    <div className="form-group">
+                                        <label className="erp-label">Tên Danh mục</label>
                                         <input
                                             required
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             type="text"
                                             placeholder="VD: Văn phòng phẩm"
-                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-6 py-4 text-sm font-bold focus:border-erp-blue focus:bg-white outline-none transition-all placeholder:text-slate-300"
+                                            className="erp-input"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Thuộc Tổ chức</label>
-                                    <div className="relative group/select">
-                                        <select
-                                            required
-                                            value={formData.orgId}
-                                            onChange={(e) => setFormData({ ...formData, orgId: e.target.value })}
-                                            className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-6 py-4 text-sm font-bold focus:border-erp-blue focus:bg-white outline-none transition-all appearance-none cursor-pointer"
-                                        >
-                                            <option value="">-- Chọn tổ chức nguồn --</option>
-                                            {organizations.map(org => (
-                                                <option key={org.id} value={org.id}>{org.name}</option>
-                                            ))}
-                                        </select>
-                                        <ChevronRight size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none group-focus-within/select:text-erp-blue" />
-                                    </div>
+                                <div className="form-group">
+                                    <label className="erp-label">Thuộc Tổ chức</label>
+                                    <select
+                                        required
+                                        value={formData.orgId}
+                                        onChange={(e) => setFormData({ ...formData, orgId: e.target.value })}
+                                        className="erp-input"
+                                    >
+                                        <option value="">Chọn tổ chức</option>
+                                        {organizations.map(org => (
+                                            <option key={org.id} value={org.id}>{org.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mô tả chi tiết</label>
+                                <div className="form-group">
+                                    <label className="erp-label">Mô tả</label>
                                     <textarea
                                         rows={3}
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        placeholder="Nhập ghi chú giới thiệu về nhóm danh mục này..."
-                                        className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-6 py-4 text-sm font-bold focus:border-erp-blue focus:bg-white outline-none transition-all placeholder:text-slate-300 resize-none"
+                                        placeholder="Nhập mô tả..."
+                                        className="erp-input resize-none"
                                     />
                                 </div>
 
-                                <div className="flex items-center justify-between p-6 bg-slate-50 rounded-[28px] border border-slate-100">
+                                <div className="flex items-center justify-between p-4 bg-[#0F1117] rounded-2xl border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-black uppercase text-erp-navy tracking-widest">Kích hoạt Danh mục</span>
-                                        <span className="text-[9px] text-slate-400 font-bold">Danh mục đang hoạt động sẽ xuất hiện khi tạo sản phẩm</span>
+                                        <span className="text-[10px] font-black uppercase text-[#F8FAFC] tracking-widest">Kích hoạt Danh mục</span>
+                                        <span className="text-[9px] text-[#64748B] font-bold">Danh mục đang hoạt động sẽ xuất hiện khi tạo sản phẩm</span>
                                     </div>
                                     <button 
                                         type="button"
                                         onClick={() => setFormData({...formData, isActive: !formData.isActive})}
-                                        className={`w-14 h-7 rounded-full p-1 transition-all duration-300 ${formData.isActive ? 'bg-indigo-600 shadow-lg shadow-indigo-200' : 'bg-slate-300'}`}
+                                        className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${formData.isActive ? 'bg-[#3B82F6]' : 'bg-[#64748B]'}`}
                                     >
-                                        <div className={`h-5 w-5 bg-white rounded-full shadow-md transition-transform duration-300 ${formData.isActive ? 'translate-x-7' : 'translate-x-0'}`} />
+                                        <div className={`h-4 w-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${formData.isActive ? 'translate-x-6' : 'translate-x-0'}`} />
                                     </button>
                                 </div>
 
@@ -309,16 +299,16 @@ export default function CategoriesPage() {
                                     <button
                                         type="button"
                                         onClick={() => setShowModal(false)}
-                                        className="flex-1 px-8 py-5 bg-slate-100 rounded-3xl font-black text-slate-400 uppercase tracking-widest hover:bg-slate-200 transition-colors"
+                                        className="btn-secondary flex-1 py-4 uppercase tracking-widest text-xs"
                                     >
                                         Hủy bỏ
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="flex-1 px-8 py-5 bg-erp-navy text-white rounded-3xl font-black uppercase tracking-widest shadow-2xl shadow-erp-navy/30 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
+                                        className="btn-primary flex-1 py-4 uppercase tracking-widest text-xs"
                                     >
-                                        {loading ? "Đang xử lý..." : (editingCategory ? "Lưu thay đổi" : "Khởi tạo ngay")}
+                                        {loading ? "Đang xử lý..." : (editingCategory ? "Lưu thay đổi" : "Khởi tạo")}
                                     </button>
                                 </div>
                             </form>

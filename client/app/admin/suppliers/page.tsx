@@ -83,9 +83,9 @@ export default function SupplierManagementPage() {
                 </div>
                 <button 
                     onClick={() => setIsAddModalOpen(true)}
-                    className="btn-primary"
+                    className="flex items-center gap-2 bg-[#3B82F6] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#3B82F6]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
-                    <Plus size={18} /> Thêm nhà cung cấp mới
+                    <Plus size={18} /> Thêm nhà cung cấp
                 </button>
             </div>
 
@@ -184,9 +184,10 @@ export default function SupplierManagementPage() {
                     <div className="absolute inset-0 bg-[#0F1117]/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsAddModalOpen(false)} />
                     <div className="relative bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         <div className="p-10">
-                            <h2 className="text-2xl font-black text-[#F8FAFC] uppercase mb-8 flex items-center gap-3">
-                                <Plus className="text-[#3B82F6]" /> Thêm nhà cung cấp mới
+                            <h2 className="text-2xl font-black text-[#F8FAFC] uppercase mb-2 tracking-tight">
+                                Thêm nhà cung cấp mới
                             </h2>
+                            <p className="text-xs text-[#64748B] font-bold uppercase tracking-widest mb-10">QUẢN LÝ NHÀ CUNG CẤP</p>
                             
                             <div className="form-grid mb-8">
                                 <div className="form-group col-span-2">

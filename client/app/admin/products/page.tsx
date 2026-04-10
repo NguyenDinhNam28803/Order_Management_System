@@ -221,7 +221,7 @@ export default function ProductAdminPage() {
             render: (row: Product) => (
                 <div className="flex gap-1">
                     <button 
-                        className="p-1.5 text-[#64748B] hover:text-[#3B82F6] hover:bg-[#3B82F6]/10 rounded-lg border border-transparent hover:border-[#3B82F6]/20 transition-all"
+                        className="h-9 w-9 flex items-center justify-center bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-[#3B82F6] hover:border-[#3B82F6]/30 rounded-xl transition-all shadow-sm"
                         onClick={() => {
                             setEditingProduct(row);
                             setIsProductModalOpen(true);
@@ -230,10 +230,10 @@ export default function ProductAdminPage() {
                         <Edit2 size={14} />
                     </button>
                     <button 
-                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        className="h-9 w-9 flex items-center justify-center bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-rose-400 hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
                         onClick={() => handleDeleteProduct(row.id)}
                     >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                     </button>
                 </div>
             )
@@ -266,19 +266,19 @@ export default function ProductAdminPage() {
             render: (row: ProductCategory) => (
                 <div className="flex gap-2">
                     <button 
-                        className="p-2 text-slate-400 hover:text-erp-blue hover:bg-erp-blue/5 rounded-lg transition-all"
+                        className="h-9 w-9 flex items-center justify-center bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-[#3B82F6] hover:border-[#3B82F6]/30 rounded-xl transition-all shadow-sm"
                         onClick={() => {
                             setEditingCategory(row);
                             setIsCategoryModalOpen(true);
                         }}
                     >
-                        <Edit2 size={16}/>
+                        <Edit2 size={14}/>
                     </button>
                     <button 
-                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        className="h-9 w-9 flex items-center justify-center bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-rose-400 hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
                         onClick={() => handleDeleteCategory(row.id)}
                     >
-                        <Trash2 size={16}/>
+                        <Trash2 size={14}/>
                     </button>
                 </div>
             )
@@ -304,7 +304,7 @@ export default function ProductAdminPage() {
                 </div>
                 <div className="flex gap-4">
                     <button 
-                        className="btn-primary flex items-center gap-2 py-4 px-8 shadow-xl shadow-erp-navy/20"
+                        className="flex items-center gap-2 bg-[#3B82F6] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#3B82F6]/20 hover:scale-[1.02] transition-transform active:scale-95"
                         onClick={() => {
                             if (activeTab === "Sản phẩm") {
                                 setEditingProduct(null);
@@ -315,10 +315,8 @@ export default function ProductAdminPage() {
                             }
                         }}
                     >
-                        <Plus size={20} />
-                        <span className="text-sm font-black uppercase">
-                            {activeTab === "Sản phẩm" ? "Thêm sản phẩm" : "Thêm danh mục"}
-                        </span>
+                        <Plus size={18} />
+                        {activeTab === "Sản phẩm" ? "Thêm sản phẩm" : "Thêm danh mục"}
                     </button>
                 </div>
             </div>
@@ -384,146 +382,128 @@ export default function ProductAdminPage() {
 
             {/* Product Modal */}
             {isProductModalOpen && (
-                <div className="fixed inset-0 z-100 flex items-center justify-center bg-erp-navy/60 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in duration-300 border border-slate-100">
-                        {/* Header */}
-                        <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                            <h3 className="text-2xl font-black text-erp-navy uppercase tracking-tight">
-                                {editingProduct ? "Cập nhật sản phẩm" : "Thêm mới Sản phẩm nguồn"}
-                            </h3>
-                            <button 
-                                onClick={() => setIsProductModalOpen(false)}
-                                className="h-10 w-10 rounded-full hover:bg-slate-200 flex items-center justify-center transition-colors"
-                            >
-                                <Plus size={24} className="rotate-45 text-slate-400" />
-                            </button>
-                        </div>
-                        
-                        {/* Form Body */}
-                        <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto no-scrollbar">
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="col-span-2">
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Tên sản phẩm (Product Name)</label>
-                                    <input 
-                                        className="erp-input w-full font-bold" 
-                                        value={productForm.name || ""} 
-                                        onChange={e => setProductForm({ ...productForm, name: e.target.value })}
-                                        placeholder="VD: Server Dell R740..." 
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Mã SKU</label>
-                                    <input 
-                                        className="erp-input w-full  font-bold" 
-                                        value={productForm.sku || ""} 
-                                        onChange={e => setProductForm({ ...productForm, sku: e.target.value })}
-                                        placeholder="DELL-R740-01" 
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Đơn vị tính</label>
-                                    <input 
-                                        className="erp-input w-full font-bold" 
-                                        value={productForm.unit || "Cái"} 
-                                        onChange={e => setProductForm({ ...productForm, unit: e.target.value })}
-                                        placeholder="Cái, Bộ, Lô..." 
-                                    />
-                                </div>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F1117]/80 backdrop-blur-sm p-4">
+                    <div className="bg-[#161922] rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-10">
+                            <h2 className="text-2xl font-black text-[#F8FAFC] uppercase mb-2 tracking-tight">
+                                {editingProduct ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới"}
+                            </h2>
+                            <p className="text-xs text-[#64748B] font-bold uppercase tracking-widest mb-10">QUẢN LÝ KHO HÀNG</p>
 
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Giá tham khảo (VNĐ)</label>
-                                    <input 
-                                        type="number" 
-                                        className="erp-input w-full font-black text-erp-blue" 
-                                        value={productForm.unitPriceRef || 0} 
-                                        onChange={e => setProductForm({ ...productForm, unitPriceRef: Number(e.target.value) })}
-                                    />
-                                </div>
+                            <form onSubmit={(e) => { e.preventDefault(); handleSaveProduct(); }} className="space-y-6">
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="col-span-2">
+                                        <label className="erp-label">Tên sản phẩm</label>
+                                        <input 
+                                            className="erp-input w-full" 
+                                            value={productForm.name || ""} 
+                                            onChange={e => setProductForm({ ...productForm, name: e.target.value })}
+                                            placeholder="VD: Server Dell R740..." 
+                                        />
+                                    </div>
+                                    
+                                    <div className="form-group">
+                                        <label className="erp-label">Mã SKU</label>
+                                        <input 
+                                            className="erp-input w-full" 
+                                            value={productForm.sku || ""} 
+                                            onChange={e => setProductForm({ ...productForm, sku: e.target.value })}
+                                            placeholder="DELL-R740-01" 
+                                        />
+                                    </div>
+                                    
+                                    <div className="form-group">
+                                        <label className="erp-label">Đơn vị tính</label>
+                                        <input 
+                                            className="erp-input w-full" 
+                                            value={productForm.unit || "Cái"} 
+                                            onChange={e => setProductForm({ ...productForm, unit: e.target.value })}
+                                            placeholder="Cái, Bộ, Lô..." 
+                                        />
+                                    </div>
 
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Loại sản phẩm</label>
-                                    <div className="relative group/select">
+                                    <div className="form-group">
+                                        <label className="erp-label">Giá tham khảo (VNĐ)</label>
+                                        <input 
+                                            type="number" 
+                                            className="erp-input w-full text-[#3B82F6]" 
+                                            value={productForm.unitPriceRef || 0} 
+                                            onChange={e => setProductForm({ ...productForm, unitPriceRef: Number(e.target.value) })}
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="erp-label">Loại sản phẩm</label>
                                         <select 
-                                            className="erp-input w-full font-bold appearance-none bg-white cursor-pointer pr-10"
+                                            className="erp-input w-full"
                                             value={productForm.type || ProductType.CATALOG}
                                             onChange={e => setProductForm({ ...productForm, type: e.target.value as ProductType })}
                                         >
                                             <option value={ProductType.CATALOG}>Catalog (Hàng tiêu chuẩn)</option>
                                             <option value={ProductType.NON_CATALOG}>Non-catalog (Phi tiêu chuẩn)</option>
                                         </select>
-                                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within/select:text-erp-blue" />
                                     </div>
-                                </div>
 
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Danh mục (Category)</label>
-                                    <div className="relative group/select">
+                                    <div className="form-group">
+                                        <label className="erp-label">Danh mục</label>
                                         <select 
-                                            className="erp-input w-full font-bold appearance-none bg-white cursor-pointer pr-10"
+                                            className="erp-input w-full"
                                             value={productForm.categoryId || ""}
                                             onChange={e => setProductForm({ ...productForm, categoryId: e.target.value })}
                                         >
-                                            <option value="" disabled>-- Chọn danh mục --</option>
+                                            <option value="" disabled>Chọn danh mục</option>
                                             {categories.map(cat => (
                                                 <option key={cat.id} value={cat.id}>{cat.name}</option>
                                             ))}
                                         </select>
-                                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within/select:text-erp-blue" />
                                     </div>
-                                </div>
 
-                                <div className="col-span-2">
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 flex items-center gap-1">
-                                        Tổ chức / Nhà cung cấp (Organization) <span className="text-red-500">*</span>
-                                    </label>
-                                    <div className="relative group/select">
+                                    <div className="col-span-2 form-group">
+                                        <label className="erp-label">Tổ chức / Nhà cung cấp</label>
                                         <select 
-                                            className="erp-input w-full font-bold appearance-none bg-white cursor-pointer pr-10"
+                                            className="erp-input w-full"
                                             value={productForm.orgId || ""}
                                             onChange={e => setProductForm({ ...productForm, orgId: e.target.value })}
                                         >
-                                            <option value="" disabled>-- Chọn tổ chức --</option>
+                                            <option value="" disabled>Chọn tổ chức</option>
                                             {organizations.map(org => (
                                                 <option key={org.id} value={org.id}>{org.name}</option>
                                             ))}
                                         </select>
-                                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within/select:text-erp-blue" />
+                                    </div>
+
+                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#0F1117] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black uppercase text-[#F8FAFC] tracking-widest">Kích hoạt sản phẩm</span>
+                                            <span className="text-[9px] text-[#64748B] font-bold">Cho phép sử dụng sản phẩm này trong các yêu cầu mua hàng</span>
+                                        </div>
+                                        <button 
+                                            type="button"
+                                            onClick={() => setProductForm({...productForm, isActive: !productForm.isActive})}
+                                            className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${productForm.isActive ? 'bg-[#3B82F6]' : 'bg-[#64748B]'}`}
+                                        >
+                                            <div className={`h-4 w-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${productForm.isActive ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        </button>
                                     </div>
                                 </div>
 
-                                <div className="col-span-2 flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-black uppercase text-erp-navy tracking-widest">Kích hoạt (Is Active)</span>
-                                        <span className="text-[8px] text-slate-400 font-bold">Cho phép sử dụng sản phẩm này trong các yêu cầu mua hàng</span>
-                                    </div>
+                                <div className="flex gap-4 pt-6">
                                     <button 
-                                        onClick={() => setProductForm({...productForm, isActive: !productForm.isActive})}
-                                        className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${productForm.isActive ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                                        type="button"
+                                        className="btn-secondary flex-1 py-4 uppercase tracking-widest text-xs"
+                                        onClick={() => setIsProductModalOpen(false)}
                                     >
-                                        <div className={`h-4 w-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${productForm.isActive ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        Hủy bỏ
+                                    </button>
+                                    <button 
+                                        type="submit"
+                                        className="btn-primary flex-1 py-4 uppercase tracking-widest text-xs"
+                                        disabled={loading}
+                                    >
+                                        {loading ? "Đang xử lý..." : (editingProduct ? "Lưu thay đổi" : "Khởi tạo")}
                                     </button>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Footer Action Buttons */}
-                        <div className="p-8 bg-slate-50/50 border-t border-slate-100 flex justify-end gap-3 text-xs">
-                             {loading && <div className="flex items-center gap-2 text-erp-blue font-black uppercase tracking-widest mr-auto"><Loader2 size={14} className="animate-spin" /> Đang xử lý...</div>}
-                            <button 
-                                className="px-8 py-3.5 font-black text-slate-500 uppercase tracking-widest border border-slate-200 hover:bg-white rounded-2xl transition-all shadow-sm" 
-                                onClick={() => setIsProductModalOpen(false)}
-                            >
-                                Hủy
-                            </button>
-                            <button 
-                                className="btn-primary py-3.5 px-10 shadow-2xl shadow-erp-navy/30" 
-                                onClick={handleSaveProduct} 
-                                disabled={loading}
-                            >
-                                {editingProduct ? "Cập nhật" : "Lưu thay đổi"}
-                            </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -531,101 +511,91 @@ export default function ProductAdminPage() {
 
             {/* Product/Category Creation Form Modal */}
             {isCategoryModalOpen && (
-                <div className="fixed inset-0 z-100 flex items-center justify-center bg-erp-navy/60 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden animate-in zoom-in duration-300 border border-slate-100">
-                        {/* Header */}
-                        <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                            <h3 className="text-2xl font-black text-erp-navy uppercase tracking-tight">
-                                {editingCategory ? "Cập nhật Danh mục" : "Thêm mới Sản phẩm / Danh mục"}
-                            </h3>
-                            <button onClick={() => setIsCategoryModalOpen(false)} className="h-10 w-10 rounded-full hover:bg-slate-200 flex items-center justify-center transition-colors">
-                                <Plus size={24} className="rotate-45 text-slate-400" />
-                            </button>
-                        </div>
-                        
-                        {/* Form Body */}
-                        <div className="p-8 space-y-6">
-                            <div className="grid grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Mã (Code)</label>
-                                    <input 
-                                        className="erp-input w-full  font-bold" 
-                                        placeholder="VD: CAT-001"
-                                        value={categoryForm.code || ""} 
-                                        onChange={e => setCategoryForm({...categoryForm, code: e.target.value})} 
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Tên (Name)</label>
-                                    <input 
-                                        className="erp-input w-full font-bold" 
-                                        placeholder="Nhập tên..."
-                                        value={categoryForm.name || ""} 
-                                        onChange={e => setCategoryForm({...categoryForm, name: e.target.value})} 
-                                    />
-                                </div>
-                                
-                                <div className="col-span-2">
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 flex items-center gap-1">
-                                        Tổ chức / Nhà cung cấp (Organization) <span className="text-red-500">*</span>
-                                    </label>
-                                    <div className="relative group/select">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F1117]/80 backdrop-blur-sm p-4">
+                    <div className="bg-[#161922] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-10">
+                            <h2 className="text-2xl font-black text-[#F8FAFC] uppercase mb-2 tracking-tight">
+                                {editingCategory ? "Cập nhật Danh mục" : "Thêm Danh mục mới"}
+                            </h2>
+                            <p className="text-xs text-[#64748B] font-bold uppercase tracking-widest mb-10">QUẢN LÝ DANH MỤC</p>
+
+                            <form onSubmit={(e) => { e.preventDefault(); handleSaveCategory(); }} className="space-y-6">
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="form-group">
+                                        <label className="erp-label">Mã (Code)</label>
+                                        <input 
+                                            className="erp-input w-full" 
+                                            placeholder="VD: CAT-001"
+                                            value={categoryForm.code || ""} 
+                                            onChange={e => setCategoryForm({...categoryForm, code: e.target.value})} 
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="erp-label">Tên (Name)</label>
+                                        <input 
+                                            className="erp-input w-full" 
+                                            placeholder="Nhập tên..."
+                                            value={categoryForm.name || ""} 
+                                            onChange={e => setCategoryForm({...categoryForm, name: e.target.value})} 
+                                        />
+                                    </div>
+                                    
+                                    <div className="col-span-2 form-group">
+                                        <label className="erp-label">Tổ chức / Nhà cung cấp</label>
                                         <select 
-                                            className="erp-input w-full font-bold appearance-none bg-white cursor-pointer pr-10"
+                                            className="erp-input w-full"
                                             value={categoryForm.orgId || ""}
                                             onChange={e => setCategoryForm({...categoryForm, orgId: e.target.value})}
                                         >
-                                            <option value="" disabled>-- Chọn tổ chức --</option>
+                                            <option value="" disabled>Chọn tổ chức</option>
                                             {organizations.map(org => (
                                                 <option key={org.id} value={org.id}>{org.name}</option>
                                             ))}
                                         </select>
-                                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within/select:text-erp-blue transition-colors" />
                                     </div>
-                                    <p className="mt-1.5 text-[8px] text-slate-400 font-bold uppercase tracking-tighter">Dữ liệu nguồn được kéo từ GET /api/organizations</p>
+
+                                    <div className="col-span-2 form-group">
+                                        <label className="erp-label">Mô tả</label>
+                                        <textarea 
+                                            className="erp-input w-full h-24 resize-none" 
+                                            placeholder="Nhập mô tả..."
+                                            value={categoryForm.description || ""} 
+                                            onChange={e => setCategoryForm({...categoryForm, description: e.target.value})} 
+                                        />
+                                    </div>
+
+                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#0F1117] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black uppercase text-[#F8FAFC] tracking-widest">Kích hoạt</span>
+                                            <span className="text-[9px] text-[#64748B] font-bold">Trạng thái hoạt động của dữ liệu</span>
+                                        </div>
+                                        <button 
+                                            type="button"
+                                            onClick={() => setCategoryForm({...categoryForm, isActive: !categoryForm.isActive})}
+                                            className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${categoryForm.isActive ? 'bg-[#3B82F6]' : 'bg-[#64748B]'}`}
+                                        >
+                                            <div className={`h-4 w-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${categoryForm.isActive ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div className="col-span-2">
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Mô tả (Description)</label>
-                                    <textarea 
-                                        className="erp-input w-full h-24 font-medium resize-none" 
-                                        placeholder="Nhập ghi chú chi tiết..."
-                                        value={categoryForm.description || ""} 
-                                        onChange={e => setCategoryForm({...categoryForm, description: e.target.value})} 
-                                    />
-                                </div>
-
-                                <div className="col-span-2 flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-black uppercase text-erp-navy tracking-widest">Kích hoạt (Is Active)</span>
-                                        <span className="text-[8px] text-slate-400 font-bold">Trạng thái hoạt động của dữ liệu</span>
-                                    </div>
+                                <div className="flex gap-4 pt-6">
                                     <button 
-                                        onClick={() => setCategoryForm({...categoryForm, isActive: !categoryForm.isActive})}
-                                        className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${categoryForm.isActive ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                                        type="button"
+                                        className="btn-secondary flex-1 py-4 uppercase tracking-widest text-xs"
+                                        onClick={() => setIsCategoryModalOpen(false)}
                                     >
-                                        <div className={`h-4 w-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${categoryForm.isActive ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        Hủy bỏ
+                                    </button>
+                                    <button 
+                                        type="submit"
+                                        className="btn-primary flex-1 py-4 uppercase tracking-widest text-xs"
+                                        disabled={loading}
+                                    >
+                                        {loading ? "Đang xử lý..." : "Lưu thay đổi"}
                                     </button>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Footer Action Buttons */}
-                        <div className="p-8 bg-slate-50/50 border-t border-slate-100 flex justify-end gap-3 text-xs">
-                             {loading && <div className="flex items-center gap-2 text-erp-blue font-black uppercase tracking-widest mr-auto"><Loader2 size={14} className="animate-spin" /> Đang xử lý...</div>}
-                            <button 
-                                className="px-8 py-3.5 font-black text-slate-500 uppercase tracking-widest border border-slate-200 hover:bg-white rounded-2xl transition-all shadow-sm" 
-                                onClick={() => setIsCategoryModalOpen(false)}
-                            >
-                                Hủy
-                            </button>
-                            <button 
-                                className="btn-primary py-3.5 px-10 shadow-2xl shadow-erp-navy/30" 
-                                onClick={handleSaveCategory} 
-                                disabled={loading}
-                            >
-                                Lưu thay đổi
-                            </button>
+                            </form>
                         </div>
                     </div>
                 </div>

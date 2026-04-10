@@ -9,24 +9,27 @@ export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
+  private pool: Pool; // ✅ Giữ ref để đóng đúng cách
+
   constructor(private configService: ConfigService) {
-    // 1. Khởi tạo Connection Pool từ thư viện 'pg'
     const pool = new Pool({
       connectionString: configService.get<string>('DATABASE_URL'),
-      max: 1000, // Tăng lên 200 kết nối để đủ cho nhiều clients gọi đồng thời
-      idleTimeoutMillis: 10000,
+      max: 20,                    // ✅ 10–20 là đủ cho NestJS
+      idleTimeoutMillis: 30000,   // ✅ 30s thay vì 10s
       connectionTimeoutMillis: 5000,
-      allowExitOnIdle: true,
+      allowExitOnIdle: false,     // ✅ Không tự tắt pool
     });
 
-    // 2. Khởi tạo Adapter cho Prisma 7.0
     const adapter = new PrismaPg(pool);
 
-    // 3. Truyền adapter vào constructor của PrismaClient
     super({
       adapter,
-      log: ['query', 'info', 'warn', 'error'],
+      log: process.env.NODE_ENV === 'development'
+        ? ['query', 'warn', 'error']
+        : ['warn', 'error'],      // ✅ Tắt query log ở production
     });
+
+    this.pool = pool; // ✅ Lưu lại ref
   }
 
   async onModuleInit() {
@@ -35,5 +38,6 @@ export class PrismaService
 
   async onModuleDestroy() {
     await this.$disconnect();
+    await this.pool.end(); // ✅ Đóng pg pool riêng — quan trọng!
   }
 }

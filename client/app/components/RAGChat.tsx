@@ -320,35 +320,111 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
                         </div>
                     ) : aiResponse ? (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            {/* Answer Section */}
+                            {/* Answer Summary Section */}
                             <div className="space-y-3">
                                 <div className="flex items-center gap-2 text-[#3B82F6]">
                                     <Sparkles size={14} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Câu trả lời từ AI</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Tóm tắt từ AI</span>
                                 </div>
                                 <div className="bg-[#161922] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl">
-                                    <div className="text-sm text-text-secondary leading-relaxed font-medium whitespace-pre-wrap">
+                                    <div className="text-sm text-[#94A3B8] leading-relaxed font-medium whitespace-pre-wrap">
                                         {formatAnswer(aiResponse?.data?.answer?.summary)}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* SQL Section removed - not in API response */}
+                            {/* Detailed Data Section - Show meaningful details only */}
+                            {aiResponse?.data?.answer?.data && aiResponse.data.answer.data.length > 0 && (
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-2 text-emerald-400">
+                                        <BarChart3 size={14} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Chi tiết thông tin</span>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {aiResponse.data.answer.data.map((item: any, idx: number) => (
+                                            <div key={idx} className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                                                {/* Header with status if available */}
+                                                {(item.status || item.details?.["Đánh giá nhà cung cấp"]) && (
+                                                    <div className="px-4 py-3 bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
+                                                        <span className="text-xs font-bold text-[#F8FAFC]">
+                                                            {item.details?.["Đánh giá nhà cung cấp"] || `Kết quả ${idx + 1}`}
+                                                        </span>
+                                                        {item.status && (
+                                                            <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${
+                                                                item.status === 'PREFERRED' ? 'bg-emerald-500/20 text-emerald-400' :
+                                                                item.status === 'APPROVED' ? 'bg-[#3B82F6]/20 text-[#3B82F6]' :
+                                                                'bg-amber-500/20 text-amber-400'
+                                                            }`}>
+                                                                {item.status}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                {/* Render details object */}
+                                                {item.details && Object.keys(item.details).length > 0 && (
+                                                    <div className="p-4">
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                            {Object.entries(item.details)
+                                                                .filter(([key]) => key !== 'id' && !key.toLowerCase().includes('id') && !key.toLowerCase().includes('org') && !key.toLowerCase().includes('company'))
+                                                                .map(([key, value]: [string, any]) => {
+                                                                    // Skip empty/null values
+                                                                    if (value === null || value === undefined || value === '') return null;
+                                                                    
+                                                                    // Format numeric values
+                                                                    const isNumeric = typeof value === 'number';
+                                                                    const displayValue = isNumeric && value > 1000 
+                                                                        ? value.toLocaleString('vi-VN') 
+                                                                        : String(value);
+                                                                    
+                                                                    return (
+                                                                        <div key={key} className="flex flex-col gap-1">
+                                                                            <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                                                                                {key}
+                                                                            </span>
+                                                                            <span className={`text-sm font-bold ${
+                                                                                key.includes('Điểm') || key.includes('tỉ lệ') || key.includes('score') || key.includes('rate')
+                                                                                    ? isNumeric && value >= 90 ? 'text-emerald-400' :
+                                                                                      isNumeric && value >= 70 ? 'text-[#3B82F6]' : 'text-amber-400'
+                                                                                    : 'text-[#F8FAFC]'
+                                                                            }`}>
+                                                                                {displayValue}
+                                                                                {key.includes('Điểm') || key.includes('score') ? '/100' : 
+                                                                                 key.includes('tỉ lệ') || key.includes('rate') ? '%' : ''}
+                                                                            </span>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {/* Notes/Ghi chú as footer */}
+                                                {item.details?.["Ghi chú"] && (
+                                                    <div className="px-4 py-3 bg-[#0F1117]/50 border-t border-[rgba(148,163,184,0.1)]">
+                                                        <p className="text-xs text-[#94A3B8] italic">
+                                                            {item.details["Ghi chú"]}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
-                            {/* Sources Section */}
+                            {/* Sources Section - Hide sensitive IDs */}
                             {aiResponse?.data?.sources?.length > 0 && (
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2 text-[#64748B]">
                                         <FileText size={14} />
                                         <span className="text-[10px] font-black uppercase tracking-widest">
-                                            Nguồn dữ liệu ({aiResponse.data.sources.length})
+                                            Nguồn tham khảo ({aiResponse.data.sources.length})
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-1 gap-2">
                                         {aiResponse.data.sources.map((s, idx) => (
                                             <div 
                                                 key={idx} 
-                                                className="flex items-start gap-3 p-3 bg-[#161922] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] transition-all cursor-pointer group"
+                                                className="flex items-start gap-3 p-3 bg-[#161922] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] transition-all group"
                                             >
                                                 <div className="p-2 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-lg text-[#64748B] shrink-0 group-hover:text-[#3B82F6] group-hover:border-[#3B82F6]/30 transition-all">
                                                     {TABLE_ICONS[s.metadata.table] || <FileText size={14} />}
@@ -360,18 +436,14 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
                                                         </span>
                                                         {s.similarity && (
                                                             <span className="text-[9px] text-[#64748B]">
-                                                                {(s.similarity * 100).toFixed(1)}% match
+                                                                Độ tương đồng: {(s.similarity * 100).toFixed(0)}%
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-xs text-[#94A3B8] truncate group-hover:text-[#F8FAFC] transition-colors">
-                                                        {s.metadata.name || s.content.substring(0, 80) + "..."}
-                                                    </p>
-                                                    <p className="text-[10px] text-[#64748B]/70 mt-1 line-clamp-2">
+                                                    <p className="text-[10px] text-[#64748B]/70 line-clamp-2">
                                                         {s.content}
                                                     </p>
                                                 </div>
-                                                <ExternalLink size={12} className="text-[#64748B] group-hover:text-[#3B82F6] shrink-0 mt-1" />
                                             </div>
                                         ))}
                                     </div>
