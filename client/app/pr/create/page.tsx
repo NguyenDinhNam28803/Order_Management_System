@@ -436,6 +436,7 @@ export default function CreatePRPage() {
                                     placeholder="Gõ tên sản phẩm, mã SKU..."
                                     options={products.map(p => ({ label: p.name, value: p.id }))}
                                     onChange={(opt) => opt && addItem(opt)}
+                                    menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
                                     styles={{
                                         control: (base) => ({
                                             ...base,
@@ -451,7 +452,11 @@ export default function CreatePRPage() {
                                             background: '#161922',
                                             border: '1px solid rgba(148,163,184,0.1)',
                                             borderRadius: '16px',
-                                            overflow: 'hidden'
+                                            zIndex: 9999
+                                        }),
+                                        menuPortal: (base) => ({
+                                            ...base,
+                                            zIndex: 9999
                                         }),
                                         option: (base, state) => ({
                                             ...base,

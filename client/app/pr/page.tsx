@@ -48,7 +48,6 @@ export default function PRPage() {
         
         return pool;
     }, [prs, myPrs, activeTab, approvals, currentUser?.role]);
-
     const columns: ERPTableColumn<PR>[] = [
         { 
             label: "Mã PR", 
@@ -244,10 +243,7 @@ export default function PRPage() {
                             ))}
                         </div>
                     </div>
-                </div>
-                
-                <ERPTable columns={columns} data={displayData} />
-                
+                </div>                
                 {displayData.length === 0 && (
                     <div className="p-20 text-center flex flex-col items-center justify-center space-y-4">
                         <div className="h-16 w-16 rounded-2xl bg-[#0F1117] flex items-center justify-center text-[#64748B] border border-[rgba(148,163,184,0.1)]">
