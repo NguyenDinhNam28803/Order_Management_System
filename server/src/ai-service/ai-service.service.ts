@@ -86,7 +86,26 @@ export class AiService implements OnModuleInit {
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
-    return this.parseSpecificJson<AiQuotationAnalysis>(result.text ?? '');
+    const parsed = this.parseSpecificJson<AiQuotationAnalysis>(result.text ?? '');
+
+    // VALIDATION: Ensure score matches assessment
+    // If assessment indicates major issues (unreasonable price, fraud suspicion), cap the score
+    const assessmentLower = parsed.assessment?.toLowerCase() || '';
+    const hasPriceIssue = assessmentLower.includes('vô lý') ||
+                         assessmentLower.includes('quá cao') ||
+                         assessmentLower.includes('gian lận') ||
+                         assessmentLower.includes('không hợp lý') ||
+                         assessmentLower.includes('vượt xa giá trị');
+
+    const hasManyCons = parsed.cons && parsed.cons.length > 0 && parsed.cons.length >= (parsed.pros?.length || 0);
+
+    // If there are significant issues, ensure score doesn't exceed 3
+    if ((hasPriceIssue || hasManyCons) && parsed.score > 3) {
+      console.warn(`[AI Validation] Score ${parsed.score} too high for problematic quotation. Capping to 3.`);
+      parsed.score = 3;
+    }
+
+    return parsed;
   }
 
   /**

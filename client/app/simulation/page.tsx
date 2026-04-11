@@ -8,7 +8,7 @@ import {
     Star, DollarSign, Truck, CreditCard, ShieldCheck,
     User, Building2, BrainCircuit, ArrowRight, ArrowLeft,
     GitBranch, AlertCircle, Clock, Package, Wallet,
-    CheckSquare, XSquare, RotateCcw, Eye, FileCheck
+    CheckSquare, XSquare, RotateCcw, Eye, FileCheck, Scale, AlertTriangle
 } from "lucide-react";
 import { getStatusLabel } from "../utils/formatUtils";
 
@@ -154,7 +154,7 @@ const W1_STEPS: StepDetail[] = [
         nextSteps: {
             approved: {
                 condition: "PO Accepted",
-                action: "NCC xác nhận PO, chuẩn bị giao hàng và gửi hóa đơn",
+                action: "NCC xác nhận PO, chuẩn bị giao hàng",
                 targetStep: 5,
                 icon: <Truck size={14} />
             }
@@ -162,26 +162,88 @@ const W1_STEPS: StepDetail[] = [
     },
     {
         id: 5,
+        title: "Giao hàng",
+        description: "Nhận hàng, kiểm tra chất lượng và tạo GRN",
+        function: "NCC giao hàng đến kho, Warehouse kiểm tra số lượng, chất lượng, đóng gói. Tạo biên bản nhận hàng (GRN) và xác nhận vào hệ thống",
+        role: "WAREHOUSE",
+        roleIcon: <Truck size={14} />,
+        icon: <Package size={20} />,
+        dataState: {
+            status: "DELIVERING",
+            changes: [
+                { field: "GRN Status", from: "-", to: "PENDING" },
+                { field: "Delivery Status", from: "-", to: "IN_TRANSIT" },
+                { field: "PO Status", from: "ISSUED", to: "ACKNOWLEDGED" },
+                { field: "Goods Receipt", from: "-", to: "CREATED" }
+            ]
+        },
+        nextSteps: {
+            approved: {
+                condition: "Nhận hàng đủ & đạt chuẩn",
+                action: "GRN confirmed, chuyển sang Finance để kiểm tra 3-way matching",
+                targetStep: 6,
+                icon: <CheckCircle size={14} />
+            },
+            rejected: {
+                condition: "Hàng lỗi / thiếu / hỏng",
+                action: "Tạo Dispute, chụp ảnh chứng minh, yêu cầu NCC bổ sung hoặc đổi trả",
+                icon: <XCircle size={14} />
+            }
+        }
+    },
+    {
+        id: 6,
+        title: "Kiểm tra 3-Way Matching",
+        description: "So khớp 3 chứng từ PO-GRN-Hóa đơn trước thanh toán",
+        function: "Finance kiểm tra tính khớp lệch giữa: (1) PO đặt hàng, (2) GRN nhận hàng thực tế, (3) Hóa đơn từ NCC. Đảm bảo số lượng, giá cả, điều khoản khớp nhau",
+        role: "FINANCE",
+        roleIcon: <FileCheck size={14} />,
+        icon: <Scale size={20} />,
+        dataState: {
+            status: "3WAY_MATCHING",
+            changes: [
+                { field: "Invoice Status", from: "-", to: "RECEIVED" },
+                { field: "3-Way Match", from: "-", to: "IN_REVIEW" },
+                { field: "PO vs GRN", from: "-", to: "CHECKING" },
+                { field: "GRN vs Invoice", from: "-", to: "CHECKING" },
+                { field: "Discrepancy", from: "-", to: "TBD" }
+            ]
+        },
+        nextSteps: {
+            approved: {
+                condition: "3-Way Match OK (chênh lệch trong ngưỡng cho phép)",
+                action: "3 chứng từ khớp khớp, chuyển sang thanh toán",
+                targetStep: 7,
+                icon: <CheckCircle size={14} />
+            },
+            rejected: {
+                condition: "Phát hiện sai lệch vượt ngưỡng",
+                action: "Tạo Dispute, yêu cầu NCC giải trình hoặc điều chỉnh hóa đơn",
+                icon: <AlertTriangle size={14} />
+            }
+        }
+    },
+    {
+        id: 7,
         title: "Thanh toán",
-        description: "Giao nhận, kiểm tra chất lượng và quyết toán tài chính",
-        function: "Nhận hàng (GRN), kiểm tra chất lượng, 3-way matching (PO-GRN-Invoice), thanh toán",
+        description: "Quyết toán tài chính và chuyển tiền cho NCC",
+        function: "Sau khi 3-way matching thành công, tạo lệnh thanh toán (Payment Order), kế toán xác nhận và chuyển tiền cho NCC qua ngân hàng",
         role: "FINANCE",
         roleIcon: <Wallet size={14} />,
         icon: <DollarSign size={20} />,
         dataState: {
             status: "PAYMENT_PROCESSING",
             changes: [
-                { field: "GRN Status", from: "-", to: "CONFIRMED" },
-                { field: "Invoice Status", from: "-", to: "MATCHED" },
-                { field: "3-Way Match", from: "-", to: "VERIFIED" },
+                { field: "3-Way Match", from: "IN_REVIEW", to: "VERIFIED" },
+                { field: "Payment Status", from: "-", to: "PAID" },
                 { field: "Budget", from: "Committed", to: "Spent" },
-                { field: "Payment", from: "Pending", to: "PAID" }
+                { field: "Bank Transfer", from: "-", to: "COMPLETED" }
             ]
         },
         nextSteps: {
             approved: {
-                condition: "Hoàn tất",
-                action: "Quy trình hoàn tất. Lưu trữ hồ sơ và cập nhật báo cáo tài chính.",
+                condition: "Thanh toán thành công",
+                action: "Quy trình hoàn tất. Lưu trữ hồ sơ đầy đủ (PO-GRN-Invoice-Payment). Cập nhật báo cáo tài chính.",
                 icon: <CheckCircle size={14} />
             }
         }

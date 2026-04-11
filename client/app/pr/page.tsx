@@ -30,22 +30,49 @@ export default function PRPage() {
     if (isManager || isDirector) tabs.push("Phê duyệt");
 
     const displayData: PR[] = React.useMemo(() => {
-        if (!prs || !myPrs) return [];
+        console.log("=== DEBUG PR Filtering ===");
+        console.log("prs count:", prs?.length);
+        console.log("myPrs count:", myPrs?.length);
+        console.log("currentUser role:", currentUser?.role);
+        console.log("activeTab:", activeTab);
+        
+        if (!prs || !myPrs) {
+            console.log("Returning empty - prs or myPrs is null/undefined");
+            return [];
+        }
         
         const userRole = currentUser?.role;
         const isProcOrAdmin = userRole === "PROCUREMENT" || userRole === "PLATFORM_ADMIN";
+        console.log("isProcOrAdmin:", isProcOrAdmin);
 
         if (activeTab === "Phê duyệt") {
             const pendingPrIds = (approvals || []).map((a: ApprovalWorkflow) => a.documentId);
-            return prs.filter((p: PR) => pendingPrIds.includes(p.id));
+            const result = prs.filter((p: PR) => pendingPrIds.includes(p.id));
+            console.log("Phê duyệt tab - found:", result.length);
+            return result;
         }
         
         const pool = isProcOrAdmin ? prs : myPrs;
+        console.log("Pool size:", pool.length);
+        console.log("Pool statuses:", pool.map((p: PR) => p.status));
         
-        if (activeTab === "Nháp") return pool.filter((p: PR) => p.status === "DRAFT");
-        if (activeTab === "Chờ duyệt") return pool.filter((p: PR) => p.status.includes("PENDING"));
-        if (activeTab === "Đã duyệt") return pool.filter((p: PR) => p.status === "APPROVED");
+        if (activeTab === "Nháp") {
+            const result = pool.filter((p: PR) => p.status === "DRAFT");
+            console.log("Nháp tab - found:", result.length);
+            return result;
+        }
+        if (activeTab === "Chờ duyệt") {
+            const result = pool.filter((p: PR) => p.status?.includes("PENDING"));
+            console.log("Chờ duyệt tab - found:", result.length);
+            return result;
+        }
+        if (activeTab === "Đã duyệt") {
+            const result = pool.filter((p: PR) => p.status === "APPROVED" || p.status === "PO_CREATED");
+            console.log("Đã duyệt tab - found:", result.length);
+            return result;
+        }
         
+        console.log("Tất cả tab - returning pool:", pool.length);
         return pool;
     }, [prs, myPrs, activeTab, approvals, currentUser?.role]);
     const columns: ERPTableColumn<PR>[] = [

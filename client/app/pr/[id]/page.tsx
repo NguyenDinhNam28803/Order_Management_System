@@ -104,8 +104,20 @@ export default function PRDetailPage() {
               <p className="text-sm font-bold text-[#F8FAFC]">{pr.prNumber || pr.id.split('-')[0].toUpperCase()}</p>
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]"><Building2 size={12}/> Bộ Phận</div>
-              <p className="text-sm font-bold text-[#94A3B8] uppercase">{pr.deptId || "N/A"}</p>
+              <div className="flex flex-col">
+                <span className="text-[#64748B] text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-1">
+                  <Building2 size={10} /> BỘ PHẬN
+                </span>
+                <span className="font-bold text-[#F8FAFC] text-sm">
+                  {typeof pr.department === 'object' && pr.department?.name 
+                    ? pr.department.name 
+                    : typeof pr.department === 'string' 
+                      ? pr.department 
+                      : pr.deptId 
+                        ? "Phòng ban #" + pr.deptId.substring(0, 8)
+                        : "N/A"}
+                </span>
+              </div>
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]"><User size={12}/> Người Yêu Cầu</div>

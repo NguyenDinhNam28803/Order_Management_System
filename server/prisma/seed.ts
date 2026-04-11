@@ -327,6 +327,9 @@ async function main() {
   ];
 
   // Clean old data to avoid duplicates/errors
+  // Delete child records first to avoid foreign key constraint violations
+  await prisma.supplierProductPrice.deleteMany({});
+  await prisma.supplierCategory.deleteMany({});
   await prisma.product.deleteMany({});
   await prisma.productCategory.deleteMany({});
 

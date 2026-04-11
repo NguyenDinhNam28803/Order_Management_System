@@ -52,6 +52,35 @@ export default function ContractDetailPage() {
 
     return (
         <div className="p-6 space-y-6 max-w-5xl mx-auto">
+            {/* Contract Header */}
+            <div className="bg-linear-to-r from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <span className="text-blue-100 text-sm font-medium">MÃ HỢP ĐỒNG</span>
+                            <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">{contract.contractNumber || 'N/A'}</span>
+                        </div>
+                        <h1 className="text-2xl font-bold">{contract.title || 'Hợp đồng'}</h1>
+                        <p className="text-blue-100 mt-1">{contract.description || 'Không có mô tả'}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                        <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+                            contract.status === 'ACTIVE' ? 'bg-green-500' :
+                            contract.status === 'PENDING_APPROVAL' ? 'bg-yellow-500' :
+                            contract.status === 'COMPLETED' ? 'bg-blue-500' :
+                            contract.status === 'TERMINATED' ? 'bg-red-500' :
+                            'bg-gray-500'
+                        }`}>
+                            {contract.status === 'ACTIVE' ? 'ĐANG HIỆU LỰC' :
+                             contract.status === 'PENDING_APPROVAL' ? 'CHỜ DUYỆT' :
+                             contract.status === 'COMPLETED' ? 'HOÀN THÀNH' :
+                             contract.status === 'TERMINATED' ? 'ĐÃ CHẤM DỨT' :
+                             contract.status}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             <button 
                 onClick={() => router.back()}
                 className="flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors"
@@ -60,33 +89,18 @@ export default function ContractDetailPage() {
             </button>
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-8 border-b border-gray-50 bg-gray-50/50">
-                    <div className="flex justify-between items-start">
-                        <div className="space-y-1">
-                            <h1 className="text-3xl font-bold text-gray-800">{contract.title}</h1>
-                            <p className="text-blue-600 font-medium">Mã hợp đồng: #{contract.contractNumber}</p>
-                        </div>
-                        <div className="flex gap-3">
-                            <button className="p-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-all shadow-sm">
-                                <Printer size={18} />
-                            </button>
-                            <button className="p-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-all shadow-sm">
-                                <Download size={18} />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2 space-y-8">
+                        {/* Contract Content */}
                         <section className="space-y-4">
                             <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                                 <FileText size={20} className="text-blue-500" /> Nội dung hợp đồng
                             </h2>
-                            <div className="prose max-w-none text-gray-600 leading-relaxed">
-                                <p>{contract.description || "Chưa có mô tả chi tiết cho hợp đồng này. Các điều khoản tuân thủ theo quy định chung của công ty và đơn hàng đi kèm."}</p>
+                            <div className="prose max-w-none text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-lg">
+                                <p>{contract.description || "Chưa có mô tả chi tiết cho hợp đồng này."}</p>
                             </div>
                         </section>
+
 
                         <section className="space-y-4">
                             <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">

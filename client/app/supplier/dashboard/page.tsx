@@ -32,7 +32,7 @@ interface RFQItem {
 interface RFQ {
   rfqId: string;
   projectName: string;
-  status: "Pending" | "Quoted" | "Rejected";
+  status: "Pending" | "Quoted" | "Rejected" | "CatalogConfirmation";
   createdAt: string;
   items: RFQItem[];
   totalAmount?: number;
@@ -379,14 +379,14 @@ export default function SupplierDashboard() {
       </header>
 
       <div className="bg-[#161922] rounded-2xl overflow-hidden shadow-xl shadow-[#3B82F6]/5 border border-[rgba(148,163,184,0.1)]">
-        <table className="erp-table text-xs text-left">
+        <table className="erp-table text-xs text-left w-full" style={{ tableLayout: 'fixed' }}>
           <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]">
             <tr className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">
-              <th className="w-32 py-4 px-6">Mã RFQ</th>
-              <th className="py-4 px-6">Dự án / Tên yêu cầu</th>
-              <th className="py-4 px-6">Thời gian nhận</th>
-              <th className="py-4 px-6">Trạng thái</th>
-              <th className="text-right py-4 px-6">Hành động</th>
+              <th className="w-[18%] py-4 px-4">Mã RFQ</th>
+              <th className="w-[35%] py-4 px-4">Dự án / Yêu cầu</th>
+              <th className="w-[15%] py-4 px-4 text-center">Ngày nhận</th>
+              <th className="w-[15%] py-4 px-4 text-center">Trạng thái</th>
+              <th className="w-[17%] py-4 px-4 text-right">Hành động</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
@@ -404,37 +404,37 @@ export default function SupplierDashboard() {
               const isApiData = !isSimulation && !rfq.rfqId.startsWith("RFQ-2024");
               return (
                 <tr key={rfq.rfqId} className={`group hover:bg-[#0F1117]/50 transition-colors ${isSimulation ? 'bg-[#3B82F6]/5' : ''}`}>
-                  <td className="font-black text-[#F8FAFC] py-4 px-6">
-                    <div className="flex items-center gap-2">
-                       {rfq.rfqId}
+                  <td className="py-4 px-4">
+                    <div className="font-black text-[#F8FAFC] text-xs truncate">{rfq.rfqId}</div>
+                    <div className="flex items-center gap-1 mt-1">
                        {isSimulation && <span className="bg-[#3B82F6] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
                        {isApiData && <span className="bg-emerald-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">API</span>}
                     </div>
                   </td>
-                  <td className="py-4 px-6">
-                    <div className="font-bold text-[#F8FAFC]">{rfq.projectName}</div>
-                    <div className="text-[10px] text-[#64748B] font-medium uppercase mt-1">
+                  <td className="py-4 px-4">
+                    <div className="font-bold text-[#F8FAFC] text-xs truncate" title={rfq.projectName}>{rfq.projectName}</div>
+                    <div className="text-[10px] text-[#64748B] font-medium uppercase mt-1 truncate">
                       {rfq.items.length} hạng mục • {rfq.items.slice(0, 2).map(i => i.name).join(", ")}{rfq.items.length > 2 ? "..." : ""}
                     </div>
                   </td>
-                  <td className="text-[#64748B] text-xs py-4 px-6">{rfq.createdAt}</td>
-                  <td className="py-4 px-6">
-                    <span className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
-                      {rfq.status === 'Pending' ? 'Chờ báo giá' : 'Đã báo giá'}
+                  <td className="text-[#64748B] text-xs py-4 px-4 text-center">{rfq.createdAt}</td>
+                  <td className="py-4 px-4 text-center">
+                    <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : rfq.status === 'CatalogConfirmation' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+                      {rfq.status === 'Pending' ? 'Chờ báo giá' : rfq.status === 'CatalogConfirmation' ? 'Xác nhận giá' : 'Đã báo giá'}
                     </span>
                   </td>
-                  <td className="text-right py-4 px-6">
-                    {rfq.status === 'Pending' ? (
+                  <td className="text-right py-4 px-4">
+                    {rfq.status === 'Pending' || rfq.status === 'CatalogConfirmation' ? (
                       <button 
                         onClick={() => handleStartQuoting(rfq)}
                         className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#3B82F6] text-white border-[#3B82F6] shadow-lg' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20 hover:bg-[#3B82F6]/20'}`}
                       >
-                        Báo giá ngay <ChevronRight size={14} />
+                        Báo giá <ChevronRight size={14} />
                       </button>
                     ) : (
-                      <div className="text-right pr-4">
+                      <div className="text-right">
                         <div className="text-xs font-black text-[#F8FAFC]">{(rfq.totalAmount || 0).toLocaleString()} ₫</div>
-                        <div className="text-[9px] font-bold text-emerald-400 uppercase tracking-tighter">Thành công</div>
+                        <div className="text-[9px] font-bold text-emerald-400 uppercase tracking-tighter">Đã gửi</div>
                       </div>
                     )}
                   </td>
