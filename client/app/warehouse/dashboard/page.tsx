@@ -90,27 +90,31 @@ export default function WarehouseDashboard() {
                         </h3>
                     </div>
                     <div className="flex-1 overflow-auto bg-[#161922] max-h-[400px]">
-                        <table className="erp-table text-xs m-0 !border-none">
+                        <table className="erp-table text-xs m-0 !border-none w-full" style={{ tableLayout: 'fixed' }}>
                             <thead className="sticky top-0 bg-[#0F1117] shadow-sm z-10">
                                 <tr>
-                                    <th>PO</th>
-                                    <th>Nhà cung cấp</th>
-                                    <th>Sản phẩm / Số lượng</th>
-                                    <th className="text-center">Ngày giao</th>
-                                    <th className="text-center">Trạng thái</th>
+                                    <th className="w-[20%]">PO</th>
+                                    <th className="w-[25%]">Nhà cung cấp</th>
+                                    <th className="w-[25%]">Sản phẩm / SL</th>
+                                    <th className="text-center w-[15%]">Ngày giao</th>
+                                    <th className="text-center w-[15%]">Trạng thái</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {incomingPOs.map((po, idx) => (
                                     <tr key={idx} className="cursor-pointer hover:bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]" onClick={() => router.push(`/warehouse/grn/new?po=${po.id}`)}>
-                                        <td className="font-bold text-[#F8FAFC]">{po.id.replace('PO-', '#PO-')}</td>
-                                        <td className="font-bold text-[#94A3B8]">{po.vendor}</td>
-                                        <td>
-                                            <div className="truncate w-32 font-medium text-[#F8FAFC]">{po.items}</div>
-                                            <div className="text-[10px] text-[#64748B] ">x {po.qty}</div>
+                                        <td className="py-4 px-4">
+                                            <div className="font-bold text-[#F8FAFC] text-xs truncate">{po.id.replace('PO-', '#PO-')}</div>
                                         </td>
-                                        <td className="text-center text-[#94A3B8]">{po.deliveryDate}</td>
-                                        <td className="text-center">
+                                        <td className="py-4 px-4">
+                                            <div className="font-bold text-[#94A3B8] text-xs truncate">{po.vendor}</div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="truncate font-medium text-[#F8FAFC] text-xs">{po.items}</div>
+                                            <div className="text-[10px] text-[#64748B]">x {po.qty} SP</div>
+                                        </td>
+                                        <td className="text-center text-[#94A3B8] py-4 px-4 text-xs">{po.deliveryDate}</td>
+                                        <td className="text-center py-4 px-4">
                                             {po.status === "PENDING" ? (
                                                 <span className="text-[9px] font-black uppercase tracking-widest bg-[#3B82F6]/10 text-[#3B82F6] px-2 py-1 rounded border border-[#3B82F6]/20">Sắp tới</span>
                                             ) : (
@@ -132,28 +136,39 @@ export default function WarehouseDashboard() {
                         </h3>
                     </div>
                     <div className="flex-1 overflow-auto bg-[#161922] max-h-[400px]">
-                        <table className="erp-table text-xs m-0 !border-none">
+                        <table className="erp-table text-xs m-0 !border-none w-full" style={{ tableLayout: 'fixed' }}>
                             <thead className="sticky top-0 bg-[#0F1117] shadow-sm z-10">
                                 <tr>
-                                    <th>Mã GRN</th>
-                                    <th>Liên kết PO</th>
-                                    <th>Ngày lập</th>
-                                    <th className="text-center">Vấn đề (Draft)</th>
-                                    <th className="text-right">Action</th>
+                                    <th className="w-[18%]">Mã GRN</th>
+                                    <th className="w-[25%]">Liên kết PO</th>
+                                    <th className="w-[15%]">Ngày lập</th>
+                                    <th className="text-center w-[22%]">Vấn đề (Draft)</th>
+                                    <th className="text-right w-[20%]">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {draftGRNs.map((grn, idx) => (
                                     <tr key={idx} className="border-b border-[rgba(148,163,184,0.1)] hover:bg-[#0F1117]">
-                                        <td className="font-bold text-[#F8FAFC]">{grn.id.replace('GRN-', '#GRN-')}</td>
-                                        <td className="font-bold text-[#94A3B8]">
-                                            {grn.poId} <br/>
-                                            <span className="font-normal text-[10px] text-[#64748B]">{grn.vendor}</span>
+                                        <td className="py-4 px-4">
+                                            <div className="font-bold text-[#F8FAFC] text-xs truncate">{grn.id.replace('GRN-', '#GRN-')}</div>
                                         </td>
-                                        <td className="text-[#94A3B8]">{grn.date}</td>
-                                        <td className="text-center text-[10px] font-bold text-amber-400">{grn.missing}</td>
-                                        <td className="text-right">
-                                            <button className="text-[10px] font-black uppercase tracking-widest text-[#3B82F6] hover:underline">Tiếp tục QC</button>
+                                        <td className="py-4 px-4">
+                                            <div className="font-bold text-[#94A3B8] text-xs truncate">{grn.poId}</div>
+                                            <div className="text-[10px] text-[#64748B] truncate">{grn.vendor}</div>
+                                        </td>
+                                        <td className="text-[#94A3B8] py-4 px-4 text-xs">{grn.date}</td>
+                                        <td className="text-center py-4 px-4">
+                                            <span className="text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-400 px-2 py-1 rounded border border-amber-500/20">
+                                                {grn.missing}
+                                            </span>
+                                        </td>
+                                        <td className="text-right py-4 px-4">
+                                            <button 
+                                                onClick={() => router.push(`/warehouse/grn/new?grn=${grn.id}`)}
+                                                className="text-[10px] font-black uppercase tracking-widest text-[#3B82F6] hover:bg-[#3B82F6]/10 px-3 py-2 rounded-lg transition-colors border border-[#3B82F6]/20"
+                                            >
+                                                Tiếp tục QC
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}

@@ -6,7 +6,7 @@ import { useProcurement, PR } from "../context/ProcurementContext";
 import { CreatePrDto, CreatePrItemDto, CurrencyCode } from "../types/api-types";
 
 // AI Draft item - based on CreatePrItemDto but currency as string (AI returns string)
-interface PrDraftItem extends Omit<CreatePrItemDto, 'currency'> {
+interface PrDraftItem extends Omit<CreatePrItemDto, 'currency' | 'categoryName'> {
   lineNumber: number;
   currency: string;
   preferredSupplierId?: string;
@@ -98,7 +98,6 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
           productDesc: item.productDesc,
           sku: item.sku,
           categoryId: item.categoryId,
-          categoryName: item.categoryName,  // Added to match CreatePrItemDto
           qty: item.qty,
           unit: item.unit,
           estimatedPrice: item.estimatedPrice,
@@ -316,9 +315,6 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                                 </div>
                                 {item.sku && (
                                   <div className="text-xs text-[#64748B]">SKU: {item.sku}</div>
-                                )}
-                                {item.categoryName && (
-                                  <div className="text-xs text-[#64748B]">{item.categoryName}</div>
                                 )}
                                 {item.specNote && (
                                   <div className="text-xs text-[#3B82F6]">{item.specNote}</div>

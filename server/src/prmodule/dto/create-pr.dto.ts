@@ -34,11 +34,6 @@ export class CreatePrItemDto {
   @IsOptional()
   categoryId?: string;
 
-  @ApiPropertyOptional({ example: 'Electronics' })
-  @IsString()
-  @IsOptional()
-  categoryName?: string;
-
   @ApiProperty({ example: 5 })
   @IsNumber()
   @IsNotEmpty()

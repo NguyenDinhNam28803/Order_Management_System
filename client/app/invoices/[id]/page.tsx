@@ -179,7 +179,7 @@ export default function InvoiceDetailPage() {
                   {invoice.invoiceNumber}
                 </h1>
                 <p className="text-text-secondary text-sm mt-1">
-                  ID: {invoice.id.slice(0, 8)}... | Ngày: {formatDate(invoice.invoiceDate)}
+                  ID: {invoice.id?.slice(0, 8)}... | Ngày: {formatDate(invoice.invoiceDate)}
                 </p>
               </div>
             </div>

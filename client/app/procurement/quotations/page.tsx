@@ -74,8 +74,8 @@ export default function QuotationManagementPage() {
             setQaThreadsList(qas || []);
         } catch (e) { }
 
-        // Only analyze if no AI analysis yet
-        if (!quotation.aiAnalysis && quotation.status === 'SUBMITTED') {
+        // Auto analyze if no AI analysis yet (for any status)
+        if (!quotation.aiAnalysis) {
             try {
                 const aiResult = await analyzeQuotationWithAI(quotation.id);
                 if (aiResult) {
@@ -486,7 +486,7 @@ export default function QuotationManagementPage() {
             {/* View Quotation Detail Modal - Redesigned */}
             {viewQuotation && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F1117]/90 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#0F1117] rounded-3xl w-full max-w-4xl shadow-2xl shadow-black/50 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.2)] overflow-hidden">
+                    <div className="bg-[#0F1117] rounded-3xl w-full max-w-4xl shadow-2xl shadow-black/50 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.2)] overflow-y-auto">
 
                         {/* Header */}
                         <div className="bg-gradient-to-r from-[#1A1D23] to-[#161922] px-8 py-5 flex justify-between items-center border-b border-[rgba(148,163,184,0.1)] shrink-0">
@@ -507,16 +507,16 @@ export default function QuotationManagementPage() {
                             </div>
                         </div>
 
-                        <div className="flex flex-1 overflow-hidden">
+                        <div className="flex flex-1 min-h-0 overflow-hidden">
                             {/* Left Panel */}
-                            <div className="flex-1 overflow-y-auto flex flex-col bg-[#0F1117]">
+                            <div className="flex-1 flex flex-col bg-[#0F1117] min-h-0 overflow-hidden">
                                 {/* Horizontal Tabs */}
                                 <div className="flex px-6 pt-4 border-b border-[rgba(148,163,184,0.1)] gap-6 shrink-0 bg-[#0F1117]">
                                     <button onClick={() => setActiveModalTab('AI')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${activeModalTab === 'AI' ? 'border-[#3B82F6] text-[#3B82F6]' : 'border-transparent text-[#64748B] hover:text-[#F8FAFC]'}`}>Phân tích AI</button>
                                     <button onClick={() => setActiveModalTab('QA')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'QA' ? 'border-[#3B82F6] text-[#3B82F6]' : 'border-transparent text-[#64748B] hover:text-[#F8FAFC]'}`}>Trao đổi (Q&A) <span className="bg-[#3B82F6]/20 text-[#3B82F6] px-1.5 py-0.5 rounded text-[9px]">{qaThreadsList?.length || 0}</span></button>
                                     <button onClick={() => setActiveModalTab('NEGOTIATION')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'NEGOTIATION' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-[#64748B] hover:text-[#F8FAFC]'}`}>Đàm phán Giá <span className="bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded text-[9px]">{counterOffersList?.length || 0}</span></button>
                                 </div>
-                                <div className="p-6 flex-1 overflow-y-auto">
+                                <div className="flex-1 overflow-y-auto p-6">
                                     {activeModalTab === 'AI' && (
                                         viewQuotation.aiAnalysis ? (
                                             <>
@@ -619,13 +619,13 @@ export default function QuotationManagementPage() {
                                                 </div>
                                             </>
                                         ) : (
-                                            /* No AI Analysis */
+                                            /* AI Analysis Loading / Not Available */
                                             <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                                                <div className="h-20 w-20 rounded-3xl bg-[#3B82F6]/10 flex items-center justify-center mb-4">
+                                                <div className="h-20 w-20 rounded-3xl bg-[#3B82F6]/10 flex items-center justify-center mb-4 animate-pulse">
                                                     <Sparkles size={36} className="text-[#3B82F6]" />
                                                 </div>
-                                                <h4 className="text-lg font-black text-[#F8FAFC] mb-2">Chưa có phân tích AI</h4>
-                                                <p className="text-sm text-[#64748B] max-w-xs">Hệ thống sẽ tự động phân tích báo giá này trong giây lát...</p>
+                                                <h4 className="text-lg font-black text-[#F8FAFC] mb-2">Đang phân tích AI...</h4>
+                                                <p className="text-sm text-[#64748B] max-w-xs">Vui lòng đợi trong giây lát</p>
                                             </div>
                                         ))}
 
@@ -713,69 +713,59 @@ export default function QuotationManagementPage() {
                                         </div>
                                     )}
                                 </div>
+                            </div>
 
-                                {/* Right Panel - Quotation Details */}
-                                <div className="w-80 bg-[#161922] border-l border-[rgba(148,163,184,0.1)] p-6 overflow-y-auto">
-                                    <div className="text-xs font-black uppercase text-[#64748B] tracking-wider mb-4">Chi tiết báo giá</div>
+                            {/* Right Panel - Quotation Details */}
+                            <div className="w-80 bg-[#161922] border-l border-[rgba(148,163,184,0.1)] p-6 overflow-y-auto shrink-0">
+                                <div className="text-xs font-black uppercase text-[#64748B] tracking-wider mb-4">Chi tiết báo giá</div>
 
-                                    <div className="space-y-4">
-                                        <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
-                                            <div className="text-[10px] text-[#64748B] uppercase mb-1">Tổng giá trị</div>
-                                            <div className="text-xl font-black text-emerald-400">{formatVND(viewQuotation.totalPrice)} ₫</div>
-                                        </div>
-
-                                        <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
-                                            <div className="text-[10px] text-[#64748B] uppercase mb-1">Lead Time</div>
-                                            <div className="text-xl font-black text-[#3B82F6]">{viewQuotation.leadTimeDays} <span className="text-sm text-[#64748B]">ngày</span></div>
-                                        </div>
-
-                                        {/* <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
-                                        <div className="text-[10px] text-[#64748B] uppercase mb-1">Thanh toán</div>
-                                        <div className="text-sm font-bold text-[#F8FAFC]">{viewQuotation.paymentTerms || "N/A"}</div>
-                                    </div>
-                                    
+                                <div className="space-y-4">
                                     <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
-                                        <div className="text-[10px] text-[#64748B] uppercase mb-1">Giao hàng</div>
-                                        <div className="text-sm font-bold text-[#F8FAFC]">{viewQuotation.deliveryTerms || "N/A"}</div>
-                                    </div> */}
-
-                                        {viewQuotation.validityDays && (
-                                            <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
-                                                <div className="text-[10px] text-[#64748B] uppercase mb-1">Hiệu lực</div>
-                                                <div className="text-sm font-bold text-[#F8FAFC]">{viewQuotation.validityDays} ngày</div>
-                                            </div>
-                                        )}
+                                        <div className="text-[10px] text-[#64748B] uppercase mb-1">Tổng giá trị</div>
+                                        <div className="text-xl font-black text-emerald-400">{formatVND(viewQuotation.totalPrice)} ₫</div>
                                     </div>
 
-                                    {viewQuotation.notes && (
-                                        <div className="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                                            <div className="text-[10px] font-black uppercase text-amber-400 mb-2">Ghi chú từ NCC</div>
-                                            <p className="text-sm text-amber-400">{viewQuotation.notes}</p>
+                                    <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
+                                        <div className="text-[10px] text-[#64748B] uppercase mb-1">Lead Time</div>
+                                        <div className="text-xl font-black text-[#3B82F6]">{viewQuotation.leadTimeDays} <span className="text-sm text-[#64748B]">ngày</span></div>
+                                    </div>
+
+                                    {viewQuotation.validityDays && (
+                                        <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
+                                            <div className="text-[10px] text-[#64748B] uppercase mb-1">Hiệu lực</div>
+                                            <div className="text-sm font-bold text-[#F8FAFC]">{viewQuotation.validityDays} ngày</div>
                                         </div>
                                     )}
                                 </div>
-                            </div>
 
-                            {/* Footer Actions */}
-                            <div className="px-6 py-4 bg-[#161922] border-t border-[rgba(148,163,184,0.1)] flex justify-between items-center shrink-0">
-                                <button
-                                    onClick={() => setViewQuotation(null)}
-                                    className="px-6 py-3 rounded-xl bg-[#0F1117] text-[#64748B] font-black text-xs uppercase tracking-wider hover:text-[#F8FAFC] transition-all border border-[rgba(148,163,184,0.2)]"
-                                >
-                                    Đóng
-                                </button>
-                                {viewQuotation.status === 'SUBMITTED' && (
-                                    <button
-                                        onClick={() => {
-                                            setViewQuotation(null);
-                                            setAwardModal(viewQuotation);
-                                        }}
-                                        className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-black text-xs uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
-                                    >
-                                        <Award size={16} /> Trao thầu
-                                    </button>
+                                {viewQuotation.notes && (
+                                    <div className="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                                        <div className="text-[10px] font-black uppercase text-amber-400 mb-2">Ghi chú từ NCC</div>
+                                        <p className="text-sm text-amber-400">{viewQuotation.notes}</p>
+                                    </div>
                                 )}
                             </div>
+                        </div>
+
+                        {/* Footer Actions */}
+                        <div className="px-6 py-4 bg-[#161922] border-t border-[rgba(148,163,184,0.1)] flex justify-between items-center shrink-0">
+                            <button
+                                onClick={() => setViewQuotation(null)}
+                                className="px-6 py-3 rounded-xl bg-[#0F1117] text-[#64748B] font-black text-xs uppercase tracking-wider hover:text-[#F8FAFC] transition-all border border-[rgba(148,163,184,0.2)]"
+                            >
+                                Đóng
+                            </button>
+                            {(viewQuotation.status === 'SUBMITTED' || viewQuotation.status === 'DRAFT') && (
+                                <button
+                                    onClick={() => {
+                                        setViewQuotation(null);
+                                        setAwardModal(viewQuotation);
+                                    }}
+                                    className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-black text-xs uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+                                >
+                                    <Award size={16} /> Trao thầu
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -822,6 +812,7 @@ export default function QuotationManagementPage() {
                             </>
                         )}
                     </div>
+                
         </main>
     );
 }

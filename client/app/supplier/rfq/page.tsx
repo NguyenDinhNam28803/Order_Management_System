@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Inbox, FileText, UploadCloud, Send, ChevronDown, CheckCircle } from "lucide-react";
+import { Inbox, FileText, UploadCloud, Send, ChevronDown, CheckCircle, AlertCircle } from "lucide-react";
 
 import { useProcurement, RFQ, PR, PRItem } from "../../context/ProcurementContext";
 import type { CreateQuoteDto } from "../../types/api-types";
@@ -181,13 +181,13 @@ export default function SupplierRFQ() {
                             </div>
                             
                             <div className="p-0">
-                                <table className="erp-table text-xs whitespace-nowrap">
+                                <table className="erp-table text-xs w-full" style={{ tableLayout: 'fixed' }}>
                                     <thead className="bg-[#0F1117]">
                                         <tr className="text-[#64748B] uppercase tracking-widest text-[9px] font-black italic">
-                                            <th className="px-8 py-5">Hạng mục hàng hóa / SKU</th>
-                                            <th className="text-center w-24">SL</th>
-                                            <th className="w-56 text-right">Đơn giá đề xuất (VNĐ)</th>
-                                            <th className="px-8">Thông số kỹ thuật đề xuất</th>
+                                            <th className="px-4 py-4 w-[35%]">Hạng mục hàng hóa / SKU</th>
+                                            <th className="text-center w-[10%]">SL</th>
+                                            <th className="text-right w-[25%]">Đơn giá đề xuất (VNĐ)</th>
+                                            <th className="px-4 w-[30%]">Thông số kỹ thuật đề xuất</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
@@ -200,38 +200,38 @@ export default function SupplierRFQ() {
 
                                             return (
                                                 <tr key={itemId} className="hover:bg-[#0F1117]/50 group transition-all">
-                                                    <td className="px-8 py-6">
-                                                        <div className="font-black text-[#F8FAFC] text-xs mb-1 uppercase tracking-tight">{itemName}</div>
-                                                        <div className="text-[9px] font-bold text-[#64748B] uppercase tracking-widest">VN-SKU: <span className="text-[#3B82F6]">{itemCode}</span></div>
+                                                    <td className="px-4 py-4">
+                                                        <div className="font-black text-[#F8FAFC] text-xs mb-1 uppercase tracking-tight truncate" title={itemName}>{itemName}</div>
+                                                        <div className="text-[9px] font-bold text-[#64748B] uppercase tracking-widest truncate">VN-SKU: <span className="text-[#3B82F6]">{itemCode}</span></div>
                                                     </td>
-                                                    <td className="text-center font-black">
+                                                    <td className="text-center font-black py-4">
                                                         <div className="text-lg text-[#F8FAFC]">{quantity}</div>
                                                         <div className="text-[9px] text-[#64748B] uppercase tracking-widest leading-none mt-1">{unit}</div>
                                                     </td>
-                                                    <td className="px-8 py-6 bg-[#3B82F6]/5">
+                                                    <td className="px-4 py-4 bg-[#3B82F6]/5">
                                                         <div className="relative group/input">
                                                             <input 
                                                                 type="text" 
-                                                                className="erp-input w-full text-right bg-[#0F1117] border-[rgba(148,163,184,0.2)] text-[#F8FAFC] font-black text-sm focus:border-[#3B82F6] transition-all pr-12 group-hover/input:bg-[#161922]" 
+                                                                className="erp-input w-full text-right bg-[#0F1117] border-[rgba(148,163,184,0.2)] text-[#F8FAFC] font-black text-sm focus:border-[#3B82F6] transition-all pr-10 h-10" 
                                                                 placeholder="0..."
                                                                 value={prices[itemId] || ""}  
                                                                 onChange={e => setPrices({...prices, [itemId]: e.target.value})}
                                                             />
-                                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-[#64748B] uppercase tracking-widest">đ</span>
+                                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-[#64748B] uppercase tracking-widest">đ</span>
                                                         </div>
                                                     </td>
-                                                    <td className="px-8 py-6">
-                                                        <input type="text" className="erp-input w-full text-[10px] bg-[#0F1117] border-[rgba(148,163,184,0.1)] focus:border-[#94A3B8] text-[#94A3B8] placeholder:text-[#64748B]" placeholder="Vd: Model 2026, Bảo hành 24th, VAT 10%..." />
+                                                    <td className="px-4 py-4">
+                                                        <input type="text" className="erp-input w-full text-[10px] bg-[#0F1117] border-[rgba(148,163,184,0.1)] focus:border-[#94A3B8] text-[#94A3B8] placeholder:text-[#64748B] h-10" placeholder="Vd: Model 2026, Bảo hành 24th..." />
                                                     </td>
                                                 </tr>
                                             );
                                         })}
                                         <tr className="bg-[#0F1117]">
-                                            <td colSpan={2} className="px-8 py-8 text-right">
+                                            <td colSpan={2} className="px-4 py-6 text-right">
                                                  <div className="text-[10px] font-black text-[#64748B] uppercase tracking-[0.2em] mb-1">DỰ TOÁN TOTAL</div>
                                                  <div className="text-xs font-bold text-[#64748B] italic">* Chưa bao gồm các loại thuế phí</div>
                                             </td>
-                                            <td className="px-8 py-8 bg-[#3B82F6]/10 text-right">
+                                            <td className="px-4 py-6 bg-[#3B82F6]/10 text-right">
                                                 <div className="text-2xl font-black text-[#F8FAFC] tracking-tighter">
                                                     {(() => {
                                                         const total = (activeRFQ.items || []).reduce((sum: number, item: PRItem) => {
@@ -246,9 +246,9 @@ export default function SupplierRFQ() {
                                                 </div>
                                                 <div className="text-[9px] font-black text-[#3B82F6] uppercase tracking-[0.2em] mt-2">Tổng giá trị báo hàng</div>
                                             </td>
-                                            <td className="px-8 py-8">
-                                                <div className="max-w-[180px] leading-relaxed text-[10px] font-bold text-[#64748B] italic text-right opacity-60">
-                                                    Dữ liệu sẽ được lưu nháp tự động trong quá trình nhập liệu.
+                                            <td className="px-4 py-6">
+                                                <div className="leading-relaxed text-[10px] font-bold text-[#64748B] italic text-right opacity-60">
+                                                    Dữ liệu sẽ được lưu nháp tự động.
                                                 </div>
                                             </td>
                                         </tr>
@@ -288,25 +288,41 @@ export default function SupplierRFQ() {
                             </div>
                         </div>
 
-                        {/* Banner xác nhận submission */}
-                        <div className="erp-card bg-gradient-to-r from-emerald-900 to-emerald-800 border-none shadow-2xl shadow-emerald-500/10 p-10 flex flex-col md:flex-row justify-between items-center relative overflow-hidden group">
-                            <div className="absolute -left-10 top-0 opacity-10 group-hover:scale-125 transition-transform duration-1000">
-                                <Send size={200}/>
-                            </div>
-                            <div className="relative z-10 text-center md:text-left mb-6 md:mb-0">
-                                <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">
-                                     <CheckCircle size={14}/> Cam kết bảo mật thông tin
+                        {/* Banner xác nhận submission hoặc thông báo hết hạn */}
+                        {activeRFQ.deadline && new Date(activeRFQ.deadline) < new Date() ? (
+                            <div className="erp-card bg-gradient-to-r from-rose-900/80 to-rose-800/80 border-rose-500/20 shadow-2xl shadow-rose-500/10 p-8 flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+                                <div className="absolute -left-10 top-0 opacity-10">
+                                    <AlertCircle size={180}/>
                                 </div>
-                                <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">XÁC NHẬN NỘP HỒ SƠ THẦU</h3>
-                                <p className="text-[11px] font-bold text-emerald-300/80 max-w-sm tracking-tight leading-relaxed">Tôi cam kết các thông tin báo giá là chính xác và tuân thủ quy tắc ứng xử B2B của hệ thống ProcurePro.</p>
+                                <div className="relative z-10 text-center md:text-left">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-500/20 text-rose-300 rounded-full text-[10px] font-black uppercase tracking-[0.15em] mb-3">
+                                        <AlertCircle size={12}/> RFQ ĐÃ HẾT HẠN
+                                    </div>
+                                    <p className="text-xs font-bold text-rose-200/80 tracking-tight">
+                                        Thời hạn nộp báo giá đã kết thúc vào {new Date(activeRFQ.deadline).toLocaleDateString('vi-VN')} {new Date(activeRFQ.deadline).toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="relative z-10 flex gap-4 w-full md:w-auto">
-                                <button className="flex-1 px-5 h-10 border border-emerald-700/50 hover:bg-emerald-800 text-emerald-100 font-black uppercase tracking-[0.15em] text-[10px] rounded-xl transition-colors">Lưu nháp</button>
-                                <button onClick={handleSubmit} className="flex-1 px-6 h-10 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 shadow-lg shadow-emerald-500/20 font-black uppercase tracking-[0.15em] text-xs rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 group/btn">
-                                     GỬI BÁO GIÁ <Send size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                                </button>
+                        ) : (
+                            <div className="erp-card bg-gradient-to-r from-emerald-900 to-emerald-800 border-none shadow-2xl shadow-emerald-500/10 p-10 flex flex-col md:flex-row justify-between items-center relative overflow-hidden group">
+                                <div className="absolute -left-10 top-0 opacity-10 group-hover:scale-125 transition-transform duration-1000">
+                                    <Send size={200}/>
+                                </div>
+                                <div className="relative z-10 text-center md:text-left mb-6 md:mb-0">
+                                    <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                                         <CheckCircle size={14}/> Cam kết bảo mật thông tin
+                                    </div>
+                                    <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">XÁC NHẬN NỘP HỒ SƠ THẦU</h3>
+                                    <p className="text-[11px] font-bold text-emerald-300/80 max-w-sm tracking-tight leading-relaxed">Tôi cam kết các thông tin báo giá là chính xác và tuân thủ quy tắc ứng xử B2B của hệ thống ProcurePro.</p>
+                                </div>
+                                <div className="relative z-10 flex gap-4 w-full md:w-auto">
+                                    <button className="flex-1 px-5 h-10 border border-emerald-700/50 hover:bg-emerald-800 text-emerald-100 font-black uppercase tracking-[0.15em] text-[10px] rounded-xl transition-colors">Lưu nháp</button>
+                                    <button onClick={handleSubmit} className="flex-1 px-6 h-10 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 shadow-lg shadow-emerald-500/20 font-black uppercase tracking-[0.15em] text-xs rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 group/btn">
+                                         GỬI BÁO GIÁ <Send size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </main>
@@ -340,12 +356,12 @@ export default function SupplierRFQ() {
                     <table className="erp-table text-xs whitespace-nowrap">
                         <thead className="bg-[#0F1117]">
                             <tr className="text-[#64748B] uppercase tracking-widest text-[9px] font-black italic">
-                                <th className="px-10 py-6">ID Giao dịch</th>
-                                <th>Khách hàng / Đối tác</th>
-                                <th>Thông tin hạng mục</th>
-                                <th>Thời gian nộp</th>
-                                <th className="text-center">Countdown</th>
-                                <th className="text-right px-10">Thao tác</th>
+                                <th className="px-6 py-6 w-[140px]">ID Giao dịch</th>
+                                <th className="w-[180px]">Khách hàng</th>
+                                <th className="w-[280px] max-w-[280px]">Thông tin hạng mục</th>
+                                <th className="w-[110px]">Thời gian nộp</th>
+                                <th className="text-center w-[100px]">Countdown</th>
+                                <th className="text-right px-6 w-[140px]">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
@@ -359,9 +375,9 @@ export default function SupplierRFQ() {
                                         className="hover:bg-[#1A1D23] border-b border-[rgba(148,163,184,0.05)] cursor-pointer group transition-all" 
                                         onClick={() => { setSelectedRfqId(r.id); setViewState("DETAIL"); }}
                                     >
-                                        <td className="px-10 py-8">
+                                        <td className="px-6 py-8">
                                             <div className="font-black text-[#F8FAFC] text-sm uppercase tracking-tighter group-hover:text-[#3B82F6] transition-colors">{r.rfqNumber || r.id.substring(0, 8)}</div>
-                                            <div className="text-[10px] font-bold text-[#64748B]">UUID: {r.id.substring(0, 4)}...</div>
+                                            <div className="text-[9px] font-bold text-[#64748B]">UUID: {r.id.substring(0, 4)}...</div>
                                         </td>
                                         <td className="py-8">
                                             <div className="flex items-center gap-3">
@@ -371,37 +387,73 @@ export default function SupplierRFQ() {
                                                  <div className="font-black text-[#F8FAFC] tracking-tight">{customerName}</div>
                                             </div>
                                         </td>
-                                        <td className="py-8">
-                                            <div className="flex flex-wrap gap-2 max-w-sm">
-                                                {prDetail?.items && prDetail.items.length > 0 ? (
-                                                    prDetail.items.slice(0, 2).map((item, i: number) => (
-                                                        <span key={i} className="bg-[#0F1117] text-[#94A3B8] text-[9px] font-black uppercase px-3 py-1.5 rounded-lg border border-[rgba(148,163,184,0.1)] group-hover:border-[#3B82F6]/20 transition-all">
-                                                            {item.productName || item.description} x{item.qty}
+                                        <td className="py-8 max-w-[280px]">
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {(r.items && r.items.length > 0) ? (
+                                                    <>
+                                                        <span className="bg-[#0F1117] text-[#94A3B8] text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] group-hover:border-[#3B82F6]/20 transition-all truncate max-w-[200px]">
+                                                            {r.items[0].description || r.items[0].productName || 'Item'} x{r.items[0].qty || 1}
                                                         </span>
-                                                    ))
+                                                        {r.items.length > 1 && (
+                                                            <span className="bg-[#3B82F6]/10 text-[#3B82F6] text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border border-[#3B82F6]/20">
+                                                                +{r.items.length - 1}
+                                                            </span>
+                                                        )}
+                                                    </>
+                                                ) : prDetail?.items && prDetail.items.length > 0 ? (
+                                                    <>
+                                                        <span className="bg-[#0F1117] text-[#94A3B8] text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] group-hover:border-[#3B82F6]/20 transition-all truncate max-w-[200px]">
+                                                            {prDetail.items[0].productName || prDetail.items[0].description} x{prDetail.items[0].qty}
+                                                        </span>
+                                                        {prDetail.items.length > 1 && (
+                                                            <span className="bg-[#3B82F6]/10 text-[#3B82F6] text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border border-[#3B82F6]/20">
+                                                                +{prDetail.items.length - 1}
+                                                            </span>
+                                                        )}
+                                                    </>
                                                 ) : (
-                                                    <span className="italic text-[#64748B] font-bold uppercase text-[9px] tracking-widest">Không có dữ phẩm hạng mục</span>
-                                                )}
-                                                {prDetail?.items && prDetail.items.length > 2 && (
-                                                    <span className="bg-[#3B82F6]/10 text-[#3B82F6] text-[9px] font-black uppercase px-3 py-1.5 rounded-lg border border-[#3B82F6]/20">
-                                                        +{prDetail.items.length - 2} Items
-                                                    </span>
+                                                    <span className="italic text-[#64748B] font-bold uppercase text-[9px] tracking-widest">Không có dữ liệu</span>
                                                 )}
                                             </div>
                                         </td>
                                         <td className="py-8">
-                                            <div className="text-[#94A3B8] font-bold text-[11px] mb-1">{r.leadTime ? new Date(r.leadTime).toLocaleDateString('vi-VN') : '30-04-2026'}</div>
-                                            <div className="text-[9px] font-black text-[#64748B] uppercase tracking-widest">{r.createdAt ? new Date(r.createdAt).toLocaleTimeString('vi-VN') : '09:00:00'}</div>
+                                            <div className="text-[#94A3B8] font-bold text-[11px] mb-1">{r.deadline ? new Date(r.deadline).toLocaleDateString('vi-VN') : '-'}</div>
+                                            <div className="text-[9px] font-black text-[#64748B] uppercase tracking-widest">{r.deadline ? new Date(r.deadline).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'}) : ''}</div>
                                         </td>
                                         <td className="text-center py-8">
-                                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl font-black uppercase text-[10px] tracking-widest group-hover:scale-105 transition-transform duration-500">
-                                                 <div className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse"></div>
-                                                 20H 15M
-                                            </div>
+                                            {(() => {
+                                                if (!r.deadline) return (
+                                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#64748B]/10 text-[#64748B] border border-[#64748B]/20 rounded-xl font-black uppercase text-[10px] tracking-widest">
+                                                        Không xác định
+                                                    </div>
+                                                );
+                                                const deadline = new Date(r.deadline).getTime();
+                                                const now = Date.now();
+                                                const diff = deadline - now;
+                                                if (diff <= 0) {
+                                                    return (
+                                                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl font-black uppercase text-[10px] tracking-widest">
+                                                            <div className="h-1.5 w-1.5 rounded-full bg-rose-500"></div>
+                                                            HẾT HẠN
+                                                        </div>
+                                                    );
+                                                }
+                                                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                                                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                                                const timeStr = days > 0 ? `${days}D ${hours}H` : `${hours}H ${mins}M`;
+                                                const isUrgent = days === 0 && hours < 12;
+                                                return (
+                                                    <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl font-black uppercase text-[10px] tracking-widest group-hover:scale-105 transition-transform duration-500 ${isUrgent ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+                                                        <div className={`h-1.5 w-1.5 rounded-full animate-pulse ${isUrgent ? 'bg-rose-500' : 'bg-emerald-500'}`}></div>
+                                                        {timeStr}
+                                                    </div>
+                                                );
+                                            })()}
                                         </td>
-                                        <td className="text-right px-10 py-8">
-                                            <button className="h-12 px-6 bg-[#3B82F6] text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-[#3B82F6]/10 hover:bg-[#2563EB] hover:scale-105 active:scale-95 transition-all flex items-center gap-3 ml-auto group/btn">
-                                                XEM CHI TIẾT <ChevronDown size={14} className="-rotate-90 group-hover/btn:translate-x-1 transition-transform" />
+                                        <td className="text-right px-6 py-8">
+                                            <button className="h-10 px-4 bg-[#3B82F6] text-white rounded-xl font-black text-[9px] uppercase tracking-[0.15em] shadow-lg shadow-[#3B82F6]/10 hover:bg-[#2563EB] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 ml-auto group/btn">
+                                                CHI TIẾT <ChevronDown size={12} className="-rotate-90 group-hover/btn:translate-x-1 transition-transform" />
                                             </button>
                                         </td>
                                     </tr>

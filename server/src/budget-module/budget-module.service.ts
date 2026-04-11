@@ -129,24 +129,64 @@ export class BudgetModuleService {
     dto: CreateBudgetAllocationDto,
     user: JwtPayload,
   ): Promise<BudgetAllocation> {
-    const allocation = await this.prisma.budgetAllocation.create({
-      data: {
-        ...dto,
-        orgId: user.orgId,
-        createdById: user.sub,
+    // Check for existing allocation with same unique key
+    const existingAllocation = await this.prisma.budgetAllocation.findFirst({
+      where: {
+        budgetPeriodId: dto.budgetPeriodId,
+        costCenterId: dto.costCenterId,
+        deptId: dto.deptId || user.deptId,
+        categoryId: dto.categoryId || null,
       },
     });
 
-    // Audit log
-    await this.auditService.create(
-      {
-        action: 'CREATE_BUDGET_ALLOCATION',
-        entityType: 'BudgetAllocation',
-        entityId: allocation.id,
-        newValue: allocation,
-      },
-      user,
-    );
+    let allocation: BudgetAllocation;
+
+    if (existingAllocation) {
+      // Update existing allocation
+      allocation = await this.prisma.budgetAllocation.update({
+        where: { id: existingAllocation.id },
+        data: {
+          allocatedAmount: dto.allocatedAmount,
+          currency: dto.currency,
+          notes: dto.notes,
+          status: BudgetAllocationStatus.DRAFT,
+        },
+      });
+
+      // Audit log
+      await this.auditService.create(
+        {
+          action: 'UPDATE_BUDGET_ALLOCATION',
+          entityType: 'BudgetAllocation',
+          entityId: allocation.id,
+          oldValue: existingAllocation,
+          newValue: allocation,
+        },
+        user,
+      );
+    } else {
+      // Create new allocation
+      allocation = await this.prisma.budgetAllocation.create({
+        data: {
+          ...dto,
+          deptId: dto.deptId || user.deptId,
+          orgId: user.orgId,
+          createdById: user.sub,
+          status: BudgetAllocationStatus.DRAFT,
+        },
+      });
+
+      // Audit log
+      await this.auditService.create(
+        {
+          action: 'CREATE_BUDGET_ALLOCATION',
+          entityType: 'BudgetAllocation',
+          entityId: allocation.id,
+          newValue: allocation,
+        },
+        user,
+      );
+    }
 
     return allocation;
   }

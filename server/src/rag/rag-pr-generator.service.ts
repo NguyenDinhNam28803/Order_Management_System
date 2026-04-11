@@ -4,6 +4,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EmbeddingService } from './embedding.service';
 import { ConfigService } from '@nestjs/config';
 import { PrDraftResponse, PrDraftItem } from './dto/generate-pr-draft.dto';
+import { ProductModuleService } from '../product-module/product-module.service';
+import { CreateProductDto } from '../product-module/dto/create-product.dto';
+import { CurrencyCode, ProductType } from '@prisma/client';
 
 @Injectable()
 export class RagPrGeneratorService {
@@ -15,6 +18,7 @@ export class RagPrGeneratorService {
     private readonly prisma: PrismaService,
     private readonly embedding: EmbeddingService,
     private readonly configService: ConfigService,
+    private readonly productService: ProductModuleService,
   ) {
     this.fptBaseUrl = this.configService.get<string>('FPT_AI_BASE_URL') ?? '';
     this.fptApiKey = this.configService.get<string>('FPT_AI_API_KEY') ?? '';
@@ -124,6 +128,33 @@ export class RagPrGeneratorService {
           })
         : [];
 
+      // 2b. Get budget allocations for user's department (to help AI choose cost center)
+      const budgetAllocations = orgId && user?.deptId
+        ? await this.prisma.budgetAllocation.findMany({
+            where: {
+              orgId,
+              deptId: user.deptId,
+              status: 'APPROVED',
+              budgetPeriod: {
+                isActive: true,
+              },
+            },
+            select: {
+              id: true,
+              budgetPeriodId: true,
+              costCenterId: true,
+              categoryId: true,
+              allocatedAmount: true,
+              spentAmount: true,
+              committedAmount: true,
+              costCenter: { select: { name: true, code: true } },
+              category: { select: { name: true, id: true } },
+              budgetPeriod: { select: { periodType: true, fiscalYear: true, periodNumber: true } },
+            },
+            take: 20,
+          })
+        : [];
+
       // 4. Determine price limit based on user role
       const priceLimit = this.getPriceLimitByRole(user?.role);
       console.log(
@@ -137,6 +168,7 @@ export class RagPrGeneratorService {
         dbProducts,
         priceLimit,
         user,
+        budgetAllocations,
       );
 
       // 4. Call LLM to generate PR
@@ -146,8 +178,16 @@ export class RagPrGeneratorService {
         allProducts,
       );
 
+      // 5. Process items without productId - create products from AI suggestions
+      const processedItems = await this.processNewProducts(
+        draftPr.items,
+        orgId,
+        allProducts,
+      );
+
       return {
         ...draftPr,
+        items: processedItems,
         sources: [
           ...chunks
             .filter((c) => c.similarity > 0.6)
@@ -183,6 +223,338 @@ export class RagPrGeneratorService {
     }
   }
 
+  /**
+   * Process items without productId - search from AI knowledge and create products
+   */
+  private async processNewProducts(
+    items: PrDraftItem[],
+    orgId: string,
+    dbProducts: any[],
+  ): Promise<PrDraftItem[]> {
+    const processedItems: PrDraftItem[] = [];
+
+    for (const item of items) {
+      // If item already has productId from DB, keep it
+      if (item.productId) {
+        processedItems.push(item);
+        continue;
+      }
+
+      console.log(
+        `[RAG] Item "${item.productDesc}" has no productId. Searching from AI knowledge...`,
+      );
+
+      // Try to find matching product in DB first (by name/description)
+      const existingProduct = await this.findProductInDb(
+        item.productDesc,
+        orgId,
+      );
+
+      if (existingProduct) {
+        console.log(
+          `[RAG] Found existing product: ${existingProduct.name} (ID: ${existingProduct.id})`,
+        );
+        processedItems.push({
+          ...item,
+          productId: existingProduct.id,
+          sku: item.sku || existingProduct.sku || this.generateSku(item.productDesc),
+          categoryId: item.categoryId || existingProduct.categoryId,
+        });
+        continue;
+      }
+
+      // If not found in DB, search from AI knowledge (simulating internet search)
+      const aiProductInfo = await this.searchProductFromAI(item.productDesc);
+
+      if (aiProductInfo) {
+        console.log(
+          `[RAG] AI found product info for: ${item.productDesc}`,
+        );
+
+        // Find or create category
+        const category = await this.findOrCreateCategory(
+          aiProductInfo.categoryName || 'Tổng hợp',
+          aiProductInfo.categoryCode || 'MISC',
+          orgId,
+        );
+
+        // Create new product in database
+        const newProduct = await this.createProductFromAI(
+          {
+            name: aiProductInfo.name || item.productDesc,
+            description: aiProductInfo.description || item.productDesc,
+            sku: aiProductInfo.sku || this.generateSku(item.productDesc),
+            unitPriceRef: item.estimatedPrice,
+            categoryId: category.id,
+            orgId,
+            unit: item.unit || 'PCS',
+            currency: item.currency as CurrencyCode,
+            type: ProductType.NON_CATALOG,
+            attributes: aiProductInfo.attributes || {},
+          },
+        );
+
+        console.log(
+          `[RAG] Created new product: ${newProduct.name} (ID: ${newProduct.id})`,
+        );
+
+        processedItems.push({
+          ...item,
+          productId: newProduct.id,
+          sku: newProduct.sku,
+          categoryId: category.id,
+        });
+      } else {
+        // If AI couldn't find info, create product with available info
+        console.log(
+          `[RAG] AI couldn't find product info. Creating with basic info...`,
+        );
+
+        const category = await this.findOrCreateCategory(
+          'Tổng hợp',
+          'MISC',
+          orgId,
+        );
+
+        const newProduct = await this.createProductFromAI(
+          {
+            name: item.productDesc,
+            description: item.specNote || item.productDesc,
+            sku: item.sku || this.generateSku(item.productDesc),
+            unitPriceRef: item.estimatedPrice,
+            categoryId: category.id,
+            orgId,
+            unit: item.unit || 'PCS',
+            currency: item.currency as CurrencyCode,
+            type: ProductType.NON_CATALOG,
+          },
+        );
+
+        processedItems.push({
+          ...item,
+          productId: newProduct.id,
+          sku: newProduct.sku,
+          categoryId: category.id,
+        });
+      }
+    }
+
+    return processedItems;
+  }
+
+  /**
+   * Find product in database by name or description
+   */
+  private async findProductInDb(
+    productDesc: string,
+    orgId: string,
+  ): Promise<any | null> {
+    const searchTerms = productDesc
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((w) => w.length > 2);
+
+    if (searchTerms.length === 0) return null;
+
+    const products = await this.prisma.product.findMany({
+      where: {
+        orgId,
+        OR: searchTerms.flatMap((term) => [
+          { name: { contains: term, mode: 'insensitive' } },
+          { description: { contains: term, mode: 'insensitive' } },
+        ]),
+      },
+      select: {
+        id: true,
+        name: true,
+        sku: true,
+        categoryId: true,
+        category: { select: { id: true, name: true } },
+      },
+      take: 5,
+    });
+
+    // Return the first match or null
+    return products.length > 0 ? products[0] : null;
+  }
+
+  /**
+   * Search product information from AI knowledge (simulating internet search)
+   */
+  private async searchProductFromAI(productDesc: string): Promise<{
+    name: string;
+    description: string;
+    sku: string;
+    categoryName: string;
+    categoryCode: string;
+    attributes?: Record<string, any>;
+  } | null> {
+    try {
+      const systemPrompt = `Bạn là AI Product Researcher. Nhiệm vụ của bạn là tìm kiếm thông tin sản phẩm từ kiến thức của bạn (như tìm kiếm trên internet).
+
+Hãy trả về thông tin chi tiết về sản phẩm theo định dạng JSON:
+{
+  "name": "Tên sản phẩm chuẩn",
+  "description": "Mô tả chi tiết sản phẩm",
+  "sku": "Mã SKU đề xuất (tối đa 50 ký tự, không dấu, viết hoa, dùng gạch ngang)",
+  "categoryName": "Tên danh mục sản phẩm phù hợp",
+  "categoryCode": "Mã danh mục (viết tắt, không dấu, viết hoa, 2-10 ký tự)",
+  "attributes": {
+    "brand": "Thương hiệu nếu có",
+    "model": "Model nếu có",
+    "specs": "Thông số kỹ thuật"
+  }
+}
+
+Lưu ý:
+- Nếu là laptop: gợi ý thương hiệu, model, cấu hình
+- Nếu là văn phòng phẩm: gợi ý thương hiệu, quy cách
+- Nếu là thiết bị: gợi ý thông số kỹ thuật
+- SKU phải là duy nhất, format: TỪ-KHÓA-CHÍNH-SỐ
+- CategoryCode ngắn gọn: IT, OFFICE, STATIONERY, EQUIPMENT, etc.`;
+
+      const response = await fetch(`${this.fptBaseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.fptApiKey}`,
+        },
+        body: JSON.stringify({
+          model: this.fptModel,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            {
+              role: 'user',
+              content: `Tìm thông tin sản phẩm: "${productDesc}"`,
+            },
+          ],
+          streaming: false,
+          temperature: 0.3,
+          max_tokens: 1000,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error(`[RAG] AI search error: ${response.status}`);
+        return null;
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content ?? '';
+
+      // Parse JSON response
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      const jsonStr = jsonMatch ? jsonMatch[0] : content;
+      const parsed = JSON.parse(jsonStr);
+
+      return {
+        name: parsed.name || productDesc,
+        description: parsed.description || productDesc,
+        sku: parsed.sku || this.generateSku(productDesc),
+        categoryName: parsed.categoryName || 'Tổng hợp',
+        categoryCode: parsed.categoryCode || 'MISC',
+        attributes: parsed.attributes || {},
+      };
+    } catch (error) {
+      console.error('[RAG] Error searching product from AI:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Find or create category
+   */
+  private async findOrCreateCategory(
+    categoryName: string,
+    categoryCode: string,
+    orgId: string,
+  ): Promise<{ id: string; name: string; code: string }> {
+    // Try to find existing category by name
+    const existingCategory = await this.prisma.productCategory.findFirst({
+      where: {
+        orgId,
+        OR: [
+          { name: { contains: categoryName, mode: 'insensitive' } },
+          { code: categoryCode },
+        ],
+      },
+    });
+
+    if (existingCategory) {
+      return existingCategory;
+    }
+
+    // Create new category
+    const newCategory = await this.prisma.productCategory.create({
+      data: {
+        name: categoryName,
+        code: categoryCode,
+        orgId,
+        isActive: true,
+      },
+    });
+
+    console.log(
+      `[RAG] Created new category: ${newCategory.name} (ID: ${newCategory.id})`,
+    );
+
+    return newCategory;
+  }
+
+  /**
+   * Create product from AI information
+   */
+  private async createProductFromAI(data: {
+    name: string;
+    description: string;
+    sku: string;
+    unitPriceRef: number;
+    categoryId: string;
+    orgId: string;
+    unit: string;
+    currency: CurrencyCode;
+    type: ProductType;
+    attributes?: Record<string, any>;
+  }) {
+    const createDto: CreateProductDto = {
+      name: data.name,
+      description: data.description,
+      sku: data.sku,
+      categoryId: data.categoryId,
+      orgId: data.orgId,
+      unit: data.unit,
+      unitPriceRef: data.unitPriceRef,
+      currency: data.currency,
+      type: data.type,
+      attributes: data.attributes,
+      isActive: true,
+    };
+
+    return this.productService.createProduct(createDto);
+  }
+
+  /**
+   * Generate SKU from product description
+   */
+  private generateSku(productDesc: string): string {
+    // Remove special characters and convert to uppercase
+    const cleanDesc = productDesc
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+      .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special chars
+      .toUpperCase()
+      .trim();
+
+    // Get first 3 words or less
+    const words = cleanDesc.split(/\s+/).slice(0, 3);
+
+    // Create SKU: first 3 letters of each word + random number
+    const prefix = words.map((w) => w.slice(0, 3)).join('-');
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+
+    return `${prefix}-${randomNum}`;
+  }
+
   private getPriceLimitByRole(role?: string): number {
     const limits: Record<string, number> = {
       REQUESTER: 10000000, // 10 triệu
@@ -203,6 +575,7 @@ export class RagPrGeneratorService {
     additionalProducts: any[] = [],
     priceLimit: number = 10000000,
     user?: any,
+    budgetAllocations: any[] = [],
   ): { context: string; allProducts: any[] } {
     const ragProducts = chunks.filter((c) => c.source_table === 'products');
     // Merge RAG products with additional DB products, avoid duplicates
@@ -268,6 +641,17 @@ ${
 ## COST CENTERS (Trung tâm chi phí hiện có):
 ${costCenters.map((c, i) => `${i + 1}. ${c.name} (ID: ${c.id}, Code: ${c.code})`).join('\n') || 'Không có cost center'}
 
+## BUDGET ALLOCATIONS (Ngân sách đã cấp phát theo danh mục - CHỈ được dùng các cost center có ngân sách phù hợp):
+${budgetAllocations.map((b, i) => {
+  const available = Number(b.allocatedAmount) - Number(b.spentAmount) - Number(b.committedAmount);
+  return `${i + 1}. Cost Center: ${b.costCenter?.name || 'N/A'} (${b.costCenter?.code || 'N/A'})
+   - Cost Center ID: ${b.costCenterId}
+   - Danh mục: ${b.category?.name || 'Ngân sách chung (không có danh mục)'}
+   - Category ID: ${b.categoryId || 'N/A'}
+   - Ngân sách còn lại: ${available.toLocaleString('vi-VN')} VND
+   - Kỳ ngân sách: ${b.budgetPeriod?.periodType || 'N/A'} ${b.budgetPeriod?.fiscalYear || ''} (P${b.budgetPeriod?.periodNumber || 'N/A'})`;
+}).join('\n') || 'Không có ngân sách nào được phân bổ'}
+
 ## USER INFO (Thông tin người tạo PR):
 - Role: ${user?.role || 'REQUESTER'}
 - Email: ${user?.email || 'N/A'}
@@ -306,7 +690,13 @@ ${costCenters.map((c, i) => `${i + 1}. ${c.name} (ID: ${c.id}, Code: ${c.code})`
    - Điều chỉnh số lượng xuống để phù hợp giới hạn
    - HOẶC đề xuất sản phẩm thay thế rẻ hơn
    - GIẢI THÍCH rõ trong reasoning tại sao phải điều chỉnh
-7. Gợi ý cost center phù hợp nếu có thể
+7. **QUAN TRỌNG - NGÂN SÁCH THEO DANH MỤC**:
+   - Trong BUDGET ALLOCATIONS có liệt kê ngân sách theo từng Cost Center + Danh mục
+   - PHẢI chọn Cost Center có ngân sách phù hợp với danh mục sản phẩm
+   - Ví dụ: Mua laptop (IT) → Chọn Cost Center có BUDGET ALLOCATION với danh mục IT
+   - Nếu không có ngân sách cho danh mục cụ thể, chọn Cost Center có "Ngân sách chung"
+   - Kiểm tra "Ngân sách còn lại" để đảm bảo đủ cho PR này
+   - Trả về suggestedCostCenterId và suggestedCostCenterName từ BUDGET ALLOCATIONS
 
 ## VÍ DỤ MAP:
 - User yêu cầu "bút" → Tìm sản phẩm có "bút" trong tên trong context

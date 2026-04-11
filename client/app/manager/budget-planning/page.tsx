@@ -162,18 +162,17 @@ export default function BudgetPlanningPage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
-            <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <header className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
                 <div>
-                    <h1 className="text-2xl font-black tracking-tight text-erp-navy mb-2 uppercase">LẬP NGÂN SÁCH PHÒNG BAN</h1>
-                    <p className="text-slate-500 font-medium italic">Phân bổ ngân sách chi tiết và gửi phê duyệt</p>
+                    <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase">LẬP NGÂN SÁCH PHÒNG BAN</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-medium italic">CẤU HÌNH PHÂN BỔ NGÂN SÁCH CHI TIẾT</p>
                 </div>
-                
-                <button 
+
+                <button
                     onClick={() => setShowModal(true)}
-                    className="flex items-center gap-3 bg-[#3B82F6] text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-[#3B82F6]/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="flex items-center gap-2 bg-[#3B82F6] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#3B82F6]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
-                    <Plus size={18} />
-                    <span>Tạo phân bổ ngân sách mới</span>
+                    <Plus size={18} /> Thêm Phân Bổ
                 </button>
             </header>
 
@@ -275,31 +274,31 @@ export default function BudgetPlanningPage() {
             {/* Create Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-[#0F1117]/80 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto pt-20 pb-20">
-                    <div className="bg-[#161922] rounded-[3rem] w-full max-w-3xl p-12 shadow-2xl border border-[rgba(148,163,184,0.1)] relative animate-in zoom-in-95 duration-200">
-                        <button onClick={() => setShowModal(false)} className="absolute top-10 right-10 text-[#64748B] hover:text-[#F8FAFC] transition-colors">
-                            <X size={28} />
+                    <div className="bg-[#161922] rounded-[2.5rem] w-full max-w-3xl p-8 shadow-2xl border border-[rgba(148,163,184,0.1)] relative animate-in zoom-in-95 duration-200">
+                        <button onClick={() => setShowModal(false)} className="absolute top-8 right-8 text-[#64748B] hover:text-[#F8FAFC] transition-colors">
+                            <X size={24} />
                         </button>
-                        
-                        <div className="mb-12">
-                            <div className="h-20 w-20 bg-[#3B82F6]/10 rounded-[2rem] flex items-center justify-center mb-6 border border-[#3B82F6]/20 shadow-xl shadow-[#3B82F6]/10">
-                                <Calculator size={40} className="text-[#3B82F6]" />
+
+                        <div className="mb-10">
+                            <div className="h-16 w-16 bg-[#3B82F6]/10 rounded-[1.5rem] flex items-center justify-center mb-5 border border-[#3B82F6]/20 shadow-lg shadow-[#3B82F6]/10">
+                                <Calculator size={32} className="text-[#3B82F6]" />
                             </div>
-                            <h2 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase leading-none mb-2">TẠO NGÂN SÁCH MỚI</h2>
+                            <h2 className="text-3xl font-black text-[#F8FAFC] tracking-tight uppercase leading-none mb-2">TẠO NGÂN SÁCH MỚI</h2>
                             <p className="text-[#64748B] font-bold uppercase tracking-widest text-[10px]">
                                 Phòng ban: {currentUser?.department && typeof currentUser.department !== "string" ? currentUser.department.name : currentUser?.deptId}
                             </p>
                         </div>
 
-                        <form onSubmit={(e) => handleSubmit(e, "SUBMIT")} className="space-y-10">
-                            <div className="grid grid-cols-2 gap-10">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] ml-6">Chu kỳ ngân sách</label>
+                        <form onSubmit={(e) => handleSubmit(e, "SUBMIT")} className="space-y-6">
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] ml-4">Chu kỳ ngân sách</label>
                                     <div className="relative group">
-                                        <Calendar size={20} className="absolute left-8 top-1/2 -translate-y-1/2 text-[#64748B] group-hover:text-[#3B82F6] transition-colors" />
-                                        <select 
+                                        <Calendar size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-[#64748B] group-hover:text-[#3B82F6] transition-colors" />
+                                        <select
                                             value={formData.budgetPeriodId}
                                             onChange={(e) => setFormData({...formData, budgetPeriodId: e.target.value})}
-                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-[2rem] py-6 pl-20 pr-8 text-sm font-bold text-[#F8FAFC] outline-none transition-all focus:border-[#3B82F6]/30 focus:bg-[#161922] appearance-none"
+                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-[1.5rem] py-4 pl-14 pr-6 text-sm font-bold text-[#F8FAFC] outline-none transition-all focus:border-[#3B82F6]/30 focus:bg-[#161922] appearance-none"
                                         >
                                             <option value="">Chọn chu kỳ...</option>
                                             {budgetPeriods.map(p => (
@@ -309,14 +308,14 @@ export default function BudgetPlanningPage() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] ml-6">Trung tâm chi phí (CC)</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] ml-4">Trung tâm chi phí (CC)</label>
                                     <div className="relative group">
-                                        <Layers size={20} className="absolute left-8 top-1/2 -translate-y-1/2 text-[#64748B] group-hover:text-[#3B82F6] transition-colors" />
-                                        <select 
+                                        <Layers size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-[#64748B] group-hover:text-[#3B82F6] transition-colors" />
+                                        <select
                                             value={formData.costCenterId}
                                             onChange={(e) => setFormData({...formData, costCenterId: e.target.value})}
-                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-[2rem] py-6 pl-20 pr-8 text-sm font-bold text-[#F8FAFC] outline-none transition-all focus:border-[#3B82F6]/30 focus:bg-[#161922] appearance-none"
+                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-[1.5rem] py-4 pl-14 pr-6 text-sm font-bold text-[#F8FAFC] outline-none transition-all focus:border-[#3B82F6]/30 focus:bg-[#161922] appearance-none"
                                         >
                                             <option value="">Chọn Cost Center...</option>
                                             {filteredCostCenters.map(cc => (
@@ -327,30 +326,30 @@ export default function BudgetPlanningPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-10">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] ml-6">Số tiền phân bổ (VNĐ)</label>
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] ml-4">Số tiền phân bổ (VNĐ)</label>
                                     <div className="relative group">
-                                        <DollarSign size={20} className="absolute left-8 top-1/2 -translate-y-1/2 text-[#64748B] group-hover:text-[#3B82F6] transition-colors" />
-                                        <input 
+                                        <DollarSign size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-[#64748B] group-hover:text-[#3B82F6] transition-colors" />
+                                        <input
                                             type="text"
                                             value={formData.allocatedAmount}
                                             onChange={(e) => setFormData({...formData, allocatedAmount: e.target.value.replace(/\D/g, "")})}
                                             onBlur={(e) => setFormData({...formData, allocatedAmount: formatVND(parseMoney(e.target.value)).replace(" ₫", "").trim()})}
-                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-[2rem] py-6 pl-20 pr-8 text-3xl font-black text-[#F8FAFC] outline-none transition-all focus:border-[#3B82F6]/30 focus:bg-[#161922]"
+                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-[1.5rem] py-4 pl-14 pr-6 text-2xl font-black text-[#F8FAFC] outline-none transition-all focus:border-[#3B82F6]/30 focus:bg-[#161922]"
                                             placeholder="0"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] ml-6">Hạng mục ngân sách (Category)</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] ml-4">Hạng mục ngân sách (Category)</label>
                                     <div className="relative group">
-                                        <PieChart size={20} className="absolute left-8 top-1/2 -translate-y-1/2 text-[#64748B] group-hover:text-[#3B82F6] transition-colors" />
-                                        <select 
+                                        <PieChart size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-[#64748B] group-hover:text-[#3B82F6] transition-colors" />
+                                        <select
                                             value={formData.categoryId}
                                             onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
-                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-[2rem] py-6 pl-20 pr-8 text-sm font-bold text-[#F8FAFC] outline-none transition-all focus:border-[#3B82F6]/30 focus:bg-[#161922] appearance-none"
+                                            className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-[1.5rem] py-4 pl-14 pr-6 text-sm font-bold text-[#F8FAFC] outline-none transition-all focus:border-[#3B82F6]/30 focus:bg-[#161922] appearance-none"
                                         >
                                             <option value="">Ngân sách chung</option>
                                             {categories.map(c => (
@@ -361,35 +360,35 @@ export default function BudgetPlanningPage() {
                                 </div>
                             </div>
 
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] ml-6">Mục đích sử dụng / Ghi chú</label>
-                                <textarea 
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] ml-4">Mục đích sử dụng / Ghi chú</label>
+                                <textarea
                                     value={formData.notes}
                                     onChange={(e) => setFormData({...formData, notes: e.target.value})}
                                     placeholder="Giải trình chi tiết về nhu cầu ngân sách này..."
-                                    className="w-full h-32 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-[2rem] p-8 text-sm font-bold text-[#F8FAFC] outline-none transition-all focus:border-[#3B82F6]/30 focus:bg-[#161922] resize-none placeholder:text-[#64748B]"
+                                    className="w-full h-28 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-[1.5rem] p-6 text-sm font-bold text-[#F8FAFC] outline-none transition-all focus:border-[#3B82F6]/30 focus:bg-[#161922] resize-none placeholder:text-[#64748B]"
                                 />
                             </div>
 
-                            <div className="flex gap-6 pt-6">
-                                <button 
+                            <div className="flex gap-4 pt-4">
+                                <button
                                     type="button"
                                     onClick={(e) => handleSubmit(e, "DRAFT")}
-                                    className="flex-1 py-6 rounded-[2rem] border border-[rgba(148,163,184,0.1)] text-[#64748B] font-black uppercase tracking-widest text-[11px] hover:bg-[#161922] transition-all flex items-center justify-center gap-4 active:scale-95"
+                                    className="flex-1 py-4 rounded-[20px] border border-[rgba(148,163,184,0.1)] text-[#64748B] font-black uppercase tracking-widest text-[11px] hover:bg-[#161922] transition-all flex items-center justify-center gap-3 active:scale-95"
                                 >
-                                    <Save size={20} />
+                                    <Save size={18} />
                                     Lưu bản nháp
                                 </button>
-                                <button 
+                                <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="flex-[2] py-6 rounded-[2rem] bg-[#3B82F6] text-white font-black uppercase tracking-widest text-xs shadow-2xl shadow-[#3B82F6]/20 hover:-translate-y-1 transition-all flex items-center justify-center gap-4 active:scale-95 disabled:opacity-50"
+                                    className="flex-[2] py-4 rounded-[20px] bg-[#3B82F6] text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-[#3B82F6]/20 hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
                                 >
                                     {isSubmitting ? (
-                                        <Loader2 size={24} className="animate-spin" />
+                                        <Loader2 size={20} className="animate-spin" />
                                     ) : (
                                         <>
-                                            <Send size={20} />
+                                            <Send size={18} />
                                             Gửi phê duyệt
                                         </>
                                     )}

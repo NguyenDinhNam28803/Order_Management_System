@@ -7,9 +7,10 @@ import { RagIngestService } from './rag-ingest.service';
 import { RagQueryService } from './rag-query.service';
 import { RagSyncProcessor, RAG_SYNC_QUEUE } from './rag-sync.processor';
 import { RagPrGeneratorService } from './rag-pr-generator.service';
+import { ProductModuleModule } from '../product-module/product-module.module';
 
 @Module({
-  imports: [BullModule.registerQueue({ name: RAG_SYNC_QUEUE }), ConfigModule],
+  imports: [BullModule.registerQueue({ name: RAG_SYNC_QUEUE }), ConfigModule, ProductModuleModule],
   controllers: [RagController],
   providers: [
     EmbeddingService,

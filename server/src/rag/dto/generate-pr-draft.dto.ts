@@ -22,18 +22,17 @@ export class GeneratePrDraftDto {
 
 export interface PrDraftItem {
   lineNumber: number;
-  productId?: string;
+  productId?: string | null;
   productDesc: string;
-  sku?: string;
-  categoryId?: string;
-  categoryName?: string;
+  sku?: string | null;
+  categoryId?: string | null;
   qty: number;
   unit: string;
   estimatedPrice: number;
   currency: string;
-  specNote?: string;
-  preferredSupplierId?: string;
-  preferredSupplierName?: string;
+  specNote?: string | null;
+  preferredSupplierId?: string | null;
+  preferredSupplierName?: string | null;
 }
 
 export interface PrDraftResponse {

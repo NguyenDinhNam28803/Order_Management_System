@@ -154,6 +154,54 @@ export class RfqRepository {
     data: CreateQuotationDto,
     quotationNumber: string,
   ) {
+    // Check if quotation already exists for this rfq + supplier
+    const existingQuotation = await this.prisma.rfqQuotation.findUnique({
+      where: {
+        rfqId_supplierId: {
+          rfqId,
+          supplierId,
+        },
+      },
+      include: { items: true },
+    });
+
+    if (existingQuotation) {
+      // Update existing quotation: delete old items and create new ones
+      return this.prisma.$transaction(async (tx) => {
+        // Delete old items
+        await tx.rfqQuotationItem.deleteMany({
+          where: { quotationId: existingQuotation.id },
+        });
+
+        // Update quotation with new data
+        return tx.rfqQuotation.update({
+          where: { id: existingQuotation.id },
+          data: {
+            totalPrice: data.totalPrice,
+            currency: data.currency || 'VND',
+            leadTimeDays: data.leadTimeDays,
+            paymentTerms: data.paymentTerms,
+            deliveryTerms: data.deliveryTerms,
+            validityDays: data.validityDays || 30,
+            notes: data.notes,
+            status: 'DRAFT',
+            items: {
+              create: data.items.map((item: QuotationItemDto) => ({
+                rfqItemId: item.rfqItemId,
+                unitPrice: item.unitPrice,
+                qtyOffered: item.qtyOffered,
+                discountPct: item.discountPct || 0,
+                leadTimeDays: item.leadTimeDays,
+                notes: item.notes,
+              })),
+            },
+          },
+          include: { items: true, rfq: true },
+        });
+      });
+    }
+
+    // Create new quotation
     return this.prisma.rfqQuotation.create({
       data: {
         quotationNumber,
