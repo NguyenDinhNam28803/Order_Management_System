@@ -36,14 +36,22 @@ export default function PRPage() {
         console.log("currentUser role:", currentUser?.role);
         console.log("activeTab:", activeTab);
         
-        if (!prs || !myPrs) {
-            console.log("Returning empty - prs or myPrs is null/undefined");
-            return [];
-        }
-        
         const userRole = currentUser?.role;
         const isProcOrAdmin = userRole === "PROCUREMENT" || userRole === "PLATFORM_ADMIN";
         console.log("isProcOrAdmin:", isProcOrAdmin);
+
+        // Check only the data source we actually need based on user role
+        if (isProcOrAdmin) {
+            if (!prs) {
+                console.log("Returning empty - prs is null/undefined for admin/procurement user");
+                return [];
+            }
+        } else {
+            if (!myPrs) {
+                console.log("Returning empty - myPrs is null/undefined for regular user");
+                return [];
+            }
+        }
 
         if (activeTab === "Phê duyệt") {
             const pendingPrIds = (approvals || []).map((a: ApprovalWorkflow) => a.documentId);
@@ -52,7 +60,7 @@ export default function PRPage() {
             return result;
         }
         
-        const pool = isProcOrAdmin ? prs : myPrs;
+        const pool = prs;
         console.log("Pool size:", pool.length);
         console.log("Pool statuses:", pool.map((p: PR) => p.status));
         
