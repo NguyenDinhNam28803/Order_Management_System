@@ -2,10 +2,11 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { 
-    Sparkles, Send, X, Loader2, Bot, ExternalLink, FileText, 
-    Database, Table2, BarChart3, User, Building2, Package, 
-    ShoppingCart, Receipt, CreditCard, FileCheck, AlertCircle,
-    MessageSquare, Wallet, TrendingUp, Users, Settings, Clock
+    Sparkles, Send, X, Loader2, Bot, FileText, Lock,
+    Database, BarChart3, FileCheck, AlertCircle,
+    MessageSquare, Wallet, TrendingUp, Users, Settings, Clock,
+    LayoutGrid, Receipt, CreditCard, Package, ShoppingCart,
+    Building2, User, Table2
 } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 
@@ -18,88 +19,76 @@ type UserRole = "REQUESTER" | "APPROVER" | "ACCOUNTANT" | "VENDOR" | "ADMIN" | "
 
 const ROLE_SUGGESTIONS: Record<string, SuggestionItem[]> = {
     REQUESTER: [
-        { text: "Tổng ngân sách còn được sử dụng", icon: <Wallet size={12} /> },
-        { text: "Trạng thái PR của tôi", icon: <FileText size={12} /> },
-        { text: "Các hóa đơn chưa thanh toán", icon: <Receipt size={12} /> },
-        { text: "KPI chi tiêu năm nay", icon: <TrendingUp size={12} /> },
-        { text: "Lịch sử yêu cầu mua hàng", icon: <Clock size={12} /> },
+        { text: "PR đang chờ phê duyệt của tôi", icon: <FileCheck size={16} /> },
+        { text: "Ngân sách Q2 còn lại bao nhiêu?", icon: <Wallet size={16} /> },
+        { text: "Hóa đơn quá hạn thanh toán", icon: <AlertCircle size={16} /> },
+        { text: "Top nhà cung cấp tháng này", icon: <TrendingUp size={16} /> },
     ],
     APPROVER: [
-        { text: "PR đang chờ phê duyệt của tôi", icon: <FileCheck size={12} /> },
-        { text: "Tổng giá trị PR cần duyệt", icon: <Wallet size={12} /> },
-        { text: "Top 3 nhà cung cấp theo chi phí", icon: <BarChart3 size={12} /> },
-        { text: "Các yêu cầu quá hạn", icon: <AlertCircle size={12} /> },
-        { text: "Lịch sử phê duyệt gần đây", icon: <Clock size={12} /> },
+        { text: "PR đang chờ phê duyệt của tôi", icon: <FileCheck size={16} /> },
+        { text: "Ngân sách Q2 còn lại bao nhiêu?", icon: <Wallet size={16} /> },
+        { text: "Hóa đơn quá hạn thanh toán", icon: <AlertCircle size={16} /> },
+        { text: "Top nhà cung cấp tháng này", icon: <TrendingUp size={16} /> },
     ],
     DEPT_APPROVER: [
-        { text: "PR đang chờ phê duyệt của tôi", icon: <FileCheck size={12} /> },
-        { text: "Tổng giá trị PR cần duyệt", icon: <Wallet size={12} /> },
-        { text: "Top 3 nhà cung cấp theo chi phí", icon: <BarChart3 size={12} /> },
-        { text: "Các yêu cầu quá hạn", icon: <AlertCircle size={12} /> },
-        { text: "Lịch sử phê duyệt gần đây", icon: <Clock size={12} /> },
+        { text: "PR đang chờ phê duyệt của tôi", icon: <FileCheck size={16} /> },
+        { text: "Ngân sách Q2 còn lại bao nhiêu?", icon: <Wallet size={16} /> },
+        { text: "Hóa đơn quá hạn thanh toán", icon: <AlertCircle size={16} /> },
+        { text: "Top nhà cung cấp tháng này", icon: <TrendingUp size={16} /> },
     ],
     DIRECTOR: [
-        { text: "PR đang chờ phê duyệt cấp cao", icon: <FileCheck size={12} /> },
-        { text: "Tổng giá trị cần phê duyệt", icon: <Wallet size={12} /> },
-        { text: "Báo cáo chi tiêu toàn công ty", icon: <BarChart3 size={12} /> },
-        { text: "Top nhà cung cấp chiến lược", icon: <TrendingUp size={12} /> },
-        { text: "Các hợp đồng sắp hết hạn", icon: <Clock size={12} /> },
+        { text: "PR đang chờ phê duyệt cấp cao", icon: <FileCheck size={16} /> },
+        { text: "Ngân sách Q2 còn lại bao nhiêu?", icon: <Wallet size={16} /> },
+        { text: "Hóa đơn quá hạn thanh toán", icon: <AlertCircle size={16} /> },
+        { text: "Top nhà cung cấp tháng này", icon: <TrendingUp size={16} /> },
     ],
     CEO: [
-        { text: "Tổng quan chi phí toàn hệ thống", icon: <Wallet size={12} /> },
-        { text: "Báo cáo chi tiêu theo quý", icon: <BarChart3 size={12} /> },
-        { text: "Top nhà cung cấp chiến lược", icon: <TrendingUp size={12} /> },
-        { text: "Các hợp đồng lớn sắp hết hạn", icon: <Clock size={12} /> },
-        { text: "Tỷ lệ tiết kiệm chi phí", icon: <TrendingUp size={12} /> },
+        { text: "Tổng quan chi phí toàn hệ thống", icon: <Wallet size={16} /> },
+        { text: "Ngân sách Q2 còn lại bao nhiêu?", icon: <Wallet size={16} /> },
+        { text: "Hóa đơn quá hạn thanh toán", icon: <AlertCircle size={16} /> },
+        { text: "Top nhà cung cấp tháng này", icon: <TrendingUp size={16} /> },
     ],
     ACCOUNTANT: [
-        { text: "Các hóa đơn chưa ghi nhận", icon: <Receipt size={12} /> },
-        { text: "Khoảng cách giữa PO và Invoice", icon: <FileText size={12} /> },
-        { text: "Tổng chi phí phát sinh tháng này", icon: <Wallet size={12} /> },
-        { text: "Báo cáo chi tiêu theo phòng ban", icon: <BarChart3 size={12} /> },
-        { text: "Các khoản thanh toán sắp đến hạn", icon: <Clock size={12} /> },
+        { text: "Các hóa đơn chưa ghi nhận", icon: <Receipt size={16} /> },
+        { text: "Ngân sách Q2 còn lại bao nhiêu?", icon: <Wallet size={16} /> },
+        { text: "Hóa đơn quá hạn thanh toán", icon: <AlertCircle size={16} /> },
+        { text: "Top nhà cung cấp tháng này", icon: <TrendingUp size={16} /> },
     ],
     FINANCE: [
-        { text: "Các hóa đơn chưa ghi nhận", icon: <Receipt size={12} /> },
-        { text: "Khoảng cách giữa PO và Invoice", icon: <FileText size={12} /> },
-        { text: "Tổng chi phí phát sinh tháng này", icon: <Wallet size={12} /> },
-        { text: "Báo cáo chi tiêu theo phòng ban", icon: <BarChart3 size={12} /> },
-        { text: "Các khoản thanh toán sắp đến hạn", icon: <Clock size={12} /> },
+        { text: "Các hóa đơn chưa ghi nhận", icon: <Receipt size={16} /> },
+        { text: "Ngân sách Q2 còn lại bao nhiêu?", icon: <Wallet size={16} /> },
+        { text: "Hóa đơn quá hạn thanh toán", icon: <AlertCircle size={16} /> },
+        { text: "Top nhà cung cấp tháng này", icon: <TrendingUp size={16} /> },
     ],
     VENDOR: [
-        { text: "Các đơn hàng của tôi", icon: <ShoppingCart size={12} /> },
-        { text: "Trạng thái thanh toán", icon: <CreditCard size={12} /> },
-        { text: "Lịch sử giao dịch", icon: <Clock size={12} /> },
-        { text: "Tỷ lệ thanh toán đúng hạn", icon: <TrendingUp size={12} /> },
-        { text: "Đánh giá KPI của tôi", icon: <BarChart3 size={12} /> },
+        { text: "Các đơn hàng của tôi", icon: <ShoppingCart size={16} /> },
+        { text: "Trạng thái thanh toán", icon: <CreditCard size={16} /> },
+        { text: "Lịch sử giao dịch", icon: <Clock size={16} /> },
+        { text: "Đánh giá KPI của tôi", icon: <BarChart3 size={16} /> },
     ],
     SUPPLIER: [
-        { text: "Các đơn hàng của tôi", icon: <ShoppingCart size={12} /> },
-        { text: "Trạng thái thanh toán", icon: <CreditCard size={12} /> },
-        { text: "Lịch sử giao dịch", icon: <Clock size={12} /> },
-        { text: "Tỷ lệ thanh toán đúng hạn", icon: <TrendingUp size={12} /> },
-        { text: "Đánh giá KPI của tôi", icon: <BarChart3 size={12} /> },
+        { text: "Các đơn hàng của tôi", icon: <ShoppingCart size={16} /> },
+        { text: "Trạng thái thanh toán", icon: <CreditCard size={16} /> },
+        { text: "Lịch sử giao dịch", icon: <Clock size={16} /> },
+        { text: "Đánh giá KPI của tôi", icon: <BarChart3 size={16} /> },
     ],
     ADMIN: [
-        { text: "Tổng số user/vendor", icon: <Users size={12} /> },
-        { text: "Chi phí toàn hệ thống", icon: <Wallet size={12} /> },
-        { text: "Các PR bất thường", icon: <AlertCircle size={12} /> },
-        { text: "Cấu hình hệ thống", icon: <Settings size={12} /> },
-        { text: "Báo cáo hiệu suất hệ thống", icon: <BarChart3 size={12} /> },
+        { text: "Tổng số user/vendor", icon: <Users size={16} /> },
+        { text: "Ngân sách Q2 còn lại bao nhiêu?", icon: <Wallet size={16} /> },
+        { text: "Hóa đơn quá hạn thanh toán", icon: <AlertCircle size={16} /> },
+        { text: "Top nhà cung cấp tháng này", icon: <TrendingUp size={16} /> },
     ],
     PROCUREMENT: [
-        { text: "RFQ đang chờ báo giá", icon: <MessageSquare size={12} /> },
-        { text: "Top nhà cung cấp theo KPI", icon: <BarChart3 size={12} /> },
-        { text: "Các PO sắp đến hạn giao", icon: <Clock size={12} /> },
-        { text: "Tổng giá trị đơn hàng tháng này", icon: <Wallet size={12} /> },
-        { text: "Nhà cung cấp tiềm năng mới", icon: <TrendingUp size={12} /> },
+        { text: "RFQ đang chờ báo giá", icon: <MessageSquare size={16} /> },
+        { text: "Ngân sách Q2 còn lại bao nhiêu?", icon: <Wallet size={16} /> },
+        { text: "Hóa đơn quá hạn thanh toán", icon: <AlertCircle size={16} /> },
+        { text: "Top nhà cung cấp tháng này", icon: <TrendingUp size={16} /> },
     ],
     DEFAULT: [
-        { text: "Tổng ngân sách IT năm 2026 còn bao nhiêu?", icon: <Table2 size={12} /> },
-        { text: "Top 3 nhà cung cấp có điểm KPI cao nhất", icon: <BarChart3 size={12} /> },
-        { text: "Trạng thái PR số PR-2026-0001", icon: <FileText size={12} /> },
-        { text: "Các hóa đơn đang chờ thanh toán", icon: <Receipt size={12} /> },
-        { text: "Số lượng hàng tồn kho đã nhập tháng này", icon: <Package size={12} /> },
+        { text: "PR đang chờ phê duyệt của tôi", icon: <FileCheck size={16} /> },
+        { text: "Ngân sách Q2 còn lại bao nhiêu?", icon: <Wallet size={16} /> },
+        { text: "Hóa đơn quá hạn thanh toán", icon: <AlertCircle size={16} /> },
+        { text: "Top nhà cung cấp tháng này", icon: <TrendingUp size={16} /> },
     ],
 };
 
@@ -273,65 +262,65 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
 
 
     return (
-        <div className="fixed inset-0 z-[100] bg-[#0F1117]/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-            <div className="bg-[#161922] w-full max-w-4xl max-h-[85vh] rounded-3xl shadow-2xl flex flex-col border border-[rgba(148,163,184,0.1)] overflow-hidden animate-in zoom-in-95 duration-300" style={{ margin: 'auto' }}>
-                {/* Header */}
-                <div className="p-5 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#161922]">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] p-2.5 rounded-xl text-white shadow-lg shadow-[#3B82F6]/20">
-                            <Bot size={22} />
-                        </div>
-                        <div>
-                            <h2 className="text-sm font-bold text-[#F8FAFC]">AI Procurement Assistant</h2>
-                            <div className="flex items-center gap-2">
-                                <p className="text-[10px] text-[#64748B] flex items-center gap-1">
-                                    <Database size={10} /> RAG • 20 bảng • Vector Search
-                                </p>
-                                <span className="text-[9px] px-2 py-0.5 bg-[#3B82F6]/20 text-[#3B82F6] rounded-full border border-[#3B82F6]/30 font-medium">
-                                    {roleDisplayNames[userRole] || userRole}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <button 
-                        onClick={onClose}
-                        className="p-2 text-[#64748B] hover:text-[#F8FAFC] hover:bg-[#0F1117] rounded-xl transition-all"
-                    >
-                        <X size={20} />
-                    </button>
+        <div className="fixed inset-0 z-[100] bg-[#0F1117] flex flex-col animate-in fade-in duration-300" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+            {/* Header */}
+            <div className="px-6 py-4 flex items-center gap-3 bg-[#0F1117]">
+                <div className="w-10 h-10 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
+                    <Lock size={20} className="text-[#60A5FA]" />
                 </div>
+                <div className="flex-1">
+                    <h2 className="text-base font-semibold text-[#F8FAFC]">AI Procurement Assistant</h2>
+                    <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[11px] px-2 py-0.5 bg-[#1E3A5F]/50 text-[#60A5FA] rounded-full">
+                            RAG • Vector Search
+                        </span>
+                        <span className="text-[11px] px-2 py-0.5 bg-[#1E3A5F]/50 text-[#60A5FA] rounded-full">
+                            20 bảng dữ liệu
+                        </span>
+                        <span className="text-[11px] px-2 py-0.5 bg-[#065F46]/50 text-[#34D399] rounded-full">
+                            {roleDisplayNames[userRole] || userRole}
+                        </span>
+                    </div>
+                </div>
+                <button 
+                    onClick={onClose}
+                    className="w-8 h-8 flex items-center justify-center text-[#64748B] hover:text-[#F8FAFC] hover:bg-[#1E293B] rounded-lg transition-all"
+                >
+                    <X size={18} />
+                </button>
+            </div>
 
                 {/* Chat Area */}
-                <div className="flex-1 overflow-y-auto p-6 bg-[#0F1117] custom-scrollbar">
-                    {isLoading ? (
-                        <div className="flex flex-col items-center justify-center h-full gap-5">
-                            <div className="relative">
-                                <div className="w-16 h-16 border-4 border-[#3B82F6]/20 border-t-[#3B82F6] rounded-full animate-spin" />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <Sparkles size={20} className="text-[#3B82F6] animate-pulse" />
-                                </div>
-                            </div>
-                            <div className="text-center space-y-2">
-                                <p className="text-sm font-bold text-[#64748B] uppercase tracking-widest animate-pulse">
-                                    Đang truy vấn Vector Database...
-                                </p>
-                                <p className="text-[10px] text-[#64748B]/70">Embedding → Similarity Search → LLM Generation</p>
+            <div className="flex-1 overflow-y-auto px-6 py-8 bg-[#0F1117] custom-scrollbar">
+                {isLoading ? (
+                    <div className="flex flex-col items-center justify-center h-full gap-5">
+                        <div className="relative">
+                            <div className="w-16 h-16 border-4 border-[#3B82F6]/20 border-t-[#3B82F6] rounded-full animate-spin" />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <Sparkles size={20} className="text-[#3B82F6] animate-pulse" />
                             </div>
                         </div>
-                    ) : aiResponse ? (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            {/* Answer Summary Section */}
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-2 text-[#3B82F6]">
-                                    <Sparkles size={14} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Tóm tắt từ AI</span>
-                                </div>
-                                <div className="bg-[#161922] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl">
-                                    <div className="text-sm text-[#94A3B8] leading-relaxed font-medium whitespace-pre-wrap">
-                                        {formatAnswer(aiResponse?.data?.answer?.summary)}
-                                    </div>
+                        <div className="text-center space-y-2">
+                            <p className="text-sm font-bold text-[#64748B] uppercase tracking-widest animate-pulse">
+                                Đang truy vấn Vector Database...
+                            </p>
+                            <p className="text-[10px] text-[#64748B]/70">Embedding → Similarity Search → LLM Generation</p>
+                        </div>
+                    </div>
+                ) : aiResponse ? (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl mx-auto">
+                        {/* Answer Summary Section */}
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-[#3B82F6]">
+                                <Sparkles size={14} />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Tóm tắt từ AI</span>
+                            </div>
+                            <div className="bg-[#161922] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl">
+                                <div className="text-sm text-[#94A3B8] leading-relaxed font-medium whitespace-pre-wrap">
+                                    {formatAnswer(aiResponse?.data?.answer?.summary)}
                                 </div>
                             </div>
+                        </div>
 
                             {/* Detailed Data Section - Show meaningful details only */}
                             {aiResponse?.data?.answer?.data && aiResponse.data.answer.data.length > 0 && (
@@ -451,71 +440,95 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
                             )}
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col justify-center">
-                            <div className="text-center mb-8">
-                                <div className="w-20 h-20 bg-gradient-to-br from-[#3B82F6]/20 to-[#8B5CF6]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#3B82F6]/20">
-                                    <Bot size={36} className="text-[#3B82F6]" />
-                                </div>
-                                <h3 className="text-lg font-bold text-[#F8FAFC] mb-2">Hỏi AI về dữ liệu của bạn</h3>
-                                <p className="text-xs text-[#64748B] max-w-md mx-auto">
-                                    Xin chào {roleDisplayNames[userRole] || userRole}! AI sẽ tìm kiếm qua 20 bảng dữ liệu để trả lời câu hỏi phù hợp với vai trò của bạn.
-                                </p>
+                    <div className="max-w-3xl mx-auto w-full">
+                        {/* Center Icon and Welcome */}
+                        <div className="text-center mb-8">
+                            <div className="w-16 h-16 bg-[#1E3A5F] rounded-2xl flex items-center justify-center mx-auto mb-5">
+                                <LayoutGrid size={32} className="text-[#60A5FA]" />
                             </div>
-                            
-                            <div className="grid grid-cols-1 gap-3 max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-2 duration-500">
+                            <h3 className="text-xl font-semibold text-[#F8FAFC] mb-2">
+                                Xin chào, {roleDisplayNames[userRole] || userRole} {currentUser?.name?.split(' ').pop() || ''}
+                            </h3>
+                            <p className="text-sm text-[#94A3B8] max-w-md mx-auto">
+                                Hỏi bất cứ điều gì về đơn hàng, ngân sách, nhà cung cấp hoặc trạng thái phê duyệt của bạn.
+                            </p>
+                        </div>
+
+                        {/* Stats Cards */}
+                        <div className="grid grid-cols-3 gap-4 mb-8">
+                            <div className="bg-[#161922] border border-[#1E293B] rounded-2xl p-4 text-center">
+                                <div className="text-2xl font-bold text-[#F59E0B] mb-1">3</div>
+                                <div className="text-xs text-[#64748B]">PR chờ duyệt</div>
+                            </div>
+                            <div className="bg-[#161922] border border-[#1E293B] rounded-2xl p-4 text-center">
+                                <div className="text-2xl font-bold text-[#EF4444] mb-1">2</div>
+                                <div className="text-xs text-[#64748B]">Hóa đơn quá hạn</div>
+                            </div>
+                            <div className="bg-[#161922] border border-[#1E293B] rounded-2xl p-4 text-center">
+                                <div className="text-2xl font-bold text-[#10B981] mb-1">87%</div>
+                                <div className="text-xs text-[#64748B]">Ngân sách còn lại</div>
+                            </div>
+                        </div>
+                        
+                        {/* Suggestions */}
+                        <div className="mb-3">
+                            <p className="text-xs text-[#64748B] uppercase tracking-wider mb-3">GỢI Ý CÂU HỎI</p>
+                            <div className="grid grid-cols-2 gap-3">
                                 {roleSuggestions.map((item: SuggestionItem, index: number) => (
                                     <button 
                                         key={item.text}
                                         onClick={() => setSearchQuery(item.text)}
-                                        className="flex items-center gap-3 p-4 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm text-[#94A3B8] hover:border-[#3B82F6]/50 hover:bg-[#1A1D23] hover:text-[#F8FAFC] transition-all text-left group shadow-sm"
-                                        style={{ animationDelay: `${index * 100}ms` }}
+                                        className="flex items-start gap-3 p-4 bg-[#161922] border border-[#1E293B] rounded-xl text-sm text-[#94A3B8] hover:border-[#3B82F6]/50 hover:bg-[#1E293B] transition-all text-left group"
                                     >
-                                        <span className="text-[#64748B] group-hover:text-[#3B82F6] transition-colors">
+                                        <span className="text-[#60A5FA] mt-0.5">
                                             {item.icon}
                                         </span>
-                                        {item.text}
+                                        <span className="leading-tight">{item.text}</span>
                                     </button>
                                 ))}
                             </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
+            </div>
 
-                {/* Input Area */}
-                <form onSubmit={handleAIsolve} className="p-5 border-t border-[rgba(148,163,184,0.1)] bg-[#161922]">
+            {/* Input Area */}
+            <div className="px-6 py-4 bg-[#0F1117]">
+                <form onSubmit={handleAIsolve} className="max-w-3xl mx-auto">
                     <div className="flex items-center gap-3">
                         <div className="flex-1 relative">
                             <input 
                                 ref={inputRef}
                                 type="text" 
-                                placeholder="Nhập câu hỏi về ngân sách, PO, hóa đơn, nhà cung cấp..."
-                                className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.2)] rounded-xl px-4 py-3.5 text-sm text-[#F8FAFC] placeholder:text-[#64748B]/60 focus:outline-none focus:border-[#3B82F6]/50 focus:ring-2 focus:ring-[#3B82F6]/10 transition-all"
+                                placeholder="Hỏi về ngân sách, PO, hóa đơn, nhà cung cấp..."
+                                className="w-full bg-[#161922] border border-[#1E293B] rounded-xl px-4 py-3.5 text-sm text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#3B82F6]/50 transition-all"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <button 
-                            type="submit"
-                            disabled={isLoading || !searchQuery.trim()}
-                            className="bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white px-6 py-3.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[#3B82F6]/20"
-                        >
-                            {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-                            Gửi
-                        </button>
-                    </div>
-                    <div className="flex items-center justify-between mt-3">
-                        <p className="text-[9px] text-[#64748B]/70 flex items-center gap-1">
-                            <Sparkles size={9} className="text-[#3B82F6]" />
-                            Powered by RAG + Vector DB + LLM
-                        </p>
-                        <div className="flex gap-1.5">
-                            {["Ctrl", "K"].map((key) => (
-                                <kbd key={key} className="px-2 py-0.5 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded text-[9px] font-bold text-[#64748B]">
-                                    {key}
-                                </kbd>
-                            ))}
+                        <div className="flex items-center gap-2">
+                            <div className="flex gap-1">
+                                {["Ctrl", "K"].map((key) => (
+                                    <kbd key={key} className="px-2 py-1 bg-[#1E293B] border border-[#334155] rounded text-[10px] font-medium text-[#64748B]">
+                                        {key}
+                                    </kbd>
+                                ))}
+                            </div>
+                            <button 
+                                type="submit"
+                                disabled={isLoading || !searchQuery.trim()}
+                                className="w-10 h-10 bg-[#3B82F6] text-white rounded-xl flex items-center justify-center hover:bg-[#2563EB] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                            >
+                                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                            </button>
                         </div>
                     </div>
+                    <p className="text-[10px] text-[#64748B] mt-3 text-center">
+                        <span className="inline-flex items-center gap-1">
+                            <span className="w-1 h-1 bg-[#10B981] rounded-full"></span>
+                            Powered by RAG • Vector DB • LLM — dữ liệu cập nhật theo thời gian thực
+                        </span>
+                    </p>
                 </form>
             </div>
         </div>
