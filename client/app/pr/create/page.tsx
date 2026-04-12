@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import Select from "react-select";
 import { formatVND } from "../../utils/formatUtils";
 import { useProcurement, Product, BudgetAllocation, PR } from "../../context/ProcurementContext";
-import { CostCenter, CreatePrDto, CurrencyCode, BudgetAllocationStatus } from "@/app/types/api-types";
-import { Trash2, FileText, Wallet, BarChart3, TrendingUp, PieChart, CheckCircle2, Loader2, XCircle, ArrowLeft, Activity, ChevronDown, ShoppingCart, AlertTriangle, Zap, Bot, Sparkles } from "lucide-react";
+import { CostCenter, CreatePrDto, CreatePrItemDto, CurrencyCode, BudgetAllocationStatus } from "@/app/types/api-types";
+import { Trash2, FileText, Wallet, BarChart3, TrendingUp, PieChart, CheckCircle2, Loader2, XCircle, ArrowLeft, Activity, ChevronDown, ShoppingCart, AlertTriangle, Zap, Bot, Sparkles, MessageSquare, PenTool, ArrowRight, Send, Wand2 } from "lucide-react";
 
 // --- Components ---
 
@@ -166,6 +166,29 @@ const BudgetAllocationsPanel = ({
 
 // --- Page Logic ---
 
+// AI Draft item - based on CreatePrItemDto but currency as string (AI returns string)
+interface PrDraftItem extends Omit<CreatePrItemDto, 'currency' | 'categoryName'> {
+    lineNumber: number;
+    currency: string;
+    preferredSupplierId?: string;
+}
+
+// AI Draft response combines CreatePrDto + AI metadata
+interface PrDraftResponse extends Omit<CreatePrDto, 'costCenterId' | 'items' | 'currency'> {
+    success: boolean;
+    currency: string;
+    totalEstimate: number;
+    items: PrDraftItem[];
+    suggestedCostCenterCode?: string;
+    suggestedCostCenterId?: string;
+    suggestedVendorIds?: string[];
+    categoryName?: string;
+    confidence?: 'high' | 'medium' | 'low';
+    reasoning?: string;
+    validationErrors?: string[];
+    error?: string;
+}
+
 interface PRItem {
     id?: string;
     productId?: string;
@@ -204,6 +227,7 @@ export default function CreatePRPage() {
     const { 
         addPR,
         submitPR,
+        apiFetch,
         costCenters, 
         currentUser, 
         products, 
@@ -212,6 +236,17 @@ export default function CreatePRPage() {
     } = useProcurement();
 
     const router = useRouter();
+    
+    // Tab state: 'ai' or 'manual'
+    const [activeTab, setActiveTab] = useState<'ai' | 'manual'>('ai');
+    
+    // AI Chat states
+    const [aiPrompt, setAiPrompt] = useState("");
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [aiDraft, setAiDraft] = useState<PrDraftResponse | null>(null);
+    const [aiError, setAiError] = useState<string | null>(null);
+    const [aiMessages, setAiMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
+    
     const [form, setForm] = useState<PRForm>({
         title: "",
         description: "",
@@ -282,6 +317,118 @@ export default function CreatePRPage() {
                 specNote: ""
             }]
         }));
+    };
+
+    // AI Chat functions
+    const handleGenerateDraft = async () => {
+        if (!aiPrompt.trim()) return;
+        
+        setIsGenerating(true);
+        setAiError(null);
+        setAiDraft(null);
+        
+        // Add user message
+        setAiMessages(prev => [...prev, { role: 'user', content: aiPrompt }]);
+        
+        try {
+            // Build enhanced prompt with user context embedded
+            const enhancedPrompt = `[User: ${currentUser?.deptName || 'Unknown'} - ${currentUser?.role || 'Unknown'}${form.costCenterId ? `, CostCenter: ${form.costCenterId}` : ''}]\n\n${aiPrompt}`;
+            
+            const response = await apiFetch('/rag/generate-pr-draft', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    prompt: enhancedPrompt
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to generate draft');
+            }
+            
+            const data: PrDraftResponse = await response.json();
+            
+            if (data.success && data.items?.length > 0) {
+                setAiDraft(data);
+                setAiMessages(prev => [...prev, { 
+                    role: 'assistant', 
+                    content: `Tôi đã tạo bản nháp PR với tiêu đề "${data.title}" gồm ${data.items.length} sản phẩm, tổng giá trị ${formatVND(data.totalEstimate)}. Bạn có thể xem trước và chuyển sang tab "Tạo thủ công" để chỉnh sửa.` 
+                }]);
+            } else if (data.error || (data.validationErrors && data.validationErrors.length > 0)) {
+                setAiError(data.error || data.validationErrors?.join(', ') || 'Không thể tạo bản nháp');
+                setAiMessages(prev => [...prev, { 
+                    role: 'assistant', 
+                    content: `Xin lỗi, tôi không thể tạo bản nháp: ${data.error || data.validationErrors?.join(', ')}` 
+                }]);
+            } else {
+                setAiError('Không thể tạo bản nháp. Vui lòng thử lại với mô tả khác.');
+                setAiMessages(prev => [...prev, { 
+                    role: 'assistant', 
+                    content: 'Xin lỗi, tôi không thể tạo bản nháp từ yêu cầu của bạn. Vui lòng thử lại với mô tả chi tiết hơn.' 
+                }]);
+            }
+        } catch (err) {
+            setAiError('Lỗi kết nối AI. Vui lòng thử lại sau.');
+            setAiMessages(prev => [...prev, { 
+                role: 'assistant', 
+                content: 'Xin lỗi, có lỗi khi kết nối đến hệ thống AI. Vui lòng thử lại sau.' 
+            }]);
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    const handleFillToManual = () => {
+        if (!aiDraft) return;
+        
+        // Map AI draft items to form items
+        const mappedItems: PRItem[] = aiDraft.items.map((item, index) => {
+            // Try to find matching product
+            const matchedProduct = products.find(p => 
+                p.name.toLowerCase().includes(item.productDesc.toLowerCase()) ||
+                item.productDesc.toLowerCase().includes(p.name.toLowerCase())
+            );
+            
+            return {
+                id: `ai-item-${index}`,
+                productId: matchedProduct?.id,
+                productDesc: item.productDesc,
+                sku: matchedProduct?.sku || `AI-${index + 1}`,
+                categoryId: matchedProduct?.categoryId || item.categoryId,
+                qty: item.qty || 1,
+                unit: item.unit || matchedProduct?.unit || 'PCS',
+                estimatedPrice: item.estimatedPrice || 0,
+                basePrice: item.estimatedPrice || 0,
+                supplierName: item.preferredSupplierId ? `Supplier: ${item.preferredSupplierId}` : 'Thị trường',
+                aiStatus: true,
+                aiLabel: 'AI SUGGESTED',
+                specNote: item.specNote || '',
+                currency: (item.currency as CurrencyCode) || CurrencyCode.VND
+            };
+        });
+        
+        // Update form with AI draft data
+        setForm(prev => ({
+            ...prev,
+            title: aiDraft.title || prev.title,
+            description: aiDraft.description || prev.description,
+            justification: aiDraft.justification || prev.justification,
+            priority: aiDraft.priority || prev.priority,
+            currency: (aiDraft.currency as CurrencyCode) || prev.currency,
+            // Try to match cost center from AI suggestion
+            costCenterId: aiDraft.suggestedCostCenterId || prev.costCenterId,
+            items: mappedItems
+        }));
+        
+        // Switch to manual tab
+        setActiveTab('manual');
+    };
+
+    const handleClearAI = () => {
+        setAiPrompt('');
+        setAiDraft(null);
+        setAiError(null);
+        setAiMessages([]);
     };
 
     const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -355,7 +502,197 @@ export default function CreatePRPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-10 gap-10">
+            {/* TABS — AI Mode vs Manual Mode */}
+            <div className="flex gap-2 mb-6">
+                <button
+                    onClick={() => setActiveTab('ai')}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
+                        activeTab === 'ai'
+                            ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/30'
+                            : 'bg-[#161922] text-[#64748B] border border-[rgba(148,163,184,0.1)] hover:text-[#F8FAFC]'
+                    }`}
+                >
+                    <Bot size={16} />
+                    <span>Tạo bằng AI Chat</span>
+                    {aiDraft && (
+                        <span className="ml-2 w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    )}
+                </button>
+                <button
+                    onClick={() => setActiveTab('manual')}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
+                        activeTab === 'manual'
+                            ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/30'
+                            : 'bg-[#161922] text-[#64748B] border border-[rgba(148,163,184,0.1)] hover:text-[#F8FAFC]'
+                    }`}
+                >
+                    <PenTool size={16} />
+                    <span>Tạo thủ công</span>
+                    {form.items.length > 0 && (
+                        <span className="ml-2 px-2 py-0.5 bg-[#3B82F6]/20 text-[#3B82F6] rounded-full text-[9px]">
+                            {form.items.length}
+                        </span>
+                    )}
+                </button>
+            </div>
+
+            {/* AI MODE TAB */}
+            {activeTab === 'ai' && (
+                <div className="animate-in fade-in duration-500 space-y-8">
+                    {/* AI Chat Interface */}
+                    <div className="bg-[#161922] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#3B82F6]/5 overflow-hidden">
+                        <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117]/50">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] p-2.5 rounded-xl text-white shadow-lg shadow-[#3B82F6]/20">
+                                    <Sparkles size={18} />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-black text-[#F8FAFC]">AI Procurement Assistant</h3>
+                                    <p className="text-[10px] text-[#64748B]">Mô tả nhu cầu mua sắm, AI sẽ tạo PR giúp bạn</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="p-8 space-y-6">
+                            {/* Chat Messages */}
+                            {aiMessages.length > 0 && (
+                                <div className="bg-[#0F1117] rounded-2xl p-6 space-y-4 max-h-[300px] overflow-y-auto">
+                                    {aiMessages.map((msg, idx) => (
+                                        <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                                msg.role === 'user' ? 'bg-[#3B82F6]' : 'bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6]'
+                                            }`}>
+                                                {msg.role === 'user' ? <MessageSquare size={14} /> : <Bot size={14} />}
+                                            </div>
+                                            <div className={`max-w-[80%] p-4 rounded-2xl text-sm ${
+                                                msg.role === 'user' 
+                                                    ? 'bg-[#3B82F6] text-white' 
+                                                    : 'bg-[#161922] text-[#94A3B8] border border-[rgba(148,163,184,0.1)]'
+                                            }`}>
+                                                {msg.content}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {isGenerating && (
+                                        <div className="flex gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center">
+                                                <Bot size={14} />
+                                            </div>
+                                            <div className="p-4 rounded-2xl bg-[#161922] border border-[rgba(148,163,184,0.1)]">
+                                                <Loader2 className="animate-spin text-[#3B82F6]" size={20} />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            
+                            {/* AI Input */}
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">
+                                    Mô tả yêu cầu mua sắm
+                                </label>
+                                <textarea
+                                    value={aiPrompt}
+                                    onChange={(e) => setAiPrompt(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && e.metaKey) {
+                                            handleGenerateDraft();
+                                        }
+                                    }}
+                                    placeholder="VD: Tôi cần mua 10 laptop Dell cho phòng IT, ngân sách khoảng 500 triệu, giao hàng trong tuần sau..."
+                                    className="w-full h-32 bg-[#0F1117] border border-[rgba(148,163,184,0.15)] rounded-2xl p-5 text-sm text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 resize-none placeholder:text-[#64748B]/50"
+                                />
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={handleGenerateDraft}
+                                        disabled={isGenerating || !aiPrompt.trim()}
+                                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#3B82F6] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#3B82F6]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isGenerating ? (
+                                            <><Loader2 className="animate-spin" size={16} /> Đang tạo...</>
+                                        ) : (
+                                            <><Wand2 size={16} /> Tạo PR bằng AI</>
+                                        )}
+                                    </button>
+                                    {aiMessages.length > 0 && (
+                                        <button
+                                            onClick={handleClearAI}
+                                            className="px-4 py-3 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#64748B] rounded-xl font-bold text-[10px] uppercase tracking-widest hover:text-[#F8FAFC] transition-all"
+                                        >
+                                            <XCircle size={16} />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            {/* AI Draft Preview */}
+                            {aiDraft && (
+                                <div className="border border-[rgba(59,130,246,0.3)] rounded-2xl p-6 bg-[#3B82F6]/5 space-y-4">
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircle2 className="text-emerald-400" size={20} />
+                                        <span className="text-sm font-black text-[#F8FAFC]">Bản nháp đã sẵn sàng</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black text-[#64748B] uppercase">Tiêu đề</span>
+                                            <p className="text-[#F8FAFC] font-bold truncate">{aiDraft.title}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black text-[#64748B] uppercase">Số sản phẩm</span>
+                                            <p className="text-[#F8FAFC] font-bold">{aiDraft.items.length} items</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black text-[#64748B] uppercase">Tổng giá trị</span>
+                                            <p className="text-emerald-400 font-black">{formatVND(aiDraft.totalEstimate)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black text-[#64748B] uppercase">Độ tin cậy</span>
+                                            <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase ${
+                                                aiDraft.confidence === 'high' ? 'bg-emerald-500/20 text-emerald-400' :
+                                                aiDraft.confidence === 'medium' ? 'bg-amber-500/20 text-amber-400' :
+                                                'bg-rose-500/20 text-rose-400'
+                                            }`}>
+                                                {aiDraft.confidence || 'medium'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {aiDraft.reasoning && (
+                                        <p className="text-xs text-[#64748B] italic border-l-2 border-[#3B82F6] pl-3">
+                                            {aiDraft.reasoning}
+                                        </p>
+                                    )}
+                                    <button
+                                        onClick={handleFillToManual}
+                                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500/30 transition-all"
+                                    >
+                                        <ArrowRight size={16} />
+                                        Chuyển sang Tạo thủ công để chỉnh sửa & Gửi PR
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    
+                    {/* Quick Tips */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[
+                            { icon: <MessageSquare size={16} />, title: "Mô tả chi tiết", desc: "Số lượng, mục đích, thời gian cần" },
+                            { icon: <Wallet size={16} />, title: "Ngân sách rõ ràng", desc: "Đề cập khoảng giá mong muốn" },
+                            { icon: <Zap size={16} />, title: "Tiêu chí đặc biệt", desc: "Thương hiệu, specs kỹ thuật" }
+                        ].map((tip, idx) => (
+                            <div key={idx} className="bg-[#0F1117] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
+                                <div className="text-[#3B82F6] mb-2">{tip.icon}</div>
+                                <h4 className="text-xs font-black text-[#F8FAFC] mb-1">{tip.title}</h4>
+                                <p className="text-[10px] text-[#64748B]">{tip.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* MANUAL MODE TAB */}
+            {activeTab === 'manual' && (
+                <div className="animate-in fade-in duration-500 grid grid-cols-1 xl:grid-cols-10 gap-10">
                 {/* LEFT CONTENT — 60% */}
                 <div className="xl:col-span-6 space-y-10">
                     
@@ -589,31 +926,32 @@ export default function CreatePRPage() {
                                     )}
                                 </div>
                                 
-                                <button 
-                                    className="w-full py-6 mt-6 bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-black uppercase tracking-[0.2em] rounded-[32px] shadow-2xl shadow-[#3B82F6]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 group/btn" 
-                                    onClick={handleSubmit} 
+                                <button
+                                    className="w-full py-3 mt-4 bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-[#3B82F6]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 group/btn"
+                                    onClick={handleSubmit}
                                     disabled={isSubmitting}
                                 >
-                                    {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} className="group-hover:fill-white transition-all" />}
-                                    {isSubmitting ? "Đang xử lý khởi tạo..." : "Xác nhận & Gửi Approval"}
+                                    {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} className="group-hover:fill-white transition-all" />}
+                                    {isSubmitting ? "Đang xử lý..." : "Xác nhận & Gửi"}
                                 </button>
                             </div>
                         </div>
 
                         {/* HELPER CARD */}
-                        <div className="bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] rounded-[40px] p-10 text-white shadow-2xl shadow-[#3B82F6]/20 relative overflow-hidden group">
-                             <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-125 transition-transform duration-700">
-                                 <Bot size={80} />
+                        <div className="bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] rounded-2xl p-5 text-white shadow-lg shadow-[#3B82F6]/20 relative overflow-hidden group">
+                             <div className="absolute top-2 right-2 p-2 opacity-20 group-hover:scale-125 transition-transform duration-700">
+                                 <Bot size={40} />
                              </div>
-                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-white/80">AI Procurement Tip</h4>
-                             <p className="text-base font-bold leading-tight mb-2 pr-12">Hệ thống AI vừa kiểm soát giá tham chiếu.</p>
-                             <p className="text-xs font-medium text-white/70">
-                                Chúng tôi đã đối chiếu giá từ 4 nhà cung cấp định kỳ để đảm bảo PR này nằm trong khung giá tối ưu nhất.
+                             <h4 className="text-[9px] font-black uppercase tracking-wider mb-2 text-white/80">AI Procurement Tip</h4>
+                             <p className="text-sm font-bold leading-tight mb-1 pr-8">Hệ thống AI vừa kiểm soát giá tham chiếu.</p>
+                             <p className="text-[10px] font-medium text-white/70">
+                                Đối chiếu giá từ 4 nhà cung cấp định kỳ.
                              </p>
                         </div>
                     </div>
                 </div>
             </div>
+            )}
 
             {/* STATUS OVERLAY */}
             {submissionStatus !== 'idle' && (

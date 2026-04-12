@@ -98,6 +98,12 @@ export class BudgetModuleController {
    * Lấy danh sách tất cả các chu kỳ ngân sách
    */
   @Get('periods')
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Lấy tất cả các chu kỳ ngân sách',
     description:
@@ -111,6 +117,12 @@ export class BudgetModuleController {
    * Lấy danh sách chu kỳ ngân sách theo loại (QUARTERLY, MONTHLY, ANNUAL, RESERVE)
    */
   @Get('periods/type/:type')
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Lấy chu kỳ ngân sách theo loại',
     description:
@@ -193,6 +205,7 @@ export class BudgetModuleController {
     UserRole.FINANCE,
     UserRole.DIRECTOR,
     UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
   )
   @ApiOperation({ summary: 'Lấy ngân sách của phòng ban tôi' })
   async findMyDeptAllocations(@Request() req: { user: JwtPayload }) {
@@ -200,7 +213,7 @@ export class BudgetModuleController {
   }
 
   @Patch('allocations/:id/submit')
-  @Roles(UserRole.DEPT_APPROVER)
+  @Roles(UserRole.DEPT_APPROVER, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Trưởng phòng gửi duyệt ngân sách',
     description:
@@ -271,6 +284,12 @@ export class BudgetModuleController {
    * Lấy danh sách tất cả các khoản phân bổ ngân sách
    */
   @Get('allocations')
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Lấy tất cả phân bổ ngân sách',
     description:
@@ -284,6 +303,12 @@ export class BudgetModuleController {
    * Lấy thông tin chi tiết một khoản phân bổ ngân sách theo ID
    */
   @Get('allocations/:id')
+  @Roles(
+    UserRole.FINANCE,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({
     summary: 'Lấy chi tiết phân bổ ngân sách theo ID',
     description:
