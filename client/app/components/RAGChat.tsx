@@ -8,7 +8,7 @@ import {
     LayoutGrid, Receipt, CreditCard, Package, ShoppingCart,
     Building2, User, Table2
 } from "lucide-react";
-import { useProcurement } from "../context/ProcurementContext";
+import { useProcurement, PR, Invoice } from "../context/ProcurementContext";
 
 interface SuggestionItem {
     text: string;
@@ -187,7 +187,7 @@ const formatAnswer = (text: string): React.ReactNode => {
 };
 
 export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
-    const { currentUser } = useProcurement();
+    const { currentUser, myPrs, prs, approvals, invoices, budgets } = useProcurement();
     const [searchQuery, setSearchQuery] = useState("");
     const [aiResponse, setAiResponse] = useState<RagResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -196,6 +196,32 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
     // Get user role and suggestions
     const userRole = currentUser?.role || "DEFAULT";
     const roleSuggestions = ROLE_SUGGESTIONS[userRole] || ROLE_SUGGESTIONS.DEFAULT;
+
+    // Calculate real stats from data
+    const isProcOrAdmin = userRole === "PROCUREMENT" || userRole === "PLATFORM_ADMIN";
+    const prPool = isProcOrAdmin ? prs : myPrs;
+    
+    // Count pending PRs (PRs with PENDING status)
+    const pendingPRCount = React.useMemo(() => {
+        if (!prPool) return 0;
+        return prPool.filter((p: PR) => p.status === "PENDING" || p.status === "SUBMITTED").length;
+    }, [prPool]);
+
+    // Count pending/incomplete invoices (using status since dueDate not available)
+    const overdueInvoiceCount = React.useMemo(() => {
+        if (!invoices) return 0;
+        // Count invoices with status PENDING, PENDING_APPROVAL, or APPROVED (not yet paid)
+        return invoices.filter((inv: Invoice) => 
+            ["PENDING", "PENDING_APPROVAL", "APPROVED"].includes(inv.status)
+        ).length;
+    }, [invoices]);
+
+    // Calculate budget remaining percentage
+    const budgetRemainingPercent = React.useMemo(() => {
+        if (!budgets || budgets.allocated === 0) return 100;
+        const remaining = budgets.allocated - budgets.committed - budgets.spent;
+        return Math.round((remaining / budgets.allocated) * 100);
+    }, [budgets]);
     
     // Role display mapping
     const roleDisplayNames: Record<string, string> = {
@@ -457,15 +483,15 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
                         {/* Stats Cards */}
                         <div className="grid grid-cols-3 gap-4 mb-8">
                             <div className="bg-[#161922] border border-[#1E293B] rounded-2xl p-4 text-center">
-                                <div className="text-2xl font-bold text-[#F59E0B] mb-1">3</div>
+                                <div className="text-2xl font-bold text-[#F59E0B] mb-1">{pendingPRCount}</div>
                                 <div className="text-xs text-[#64748B]">PR chờ duyệt</div>
                             </div>
                             <div className="bg-[#161922] border border-[#1E293B] rounded-2xl p-4 text-center">
-                                <div className="text-2xl font-bold text-[#EF4444] mb-1">2</div>
+                                <div className="text-2xl font-bold text-[#EF4444] mb-1">{overdueInvoiceCount}</div>
                                 <div className="text-xs text-[#64748B]">Hóa đơn quá hạn</div>
                             </div>
                             <div className="bg-[#161922] border border-[#1E293B] rounded-2xl p-4 text-center">
-                                <div className="text-2xl font-bold text-[#10B981] mb-1">87%</div>
+                                <div className="text-2xl font-bold text-[#10B981] mb-1">{budgetRemainingPercent}%</div>
                                 <div className="text-xs text-[#64748B]">Ngân sách còn lại</div>
                             </div>
                         </div>
