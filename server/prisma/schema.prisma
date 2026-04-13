@@ -1424,6 +1424,30 @@ model BudgetOverrideRequest {
   @@map("budget_override_requests")
 }
 
+model ExternalToken {
+  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  token       String    @unique @db.VarChar(128)
+  type        TokenType
+  referenceId String    @map("reference_id") @db.Uuid
+  targetEmail String    @map("target_email") @db.VarChar(255)
+  metadata    Json      @default("{}")
+  expiresAt   DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt      DateTime? @map("used_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([token])
+  @@index([referenceId, type])
+  @@map("external_tokens")
+}
+
+enum TokenType {
+  RFQ_QUOTE        // NCC báo giá (thay login)
+  PO_CONFIRM       // NCC confirm nhận PO
+  GRN_MILESTONE    // NCC update trạng thái giao hàng
+  INVOICE_SUBMIT   // NCC nộp invoice
+  // APPROVAL không cần token riêng — dùng ApprovalWorkflow có sẵn
+}
+
 enum PriceVolatility {
   STABLE        // STABLE: Giá ổn định (~30 ngày không đổi) → Tạo RFQ trực tiếp
   MODERATE      // MODERATE: Giá thay đổi vừa phải (~1-2 lần/tháng) → Báo giá/RFQ

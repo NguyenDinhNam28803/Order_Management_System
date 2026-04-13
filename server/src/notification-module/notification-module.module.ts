@@ -7,12 +7,14 @@ import { EmailService } from './email.service';
 import { SmsService } from './sms.service';
 import { EmailTemplatesService } from './email-template.service';
 import { EmailProcessor } from './email.processor';
+import { ExternalTokenModule } from '../external-token-module/external-token.module';
 
 @Module({
   imports: [
     BullModule.registerQueue({
       name: 'email-queue',
     }),
+    ExternalTokenModule,
   ],
   controllers: [NotificationModuleController],
   providers: [

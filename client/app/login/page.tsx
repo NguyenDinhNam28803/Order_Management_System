@@ -18,22 +18,13 @@ export default function LoginPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const demoUsers = [
-        { name: "IT Requester", email: "it.requester@innhub.com", role: "REQUESTER" },
-        { name: "Dept Approver", email: "it.manager@innhub.com", role: "DEPT_APPROVER" },
-        { name: "Director", email: "director@innhub.com", role: "DIRECTOR" },
-        { name: "CEO", email: "ceo@innhub.com", role: "CEO" },
-        { name: "CFO (Finance)", email: "cfo@innhub.com", role: "FINANCE" },
-        { name: "System Admin", email: "admin@innhub.com", role: "ADMIN" },
-        { name: "Procurement", email: "proc.officer@innhub.com", role: "PROCUREMENT" },
-        { name: "Supplier (Hoang Gia)", email: "sales@hoanggia-vpp.vn", role: "SUPPLIER" },
-        { name: "Supplier Manager (Hoang Gia)", email: "manager@hoanggia-vpp.vn", role: "SUPPLIER" },
-        // Suppliers
-        { name: "Supplier (Phuong Nam - IT)", email: "sales@phuongnam-tech.vn", role: "SUPPLIER" },
-        { name: "Support (Phuong Nam - IT)", email: "support@phuongnam-tech.vn", role: "SUPPLIER" },
-        { name: "Supplier (Thien Long - Stationery)", email: "sales@thienlong.vn", role: "SUPPLIER" },
-        { name: "Support (Thien Long - Stationery)", email: "support@thienlong.vn", role: "SUPPLIER" },
-        { name: "Supplier (Viet Tien - Garment)", email: "sales@viettien.com.vn", role: "SUPPLIER" },
-        { name: "B2B (Viet Tien - Garment)", email: "b2b@viettien.com.vn", role: "SUPPLIER" }
+        // === ProcureSmart Company Only ===
+        { name: "IT Requester", email: "itrequesterprocuresmart@gmail.com", role: "REQUESTER" },
+        { name: "IT Manager", email: "itmanageprocuresmart@gmail.com", role: "DEPT_APPROVER" },
+        { name: "Procurement", email: "procurementprocuresmart@gmail.com", role: "PROCUREMENT" },
+        { name: "Finance", email: "financeprocuresmart@gmail.com", role: "FINANCE" },
+        { name: "Warehouse", email: "warehouseprocuresmart@gmail.com", role: "WAREHOUSE" },
+        { name: "Admin", email: "adminprocuresmart@gmail.com", role: "PLATFORM_ADMIN" },
     ];
 
     const ITEMS_PER_PAGE = 6;

@@ -9,6 +9,7 @@ import { SendNotificationDto } from './dto/send-notification.dto';
 import { CreateNotificationTemplateDto } from './dto/create-notification-template.dto';
 import { NotificationChannel, NotificationStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { ExternalTokenService, TokenType } from '../external-token-module/external-token.service';
 
 @Injectable()
 export class NotificationModuleService {
@@ -20,6 +21,7 @@ export class NotificationModuleService {
     private readonly smsService: SmsService,
     private readonly prisma: PrismaService,
     private readonly emailTemplates: EmailTemplatesService,
+    private readonly externalTokenService: ExternalTokenService,
     @InjectQueue('email-queue') private readonly emailQueue: bull.Queue, // Thêm queue
   ) {}
 
@@ -161,5 +163,66 @@ export class NotificationModuleService {
     return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
       return data[key] !== undefined ? String(data[key]) : match;
     });
+  }
+
+  /**
+   * Gửi email cho external user (NCC/Supplier) với magic link
+   * Tự động tạo ExternalToken và gửi link trong email
+   */
+  async sendExternalEmailWithMagicLink(params: {
+    to: string;
+    subject: string;
+    eventType: string;
+    data: Record<string, any>;
+    referenceId: string;
+    tokenType: TokenType;
+    expiresInDays?: number;
+  }) {
+    const { to, subject, eventType, data, referenceId, tokenType, expiresInDays = 7 } = params;
+
+    try {
+      // 1. Tạo external token
+      const tokenResult = await this.externalTokenService.createToken({
+        type: tokenType,
+        referenceId,
+        targetEmail: to,
+        metadata: { eventType, ...data },
+        expiresInDays,
+      });
+
+      // 2. Render email template với link
+      const emailBody = this.emailTemplates.render(eventType, {
+        ...data,
+        email: to,
+        // Thêm các biến link vào template
+        rfqLink: tokenResult.link,
+        approveLink: tokenResult.link,
+        rejectLink: tokenResult.link.replace('?token=', '?token=').replace('/confirm', '/reject'),
+        detailLink: tokenResult.link,
+        confirmLink: tokenResult.link,
+        updateLink: tokenResult.link,
+        submitLink: tokenResult.link,
+      });
+
+      // 3. Thêm vào queue gửi email
+      await this.emailQueue.add('send-email', {
+        to,
+        subject,
+        body: emailBody,
+        tokenId: tokenResult.id,
+      });
+
+      this.logger.log(`External email with magic link queued: ${to} - ${eventType}`);
+
+      return {
+        success: true,
+        tokenId: tokenResult.id,
+        link: tokenResult.link,
+        expiresAt: tokenResult.expiresAt,
+      };
+    } catch (error) {
+      this.logger.error(`Failed to send external email to ${to}:`, error);
+      throw error;
+    }
   }
 }
