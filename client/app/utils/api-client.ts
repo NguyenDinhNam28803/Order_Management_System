@@ -700,3 +700,173 @@ export const supplierKPIAPI = {
     return res.json();
   },
 };
+
+// ==========================================
+// PO CONSOLIDATION  (Feature: gộp nhiều PR → 1 PO)
+// POST /purchase-orders/consolidate
+// ==========================================
+export interface ConsolidatePRsDto {
+  /** Danh sách PR ID đã APPROVED cần gộp (tối thiểu 2) */
+  prIds: string[];
+  /** Nhà cung cấp được chọn */
+  supplierId: string;
+  /** SKU_MATCH: gộp theo mã SKU | CATEGORY_MATCH: gộp theo danh mục */
+  consolidationMode?: 'SKU_MATCH' | 'CATEGORY_MATCH';
+  deliveryDate: string;
+  paymentTerms?: string;
+  deliveryAddress?: string;
+  notes?: string;
+}
+
+export interface ConsolidationSummary {
+  sourcePrCount: number;
+  sourcePrNumbers: string[];
+  mergedItemCount: number;
+  totalOriginalItems: number;
+  savedItems: number;
+  totalAmount: number;
+  budgetReservedByCostCenter: Record<string, number>;
+}
+
+export const poConsolidateAPI = {
+  /** Gộp nhiều PR thành 1 PO */
+  consolidate: async (dto: ConsolidatePRsDto) => {
+    const res = await apiFetch('/purchase-orders/consolidate', {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    });
+    return res as { poNumber: string; id: string; consolidationSummary: ConsolidationSummary };
+  },
+};
+
+// ==========================================
+// EMAIL RAG  (Feature: đọc Gmail → ingest vào RAG)
+// GET  /rag/emails?limit=N    — lấy email thô
+// POST /rag/emails/ingest?limit=N — ingest vào vector store
+// ==========================================
+export interface ParsedEmail {
+  messageId: string;
+  subject: string;
+  from: string;
+  to: string;
+  date: string;
+  body: string;
+}
+
+export const emailRagAPI = {
+  /** Lấy email gần nhất từ Gmail INBOX */
+  fetchEmails: async (limit = 20): Promise<ParsedEmail[]> => {
+    const res = await apiFetch(`/rag/emails?limit=${limit}`);
+    return res as ParsedEmail[];
+  },
+
+  /** Ingest email vào vector store để RAG query tìm kiếm được */
+  ingestEmails: async (limit = 50): Promise<{ ingested: number; skipped: number }> => {
+    const res = await apiFetch(`/rag/emails/ingest?limit=${limit}`, { method: 'POST' });
+    return res as { ingested: number; skipped: number };
+  },
+};
+
+// ==========================================
+// CONTRACT ENDPOINTS
+// ==========================================
+export const contractAPI = {
+  list: async (orgId?: string) => {
+    const url = orgId ? `/contracts?orgId=${orgId}` : '/contracts';
+    return apiFetch(url);
+  },
+  getById: async (id: string) => apiFetch(`/contracts/${id}`),
+  create: async (data: Record<string, unknown>) =>
+    apiFetch('/contracts', { method: 'POST', body: JSON.stringify(data) }),
+  update: async (id: string, data: Record<string, unknown>) =>
+    apiFetch(`/contracts/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+};
+
+// ==========================================
+// DISPUTE ENDPOINTS
+// ==========================================
+export const disputeAPI = {
+  list: async () => apiFetch('/disputes'),
+  getById: async (id: string) => apiFetch(`/disputes/${id}`),
+  create: async (data: Record<string, unknown>) =>
+    apiFetch('/disputes', { method: 'POST', body: JSON.stringify(data) }),
+  resolve: async (id: string, data: Record<string, unknown>) =>
+    apiFetch(`/disputes/${id}/resolve`, { method: 'POST', body: JSON.stringify(data) }),
+};
+
+// ==========================================
+// REVIEW ENDPOINTS  (Đánh giá nhà cung cấp thủ công)
+// ==========================================
+export const reviewAPI = {
+  list: async () => apiFetch('/reviews'),
+  getById: async (id: string) => apiFetch(`/reviews/${id}`),
+  create: async (data: Record<string, unknown>) =>
+    apiFetch('/reviews', { method: 'POST', body: JSON.stringify(data) }),
+};
+
+// ==========================================
+// REPORT ENDPOINTS
+// ==========================================
+export const reportAPI = {
+  getSpendReport: async (params?: { orgId?: string; startDate?: string; endDate?: string }) => {
+    const q = new URLSearchParams(params as Record<string, string>).toString();
+    return apiFetch(`/reports/spend${q ? `?${q}` : ''}`);
+  },
+  getApReport: async (params?: Record<string, string>) => {
+    const q = new URLSearchParams(params).toString();
+    return apiFetch(`/reports/ap${q ? `?${q}` : ''}`);
+  },
+};
+
+// ==========================================
+// RAG ENDPOINTS  (AI / Vector Search)
+// ==========================================
+export const ragAPI = {
+  /** Truy vấn ngữ nghĩa từ Vector DB */
+  query: async (question: string, topK = 5) =>
+    apiFetch('/rag/query', {
+      method: 'POST',
+      body: JSON.stringify({ question, topK }),
+    }),
+
+  /** Ingest một bảng dữ liệu vào Vector DB */
+  ingestTable: async (table: string) =>
+    apiFetch(`/rag/ingest/${table}`, { method: 'POST' }),
+
+  /** Kích hoạt full sync toàn bộ dữ liệu */
+  triggerFullSync: async () =>
+    apiFetch('/rag/sync', { method: 'POST' }),
+
+  /** AI tạo PR Draft từ mô tả ngôn ngữ tự nhiên */
+  generatePrDraft: async (prompt: string) =>
+    apiFetch('/rag/generate-pr-draft', {
+      method: 'POST',
+      body: JSON.stringify({ prompt }),
+    }),
+
+  /** Lấy email Gmail gần nhất */
+  fetchEmails: async (limit = 20) =>
+    apiFetch(`/rag/emails?limit=${limit}`),
+
+  /** Ingest email vào Vector Store */
+  ingestEmails: async (limit = 50) =>
+    apiFetch(`/rag/emails/ingest?limit=${limit}`, { method: 'POST' }),
+};
+
+// ==========================================
+// SYSTEM CONFIG ENDPOINTS
+// ==========================================
+export const systemConfigAPI = {
+  list: async () => apiFetch('/system-configs'),
+  upsert: async (data: { key: string; value: string; description?: string }) =>
+    apiFetch('/system-configs', { method: 'POST', body: JSON.stringify(data) }),
+};
+
+// ==========================================
+// PO ACKNOWLEDGE  (NCC xác nhận PO)
+// Thêm vào poAPI nếu cần dùng trực tiếp
+// ==========================================
+export const poAcknowledgeAPI = {
+  acknowledge: async (poId: string) =>
+    apiFetch(`/purchase-orders/${poId}/acknowledge`, { method: 'POST' }),
+};

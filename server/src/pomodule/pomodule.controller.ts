@@ -10,7 +10,8 @@ import {
 } from '@nestjs/common';
 import { PomoduleService } from './pomodule.service';
 import { CreatePoDto } from './dto/create-po.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ConsolidatePRsDto } from './dto/consolidate-prs.dto';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
 import { UserRole } from '@prisma/client';
@@ -116,6 +117,28 @@ export class PomoduleController {
     @Request() req: JwtPayload,
   ) {
     return this.poService.createFromPr(body.prId, body.supplierId, req);
+  }
+
+  /**
+   * POST /purchase-orders/consolidate
+   * Gộp nhiều PR đã duyệt thành 1 PO duy nhất.
+   * Items giống nhau (cùng SKU hoặc cùng category) sẽ được cộng qty lại.
+   */
+  @Post('consolidate')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({
+    summary: 'Gộp nhiều PR thành 1 PO (PO Consolidation)',
+    description:
+      'Nhận danh sách PR đã APPROVED, nhóm các item giống nhau lại ' +
+      '(theo SKU hoặc Category), tính qty tổng và tạo 1 PO duy nhất gửi cho NCC. ' +
+      'Tiết kiệm chi phí mua sắm nhờ số lượng lớn hơn và giảm số lần giao dịch.',
+  })
+  @ApiBody({ type: ConsolidatePRsDto })
+  consolidatePRs(
+    @Body() dto: ConsolidatePRsDto,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.poService.consolidatePRsIntoPO(dto, req.user);
   }
 
   @Post(':id/submit')

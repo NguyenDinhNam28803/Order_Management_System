@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npx prisma:*)",
+      "Bash(ls -d /d/Order_management_system/client/*/)",
+      "Bash(grep -rn \"@Controller\" D:/Order_management_system/server/src/*/ --include=\"*.controller.ts\")"
+    ]
+  }
+}

@@ -6,6 +6,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { ApprovalModuleModule } from '../approval-module/approval-module.module';
 import { SupplierKpimoduleModule } from '../supplier-kpimodule/supplier-kpimodule.module';
 import { BudgetModuleModule } from '../budget-module/budget-module.module';
+import { AutomationModule } from '../common/automation/automation.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { BudgetModuleModule } from '../budget-module/budget-module.module';
     ApprovalModuleModule,
     SupplierKpimoduleModule,
     BudgetModuleModule,
+    AutomationModule,
   ],
   controllers: [PomoduleController],
   providers: [PomoduleService, PoRepository],

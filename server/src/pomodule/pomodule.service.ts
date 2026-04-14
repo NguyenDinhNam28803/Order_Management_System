@@ -2,10 +2,12 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PoRepository } from './po.repository';
 import { CreatePoDto } from './dto/create-po.dto';
+import { ConsolidatePRsDto } from './dto/consolidate-prs.dto';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { PoStatus, PrStatus, DocumentType } from '@prisma/client';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
@@ -15,6 +17,8 @@ import { AutomationService } from '../common/automation/automation.service';
 
 @Injectable()
 export class PomoduleService {
+  private readonly logger = new Logger(PomoduleService.name);
+
   constructor(
     private readonly repository: PoRepository,
     private readonly prisma: PrismaService,
@@ -224,5 +228,287 @@ export class PomoduleService {
 
   async findOne(id: string) {
     return this.repository.findOne(id);
+  }
+
+  // ─── PO Consolidation ────────────────────────────────────────────────────────
+
+  /**
+   * Gộp nhiều PR đã duyệt thành 1 PO duy nhất, nhóm các item giống nhau lại.
+   *
+   * Luồng xử lý:
+   *  1. Fetch + validate tất cả PR (phải APPROVED, cùng org)
+   *  2. Gộp PR items theo chế độ: SKU_MATCH hoặc CATEGORY_MATCH
+   *  3. Tính qty tổng, unitPrice = giá thấp nhất trong nhóm (đòn bẩy đàm phán)
+   *  4. Reserve budget riêng từng costCenter (vì PR có thể từ nhiều phòng ban)
+   *  5. Tạo PO + PoItem + PoItemSource (bảng truy vết) trong 1 transaction
+   *  6. Cập nhật tất cả PR → PO_CREATED
+   */
+  async consolidatePRsIntoPO(dto: ConsolidatePRsDto, user: JwtPayload) {
+    const {
+      prIds,
+      supplierId,
+      consolidationMode = 'SKU_MATCH',
+      deliveryDate,
+      paymentTerms,
+      deliveryAddress,
+      notes,
+    } = dto;
+
+    // ── Bước 1: Lấy và validate tất cả PR ────────────────────────────────────
+    const prs = await this.prisma.purchaseRequisition.findMany({
+      where: { id: { in: prIds } },
+      include: {
+        items: {
+          include: { category: true },
+        },
+      },
+    });
+
+    // Kiểm tra đủ số lượng PR
+    if (prs.length !== prIds.length) {
+      const foundIds = prs.map((p) => p.id);
+      const missing = prIds.filter((id) => !foundIds.includes(id));
+      throw new NotFoundException(
+        `Không tìm thấy các PR sau: ${missing.join(', ')}`,
+      );
+    }
+
+    // Tất cả PR phải ở trạng thái APPROVED
+    const nonApproved = prs.filter((p) => p.status !== 'APPROVED');
+    if (nonApproved.length > 0) {
+      throw new BadRequestException(
+        `Các PR sau chưa được duyệt hoàn toàn: ${nonApproved.map((p) => p.prNumber).join(', ')}`,
+      );
+    }
+
+    // Tất cả PR phải thuộc cùng 1 tổ chức (không thể mua chéo org)
+    const orgIds = [...new Set(prs.map((p) => p.orgId))];
+    if (orgIds.length > 1) {
+      throw new BadRequestException(
+        'Tất cả PR phải thuộc cùng một tổ chức để có thể gộp PO.',
+      );
+    }
+    const orgId = orgIds[0];
+
+    // ── Bước 2: Gom tất cả PR items vào 1 danh sách phẳng ───────────────────
+    // Đính kèm prId và costCenterId của PR mẹ vào từng item
+    type FlatItem = {
+      id: string;
+      prId: string;
+      sku: string | null;
+      categoryId: string | null;
+      productDesc: string;
+      qty: number;
+      unit: string;
+      estimatedPrice: number;
+      costCenterId: string | null;
+    };
+
+    const allItems: FlatItem[] = prs.flatMap((pr) =>
+      pr.items.map((item) => ({
+        id: item.id,
+        prId: pr.id,
+        sku: item.sku,
+        categoryId: item.categoryId,
+        productDesc: item.productDesc,
+        qty: Number(item.qty),
+        unit: item.unit,
+        estimatedPrice: Number(item.estimatedPrice),
+        // costCenterId lấy từ PR mẹ (mỗi PR thuộc 1 cost center)
+        costCenterId: pr.costCenterId ?? null,
+      })),
+    );
+
+    // ── Bước 3: Nhóm item theo matching key ──────────────────────────────────
+    //
+    // SKU_MATCH:
+    //   key = sku nếu có; ngược lại dùng productDesc lowercase để fallback
+    //   → Ví dụ: sku = "A4-GIAY-500" thì key = "A4-GIAY-500"
+    //
+    // CATEGORY_MATCH:
+    //   key = categoryId nếu có; ngược lại dùng productDesc lowercase
+    //   → Ví dụ: tất cả "văn phòng phẩm" (cùng categoryId) được gộp lại
+    //
+    const groups = new Map<string, FlatItem[]>();
+
+    for (const item of allItems) {
+      let matchKey: string;
+
+      if (consolidationMode === 'SKU_MATCH') {
+        matchKey = item.sku ?? `desc::${item.productDesc.toLowerCase().trim()}`;
+      } else {
+        // CATEGORY_MATCH
+        matchKey =
+          item.categoryId ?? `desc::${item.productDesc.toLowerCase().trim()}`;
+      }
+
+      if (!groups.has(matchKey)) groups.set(matchKey, []);
+      groups.get(matchKey)!.push(item);
+    }
+
+    // ── Bước 4: Tổng hợp từng nhóm thành 1 PO item ──────────────────────────
+    type ConsolidatedItem = {
+      lineNumber: number;
+      sku: string | null;
+      description: string;
+      unit: string;
+      totalQty: number;
+      unitPrice: number; // Giá thấp nhất trong nhóm
+      total: number;
+      sources: Array<{
+        // Truy vết nguồn gốc từng PR
+        prItemId: string;
+        prId: string;
+        contributedQty: number;
+        costCenterId: string | null;
+      }>;
+    };
+
+    const consolidatedItems: ConsolidatedItem[] = [];
+    let lineNumber = 1;
+
+    for (const [, items] of groups) {
+      const totalQty = items.reduce((sum, i) => sum + i.qty, 0);
+
+      // Dùng giá THẤP NHẤT trong nhóm làm unitPrice của PO item gộp
+      // Lý do: khi mua số lượng lớn hơn, đàm phán được giá tốt hơn giá đơn lẻ cao nhất
+      const unitPrice = Math.min(...items.map((i) => i.estimatedPrice));
+
+      consolidatedItems.push({
+        lineNumber: lineNumber++,
+        sku: items[0].sku ?? null,
+        description: items[0].productDesc,
+        unit: items[0].unit,
+        totalQty,
+        unitPrice,
+        total: totalQty * unitPrice,
+        sources: items.map((i) => ({
+          prItemId: i.id,
+          prId: i.prId,
+          contributedQty: i.qty,
+          costCenterId: i.costCenterId,
+        })),
+      });
+    }
+
+    // ── Bước 5: Reserve budget theo từng costCenter ───────────────────────────
+    //
+    // Vì các PR có thể từ nhiều phòng ban khác nhau (nhiều costCenter),
+    // cần tính xem mỗi costCenter phải trả bao nhiêu rồi reserve riêng.
+    //
+    // Ví dụ:
+    //   PR-001 (CC-IT):   10 tờ giấy × 50,000 = 500,000
+    //   PR-002 (CC-MKT):   5 tờ giấy × 50,000 = 250,000
+    //   PR-003 (CC-HR):    3 tờ giấy × 50,000 = 150,000
+    //   → CC-IT reserve 500,000 | CC-MKT reserve 250,000 | CC-HR reserve 150,000
+    //
+    const budgetByCostCenter = new Map<string, number>();
+
+    for (const item of consolidatedItems) {
+      for (const source of item.sources) {
+        if (source.costCenterId) {
+          const cost = source.contributedQty * item.unitPrice;
+          budgetByCostCenter.set(
+            source.costCenterId,
+            (budgetByCostCenter.get(source.costCenterId) ?? 0) + cost,
+          );
+        }
+      }
+    }
+
+    // Gọi BudgetService.reserveBudget cho từng costCenter
+    for (const [costCenterId, amount] of budgetByCostCenter) {
+      await this.budgetService.reserveBudget(costCenterId, orgId, amount, user);
+      this.logger.log(
+        `Reserved ${amount.toLocaleString('vi-VN')} VND for costCenter ${costCenterId}`,
+      );
+    }
+
+    const totalAmount = consolidatedItems.reduce((sum, i) => sum + i.total, 0);
+
+    // PO gộp có prefix PO-CONS để phân biệt với PO thường
+    const poNumber = `PO-CONS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // ── Bước 6: Tạo PO + items + sources trong 1 transaction ─────────────────
+    const po = await this.prisma.$transaction(async (tx) => {
+      // A. Tạo PO gộp
+      // prId để null vì PO này có nhiều PR nguồn (track qua PoItemSource)
+      const newPo = await tx.purchaseOrder.create({
+        data: {
+          poNumber,
+          orgId,
+          supplierId,
+          buyerId: user.sub,
+          status: PoStatus.DRAFT,
+          totalAmount,
+          currency: prs[0].currency,
+          deliveryDate,
+          paymentTerms: paymentTerms ?? null,
+          deliveryAddress: deliveryAddress ?? null,
+          notes:
+            notes ??
+            `PO gộp từ ${prIds.length} PR: ${prs.map((p) => p.prNumber).join(', ')}`,
+        },
+      });
+
+      // B. Tạo từng PoItem gộp + PoItemSource tương ứng
+      for (const item of consolidatedItems) {
+        const poItem = await tx.poItem.create({
+          data: {
+            poId: newPo.id,
+            lineNumber: item.lineNumber,
+            sku: item.sku,
+            description: item.description,
+            qty: item.totalQty,
+            unit: item.unit,
+            unitPrice: item.unitPrice,
+            total: item.total,
+            // prItemId để null vì item này tổng hợp từ nhiều prItem
+            // (chi tiết xem trong bảng po_item_sources)
+          },
+        });
+
+        // C. Tạo PoItemSource — bảng truy vết từng PR item đóng góp vào PO item này
+        // Mỗi row = 1 PR item gốc với số lượng đóng góp và costCenter của nó
+        for (const source of item.sources) {
+          await tx.poItemSource.create({
+            data: {
+              poItemId: poItem.id,
+              prItemId: source.prItemId,
+              prId: source.prId,
+              contributedQty: source.contributedQty,
+              costCenterId: source.costCenterId,
+            },
+          });
+        }
+      }
+
+      // D. Cập nhật tất cả PR nguồn → PO_CREATED
+      await tx.purchaseRequisition.updateMany({
+        where: { id: { in: prIds } },
+        data: { status: 'PO_CREATED' as PrStatus },
+      });
+
+      return newPo;
+    });
+
+    this.logger.log(
+      `Created consolidated PO ${po.poNumber} from ${prIds.length} PRs, ` +
+        `${consolidatedItems.length} merged items, total: ${totalAmount.toLocaleString('vi-VN')} VND`,
+    );
+
+    return {
+      ...po,
+      // Trả thêm thông tin tổng kết để client hiển thị
+      consolidationSummary: {
+        sourcePrCount: prIds.length,
+        sourcePrNumbers: prs.map((p) => p.prNumber),
+        mergedItemCount: consolidatedItems.length,
+        totalOriginalItems: allItems.length,
+        savedItems: allItems.length - consolidatedItems.length, // Số item đã gộp được
+        totalAmount,
+        budgetReservedByCostCenter: Object.fromEntries(budgetByCostCenter),
+      },
+    };
   }
 }

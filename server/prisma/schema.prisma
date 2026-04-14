@@ -134,6 +134,7 @@ model CostCenter {
   organization         Organization          @relation(fields: [orgId], references: [id])
   purchaseOrders       PurchaseOrder[]
   purchaseRequisitions PurchaseRequisition[]
+  poItemSources        PoItemSource[]
 
   @@unique([orgId, code])
   @@map("cost_centers")
@@ -367,6 +368,7 @@ model PurchaseRequisition {
   attachments    PrAttachment[]
   items          PrItem[]
   purchaseOrders PurchaseOrder[]
+  poItemSources  PoItemSource[]
   costCenter     CostCenter?     @relation(fields: [costCenterId], references: [id])
   department     Department      @relation(fields: [deptId], references: [id])
   organization   Organization    @relation(fields: [orgId], references: [id])
@@ -397,6 +399,7 @@ model PrItem {
   preferredSupplierId String?             @map("preferred_supplier_id") @db.Uuid
   createdAt           DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   poItems             PoItem[]
+  poItemSources       PoItemSource[]
   category            ProductCategory?    @relation(fields: [categoryId], references: [id])
   pr                  PurchaseRequisition @relation(fields: [prId], references: [id], onDelete: Cascade)
   preferredSupplier   Organization?       @relation("PreferredSupplier", fields: [preferredSupplierId], references: [id])
@@ -660,12 +663,31 @@ model PoItem {
   createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   grnItems        GrnItem[]
   invoiceItems    InvoiceItem[]
+  sources         PoItemSource[]
   po              PurchaseOrder     @relation(fields: [poId], references: [id], onDelete: Cascade)
   prItem          PrItem?           @relation(fields: [prItemId], references: [id])
   quotationItem   RfqQuotationItem? @relation(fields: [quotationItemId], references: [id])
 
   @@unique([poId, lineNumber])
   @@map("po_items")
+}
+
+// Bảng trung gian: truy vết từng PR item đóng góp vào PO item khi gộp nhiều PR
+model PoItemSource {
+  id             String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  poItemId       String              @map("po_item_id") @db.Uuid
+  prItemId       String              @map("pr_item_id") @db.Uuid
+  prId           String              @map("pr_id") @db.Uuid
+  contributedQty Decimal             @map("contributed_qty") @db.Decimal(12, 3)
+  costCenterId   String?             @map("cost_center_id") @db.Uuid
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  poItem         PoItem              @relation(fields: [poItemId], references: [id], onDelete: Cascade)
+  prItem         PrItem              @relation(fields: [prItemId], references: [id])
+  pr             PurchaseRequisition @relation(fields: [prId], references: [id])
+  costCenter     CostCenter?         @relation(fields: [costCenterId], references: [id])
+
+  @@map("po_item_sources")
 }
 
 model PoAmendment {
