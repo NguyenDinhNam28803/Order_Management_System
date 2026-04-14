@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as imaps from 'imap-simple';
+import type * as Imap from 'imap';
 import { EmbeddingService } from './embedding.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -62,7 +63,7 @@ export class EmailRagService {
       const sinceStr = since.toISOString().slice(0, 10);
 
       const searchCriteria: any[] = [['SINCE', sinceStr]];
-      const fetchOptions: imaps.FetchOptions = {
+      const fetchOptions: Imap.FetchOptions = {
         // bodies: mảng chỉ định những phần header nào cần tải
         // 'HEADER.FIELDS (FROM TO SUBJECT DATE MESSAGE-ID)' → chỉ lấy 5 field header
         // 'TEXT' → lấy phần nội dung thuần
@@ -70,6 +71,7 @@ export class EmailRagService {
         struct: true, // Cần struct để biết cấu trúc MIME (tìm phần text/plain)
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const messages = await connection.search(searchCriteria, fetchOptions);
 
       // Chỉ lấy `limit` email mới nhất (slice từ cuối)
@@ -85,18 +87,26 @@ export class EmailRagService {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const header: Record<string, string[]> = headerPart?.body ?? {};
 
-        // Lấy nội dung text/plain từ cấu trúc MIME
-        const allParts = imaps.getParts(msg.attributes.struct as any);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const textPart = allParts.find(
-          (p: any) => p.type === 'text' && p.subtype === 'plain',
-        );
-
+        // Bug fix #1: guard against missing struct (some IMAP servers omit it)
         let body = '';
-        if (textPart) {
-          // getPartData trả về nội dung đã decode (base64 / quoted-printable)
+        if (msg.attributes.struct) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          const allParts = imaps.getParts(msg.attributes.struct as any);
+          // Bug fix #2: case-insensitive comparison — servers may return uppercase types
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          body = await connection.getPartData(msg, textPart);
+          const textPart = allParts.find(
+            (p: any) =>
+              p.type?.toLowerCase() === 'text' &&
+              p.subtype?.toLowerCase() === 'plain',
+          );
+          if (textPart) {
+            // Bug fix #3: getPartData may return a Buffer for binary-encoded parts
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const raw = await connection.getPartData(msg, textPart);
+            body = Buffer.isBuffer(raw)
+              ? raw.toString('utf-8')
+              : String(raw ?? '');
+          }
         }
 
         // Sanitize messageId: loại bỏ ký tự đặc biệt để dùng làm source_id trong DB
@@ -110,7 +120,11 @@ export class EmailRagService {
           subject: String(header.subject?.[0] ?? '(no subject)'),
           from: String(header.from?.[0] ?? ''),
           to: String(header.to?.[0] ?? ''),
-          date: new Date(header.date?.[0] ?? Date.now()),
+          // Bug fix #4: guard against malformed date strings → Invalid Date
+          date: (() => {
+            const d = new Date(header.date?.[0] ?? '');
+            return isNaN(d.getTime()) ? new Date() : d;
+          })(),
           // Giới hạn 2000 ký tự để tránh chunk quá lớn
           body: body.slice(0, 2000),
         });

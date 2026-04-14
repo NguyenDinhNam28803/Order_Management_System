@@ -20,22 +20,22 @@ export default function Topbar() {
     };
 
     return (
-        <header className="sticky top-0 z-40 w-full bg-[#0F1117]/80 backdrop-blur-xl border-b border-[rgba(148,163,184,0.1)] transition-all h-16 flex items-center justify-between px-6">
-            <div className="flex items-center gap-4">
+        <header className="sticky top-0 z-40 w-full bg-[#161B22]/95 backdrop-blur-xl border-b border-[rgba(240,246,252,0.1)] h-14 flex items-center justify-between px-5">
+            <div className="flex items-center gap-3">
                 <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">ProcurePro ERP</span>
-                    <h2 className="text-sm font-bold text-[#F8FAFC] tracking-tight">{getBreadcrumb()}</h2>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#484F58]">ProcurePro ERP</span>
+                    <h2 className="text-[13px] font-bold text-[#E6EDF3] tracking-tight leading-tight">{getBreadcrumb()}</h2>
                 </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
                 {/* Search */}
                 <div className="hidden md:flex relative group">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] group-focus-within:text-[#3B82F6] transition-colors" size={16} />
-                    <input 
-                        type="text" 
-                        placeholder="Tìm kiếm hệ thống..." 
-                        className="pl-10 pr-4 py-2 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-full text-xs font-bold text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#3B82F6]/50 focus:ring-1 focus:ring-[#3B82F6]/50 w-64 transition-all"
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#484F58] group-focus-within:text-[#2563EB] transition-colors" size={14} />
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm hệ thống..."
+                        className="pl-9 pr-4 py-1.5 bg-[#21262D] border border-[rgba(240,246,252,0.1)] rounded-lg text-xs font-medium text-[#E6EDF3] placeholder:text-[#484F58] focus:outline-none focus:border-[#2563EB]/50 focus:ring-1 focus:ring-[#2563EB]/30 w-56 transition-all"
                     />
                 </div>
 
@@ -44,33 +44,33 @@ export default function Topbar() {
 
                 {/* System Notifications Bell */}
                 <div className="relative">
-                    <button 
+                    <button
                         onClick={() => setShowNotifications(!showNotifications)}
-                        className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#3B82F6]/30 transition-all duration-200 focus:outline-none"
+                        className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-[#21262D] border border-[rgba(240,246,252,0.1)] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[#2563EB]/40 transition-all focus:outline-none"
                     >
-                        <Bell size={16} />
+                        <Bell size={15} />
                         {notificationCount > 0 && (
-                            <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 flex items-center justify-center bg-rose-500 text-white text-[9px] font-bold rounded-full border border-[#0F1117]">
+                            <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 flex items-center justify-center bg-rose-500 text-white text-[9px] font-bold rounded-full border border-[#161B22]">
                                 {notificationCount > 9 ? "9+" : notificationCount}
                             </span>
                         )}
                     </button>
                     {showNotifications && (
-                        <div className="absolute right-0 mt-2 w-80 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-xl shadow-black/50 overflow-hidden z-50">
-                            <div className="p-3 border-b border-[rgba(148,163,184,0.1)]">
-                                <h4 className="text-sm font-bold text-[#F8FAFC]">Thông báo hệ thống</h4>
-                                <p className="text-[10px] text-[#64748B]">{notificationCount} thông báo mới</p>
+                        <div className="absolute right-0 mt-2 w-72 bg-[#21262D] border border-[rgba(240,246,252,0.1)] rounded-xl shadow-xl shadow-black/50 overflow-hidden z-50">
+                            <div className="p-3 border-b border-[rgba(240,246,252,0.1)]">
+                                <h4 className="text-sm font-bold text-[#E6EDF3]">Thông báo hệ thống</h4>
+                                <p className="text-[10px] text-[#484F58]">{notificationCount} thông báo mới</p>
                             </div>
-                            <div className="max-h-64 overflow-y-auto">
+                            <div className="max-h-60 overflow-y-auto">
                                 {notificationCount === 0 ? (
-                                    <div className="text-xs text-[#64748B] text-center p-4">
+                                    <div className="text-xs text-[#484F58] text-center p-4">
                                         Không có thông báo mới
                                     </div>
                                 ) : (
                                     Array.from({ length: notificationCount }).map((_, i) => (
-                                        <div key={i} className="p-3 border-b border-[rgba(148,163,184,0.05)] hover:bg-[rgba(59,130,246,0.05)] transition-colors cursor-pointer">
-                                            <p className="text-xs text-[#F8FAFC] font-medium">Thông báo hệ thống #{i + 1}</p>
-                                            <p className="text-[10px] text-[#64748B] mt-1">Vừa xong</p>
+                                        <div key={i} className="p-3 border-b border-[rgba(240,246,252,0.05)] hover:bg-[rgba(37,99,235,0.06)] transition-colors cursor-pointer">
+                                            <p className="text-xs text-[#E6EDF3] font-medium">Thông báo hệ thống #{i + 1}</p>
+                                            <p className="text-[10px] text-[#484F58] mt-0.5">Vừa xong</p>
                                         </div>
                                     ))
                                 )}
@@ -79,16 +79,16 @@ export default function Topbar() {
                     )}
                 </div>
 
-                {/* User Profile Hook */}
-                <div className="flex items-center gap-3 pl-4 border-l border-[rgba(148,163,184,0.1)] cursor-pointer hover:bg-[rgba(148,163,184,0.05)] p-1.5 rounded-xl transition-all">
-                    <div className="h-8 w-8 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/30 flex items-center justify-center text-[#3B82F6] font-black shadow-inner">
-                        {currentUser?.fullName?.charAt(0) || <User size={16} />}
+                {/* User Profile */}
+                <div className="flex items-center gap-2.5 pl-3 border-l border-[rgba(240,246,252,0.1)] cursor-pointer hover:bg-[rgba(240,246,252,0.04)] px-2.5 py-1.5 rounded-lg transition-all">
+                    <div className="h-7 w-7 rounded-md bg-[#2563EB]/15 border border-[#2563EB]/30 flex items-center justify-center text-[#60A5FA] font-black text-[11px]">
+                        {currentUser?.fullName?.charAt(0) || <User size={14} />}
                     </div>
                     <div className="hidden md:flex flex-col">
-                        <span className="text-xs font-black text-[#F8FAFC]">{currentUser?.fullName || "Guest"}</span>
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#64748B]">{currentUser?.role?.replace(/_/g, ' ') || "No Role"}</span>
+                        <span className="text-[11px] font-bold text-[#E6EDF3] leading-tight">{currentUser?.fullName || "Guest"}</span>
+                        <span className="text-[9px] font-semibold uppercase tracking-widest text-[#484F58]">{currentUser?.role?.replace(/_/g, ' ') || "No Role"}</span>
                     </div>
-                    <ChevronDown size={14} className="text-[#64748B]" />
+                    <ChevronDown size={12} className="text-[#484F58]" />
                 </div>
             </div>
         </header>

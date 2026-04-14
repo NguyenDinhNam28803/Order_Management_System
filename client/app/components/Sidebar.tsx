@@ -155,19 +155,19 @@ export default function Sidebar() {
         .reduce((acc, item) => acc + (item.badge || 0), 0);
 
     return (
-        <aside className="group fixed left-0 top-0 z-50 h-screen w-16 hover:w-64 bg-gradient-to-b from-[#161922] to-[#0F1117] border-r border-[rgba(148,163,184,0.1)] shadow-2xl transition-all duration-300 ease-in-out flex flex-col overflow-hidden">
-            {/* Logo Section */}
-            <div className="flex h-16 items-center px-4 border-b border-[rgba(148,163,184,0.1)] shrink-0">
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center shrink-0 shadow-lg shadow-[#3B82F6]/30">
-                    <span className="text-white text-xs font-bold">PS</span>
+        <aside className="fixed left-0 top-0 z-50 h-screen w-[180px] bg-[#161B22] border-r border-[rgba(240,246,252,0.1)] flex flex-col overflow-hidden">
+            {/* Logo */}
+            <div className="flex h-14 items-center gap-3 px-4 border-b border-[rgba(240,246,252,0.1)] shrink-0">
+                <div className="h-7 w-7 rounded-md bg-[#2563EB] flex items-center justify-center shrink-0">
+                    <span className="text-white text-[10px] font-black tracking-tight">PS</span>
                 </div>
-                <span className="ml-4 text-sm font-black tracking-tight text-[#F8FAFC] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    PROCURE<span className="text-[#3B82F6]">SMART</span>
+                <span className="text-[13px] font-black tracking-tight text-[#E6EDF3] whitespace-nowrap">
+                    PROCURE<span className="text-[#2563EB]">SMART</span>
                 </span>
             </div>
 
             {/* Nav */}
-            <nav className="mt-4 px-2 space-y-4 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-32">
+            <nav className="mt-3 px-2 space-y-3 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-36">
                 {navigation.map((group) => {
                     const userRole = currentUser?.role;
                     const groupVisible = !userRole || group.roles.includes(userRole);
@@ -178,10 +178,10 @@ export default function Sidebar() {
 
                     return (
                         <div key={group.group}>
-                            <h3 className="mb-2 px-4 text-[9px] font-black uppercase tracking-widest text-[#64748B] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            <h3 className="mb-1 px-2 text-[9px] font-black uppercase tracking-widest text-[#484F58] whitespace-nowrap">
                                 {group.group}
                             </h3>
-                            <div className="space-y-1 ml-1">
+                            <div className="space-y-0.5">
                                 {visibleItems.map((item) => {
                                     const isActive = pathname === item.path || pathname.startsWith(`${item.path}/`);
                                     return (
@@ -190,17 +190,18 @@ export default function Sidebar() {
                                             href={item.path}
                                             className={`sidebar-item relative ${isActive ? "active" : ""}`}
                                         >
-                                            <item.icon size={18} className={`shrink-0 transition-colors ${isActive ? "text-[#60A5FA]" : "text-[#64748B] group-hover/item:text-[#94A3B8]"}`} />
-                                            <span className="ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-semibold text-sm">
+                                            <item.icon size={15} className={`shrink-0 ${isActive ? "text-[#60A5FA]" : "text-[#484F58]"}`} />
+                                            <span className="whitespace-nowrap font-medium text-[12.5px] truncate">
                                                 {item.name}
                                             </span>
-                                            {/* Badge */}
                                             {item.badge && (
-                                                <span className={`absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1.5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg ${!isActive ? "animate-pulse" : ""}`}>
+                                                <span className="ml-auto min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shrink-0">
                                                     {item.badge > 9 ? "9+" : item.badge}
                                                 </span>
                                             )}
-                                            {isActive && <ChevronRight size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-[#60A5FA]" />}
+                                            {isActive && !item.badge && (
+                                                <ChevronRight size={12} className="ml-auto text-[#2563EB] shrink-0" />
+                                            )}
                                         </Link>
                                     );
                                 })}
@@ -210,46 +211,41 @@ export default function Sidebar() {
                 })}
             </nav>
 
-            {/* Quick Stats - Only visible on hover */}
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity px-4 py-3 border-t border-[rgba(148,163,184,0.1)] bg-[rgba(22,25,34,0.5)]">
-                <div className="grid grid-cols-2 gap-2 text-center">
-                    <div className="p-2 bg-[#0F1117] rounded-lg">
-                        <p className="text-xs text-[#64748B]">Chờ duyệt</p>
-                        <p className="text-lg font-bold text-amber-400">{totalBadgeCount}</p>
+            {/* Quick Stats */}
+            <div className="px-3 py-2 border-t border-[rgba(240,246,252,0.1)] bg-[#0D1117]">
+                <div className="grid grid-cols-2 gap-1.5 text-center">
+                    <div className="p-1.5 bg-[#161B22] rounded-md">
+                        <p className="text-[9px] text-[#484F58] font-medium">Chờ duyệt</p>
+                        <p className="text-sm font-black text-amber-400 font-mono">{totalBadgeCount}</p>
                     </div>
-                    <div className="p-2 bg-[#0F1117] rounded-lg">
-                        <p className="text-xs text-[#64748B]">Hoạt động</p>
-                        <p className="text-lg font-bold text-emerald-400">24</p>
+                    <div className="p-1.5 bg-[#161B22] rounded-md">
+                        <p className="text-[9px] text-[#484F58] font-medium">Online</p>
+                        <p className="text-sm font-black text-emerald-400 font-mono">24</p>
                     </div>
                 </div>
             </div>
 
-            {/* Logout / User Info Footer */}
-            <div className="absolute bottom-0 w-full border-t border-[rgba(148,163,184,0.1)] bg-[#161922] p-3">
-                <Link href="/users/profile" className="flex items-center gap-3 mb-2 p-2 hover:bg-[rgba(59,130,246,0.1)] rounded-xl transition-colors cursor-pointer group/profile">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center font-black text-white text-xs shrink-0 shadow-lg shadow-[#3B82F6]/20">
+            {/* User Footer */}
+            <div className="border-t border-[rgba(240,246,252,0.1)] bg-[#161B22] p-2">
+                <Link href="/users/profile" className="flex items-center gap-2 mb-1.5 px-2 py-1.5 hover:bg-[rgba(37,99,235,0.1)] rounded-lg transition-colors cursor-pointer">
+                    <div className="h-7 w-7 rounded-lg bg-[#2563EB] flex items-center justify-center font-black text-white text-[10px] shrink-0">
                         {currentUser?.fullName?.substring(0, 2).toUpperCase() || "GU"}
                     </div>
-                    <div className="flex flex-col opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden">
-                        <span className="text-xs font-bold truncate text-[#F8FAFC] leading-none mb-1">
+                    <div className="flex flex-col overflow-hidden min-w-0">
+                        <span className="text-[11px] font-bold truncate text-[#E6EDF3] leading-tight">
                             {currentUser?.name || currentUser?.fullName || "Guest"}
                         </span>
-                        <div className="flex">
-                            <span className={`role-badge ${roleInfo?.class ?? "bg-slate-400"}`}>
-                                {roleInfo?.label || roleKey}
-                            </span>
-                        </div>
+                        <span className={`role-badge mt-0.5 ${roleInfo?.class ?? "bg-slate-400"}`}>
+                            {roleInfo?.label || roleKey}
+                        </span>
                     </div>
-                    <UserCircle size={16} className="ml-auto opacity-0 group-hover/profile:opacity-100 text-[#60A5FA] shrink-0" />
                 </Link>
-                <button 
+                <button
                     onClick={logout}
-                    className="flex w-full items-center gap-3 p-3 text-xs font-bold uppercase tracking-wider text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors group/logout"
+                    className="flex w-full items-center gap-2 px-2 py-1.5 text-[11px] font-bold text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
                 >
-                    <LogOut size={20} className="shrink-0" />
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        Đăng xuất
-                    </span>
+                    <LogOut size={14} className="shrink-0" />
+                    <span>Đăng xuất</span>
                 </button>
             </div>
         </aside>
