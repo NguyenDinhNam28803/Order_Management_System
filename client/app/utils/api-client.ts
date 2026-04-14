@@ -152,553 +152,174 @@ export const apiFetch = async (url: string, options: RequestInit = {}) => {
 // PR ENDPOINTS
 // ==========================================
 export const prAPI = {
-  list: async () => {
-    const res = await fetch(`${API_BASE}/procurement-requests`);
-    if (!res.ok) throw new Error('Failed to fetch PRs');
-    return res.json();
-  },
-
-  myPRs: async () => {
-    const res = await fetch(`${API_BASE}/procurement-requests/my`);
-    if (!res.ok) throw new Error('Failed to fetch my PRs');
-    return res.json();
-  },
-
-  getById: async (id: string) => {
-    const res = await fetch(`${API_BASE}/procurement-requests/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch PR');
-    return res.json();
-  },
-
-  create: async (data: PRCreateData) => {
-    const res = await fetch(`${API_BASE}/procurement-requests`, {
+  list: () => apiFetch('/procurement-requests'),
+  myPRs: () => apiFetch('/procurement-requests/my'),
+  getById: (id: string) => apiFetch(`/procurement-requests/${id}`),
+  create: (data: PRCreateData) =>
+    apiFetch('/procurement-requests', { method: 'POST', body: JSON.stringify(data) }),
+  submit: (id: string, reviewers: string[]) =>
+    apiFetch(`/procurement-requests/${id}/submit`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error('Failed to create PR');
-    return res.json();
-  },
-
-  submit: async (id: string, reviewers: string[]) => {
-    const res = await fetch(`${API_BASE}/procurement-requests/${id}/submit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reviewerIds: reviewers }),
-    });
-    if (!res.ok) throw new Error('Failed to submit PR');
-    return res.json();
-  },
-
-  aiSuggest: async (keyword: string) => {
-    const res = await fetch(`${API_BASE}/procurement-requests/ai-suggest`, {
+    }),
+  aiSuggest: (keyword: string) =>
+    apiFetch('/procurement-requests/ai-suggest', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ keyword }),
-    });
-    if (!res.ok) throw new Error('Failed to get AI suggestions');
-    return res.json();
-  },
+    }),
 };
 
 // ==========================================
 // PO ENDPOINTS
 // ==========================================
 export const poAPI = {
-  list: async () => {
-    const res = await fetch(`${API_BASE}/purchase-orders`);
-    if (!res.ok) throw new Error('Failed to fetch POs');
-    return res.json();
-  },
-
-  getById: async (id: string) => {
-    const res = await fetch(`${API_BASE}/purchase-orders/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch PO');
-    return res.json();
-  },
-
-  create: async (data: POCreateData) => {
-    const res = await fetch(`${API_BASE}/purchase-orders`, {
+  list: () => apiFetch('/purchase-orders'),
+  getById: (id: string) => apiFetch(`/purchase-orders/${id}`),
+  create: (data: POCreateData) =>
+    apiFetch('/purchase-orders', { method: 'POST', body: JSON.stringify(data) }),
+  createFromPR: (prId: string, supplierId: string) =>
+    apiFetch('/purchase-orders/create-from-pr', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error('Failed to create PO');
-    return res.json();
-  },
-
-  createFromPR: async (prId: string, supplierId: string) => {
-    const res = await fetch(`${API_BASE}/purchase-orders/create-from-pr`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prId, supplierId }),
-    });
-    if (!res.ok) throw new Error('Failed to create PO from PR');
-    return res.json();
-  },
-
-  confirm: async (id: string) => {
-    const res = await fetch(`${API_BASE}/purchase-orders/${id}/confirm`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!res.ok) throw new Error('Failed to confirm PO');
-    return res.json();
-  },
-
-  submit: async (id: string) => {
-    const res = await fetch(`${API_BASE}/purchase-orders/${id}/submit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!res.ok) throw new Error('Failed to submit PO');
-    return res.json();
-  },
-
-  updateStatus: async (id: string, status: string) => {
-    const res = await fetch(`${API_BASE}/purchase-orders/${id}/status`, {
+    }),
+  confirm: (id: string) =>
+    apiFetch(`/purchase-orders/${id}/confirm`, { method: 'POST' }),
+  submit: (id: string) =>
+    apiFetch(`/purchase-orders/${id}/submit`, { method: 'POST' }),
+  updateStatus: (id: string, status: string) =>
+    apiFetch(`/purchase-orders/${id}/status`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
-    });
-    if (!res.ok) throw new Error('Failed to update PO status');
-    return res.json();
-  },
-
-  reject: async (id: string, reason: string) => {
-    const res = await fetch(`${API_BASE}/purchase-orders/${id}/reject`, {
+    }),
+  reject: (id: string, reason: string) =>
+    apiFetch(`/purchase-orders/${id}/reject`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reason }),
-    });
-    if (!res.ok) throw new Error('Failed to reject PO');
-    return res.json();
-  },
-
-  reset: async (id: string) => {
-    const res = await fetch(`${API_BASE}/purchase-orders/${id}/reset`, {
-      method: 'POST',
-    });
-    if (!res.ok) throw new Error('Failed to reset PO');
-    return res.json();
-  },
+    }),
+  reset: (id: string) =>
+    apiFetch(`/purchase-orders/${id}/reset`, { method: 'POST' }),
 };
 
 // ==========================================
 // RFQ ENDPOINTS
 // ==========================================
 export const rfqAPI = {
-  list: async () => {
-    const res = await fetch(`${API_BASE}/request-for-quotations`);
-    if (!res.ok) throw new Error('Failed to fetch RFQs');
-    return res.json();
-  },
-
-  getById: async (id: string) => {
-    const res = await fetch(`${API_BASE}/request-for-quotations/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch RFQ');
-    return res.json();
-  },
-
-  create: async (data: RFQCreateData) => {
-    const res = await fetch(`${API_BASE}/request-for-quotations`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error('Failed to create RFQ');
-    return res.json();
-  },
-
-  updateStatus: async (id: string, status: string) => {
-    const res = await fetch(`${API_BASE}/request-for-quotations/${id}/status`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    });
-    if (!res.ok) throw new Error('Failed to update RFQ status');
-    return res.json();
-  },
+  list: () => apiFetch('/request-for-quotations'),
+  getById: (id: string) => apiFetch(`/request-for-quotations/${id}`),
+  create: (data: RFQCreateData) =>
+    apiFetch('/request-for-quotations', { method: 'POST', body: JSON.stringify(data) }),
+  updateStatus: (id: string, status: string) =>
+    apiFetch(`/request-for-quotations/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
 
   // Supplier Management
-  getSuppliers: async (rfqId: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/${rfqId}/suppliers`
-    );
-    if (!res.ok) throw new Error('Failed to fetch suppliers');
-    return res.json();
-  },
-
-  inviteSuppliers: async (rfqId: string, supplierIds: string[]) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/${rfqId}/suppliers/invite`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ supplierIds }),
-      }
-    );
-    if (!res.ok) throw new Error('Failed to invite suppliers');
-    return res.json();
-  },
-
-  removeSupplier: async (rfqId: string, supplierId: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/${rfqId}/suppliers/${supplierId}`,
-      { method: 'DELETE' }
-    );
-    if (!res.ok) throw new Error('Failed to remove supplier');
-    return res.json();
-  },
-
-  aiSearchAndAddSuppliers: async (rfqId: string, keyword: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/${rfqId}/search-and-add-suppliers`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keyword }),
-      }
-    );
-    if (!res.ok) throw new Error('Failed to search suppliers');
-    return res.json();
-  },
+  getSuppliers: (rfqId: string) =>
+    apiFetch(`/request-for-quotations/${rfqId}/suppliers`),
+  inviteSuppliers: (rfqId: string, supplierIds: string[]) =>
+    apiFetch(`/request-for-quotations/${rfqId}/suppliers/invite`, {
+      method: 'POST', body: JSON.stringify({ supplierIds }),
+    }),
+  removeSupplier: (rfqId: string, supplierId: string) =>
+    apiFetch(`/request-for-quotations/${rfqId}/suppliers/${supplierId}`, { method: 'DELETE' }),
+  aiSearchAndAddSuppliers: (rfqId: string, keyword: string) =>
+    apiFetch(`/request-for-quotations/${rfqId}/search-and-add-suppliers`, {
+      method: 'POST', body: JSON.stringify({ keyword }),
+    }),
 
   // Quotation Management
-  getQuotations: async (rfqId: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/${rfqId}/quotations`
-    );
-    if (!res.ok) throw new Error('Failed to fetch quotations');
-    return res.json();
-  },
-
-  getQuotationById: async (id: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/quotations/${id}`
-    );
-    if (!res.ok) throw new Error('Failed to fetch quotation');
-    return res.json();
-  },
-
-  submitQuotation: async (id: string, data: QuotationSubmitData) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/quotations/${id}/submit`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) throw new Error('Failed to submit quotation');
-    return res.json();
-  },
-
-  acceptQuotation: async (id: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/quotations/${id}/accept`,
-      { method: 'PUT' }
-    );
-    if (!res.ok) throw new Error('Failed to accept quotation');
-    return res.json();
-  },
-
-  rejectQuotation: async (id: string, reason: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/quotations/${id}/reject`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason }),
-      }
-    );
-    if (!res.ok) throw new Error('Failed to reject quotation');
-    return res.json();
-  },
-
-  updateAIScore: async (id: string, score: number) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/quotations/${id}/ai-score`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ aiScore: score }),
-      }
-    );
-    if (!res.ok) throw new Error('Failed to update AI score');
-    return res.json();
-  },
-
-  analyzeQuotation: async (id: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/quotations/${id}/analyze`,
-      { method: 'POST' }
-    );
-    if (!res.ok) throw new Error('Failed to analyze quotation');
-    return res.json();
-  },
+  getQuotations: (rfqId: string) =>
+    apiFetch(`/request-for-quotations/${rfqId}/quotations`),
+  getQuotationById: (id: string) =>
+    apiFetch(`/request-for-quotations/quotations/${id}`),
+  submitQuotation: (id: string, data: QuotationSubmitData) =>
+    apiFetch(`/request-for-quotations/quotations/${id}/submit`, { method: 'PUT', body: JSON.stringify(data) }),
+  acceptQuotation: (id: string) =>
+    apiFetch(`/request-for-quotations/quotations/${id}/accept`, { method: 'PUT' }),
+  rejectQuotation: (id: string, reason: string) =>
+    apiFetch(`/request-for-quotations/quotations/${id}/reject`, { method: 'PUT', body: JSON.stringify({ reason }) }),
+  updateAIScore: (id: string, score: number) =>
+    apiFetch(`/request-for-quotations/quotations/${id}/ai-score`, { method: 'PUT', body: JSON.stringify({ aiScore: score }) }),
+  analyzeQuotation: (id: string) =>
+    apiFetch(`/request-for-quotations/quotations/${id}/analyze`, { method: 'POST' }),
 
   // Q&A Threads
-  getQAThreads: async (rfqId: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/${rfqId}/qa-threads`
-    );
-    if (!res.ok) throw new Error('Failed to fetch Q&A threads');
-    return res.json();
-  },
-
-  createQAThread: async (rfqId: string, data: QAThreadData) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/${rfqId}/qa-threads`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) throw new Error('Failed to create Q&A thread');
-    return res.json();
-  },
-
-  answerQAThread: async (id: string, answer: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/qa-threads/${id}/answer`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answer }),
-      }
-    );
-    if (!res.ok) throw new Error('Failed to answer Q&A thread');
-    return res.json();
-  },
+  getQAThreads: (rfqId: string) =>
+    apiFetch(`/request-for-quotations/${rfqId}/qa-threads`),
+  createQAThread: (rfqId: string, data: QAThreadData) =>
+    apiFetch(`/request-for-quotations/${rfqId}/qa-threads`, { method: 'POST', body: JSON.stringify(data) }),
+  answerQAThread: (id: string, answer: string) =>
+    apiFetch(`/request-for-quotations/qa-threads/${id}/answer`, { method: 'PUT', body: JSON.stringify({ answer }) }),
 
   // Counter Offers
-  createCounterOffer: async (quotationId: string, data: CounterOfferData) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/quotations/${quotationId}/counter-offers`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) throw new Error('Failed to create counter offer');
-    return res.json();
-  },
-
-  getCounterOffers: async (quotationId: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/quotations/${quotationId}/counter-offers`
-    );
-    if (!res.ok) throw new Error('Failed to fetch counter offers');
-    return res.json();
-  },
-
-  respondToCounterOffer: async (id: string, response: CounterOfferResponse) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/counter-offers/${id}/respond`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(response),
-      }
-    );
-    if (!res.ok) throw new Error('Failed to respond to counter offer');
-    return res.json();
-  },
+  createCounterOffer: (quotationId: string, data: CounterOfferData) =>
+    apiFetch(`/request-for-quotations/quotations/${quotationId}/counter-offers`, {
+      method: 'POST', body: JSON.stringify(data),
+    }),
+  getCounterOffers: (quotationId: string) =>
+    apiFetch(`/request-for-quotations/quotations/${quotationId}/counter-offers`),
+  respondToCounterOffer: (id: string, response: CounterOfferResponse) =>
+    apiFetch(`/request-for-quotations/counter-offers/${id}/respond`, { method: 'PUT', body: JSON.stringify(response) }),
 
   // Award
-  award: async (rfqId: string, quotationId: string) => {
-    const res = await fetch(
-      `${API_BASE}/request-for-quotations/${rfqId}/award`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ selectedQuotationId: quotationId }),
-      }
-    );
-    if (!res.ok) throw new Error('Failed to award quotation');
-    return res.json();
-  },
+  award: (rfqId: string, quotationId: string) =>
+    apiFetch(`/request-for-quotations/${rfqId}/award`, {
+      method: 'PUT', body: JSON.stringify({ selectedQuotationId: quotationId }),
+    }),
 };
 
 // ==========================================
 // GRN ENDPOINTS
 // ==========================================
 export const grnAPI = {
-  list: async () => {
-    const res = await fetch(`${API_BASE}/grn`);
-    if (!res.ok) throw new Error('Failed to fetch GRNs');
-    return res.json();
-  },
-
-  getById: async (id: string) => {
-    const res = await fetch(`${API_BASE}/grn/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch GRN');
-    return res.json();
-  },
-
-  create: async (data: GRNCreateData) => {
-    const res = await fetch(`${API_BASE}/grn`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error('Failed to create GRN');
-    return res.json();
-  },
-
-  updateStatus: async (id: string, status: string) => {
-    const res = await fetch(`${API_BASE}/grn/${id}/status`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    });
-    if (!res.ok) throw new Error('Failed to update GRN status');
-    return res.json();
-  },
-
-  updateItemQC: async (id: string, itemId: string, qcResult: QCResultData) => {
-    const res = await fetch(`${API_BASE}/grn/${id}/items/${itemId}/qc`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(qcResult),
-    });
-    if (!res.ok) throw new Error('Failed to update item QC');
-    return res.json();
-  },
-
-  confirm: async (id: string) => {
-    const res = await fetch(`${API_BASE}/grn/${id}/confirm`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!res.ok) throw new Error('Failed to confirm GRN');
-    return res.json();
-  },
+  list: () => apiFetch('/grn'),
+  getById: (id: string) => apiFetch(`/grn/${id}`),
+  create: (data: GRNCreateData) =>
+    apiFetch('/grn', { method: 'POST', body: JSON.stringify(data) }),
+  updateStatus: (id: string, status: string) =>
+    apiFetch(`/grn/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  updateItemQC: (id: string, itemId: string, qcResult: QCResultData) =>
+    apiFetch(`/grn/${id}/items/${itemId}/qc`, { method: 'PATCH', body: JSON.stringify(qcResult) }),
+  confirm: (id: string) =>
+    apiFetch(`/grn/${id}/confirm`, { method: 'POST' }),
 };
 
 // ==========================================
 // INVOICE ENDPOINTS
 // ==========================================
 export const invoiceAPI = {
-  list: async () => {
-    const res = await fetch(`${API_BASE}/invoices`);
-    if (!res.ok) throw new Error('Failed to fetch invoices');
-    return res.json();
-  },
-
-  getById: async (id: string) => {
-    const res = await fetch(`${API_BASE}/invoices/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch invoice');
-    return res.json();
-  },
-
-  create: async (data: InvoiceCreateData) => {
-    const res = await fetch(`${API_BASE}/invoices`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error('Failed to create invoice');
-    return res.json();
-  },
-
-  update: async (id: string, data: InvoiceUpdateData) => {
-    const res = await fetch(`${API_BASE}/invoices/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error('Failed to update invoice');
-    return res.json();
-  },
-
-  runMatching: async (id: string) => {
-    const res = await fetch(`${API_BASE}/invoices/${id}/run-matching`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!res.ok) throw new Error('Failed to run 3-way matching');
-    return res.json();
-  },
-
-  pay: async (id: string) => {
-    const res = await fetch(`${API_BASE}/invoices/${id}/pay`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!res.ok) throw new Error('Failed to pay invoice');
-    return res.json();
-  },
-
-  delete: async (id: string) => {
-    const res = await fetch(`${API_BASE}/invoices/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) throw new Error('Failed to delete invoice');
-    return res.json();
-  },
+  list: () => apiFetch('/invoices'),
+  getById: (id: string) => apiFetch(`/invoices/${id}`),
+  create: (data: InvoiceCreateData) =>
+    apiFetch('/invoices', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: InvoiceUpdateData) =>
+    apiFetch(`/invoices/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  runMatching: (id: string) =>
+    apiFetch(`/invoices/${id}/run-matching`, { method: 'POST' }),
+  pay: (id: string) =>
+    apiFetch(`/invoices/${id}/pay`, { method: 'POST' }),
+  delete: (id: string) =>
+    apiFetch(`/invoices/${id}`, { method: 'DELETE' }),
 };
 
 // ==========================================
 // PAYMENT ENDPOINTS
 // ==========================================
 export const paymentAPI = {
-  list: async () => {
-    const res = await fetch(`${API_BASE}/payments`);
-    if (!res.ok) throw new Error('Failed to fetch payments');
-    return res.json();
-  },
-
-  getById: async (id: string) => {
-    const res = await fetch(`${API_BASE}/payments/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch payment');
-    return res.json();
-  },
-
-  create: async (data: PaymentCreateData) => {
-    const res = await fetch(`${API_BASE}/payments`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error('Failed to create payment');
-    return res.json();
-  },
-
-  complete: async (id: string) => {
-    const res = await fetch(`${API_BASE}/payments/${id}/complete`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!res.ok) throw new Error('Failed to complete payment');
-    return res.json();
-  },
+  list: () => apiFetch('/payments'),
+  getById: (id: string) => apiFetch(`/payments/${id}`),
+  create: (data: PaymentCreateData) =>
+    apiFetch('/payments', { method: 'POST', body: JSON.stringify(data) }),
+  complete: (id: string) =>
+    apiFetch(`/payments/${id}/complete`, { method: 'POST' }),
 };
 
 // ==========================================
 // SUPPLIER KPI ENDPOINTS
 // ==========================================
 export const supplierKPIAPI = {
-  evaluate: async (supplierId: string) => {
-    const res = await fetch(
-      `${API_BASE}/supplier-kpis/evaluate/${supplierId}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-    if (!res.ok) throw new Error('Failed to evaluate supplier');
-    return res.json();
-  },
-
-  getReport: async (supplierId: string) => {
-    const res = await fetch(`${API_BASE}/supplier-kpis/report/${supplierId}`);
-    if (!res.ok) throw new Error('Failed to fetch KPI report');
-    return res.json();
-  },
+  evaluate: (supplierId: string) =>
+    apiFetch(`/supplier-kpis/evaluate/${supplierId}`, { method: 'POST' }),
+  getReport: (supplierId: string) =>
+    apiFetch(`/supplier-kpis/report/${supplierId}`),
 };
 
 // ==========================================

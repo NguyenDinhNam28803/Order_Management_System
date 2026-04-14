@@ -6,7 +6,7 @@ import {
     FileCheck, ShieldAlert, Users, Settings, LogOut,
     FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers,
     ShieldCheck, MessageSquare, History, FileText,
-    Bell, Inbox, Command, Star, UserCircle, Zap, Brain, PlusCircle
+    Bell, Inbox, Command, Star, UserCircle, Zap, Brain, PlusCircle, GitMerge
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -57,6 +57,7 @@ const navigation: NavGroup[] = [
         roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"],
         items: [
             { name: "Đơn đặt hàng (PO)", icon: ShoppingBag, path: "/procurement/pos", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Gộp PO từ nhiều PR", icon: GitMerge, path: "/po/consolidate", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
             { name: "Quản lý Báo giá", icon: FileText, path: "/procurement/quotations", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
             { name: "Quản lý Hợp đồng", icon: ShieldCheck, path: "/procurement/contracts", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
             { name: "Đánh giá Nhà cung cấp", icon: Star, path: "/procurement/suppliers", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },

@@ -22,7 +22,7 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
 
 export default function InvoicesPage() {
   //deleteInvoice
-  const { invoices, fetchInvoices } = useProcurement();
+  const { invoices, fetchInvoices, removeInvoice } = useProcurement();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -64,7 +64,10 @@ export default function InvoicesPage() {
     if (!confirm("Bạn có chắc muốn xóa hóa đơn này?")) return;
     setDeletingId(id);
     try {
-      // await deleteInvoice?.(id);
+      await removeInvoice(id);
+      await fetchInvoices();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không xóa được hóa đơn");
     } finally {
       setDeletingId(null);
     }
@@ -157,7 +160,7 @@ export default function InvoicesPage() {
       </div>
 
       {/* Table */}
-      <div className="erp-card overflow-hidden p-0">
+      <div className="erp-card table-card">
         <div className="overflow-x-auto">
           <table className="erp-table">
             <thead>

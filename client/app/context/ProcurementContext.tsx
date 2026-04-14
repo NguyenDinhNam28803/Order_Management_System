@@ -40,6 +40,53 @@ export interface Notification {
     id: number; message: string; type: 'success' | 'error' | 'info' | 'warning'; role?: string;
 }
 
+// ── PO Consolidation ──────────────────────────────────────────────────────────
+export interface ConsolidatePRsInput {
+    prIds: string[];
+    supplierId: string;
+    consolidationMode?: 'SKU_MATCH' | 'CATEGORY_MATCH';
+    deliveryDate: string;
+    paymentTerms?: string;
+    deliveryAddress?: string;
+    notes?: string;
+}
+
+export interface ConsolidationSummary {
+    sourcePrCount: number;
+    sourcePrNumbers: string[];
+    mergedItemCount: number;
+    totalOriginalItems: number;
+    savedItems: number;
+    totalAmount: number;
+    budgetReservedByCostCenter: Record<string, number>;
+}
+
+export interface ConsolidatePRsResult {
+    id: string;
+    poNumber: string;
+    consolidationSummary: ConsolidationSummary;
+}
+
+// ── Spend Report ──────────────────────────────────────────────────────────────
+export interface SpendOverview {
+    prCount: number;
+    poCount: number;
+    invoiceCount: number;
+    supplierCount: number;
+    totalSpent: number;
+}
+
+export interface SpendBySupplier {
+    supplierName: string;
+    totalAmount: number;
+    poCount: number;
+}
+
+export interface SpendByCategory {
+    categoryName: string;
+    totalAmount: number;
+}
+
 export interface POItem {
     id: string; description: string; qty: number; estimatedPrice?: number; unitPrice?: number; total?: number;
 }
@@ -139,8 +186,8 @@ export interface ProcurementContextType extends ProcurementState {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateCostCenter: (id: string, d: any) => Promise<boolean>;
     removeCostCenter: (id: string) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fetchCostCenter: (id: string) => Promise<CostCenter | null>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fetchMyDeptCostCenters: () => Promise<any>;
     addBudgetPeriod: (d: CreateBudgetPeriodPayload) => Promise<boolean>;
     addBudgetAllocation: (d: CreateBudgetAllocationPayload) => Promise<BudgetAllocation | null>;
@@ -248,6 +295,15 @@ export interface ProcurementContextType extends ProcurementState {
     createDispute: (d: any) => Promise<boolean>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createReview: (d: any) => Promise<boolean>;
+    // PO Consolidation
+    consolidatePRs: (dto: ConsolidatePRsInput) => Promise<ConsolidatePRsResult | null>;
+    // RAG / AI Sync
+    syncRAG: () => Promise<boolean>;
+    ingestRAGEntity: (entity: string) => Promise<boolean>;
+    // Spend Reports
+    fetchSpendOverview: () => Promise<SpendOverview | null>;
+    fetchSpendBySupplier: () => Promise<SpendBySupplier[]>;
+    fetchSpendByCategory: () => Promise<SpendByCategory[]>;
 }
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
@@ -1462,6 +1518,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 'PROVISIONAL': 'BRONZE',
                 'BLACKLISTED': 'BRONZE',
             };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return items.map((item: any) => {
                 const kpiScore = item?.kpiScore || item;
                 const aiInsights = item?.aiInsights;
@@ -1542,6 +1599,60 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return true;
     }, [notify]);
 
+    // ========== PO Consolidation ==========
+    const consolidatePRs = useCallback(async (dto: ConsolidatePRsInput): Promise<ConsolidatePRsResult | null> => {
+        const resp = await apiFetch('/purchase-orders/consolidate', {
+            method: 'POST',
+            body: JSON.stringify(dto),
+        });
+        if (resp.ok) {
+            const res = await resp.json();
+            const data = res.data || res;
+            notify(`PO gộp ${data.poNumber} tạo thành công`, 'success');
+            return data as ConsolidatePRsResult;
+        }
+        const errText = await resp.text().catch(() => '');
+        notify(errText || 'Không thể tạo PO gộp', 'error');
+        return null;
+    }, [apiFetch, notify]);
+
+    // ========== RAG / AI Sync ==========
+    const syncRAG = useCallback(async (): Promise<boolean> => {
+        const resp = await apiFetch('/rag/sync', { method: 'POST' });
+        if (resp.ok) {
+            notify('Đồng bộ RAG toàn hệ thống thành công', 'success');
+            return true;
+        }
+        notify('Lỗi khi đồng bộ RAG', 'error');
+        return false;
+    }, [apiFetch, notify]);
+
+    const ingestRAGEntity = useCallback(async (entity: string): Promise<boolean> => {
+        const resp = await apiFetch(`/rag/ingest/${entity}`, { method: 'POST' });
+        if (resp.ok) return true;
+        notify(`Lỗi ingest entity: ${entity}`, 'error');
+        return false;
+    }, [apiFetch, notify]);
+
+    // ========== Spend Reports ==========
+    const fetchSpendOverview = useCallback(async (): Promise<SpendOverview | null> => {
+        const resp = await apiFetch('/reports/overview');
+        if (resp.ok) { const res = await resp.json(); return (res.data || res) as SpendOverview; }
+        return null;
+    }, [apiFetch]);
+
+    const fetchSpendBySupplier = useCallback(async (): Promise<SpendBySupplier[]> => {
+        const resp = await apiFetch('/reports/spend-by-supplier');
+        if (resp.ok) { const res = await resp.json(); const d = res.data || res; return Array.isArray(d) ? d : []; }
+        return [];
+    }, [apiFetch]);
+
+    const fetchSpendByCategory = useCallback(async (): Promise<SpendByCategory[]> => {
+        const resp = await apiFetch('/reports/spend-by-category');
+        if (resp.ok) { const res = await resp.json(); const d = res.data || res; return Array.isArray(d) ? d : []; }
+        return [];
+    }, [apiFetch]);
+
     const contextValue: ProcurementContextType = {
         ...state,
         login, logout, refreshData, apiFetch, addPR, submitPR, updatePR, fetchPrDetail, actionApproval,
@@ -1597,7 +1708,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         // Supplier KPI
         evaluateSupplierKPI, fetchSupplierKPIReport,
         // Audit Logs
-        fetchAuditLogsByEntity, fetchAuditLogById, createAuditLog
+        fetchAuditLogsByEntity, fetchAuditLogById, createAuditLog,
+        // PO Consolidation
+        consolidatePRs,
+        // RAG / AI Sync
+        syncRAG, ingestRAGEntity,
+        // Spend Reports
+        fetchSpendOverview, fetchSpendBySupplier, fetchSpendByCategory,
     };
 
     return <ProcurementContext.Provider value={contextValue}>{children}</ProcurementContext.Provider>;

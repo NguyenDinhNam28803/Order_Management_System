@@ -17,12 +17,12 @@ export class EmailRequest {
   @ApiProperty({ example: 'user@gmail.com', description: 'Email người nhận' })
   @IsEmail()
   @IsNotEmpty()
-  to: string;
+  to!: string;
 
   @ApiProperty({ example: 'Thông báo đơn hàng', description: 'Tiêu đề email' })
   @IsString()
   @IsNotEmpty()
-  subject: string;
+  subject!: string;
 
   @ApiProperty({
     example: { orderId: '123', status: 'Approved' },
@@ -30,7 +30,7 @@ export class EmailRequest {
   })
   @IsObject()
   @IsNotEmpty()
-  data: Record<string, any>;
+  data!: Record<string, any>;
 }
 
 @ApiTags('Notification Management')

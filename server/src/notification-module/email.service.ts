@@ -27,7 +27,7 @@ export class EmailService {
       await this.transporter.verify();
       this.logger.log('✅ Mail server connected successfully');
       return '✅ Check thành công';
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('❌ Mail server connection failed:', error.message);
       return '❌ Kết nối thất bại';
     }

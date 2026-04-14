@@ -114,9 +114,9 @@ export class PomoduleController {
   @Post('create-from-pr')
   async createFromPr(
     @Body() body: { prId: string; supplierId: string },
-    @Request() req: JwtPayload,
+    @Request() req: { user: JwtPayload },
   ) {
-    return this.poService.createFromPr(body.prId, body.supplierId, req);
+    return this.poService.createFromPr(body.prId, body.supplierId, req.user);
   }
 
   /**

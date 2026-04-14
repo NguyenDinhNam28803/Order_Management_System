@@ -6,7 +6,13 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 
 @Module({
-  providers: [EmailProcessorService, EmailListenerService, AiService, PrismaService, ConfigService],
+  providers: [
+    EmailProcessorService,
+    EmailListenerService,
+    AiService,
+    PrismaService,
+    ConfigService,
+  ],
   exports: [EmailProcessorService],
 })
 export class EmailProcessorModule {}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Database, RefreshCw, Layers, CheckCircle2, AlertCircle, FileText, Download, Users, Zap, Search } from "lucide-react";
-import { apiFetch } from "../../utils/api-client";
+import { useProcurement } from "../../context/ProcurementContext";
 
 const SYNC_ENTITIES = [
     { id: "products", name: "Sản phẩm & Vật tư", icon: Layers, desc: "Dữ liệu Product Catalog, Description, SKU" },
@@ -12,34 +12,25 @@ const SYNC_ENTITIES = [
 ];
 
 export default function AISyncPage() {
+    const { syncRAG, ingestRAGEntity } = useProcurement();
     const [isGlobalSyncing, setIsGlobalSyncing] = useState(false);
     const [syncStatuses, setSyncStatuses] = useState<Record<string, 'idle' | 'syncing' | 'success' | 'error'>>({});
 
     const handleGlobalSync = async () => {
         setIsGlobalSyncing(true);
-        try {
-            await apiFetch("/rag/sync", { method: "POST" });
-            // Simulate all success if backend succeeds
-            const newStatuses: Record<string, any> = {};
-            SYNC_ENTITIES.forEach(e => newStatuses[e.id] = 'success');
+        const ok = await syncRAG();
+        if (ok) {
+            const newStatuses: Record<string, 'success'> = {};
+            SYNC_ENTITIES.forEach(e => { newStatuses[e.id] = 'success'; });
             setSyncStatuses(newStatuses);
-        } catch (error) {
-            console.error(error);
-            alert("Lỗi khi đồng bộ RAG toàn hệ thống");
-        } finally {
-            setIsGlobalSyncing(false);
         }
+        setIsGlobalSyncing(false);
     };
 
     const handleSyncEntity = async (entity: string) => {
         setSyncStatuses(prev => ({ ...prev, [entity]: 'syncing' }));
-        try {
-            await apiFetch(`/rag/ingest/${entity}`, { method: "POST" });
-            setSyncStatuses(prev => ({ ...prev, [entity]: 'success' }));
-        } catch (error) {
-            console.error(error);
-            setSyncStatuses(prev => ({ ...prev, [entity]: 'error' }));
-        }
+        const ok = await ingestRAGEntity(entity);
+        setSyncStatuses(prev => ({ ...prev, [entity]: ok ? 'success' : 'error' }));
     };
 
     return (

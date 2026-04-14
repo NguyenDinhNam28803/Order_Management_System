@@ -19,7 +19,7 @@ export class EmailProcessor {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await this.emailService.sendEmail(to, subject, body);
       this.logger.log(`Successfully sent email to ${to}`);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Failed to send email to ${to}: ${error.message}`);
       throw error; // Throw error để Bull thực hiện retry
     }

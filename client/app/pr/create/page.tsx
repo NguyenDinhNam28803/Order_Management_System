@@ -332,7 +332,7 @@ export default function CreatePRPage() {
         
         try {
             // Build enhanced prompt with user context embedded
-            const enhancedPrompt = `[User: ${currentUser?.deptName || 'Unknown'} - ${currentUser?.role || 'Unknown'}${form.costCenterId ? `, CostCenter: ${form.costCenterId}` : ''}]\n\n${aiPrompt}`;
+            const enhancedPrompt = `[User: ${currentUser?.department || 'Unknown'} - ${currentUser?.role || 'Unknown'}${form.costCenterId ? `, CostCenter: ${form.costCenterId}` : ''}]\n\n${aiPrompt}`;
             
             const response = await apiFetch('/rag/generate-pr-draft', {
                 method: 'POST',

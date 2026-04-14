@@ -16,7 +16,10 @@ export class EmailListenerService implements OnModuleInit {
       imap: {
         user: this.configService.get<string>('EMAIL_USER'),
         password: this.configService.get<string>('EMAIL_PASS'),
-        host: this.configService.get<string>('EMAIL_IMAP_HOST', 'imap.gmail.com'),
+        host: this.configService.get<string>(
+          'EMAIL_IMAP_HOST',
+          'imap.gmail.com',
+        ),
         port: 993,
         tls: true,
         authTimeout: 3000,
@@ -31,6 +34,7 @@ export class EmailListenerService implements OnModuleInit {
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const connection = await imaps.connect(this.imapConfig);
       await connection.openBox('INBOX');
 
@@ -40,14 +44,21 @@ export class EmailListenerService implements OnModuleInit {
         markSeen: true,
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const messages = await connection.search(searchCriteria, fetchOptions);
 
       for (const message of messages) {
-        const allParts = imaps.getParts(message.attributes.struct);
-        const textPart = allParts.find((part) => part.type === 'text' && part.subtype === 'plain');
-        
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const allParts = imaps.getParts(message.attributes.struct || []);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const textPart = allParts.find(
+          (part) => part.type === 'text' && part.subtype === 'plain',
+        );
+
         if (textPart) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const body = await connection.getPartData(message, textPart);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           await this.emailProcessor.processIncomingEmail(body);
         }
       }

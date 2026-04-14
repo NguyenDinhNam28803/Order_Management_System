@@ -1,35 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { 
-    BarChart3, PieChart, TrendingUp, Calendar, CreditCard, Filter, Download, ArrowUpRight, DollarSign, Users, Layers 
+import {
+    BarChart3, CreditCard, Filter, Download, DollarSign, Users, Layers
 } from "lucide-react";
-import { apiFetch } from "../../utils/api-client";
+import { useProcurement, SpendOverview, SpendBySupplier, SpendByCategory } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
 import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
 
-interface Overview {
-    prCount: number;
-    poCount: number;
-    invoiceCount: number;
-    supplierCount: number;
-    totalSpent: number;
-}
-
-interface SpendBySupplier {
-    supplierName: string;
-    totalAmount: number;
-    poCount: number;
-}
-
-interface SpendByCategory {
-    categoryName: string;
-    totalAmount: number;
-}
-
 export default function SpendReportPage() {
+    const { fetchSpendOverview, fetchSpendBySupplier, fetchSpendByCategory } = useProcurement();
     const [loading, setLoading] = useState(true);
-    const [overview, setOverview] = useState<Overview | null>(null);
+    const [overview, setOverview] = useState<SpendOverview | null>(null);
     const [spendBySupplier, setSpendBySupplier] = useState<SpendBySupplier[]>([]);
     const [spendByCategory, setSpendByCategory] = useState<SpendByCategory[]>([]);
 
@@ -38,14 +20,13 @@ export default function SpendReportPage() {
             setLoading(true);
             try {
                 const [overviewData, supplierData, categoryData] = await Promise.all([
-                    apiFetch("/reports/overview").catch(() => null),
-                    apiFetch("/reports/spend-by-supplier").catch(() => []),
-                    apiFetch("/reports/spend-by-category").catch(() => [])
+                    fetchSpendOverview().catch(() => null),
+                    fetchSpendBySupplier().catch(() => []),
+                    fetchSpendByCategory().catch(() => []),
                 ]);
-
-                if (overviewData?.data) setOverview(overviewData.data);
-                setSpendBySupplier(Array.isArray(supplierData?.data) ? supplierData.data : Array.isArray(supplierData) ? supplierData : []);
-                setSpendByCategory(Array.isArray(categoryData?.data) ? categoryData.data : Array.isArray(categoryData) ? categoryData : []);
+                if (overviewData) setOverview(overviewData);
+                setSpendBySupplier(supplierData ?? []);
+                setSpendByCategory(categoryData ?? []);
             } catch (error) {
                 console.error("Failed to load reports", error);
             } finally {
@@ -53,6 +34,7 @@ export default function SpendReportPage() {
             }
         }
         fetchReports();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (loading) {

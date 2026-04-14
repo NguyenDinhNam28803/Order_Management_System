@@ -7,12 +7,12 @@ import { PrismaService } from '../prisma/prisma.service';
 
 // ─── Kiểu trả về của một email đã được parse ───────────────────────────────
 export interface ParsedEmail {
-  messageId: string;   // UID duy nhất của email (từ Message-ID header)
-  subject: string;     // Tiêu đề email
-  from: string;        // Người gửi
-  to: string;          // Người nhận
-  date: Date;          // Ngày gửi
-  body: string;        // Nội dung thuần text (tối đa 2000 ký tự)
+  messageId: string; // UID duy nhất của email (từ Message-ID header)
+  subject: string; // Tiêu đề email
+  from: string; // Người gửi
+  to: string; // Người nhận
+  date: Date; // Ngày gửi
+  body: string; // Nội dung thuần text (tối đa 2000 ký tự)
 }
 
 @Injectable()
@@ -24,7 +24,7 @@ export class EmailRagService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly embedding: EmbeddingService,  // service tạo vector embedding
+    private readonly embedding: EmbeddingService, // service tạo vector embedding
     private readonly prisma: PrismaService,
   ) {
     this.imapConfig = {
@@ -32,9 +32,10 @@ export class EmailRagService {
         user: this.configService.get<string>('EMAIL_USER')!,
         // EMAIL_PASS trong .env là App Password Gmail (xhqz arwr inls gklb)
         password: this.configService.get<string>('EMAIL_PASS')!,
-        host: this.configService.get<string>('EMAIL_IMAP_HOST') ?? 'imap.gmail.com',
-        port: 993,         // Port IMAP SSL của Gmail
-        tls: true,         // Bắt buộc TLS
+        host:
+          this.configService.get<string>('EMAIL_IMAP_HOST') ?? 'imap.gmail.com',
+        port: 993, // Port IMAP SSL của Gmail
+        tls: true, // Bắt buộc TLS
         tlsOptions: { rejectUnauthorized: false },
         authTimeout: 10000,
       },
@@ -81,10 +82,12 @@ export class EmailRagService {
         const headerPart = msg.parts.find(
           (p) => p.which === 'HEADER.FIELDS (FROM TO SUBJECT DATE MESSAGE-ID)',
         );
-        const header: Record<string, string[]> = (headerPart?.body as any) ?? {};
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const header: Record<string, string[]> = headerPart?.body ?? {};
 
         // Lấy nội dung text/plain từ cấu trúc MIME
         const allParts = imaps.getParts(msg.attributes.struct as any);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const textPart = allParts.find(
           (p: any) => p.type === 'text' && p.subtype === 'plain',
         );
@@ -92,11 +95,14 @@ export class EmailRagService {
         let body = '';
         if (textPart) {
           // getPartData trả về nội dung đã decode (base64 / quoted-printable)
-          body = await connection.getPartData(msg, textPart as any);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          body = await connection.getPartData(msg, textPart);
         }
 
         // Sanitize messageId: loại bỏ ký tự đặc biệt để dùng làm source_id trong DB
-        const rawId = String(header['message-id']?.[0] ?? `uid-${msg.attributes.uid}`);
+        const rawId = String(
+          header['message-id']?.[0] ?? `uid-${msg.attributes.uid}`,
+        );
         const sourceId = rawId.replace(/[<>\s]/g, '').slice(0, 200);
 
         emails.push({
@@ -117,7 +123,7 @@ export class EmailRagService {
       throw error;
     } finally {
       // Luôn đóng kết nối dù có lỗi hay không
-      if (connection) await connection.end();
+      if (connection) connection.end();
     }
   }
 
@@ -128,7 +134,9 @@ export class EmailRagService {
    *
    * @param limit  Số email tối đa cần ingest
    */
-  async ingestEmails(limit = 50): Promise<{ ingested: number; skipped: number }> {
+  async ingestEmails(
+    limit = 50,
+  ): Promise<{ ingested: number; skipped: number }> {
     const emails = await this.fetchRecentEmails(limit);
     let ingested = 0;
     let skipped = 0;
@@ -180,7 +188,9 @@ export class EmailRagService {
       }
     }
 
-    this.logger.log(`Email ingest complete: ${ingested} ingested, ${skipped} skipped`);
+    this.logger.log(
+      `Email ingest complete: ${ingested} ingested, ${skipped} skipped`,
+    );
     return { ingested, skipped };
   }
 

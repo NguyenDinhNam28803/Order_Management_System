@@ -9,7 +9,10 @@ import { SendNotificationDto } from './dto/send-notification.dto';
 import { CreateNotificationTemplateDto } from './dto/create-notification-template.dto';
 import { NotificationChannel, NotificationStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { ExternalTokenService, TokenType } from '../external-token-module/external-token.service';
+import {
+  ExternalTokenService,
+  TokenType,
+} from '../external-token-module/external-token.service';
 
 @Injectable()
 export class NotificationModuleService {
@@ -96,7 +99,7 @@ export class NotificationModuleService {
                 notificationId: notification.id,
               });
               results.push({ channel: template.channel, status: 'QUEUED' });
-            } catch (queueError) {
+            } catch (queueError: any) {
               this.logger.warn(
                 `Queue failed, fallback to direct email: ${queueError.message}`,
               );
@@ -178,7 +181,15 @@ export class NotificationModuleService {
     tokenType: TokenType;
     expiresInDays?: number;
   }) {
-    const { to, subject, eventType, data, referenceId, tokenType, expiresInDays = 7 } = params;
+    const {
+      to,
+      subject,
+      eventType,
+      data,
+      referenceId,
+      tokenType,
+      expiresInDays = 7,
+    } = params;
 
     try {
       // 1. Tạo external token
@@ -197,7 +208,9 @@ export class NotificationModuleService {
         // Thêm các biến link vào template
         rfqLink: tokenResult.link,
         approveLink: tokenResult.link,
-        rejectLink: tokenResult.link.replace('?token=', '?token=').replace('/confirm', '/reject'),
+        rejectLink: tokenResult.link
+          .replace('?token=', '?token=')
+          .replace('/confirm', '/reject'),
         detailLink: tokenResult.link,
         confirmLink: tokenResult.link,
         updateLink: tokenResult.link,
@@ -212,7 +225,9 @@ export class NotificationModuleService {
         tokenId: tokenResult.id,
       });
 
-      this.logger.log(`External email with magic link queued: ${to} - ${eventType}`);
+      this.logger.log(
+        `External email with magic link queued: ${to} - ${eventType}`,
+      );
 
       return {
         success: true,
