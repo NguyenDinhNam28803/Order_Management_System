@@ -36,8 +36,15 @@ export interface AiQuotationAnalysis {
   recommendation: 'RECOMMEND' | 'CONSIDER' | 'REJECT';
 }
 
+export interface AiEmailAnalysis {
+  intent: 'CREATE_PR' | 'UPDATE_PO' | 'GENERAL_INQUIRY';
+  data: any;
+  confidence: number;
+}
+
 @Injectable()
 export class AiService implements OnModuleInit {
+  // ... (giữ nguyên constructor và các method khác)
   private client: GoogleGenAI;
 
   constructor(
@@ -52,6 +59,30 @@ export class AiService implements OnModuleInit {
       apiKey: apiKey,
     });
   }
+  /**
+   * Phân tích nội dung email bằng AI
+   */
+  async analyzeEmailContent(emailContent: string): Promise<AiEmailAnalysis> {
+    const prompt = `
+      Đóng vai trợ lý mua sắm thông minh. Hãy phân tích email sau và trích xuất dữ liệu:
+      "${emailContent}"
+
+      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT:
+      {
+        "intent": "CREATE_PR" | "UPDATE_PO" | "GENERAL_INQUIRY",
+        "data": { "description": "string", "quantity": number, "supplierId": "string" | null },
+        "confidence": number
+      }
+    `;
+
+    const result = await this.client.models.generateContent({
+      model: 'gemini-3.1-flash-lite-preview',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+
+    return this.parseSpecificJson<AiEmailAnalysis>(result.text ?? '');
+  }
+
 
   async onModuleInit() {
     await this.listModels();

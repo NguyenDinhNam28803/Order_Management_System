@@ -103,6 +103,7 @@ export default function GlobalAISearch() {
                 <RAGChat
                     apiFetch={apiFetch}
                     onClose={handleClose}
+                    onSwitchMode={() => setAiMode('pr-generator')}
                 />
             )}
 

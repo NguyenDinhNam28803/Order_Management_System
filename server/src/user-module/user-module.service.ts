@@ -55,10 +55,22 @@ export class UserModuleService {
 
   // ... (findAll, findOne, update, remove remain unchanged)
 
-  async findAll() {
-    console.log('--- Truy vấn dữ liệu từ database (All Users) ---');
+  async findAll(filters?: { orgId?: string }) {
+    console.log('--- Truy vấn dữ liệu từ database (Filtered by Org) ---');
+    
+    if (filters?.orgId) {
+      // Filter users by organization
+      const users = await this.prisma.user.findMany({
+        where: { orgId: filters.orgId },
+        include: {
+          department: true,
+        },
+      });
+      return users;
+    }
+    
+    // Fallback: return all (for system admin if needed)
     const users = await this.userRepository.findAll();
-    // await this.cacheManager.set(cacheKey, users);
     return users;
   }
 

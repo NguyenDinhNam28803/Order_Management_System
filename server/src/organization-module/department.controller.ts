@@ -8,7 +8,9 @@ import {
   Delete,
   UseGuards,
   Query,
+  Request,
 } from '@nestjs/common';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -48,12 +50,11 @@ export class DepartmentController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all departments' })
-  async findAll(@Query('orgId') orgId?: string) {
-    const where: { orgId?: string } = {};
-    if (orgId) where.orgId = orgId;
+  @ApiOperation({ summary: 'Get all departments for admin organization' })
+  async findAll(@Request() req: { user: JwtPayload }) {
+    // Filter by admin's organization only
     return this.prisma.department.findMany({
-      where,
+      where: { orgId: req.user.orgId },
       include: {
         organization: { select: { name: true } },
         head: { select: { fullName: true, id: true } },

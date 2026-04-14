@@ -107,15 +107,16 @@ export class UserModuleController {
   }
 
   /**
-   * Lấy danh sách tất cả người dùng trong hệ thống
+   * Lấy danh sách tất cả người dùng trong công ty của admin
    */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.PLATFORM_ADMIN)
   @Get()
-  @ApiOperation({ summary: 'Lấy danh sách tất cả người dùng' })
+  @ApiOperation({ summary: 'Lấy danh sách người dùng trong công ty' })
   @ApiResponse({ status: 200, type: [UserModule] })
-  findAll() {
-    return this.userModuleService.findAll();
+  findAll(@Request() req: { user: JwtPayload }) {
+    // Filter users by admin's organization
+    return this.userModuleService.findAll({ orgId: req.user.orgId });
   }
 
   /**

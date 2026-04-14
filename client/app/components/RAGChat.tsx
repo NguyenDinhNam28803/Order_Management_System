@@ -118,6 +118,7 @@ interface RagResponse {
 interface RAGChatProps {
     apiFetch: (url: string, options?: RequestInit) => Promise<Response>;
     onClose: () => void;
+    onSwitchMode?: () => void;
 }
 
 const TABLE_ICONS: Record<string, React.ReactNode> = {
@@ -186,7 +187,7 @@ const formatAnswer = (text: string): React.ReactNode => {
     });
 };
 
-export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
+export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProps) {
     const { currentUser, myPrs, prs, approvals, invoices, budgets } = useProcurement();
     const [searchQuery, setSearchQuery] = useState("");
     const [aiResponse, setAiResponse] = useState<RagResponse | null>(null);
@@ -503,7 +504,13 @@ export default function RAGChat({ apiFetch, onClose }: RAGChatProps) {
                                 {roleSuggestions.map((item: SuggestionItem, index: number) => (
                                     <button 
                                         key={item.text}
-                                        onClick={() => setSearchQuery(item.text)}
+                                        onClick={() => {
+                                            if (item.text.includes("Tạo PR mới với AI") && onSwitchMode) {
+                                                onSwitchMode();
+                                            } else {
+                                                setSearchQuery(item.text);
+                                            }
+                                        }}
                                         className="flex items-start gap-3 p-4 bg-[#161922] border border-[#1E293B] rounded-xl text-sm text-[#94A3B8] hover:border-[#3B82F6]/50 hover:bg-[#1E293B] transition-all text-left group"
                                     >
                                         <span className="text-[#60A5FA] mt-0.5">

@@ -101,7 +101,7 @@ export default function LoginPage() {
                             <button
                                 key={idx}
                                 type="button"
-                                onClick={() => { setEmail(u.email); setPassword("password123"); setSidebarOpen(false); }}
+                                onClick={() => { setEmail(u.email); setPassword("ProcureSmart@2024"); setSidebarOpen(false); }}
                                 className="w-full bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/40 p-4 rounded-2xl text-left transition-all group relative overflow-hidden active:scale-95"
                             >
                                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">

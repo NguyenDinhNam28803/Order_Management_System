@@ -35,6 +35,7 @@ import { CostCenterModuleModule } from './cost-center-module/cost-center-module.
 import { OrganizationModuleModule } from './organization-module/organization-module.module';
 import { AutomationModule } from './common/automation/automation.module';
 import { RagModule } from './rag/rag.module';
+import { EmailProcessorModule } from './email-processor/email-processor.module';
 
 @Module({
   imports: [
@@ -106,6 +107,7 @@ import { RagModule } from './rag/rag.module';
     OrganizationModuleModule,
     AutomationModule,
     RagModule,
+    EmailProcessorModule,
   ],
   controllers: [AppController],
   providers: [
