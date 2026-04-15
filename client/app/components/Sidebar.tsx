@@ -216,7 +216,7 @@ export default function Sidebar() {
                                                 size={14}
                                                 className={`shrink-0 transition-colors ${isActive ? "text-[#60A5FA]" : "text-[#484F58]"}`}
                                             />
-                                            <span className="whitespace-nowrap font-medium text-[12px] truncate leading-none">
+                                            <span className="whitespace-nowrap font-medium text-[12px] truncate leading-snug">
                                                 {item.name}
                                             </span>
                                             {item.badge ? (
