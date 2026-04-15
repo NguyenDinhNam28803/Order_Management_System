@@ -208,6 +208,49 @@ export class EmailRagService {
     return { ingested, skipped };
   }
 
+  // ─── 2b. Ingest một email đơn lẻ (gọi trực tiếp từ EmailProcessorService) ──
+  /**
+   * Ingest một email đã được parse ngay lập tức vào vector store,
+   * không cần chờ cron 5 phút. ON CONFLICT đảm bảo không duplicate.
+   */
+  async ingestSingleEmail(email: ParsedEmail): Promise<void> {
+    const content = [
+      `Tiêu đề email: ${email.subject}`,
+      `Từ: ${email.from}`,
+      `Đến: ${email.to}`,
+      `Ngày: ${email.date.toLocaleString('vi-VN')}`,
+      `Nội dung: ${email.body}`,
+    ].join('\n');
+
+    const vector = await this.embedding.embed(content);
+    const vectorStr = `[${vector.join(',')}]`;
+
+    await this.prisma.$executeRawUnsafe(
+      `
+      INSERT INTO document_embeddings
+        (content, embedding, source_table, source_id, metadata)
+      VALUES
+        ($1, $2::vector, 'emails', $3, $4::jsonb)
+      ON CONFLICT (source_table, source_id, content)
+      DO UPDATE SET
+        embedding = EXCLUDED.embedding,
+        metadata  = EXCLUDED.metadata
+      `,
+      content,
+      vectorStr,
+      email.messageId,
+      JSON.stringify({
+        table: 'emails',
+        id: email.messageId,
+        name: email.subject,
+        from: email.from,
+        date: email.date.toISOString(),
+      }),
+    );
+
+    this.logger.log(`Ingested single email into RAG: "${email.subject}"`);
+  }
+
   // ─── 3. Cron job tự động sync mỗi 5 phút ──────────────────────────────────
   /**
    * Tự động pull email mới và cập nhật vector store mỗi 5 phút.
