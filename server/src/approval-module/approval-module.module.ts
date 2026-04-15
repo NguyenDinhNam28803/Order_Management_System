@@ -6,6 +6,7 @@ import { BudgetModuleModule } from '../budget-module/budget-module.module';
 import { AutomationModule } from '../common/automation/automation.module';
 import { UserModuleModule } from '../user-module/user-module.module';
 import { AuditModuleModule } from '../audit-module/audit-module.module';
+import { NotificationModuleModule } from '../notification-module/notification-module.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AuditModuleModule } from '../audit-module/audit-module.module';
     AutomationModule,
     UserModuleModule,
     AuditModuleModule,
+    NotificationModuleModule, // Dùng sendDirectEmail để notify approver/requester
   ],
   controllers: [ApprovalModuleController],
   providers: [ApprovalModuleService],

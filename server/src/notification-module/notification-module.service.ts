@@ -162,6 +162,26 @@ export class NotificationModuleService {
     return this.repository.findAllNotificationsByRecipient(recipientId);
   }
 
+  /**
+   * Gửi email trực tiếp không cần template trong DB.
+   * Dùng nội bộ (vd: ApprovalModuleService) khi cần notify ngay mà không
+   * phụ thuộc vào cấu hình template trong database.
+   */
+  async sendDirectEmail(
+    to: string,
+    subject: string,
+    eventType: string,
+    data: Record<string, any>,
+  ): Promise<void> {
+    try {
+      const body = this.emailTemplates.render(eventType, data);
+      await this.emailQueue.add('send-email', { to, subject, body });
+      this.logger.log(`Direct email queued → ${to} [${eventType}]`);
+    } catch (error) {
+      this.logger.error(`Failed to queue direct email to ${to} [${eventType}]:`, error);
+    }
+  }
+
   private renderTemplate(template: string, data: Record<string, any>): string {
     return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
       return data[key] !== undefined ? String(data[key]) : match;

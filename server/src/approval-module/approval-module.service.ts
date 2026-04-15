@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   BadRequestException,
   Inject,
@@ -21,9 +22,12 @@ import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { UserModuleService } from '../user-module/user-module.service';
 import { AuditModuleService } from '../audit-module/audit-module.service';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 
 @Injectable()
 export class ApprovalModuleService {
+  private readonly logger = new Logger(ApprovalModuleService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly automationService: AutomationService,
@@ -31,6 +35,7 @@ export class ApprovalModuleService {
     private readonly budgetService: BudgetModuleService,
     private readonly userService: UserModuleService,
     private readonly auditService: AuditModuleService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   /**
@@ -113,6 +118,16 @@ export class ApprovalModuleService {
     const finalStatus = allAutoApproved ? 'APPROVED' : 'PENDING_APPROVAL';
     await this.updateSourceDocumentStatus(docType, docId, finalStatus, user);
 
+    // ── Gửi email thông báo cho từng approver chưa được tự động duyệt ────────
+    if (!allAutoApproved) {
+      const docLabel = this.getDocumentLabel(docType);
+      for (const step of workflowData) {
+        if (step.status === ApprovalStatus.PENDING) {
+          void this.notifyApprover(step.approverId, docLabel, docId, totalAmount);
+        }
+      }
+    }
+
     return {
       message: allAutoApproved
         ? 'Workflow auto-approved'
@@ -164,6 +179,13 @@ export class ApprovalModuleService {
         'REJECTED',
         user,
       );
+      // Thông báo cho người yêu cầu biết tài liệu bị từ chối
+      void this.notifyRequesterOnResult(
+        currentStep.documentType,
+        currentStep.documentId,
+        'REJECTED',
+        comment,
+      );
       return { status: 'REJECTED', message: 'Tài liệu đã bị từ chối.' };
     }
 
@@ -183,6 +205,12 @@ export class ApprovalModuleService {
         currentStep.documentId,
         'APPROVED',
         user,
+      );
+      // Thông báo cho người yêu cầu biết tài liệu đã được duyệt hoàn toàn
+      void this.notifyRequesterOnResult(
+        currentStep.documentType,
+        currentStep.documentId,
+        'APPROVED',
       );
       return {
         status: 'FULLY_APPROVED',
@@ -443,5 +471,116 @@ export class ApprovalModuleService {
       // },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  // ── Helpers thông báo email ──────────────────────────────────────────────────
+
+  /** Gửi email thông báo cho approver khi có tài liệu chờ duyệt */
+  private async notifyApprover(
+    approverId: string,
+    docLabel: string,
+    docId: string,
+    totalAmount: number,
+  ): Promise<void> {
+    try {
+      const approver = await this.prisma.user.findUnique({
+        where: { id: approverId },
+      });
+      if (!approver?.email) return;
+
+      await this.notificationService.sendDirectEmail(
+        approver.email,
+        `[OMS] Yêu cầu phê duyệt ${docLabel} mới`,
+        'PO_APPROVAL_REQUEST',
+        {
+          name: approver.fullName ?? approver.email,
+          docType: docLabel,
+          docId,
+          totalAmount: new Intl.NumberFormat('vi-VN').format(totalAmount) + ' VNĐ',
+          approveLink: `${process.env.FRONTEND_URL ?? ''}/approvals`,
+        },
+      );
+    } catch (err: any) {
+      this.logger.warn(`notifyApprover failed for ${approverId}: ${err.message}`);
+    }
+  }
+
+  /** Gửi email thông báo kết quả (APPROVED / REJECTED) cho người yêu cầu */
+  private async notifyRequesterOnResult(
+    docType: DocumentType,
+    docId: string,
+    result: 'APPROVED' | 'REJECTED',
+    comment?: string,
+  ): Promise<void> {
+    try {
+      const requesterId = await this.getRequesterId(docType, docId);
+      if (!requesterId) return;
+
+      const requester = await this.prisma.user.findUnique({
+        where: { id: requesterId },
+      });
+      if (!requester?.email) return;
+
+      const docLabel = this.getDocumentLabel(docType);
+      const eventType = result === 'APPROVED' ? 'PO_APPROVED' : 'PO_APPROVAL_REQUEST';
+      const subject =
+        result === 'APPROVED'
+          ? `[OMS] ${docLabel} của bạn đã được phê duyệt`
+          : `[OMS] ${docLabel} của bạn bị từ chối`;
+
+      await this.notificationService.sendDirectEmail(
+        requester.email,
+        subject,
+        eventType,
+        {
+          name: requester.fullName ?? requester.email,
+          docType: docLabel,
+          docId,
+          status: result === 'APPROVED' ? 'Đã phê duyệt' : 'Bị từ chối',
+          comment: comment ?? '',
+          detailLink: `${process.env.FRONTEND_URL ?? ''}/pr`,
+        },
+      );
+    } catch (err: any) {
+      this.logger.warn(`notifyRequesterOnResult failed for ${docId}: ${err.message}`);
+    }
+  }
+
+  /** Lấy requesterId từ tài liệu nguồn */
+  private async getRequesterId(
+    docType: DocumentType,
+    docId: string,
+  ): Promise<string | null> {
+    switch (docType) {
+      case DocumentType.PURCHASE_REQUISITION: {
+        const pr = await this.prisma.purchaseRequisition.findUnique({
+          where: { id: docId },
+          select: { requesterId: true },
+        });
+        return pr?.requesterId ?? null;
+      }
+      case DocumentType.PURCHASE_ORDER: {
+        const po = await this.prisma.purchaseOrder.findUnique({
+          where: { id: docId },
+          select: { buyerId: true },
+        });
+        return po?.buyerId ?? null;
+      }
+      default:
+        return null;
+    }
+  }
+
+  /** Trả về tên hiển thị của loại tài liệu */
+  private getDocumentLabel(docType: DocumentType): string {
+    const labels: Partial<Record<DocumentType, string>> = {
+      [DocumentType.PURCHASE_REQUISITION]: 'Phiếu yêu cầu mua hàng (PR)',
+      [DocumentType.PURCHASE_ORDER]: 'Đơn đặt hàng (PO)',
+      [DocumentType.GRN]: 'Biên bản nhận hàng (GRN)',
+      [DocumentType.SUPPLIER_INVOICE]: 'Hóa đơn nhà cung cấp',
+      [DocumentType.PAYMENT]: 'Thanh toán',
+      [DocumentType.BUDGET_ALLOCATION]: 'Phân bổ ngân sách',
+    };
+    return labels[docType] ?? docType;
   }
 }
