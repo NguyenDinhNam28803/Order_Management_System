@@ -4,9 +4,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EmailRagService, ParsedEmail } from '../rag/email-rag.service';
 
 export interface IncomingEmailData {
-  from: string;      // Người gửi (vd: "Nguyen Van A <a@company.com>")
-  subject: string;   // Tiêu đề email
-  body: string;      // Nội dung text thuần
+  from: string; // Người gửi (vd: "Nguyen Van A <a@company.com>")
+  subject: string; // Tiêu đề email
+  body: string; // Nội dung text thuần
   messageId: string; // Message-ID duy nhất (đã sanitize)
 }
 
@@ -36,9 +36,13 @@ export class EmailProcessorService {
       date: new Date(),
       body,
     };
-    await this.emailRagService.ingestSingleEmail(parsedEmail).catch((err: Error) => {
-      this.logger.warn(`RAG ingest failed for email "${subject}": ${err.message}`);
-    });
+    await this.emailRagService
+      .ingestSingleEmail(parsedEmail)
+      .catch((err: Error) => {
+        this.logger.warn(
+          `RAG ingest failed for email "${subject}": ${err.message}`,
+        );
+      });
 
     // ── Bước 2: Phân tích nội dung email bằng Gemini AI ──────────────────────
     const analysis = await this.aiService.analyzeEmailContent(
@@ -56,7 +60,10 @@ export class EmailProcessorService {
     const senderEmail = this.extractEmail(from);
     const senderUser = senderEmail
       ? await this.prisma.user.findFirst({
-          where: { email: { equals: senderEmail, mode: 'insensitive' }, isActive: true },
+          where: {
+            email: { equals: senderEmail, mode: 'insensitive' },
+            isActive: true,
+          },
         })
       : null;
 
@@ -64,7 +71,11 @@ export class EmailProcessorService {
       this.logger.warn(
         `Người gửi "${from}" không có trong hệ thống — không thể tạo PR tự động`,
       );
-      return { success: false, reason: 'Sender not registered in system', ingested: true };
+      return {
+        success: false,
+        reason: 'Sender not registered in system',
+        ingested: true,
+      };
     }
 
     // ── Bước 4: Xử lý theo intent ────────────────────────────────────────────
@@ -81,6 +92,17 @@ export class EmailProcessorService {
     user: { id: string; orgId: string; deptId: string | null },
     subject: string,
   ) {
+    if (!user.deptId) {
+      this.logger.warn(
+        `User ${user.id} chưa thuộc phòng ban nào — không thể tạo PR tự động`,
+      );
+      return {
+        success: false,
+        reason: 'User has no department assigned',
+        ingested: true,
+      };
+    }
+
     const pr = await this.prisma.purchaseRequisition.create({
       data: {
         prNumber: `PR-EMAIL-${Date.now()}`,
@@ -90,7 +112,7 @@ export class EmailProcessorService {
         status: 'DRAFT',
         orgId: user.orgId,
         requesterId: user.id,
-        ...(user.deptId ? { deptId: user.deptId } : {}),
+        deptId: user.deptId,
         items: {
           create: [
             {
@@ -98,7 +120,8 @@ export class EmailProcessorService {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               qty: data?.quantity ?? 1,
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              productDesc: data?.description ?? 'Sản phẩm từ email (cần bổ sung)',
+              productDesc:
+                data?.description ?? 'Sản phẩm từ email (cần bổ sung)',
               estimatedPrice: 0,
             },
           ],

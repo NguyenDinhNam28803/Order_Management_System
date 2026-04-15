@@ -170,18 +170,18 @@ export class EmailRagService {
         const vector = await this.embedding.embed(content);
         const vectorStr = `[${vector.join(',')}]`;
 
-        // Upsert vào bảng document_embeddings (có ON CONFLICT để không bị trùng)
-        // source_table = 'emails' để phân biệt với các loại tài liệu khác
+        // Upsert: xóa record cũ (nếu có) rồi insert mới — tránh lỗi 42P10
+        // (ON CONFLICT yêu cầu unique constraint, nhưng bảng chưa có)
+        await this.prisma.$executeRawUnsafe(
+          `DELETE FROM document_embeddings WHERE source_table = 'emails' AND source_id = $1`,
+          email.messageId,
+        );
         await this.prisma.$executeRawUnsafe(
           `
           INSERT INTO document_embeddings
             (content, embedding, source_table, source_id, metadata)
           VALUES
             ($1, $2::vector, 'emails', $3, $4::jsonb)
-          ON CONFLICT (source_table, source_id, content)
-          DO UPDATE SET
-            embedding = EXCLUDED.embedding,
-            metadata  = EXCLUDED.metadata
           `,
           content,
           vectorStr,
@@ -225,16 +225,17 @@ export class EmailRagService {
     const vector = await this.embedding.embed(content);
     const vectorStr = `[${vector.join(',')}]`;
 
+    // Upsert: xóa record cũ (nếu có) rồi insert mới — tránh lỗi 42P10
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM document_embeddings WHERE source_table = 'emails' AND source_id = $1`,
+      email.messageId,
+    );
     await this.prisma.$executeRawUnsafe(
       `
       INSERT INTO document_embeddings
         (content, embedding, source_table, source_id, metadata)
       VALUES
         ($1, $2::vector, 'emails', $3, $4::jsonb)
-      ON CONFLICT (source_table, source_id, content)
-      DO UPDATE SET
-        embedding = EXCLUDED.embedding,
-        metadata  = EXCLUDED.metadata
       `,
       content,
       vectorStr,

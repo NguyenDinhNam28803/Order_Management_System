@@ -123,7 +123,12 @@ export class ApprovalModuleService {
       const docLabel = this.getDocumentLabel(docType);
       for (const step of workflowData) {
         if (step.status === ApprovalStatus.PENDING) {
-          void this.notifyApprover(step.approverId, docLabel, docId, totalAmount);
+          void this.notifyApprover(
+            step.approverId,
+            docLabel,
+            docId,
+            totalAmount,
+          );
         }
       }
     }
@@ -496,12 +501,15 @@ export class ApprovalModuleService {
           name: approver.fullName ?? approver.email,
           docType: docLabel,
           docId,
-          totalAmount: new Intl.NumberFormat('vi-VN').format(totalAmount) + ' VNĐ',
+          totalAmount:
+            new Intl.NumberFormat('vi-VN').format(totalAmount) + ' VNĐ',
           approveLink: `${process.env.FRONTEND_URL ?? ''}/approvals`,
         },
       );
     } catch (err: any) {
-      this.logger.warn(`notifyApprover failed for ${approverId}: ${err.message}`);
+      this.logger.warn(
+        `notifyApprover failed for ${approverId}: ${err.message}`,
+      );
     }
   }
 
@@ -522,7 +530,8 @@ export class ApprovalModuleService {
       if (!requester?.email) return;
 
       const docLabel = this.getDocumentLabel(docType);
-      const eventType = result === 'APPROVED' ? 'PO_APPROVED' : 'PO_APPROVAL_REQUEST';
+      const eventType =
+        result === 'APPROVED' ? 'PO_APPROVED' : 'PO_APPROVAL_REQUEST';
       const subject =
         result === 'APPROVED'
           ? `[OMS] ${docLabel} của bạn đã được phê duyệt`
@@ -542,7 +551,9 @@ export class ApprovalModuleService {
         },
       );
     } catch (err: any) {
-      this.logger.warn(`notifyRequesterOnResult failed for ${docId}: ${err.message}`);
+      this.logger.warn(
+        `notifyRequesterOnResult failed for ${docId}: ${err.message}`,
+      );
     }
   }
 

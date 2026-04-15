@@ -17,7 +17,10 @@ export class EmailListenerService implements OnModuleInit {
       imap: {
         user: this.configService.get<string>('EMAIL_USER')!,
         password: this.configService.get<string>('EMAIL_PASS')!,
-        host: this.configService.get<string>('EMAIL_IMAP_HOST', 'imap.gmail.com')!,
+        host: this.configService.get<string>(
+          'EMAIL_IMAP_HOST',
+          'imap.gmail.com',
+        ),
         port: 993,
         tls: true,
         tlsOptions: { rejectUnauthorized: false },
@@ -27,7 +30,9 @@ export class EmailListenerService implements OnModuleInit {
   }
 
   onModuleInit() {
-    this.logger.log('EmailListenerService initialized — polling INBOX every minute');
+    this.logger.log(
+      'EmailListenerService initialized — polling INBOX every minute',
+    );
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
@@ -47,11 +52,21 @@ export class EmailListenerService implements OnModuleInit {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const messages = await connection.search(searchCriteria, fetchOptions);
 
-      for (const message of messages) {
+      // Giới hạn 5 email/lần để tránh vượt quota Gemini free tier (15 req/phút)
+      const batch = messages.slice(0, 5);
+      if (messages.length > 5) {
+        this.logger.warn(
+          `${messages.length} unseen emails found — processing first 5, rest deferred to next cycle`,
+        );
+      }
+
+      for (const message of batch) {
         try {
           // ── Đọc header (from, subject, message-id) ─────────────────────────
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const headerPart = message.parts.find((p: any) => p.which === 'HEADER');
+          const headerPart = message.parts.find(
+            (p: any) => p.which === 'HEADER',
+          );
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const header: Record<string, string[]> = headerPart?.body ?? {};
 
@@ -69,7 +84,9 @@ export class EmailListenerService implements OnModuleInit {
             if (textPart) {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               const raw = await connection.getPartData(message, textPart);
-              body = Buffer.isBuffer(raw) ? raw.toString('utf-8') : String(raw ?? '');
+              body = Buffer.isBuffer(raw)
+                ? raw.toString('utf-8')
+                : String(raw ?? '');
             }
           }
 
@@ -86,6 +103,9 @@ export class EmailListenerService implements OnModuleInit {
             body: body.slice(0, 5000), // Giới hạn để tránh prompt AI quá dài
             messageId,
           });
+
+          // Delay 4s giữa các email để tránh vượt Gemini free tier 15 req/phút
+          await new Promise((resolve) => setTimeout(resolve, 4000));
         } catch (msgErr: any) {
           this.logger.error(`Error processing message: ${msgErr.message}`);
         }
@@ -94,7 +114,11 @@ export class EmailListenerService implements OnModuleInit {
       this.logger.error(`IMAP polling error: ${error.message}`);
     } finally {
       if (connection) {
-        try { connection.end(); } catch { /* ignore */ }
+        try {
+          connection.end();
+        } catch {
+          /* ignore */
+        }
       }
     }
   }
