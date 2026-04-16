@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import * as imaps from 'imap-simple';
 import { EmailProcessorService } from './email-processor.service';
+import { EmailFilterService } from './email-filter.service';
 
 @Injectable()
 export class EmailListenerService implements OnModuleInit {
@@ -12,6 +13,7 @@ export class EmailListenerService implements OnModuleInit {
   constructor(
     private configService: ConfigService,
     private emailProcessor: EmailProcessorService,
+    private emailFilter: EmailFilterService,
   ) {
     this.imapConfig = {
       imap: {
@@ -96,13 +98,36 @@ export class EmailListenerService implements OnModuleInit {
           );
           const messageId = rawMessageId.replace(/[<>\s]/g, '').slice(0, 200);
 
-          // ── Gửi đến EmailProcessorService (ingest RAG + phân tích AI) ──────
-          await this.emailProcessor.processIncomingEmail({
+          // ── Log email AI đọc được ─────────────────────────────────────────
+          const emailData = {
             from: String(header.from?.[0] ?? ''),
             subject: String(header.subject?.[0] ?? '(no subject)'),
-            body: body.slice(0, 5000), // Giới hạn để tránh prompt AI quá dài
+            body: body.slice(0, 5000),
             messageId,
+          };
+          console.log('[EmailListener] AI đọc được email:', {
+            messageId: emailData.messageId,
+            from: emailData.from,
+            subject: emailData.subject,
+            bodyPreview:
+              emailData.body.slice(0, 200) +
+              (emailData.body.length > 200 ? '...' : ''),
           });
+
+          // ── Lọc email trước khi xử lý (system rules → AI) ────────────────
+          const filterResult = await this.emailFilter.filter(emailData);
+          if (!filterResult.shouldProcess) {
+            this.logger.log(
+              `Email "${emailData.subject}" bị lọc [${filterResult.filterType}]: ${filterResult.reason}`,
+            );
+            continue;
+          }
+          this.logger.log(
+            `Email "${emailData.subject}" vượt qua bộ lọc [${filterResult.filterType}]: ${filterResult.reason}`,
+          );
+
+          // ── Gửi đến EmailProcessorService (ingest RAG + phân tích AI) ──────
+          await this.emailProcessor.processIncomingEmail(emailData);
 
           // Delay 4s giữa các email để tránh vượt Gemini free tier 15 req/phút
           await new Promise((resolve) => setTimeout(resolve, 4000));
