@@ -2,12 +2,27 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailRagService, ParsedEmail } from '../rag/email-rag.service';
+import {
+  QuotationEmailData,
+  PoConfirmationEmailData,
+  ShippingNotificationEmailData,
+} from '../ai-service/ai-service.service';
+import { RfqStatus, PoStatus, QuotationStatus, CompanyType } from '@prisma/client';
 
 export interface IncomingEmailData {
-  from: string; // Người gửi (vd: "Nguyen Van A <a@company.com>")
-  subject: string; // Tiêu đề email
-  body: string; // Nội dung text thuần
-  messageId: string; // Message-ID duy nhất (đã sanitize)
+  from: string;
+  subject: string;
+  body: string;
+  messageId: string;
+}
+
+export interface EmailProcessResult {
+  success: boolean;
+  intent?: string;
+  action?: string;
+  entityId?: string;
+  reason?: string;
+  ingested: boolean;
 }
 
 @Injectable()
@@ -21,13 +36,15 @@ export class EmailProcessorService {
   ) {}
 
   /**
-   * Xử lý email đến: ingest vào RAG ngay lập tức, sau đó phân tích bằng AI
-   * để tự động tạo PR nếu email là yêu cầu mua hàng.
+   * Xử lý email đến từ nhà cung cấp:
+   * 1. Ingest vào RAG
+   * 2. AI phân loại intent: QUOTATION | PO_CONFIRMATION | SHIPPING_NOTIFICATION
+   * 3. Thực hiện hành động nghiệp vụ tương ứng
    */
-  async processIncomingEmail(emailData: IncomingEmailData) {
+  async processIncomingEmail(emailData: IncomingEmailData): Promise<EmailProcessResult> {
     const { from, subject, body, messageId } = emailData;
 
-    // ── Bước 1: Ingest vào RAG ngay lập tức (không chờ cron 5 phút) ──────────
+    // ── Bước 1: Ingest vào RAG ngay lập tức ──────────────────────────────────
     const parsedEmail: ParsedEmail = {
       messageId,
       subject,
@@ -39,98 +56,343 @@ export class EmailProcessorService {
     await this.emailRagService
       .ingestSingleEmail(parsedEmail)
       .catch((err: Error) => {
-        this.logger.warn(
-          `RAG ingest failed for email "${subject}": ${err.message}`,
-        );
+        this.logger.warn(`RAG ingest failed for "${subject}": ${err.message}`);
       });
 
-    // ── Bước 2: Phân tích nội dung email bằng Gemini AI ──────────────────────
+    // ── Bước 2: AI phân tích intent ───────────────────────────────────────────
     const analysis = await this.aiService.analyzeEmailContent(
       `Tiêu đề: ${subject}\n\n${body}`,
     );
 
-    if (analysis.confidence < 0.7) {
-      this.logger.log(
-        `Email từ ${from} có confidence thấp (${analysis.confidence}), bỏ qua tự động xử lý`,
-      );
+    this.logger.log(
+      `Email "${subject}" từ ${from} → intent: ${analysis.intent}, confidence: ${analysis.confidence}`,
+    );
+
+    if (analysis.confidence < 0.65) {
+      this.logger.log(`Confidence thấp (${analysis.confidence}), bỏ qua xử lý tự động`);
       return { success: false, reason: 'Low confidence', ingested: true };
     }
 
-    // ── Bước 3: Tìm user gửi email trong hệ thống ────────────────────────────
+    if (analysis.intent === 'GENERAL_INQUIRY') {
+      return { success: true, intent: 'GENERAL_INQUIRY', action: 'none', ingested: true };
+    }
+
+    // ── Bước 3: Tìm nhà cung cấp gửi email ───────────────────────────────────
     const senderEmail = this.extractEmail(from);
-    const senderUser = senderEmail
-      ? await this.prisma.user.findFirst({
-          where: {
-            email: { equals: senderEmail, mode: 'insensitive' },
-            isActive: true,
-          },
-        })
+    const supplier = senderEmail
+      ? await this.findSupplierByEmail(senderEmail)
       : null;
 
-    if (!senderUser) {
-      this.logger.warn(
-        `Người gửi "${from}" không có trong hệ thống — không thể tạo PR tự động`,
-      );
+    if (!supplier) {
+      this.logger.warn(`Không tìm thấy nhà cung cấp cho email "${from}" trong hệ thống`);
       return {
         success: false,
-        reason: 'Sender not registered in system',
+        intent: analysis.intent,
+        reason: 'Supplier not found in system',
         ingested: true,
       };
     }
 
-    // ── Bước 4: Xử lý theo intent ────────────────────────────────────────────
-    if (analysis.intent === 'CREATE_PR') {
-      return await this.createDraftPR(analysis.data, senderUser, subject);
+    // ── Bước 4: Điều phối theo intent ────────────────────────────────────────
+    switch (analysis.intent) {
+      case 'QUOTATION':
+        return this.handleQuotation(
+          analysis.data as QuotationEmailData,
+          supplier.id,
+          subject,
+        );
+      case 'PO_CONFIRMATION':
+        return this.handlePoConfirmation(
+          analysis.data as PoConfirmationEmailData,
+          supplier.id,
+        );
+      case 'SHIPPING_NOTIFICATION':
+        return this.handleShippingNotification(
+          analysis.data as ShippingNotificationEmailData,
+          supplier.id,
+          subject,
+        );
+      default:
+        return { success: false, reason: 'Unhandled intent', ingested: true };
     }
-
-    return { success: false, message: 'Unsupported intent', ingested: true };
   }
 
-  // ── Tạo PR nháp từ dữ liệu AI phân tích ──────────────────────────────────
-  private async createDraftPR(
-    data: any,
-    user: { id: string; orgId: string; deptId: string | null },
+  // ── Xử lý email báo giá từ nhà cung cấp ─────────────────────────────────
+  private async handleQuotation(
+    data: QuotationEmailData,
+    supplierId: string,
     subject: string,
-  ) {
-    if (!user.deptId) {
-      this.logger.warn(
-        `User ${user.id} chưa thuộc phòng ban nào — không thể tạo PR tự động`,
-      );
+  ): Promise<EmailProcessResult> {
+    // Tìm RFQ theo rfqNumber hoặc RFQ mở mới nhất của NCC này
+    let rfq: { id: string; orgId: string } | null = null;
+
+    if (data.rfqNumber) {
+      rfq = await this.prisma.rfqRequest.findFirst({
+        where: { rfqNumber: data.rfqNumber },
+        select: { id: true, orgId: true },
+      });
+    }
+
+    if (!rfq) {
+      // Fallback: RFQ ở trạng thái SENT hoặc OPEN có NCC này trong danh sách mời
+      rfq = await this.prisma.rfqRequest.findFirst({
+        where: {
+          status: { in: [RfqStatus.SENT, RfqStatus.OPEN] },
+          suppliers: { some: { supplierId } },
+        },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, orgId: true },
+      });
+    }
+
+    if (!rfq) {
+      this.logger.warn(`Không tìm thấy RFQ phù hợp cho báo giá từ supplier ${supplierId}`);
       return {
         success: false,
-        reason: 'User has no department assigned',
+        intent: 'QUOTATION',
+        reason: 'No matching RFQ found',
         ingested: true,
       };
     }
 
-    const pr = await this.prisma.purchaseRequisition.create({
-      data: {
-        prNumber: `PR-EMAIL-${Date.now()}`,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        title: data?.description || subject || 'Yêu cầu mua hàng từ email',
-        description: `Tự động tạo từ email.\nNội dung AI phân tích: ${data?.description ?? 'N/A'}`,
-        status: 'DRAFT',
-        orgId: user.orgId,
-        requesterId: user.id,
-        deptId: user.deptId,
-        items: {
-          create: [
-            {
-              lineNumber: 1,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              qty: data?.quantity ?? 1,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              productDesc:
-                data?.description ?? 'Sản phẩm từ email (cần bổ sung)',
-              estimatedPrice: 0,
-            },
-          ],
+    const quotationNumber =
+      data.quotationNumber ?? `QUO-EMAIL-${Date.now()}`;
+    const totalPrice = data.totalPrice ?? 0;
+    const leadTimeDays = data.leadTimeDays ?? 7;
+    const validityDays = data.validityDays ?? 30;
+
+    // Tạo hoặc cập nhật RfqQuotation
+    const existing = await this.prisma.rfqQuotation.findFirst({
+      where: { rfqId: rfq.id, supplierId },
+    });
+
+    let quotationId: string;
+
+    if (existing) {
+      await this.prisma.rfqQuotation.update({
+        where: { id: existing.id },
+        data: {
+          quotationNumber,
+          totalPrice,
+          currency: (data.currency as any) ?? 'VND',
+          leadTimeDays,
+          validityDays,
+          paymentTerms: data.paymentTerms ?? null,
+          notes: subject,
+          status: QuotationStatus.SUBMITTED,
+          submittedAt: new Date(),
         },
+      });
+      quotationId = existing.id;
+      this.logger.log(`Đã cập nhật RfqQuotation ${existing.id} từ email`);
+    } else {
+      const created = await this.prisma.rfqQuotation.create({
+        data: {
+          rfqId: rfq.id,
+          supplierId,
+          quotationNumber,
+          totalPrice,
+          currency: (data.currency as any) ?? 'VND',
+          leadTimeDays,
+          validityDays,
+          paymentTerms: data.paymentTerms ?? null,
+          notes: subject,
+          status: QuotationStatus.SUBMITTED,
+          submittedAt: new Date(),
+        },
+      });
+      quotationId = created.id;
+      this.logger.log(`Đã tạo RfqQuotation ${created.id} từ email`);
+    }
+
+    // Chuyển RFQ sang QUOTATION_RECEIVED nếu chưa ở trạng thái đó
+    const rfqFull = await this.prisma.rfqRequest.findUnique({
+      where: { id: rfq.id },
+      select: { status: true },
+    });
+    if (
+      rfqFull &&
+      rfqFull.status !== RfqStatus.QUOTATION_RECEIVED &&
+      rfqFull.status !== RfqStatus.AWARDED &&
+      rfqFull.status !== RfqStatus.CLOSED
+    ) {
+      await this.prisma.rfqRequest.update({
+        where: { id: rfq.id },
+        data: { status: RfqStatus.QUOTATION_RECEIVED },
+      });
+      this.logger.log(`RFQ ${rfq.id} → QUOTATION_RECEIVED`);
+    }
+
+    return {
+      success: true,
+      intent: 'QUOTATION',
+      action: existing ? 'updated_quotation' : 'created_quotation',
+      entityId: quotationId,
+      ingested: true,
+    };
+  }
+
+  // ── Xử lý email xác nhận PO từ nhà cung cấp ─────────────────────────────
+  private async handlePoConfirmation(
+    data: PoConfirmationEmailData,
+    supplierId: string,
+  ): Promise<EmailProcessResult> {
+    const po = await this.findPoByNumberOrSupplier(data.poNumber, supplierId, [
+      PoStatus.ISSUED,
+    ]);
+
+    if (!po) {
+      this.logger.warn(
+        `Không tìm thấy PO cho xác nhận từ supplier ${supplierId}, poNumber: ${data.poNumber ?? 'N/A'}`,
+      );
+      return {
+        success: false,
+        intent: 'PO_CONFIRMATION',
+        reason: 'No matching PO found',
+        ingested: true,
+      };
+    }
+
+    let notes = po.notes ?? '';
+    if (data.estimatedDelivery) {
+      notes = `${notes}\n[NCC xác nhận] Dự kiến giao hàng: ${data.estimatedDelivery}`.trim();
+    }
+    if (data.notes) {
+      notes = `${notes}\n${data.notes}`.trim();
+    }
+
+    await this.prisma.purchaseOrder.update({
+      where: { id: po.id },
+      data: {
+        status: PoStatus.ACKNOWLEDGED,
+        notes: notes || null,
       },
     });
 
-    this.logger.log(`PR nháp tạo từ email: ${pr.prNumber} cho user ${user.id}`);
-    return { success: true, prId: pr.id, prNumber: pr.prNumber };
+    this.logger.log(`PO ${po.id} → ACKNOWLEDGED (xác nhận từ email NCC)`);
+    return {
+      success: true,
+      intent: 'PO_CONFIRMATION',
+      action: 'po_acknowledged',
+      entityId: po.id,
+      ingested: true,
+    };
+  }
+
+  // ── Xử lý email thông báo giao hàng từ nhà cung cấp ─────────────────────
+  private async handleShippingNotification(
+    data: ShippingNotificationEmailData,
+    supplierId: string,
+    subject: string,
+  ): Promise<EmailProcessResult> {
+    const po = await this.findPoByNumberOrSupplier(data.poNumber, supplierId, [
+      PoStatus.ACKNOWLEDGED,
+      PoStatus.IN_PROGRESS,
+      PoStatus.ISSUED,
+    ]);
+
+    if (!po) {
+      this.logger.warn(
+        `Không tìm thấy PO cho shipping notification từ supplier ${supplierId}, poNumber: ${data.poNumber ?? 'N/A'}`,
+      );
+      return {
+        success: false,
+        intent: 'SHIPPING_NOTIFICATION',
+        reason: 'No matching PO found',
+        ingested: true,
+      };
+    }
+
+    const trackingParts: string[] = [];
+    if (data.trackingNumber) trackingParts.push(`Mã vận đơn: ${data.trackingNumber}`);
+    if (data.carrier) trackingParts.push(`Đơn vị VC: ${data.carrier}`);
+    if (data.shippedDate) trackingParts.push(`Ngày xuất kho: ${data.shippedDate}`);
+    if (data.estimatedArrival) trackingParts.push(`Dự kiến đến: ${data.estimatedArrival}`);
+    if (data.notes) trackingParts.push(data.notes);
+
+    const shippingNote = `[NCC thông báo giao hàng] ${subject}\n${trackingParts.join(' | ')}`;
+    const notes = po.notes
+      ? `${po.notes}\n${shippingNote}`
+      : shippingNote;
+
+    await this.prisma.purchaseOrder.update({
+      where: { id: po.id },
+      data: {
+        status: PoStatus.SHIPPED,
+        notes: notes.trim(),
+      },
+    });
+
+    this.logger.log(
+      `PO ${po.id} → SHIPPED (tracking: ${data.trackingNumber ?? 'N/A'})`,
+    );
+    return {
+      success: true,
+      intent: 'SHIPPING_NOTIFICATION',
+      action: 'po_shipped',
+      entityId: po.id,
+      ingested: true,
+    };
+  }
+
+  // ── Tìm PO theo số PO hoặc NCC + trạng thái ──────────────────────────────
+  private async findPoByNumberOrSupplier(
+    poNumber: string | null | undefined,
+    supplierId: string,
+    statuses: PoStatus[],
+  ): Promise<{ id: string; notes: string | null } | null> {
+    if (poNumber) {
+      const po = await this.prisma.purchaseOrder.findFirst({
+        where: {
+          poNumber,
+          supplierId,
+        },
+        select: { id: true, notes: true },
+      });
+      if (po) return po;
+    }
+
+    // Fallback: PO mới nhất của NCC này ở trạng thái phù hợp
+    return this.prisma.purchaseOrder.findFirst({
+      where: {
+        supplierId,
+        status: { in: statuses },
+      },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, notes: true },
+    });
+  }
+
+  // ── Tìm Organization nhà cung cấp theo email hoặc domain ─────────────────
+  private async findSupplierByEmail(
+    email: string,
+  ): Promise<{ id: string } | null> {
+    // 1. Khớp chính xác email công ty
+    const byEmail = await this.prisma.organization.findFirst({
+      where: {
+        email: { equals: email, mode: 'insensitive' },
+        companyType: { in: [CompanyType.SUPPLIER, CompanyType.BOTH] },
+        isActive: true,
+      },
+      select: { id: true },
+    });
+    if (byEmail) return byEmail;
+
+    // 2. Khớp theo domain website (domain từ email @domain.com vs website domain.com)
+    const domain = email.split('@')[1];
+    if (domain) {
+      const byDomain = await this.prisma.organization.findFirst({
+        where: {
+          website: { contains: domain, mode: 'insensitive' },
+          companyType: { in: [CompanyType.SUPPLIER, CompanyType.BOTH] },
+          isActive: true,
+        },
+        select: { id: true },
+      });
+      if (byDomain) return byDomain;
+    }
+
+    return null;
   }
 
   // ── Trích xuất địa chỉ email từ chuỗi "Name <email>" hoặc "email" ─────────

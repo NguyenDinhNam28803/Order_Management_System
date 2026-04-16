@@ -36,9 +36,50 @@ export interface AiQuotationAnalysis {
   recommendation: 'RECOMMEND' | 'CONSIDER' | 'REJECT';
 }
 
+/** Dữ liệu trích xuất từ email báo giá nhà cung cấp */
+export interface QuotationEmailData {
+  rfqNumber?: string;          // Mã RFQ được đề cập trong email
+  quotationNumber?: string;    // Mã báo giá của NCC
+  totalPrice?: number;
+  currency?: string;           // VND | USD | EUR
+  leadTimeDays?: number;
+  validityDays?: number;
+  paymentTerms?: string;
+  items?: {
+    description: string;
+    qty: number;
+    unitPrice: number;
+  }[];
+  notes?: string;
+}
+
+/** Dữ liệu trích xuất từ email xác nhận PO */
+export interface PoConfirmationEmailData {
+  poNumber?: string;           // Mã PO được xác nhận
+  confirmedDate?: string;      // ISO date string
+  estimatedDelivery?: string;  // ISO date string
+  notes?: string;
+}
+
+/** Dữ liệu trích xuất từ email thông báo giao hàng */
+export interface ShippingNotificationEmailData {
+  poNumber?: string;           // Mã PO liên quan
+  trackingNumber?: string;
+  carrier?: string;            // Đơn vị vận chuyển
+  shippedDate?: string;        // ISO date string
+  estimatedArrival?: string;   // ISO date string
+  notes?: string;
+}
+
+export type SupplierEmailIntent =
+  | 'QUOTATION'              // NCC gửi báo giá
+  | 'PO_CONFIRMATION'        // NCC xác nhận đã nhận / đồng ý PO
+  | 'SHIPPING_NOTIFICATION'  // NCC thông báo đang giao hàng
+  | 'GENERAL_INQUIRY';       // Không thuộc 3 loại trên
+
 export interface AiEmailAnalysis {
-  intent: 'CREATE_PR' | 'UPDATE_PO' | 'GENERAL_INQUIRY';
-  data: any;
+  intent: SupplierEmailIntent;
+  data: QuotationEmailData | PoConfirmationEmailData | ShippingNotificationEmailData | Record<string, unknown>;
   confidence: number;
 }
 
@@ -60,20 +101,44 @@ export class AiService implements OnModuleInit {
     });
   }
   /**
-   * Phân tích nội dung email bằng AI
+   * Phân tích email từ nhà cung cấp và phân loại vào 3 intent chính:
+   * QUOTATION | PO_CONFIRMATION | SHIPPING_NOTIFICATION | GENERAL_INQUIRY
    */
   async analyzeEmailContent(emailContent: string): Promise<AiEmailAnalysis> {
-    const prompt = `
-      Đóng vai trợ lý mua sắm thông minh. Hãy phân tích email sau và trích xuất dữ liệu:
-      "${emailContent}"
+    const prompt = `Bạn là AI phân tích email trong hệ thống quản lý mua hàng B2B (ERP).
+Nhiệm vụ: xác định email này từ nhà cung cấp thuộc loại nào, và trích xuất dữ liệu cấu trúc.
 
-      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT:
-      {
-        "intent": "CREATE_PR" | "UPDATE_PO" | "GENERAL_INQUIRY",
-        "data": { "description": "string", "quantity": number, "supplierId": "string" | null },
-        "confidence": number
-      }
-    `;
+EMAIL CẦN PHÂN TÍCH:
+${emailContent}
+
+CÁC LOẠI EMAIL (intent):
+1. QUOTATION — Nhà cung cấp gửi báo giá / đề xuất giá cho RFQ / yêu cầu mua hàng
+   Dấu hiệu: có bảng giá, đơn giá, tổng tiền, thời gian giao hàng, điều khoản thanh toán
+   data cần trích: rfqNumber, quotationNumber, totalPrice, currency, leadTimeDays, validityDays, paymentTerms, items[{description,qty,unitPrice}]
+
+2. PO_CONFIRMATION — Nhà cung cấp xác nhận đã nhận và đồng ý thực hiện đơn hàng (PO)
+   Dấu hiệu: đề cập số PO, xác nhận đơn hàng, thông báo đồng ý, ước tính ngày giao
+   data cần trích: poNumber, confirmedDate, estimatedDelivery, notes
+
+3. SHIPPING_NOTIFICATION — Nhà cung cấp thông báo đã xuất kho / đang giao hàng
+   Dấu hiệu: mã vận đơn, tracking number, tên hãng vận chuyển, ngày dự kiến đến
+   data cần trích: poNumber, trackingNumber, carrier, shippedDate, estimatedArrival, notes
+
+4. GENERAL_INQUIRY — Không thuộc 3 loại trên (hỏi thông tin, khiếu nại, khác)
+
+LUẬT QUAN TRỌNG:
+- Chỉ trả về JSON thuần, KHÔNG markdown, KHÔNG giải thích
+- confidence: 0.0-1.0 (mức độ chắc chắn về intent)
+- Nếu không tìm thấy giá trị cho một field → dùng null
+- Số tiền luôn là number (không có dấu phẩy, không có ký hiệu tiền tệ)
+- Ngày giờ luôn là ISO 8601 string hoặc null
+
+TRẢ VỀ JSON:
+{
+  "intent": "QUOTATION" | "PO_CONFIRMATION" | "SHIPPING_NOTIFICATION" | "GENERAL_INQUIRY",
+  "confidence": number,
+  "data": { ... (theo loại intent tương ứng ở trên) }
+}`;
 
     const result = await this.client.models.generateContent({
       model: 'gemini-3.1-flash-lite-preview',
