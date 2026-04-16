@@ -314,8 +314,11 @@ export class BudgetModuleController {
     description:
       'Xem thông tin chi tiết của một khoản phân bổ ngân sách cụ thể, bao gồm số tiền định mức và số dư còn lại.',
   })
-  async findAllocationOne(@Param('id') id: string) {
-    return this.budgetService.findAllocationOne(id);
+  async findAllocationOne(
+    @Param('id') id: string,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.budgetService.findAllocationOne(id, req.user.orgId);
   }
 
   /**
