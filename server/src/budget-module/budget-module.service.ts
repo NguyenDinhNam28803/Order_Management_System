@@ -204,7 +204,7 @@ export class BudgetModuleService {
     });
   }
 
-  async findAllocationOne(id: string): Promise<BudgetAllocation> {
+  async findAllocationOne(id: string, orgId?: string): Promise<BudgetAllocation> {
     const allocation = await this.prisma.budgetAllocation.findUnique({
       where: { id },
       include: {
@@ -220,6 +220,11 @@ export class BudgetModuleService {
       throw new NotFoundException(`Budget Allocation with ID ${id} not found`);
     }
 
+    // Prevent cross-org access when orgId is provided
+    if (orgId && allocation.orgId !== orgId) {
+      throw new NotFoundException(`Budget Allocation with ID ${id} not found`);
+    }
+
     return allocation;
   }
 
@@ -228,7 +233,7 @@ export class BudgetModuleService {
     dto: UpdateBudgetAllocationDto,
     user: JwtPayload,
   ): Promise<BudgetAllocation> {
-    const oldAllocation = await this.findAllocationOne(id);
+    const oldAllocation = await this.findAllocationOne(id, user.orgId);
     const updated = await this.prisma.budgetAllocation.update({
       where: { id },
       data: dto,
@@ -253,7 +258,7 @@ export class BudgetModuleService {
     id: string,
     user: JwtPayload,
   ): Promise<BudgetAllocation> {
-    const oldAllocation = await this.findAllocationOne(id);
+    const oldAllocation = await this.findAllocationOne(id, user.orgId);
     const deleted = await this.prisma.budgetAllocation.delete({
       where: { id },
     });

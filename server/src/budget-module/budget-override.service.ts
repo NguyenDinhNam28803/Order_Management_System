@@ -2,14 +2,17 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
-import { BudgetOverrideStatus } from '@prisma/client';
+import { BudgetOverrideStatus, PrStatus } from '@prisma/client';
 import { AuditModuleService } from '../audit-module/audit-module.service';
 
 @Injectable()
 export class BudgetOverrideService {
+  private readonly logger = new Logger(BudgetOverrideService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly auditService: AuditModuleService,
@@ -117,6 +120,24 @@ export class BudgetOverrideService {
       return req;
     });
 
+    // Unblock PR: advance from PENDING_OVERRIDE back to PENDING_APPROVAL
+    if (request.prId) {
+      await this.prisma.purchaseRequisition
+        .updateMany({
+          where: {
+            id: request.prId,
+            status: PrStatus.PENDING_OVERRIDE,
+          },
+          data: { status: PrStatus.PENDING_APPROVAL },
+        })
+        .catch((err: unknown) => {
+          this.logger.warn(
+            `Could not advance PR ${request.prId} after override approval`,
+            err instanceof Error ? err.stack : String(err),
+          );
+        });
+    }
+
     await this.auditService.create(
       {
         action: 'APPROVE_BUDGET_OVERRIDE_REQUEST',
@@ -149,6 +170,24 @@ export class BudgetOverrideService {
         rejectedReason: reason,
       },
     });
+
+    // Unblock PR: move from PENDING_OVERRIDE to REJECTED
+    if (request.prId) {
+      await this.prisma.purchaseRequisition
+        .updateMany({
+          where: {
+            id: request.prId,
+            status: PrStatus.PENDING_OVERRIDE,
+          },
+          data: { status: PrStatus.REJECTED },
+        })
+        .catch((err: unknown) => {
+          this.logger.warn(
+            `Could not reject PR ${request.prId} after override rejection`,
+            err instanceof Error ? err.stack : String(err),
+          );
+        });
+    }
 
     await this.auditService.create(
       {

@@ -110,7 +110,26 @@ export class GrnmoduleService {
     const grn = await this.repository.findOne(id);
     if (!grn) throw new NotFoundException(`GRN with ID ${id} not found`);
 
-    return this.repository.updateStatus(id, status, userId);
+    const result = await this.repository.updateStatus(id, status, userId);
+
+    // Auto-create a Return To Vendor record when GRN is marked DISPUTED
+    if (status === GrnStatus.DISPUTED && grn.po?.supplierId) {
+      const rtvNumber = `RTV-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+      await this.prisma.returnToVendor.create({
+        data: {
+          rtvNumber,
+          grnId: id,
+          poId: grn.poId,
+          supplierId: grn.po.supplierId,
+          reason: 'Hàng bị tranh chấp tại GRN — cần xem xét và trả hàng',
+          returnType: 'REPLACE',
+          status: 'PENDING',
+          createdById: userId,
+        },
+      });
+    }
+
+    return result;
   }
 
   async updateItemQc(

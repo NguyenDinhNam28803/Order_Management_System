@@ -11,6 +11,8 @@ import {
   CreateInvoiceItemDto,
 } from './dto/create-invoice-module.dto';
 import { UpdateInvoiceModuleDto } from './dto/update-invoice-module.dto';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 interface MatchingItemResult {
   poItemId: string;
@@ -23,7 +25,10 @@ interface MatchingItemResult {
 export class InvoiceModuleService {
   private readonly logger = new Logger(InvoiceModuleService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationModuleService,
+  ) {}
 
   /**
    * Đánh dấu hóa đơn đã thanh toán và cập nhật ngân sách thực tế (Spent)
@@ -124,8 +129,13 @@ export class InvoiceModuleService {
       include: { items: true },
     });
 
-    // Tự động chạy đối soát sau khi tạo
-    void this.runThreeWayMatching(invoice.id);
+    // Tự động chạy đối soát sau khi tạo (non-blocking, errors are logged)
+    this.runThreeWayMatching(invoice.id).catch((err: unknown) => {
+      this.logger.error(
+        `3-Way Matching failed for invoice ${invoice.id}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+    });
 
     // Cập nhật trạng thái PO sang INVOICED (Enum chuẩn trong Schema)
     await this.prisma.purchaseOrder.update({
@@ -275,6 +285,81 @@ export class InvoiceModuleService {
     this.logger.log(
       `Matching finished for ${invoiceId}. Result: ${finalStatus}`,
     );
+
+    // Notify Finance team when manual review is required
+    if (finalStatus === InvoiceStatus.EXCEPTION_REVIEW) {
+      const financeUsers = await this.prisma.user.findMany({
+        where: {
+          orgId: invoice.orgId,
+          role: 'FINANCE' as any,
+          isActive: true,
+        },
+        select: { id: true, email: true, fullName: true },
+      });
+
+      for (const fu of financeUsers) {
+        if (fu.email) {
+          this.notificationService
+            .sendDirectEmail(
+              fu.email,
+              `[ProcureSmart] Hóa đơn ${invoice.invoiceNumber} cần xét duyệt thủ công`,
+              'INVOICE_EXCEPTION_REVIEW',
+              {
+                recipientName: fu.fullName,
+                invoiceNumber: invoice.invoiceNumber,
+                exceptionReason,
+                invoiceId,
+              },
+            )
+            .catch((err: unknown) => {
+              this.logger.warn(
+                `Failed to notify finance user ${fu.id} about invoice exception`,
+                err instanceof Error ? err.stack : String(err),
+              );
+            });
+        }
+      }
+    }
+  }
+
+  /**
+   * Finance override: thủ công duyệt bỏ qua exception trong 3-way matching
+   */
+  async approveMatchingException(invoiceId: string, user: JwtPayload) {
+    const invoice = await this.prisma.supplierInvoice.findUnique({
+      where: { id: invoiceId },
+    });
+
+    if (!invoice) throw new NotFoundException('Hóa đơn không tồn tại');
+
+    if (invoice.status !== InvoiceStatus.EXCEPTION_REVIEW) {
+      throw new BadRequestException(
+        `Chỉ có thể duyệt exception ở trạng thái EXCEPTION_REVIEW. Hiện tại: ${invoice.status}`,
+      );
+    }
+
+    const updated = await this.prisma.supplierInvoice.update({
+      where: { id: invoiceId },
+      data: {
+        status: InvoiceStatus.PAYMENT_APPROVED,
+        approvedAt: new Date(),
+        approvedById: user.sub,
+        exceptionReason: invoice.exceptionReason
+          ? `[Override by ${user.sub}] ${invoice.exceptionReason}`
+          : null,
+      },
+    });
+
+    this.logger.log(
+      `Invoice ${invoiceId} exception approved by user ${user.sub}`,
+    );
+
+    return {
+      ...updated,
+      subtotal: Number(updated.subtotal),
+      taxRate: updated.taxRate ? Number(updated.taxRate) : null,
+      totalAmount: Number(updated.totalAmount),
+    };
   }
 
   async update(id: string, updateInvoiceDto: UpdateInvoiceModuleDto) {
