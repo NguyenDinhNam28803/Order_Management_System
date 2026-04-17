@@ -112,11 +112,6 @@ export default function NotificationInbox() {
         className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] hover:text-[#3B82F6] hover:border-[rgba(59,130,246,0.3)] transition-all duration-200"
       >
         <Inbox size={16} />
-        {pendingCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 flex items-center justify-center bg-rose-500 text-white text-[9px] font-bold rounded-full border border-[#0F1117]">
-            {pendingCount > 9 ? "9+" : pendingCount}
-          </span>
-        )}
       </button>
 
       {/* Inbox Modal */}

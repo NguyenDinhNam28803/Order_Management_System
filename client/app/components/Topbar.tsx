@@ -156,11 +156,6 @@ export default function Topbar() {
                         className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-[#21262D] border border-[rgba(240,246,252,0.08)] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[rgba(240,246,252,0.18)] transition-all focus:outline-none"
                     >
                         <Bell size={14} />
-                        {MOCK_NOTIFICATIONS.length > 0 && (
-                            <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-[15px] px-0.5 flex items-center justify-center bg-rose-500 text-white text-[8px] font-bold rounded-full border border-[#161B22]">
-                                {MOCK_NOTIFICATIONS.length}
-                            </span>
-                        )}
                     </button>
 
                     {showNotifications && (

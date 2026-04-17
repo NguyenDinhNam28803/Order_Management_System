@@ -219,11 +219,7 @@ export default function Sidebar() {
                                             <span className="whitespace-nowrap font-medium text-[12px] truncate leading-snug">
                                                 {item.name}
                                             </span>
-                                            {item.badge ? (
-                                                <span className="ml-auto min-w-[17px] h-[17px] px-1 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center shrink-0">
-                                                    {item.badge > 9 ? "9+" : item.badge}
-                                                </span>
-                                            ) : isActive ? (
+                                            {isActive ? (
                                                 <ChevronRight size={11} className="ml-auto text-[#3B82F6] shrink-0" />
                                             ) : null}
                                         </Link>
