@@ -2,15 +2,31 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useProcurement } from '@/app/context/ProcurementContext';
+import { useProcurement, PO, POItem } from '@/app/context/ProcurementContext';
 import { ArrowLeft, CheckCircle2, Clock, FileText, Send, Building2, User, FileDigit, Calendar } from 'lucide-react';
+
+// Extended PO with API-specific fields
+type ExtendedPOItem = POItem & {
+    product?: { name?: string };
+    quantity?: number;
+    unitPrice?: number;
+    lineTotal?: number;
+};
+
+type POWithDetails = PO & {
+    supplier?: { name?: string };
+    prId?: string;
+    pr?: { prNumber?: string };
+    totalAmount?: number;
+    items?: ExtendedPOItem[];
+};
 
 export default function PODetailPage() {
   const params = useParams();
   const router = useRouter();
   const poId = params.id as string;
   const { fetchPOById, confirmPO, submitPO, notify } = useProcurement();
-  const [po, setPO] = useState<any>(null);
+  const [po, setPO] = useState<POWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -19,7 +35,7 @@ export default function PODetailPage() {
     const fetch = async () => {
       try {
         const data = await fetchPOById(poId);
-        setPO(data);
+        setPO(data as POWithDetails);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load PO');
       } finally {
@@ -138,7 +154,7 @@ export default function PODetailPage() {
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]"><Calendar size={12}/> Ngày Tạo</div>
-              <p className="text-sm font-bold text-[#94A3B8]">{new Date(po.createdAt).toLocaleDateString('vi-VN')}</p>
+              <p className="text-sm font-bold text-[#94A3B8]">{po.createdAt ? new Date(po.createdAt).toLocaleDateString('vi-VN') : 'N/A'}</p>
             </div>
           </div>
         </div>
@@ -170,7 +186,7 @@ export default function PODetailPage() {
               </tr>
             </thead>
             <tbody>
-              {po.items && po.items.length > 0 ? po.items.map((item: any, idx: number) => (
+              {po.items && po.items.length > 0 ? po.items.map((item: ExtendedPOItem, idx: number) => (
                 <tr key={item.id}>
                   <td className="text-center font-bold text-[#64748B]">{idx + 1}</td>
                   <td className="font-bold text-[#F8FAFC]">{item.product?.name || "N/A"}</td>

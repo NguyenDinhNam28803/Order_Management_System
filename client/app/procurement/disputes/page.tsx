@@ -96,7 +96,7 @@ export default function DisputesPage() {
                         </div>
                         
                         <div className="bg-[#0F1117] p-3 rounded-xl text-sm text-[#94A3B8] mb-4 line-clamp-2 italic border border-[rgba(148,163,184,0.1)]">
-                            "{d.reason}"
+                            &quot;{d.reason}&quot;
                         </div>
 
                         <div className="flex justify-between items-center pt-4 border-t border-[rgba(148,163,184,0.1)]">

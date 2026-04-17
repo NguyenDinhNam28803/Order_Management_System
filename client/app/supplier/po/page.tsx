@@ -3,21 +3,41 @@
 import React, { useState } from "react";
 import { Package, DownloadCloud, FileText, CheckCircle, AlertTriangle, Truck, Clock, RefreshCcw, Send, XCircle, Search, Eye, X } from "lucide-react";
 
-import { useProcurement, PO } from "../../context/ProcurementContext";
+import { useProcurement, PO, POItem } from "../../context/ProcurementContext";
 import { getStatusLabel } from "../../utils/formatUtils";
+import { Organization } from "../../types/api-types";
+
+// Extended PO with API-specific fields
+type ExtendedPOItem = POItem & {
+    productName?: string;
+    product?: { name?: string };
+    quantity?: number;
+    unit?: string;
+    uom?: string;
+    price?: number;
+};
+
+type POWithDetails = PO & {
+    buyer?: Organization;
+    org?: Organization;
+    totalAmount?: number;
+    products?: ExtendedPOItem[];
+    poLines?: ExtendedPOItem[];
+    lines?: ExtendedPOItem[];
+};
 
 export default function SupplierPO() {
     const [viewState, setViewState] = useState<"LIST" | "DETAIL">("LIST");
     const [poIdInput, setPoIdInput] = useState("");
-    const [searchedPO, setSearchedPO] = useState<PO | null>(null);
-    const [selectedPO, setSelectedPO] = useState<PO | null>(null);
+    const [searchedPO, setSearchedPO] = useState<POWithDetails | null>(null);
+    const [selectedPO, setSelectedPO] = useState<POWithDetails | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     
     const { currentUser, pos, allPos, ackPO, shipPO, rejectPO, notify, fetchPOById } = useProcurement();
     
     // Lọc thủ công từ global pos state
     const supplierId = currentUser?.orgId || "";
-    let supplierPOs = allPos.filter((p) => (p as PO).supplierId === supplierId);
+    const supplierPOs = allPos.filter((p) => p.supplierId === supplierId);
     console.log("supplierPOs", supplierPOs)
     // Debug: Nếu không tìm thấy PO nào, hiển thị tất cả để kiểm tra
     const [showAll, setShowAll] = useState(false);
@@ -63,10 +83,10 @@ export default function SupplierPO() {
 
     const openModal = (po: PO) => {
         console.log("Opening modal with PO:", po);
-        console.log("PO items:", (po as any).items);
-        console.log("PO products:", (po as any).products);
-        console.log("PO lines:", (po as any).lines);
-        console.log("PO poLines:", (po as any).poLines);
+        console.log("PO items:", po.items);
+        console.log("PO products:", po.items);
+        console.log("PO lines:", po.items);
+        console.log("PO poLines:", po.items);
         setSelectedPO(po);
         setIsModalOpen(true);
     };
@@ -179,9 +199,9 @@ export default function SupplierPO() {
                                         <thead><tr className="bg-[#0F1117]"><th className="p-2 text-left text-[#64748B]">Item</th><th className="p-2 text-center text-[#64748B]">Qty</th><th className="p-2 text-right text-[#64748B]">Price</th></tr></thead>
                                         <tbody>
                                             {po.items?.map((i) => (
-                                                <tr key={i.id} className="border-b border-[rgba(148,163,184,0.1)]"><td className="p-2 text-[#F8FAFC]">{(i as any).description || (i as any).productName}</td><td className="p-2 text-center text-[#94A3B8]">{i.qty}</td><td className="p-2 text-right text-[#F8FAFC]">{((i as any).estimatedPrice || (i as any).unitPrice || 0).toLocaleString()} ₫</td></tr>
+                                                <tr key={i.id} className="border-b border-[rgba(148,163,184,0.1)]"><td className="p-2 text-[#F8FAFC]">{i.description || 'N/A'}</td><td className="p-2 text-center text-[#94A3B8]">{i.qty}</td><td className="p-2 text-right text-[#F8FAFC]">{(i.unitPrice || i.estimatedPrice || 0).toLocaleString()} ₫</td></tr>
                                             ))}
-                                            <tr><td colSpan={2} className="p-2 text-right font-bold uppercase text-[#64748B]">Total</td><td className="p-2 text-right font-bold text-lg text-[#F8FAFC]">{Number((po as any).totalAmount || (po as any).total || 0).toLocaleString()} ₫</td></tr>
+                                            <tr><td colSpan={2} className="p-2 text-right font-bold uppercase text-[#64748B]">Total</td><td className="p-2 text-right font-bold text-lg text-[#F8FAFC]">{Number(po.total || 0).toLocaleString()} ₫</td></tr>
                                         </tbody>
                                     </table>
                                     <div className="text-[9px] text-[#64748B] uppercase font-sans mt-20">Terms: DDP, Net 30. Penalty SLA 1%/day.</div>
@@ -296,9 +316,9 @@ export default function SupplierPO() {
                         <p><strong className="text-[#3B82F6]">PO ID:</strong> {searchedPO.id}</p>
                         <p><strong className="text-[#3B82F6]">PO Number:</strong> {searchedPO.poNumber}</p>
                         <p><strong className="text-[#3B82F6]">Status:</strong> {searchedPO.status}</p>
-                        <p><strong className="text-[#3B82F6]">Supplier ID:</strong> {(searchedPO as any).supplierId || (searchedPO as any).supplier?.id || 'N/A'}</p>
+                        <p><strong className="text-[#3B82F6]">Supplier ID:</strong> {searchedPO.supplierId || 'N/A'}</p>
                         <p><strong className="text-[#3B82F6]">Your ID:</strong> {supplierId}</p>
-                        <p><strong className="text-[#3B82F6]">Match:</strong> {((searchedPO as any).supplierId === supplierId || (searchedPO as any).supplier?.id === supplierId) ? '✅ Có' : '❌ Không'}</p>
+                        <p><strong className="text-[#3B82F6]">Match:</strong> {(searchedPO.supplierId === supplierId) ? '✅ Có' : '❌ Không'}</p>
                     </div>
                 )}
             </div>
@@ -317,23 +337,23 @@ export default function SupplierPO() {
                     </thead>
                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                         {displayPOs.map((p) => {
-                            const items = (p as any).items || [];
-                            const totalQty = items.reduce((sum: number, item: any) => sum + (item.qty || 0), 0);
-                            const totalAmount = (p as any).totalAmount || (p as any).totalPrice || items.reduce((sum: number, item: any) => sum + ((item.qty || 0) * (item.unitPrice || 0)), 0);
+                            const items = p.items || [];
+                            const totalQty = items.reduce((sum: number, item: { qty?: number }) => sum + (item.qty || 0), 0);
+                            const totalAmount = p.total || items.reduce((sum: number, item: { qty?: number; unitPrice?: number }) => sum + ((item.qty || 0) * (item.unitPrice || 0)), 0);
                             const firstItem = items[0];
-                            const itemName = firstItem?.product?.productDesc || firstItem?.productDesc || firstItem?.description || 'Sản phẩm';
-                            const itemCode = firstItem?.product?.sku || firstItem?.sku || firstItem?.productId?.substring(0, 8) || '';
+                            const itemName = firstItem?.description || 'Sản phẩm';
+                            const itemCode = firstItem?.id?.substring(0, 8) || '';
                             const moreItems = items.length > 1 ? `+${items.length - 1} sản phẩm khác` : '';
 
                             return (
-                                <tr key={p.id} className={`hover:bg-[#0F1117]/50 transition-colors ${(p as any).supplierId === supplierId || (p as any).supplier?.id === supplierId ? 'bg-[#3B82F6]/5' : ''}`}>
+                                <tr key={p.id} className={`hover:bg-[#0F1117]/50 transition-colors ${p.supplierId === supplierId ? 'bg-[#3B82F6]/5' : ''}`}>
                                     {/* PO Number */}
                                     <td className="py-4 px-4">
                                         <div className="font-bold text-[#F8FAFC] text-xs mb-1 truncate" title={p.poNumber || p.id}>
                                             {p.poNumber || p.id}
                                         </div>
                                         <div className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider truncate">
-                                            {(p as any).buyer?.name || (p as any).org?.name || "ProcurePro"}
+                                            {"ProcurePro"}
                                         </div>
                                     </td>
 
@@ -460,11 +480,11 @@ export default function SupplierPO() {
                                         </span>
                                     </div>
                                     <p className="text-sm text-[#94A3B8]"><strong className="text-[#F8FAFC]">Ngày tạo:</strong> {selectedPO.createdAt ? new Date(selectedPO.createdAt).toLocaleDateString("vi-VN") : "N/A"}</p>
-                                    <p className="text-sm text-[#94A3B8]"><strong className="text-[#F8FAFC]">Bên mua:</strong> {(selectedPO as any).buyer?.name || (selectedPO as any).org?.name || "ProcurePro"}</p>
+                                    <p className="text-sm text-[#94A3B8]"><strong className="text-[#F8FAFC]">Bên mua:</strong> {selectedPO.buyer?.name || selectedPO.org?.name || "ProcurePro"}</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-sm font-bold text-[#64748B]">Tổng tiền:</p>
-                                    <p className="text-2xl font-black text-[#F8FAFC]">{Number((selectedPO as any).totalAmount || (selectedPO as any).total || 0).toLocaleString()} ₫</p>
+                                    <p className="text-2xl font-black text-[#F8FAFC]">{Number(selectedPO.totalAmount || selectedPO.total || 0).toLocaleString()} ₫</p>
                                 </div>
                             </div>
 
@@ -473,7 +493,7 @@ export default function SupplierPO() {
                                 <div className="bg-[#0F1117] p-4 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                                     <h3 className="text-sm font-black uppercase tracking-widest text-[#F8FAFC]">Danh sách sản phẩm</h3>
                                     <span className="text-[10px] text-[#64748B]">
-                                        items: {selectedPO.items?.length || 0} | products: {(selectedPO as any).products?.length || 0} | poLines: {(selectedPO as any).poLines?.length || 0}
+                                        items: {selectedPO.items?.length || 0} | products: {selectedPO.products?.length || 0} | poLines: {selectedPO.poLines?.length || 0}
                                     </span>
                                 </div>
                                 <table className="erp-table text-sm">
@@ -488,20 +508,20 @@ export default function SupplierPO() {
                                     </thead>
                                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                                         {(() => {
-                                            const items = selectedPO.items || (selectedPO as any).products || (selectedPO as any).poLines || (selectedPO as any).lines || [];
+                                            const items = selectedPO.items || selectedPO.products || selectedPO.poLines || selectedPO.lines || [];
                                             if (items.length === 0) {
                                                 return (
                                                     <tr>
                                                         <td colSpan={5} className="p-4 text-center text-[#64748B]">
                                                             Không có dữ liệu sản phẩm
                                                             <div className="text-[10px] text-[#64748B]/50 mt-1">
-                                                                Debug: items={(selectedPO as any).items?.length}, products={(selectedPO as any).products?.length}, poLines={(selectedPO as any).poLines?.length}
+                                                                Debug: items={selectedPO.items?.length}, products={selectedPO.products?.length}, poLines={selectedPO.poLines?.length}
                                                             </div>
                                                         </td>
                                                     </tr>
                                                 );
                                             }
-                                            return items.map((item: any, idx: number) => (
+                                            return items.map((item: ExtendedPOItem, idx: number) => (
                                                 <tr key={item.id || idx} className="hover:bg-[#0F1117]/30">
                                                     <td className="p-3 text-[#F8FAFC]">{item.description || item.productName || item.product?.name || "Sản phẩm"}</td>
                                                     <td className="p-3 text-center text-[#94A3B8]">{item.qty || item.quantity || 0}</td>

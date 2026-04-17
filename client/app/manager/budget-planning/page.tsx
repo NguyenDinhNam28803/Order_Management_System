@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Plus, Send, Save, X, Calculator, Building, PieChart, Layers, DollarSign, Calendar, Loader2 } from "lucide-react";
 import { useProcurement, BudgetAllocationStatus, BudgetPeriod } from "../../context/ProcurementContext";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
+import { CurrencyCode, CreateBudgetAllocationPayload } from "@/app/types/api-types";
 
 export default function BudgetPlanningPage() {
     const { 
@@ -122,20 +123,22 @@ export default function BudgetPlanningPage() {
                 }
             }
 
-            const payload: any = {
+            const payload: CreateBudgetAllocationPayload & { categoryId?: string } = {
                 budgetPeriodId: formData.budgetPeriodId,
                 costCenterId: formData.costCenterId,
                 categoryId: formData.categoryId,
-                currency: formData.currency as any,
+                currency: formData.currency as CurrencyCode,
                 notes: formData.notes,
                 allocatedAmount: amount,
                 deptId: currentUser?.deptId,
+                orgId: currentUser?.orgId || "",
+                status: "DRAFT" as BudgetAllocationStatus,
             };
             if (!payload.categoryId) delete payload.categoryId;
             if (!payload.notes) delete payload.notes;
             if (!payload.deptId) delete payload.deptId;
 
-            const result: any = await addBudgetAllocation(payload);
+            const result = await addBudgetAllocation(payload);
 
             if (result) {
                 if (type === "SUBMIT" && result.id) {

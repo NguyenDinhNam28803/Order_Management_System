@@ -365,7 +365,7 @@ export default function SupplierRFQ() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
-                            {myRfqs.map((r: any) => {
+                            {myRfqs.map((r: RFQ) => {
                                 const prDetail = prs.find((p) => p.id === r.prId);
                                 const customerName = prDetail ? (typeof prDetail.department === 'string' ? prDetail.department : prDetail.department?.name) || "ProcurePro Network" : "ProcurePro Network";
                                 

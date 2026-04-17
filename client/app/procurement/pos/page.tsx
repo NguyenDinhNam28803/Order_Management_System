@@ -519,7 +519,7 @@ function PODetailDrawer({ po, onClose }: { po: POMockData, onClose: () => void }
                                             <tr key={item.id} className="hover:bg-[#0F1117]/50 transition-colors">
                                                 <td className="px-5 py-4 font-bold text-[#F8FAFC]">{item.description}</td>
                                                 <td className="px-5 py-4 text-center font-black text-[#64748B]">{item.qty}</td>
-                                                <td className="px-5 py-4 text-right font-black text-[#94A3B8]">{(item as any).estimatedPrice?.toLocaleString() || 0} ₫</td>
+                                                <td className="px-5 py-4 text-right font-black text-[#94A3B8]">{item.estimatedPrice?.toLocaleString() || 0} ₫</td>
                                             </tr>
                                         ))}
                                     </tbody>

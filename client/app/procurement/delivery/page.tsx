@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import {
     Truck, Package, MapPin, Calendar,
     Search, X, Edit3, CheckCircle, Clock,
@@ -30,6 +30,11 @@ export default function DeliveryTrackingPage() {
     const [selectedPO, setSelectedPO] = useState<DeliveryInfo | null>(null);
     const [editingDelivery, setEditingDelivery] = useState<DeliveryInfo | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
+
+    // Stable mock data refs to avoid purity warnings
+    const carriersRef = useRef(["DHL", "FedEx", "ViettelPost", "GHN"]);
+    const getTrackingRef = useRef(() => `VN${Math.floor(Math.random() * 1000000000)}`);
+    const getCarrierRef = useRef(() => carriersRef.current[Math.floor(Math.random() * carriersRef.current.length)]);
 
     // Convert POs to Delivery Info
     const deliveryList: DeliveryInfo[] = useMemo(() => {
@@ -64,8 +69,8 @@ export default function DeliveryTrackingPage() {
                 supplierName,
                 status,
                 progress,
-                trackingNumber: `VN${Math.floor(Math.random() * 1000000000)}`,
-                carrier: ["DHL", "FedEx", "ViettelPost", "GHN"][Math.floor(Math.random() * 4)],
+                trackingNumber: getTrackingRef.current(),
+                carrier: getCarrierRef.current(),
                 shippedAt: po.createdAt,
                 estimatedArrival: po.createdAt ? new Date(new Date(po.createdAt).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined,
                 itemsDelivered: status === "DELIVERED" ? po.items.length : Math.floor(po.items?.length * progress / 100),

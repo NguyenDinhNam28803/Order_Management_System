@@ -183,14 +183,14 @@ export default function AdminSupplierDetailPage() {
             <div className="bg-[#161922] border-b border-[rgba(148,163,184,0.1)]">
                 <div className="max-w-[1400px] mx-auto px-8">
                     <div className="flex gap-8">
-                        {[
+                        {([
                             { id: "overview", label: "Tổng quan", icon: Building2 },
                             { id: "kpi", label: "KPI & Hiệu suất", icon: BarChart3 },
                             { id: "ratings", label: "Đánh giá chi tiết", icon: Star },
-                        ].map((tab) => (
+                        ] as const).map((tab) => (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id as any)}
+                                onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 py-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-all ${
                                     activeTab === tab.id
                                         ? "text-[#3B82F6] border-[#3B82F6]"

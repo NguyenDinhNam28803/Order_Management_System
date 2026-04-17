@@ -108,7 +108,7 @@ interface RagResponse {
     data: {
         answer: {
             summary: string;
-            data?: any[];
+            data?: Record<string, unknown>[];
             found?: boolean;
         };
         sources: Source[];
@@ -357,32 +357,32 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                         <span className="text-[10px] font-black uppercase tracking-widest">Chi tiết thông tin</span>
                                     </div>
                                     <div className="space-y-3">
-                                        {aiResponse.data.answer.data.map((item: any, idx: number) => (
+                                        {(aiResponse.data.answer.data as Array<Record<string, any>>).map((item, idx) => (
                                             <div key={idx} className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                                                 {/* Header with status if available */}
-                                                {(item.status || item.details?.["Đánh giá nhà cung cấp"]) && (
+                                                {!!(item.status || (item.details as any)?.["Đánh giá nhà cung cấp"]) && (
                                                     <div className="px-4 py-3 bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                                                         <span className="text-xs font-bold text-[#F8FAFC]">
-                                                            {item.details?.["Đánh giá nhà cung cấp"] || `Kết quả ${idx + 1}`}
+                                                            {(item.details as any)?.["Đánh giá nhà cung cấp"] || `Kết quả ${idx + 1}`}
                                                         </span>
-                                                        {item.status && (
+                                                        {!!item.status && (
                                                             <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${
                                                                 item.status === 'PREFERRED' ? 'bg-emerald-500/20 text-emerald-400' :
                                                                 item.status === 'APPROVED' ? 'bg-[#3B82F6]/20 text-[#3B82F6]' :
                                                                 'bg-amber-500/20 text-amber-400'
                                                             }`}>
-                                                                {item.status}
+                                                                {item.status as string}
                                                             </span>
                                                         )}
                                                     </div>
                                                 )}
                                                 {/* Render details object */}
-                                                {item.details && Object.keys(item.details).length > 0 && (
+                                                {item.details && Object.keys(item.details as any).length > 0 && (
                                                     <div className="p-4">
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                            {Object.entries(item.details)
+                                                            {Object.entries(item.details as Record<string, unknown>)
                                                                 .filter(([key]) => key !== 'id' && !key.toLowerCase().includes('id') && !key.toLowerCase().includes('org') && !key.toLowerCase().includes('company'))
-                                                                .map(([key, value]: [string, any]) => {
+                                                                .map(([key, value]: [string, unknown]) => {
                                                                     // Skip empty/null values
                                                                     if (value === null || value === undefined || value === '') return null;
                                                                     
@@ -414,10 +414,10 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                                     </div>
                                                 )}
                                                 {/* Notes/Ghi chú as footer */}
-                                                {item.details?.["Ghi chú"] && (
+                                                {!!(item.details as any)?.["Ghi chú"] && (
                                                     <div className="px-4 py-3 bg-[#0F1117]/50 border-t border-[rgba(148,163,184,0.1)]">
                                                         <p className="text-xs text-[#94A3B8] italic">
-                                                            {item.details["Ghi chú"]}
+                                                            {(item.details as any)["Ghi chú"]}
                                                         </p>
                                                     </div>
                                                 )}

@@ -37,6 +37,7 @@ export function useWebSocket({
     const reconnectAttemptsRef = useRef(0);
     const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
     const isManualClose = useRef(false);
+    const connectRef = useRef<(() => void) | null>(null);
 
     const connect = useCallback(() => {
         if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -73,7 +74,7 @@ export function useWebSocket({
                 if (!isManualClose.current && reconnectAttemptsRef.current < maxReconnectAttempts) {
                     reconnectAttemptsRef.current++;
                     reconnectTimerRef.current = setTimeout(() => {
-                        connect();
+                        connectRef.current?.();
                     }, reconnectInterval);
                 }
             };
@@ -87,6 +88,9 @@ export function useWebSocket({
             console.error("WebSocket connection error:", err);
         }
     }, [url, onMessage, onConnect, onDisconnect, onError, reconnectInterval, maxReconnectAttempts]);
+
+    // Update ref to point to current connect function
+    connectRef.current = connect;
 
     const disconnect = useCallback(() => {
         isManualClose.current = true;

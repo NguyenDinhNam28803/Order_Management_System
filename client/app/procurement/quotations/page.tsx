@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useProcurement, RFQ } from "../../context/ProcurementContext";
-import { Quotation, QuotationItem, RfqStatus } from "@/app/types/api-types";
+import { Quotation, QuotationItem, RfqStatus, Organization } from "@/app/types/api-types";
 import { ERPTableColumn } from "../../components/shared/ERPTable";
 import { formatVND } from "../../utils/formatUtils";
 import ERPTable from "../../components/shared/ERPTable";
@@ -49,7 +49,7 @@ export default function QuotationManagementPage() {
                 });
                 // Enrich supplier data from organizations
                 const enrichedQuotes = quotes.map(q => {
-                    const supplierOrg = organizations?.find((o: any) => o.id === q.supplierId);
+                    const supplierOrg = organizations?.find((o: Organization) => o.id === q.supplierId);
                     return {
                         ...q,
                         supplier: supplierOrg || q.supplier || { id: q.supplierId, name: 'Nhà cung cấp #' + q.supplierId.substring(0, 6) }
@@ -79,15 +79,16 @@ export default function QuotationManagementPage() {
             try {
                 const aiResult = await analyzeQuotationWithAI(quotation.id);
                 if (aiResult) {
+                    const aiData = aiResult as { score?: number; assessment?: string; pros?: string[]; cons?: string[]; recommendation?: string };
                     setViewQuotation(prev => prev ? {
                         ...prev,
-                        aiAnalysis: aiResult as Quotation['aiAnalysis'],
-                        aiScore: (aiResult as any).score ? ((aiResult as any).score * 10) : undefined
+                        aiAnalysis: aiData as Quotation['aiAnalysis'],
+                        aiScore: aiData.score ? aiData.score * 10 : undefined
                     } : null);
                     // Also update in quotations list
                     setQuotations(prev => prev.map(q =>
                         q.id === quotation.id
-                            ? { ...q, aiAnalysis: aiResult as Quotation['aiAnalysis'], aiScore: (aiResult as any).score ? ((aiResult as any).score * 10) : undefined }
+                            ? { ...q, aiAnalysis: aiData as Quotation['aiAnalysis'], aiScore: aiData.score ? aiData.score * 10 : undefined }
                             : q
                     ));
                 }
@@ -104,12 +105,7 @@ export default function QuotationManagementPage() {
         return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
     };
 
-    // Role check
-    if (currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN") {
-        return <div className="p-20 text-center font-black text-slate-400">Bạn không có quyền truy cập trang quản lý báo giá.</div>;
-    }
-
-    // Filter RFQs
+    // Filter RFQs - must be before any conditional returns (Rules of Hooks)
     const filteredRFQs = useMemo(() => {
         return rfqs.filter((rfq: RFQ) => {
             const search = searchTerm.toLowerCase();
@@ -120,6 +116,24 @@ export default function QuotationManagementPage() {
             );
         });
     }, [rfqs, searchTerm]);
+
+    // Stats for selected RFQ - must be before any conditional returns (Rules of Hooks)
+    const rfqStats = useMemo(() => {
+        if (!quotations.length) return [];
+        const sortedByScore = [...quotations].sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0));
+        const bestQuote = sortedByScore[0];
+        return [
+            { label: "Tổng báo giá", value: quotations.length, icon: Users, color: "text-slate-500", bg: "bg-slate-50" },
+            { label: "Chưa trao thầu", value: quotations.filter((q: Quotation) => q.status === 'SUBMITTED').length, icon: Send, color: "text-blue-500", bg: "bg-blue-50" },
+            { label: "Đã trao thầu", value: quotations.filter((q: Quotation) => q.status === 'ACCEPTED').length, icon: Award, color: "text-emerald-500", bg: "bg-emerald-50" },
+            { label: bestQuote?.aiScore ? "Đề xuất AI" : "Giá thấp nhất", value: formatVND(Math.min(...quotations.map(q => q.totalPrice))), icon: Sparkles, color: "text-purple-500", bg: "bg-purple-50" },
+        ];
+    }, [quotations]);
+
+    // Role check
+    if (currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN") {
+        return <div className="p-20 text-center font-black text-slate-400">Bạn không có quyền truy cập trang quản lý báo giá.</div>;
+    }
 
     const handleAward = async (quotation: Quotation) => {
         try {
@@ -345,19 +359,6 @@ export default function QuotationManagementPage() {
             )
         }
     ];
-
-    // Stats for selected RFQ
-    const rfqStats = useMemo(() => {
-        if (!quotations.length) return [];
-        const sortedByScore = [...quotations].sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0));
-        const bestQuote = sortedByScore[0];
-        return [
-            { label: "Tổng báo giá", value: quotations.length, icon: Users, color: "text-slate-500", bg: "bg-slate-50" },
-            { label: "Chưa trao thầu", value: quotations.filter((q: Quotation) => q.status === 'SUBMITTED').length, icon: Send, color: "text-blue-500", bg: "bg-blue-50" },
-            { label: "Đã trao thầu", value: quotations.filter((q: Quotation) => q.status === 'ACCEPTED').length, icon: Award, color: "text-emerald-500", bg: "bg-emerald-50" },
-            { label: bestQuote?.aiScore ? "Đề xuất AI" : "Giá thấp nhất", value: formatVND(Math.min(...quotations.map(q => q.totalPrice))), icon: Sparkles, color: "text-purple-500", bg: "bg-purple-50" },
-        ];
-    }, [quotations]);
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
@@ -686,7 +687,7 @@ export default function QuotationManagementPage() {
                                                             <StatusPill status={co.status} />
                                                         </div>
                                                         <div className="text-2xl font-black text-emerald-400 mb-2">{formatVND(co.proposedPrice)} ₫</div>
-                                                        {co.buyerNote && <p className="text-xs text-[#94A3B8] italic">"{co.buyerNote}"</p>}
+                                                        {co.buyerNote && <p className="text-xs text-[#94A3B8] italic">&quot;{co.buyerNote}&quot;</p>}
                                                     </div>
                                                 ))}
                                                 {counterOffersList.length === 0 && <p className="text-center text-[#64748B] p-4 text-xs font-bold uppercase">Chưa có đề xuất đàm phán</p>}

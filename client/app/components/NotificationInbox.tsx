@@ -151,10 +151,10 @@ export default function NotificationInbox() {
 
             {/* Filter Tabs */}
             <div className="flex gap-1 p-3 border-b border-[rgba(148,163,184,0.1)]">
-              {["PENDING", "ALL", "APPROVED"].map((f) => (
+              {(["PENDING", "ALL", "APPROVED"] as const).map((f) => (
                 <button
                   key={f}
-                  onClick={() => setFilter(f as any)}
+                  onClick={() => setFilter(f)}
                   className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                     filter === f 
                       ? "bg-[rgba(59,130,246,0.15)] text-[#3B82F6] border border-[rgba(59,130,246,0.3)]" 

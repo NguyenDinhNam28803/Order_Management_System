@@ -2,7 +2,49 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useProcurement } from '@/app/context/ProcurementContext';
+import { useProcurement, Invoice } from '@/app/context/ProcurementContext';
+
+// Extended Invoice with matching result and API-specific fields
+type InvoiceWithMatching = Invoice & {
+    invoiceDate?: string;
+    totalAmount?: number;
+    currency?: string;
+    taxRate?: number;
+    subtotal?: number;
+    taxAmount?: number;
+    grnId?: string;
+    exceptionReason?: string;
+    matchedAt?: string;
+    approvedAt?: string;
+    paidAt?: string;
+    po?: { 
+        id: string; 
+        poNumber?: string;
+        status?: string;
+        currency?: string;
+        totalAmount?: number;
+        deliveryDate?: string;
+    };
+    supplier?: { 
+        id: string; 
+        name?: string; 
+        fullName?: string;
+        code?: string;
+        taxCode?: string;
+        supplierTier?: string;
+        trustScore?: number;
+    };
+    matchingResult?: Array<{
+        poItemId?: string;
+        grnItemId?: string;
+        status?: string;
+        quantity?: number;
+        qtyMatch?: boolean;
+        priceMatch?: boolean;
+        variance?: number;
+    }>;
+};
+
 import { 
   FileText, 
   CheckCircle2, 
@@ -24,7 +66,7 @@ export default function InvoiceDetailPage() {
   const invoiceId = params.id as string;
   const { fetchInvoiceById, runMatching, payInvoice, notify } = useProcurement();
   const router = useRouter();
-  const [invoice, setInvoice] = useState<any>(null);
+  const [invoice, setInvoice] = useState<InvoiceWithMatching | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
@@ -34,7 +76,8 @@ export default function InvoiceDetailPage() {
       try {
         const data = await fetchInvoiceById(invoiceId);
         // API returns array, take first item
-        setInvoice(Array.isArray(data) ? data[0] : data);
+        const invoiceData = Array.isArray(data) ? data[0] : data;
+        setInvoice(invoiceData as InvoiceWithMatching | null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load invoice');
       } finally {
@@ -49,8 +92,14 @@ export default function InvoiceDetailPage() {
     try {
       setProcessing(true);
       const updated = await runMatching(invoiceId);
-      setInvoice(updated);
-      notify('3-Way Matching completed', 'success');
+      if (updated) {
+        setInvoice(updated as InvoiceWithMatching);
+        notify('3-Way Matching completed', 'success');
+        // Optionally refresh to see latest status
+        const data = await fetchInvoiceById(invoiceId);
+        const invoiceData = Array.isArray(data) ? data[0] : data;
+        setInvoice(invoiceData as InvoiceWithMatching);
+      }
       router.push('/finance/invoices');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to run matching');
@@ -63,9 +112,14 @@ export default function InvoiceDetailPage() {
     if (window.confirm('Confirm payment for this invoice?')) {
       try {
         setProcessing(true);
-        const updated = await payInvoice(invoiceId);
-        setInvoice(updated);
-        notify('Payment scheduled successfully', 'success');
+        const success = await payInvoice(invoiceId);
+        if (success) {
+          notify('Payment scheduled successfully', 'success');
+          // Fetch updated invoice after payment
+          const data = await fetchInvoiceById(invoiceId);
+          const invoiceData = Array.isArray(data) ? data[0] : data;
+          setInvoice(invoiceData as InvoiceWithMatching);
+        }
         router.push('/finance/invoices');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to process payment');
@@ -111,12 +165,12 @@ export default function InvoiceDetailPage() {
     }
   };
 
-  const formatCurrency = (value: string | number) => {
+  const formatCurrency = (value: string | number | undefined) => {
     const num = typeof value === 'string' ? parseFloat(value) : value;
     return num?.toLocaleString('vi-VN') || '0';
   };
 
-  const formatDate = (dateString: string | null) => {
+  const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
@@ -317,7 +371,7 @@ export default function InvoiceDetailPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {invoice.matchingResult.map((result: any, idx: number) => (
+                      {invoice.matchingResult.map((result, idx) => (
                         <tr key={idx} className="border-b border-border/50">
                           <td className="py-3 px-4 text-text-primary font-mono text-sm">
                             {result.poItemId?.slice(0, 8)}...

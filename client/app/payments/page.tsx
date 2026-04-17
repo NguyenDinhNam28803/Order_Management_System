@@ -5,8 +5,14 @@ import { ArrowRight, ShieldCheck, History } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { Payment } from "../types/api-types";
 
+// Extended Payment with API extra fields
+interface PaymentWithDetails extends Payment {
+    supplierName?: string;
+    paymentDate?: string;
+}
+
 export default function PaymentsPage() {
-    const [payments, setPayments] = useState<Payment[]>([]);
+    const [payments, setPayments] = useState<PaymentWithDetails[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [totalAmount, setTotalAmount] = useState(0);
@@ -83,7 +89,7 @@ export default function PaymentsPage() {
                                             return (
                                                 <tr key={payment.id}>
                                                     <td className=" font-bold">#PAY-{payment.id.split('-')[0].toUpperCase()}</td>
-                                                    <td className="font-bold">{(payment as any).supplierName || 'N/A'}</td>
+                                                                                                    <td className="font-bold">{payment.supplierName || 'N/A'}</td>
                                                     <td className="font-black text-erp-navy">{formatCurrency(payment.amount)}</td>
                                                     <td>
                                                         <span className={`status-pill ${statusDisplay.class}`}>
@@ -140,7 +146,7 @@ export default function PaymentsPage() {
                                     <div className="h-8 w-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20"><ShieldCheck size={16} /></div>
                                     <div className="flex-1">
                                         <div className="text-[10px] font-bold text-[#F8FAFC]">Thanh toán {payment.id}</div>
-                                        <div className="text-[9px] text-[#64748B]">{new Date((payment as any).paymentDate || payment.createdAt).toLocaleDateString('vi-VN')} - Thành công</div>
+                                                                                <div className="text-[9px] text-[#64748B]">{new Date(payment.paymentDate || payment.createdAt).toLocaleDateString('vi-VN')} - Thành công</div>
                                     </div>
                                     <div className="text-[10px] font-black text-[#F8FAFC]">-{formatCurrency(payment.amount)}</div>
                                 </div>

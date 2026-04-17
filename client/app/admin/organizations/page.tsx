@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Plus, Edit2, Trash2, Search, MapPin, Hash, Building2 } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
-import { Organization } from "@/app/types/api-types";
+import { Organization, CreateOrganizationPayload, UpdateOrganizationPayload } from "@/app/types/api-types";
 
 export default function OrganizationsPage() {
     const { organizations, addOrganization, updateOrganization, removeOrganization, refreshData } = useProcurement();
@@ -59,9 +59,9 @@ export default function OrganizationsPage() {
         };
 
         if (editingOrg) {
-            success = await updateOrganization(editingOrg.id, payload as any);
+            success = await updateOrganization(editingOrg.id, payload as UpdateOrganizationPayload);
         } else {
-            success = await addOrganization(payload as any);
+            success = await addOrganization(payload as CreateOrganizationPayload);
         }
 
         if (success) {

@@ -1,8 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useProcurement } from "@/app/context/ProcurementContext";
+import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
+import { Organization } from "@/app/types/api-types";
 import Link from "next/link";
+
+type InvoiceWithDetails = Invoice & {
+    supplier?: Organization;
+    supplierName?: string;
+    po?: { poNumber?: string };
+    totalAmount?: number;
+    amount?: number;
+    invoiceDate?: string;
+    dueDate?: string;
+};
 import {
   FileText, Eye, Pencil, Trash2, Search, Filter,
   TrendingUp, Clock, CheckCircle2, AlertTriangle, Plus
@@ -43,7 +54,7 @@ export default function InvoicesPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const filtered = (invoices ?? []).filter((inv: any) => {
+  const filtered = (invoices as InvoiceWithDetails[] ?? []).filter((inv: InvoiceWithDetails) => {
     const matchSearch =
       !search ||
       inv.invoiceNumber?.toLowerCase().includes(search.toLowerCase()) ||
@@ -55,9 +66,9 @@ export default function InvoicesPage() {
 
   const stats = {
     total:   (invoices ?? []).length,
-    pending: (invoices ?? []).filter((i: any) => i.status === "PENDING_MATCH" || i.status === "RECEIVED").length,
-    paid:    (invoices ?? []).filter((i: any) => i.status === "PAID").length,
-    exception:(invoices ?? []).filter((i: any) => i.status === "EXCEPTION_REVIEW").length,
+    pending: (invoices as InvoiceWithDetails[] ?? []).filter((i: InvoiceWithDetails) => i.status === "PENDING_MATCH" || i.status === "RECEIVED").length,
+    paid:    (invoices as InvoiceWithDetails[] ?? []).filter((i: InvoiceWithDetails) => i.status === "PAID").length,
+    exception:(invoices as InvoiceWithDetails[] ?? []).filter((i: InvoiceWithDetails) => i.status === "EXCEPTION_REVIEW").length,
   };
 
   const handleDelete = async (id: string) => {
@@ -184,7 +195,7 @@ export default function InvoicesPage() {
                     <p className="text-xs mt-1 opacity-60">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
                   </td>
                 </tr>
-              ) : filtered.map((inv: any) => {
+              ) : filtered.map((inv: InvoiceWithDetails) => {
                 const st = STATUS_MAP[inv.status] ?? { label: inv.status, cls: "status-draft" };
                 return (
                   <tr key={inv.id}>

@@ -72,19 +72,24 @@ export default function CategoriesPage() {
 
         setLoading(true);
         try {
-            const payload: any = {
-                name: formData.name,
-                code: formData.code,
-                description: formData.description,
-                orgId: formData.orgId,
-                isActive: formData.isActive
-            };
-
             let success = false;
             if (editingCategory) {
-                success = await updateCategory(editingCategory.id, payload);
+                const updatePayload: UpdateCategoryDto = {
+                    name: formData.name,
+                    description: formData.description,
+                    orgId: formData.orgId,
+                    isActive: formData.isActive
+                };
+                success = await updateCategory(editingCategory.id, updatePayload);
             } else {
-                success = await addCategory(payload);
+                const createPayload: CreateCategoryDto = {
+                    name: formData.name,
+                    code: formData.code,
+                    description: formData.description,
+                    orgId: formData.orgId,
+                    isActive: formData.isActive ?? true
+                };
+                success = await addCategory(createPayload);
             }
 
             if (success) {

@@ -254,7 +254,7 @@ export default function RFQCreatePage() {
                                         className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                                         value={form.deadline}
                                         onChange={e => setForm({...form, deadline: e.target.value})}
-                                        onClick={(e) => (e.currentTarget as any).showPicker?.()}
+                                        onClick={(e) => (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.()}
                                     />
                                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300">
                                         <Calendar size={16} />

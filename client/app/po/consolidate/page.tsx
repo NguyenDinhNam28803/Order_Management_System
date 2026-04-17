@@ -2,9 +2,10 @@
 
 import React, { useState, useMemo } from "react";
 import {
-  useProcurement, PR,
+  useProcurement, PR, PRItem,
   ConsolidationSummary, ConsolidatePRsResult,
 } from "../../context/ProcurementContext";
+import { Organization } from "@/app/types/api-types";
 import {
   GitMerge, CheckSquare, Square, ChevronRight, Loader2,
   AlertTriangle, CheckCircle2, Building2, Package, ArrowRight,
@@ -42,7 +43,7 @@ export default function POConsolidatePage() {
 
   // Suppliers
   const suppliers = useMemo(
-    () => (organizations ?? []).filter((o: any) =>
+    () => (organizations ?? []).filter((o: Organization) =>
       o.companyType === "SUPPLIER" || o.companyType === "BOTH"
     ),
     [organizations]
@@ -53,7 +54,7 @@ export default function POConsolidatePage() {
     if (selectedPrIds.length < 2) return [];
     const selected = approvedPRs.filter((p: PR) => selectedPrIds.includes(p.id));
     const allItems = selected.flatMap((pr: PR) =>
-      (pr.items ?? []).map((item: any) => ({
+      (pr.items ?? []).map((item: PRItem & { prNumber?: string; costCenterId?: string; categoryId?: string }) => ({
         ...item, prNumber: pr.prNumber, costCenterId: pr.costCenterId,
       }))
     );
@@ -70,9 +71,9 @@ export default function POConsolidatePage() {
       description: items[0].productDesc ?? "—",
       sku: items[0].sku,
       unit: items[0].unit ?? "PCS",
-      totalQty: items.reduce((s: number, i: any) => s + Number(i.qty ?? 0), 0),
-      unitPrice: Math.min(...items.map((i: any) => Number(i.estimatedPrice ?? 0))),
-      sources: items.map((i: any) => ({ prNumber: i.prNumber, qty: Number(i.qty ?? 0) })),
+      totalQty: items.reduce((s: number, i: PRItem & { prNumber?: string }) => s + Number(i.qty ?? 0), 0),
+      unitPrice: Math.min(...items.map((i: PRItem & { prNumber?: string }) => Number(i.estimatedPrice ?? 0))),
+      sources: items.map((i: PRItem & { prNumber?: string }) => ({ prNumber: i.prNumber, qty: Number(i.qty ?? 0) })),
     }));
   }, [selectedPrIds, approvedPRs, mode]);
 
@@ -109,8 +110,8 @@ export default function POConsolidatePage() {
       } else {
         setError("Không thể tạo PO gộp — vui lòng kiểm tra lại thông tin");
       }
-    } catch (err: any) {
-      setError(err?.message ?? "Đã xảy ra lỗi khi gộp PO");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Đã xảy ra lỗi khi gộp PO");
     } finally {
       setSubmitting(false);
     }
@@ -335,7 +336,7 @@ export default function POConsolidatePage() {
                   className="erp-input"
                 >
                   <option value="">— Chọn nhà cung cấp —</option>
-                  {suppliers.map((s: any) => (
+                  {suppliers.map((s: Organization) => (
                     <option key={s.id} value={s.id}>{s.name}</option>
                   ))}
                 </select>

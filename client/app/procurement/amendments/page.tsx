@@ -191,7 +191,7 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
                             <select 
                                 className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl px-6 py-5 text-sm font-bold text-[#F8FAFC] outline-none focus:bg-[#161922] focus:border-[#3B82F6]/30 transition-all"
                                 value={formData.changeType}
-                                onChange={(e) => setFormData({ ...formData, changeType: e.target.value as any })}
+                                onChange={(e) => setFormData({ ...formData, changeType: e.target.value as AmendmentMock["changeType"] })}
                             >
                                 <option value="QUANTITY">Số lượng (Quantity)</option>
                                 <option value="PRICE">Đơn giá (Price)</option>
@@ -289,7 +289,7 @@ function AmendmentHistoryTimeline({ poNumber, history, onClose, getBadgeColor }:
                                               <span className="text-sm font-black text-emerald-400">{am.newValue}</span>
                                          </div>
                                          <p className="text-[11px] text-[#94A3B8] font-medium leading-relaxed italic">
-                                             "{am.reason}"
+                                             &quot;{am.reason}&quot;
                                          </p>
                                      </div>
                                  </div>

@@ -235,7 +235,7 @@ export default function NotificationAdminPage() {
             </div>
             <div>
               <p className="font-bold text-[#F8FAFC] mb-1">Xem trước template</p>
-              <p className="text-[#64748B]">Click "Xem trước từ server" để tải HTML render từ backend</p>
+              <p className="text-[#64748B]">Click &quot;Xem trước từ server&quot; để tải HTML render từ backend</p>
             </div>
           </div>
         </div>

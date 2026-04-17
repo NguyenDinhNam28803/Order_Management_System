@@ -6,7 +6,7 @@ import {
   Clock, User, Building, X, Sparkles, ArrowRight,
   Command, TrendingUp, Loader2, AlertCircle,
 } from "lucide-react";
-import { useProcurement } from "../context/ProcurementContext";
+import { useProcurement, PR, PO } from "../context/ProcurementContext";
 import { getStatusLabel } from "../utils/formatUtils";
 import { useRouter } from "next/navigation";
 
@@ -82,8 +82,7 @@ export default function SmartSearch() {
     const lower = q.toLowerCase();
     const hits: SearchResult[] = [];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (prs ?? []).slice(0, 50).forEach((pr: any) => {
+    (prs ?? []).slice(0, 50).forEach((pr: PR) => {
       if (
         pr.prNumber?.toLowerCase().includes(lower) ||
         pr.title?.toLowerCase().includes(lower)
@@ -91,27 +90,26 @@ export default function SmartSearch() {
         hits.push({
           id: pr.id,
           type: "PR",
-          title: pr.title || pr.prNumber,
+          title: pr.title || pr.prNumber || "—",
           subtitle: `Người yêu cầu: ${pr.requester?.fullName ?? "—"}`,
-          metadata: `${pr.prNumber} • ${pr.dept?.name ?? ""}`,
+          metadata: `${pr.prNumber} • ${(pr as PR & { dept?: { name?: string } }).dept?.name ?? ""}`,
           status: pr.status,
           href: `/pr/${pr.id}`,
         });
       }
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (pos ?? []).slice(0, 50).forEach((po: any) => {
+    (pos ?? []).slice(0, 50).forEach((po: PO) => {
       if (
         po.poNumber?.toLowerCase().includes(lower) ||
-        po.supplierName?.toLowerCase().includes(lower)
+        (po as PO & { supplierName?: string }).supplierName?.toLowerCase().includes(lower)
       ) {
         hits.push({
           id: po.id,
           type: "PO",
           title: `Đơn hàng ${po.poNumber}`,
-          subtitle: `Nhà cung cấp: ${po.supplier?.fullName ?? po.supplierName ?? "—"}`,
-          metadata: `${po.poNumber} • ${Number(po.totalAmount ?? 0).toLocaleString("vi-VN")} ₫`,
+          subtitle: `Nhà cung cấp: ${(po as PO & { supplier?: { fullName?: string }; supplierName?: string; totalAmount?: number }).supplier?.fullName ?? (po as PO & { supplierName?: string }).supplierName ?? "—"}`,
+          metadata: `${po.poNumber} • ${Number((po as PO & { totalAmount?: number }).totalAmount ?? 0).toLocaleString("vi-VN")} ₫`,
           status: po.status,
           href: `/po/${po.id}`,
         });
@@ -146,18 +144,17 @@ export default function SmartSearch() {
       setAiSources(sources);
 
       // Also surface any structured data rows as result cards
-      const rows: unknown[] = Array.isArray(answerObj?.data) ? answerObj.data : [];
+      const rows = (Array.isArray(answerObj?.data) ? answerObj.data : []) as Record<string, unknown>[];
       setResults(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        rows.slice(0, 5).map((row: any, i: number) => ({
-          id:       row.id ?? `rag-${i}`,
+        rows.slice(0, 5).map((row, i) => ({
+          id:       (row.id as string) ?? `rag-${i}`,
           type:     "AI" as const,
-          title:    row.title ?? row.name ?? row.prNumber ?? row.poNumber ?? `Kết quả ${i + 1}`,
-          subtitle: row.description ?? row.status ?? "",
+          title:    (row.title as string) ?? (row.name as string) ?? (row.prNumber as string) ?? (row.poNumber as string) ?? `Kết quả ${i + 1}`,
+          subtitle: String(row.description ?? row.status ?? ""),
           metadata: row.totalAmount
             ? `${Number(row.totalAmount).toLocaleString("vi-VN")} ₫`
-            : sources[i]?.table ?? "",
-          status: row.status,
+            : (sources[i]?.table as string) ?? "",
+          status: row.status as string,
         }))
       );
     } catch (err) {

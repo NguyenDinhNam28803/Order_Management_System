@@ -5,6 +5,20 @@ import { useRouter } from "next/navigation";
 import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
 import { FileText, Search, CheckCircle2, Clock, AlertCircle, ArrowRight, FileCheck, XCircle, CreditCard } from "lucide-react";
 import { formatVND, getStatusLabel } from "@/app/utils/formatUtils";
+import { Organization } from "@/app/types/api-types";
+
+// Extended Invoice with UI-specific fields from API
+type InvoiceWithDetails = Invoice & {
+    supplier?: Organization;
+    vendor?: string;
+    po?: { poNumber?: string };
+    grnId?: string;
+    totalAmount?: number;
+    amount?: number;
+    currency?: string;
+    exceptionReason?: string;
+    invoiceDate?: string;
+}
 
 export default function FinanceInvoicesPage() {
     const { invoices, pos } = useProcurement();
@@ -15,7 +29,8 @@ export default function FinanceInvoicesPage() {
     console.log(invoices);
 
     // Filter invoices
-    const filteredInvoices = invoices.filter((inv: any) => {
+    const invoicesWithDetails = invoices as InvoiceWithDetails[];
+    const filteredInvoices = invoicesWithDetails.filter((inv: InvoiceWithDetails) => {
         const matchesSearch = 
             inv.invoiceNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             inv.supplier?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -147,7 +162,7 @@ export default function FinanceInvoicesPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredInvoices.map((inv: any) => (
+                                filteredInvoices.map((inv: InvoiceWithDetails) => (
                                     <tr key={inv.id} className="hover:bg-[#0F1117]/50 transition-all group">
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-3">
@@ -176,7 +191,7 @@ export default function FinanceInvoicesPage() {
                                         </td>
                                         <td className="px-6 py-5 text-right">
                                             <span className="font-black text-[#F8FAFC]">
-                                                {formatVND(parseFloat(inv.totalAmount || inv.amount || 0))}
+                                                {formatVND(Number(inv.totalAmount || inv.amount || 0))}
                                             </span>
                                             <p className="text-xs text-[#64748B]">{inv.currency}</p>
                                         </td>
@@ -223,19 +238,19 @@ export default function FinanceInvoicesPage() {
                 <div className="bg-[#161922] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Chờ đối soát</p>
                     <p className="text-2xl font-black text-amber-400">
-                        {invoices.filter((i: any) => i.status === "SUBMITTED" || i.status === "PENDING" || i.status === "MATCHING").length}
+                        {invoicesWithDetails.filter((i: InvoiceWithDetails) => i.status === "SUBMITTED" || i.status === "PENDING" || i.status === "MATCHING").length}
                     </p>
                 </div>
                 <div className="bg-[#161922] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Lỗi đối soát</p>
                     <p className="text-2xl font-black text-orange-400">
-                        {invoices.filter((i: any) => i.status === "EXCEPTION_REVIEW").length}
+                        {invoicesWithDetails.filter((i: InvoiceWithDetails) => i.status === "EXCEPTION_REVIEW").length}
                     </p>
                 </div>
                 <div className="bg-[#161922] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Tổng giá trị</p>
                     <p className="text-xl font-black text-[#F8FAFC]">
-                        {formatVND(invoices.reduce((sum, i: any) => sum + parseFloat(i.totalAmount || i.amount || 0), 0))}
+                        {formatVND(invoicesWithDetails.reduce((sum, i: InvoiceWithDetails) => sum + Number(i.totalAmount || i.amount || 0), 0))}
                     </p>
                 </div>
             </div>

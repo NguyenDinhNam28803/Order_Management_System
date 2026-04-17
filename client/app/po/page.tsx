@@ -221,8 +221,7 @@ export default function POPage() {
                                             type="date"
                                             className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                                             defaultValue={new Date().toISOString().substring(0, 10)} 
-                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                            onClick={(e) => (e.currentTarget as any).showPicker?.()}
+                                            onClick={(e) => (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.()}
                                         />
                                     </div>
                                 </div>

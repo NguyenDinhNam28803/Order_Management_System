@@ -45,7 +45,7 @@ interface AIInsights {
 
 interface KPIResponse {
   kpiScore: KPIScore;
-  aiInsights: AIInsights;
+  aiInsights: AIInsights | null | undefined;
 }
 
 const metricIcons: Record<string, ReactNode> = {
@@ -105,13 +105,14 @@ export default function SupplierKPIPage() {
         const report = await fetchSupplierKPIReport(supplierId);
         // Handle nested response structure with data.kpiScore and data.aiInsights
         let kpiResponse: KPIResponse | null = null;
-        if ((report as any)?.data?.kpiScore) {
+        const reportData = report as { data?: { kpiScore?: KPIScore; aiInsights?: AIInsights }; kpiScore?: KPIScore };
+        if (reportData?.data?.kpiScore) {
           kpiResponse = {
-            kpiScore: (report as any).data.kpiScore,
-            aiInsights: (report as any).data.aiInsights
+            kpiScore: reportData.data.kpiScore,
+            aiInsights: reportData.data.aiInsights
           };
-        } else if ((report as any)?.kpiScore) {
-          kpiResponse = (report as unknown) as KPIResponse;
+        } else if (reportData?.kpiScore) {
+          kpiResponse = report as unknown as KPIResponse;
         }
         setKPIData(kpiResponse);
       } catch (err) {
@@ -130,32 +131,33 @@ export default function SupplierKPIPage() {
       const result = await evaluateSupplierKPI(supplierId);
       if (result) {
         // ProcurementContext already transforms data - convert to KPIResponse format
+        const resultData = result as Partial<KPIScore> & { aiInsights?: AIInsights | null };
         const kpiResponse: KPIResponse = {
           kpiScore: {
-            id: (result as any).id || '',
+            id: resultData?.id || '',
             supplierId: supplierId,
-            buyerOrgId: (result as any).buyerOrgId || '',
-            periodYear: (result as any).periodYear || new Date().getFullYear(),
-            periodQuarter: (result as any).periodQuarter || 1,
-            otdScore: (result as any).otdScore || 0,
-            qualityScore: (result as any).qualityScore || 0,
-            priceScore: (result as any).priceScore || 0,
-            invoiceAccuracy: String((result as any).invoiceAccuracy || 0),
-            fulfillmentRate: String((result as any).fulfillmentRate || 0),
-            responseTimeScore: String((result as any).responseTimeScore || 0),
-            manualScore: (result as any).manualScore || (result as any).score || 0,
-            tier: (result as any).tier || 'PENDING',
-            poCount: (result as any).poCount || 0,
-            disputeCount: (result as any).disputeCount || 0,
-            reviewCompleted: (result as any).reviewCompleted || false,
-            qbrHeldAt: (result as any).qbrHeldAt || null,
-            improvementPlan: (result as any).improvementPlan || '',
-            notes: (result as any).notes || '',
-            calculatedAt: (result as any).calculatedAt || new Date().toISOString(),
-            createdAt: (result as any).createdAt || new Date().toISOString(),
-            updatedAt: (result as any).updatedAt || new Date().toISOString(),
+            buyerOrgId: resultData?.buyerOrgId || '',
+            periodYear: resultData?.periodYear || new Date().getFullYear(),
+            periodQuarter: resultData?.periodQuarter || 1,
+            otdScore: resultData?.otdScore || 0,
+            qualityScore: resultData?.qualityScore || 0,
+            priceScore: resultData?.priceScore || 0,
+            invoiceAccuracy: String(resultData?.invoiceAccuracy || 0),
+            fulfillmentRate: String(resultData?.fulfillmentRate || 0),
+            responseTimeScore: String(resultData?.responseTimeScore || 0),
+            manualScore: resultData?.manualScore || (resultData as { score?: number })?.score || 0,
+            tier: resultData?.tier || 'PENDING',
+            poCount: resultData?.poCount || 0,
+            disputeCount: resultData?.disputeCount || 0,
+            reviewCompleted: resultData?.reviewCompleted || false,
+            qbrHeldAt: resultData?.qbrHeldAt || null,
+            improvementPlan: resultData?.improvementPlan || '',
+            notes: resultData?.notes || '',
+            calculatedAt: resultData?.calculatedAt || new Date().toISOString(),
+            createdAt: resultData?.createdAt || new Date().toISOString(),
+            updatedAt: resultData?.updatedAt || new Date().toISOString(),
           },
-          aiInsights: (result as any).aiInsights || null
+          aiInsights: resultData?.aiInsights || null
         };
         setKPIData(kpiResponse);
         notify('Đánh giá nhà cung cấp hoàn tất', 'success');

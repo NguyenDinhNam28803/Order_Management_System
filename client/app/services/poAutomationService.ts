@@ -7,7 +7,7 @@
  */
 
 import { PO } from "../context/ProcurementContext";
-import { Contract } from "../types/api-types";
+import { Contract, CurrencyCode, ContractStatus } from "../types/api-types";
 
 export interface POAutomationConfig {
   // Ngưỡng giá tối thiểu để tạo hợp đồng (VND)
@@ -61,10 +61,10 @@ export function generateContractFromPO(
     supplierId: po.supplierId || po.vendor,
     poId: po.id,
     totalValue: po.total,
-    currency: 'VND' as any,
+    currency: CurrencyCode.VND,
     startDate: startDate.toISOString().split('T')[0],
     endDate: endDate.toISOString().split('T')[0],
-    status: 'DRAFT' as any,
+    status: ContractStatus.DRAFT,
   };
 }
 

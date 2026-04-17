@@ -23,7 +23,6 @@ import {
   TrendingDown,
   ChevronRight,
   Bell,
-  Calendar,
   Award,
   BarChart3,
   RefreshCcw,
@@ -120,7 +119,7 @@ const StatCard = ({ title, value, subtitle, icon: Icon, color, trend, onClick }:
   </div>
 );
 
-const QuickAction = ({ icon: Icon, label, href, color }: { icon: any, label: string, href: string, color: string }) => (
+const QuickAction = ({ icon: Icon, label, href, color }: { icon: React.ElementType, label: string, href: string, color: string }) => (
   <Link 
     href={href}
     className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30 hover:bg-[#161922] transition-all group"
@@ -148,15 +147,13 @@ interface KPIData {
   priceScore?: number;
   manualScore?: number;
   metrics?: KPIMetric[];
-  evaluations?: any[];
+  evaluations?: unknown[];
 }
 
 export default function SupplierPortalPage() {
   const router = useRouter();
   const { 
     currentUser, 
-    rfqs, 
-    pos, 
     allPos,
     contracts,
     fetchMySupplierRFQs,

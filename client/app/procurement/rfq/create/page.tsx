@@ -40,7 +40,7 @@ interface RagResponse {
     data: {
         answer: {
             summary: string;
-            data?: any[];
+            data?: Record<string, unknown>[];
             found?: boolean;
         };
         sources: Source[];
@@ -669,7 +669,7 @@ export default function CreateRFQPage() {
                                             className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                                             value={deadline}
                                             onChange={(e) => setDeadline(e.target.value)}
-                                            onClick={(e) => (e.currentTarget as any).showPicker?.()}
+                                            onClick={(e) => (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.()}
                                         />
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#64748B]">
                                             <Calendar size={18} />

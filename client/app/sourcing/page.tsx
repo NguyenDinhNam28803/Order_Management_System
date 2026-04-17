@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PR, useProcurement, QuoteRequestStatus, QuoteRequest, Organization, PO } from "../context/ProcurementContext";
+import { PR, useProcurement, QuoteRequestStatus, QuoteRequest, QuoteRequestItem, Organization, PO } from "../context/ProcurementContext";
 import { 
     Filter, ArrowRight, 
     FileText, ShoppingBag, 
@@ -76,7 +76,7 @@ export default function SourcingPage() {
                 const posResp = await fetch('/api/purchase-orders');
                 if (posResp.ok) {
                     const allPOs = await posResp.json();
-                    const newPO = allPOs.find((p: any) => p.prId === prId);
+                    const newPO = allPOs.find((p: PO & { prId?: string }) => p.prId === prId);
                     if (newPO?.id) {
                         const poTotal = Number(newPO.totalAmount || newPO.total || 0);
                         if (poTotal >= 50000000) {
@@ -301,7 +301,7 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
     const handleOpenEdit = (qr: QuoteRequest) => { setProcessingId(qr.id); setEditData(JSON.parse(JSON.stringify(qr))); };
     const handleUpdateItem = (idx: number, field: string, value: string | number) => {
         if (!editData) return;
-        const ni = [...editData.items]; ni[idx] = { ...ni[idx], [field]: value } as any;
+        const ni = [...editData.items]; ni[idx] = { ...ni[idx], [field]: value } as QuoteRequestItem;
         setEditData({ ...editData, items: ni });
     };
 

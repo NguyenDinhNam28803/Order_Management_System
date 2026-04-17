@@ -72,8 +72,8 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
       }
 
       setDraft(draftData);
-    } catch (err: any) {
-      setError(err.message || "Lỗi kết nối server");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Lỗi kết nối server");
     } finally {
       setIsGenerating(false);
     }
@@ -130,8 +130,8 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
         onPrCreated?.(res);
         handleClose();
       }, 1500);
-    } catch (err: any) {
-      setError(err.message || "Lỗi khi tạo PR");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Lỗi khi tạo PR");
     } finally {
       setIsSubmitting(false);
     }

@@ -703,10 +703,8 @@ export interface AuditLog {
     action: string;
     entityType: string;
     entityId: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    oldValue?: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    newValue?: any;
+    oldValue?: unknown;
+    newValue?: unknown;
     ipAddress?: string;
     userAgent?: string;
     createdAt: string;

@@ -31,7 +31,7 @@ export interface NotificationPayload {
   recipientId: string;
   recipientEmail: string;
   eventType: EmailEventType;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   referenceType?: string;
   referenceId?: string;
 }
@@ -114,4 +114,4 @@ export type TemplateData =
   | GrnMilestoneUpdateData
   | InvoiceSubmitLinkData
   | PaymentConfirmedData
-  | Record<string, any>;
+  | Record<string, unknown>;

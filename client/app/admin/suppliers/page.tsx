@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useProcurement, Organization } from "../../context/ProcurementContext";
+import { CreateOrganizationPayload } from "@/app/types/api-types";
 import { 
     Truck, Plus, Search, 
     Trash2, CheckCircle2, XCircle, Star, 
@@ -52,12 +53,12 @@ export default function SupplierManagementPage() {
             name: newSupplier.name!,
             code: newSupplier.code!,
             industry: newSupplier.category || "General",
-            companyType: "SUPPLIER" as any,
+            companyType: "SUPPLIER" as const,
             email: newSupplier.email || "",
-            phone: newSupplier.phone || "",
+            phone: newSupplier.phone,
             website: newSupplier.website,
             countryCode: "VN"
-        } as any);
+        } as CreateOrganizationPayload);
 
         if (success) {
             setIsAddModalOpen(false);

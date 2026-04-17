@@ -904,7 +904,7 @@ export default function SimulationPage() {
                                             <div className="p-1.5 bg-[#3B82F6]/10 rounded-lg"><FileText size={12} className="text-[#3B82F6]" /></div>
                                             <span className="text-[11px] font-black text-[#F8FAFC]">{pr.id}</span>
                                         </div>
-                                        <StatusBadge status={pr.status} type={getStatusColor(pr.status) as any} />
+                                        <StatusBadge status={pr.status} type={getStatusColor(pr.status)} />
                                     </div>
                                     <div className="text-[10px] text-[#64748B]">{(pr.total/1000000).toFixed(0)}M ₫</div>
                                 </div>
@@ -917,7 +917,7 @@ export default function SimulationPage() {
                                             <div className="p-1.5 bg-amber-500/10 rounded-lg"><Search size={12} className="text-amber-400" /></div>
                                             <span className="text-[11px] font-black text-[#F8FAFC]">{rfq.id}</span>
                                         </div>
-                                        <StatusBadge status={rfq.status} type={getStatusColor(rfq.status) as any} />
+                                        <StatusBadge status={rfq.status} type={getStatusColor(rfq.status)} />
                                     </div>
                                     <div className="text-[10px] text-[#64748B] truncate">{rfq.supplier || rfq.title}</div>
                                 </div>
@@ -930,7 +930,7 @@ export default function SimulationPage() {
                                             <div className="p-1.5 bg-emerald-500/10 rounded-lg"><ShoppingBag size={12} className="text-emerald-400" /></div>
                                             <span className="text-[11px] font-black text-[#F8FAFC]">{po.id}</span>
                                         </div>
-                                        <StatusBadge status={po.status} type={getStatusColor(po.status) as any} />
+                                        <StatusBadge status={po.status} type={getStatusColor(po.status)} />
                                     </div>
                                     <div className="text-[10px] text-emerald-400 font-black">{(po.total/1000000).toFixed(0)}M ₫</div>
                                 </div>

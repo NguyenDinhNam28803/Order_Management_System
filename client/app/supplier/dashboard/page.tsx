@@ -135,7 +135,8 @@ export default function SupplierDashboard() {
     const relevantContextRfqs = (contextRfqs || []).filter((r: ContextRFQ) => 
       r.supplierIds?.includes(currentUser?.orgId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253")
     ).map((cr: ContextRFQ) => {
-      const buyerOrgName = organizations?.find((o: ContextOrg) => o.id === (cr as any).orgId)?.name || "Phòng Hành chính";
+      const crWithOrg = cr as ContextRFQ & { orgId?: string };
+      const buyerOrgName = organizations?.find((o: ContextOrg) => o.id === crWithOrg.orgId)?.name || "Phòng Hành chính";
       
       const isCatalog = cr.type === 'PO_CONFIRMATION';
       

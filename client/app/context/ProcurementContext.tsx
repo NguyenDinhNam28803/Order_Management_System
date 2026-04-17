@@ -1507,22 +1507,47 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 'PROVISIONAL': 'BRONZE',
                 'BLACKLISTED': 'BRONZE',
             };
+            interface KpiScoreData {
+                overallScore?: number;
+                otdScore?: number;
+                qualityScore?: number;
+                priceScore?: number;
+                invoiceAccuracy?: string;
+                responseTimeScore?: string;
+                fulfillmentRate?: string;
+                periodQuarter?: number;
+                periodYear?: number;
+                tier?: string;
+                supplier?: { id?: string; name?: string };
+            }
+            interface AiInsightsData {
+                overallScore?: number;
+            }
             return items.map((item: Record<string, unknown>) => {
-                const kpiScore = item?.kpiScore || item;
-                const aiInsights = item?.aiInsights;
+                const kpiScore = (item?.kpiScore || item) as KpiScoreData;
+                const aiInsights = item?.aiInsights as AiInsightsData | undefined;
+                const overallScore = aiInsights?.overallScore ?? kpiScore?.overallScore ?? kpiScore?.otdScore ?? 0;
                 return {
-                    ...kpiScore,
-                    score: aiInsights?.overallScore ?? kpiScore?.overallScore ?? kpiScore?.otdScore ?? 0,
+                    id: (item?.id as string) || `${supplierId}-kpi-${Date.now()}`,
+                    supplierId: supplierId,
+                    period: `Q${kpiScore?.periodQuarter || 1} ${kpiScore?.periodYear || 2026}`,
+                    onTimeDeliveryScore: kpiScore?.otdScore ?? 0,
+                    qualityScore: kpiScore?.qualityScore ?? 0,
+                    priceScore: kpiScore?.priceScore ?? 0,
+                    responsivenessScore: parseFloat(kpiScore?.responseTimeScore || '0') || 0,
+                    complianceScore: parseFloat(kpiScore?.invoiceAccuracy || '0') || 0,
+                    overallScore: overallScore,
+                    tier: (tierMap[kpiScore?.tier || ''] || 'BRONZE') as import('../types/api-types').SupplierTier,
+                    evaluatedAt: new Date().toISOString(),
                     quarter: `Q${kpiScore?.periodQuarter || 1} ${kpiScore?.periodYear || 2026}`,
-                    tier: tierMap[kpiScore?.tier] || 'BRONZE',
                     supplier: kpiScore?.supplier || { id: supplierId, name: 'Nhà cung cấp' },
                     metrics: {
                         onTimeDelivery: { score: kpiScore?.otdScore ?? 0 },
                         qualityScore: { score: kpiScore?.qualityScore ?? 0 },
                         priceCompetitiveness: { score: kpiScore?.priceScore ?? 0 },
-                        invoiceAccuracy: { score: parseFloat(kpiScore?.invoiceAccuracy) || 0 },
-                        responsiveness: { score: parseFloat(kpiScore?.responseTimeScore) || 0 },
-                        orderFulfillment: { score: parseFloat(kpiScore?.fulfillmentRate) || 0 },
+                        invoiceAccuracy: { score: parseFloat(kpiScore?.invoiceAccuracy || '0') || 0 },
+                        responsiveness: { score: parseFloat(kpiScore?.responseTimeScore || '0') || 0 },
+                        orderFulfillment: { score: parseFloat(kpiScore?.fulfillmentRate || '0') || 0 },
                     },
                     aiInsights,
                 };

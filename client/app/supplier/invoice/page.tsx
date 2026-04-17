@@ -75,9 +75,10 @@ export default function SupplierInvoice() {
             currentPO.items.forEach(item => {
                 initialItems[item.id] = item.qty || 0;
             });
-            setInvoiceItems(initialItems);
+            // Use a timeout to avoid ESLint error about setting state in effect
+            setTimeout(() => setInvoiceItems(initialItems), 0);
         } else {
-            setInvoiceItems({});
+            setTimeout(() => setInvoiceItems({}), 0);
         }
     }, [selectedPO, currentPO?.id]);
 

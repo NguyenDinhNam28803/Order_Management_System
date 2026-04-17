@@ -262,7 +262,7 @@ export default function BudgetAllocationPage() {
                     <div className="flex flex-col items-center gap-2 opacity-30">
                       <LayoutGrid size={48} className="text-[#64748B]" />
                       <p className="font-bold text-[#64748B]">Chưa có dữ liệu phân bổ cho Quý {selectedQuarter}</p>
-                      <p className="text-xs text-[#64748B]">Sử dụng tính năng "Phân bổ 20/80" để khởi tạo ngân sách năm</p>
+                      <p className="text-xs text-[#64748B]">Sử dụng tính năng &quot;Phân bổ 20/80&quot; để khởi tạo ngân sách năm</p>
                     </div>
                   </td>
                 </tr>
