@@ -11,7 +11,7 @@ export default function RFQInteractionPage() {
             </div>
 
             <div className="bg-slate-50 p-12 rounded-[40px] border border-slate-100 shadow-inner">
-                <RFQInteraction />
+                <RFQInteraction rfqId={""} />
             </div>
 
             <div className="mt-12 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
