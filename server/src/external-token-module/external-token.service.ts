@@ -135,7 +135,7 @@ export class ExternalTokenService {
   }
 
   private generateLink(type: TokenType, token: string): string {
-    const baseUrl = process.env.FRONTEND_URL || 'https://your-domain.com';
+    const baseUrl = process.env.FRONTEND_URL || 'http://procuresmart.io.vn/';
 
     const pathMap: Record<TokenType, string> = {
       [TokenType.RFQ_QUOTE]: '/rfq/quote',
