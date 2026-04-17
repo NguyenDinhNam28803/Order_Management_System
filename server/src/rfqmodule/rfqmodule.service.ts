@@ -14,6 +14,7 @@ import { RfqStatus, QuotationStatus } from '@prisma/client';
 import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
+import { TokenType } from '../external-token-module/external-token.service';
 import { AutomationService } from '../common/automation/automation.service';
 
 export class RfqSupplierCreateManyInput {
@@ -238,35 +239,64 @@ export class RfqmoduleService {
   }
 
   private async sendInvitationEmails(rfq: any, supplierIds: string[]) {
-    // Tìm các user có role SUPPLIER thuộc các org này
+    // Lấy user SUPPLIER kèm thông tin org để có tên hiển thị
     const suppliers = await this.prisma.user.findMany({
       where: {
         orgId: { in: supplierIds },
         role: 'SUPPLIER',
+        isActive: true,
       },
+      include: { organization: true },
     });
 
+    // Chuẩn hoá items sang format mà template RFQ_MAGIC_LINK cần
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const itemsSummary = rfq.items
-      .map((i: any) => `${i.description} (${i.qty} ${i.unit})`)
-      .join(', ');
+    const items: Array<{ name: string; qty: number; unit: string }> = (
+      rfq.items as any[]
+    ).map((i) => ({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      name: i.description || i.name || 'Hàng hóa',
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      qty: i.qty ?? i.quantity ?? 1,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      unit: i.unit ?? 'cái',
+    }));
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const deadlineDate: Date = rfq.deadline;
 
     for (const supplier of suppliers) {
-      await this.notificationService.sendNotification({
-        recipientId: supplier.id,
-        eventType: 'RFQ_INVITATION', // Phải khớp với eventType trong db
-        referenceType: 'RFQ',
+      if (!supplier.email) continue;
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const supplierName: string =
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (supplier as any).organization?.name ??
+        supplier.fullName ??
+        supplier.email;
+
+      await this.notificationService.sendExternalEmailWithMagicLink({
+        to: supplier.email,
+        subject: `[Mời báo giá] ${rfq.rfqNumber} — ${rfq.title} | Hạn: ${deadlineDate.toLocaleDateString('vi-VN')}`,
+        eventType: 'RFQ_MAGIC_LINK',
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         referenceId: rfq.id,
+        tokenType: TokenType.RFQ_QUOTE,
+        expiresInDays: 7,
         data: {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          rfqNumber: rfq.rfqNumber,
+          rfqCode:      rfq.rfqNumber,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          rfqTitle: rfq.title,
+          rfqTitle:     rfq.title,
+          supplierName,
+          deadline:     deadlineDate,
+          items,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          deadline: rfq.deadline.toLocaleDateString(),
+          contactPerson:  rfq.contactPerson  ?? '',
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          itemsSummary: itemsSummary,
+          contactEmail:   rfq.contactEmail   ?? '',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          paymentTerms:   rfq.paymentTerms   ?? '',
         },
       });
     }

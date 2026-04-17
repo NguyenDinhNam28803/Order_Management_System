@@ -6,7 +6,7 @@ import {
     Organization, CostCenter, Department, CurrencyCode, CompanyType, KycStatus, UserRole, 
     PrStatus, RfqStatus, QuotationStatus, PoStatus, GrnStatus, InvoiceStatus, ApprovalStatus, DocumentType, 
     BudgetAllocationStatus, BudgetOverrideStatus, BudgetPeriodType,
-    ApiResponse, LoginPayload, LoginResponse, RegisterPayload, CreatePrDto, UpdatePrDto, CreateRfqDto, ConsolidateRfqDto, 
+    RegisterPayload, CreatePrDto, UpdatePrDto, CreateRfqDto, ConsolidateRfqDto,
     CreateGrnDto, CreateInvoiceDto, CreateQuoteDto, CreateOrganizationPayload, UpdateOrganizationPayload, 
     CreateCostCenterPayload, UpdateCostCenterPayload, CreateDepartmentPayload, UpdateDepartmentPayload, 
     Product, ProductCategory, CreateProductDtoShort, UpdateProductDtoShort, CreateCategoryDto, UpdateCategoryDto,
@@ -14,14 +14,14 @@ import {
     CreateBudgetAllocationPayload, UpdateBudgetAllocationPayload, CreatePoDto,
     PR, PRItem, QuoteRequest, QuoteRequestItem, BudgetOverride, PrType, QuoteRequestStatus,
     Contract, Dispute, AuditLog, SupplierEvaluation,
-    Quotation, QuotationItem, CreateQuotationDto, QAThread, CreateQAThreadDto, AnswerQAThreadDto,
-    CounterOffer, CreateCounterOfferDto, RespondCounterOfferDto,
-    Payment, CreatePaymentDto, PaymentStatus,
+    Quotation, QAThread, CreateQAThreadDto,
+    CounterOffer, CreateCounterOfferDto,
+    Payment, CreatePaymentDto,
     UserDelegation, CreateDelegationDto,
-    ContractMilestone, UpdateMilestoneDto,
-    UpdateInvoiceDto, UpdateGrnStatusDto,
-    SupplierKPI, AuditLogFilterDto,
-    RefreshTokenDto, ValidateTokenDto
+    UpdateMilestoneDto,
+    UpdateInvoiceDto,
+    SupplierKPI,
+
 } from "../types/api-types";
 
 export type { 
@@ -368,7 +368,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
             // Role-gated calls (parallel with each other)
             let newBudgetOverrides: BudgetOverride[] | null = null;
-            let newAuditLogs: unknown[] | null = null;
+            let newAuditLogs: AuditLog[] | null = null;
             if (user && ["FINANCE", "DIRECTOR", "CEO", "PLATFORM_ADMIN"].includes(user.role)) {
                 const [overridesResp, auditResp] = await Promise.all([
                     apiFetch('/budgets/overrides'),
@@ -1196,7 +1196,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             const res = await resp.json();
             const arr = res.data || res;
             // Server returns RfqSupplier[] with nested { supplier: Organization } — extract the Organization objects
-            return Array.isArray(arr) ? arr.map((s: any) => s.supplier ?? s).filter(Boolean) : [];
+            return Array.isArray(arr) ? arr.map((s: { supplier?: Organization }) => (s.supplier ?? s) as Organization).filter(Boolean) : [];
         }
         return [];
     }, [apiFetch]);
@@ -1603,7 +1603,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return [];
     }, [apiFetch]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const contextValue = useMemo<ProcurementContextType>(() => ({
         ...state,
         login, logout, refreshData, apiFetch, addPR, submitPR, updatePR, fetchPrDetail, actionApproval,
@@ -1647,6 +1646,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         consolidatePRs,
         syncRAG, ingestRAGEntity,
         fetchSpendOverview, fetchSpendBySupplier, fetchSpendByCategory,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }), [state]); // callbacks are stable useCallback refs; only state triggers re-render
 
     return <ProcurementContext.Provider value={contextValue}>{children}</ProcurementContext.Provider>;

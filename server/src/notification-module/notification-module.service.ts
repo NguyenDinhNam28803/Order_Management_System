@@ -70,7 +70,7 @@ export class NotificationModuleService {
 
       const renderedBody =
         template.channel === NotificationChannel.EMAIL
-          ? this.emailTemplates.render(eventType, {
+          ? await this.emailTemplates.render(eventType as any, {
               ...data,
               name: user.fullName ?? user.email,
               email: user.email,
@@ -177,7 +177,7 @@ export class NotificationModuleService {
     data: Record<string, any>,
   ): Promise<void> {
     try {
-      const body = this.emailTemplates.render(eventType, data);
+      const body = await this.emailTemplates.render(eventType, data);
       await this.emailQueue.add('send-email', { to, subject, body });
       this.logger.log(`Direct email queued → ${to} [${eventType}]`);
     } catch (error) {
@@ -228,7 +228,7 @@ export class NotificationModuleService {
       });
 
       // 2. Render email template với link
-      const emailBody = this.emailTemplates.render(eventType, {
+      const emailBody = await this.emailTemplates.render(eventType, {
         ...data,
         email: to,
         // Thêm các biến link vào template

@@ -126,7 +126,7 @@ export class NotificationModuleController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   async sendEmailNotification(@Body() data: EmailRequest) {
-    const html = this.emailTemplatesService.render(data.eventType, data.data);
+    const html = await this.emailTemplatesService.render(data.eventType, data.data);
     await this.emailService.sendEmail(data.to, data.subject, html);
   }
 }
