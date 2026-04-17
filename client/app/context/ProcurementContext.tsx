@@ -333,195 +333,129 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return fetch(`${baseUrl}${url}`, { ...options, headers });
     }, []);
 
-    // Helper function to run promises in batches with delay
-    const runInBatches = async <T,>(
-        factories: (() => Promise<T>)[],
-        batchSize: number
-    ): Promise<T[]> => {
-        const results: T[] = [];
-        for (let i = 0; i < factories.length; i += batchSize) {
-            const batch = factories.slice(i, i + batchSize);
-            const batchResults = await Promise.all(batch.map(fn => fn()));
-            results.push(...batchResults);
-            if (i + batchSize < factories.length) {
-                await new Promise(resolve => setTimeout(resolve, 150));
-            }
-        }
-        return results;
-    };
-
     const refreshData = useCallback(async () => {
         setState(prev => ({ ...prev, loadingMyPrs: true }));
         try {
             const userJson = Cookies.get('user');
             const user = userJson ? JSON.parse(userJson) : null;
-            
-            // Split API calls into batches of 5 to avoid overwhelming the connection pool
-            const apiCalls = [
-                () => apiFetch('/budgets/periods'),
-                () => apiFetch('/budgets/allocations'),
-                () => apiFetch('/procurement-requests'),
-                () => apiFetch('/procurement-requests/my'),
-                () => apiFetch('/approvals/pending'),
-                () => apiFetch('/organizations'),
-                () => apiFetch('/departments'),
-                () => apiFetch('/users'),
-                () => apiFetch('/products'),
-                () => apiFetch('/products/categories'),
-                () => apiFetch('/cost-centers'),
-                () => apiFetch('/purchase-orders'),
-                () => apiFetch('/purchase-orders/all'),
-                () => apiFetch('/request-for-quotations'),
-                () => apiFetch('/grn'),
-                () => apiFetch('/invoices'),
-                () => apiFetch('/contracts'),
-                () => apiFetch('/disputes')
-            ];
-            
+
+            // Fire all requests in parallel — no artificial batching delay
             const [
-                periodsResp, allocsResp, prsResp, myPrsResp, approvalsResp, 
-                orgsResp, deptsResp, usersResp, productsResp, categoriesResp, 
+                periodsResp, allocsResp, prsResp, myPrsResp, approvalsResp,
+                orgsResp, deptsResp, usersResp, productsResp, categoriesResp,
                 ccResp, posResp, posAllResp, rfqsResp, grnsResp, invoicesResp,
                 contractsResp, disputesResp
-            ] = await runInBatches(apiCalls, 2);
+            ] = await Promise.all([
+                apiFetch('/budgets/periods'),
+                apiFetch('/budgets/allocations'),
+                apiFetch('/procurement-requests'),
+                apiFetch('/procurement-requests/my'),
+                apiFetch('/approvals/pending'),
+                apiFetch('/organizations'),
+                apiFetch('/departments'),
+                apiFetch('/users'),
+                apiFetch('/products'),
+                apiFetch('/products/categories'),
+                apiFetch('/cost-centers'),
+                apiFetch('/purchase-orders'),
+                apiFetch('/purchase-orders/all'),
+                apiFetch('/request-for-quotations'),
+                apiFetch('/grn'),
+                apiFetch('/invoices'),
+                apiFetch('/contracts'),
+                apiFetch('/disputes'),
+            ]);
 
+            // Role-gated calls (parallel with each other)
+            let newBudgetOverrides: BudgetOverride[] | null = null;
+            let newAuditLogs: unknown[] | null = null;
             if (user && ["FINANCE", "DIRECTOR", "CEO", "PLATFORM_ADMIN"].includes(user.role)) {
-                const overridesResp = await apiFetch('/budgets/overrides');
+                const [overridesResp, auditResp] = await Promise.all([
+                    apiFetch('/budgets/overrides'),
+                    apiFetch('/audit-logs'),
+                ]);
                 if (overridesResp.ok) {
                     const res = await overridesResp.json();
-                    const data = res.data || res;
-                    if (Array.isArray(data)) setState(prev => ({ ...prev, budgetOverrides: data }));
+                    const d = res.data || res;
+                    if (Array.isArray(d)) newBudgetOverrides = d;
                 }
-
-                const auditResp = await apiFetch('/audit-logs');
                 if (auditResp.ok) {
                     const res = await auditResp.json();
-                    const data = res.data || res;
-                    if (Array.isArray(data)) setState(prev => ({ ...prev, auditLogs: data }));
+                    const d = res.data || res;
+                    if (Array.isArray(d)) newAuditLogs = d;
                 }
             }
 
-            if (contractsResp.ok) {
-                const res = await contractsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, contracts: data }));
-            }
+            // Parse all responses into local variables
+            const parseArr = async (resp: Response) => {
+                const res = await resp.json();
+                const d = res.data || res;
+                return Array.isArray(d) ? d : null;
+            };
 
-            if (disputesResp.ok) {
-                const res = await disputesResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, disputes: data }));
-            }
+            const [
+                periodsData, allocsData, rawPrsData, rawMyPrsData, approvalsData,
+                orgsData, deptsData, usersData, productsData, categoriesData,
+                ccData, posData, posAllData, rfqsData, grnsData, invoicesData,
+                contractsData, disputesData,
+            ] = await Promise.all([
+                periodsResp.ok  ? parseArr(periodsResp)    : Promise.resolve(null),
+                allocsResp.ok   ? parseArr(allocsResp)     : Promise.resolve(null),
+                prsResp.ok      ? parseArr(prsResp)        : Promise.resolve(null),
+                myPrsResp.ok    ? parseArr(myPrsResp)      : Promise.resolve(null),
+                approvalsResp.ok? parseArr(approvalsResp)  : Promise.resolve(null),
+                orgsResp.ok     ? parseArr(orgsResp)       : Promise.resolve(null),
+                deptsResp.ok    ? parseArr(deptsResp)      : Promise.resolve(null),
+                usersResp.ok    ? parseArr(usersResp)      : Promise.resolve(null),
+                productsResp.ok ? parseArr(productsResp)   : Promise.resolve(null),
+                categoriesResp.ok? parseArr(categoriesResp): Promise.resolve(null),
+                ccResp?.ok      ? parseArr(ccResp)         : Promise.resolve(null),
+                posResp?.ok     ? parseArr(posResp)        : Promise.resolve(null),
+                posAllResp?.ok  ? parseArr(posAllResp)     : Promise.resolve(null),
+                rfqsResp?.ok    ? parseArr(rfqsResp)       : Promise.resolve(null),
+                grnsResp?.ok    ? parseArr(grnsResp)       : Promise.resolve(null),
+                invoicesResp?.ok? parseArr(invoicesResp)   : Promise.resolve(null),
+                contractsResp.ok? parseArr(contractsResp)  : Promise.resolve(null),
+                disputesResp.ok ? parseArr(disputesResp)   : Promise.resolve(null),
+            ]);
 
-            if (periodsResp.ok) {
-                const res = await periodsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, budgetPeriods: data }));
-            }
+            const normalizePR = (p: PR): PR => ({
+                ...p,
+                title:     p.title || p.description || p.prNumber || "Yêu cầu mua sắm",
+                type:      p.type || PrType.NON_CATALOG,
+                requester: p.requester || { id: "u-unknown" },
+            });
 
-            if (allocsResp.ok) {
-                const res = await allocsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, budgetAllocations: data }));
-            }
-            
-            if (prsResp.ok) {
-                const res = await prsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) {
-                    setState(prev => ({ 
-                        ...prev, 
-                        prs: data.map((p: PR) => ({
-                            ...p,
-                            title: p.title || p.description || p.prNumber || "Yêu cầu mua sắm",
-                            type: p.type || PrType.NON_CATALOG,
-                            requester: p.requester || { id: "u-unknown" }
-                        })) 
-                    }));
-                }
-            }
-            if (myPrsResp.ok) {
-                const res = await myPrsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) {
-                    setState(prev => ({ 
-                        ...prev, 
-                        myPrs: data.map((p: PR) => ({
-                            ...p,
-                            title: p.title || p.description || p.prNumber || "Yêu cầu mua sắm",
-                            type: p.type || PrType.NON_CATALOG,
-                            requester: p.requester || { id: "u-unknown" }
-                        }))
-                    }));
-                }
-            }
-            if (ccResp && ccResp.ok) {
-                const res = await ccResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, costCenters: data }));
-            }
-            if (posResp && posResp.ok) {
-                const res = await posResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) {
-                    setState(prev => ({ ...prev, pos: data }));
-                }
-            }
-            if (posAllResp && posAllResp.ok) {
-                // Lưu tất cả PO trong hệ thống vào allPos (riêng biệt với pos)
-                const res = await posAllResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, allPos: data }));
-            }
-            if (rfqsResp && rfqsResp.ok) {
-                const res = await rfqsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, rfqs: data }));
-            }
-            if (grnsResp && grnsResp.ok) {
-                const res = await grnsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, grns: data }));
-            }
-            if (invoicesResp && invoicesResp.ok) {
-                const res = await invoicesResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, invoices: data }));
-            }
-            if (orgsResp.ok) {
-                const res = await orgsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, organizations: data }));
-            }
-            if (deptsResp.ok) {
-                const res = await deptsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, departments: data }));
-            }
-            if (usersResp.ok) {
-                const res = await usersResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, users: data }));
-            }
-            if (productsResp.ok) {
-                const res = await productsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, products: data }));
-            }
-            if (categoriesResp.ok) {
-                const res = await categoriesResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, categories: data }));
-            }
-            if (approvalsResp.ok) {
-                const res = await approvalsResp.json();
-                const data = res.data || res;
-                console.log("Pending Approvals", data);
-                if (Array.isArray(data)) setState(prev => ({ ...prev, approvals: data }));
-            }
+            const prsData   = rawPrsData   ? rawPrsData.map(normalizePR)   : null;
+            const myPrsData = rawMyPrsData ? rawMyPrsData.map(normalizePR) : null;
+
+            // Single atomic setState — triggers exactly 1 re-render
+            setState(prev => ({
+                ...prev,
+                ...(periodsData    !== null && { budgetPeriods: periodsData }),
+                ...(allocsData     !== null && { budgetAllocations: allocsData }),
+                ...(prsData        !== null && { prs: prsData }),
+                ...(myPrsData      !== null && { myPrs: myPrsData }),
+                ...(approvalsData  !== null && { approvals: approvalsData }),
+                ...(orgsData       !== null && { organizations: orgsData }),
+                ...(deptsData      !== null && { departments: deptsData }),
+                ...(usersData      !== null && { users: usersData }),
+                ...(productsData   !== null && { products: productsData }),
+                ...(categoriesData !== null && { categories: categoriesData }),
+                ...(ccData         !== null && { costCenters: ccData }),
+                ...(posData        !== null && { pos: posData }),
+                ...(posAllData     !== null && { allPos: posAllData }),
+                ...(rfqsData       !== null && { rfqs: rfqsData }),
+                ...(grnsData       !== null && { grns: grnsData }),
+                ...(invoicesData   !== null && { invoices: invoicesData }),
+                ...(contractsData  !== null && { contracts: contractsData }),
+                ...(disputesData   !== null && { disputes: disputesData }),
+                ...(newBudgetOverrides !== null && { budgetOverrides: newBudgetOverrides }),
+                ...(newAuditLogs       !== null && { auditLogs: newAuditLogs }),
+                loadingMyPrs: false,
+            }));
         } catch (e) {
             console.error("Refresh Data Error", e);
-        } finally {
             setState(prev => ({ ...prev, loadingMyPrs: false }));
         }
     }, [apiFetch]);
@@ -1664,7 +1598,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return [];
     }, [apiFetch]);
 
-    const contextValue: ProcurementContextType = {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const contextValue = useMemo<ProcurementContextType>(() => ({
         ...state,
         login, logout, refreshData, apiFetch, addPR, submitPR, updatePR, fetchPrDetail, actionApproval,
         addBudgetAllocation, submitAllocation, approveAllocation, rejectAllocation, distributeAnnualBudget, reconcileQuarter,
@@ -1688,45 +1623,26 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         createGRN, updateGrnItemQc, createInvoice, payInvoice, matchInvoice,
         approvePR: async () => true,
         createContract, signContract, createDispute, createReview,
-        // Auth
         logoutApi, refreshToken, validateToken,
-        // Users
         fetchUserProfile, fetchUserById, createDelegation, fetchMyDelegations, toggleDelegation,
-        // Organizations & Departments
         fetchOrganizationById, fetchMyOrganization, fetchDepartmentById,
-        // Budget
         fetchBudgetPeriodsByType, fetchMyDeptBudgets, fetchBudgetAllocationById, fetchBudgetOverrideById,
-        // RFQ Quotations
         fetchQuotationsByRfq, fetchQuotationById, submitQuotation, reviewQuotation, acceptQuotation, rejectQuotation, updateQuotationAiScore,
-        // Q&A Threads
         createQAThread, fetchQAThreadsByRfq, fetchQAThreadById, answerQAThread, fetchQAThreadsBySupplier,
-        // RFQ Suppliers
         inviteSuppliersToRFQ, removeSupplierFromRFQ, searchAndAddSuppliers,
-        // Counter Offers
         createCounterOffer, fetchCounterOffersByQuotation, fetchCounterOfferById, respondCounterOffer,
-        // RFQ Management
         deleteRFQ, updateRFQStatus, fetchRFQById, fetchSuppliersByRFQ, analyzeQuotationWithAI, fetchMySupplierRFQs,
-        // Contracts
         fetchContractById, updateContract, removeContract, submitContractForApproval, updateContractMilestone, fetchContractsBySupplier,
-        // GRN
         fetchGRNById, updateGRNStatus, confirmGRN,
-        // Invoices
         fetchInvoiceById, updateInvoice, removeInvoice, fetchInvoices, runMatching,
-        // Payments
         createPayment, completePayment, fetchPayments, fetchPaymentById,
-        // Reviews
         fetchSupplierReviews, fetchBuyerRatings,
-        // Supplier KPI
         evaluateSupplierKPI, fetchSupplierKPIReport,
-        // Audit Logs
         fetchAuditLogsByEntity, fetchAuditLogById, createAuditLog,
-        // PO Consolidation
         consolidatePRs,
-        // RAG / AI Sync
         syncRAG, ingestRAGEntity,
-        // Spend Reports
         fetchSpendOverview, fetchSpendBySupplier, fetchSpendByCategory,
-    };
+    }), [state]); // callbacks are stable useCallback refs; only state triggers re-render
 
     return <ProcurementContext.Provider value={contextValue}>{children}</ProcurementContext.Provider>;
 }

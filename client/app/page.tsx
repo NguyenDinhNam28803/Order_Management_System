@@ -35,25 +35,14 @@ export default function Dashboard() {
     const [isSimDropdownOpen, setIsSimDropdownOpen] = React.useState(false);
     const { confirmCatalogPrice } = useProcurement();
 
-    // Debug logging for budget data
-    React.useEffect(() => {
-        console.log("=== BUDGET DEBUG ===");
-        console.log("currentUser:", currentUser);
-        console.log("departmentId:", departmentId);
-        console.log("budgetPeriods:", budgetPeriods);
-        console.log("budgetAllocations:", budgetAllocations);
-        console.log("activeQuarterPeriod:", activeQuarterPeriod);
-        console.log("deptAllocation:", deptAllocation);
-        console.log("costCenters:", costCenters);
-    }, [currentUser, departmentId, budgetPeriods, budgetAllocations, activeQuarterPeriod, deptAllocation, costCenters]);
-
     // Fetch budget data on mount for DEPT_APPROVER
+    const refreshDataRef = React.useRef(refreshData);
+    refreshDataRef.current = refreshData;
     React.useEffect(() => {
         if (currentUser?.role === "DEPT_APPROVER" && !deptAllocation) {
-            console.log("Fetching budget data for DEPT_APPROVER...");
-            refreshData();
+            refreshDataRef.current();
         }
-    }, [currentUser?.role, currentUser?.deptId, refreshData, deptAllocation]);
+    }, [currentUser?.role, currentUser?.deptId, deptAllocation]);
 
     const formatDate = (ds?: string) => {
         if (!ds) return "N/A";

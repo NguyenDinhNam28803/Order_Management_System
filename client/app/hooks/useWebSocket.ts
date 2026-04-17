@@ -39,6 +39,16 @@ export function useWebSocket({
     const isManualClose = useRef(false);
     const connectRef = useRef<(() => void) | null>(null);
 
+    // Stable refs for callback props — updated every render without recreating `connect`
+    const onMessageRef    = useRef(onMessage);
+    const onConnectRef    = useRef(onConnect);
+    const onDisconnectRef = useRef(onDisconnect);
+    const onErrorRef      = useRef(onError);
+    onMessageRef.current    = onMessage;
+    onConnectRef.current    = onConnect;
+    onDisconnectRef.current = onDisconnect;
+    onErrorRef.current      = onError;
+
     const connect = useCallback(() => {
         if (wsRef.current?.readyState === WebSocket.OPEN) {
             return;
@@ -54,14 +64,14 @@ export function useWebSocket({
             ws.onopen = () => {
                 setStatus("connected");
                 reconnectAttemptsRef.current = 0;
-                onConnect?.();
+                onConnectRef.current?.();
             };
 
             ws.onmessage = (event) => {
                 try {
                     const message: WebSocketMessage = JSON.parse(event.data);
                     setLastMessage(message);
-                    onMessage?.(message);
+                    onMessageRef.current?.(message);
                 } catch (err) {
                     console.error("WebSocket message parse error:", err);
                 }
@@ -69,7 +79,7 @@ export function useWebSocket({
 
             ws.onclose = () => {
                 setStatus("disconnected");
-                onDisconnect?.();
+                onDisconnectRef.current?.();
 
                 if (!isManualClose.current && reconnectAttemptsRef.current < maxReconnectAttempts) {
                     reconnectAttemptsRef.current++;
@@ -81,13 +91,13 @@ export function useWebSocket({
 
             ws.onerror = (error) => {
                 setStatus("error");
-                onError?.(error);
+                onErrorRef.current?.(error);
             };
         } catch (err) {
             setStatus("error");
             console.error("WebSocket connection error:", err);
         }
-    }, [url, onMessage, onConnect, onDisconnect, onError, reconnectInterval, maxReconnectAttempts]);
+    }, [url, reconnectInterval, maxReconnectAttempts]); // stable primitives only
 
     // Update ref to point to current connect function
     connectRef.current = connect;
