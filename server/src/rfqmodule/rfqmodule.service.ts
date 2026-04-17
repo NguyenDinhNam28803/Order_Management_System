@@ -285,18 +285,18 @@ export class RfqmoduleService {
         expiresInDays: 7,
         data: {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          rfqCode:      rfq.rfqNumber,
+          rfqCode: rfq.rfqNumber,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          rfqTitle:     rfq.title,
+          rfqTitle: rfq.title,
           supplierName,
-          deadline:     deadlineDate,
+          deadline: deadlineDate,
           items,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          contactPerson:  rfq.contactPerson  ?? '',
+          contactPerson: rfq.contactPerson ?? '',
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          contactEmail:   rfq.contactEmail   ?? '',
+          contactEmail: rfq.contactEmail ?? '',
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          paymentTerms:   rfq.paymentTerms   ?? '',
+          paymentTerms: rfq.paymentTerms ?? '',
         },
       });
     }
@@ -428,7 +428,45 @@ export class RfqmoduleService {
     if (!quotation) {
       throw new NotFoundException(`Quotation with ID ${id} not found`);
     }
-    return this.repository.submitQuotation(id);
+    const result = await this.repository.submitQuotation(id);
+
+    // Gửi email QUOTATION_RECEIVED cho người tạo RFQ (procurement)
+    void this.notifyQuotationReceived(
+      quotation.rfqId,
+      quotation.supplierId,
+    ).catch(() => {});
+
+    return result;
+  }
+
+  private async notifyQuotationReceived(rfqId: string, supplierId: string) {
+    const [rfq, supplierOrg, quotationCount] = await Promise.all([
+      this.prisma.rfqRequest.findUnique({
+        where: { id: rfqId },
+        include: { createdBy: true },
+      }),
+      this.prisma.organization.findUnique({ where: { id: supplierId } }),
+      this.prisma.rfqQuotation.count({ where: { rfqId } }),
+    ]);
+
+    if (!rfq || !(rfq.createdBy as any)?.email) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const creator = rfq.createdBy as any;
+    await this.notificationService.sendDirectEmail(
+      creator.email as string,
+      `[Báo giá mới] ${rfq.rfqNumber} — ${rfq.title ?? ''}`,
+      'QUOTATION_RECEIVED',
+      {
+        name: (creator.fullName as string) || (creator.email as string),
+        rfqNumber: rfq.rfqNumber,
+        rfqTitle: rfq.title ?? '',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        supplierName: (supplierOrg as any)?.name ?? 'Nhà cung cấp',
+        quotationCount,
+        loginUrl: process.env['FRONTEND_URL'] ?? '#',
+      },
+    );
   }
 
   /**

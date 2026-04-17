@@ -9,12 +9,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { GrnStatus, PoStatus } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { UpdateGrnItemQcResultDto } from './dto/update-grn-item-qc.dto';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 
 @Injectable()
 export class GrnmoduleService {
   constructor(
     private readonly repository: GrnRepository,
     private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   async create(createGrnDto: CreateGrnmoduleDto, user: JwtPayload) {
@@ -186,6 +188,53 @@ export class GrnmoduleService {
       }
     }
 
+    // Gửi email GRN_CONFIRMED cho các finance user trong org
+    void this.notifyGrnConfirmed(id, grn).catch(() => {});
+
     return result;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async notifyGrnConfirmed(grnId: string, grn: any) {
+    const fullGrn = await this.prisma.goodsReceipt.findUnique({
+      where: { id: grnId },
+      include: { po: { include: { supplier: true } } },
+    });
+    if (!fullGrn) return;
+
+    const financeUsers = await this.prisma.user.findMany({
+      where: {
+        orgId: fullGrn.orgId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        role: { in: ['FINANCE', 'ADMIN'] as any },
+        isActive: true,
+      },
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = (fullGrn.po as any)?.supplier?.name ?? 'Nhà cung cấp';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poCode = (fullGrn.po as any)?.poNumber ?? '';
+    const totalAmount = Number((fullGrn.po as any)?.totalAmount ?? 0);
+
+    for (const user of financeUsers) {
+      if (!user.email) continue;
+      await this.notificationService.sendDirectEmail(
+        user.email,
+        `[Xác nhận nhận hàng] GRN ${fullGrn.grnNumber}`,
+        'GRN_CONFIRMED',
+        {
+          name: user.fullName || user.email,
+          grnCode: fullGrn.grnNumber,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          poCode,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          supplierName,
+          confirmedAt: new Date(),
+          totalAmount,
+          loginUrl: process.env['FRONTEND_URL'] ?? '#',
+        },
+      );
+    }
   }
 }

@@ -10,7 +10,11 @@
       "Bash(echo \"EXIT_CODE: $?\")",
       "Bash(grep -l \"it\\\\|test\\\\|describe\" /d/Order_management_system/server/src/**/*.spec.ts)",
       "Bash(xargs -I {} sh -c 'wc -l \"{}\"')",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(grep -v \"^$\")",
+      "Bash(find *)"
     ]
   }
 }

@@ -124,6 +124,7 @@ export class ApprovalModuleService {
       for (const step of workflowData) {
         if (step.status === ApprovalStatus.PENDING) {
           void this.notifyApprover(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             step.approverId,
             docLabel,
             docId,
@@ -222,6 +223,19 @@ export class ApprovalModuleService {
         message: 'Tài liệu đã được duyệt hoàn toàn.',
       };
     } else {
+      // Gửi email cho approver của bước tiếp theo
+      const nextStep = remainingSteps[0];
+      const docLabel = this.getDocumentLabel(currentStep.documentType);
+      const docAmount = await this.getDocumentAmount(
+        currentStep.documentType,
+        currentStep.documentId,
+      );
+      void this.notifyApprover(
+        nextStep.approverId,
+        docLabel,
+        currentStep.documentId,
+        docAmount,
+      );
       return {
         status: 'PARTIALLY_APPROVED',
         message: 'Đã duyệt cấp hiện tại, đang chờ cấp tiếp theo.',
@@ -530,8 +544,15 @@ export class ApprovalModuleService {
       if (!requester?.email) return;
 
       const docLabel = this.getDocumentLabel(docType);
+      const isPoOrPr =
+        docType === DocumentType.PURCHASE_REQUISITION ||
+        docType === DocumentType.PURCHASE_ORDER;
       const eventType =
-        result === 'APPROVED' ? 'PO_APPROVED' : 'PO_APPROVAL_REQUEST';
+        result === 'APPROVED'
+          ? 'PO_APPROVED'
+          : isPoOrPr
+            ? 'PR_REJECTED'
+            : 'PO_APPROVAL_REQUEST';
       const subject =
         result === 'APPROVED'
           ? `[OMS] ${docLabel} của bạn đã được phê duyệt`
@@ -577,8 +598,83 @@ export class ApprovalModuleService {
         });
         return po?.buyerId ?? null;
       }
+      case DocumentType.GRN: {
+        const grn = await this.prisma.goodsReceipt.findUnique({
+          where: { id: docId },
+          select: { receivedById: true },
+        });
+        return grn?.receivedById ?? null;
+      }
+      case DocumentType.SUPPLIER_INVOICE: {
+        // Invoice không có submittedById — dùng buyerId của PO liên quan
+        const invoice = await this.prisma.supplierInvoice.findUnique({
+          where: { id: docId },
+          select: { po: { select: { buyerId: true } } },
+        });
+        return invoice?.po?.buyerId ?? null;
+      }
+      case DocumentType.PAYMENT: {
+        const payment = await this.prisma.payment.findUnique({
+          where: { id: docId },
+          select: { createdById: true },
+        });
+        return payment?.createdById ?? null;
+      }
+      case DocumentType.BUDGET_ALLOCATION: {
+        const budget = await this.prisma.budgetAllocation.findUnique({
+          where: { id: docId },
+          select: { createdById: true },
+        });
+        return budget?.createdById ?? null;
+      }
       default:
         return null;
+    }
+  }
+
+  /** Lấy giá trị tài liệu để hiển thị trong email thông báo bước duyệt tiếp theo */
+  private async getDocumentAmount(
+    docType: DocumentType,
+    docId: string,
+  ): Promise<number> {
+    switch (docType) {
+      case DocumentType.PURCHASE_REQUISITION: {
+        const pr = await this.prisma.purchaseRequisition.findUnique({
+          where: { id: docId },
+          select: { totalEstimate: true },
+        });
+        return Number(pr?.totalEstimate ?? 0);
+      }
+      case DocumentType.PURCHASE_ORDER: {
+        const po = await this.prisma.purchaseOrder.findUnique({
+          where: { id: docId },
+          select: { totalAmount: true },
+        });
+        return Number(po?.totalAmount ?? 0);
+      }
+      case DocumentType.SUPPLIER_INVOICE: {
+        const invoice = await this.prisma.supplierInvoice.findUnique({
+          where: { id: docId },
+          select: { totalAmount: true },
+        });
+        return Number(invoice?.totalAmount ?? 0);
+      }
+      case DocumentType.PAYMENT: {
+        const payment = await this.prisma.payment.findUnique({
+          where: { id: docId },
+          select: { amount: true },
+        });
+        return Number(payment?.amount ?? 0);
+      }
+      case DocumentType.BUDGET_ALLOCATION: {
+        const budget = await this.prisma.budgetAllocation.findUnique({
+          where: { id: docId },
+          select: { allocatedAmount: true },
+        });
+        return Number(budget?.allocatedAmount ?? 0);
+      }
+      default:
+        return 0;
     }
   }
 

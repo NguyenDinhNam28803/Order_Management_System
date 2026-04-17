@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RfqmoduleService } from '../../rfqmodule/rfqmodule.service';
 import { EmailService } from '../../notification-module/email.service';
+import { NotificationModuleService } from '../../notification-module/notification-module.service';
+import { TokenType } from '../../external-token-module/external-token.service';
 import {
   DocumentType,
   PrStatus,
@@ -31,6 +33,7 @@ export class AutomationService {
     private readonly prisma: PrismaService,
     private readonly rfqService: RfqmoduleService,
     private readonly emailService: EmailService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   /**
@@ -310,7 +313,7 @@ export class AutomationService {
         deliveryDate.getDate() + (quotation.leadTimeDays || 7),
       );
 
-      await this.prisma.$transaction(async (tx) => {
+      const createdPo = await this.prisma.$transaction(async (tx) => {
         // Tạo PO chính thức
         const po = await tx.purchaseOrder.create({
           data: {
@@ -434,11 +437,89 @@ export class AutomationService {
 
         return po;
       });
+
+      // Gửi email PO_CONFIRM_LINK cho nhà cung cấp sau khi PO được tạo
+
+      if (createdPo)
+        void this.sendPoConfirmLinkEmail(createdPo, quotation, rfq).catch(
+          () => {},
+        );
     } catch (error) {
       this.logger.error(
         `Failed to auto-create PO from RFQ ${rfqId}: ${error!}`,
       );
     }
+  }
+
+  private async sendPoConfirmLinkEmail(
+    po: Record<string, unknown>,
+    quotation: Record<string, unknown>,
+    rfq: Record<string, unknown>,
+  ) {
+    const supplierId = quotation['supplierId'];
+    const supplierUser = await this.prisma.user.findFirst({
+      where: {
+        orgId: supplierId as string,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        role: 'SUPPLIER' as any,
+        isActive: true,
+      },
+      include: { organization: true },
+    });
+    if (!supplierUser?.email) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName: string =
+      (supplierUser.organization as any)?.name ??
+      supplierUser.fullName ??
+      supplierUser.email;
+
+    const quotationItems: any[] = Array.isArray(quotation['items'])
+      ? quotation['items']
+      : [];
+
+    const rfqItems: any[] = Array.isArray(rfq['items']) ? rfq['items'] : [];
+
+    const items = quotationItems.map((qItem: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const rfqItem = rfqItems.find((i: any) => i.id === qItem.rfqItemId);
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        name: rfqItem?.description || 'N/A',
+
+        qty: Number(qItem.qtyOffered || rfqItem?.qty || 0),
+
+        unitPrice: Number(qItem.unitPrice),
+        total:
+          Number(qItem.unitPrice) *
+          Number(qItem.qtyOffered || rfqItem?.qty || 0) *
+          (1 - Number(qItem.discountPct ?? 0) / 100),
+      };
+    });
+
+    await this.notificationService.sendExternalEmailWithMagicLink({
+      to: supplierUser.email,
+
+      subject: `[Đơn mua hàng] ${po['poNumber'] as string} — Vui lòng xác nhận`,
+      eventType: 'PO_CONFIRM_LINK',
+      referenceId: po['id'] as string,
+      tokenType: TokenType.PO_CONFIRM,
+      expiresInDays: 7,
+      data: {
+        poCode: po['poNumber'],
+        supplierName,
+        issuedDate: new Date(),
+        deliveryDate: po['deliveryDate'],
+        deliveryAddress: po['deliveryAddress'] ?? '',
+        paymentTerms: po['paymentTerms'] ?? '',
+
+        totalAmount: Number(quotation['totalPrice']),
+        items,
+      },
+    });
+    this.logger.log(
+      `PO_CONFIRM_LINK email sent to ${supplierUser.email} for PO ${po['poNumber'] as string}`,
+    );
   }
 
   /**
