@@ -27,7 +27,7 @@ import {
 export type { 
     Organization, CostCenter, Department, Product, ProductCategory, User, BudgetPeriod, BudgetAllocation, 
     PR, PRItem, QuoteRequest, QuoteRequestItem, BudgetOverride,
-    Contract, Dispute, AuditLog, SupplierEvaluation 
+    Contract, Dispute, AuditLog, SupplierEvaluation, Quotation
 };
 
 export {
@@ -251,7 +251,7 @@ export interface ProcurementContextType extends ProcurementState {
     deleteRFQ: (id: string) => Promise<boolean>;
     updateRFQStatus: (id: string, status: RfqStatus) => Promise<boolean>;
     fetchRFQById: (id: string) => Promise<RFQ | null>;
-    fetchSuppliersByRFQ: (rfqId: string) => Promise<User[]>;
+    fetchSuppliersByRFQ: (rfqId: string) => Promise<Organization[]>;
     analyzeQuotationWithAI: (quotationId: string) => Promise<unknown>;
     fetchMySupplierRFQs: () => Promise<RFQ[]>;
     fetchContractById: (id: string) => Promise<Contract | null>;
