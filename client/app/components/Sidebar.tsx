@@ -31,7 +31,6 @@ interface NavItem {
     icon: React.ComponentType<{ size?: number; className?: string }>;
     path: string;
     roles: string[];
-    badge?: number;
 }
 
 interface NavGroup {
@@ -158,11 +157,6 @@ export default function Sidebar() {
     const roleKey = currentUser?.role || "GUEST";
     const roleInfo = roleMapping[roleKey] || { label: "Khách", class: "role-finance", dot: "#64748B" };
 
-    const totalBadgeCount = navigation
-        .flatMap(g => g.items)
-        .filter(item => item.roles.includes(roleKey) && item.badge)
-        .reduce((acc, item) => acc + (item.badge || 0), 0);
-
     const initials = (currentUser?.fullName || currentUser?.name || "GU")
         .split(" ").slice(-2).map((w: string) => w[0]?.toUpperCase() || "").join("").slice(0, 2) || "GU";
 
@@ -236,7 +230,7 @@ export default function Sidebar() {
                 <div className="grid grid-cols-3 gap-1 text-center">
                     <div className="p-1.5 bg-[#161B22] rounded-md border border-[rgba(240,246,252,0.05)]">
                         <p className="text-[8px] text-[#484F58] font-semibold uppercase tracking-wide">Chờ</p>
-                        <p className="text-[13px] font-black text-amber-400 num-display leading-tight">{totalBadgeCount}</p>
+                        <p className="text-[13px] font-black text-amber-400 num-display leading-tight">—</p>
                     </div>
                     <div className="p-1.5 bg-[#161B22] rounded-md border border-[rgba(240,246,252,0.05)]">
                         <p className="text-[8px] text-[#484F58] font-semibold uppercase tracking-wide">Online</p>

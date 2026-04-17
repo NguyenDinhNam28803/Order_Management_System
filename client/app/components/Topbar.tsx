@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useProcurement } from "../context/ProcurementContext";
 import { usePathname } from "next/navigation";
-import { Bell, Search, User, ChevronDown, CheckCircle2, Clock, AlertTriangle, ChevronRight, Sparkles } from "lucide-react";
+import { Bell, Search, User, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
 import NotificationInbox from "./NotificationInbox";
 
 // Breadcrumb label overrides
@@ -62,11 +62,6 @@ const PAGE_LABELS: Record<string, string> = {
     "help":          "Trợ giúp",
 };
 
-// Fake notification data
-const MOCK_NOTIFICATIONS = [
-    { id: 1, type: "approval", icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-400/10", title: "PR-2024-0041 đã được duyệt", time: "2 phút trước" },
-    { id: 2, type: "warning",  icon: AlertTriangle, color: "text-amber-400",  bg: "bg-amber-400/10",   title: "Ngân sách Q2 đã dùng 85%",  time: "15 phút trước" },
-];
 
 export default function Topbar() {
     const { currentUser } = useProcurement();
@@ -159,42 +154,19 @@ export default function Topbar() {
                     </button>
 
                     {showNotifications && (
-                        <div className="absolute right-0 mt-2 w-76 bg-[#21262D] border border-[rgba(240,246,252,0.1)] rounded-xl shadow-2xl shadow-black/60 overflow-hidden z-50 animate-slide-up">
+                        <div className="absolute right-0 mt-2 w-72 bg-[#21262D] border border-[rgba(240,246,252,0.1)] rounded-xl shadow-2xl shadow-black/60 overflow-hidden z-50 animate-slide-up">
                             <div className="p-3 border-b border-[rgba(240,246,252,0.08)] flex items-center justify-between">
-                                <div>
-                                    <h4 className="text-[12px] font-bold text-[#E6EDF3]">Thông báo</h4>
-                                    <p className="text-[9px] text-[#484F58] font-medium uppercase tracking-wider">{MOCK_NOTIFICATIONS.length} mới</p>
-                                </div>
+                                <h4 className="text-[12px] font-bold text-[#E6EDF3]">Thông báo</h4>
                                 <button
-                                    className="text-[9px] font-bold text-[#3B82F6] hover:text-blue-300 uppercase tracking-widest"
+                                    className="text-[9px] font-bold text-[#484F58] uppercase tracking-widest"
                                     onClick={() => setShowNotifications(false)}
                                 >
-                                    Đánh dấu đã đọc
+                                    Đóng
                                 </button>
                             </div>
-                            <div className="max-h-64 overflow-y-auto no-scrollbar">
-                                {MOCK_NOTIFICATIONS.map((n) => (
-                                    <div
-                                        key={n.id}
-                                        className="flex items-start gap-3 p-3 border-b border-[rgba(240,246,252,0.05)] hover:bg-[rgba(37,99,235,0.06)] transition-colors cursor-pointer"
-                                    >
-                                        <div className={`mt-0.5 h-7 w-7 rounded-lg ${n.bg} flex items-center justify-center shrink-0`}>
-                                            <n.icon size={14} className={n.color} />
-                                        </div>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-[11px] text-[#E6EDF3] font-semibold leading-snug">{n.title}</p>
-                                            <p className="text-[9px] text-[#484F58] mt-0.5 flex items-center gap-1">
-                                                <Clock size={8} />
-                                                {n.time}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="p-2 text-center border-t border-[rgba(240,246,252,0.06)]">
-                                <button className="text-[10px] font-bold text-[#484F58] hover:text-[#8B949E] transition-colors">
-                                    Xem tất cả thông báo →
-                                </button>
+                            <div className="p-6 text-center">
+                                <Bell size={24} className="mx-auto mb-2 text-[#30363D]" />
+                                <p className="text-[11px] text-[#484F58]">Không có thông báo mới</p>
                             </div>
                         </div>
                     )}
