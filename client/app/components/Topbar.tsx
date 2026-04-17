@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useProcurement } from "../context/ProcurementContext";
 import { usePathname } from "next/navigation";
 import { Bell, Search, User, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
@@ -64,10 +64,34 @@ const PAGE_LABELS: Record<string, string> = {
 
 
 export default function Topbar() {
-    const { currentUser } = useProcurement();
+    const { currentUser, apiFetch } = useProcurement();
     const pathname = usePathname() ?? "/";
     const [showNotifications, setShowNotifications] = useState(false);
+    const [notifications, setNotifications] = useState<any[]>([]);
     const notifRef = useRef<HTMLDivElement>(null);
+
+    const fetchNotifications = useCallback(async () => {
+        if (!currentUser?.id) return;
+        try {
+            const response = await apiFetch(`/notifications/recipient/${currentUser.id}`);
+            if (response.ok) {
+                const res = await response.json();
+                const data = res.data || res;
+                setNotifications(Array.isArray(data) ? data : []);
+            }
+        } catch (err) {
+            console.error("Failed to fetch persistent notifications:", err);
+        }
+    }, [currentUser?.id, apiFetch]);
+
+    useEffect(() => {
+        if (currentUser?.id) {
+            fetchNotifications();
+            // Optional: interval fetch
+            const interval = setInterval(fetchNotifications, 60000);
+            return () => clearInterval(interval);
+        }
+    }, [currentUser?.id, fetchNotifications]);
 
     // Close on outside click
     useEffect(() => {
@@ -148,25 +172,56 @@ export default function Topbar() {
                 <div className="relative" ref={notifRef}>
                     <button
                         onClick={() => setShowNotifications(v => !v)}
-                        className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-[#21262D] border border-[rgba(240,246,252,0.08)] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[rgba(240,246,252,0.18)] transition-all focus:outline-none"
+                        className={`relative flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${
+                            showNotifications 
+                            ? "bg-[#3B82F6]/10 border-[#3B82F6] text-[#3B82F6]" 
+                            : "bg-[#21262D] border-[rgba(240,246,252,0.08)] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[rgba(240,246,252,0.18)]"
+                        }`}
                     >
                         <Bell size={14} />
+                        {notifications.length > 0 && (
+                            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-rose-500 rounded-full ring-2 ring-[#161B22]"></span>
+                        )}
                     </button>
 
                     {showNotifications && (
-                        <div className="absolute right-0 mt-2 w-72 bg-[#21262D] border border-[rgba(240,246,252,0.1)] rounded-xl shadow-2xl shadow-black/60 overflow-hidden z-50 animate-slide-up">
-                            <div className="p-3 border-b border-[rgba(240,246,252,0.08)] flex items-center justify-between">
-                                <h4 className="text-[12px] font-bold text-[#E6EDF3]">Thông báo</h4>
+                        <div className="absolute right-0 mt-3 w-[320px] bg-[#21262D] border border-[rgba(240,246,252,0.1)] rounded-xl shadow-2xl shadow-black/80 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className="p-3.6 border-b border-[rgba(240,246,252,0.08)] flex items-center justify-between bg-[#161B22]/50">
+                                <h4 className="text-[12px] font-bold text-[#E6EDF3] flex items-center gap-2">
+                                    <Sparkles size={12} className="text-violet-400" /> Thông báo hệ thống
+                                </h4>
                                 <button
-                                    className="text-[9px] font-bold text-[#484F58] uppercase tracking-widest"
+                                    className="text-[9px] font-bold text-[#484F58] hover:text-[#8B949E] uppercase tracking-widest"
                                     onClick={() => setShowNotifications(false)}
                                 >
                                     Đóng
                                 </button>
                             </div>
-                            <div className="p-6 text-center">
-                                <Bell size={24} className="mx-auto mb-2 text-[#30363D]" />
-                                <p className="text-[11px] text-[#484F58]">Không có thông báo mới</p>
+                            
+                            <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                                {notifications.length > 0 ? (
+                                    notifications.map((n: any) => (
+                                        <div key={n.id} className="p-4 border-b border-[rgba(240,246,252,0.03)] hover:bg-[#2D333B]/50 transition-colors cursor-pointer group">
+                                            <div className="flex justify-between items-start mb-1">
+                                                <span className="text-[9px] font-black text-[#3B82F6] uppercase tracking-[0.1em]">{n.referenceType || "Hệ thống"}</span>
+                                                <span className="text-[8px] text-[#484F58] font-bold">{new Date(n.createdAt).toLocaleDateString('vi-VN')}</span>
+                                            </div>
+                                            <h5 className="text-[11px] font-bold text-[#E6EDF3] mb-1 group-hover:text-[#3B82F6] transition-colors">{n.subject || "Thông báo mới"}</h5>
+                                            <p className="text-[10px] text-[#8B949E] line-clamp-2 leading-relaxed">{n.body}</p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="p-8 text-center text-[#484F58]">
+                                        <Bell size={24} className="mx-auto mb-2 opacity-20" />
+                                        <p className="text-[11px] font-medium">Không có thông báo mới</p>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <div className="p-2 border-t border-[rgba(240,246,252,0.08)] bg-[#161B22]/30">
+                                <button className="w-full py-2 text-[10px] font-bold text-[#58A6FF] hover:text-[#79C0FF] transition-all">
+                                    Đánh dấu tất cả đã đọc
+                                </button>
                             </div>
                         </div>
                     )}
