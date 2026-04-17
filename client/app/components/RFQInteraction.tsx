@@ -19,14 +19,15 @@ interface SupplierWithQuote {
 
 export default function RFQInteraction({ rfqId }: RFQInteractionProps) {
     // API Hooks
-    const { 
-        fetchRFQById, 
-        fetchQuotationsByRfq, 
+    const {
+        fetchRFQById,
+        fetchQuotationsByRfq,
         fetchSuppliersByRFQ,
+        inviteSuppliersToRFQ,
         awardQuotation,
         analyzeQuotationWithAI,
         organizations,
-        notify 
+        notify
     } = useProcurement();
 
     // State Management
@@ -95,12 +96,11 @@ export default function RFQInteraction({ rfqId }: RFQInteractionProps) {
         });
     }, [top3Suppliers, quotations]);
 
-    // Find best price supplier
+    // Find best price supplier (only among those with an actual quote)
     const bestPriceSupplier = useMemo(() => {
-        if (supplierQuotes.length === 0) return null;
-        return supplierQuotes.reduce((min, current) => 
-            current.quotePrice > 0 && current.quotePrice < min.quotePrice ? current : min
-        );
+        const withPrice = supplierQuotes.filter(s => s.quotePrice > 0);
+        if (withPrice.length === 0) return null;
+        return withPrice.reduce((min, current) => current.quotePrice < min.quotePrice ? current : min);
     }, [supplierQuotes]);
 
     // Handle invite suppliers (Step 1 -> Step 2)
@@ -108,6 +108,11 @@ export default function RFQInteraction({ rfqId }: RFQInteractionProps) {
         if (selectedSuppliers.length === 0) {
             notify("Vui lòng chọn ít nhất 1 nhà cung cấp", "warning");
             return;
+        }
+        try {
+            await inviteSuppliersToRFQ(rfqId, selectedSuppliers);
+        } catch {
+            // continue even if invite call fails
         }
         setStep(2);
         // Poll for quotations every 3 seconds

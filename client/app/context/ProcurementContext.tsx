@@ -1192,7 +1192,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const fetchSuppliersByRFQ = useCallback(async (rfqId: string) => {
         const resp = await apiFetch(`/request-for-quotations/${rfqId}/suppliers`);
-        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        if (resp.ok) {
+            const res = await resp.json();
+            const arr = res.data || res;
+            // Server returns RfqSupplier[] with nested { supplier: Organization } — extract the Organization objects
+            return Array.isArray(arr) ? arr.map((s: any) => s.supplier ?? s).filter(Boolean) : [];
+        }
         return [];
     }, [apiFetch]);
 
