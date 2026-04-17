@@ -181,14 +181,11 @@ export interface ProcurementContextType extends ProcurementState {
     removeCategory: (id: string) => Promise<boolean>;
     payInvoice: (id: string) => Promise<boolean>;
     matchInvoice: (id: string) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    addCostCenter: (d: any) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    updateCostCenter: (id: string, d: any) => Promise<boolean>;
+    addCostCenter: (d: CreateCostCenterPayload) => Promise<boolean>;
+    updateCostCenter: (id: string, d: UpdateCostCenterPayload) => Promise<boolean>;
     removeCostCenter: (id: string) => Promise<boolean>;
     fetchCostCenter: (id: string) => Promise<CostCenter | null>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fetchMyDeptCostCenters: () => Promise<any>;
+    fetchMyDeptCostCenters: () => Promise<CostCenter[]>;
     addBudgetPeriod: (d: CreateBudgetPeriodPayload) => Promise<boolean>;
     addBudgetAllocation: (d: CreateBudgetAllocationPayload) => Promise<BudgetAllocation | null>;
     submitAllocation: (id: string) => Promise<boolean>;
@@ -197,10 +194,8 @@ export interface ProcurementContextType extends ProcurementState {
     distributeAnnualBudget: (costCenterId: string, fiscalYear: number) => Promise<boolean>;
     reconcileQuarter: (costCenterId: string, fiscalYear: number, quarter: number) => Promise<boolean>;
     fetchQuarterlyAllocation: (cc: string, year: number, quarter: number) => Promise<BudgetAllocation | null>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    addQuoteRequest: (d: any) => Promise<QuoteRequest | null>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    updateQuoteRequest: (id: string, d: any) => Promise<boolean>;
+    addQuoteRequest: (d: Record<string, unknown>) => Promise<QuoteRequest | null>;
+    updateQuoteRequest: (id: string, d: Partial<QuoteRequest>) => Promise<boolean>;
     submitQuoteRequest: (id: string) => Promise<boolean>;
     convertQuoteToPR: (qrId: string) => Promise<boolean>;
     sendQuoteRequestToSupplier: (id: string, supplierIds: string[]) => Promise<boolean>;
@@ -208,8 +203,7 @@ export interface ProcurementContextType extends ProcurementState {
     startSimulation: (wf: "CATALOG" | "NON_CATALOG") => void;
     nextSimulationStep: () => void;
     stopSimulation: () => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    confirmCatalogPrice: (d: any) => Promise<boolean>;
+    confirmCatalogPrice: (d: Record<string, unknown>) => Promise<boolean>;
     approveOverride: (id: string) => Promise<boolean>;
     rejectOverride: (id: string, reason: string) => Promise<boolean>;
     removeNotification: (id: number) => void;
@@ -288,13 +282,10 @@ export interface ProcurementContextType extends ProcurementState {
     createGRN: (d: CreateGrnDto) => Promise<boolean>;
     updateGrnItemQc: (id: string, itemId: string, status: string, notes?: string) => Promise<boolean>;
     createInvoice: (d: CreateInvoiceDto) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createContract: (d: any) => Promise<boolean>;
+    createContract: (d: Partial<Contract>) => Promise<boolean>;
     signContract: (id: string, isBuyer: boolean) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createDispute: (d: any) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createReview: (d: any) => Promise<boolean>;
+    createDispute: (d: Partial<Dispute>) => Promise<boolean>;
+    createReview: (d: { type: 'BUYER' | 'SUPPLIER'; rating: number; comment: string; relatedId: string }) => Promise<boolean>;
     // PO Consolidation
     consolidatePRs: (dto: ConsolidatePRsInput) => Promise<ConsolidatePRsResult | null>;
     // RAG / AI Sync
@@ -331,10 +322,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const apiFetch = useCallback(async (url: string, options: RequestInit = {}) => {
         const token = Cookies.get('token');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const headers: any = { 
+        const headers: Record<string, string> = {
             'Content-Type': 'application/json',
-            ...(options.headers || {})
+            ...(options.headers as Record<string, string> || {})
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -1517,8 +1507,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 'PROVISIONAL': 'BRONZE',
                 'BLACKLISTED': 'BRONZE',
             };
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return items.map((item: any) => {
+            return items.map((item: Record<string, unknown>) => {
                 const kpiScore = item?.kpiScore || item;
                 const aiInsights = item?.aiInsights;
                 return {
@@ -1561,26 +1550,24 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const addQuoteRequest = useCallback(async (d: any): Promise<QuoteRequest | null> => {
+    const addQuoteRequest = useCallback(async (d: Record<string, unknown>): Promise<QuoteRequest | null> => {
         const id = "qr-" + Math.random().toString(36).substring(2, 11);
         const newQR: QuoteRequest = {
             id,
             qrNumber: "QR-" + id.substring(0, 5).toUpperCase(),
-            title: d.title,
-            description: d.description || "",
+            title: d.title as string,
+            description: (d.description as string) || "",
             status: QuoteRequestStatus.DRAFT,
             createdAt: new Date().toISOString(),
-            items: d.items || [],
-            requiredDate: d.requiredDate
+            items: (d.items as QuoteRequestItem[]) || [],
+            requiredDate: d.requiredDate as string | undefined
         };
         setState(prev => ({ ...prev, quoteRequests: [...prev.quoteRequests, newQR] }));
         notify("Tạo yêu cầu báo giá thành công (Mô phỏng)", "success");
         return newQR;
     }, [notify]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updateQuoteRequest = useCallback(async (id: string, d: any): Promise<boolean> => {
+    const updateQuoteRequest = useCallback(async (id: string, d: Partial<QuoteRequest>): Promise<boolean> => {
         setState(prev => ({
             ...prev,
             quoteRequests: prev.quoteRequests.map(qr => qr.id === id ? { ...qr, ...d } : qr)

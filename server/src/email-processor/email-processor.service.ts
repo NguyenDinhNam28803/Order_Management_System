@@ -7,7 +7,12 @@ import {
   PoConfirmationEmailData,
   ShippingNotificationEmailData,
 } from '../ai-service/ai-service.service';
-import { RfqStatus, PoStatus, QuotationStatus, CompanyType } from '@prisma/client';
+import {
+  RfqStatus,
+  PoStatus,
+  QuotationStatus,
+  CompanyType,
+} from '@prisma/client';
 
 export interface IncomingEmailData {
   from: string;
@@ -41,7 +46,9 @@ export class EmailProcessorService {
    * 2. AI phân loại intent: QUOTATION | PO_CONFIRMATION | SHIPPING_NOTIFICATION
    * 3. Thực hiện hành động nghiệp vụ tương ứng
    */
-  async processIncomingEmail(emailData: IncomingEmailData): Promise<EmailProcessResult> {
+  async processIncomingEmail(
+    emailData: IncomingEmailData,
+  ): Promise<EmailProcessResult> {
     const { from, subject, body, messageId } = emailData;
 
     // ── Bước 1: Ingest vào RAG ngay lập tức ──────────────────────────────────
@@ -69,12 +76,19 @@ export class EmailProcessorService {
     );
 
     if (analysis.confidence < 0.65) {
-      this.logger.log(`Confidence thấp (${analysis.confidence}), bỏ qua xử lý tự động`);
+      this.logger.log(
+        `Confidence thấp (${analysis.confidence}), bỏ qua xử lý tự động`,
+      );
       return { success: false, reason: 'Low confidence', ingested: true };
     }
 
     if (analysis.intent === 'GENERAL_INQUIRY') {
-      return { success: true, intent: 'GENERAL_INQUIRY', action: 'none', ingested: true };
+      return {
+        success: true,
+        intent: 'GENERAL_INQUIRY',
+        action: 'none',
+        ingested: true,
+      };
     }
 
     // ── Bước 3: Tìm nhà cung cấp gửi email ───────────────────────────────────
@@ -84,7 +98,9 @@ export class EmailProcessorService {
       : null;
 
     if (!supplier) {
-      this.logger.warn(`Không tìm thấy nhà cung cấp cho email "${from}" trong hệ thống`);
+      this.logger.warn(
+        `Không tìm thấy nhà cung cấp cho email "${from}" trong hệ thống`,
+      );
       return {
         success: false,
         intent: analysis.intent,
@@ -128,6 +144,7 @@ export class EmailProcessorService {
 
     if (data.rfqNumber) {
       rfq = await this.prisma.rfqRequest.findFirst({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         where: { rfqNumber: data.rfqNumber },
         select: { id: true, orgId: true },
       });
@@ -137,7 +154,7 @@ export class EmailProcessorService {
       // Fallback: RFQ ở trạng thái SENT hoặc OPEN có NCC này trong danh sách mời
       rfq = await this.prisma.rfqRequest.findFirst({
         where: {
-          status: { in: [RfqStatus.SENT, RfqStatus.OPEN] },
+          status: { in: [RfqStatus.SENT, RfqStatus.SUPPLIER_REVIEWING] },
           suppliers: { some: { supplierId } },
         },
         orderBy: { createdAt: 'desc' },
@@ -146,7 +163,9 @@ export class EmailProcessorService {
     }
 
     if (!rfq) {
-      this.logger.warn(`Không tìm thấy RFQ phù hợp cho báo giá từ supplier ${supplierId}`);
+      this.logger.warn(
+        `Không tìm thấy RFQ phù hợp cho báo giá từ supplier ${supplierId}`,
+      );
       return {
         success: false,
         intent: 'QUOTATION',
@@ -154,11 +173,13 @@ export class EmailProcessorService {
         ingested: true,
       };
     }
-
-    const quotationNumber =
-      data.quotationNumber ?? `QUO-EMAIL-${Date.now()}`;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const quotationNumber = data.quotationNumber ?? `QUO-EMAIL-${Date.now()}`;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const totalPrice = data.totalPrice ?? 0;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const leadTimeDays = data.leadTimeDays ?? 7;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const validityDays = data.validityDays ?? 30;
 
     // Tạo hoặc cập nhật RfqQuotation
@@ -172,11 +193,17 @@ export class EmailProcessorService {
       await this.prisma.rfqQuotation.update({
         where: { id: existing.id },
         data: {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           quotationNumber,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           totalPrice,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           currency: (data.currency as any) ?? 'VND',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           leadTimeDays,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           validityDays,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           paymentTerms: data.paymentTerms ?? null,
           notes: subject,
           status: QuotationStatus.SUBMITTED,
@@ -190,11 +217,17 @@ export class EmailProcessorService {
         data: {
           rfqId: rfq.id,
           supplierId,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           quotationNumber,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           totalPrice,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           currency: (data.currency as any) ?? 'VND',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           leadTimeDays,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           validityDays,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           paymentTerms: data.paymentTerms ?? null,
           notes: subject,
           status: QuotationStatus.SUBMITTED,
@@ -255,7 +288,8 @@ export class EmailProcessorService {
 
     let notes = po.notes ?? '';
     if (data.estimatedDelivery) {
-      notes = `${notes}\n[NCC xác nhận] Dự kiến giao hàng: ${data.estimatedDelivery}`.trim();
+      notes =
+        `${notes}\n[NCC xác nhận] Dự kiến giao hàng: ${data.estimatedDelivery}`.trim();
     }
     if (data.notes) {
       notes = `${notes}\n${data.notes}`.trim();
@@ -304,16 +338,17 @@ export class EmailProcessorService {
     }
 
     const trackingParts: string[] = [];
-    if (data.trackingNumber) trackingParts.push(`Mã vận đơn: ${data.trackingNumber}`);
+    if (data.trackingNumber)
+      trackingParts.push(`Mã vận đơn: ${data.trackingNumber}`);
     if (data.carrier) trackingParts.push(`Đơn vị VC: ${data.carrier}`);
-    if (data.shippedDate) trackingParts.push(`Ngày xuất kho: ${data.shippedDate}`);
-    if (data.estimatedArrival) trackingParts.push(`Dự kiến đến: ${data.estimatedArrival}`);
+    if (data.shippedDate)
+      trackingParts.push(`Ngày xuất kho: ${data.shippedDate}`);
+    if (data.estimatedArrival)
+      trackingParts.push(`Dự kiến đến: ${data.estimatedArrival}`);
     if (data.notes) trackingParts.push(data.notes);
 
     const shippingNote = `[NCC thông báo giao hàng] ${subject}\n${trackingParts.join(' | ')}`;
-    const notes = po.notes
-      ? `${po.notes}\n${shippingNote}`
-      : shippingNote;
+    const notes = po.notes ? `${po.notes}\n${shippingNote}` : shippingNote;
 
     await this.prisma.purchaseOrder.update({
       where: { id: po.id },

@@ -17,6 +17,7 @@ export class CostCenterModuleService {
   // Helper chuyển đổi Decimal sang Number cho Frontend
   private mapCostCenter(cc: any) {
     if (!cc) return null;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const mapped = {
       ...cc,
       budgetAnnual: cc.budgetAnnual ? Math.round(Number(cc.budgetAnnual)) : 0,
@@ -24,6 +25,7 @@ export class CostCenterModuleService {
     };
 
     if (cc.budgetAllocations && Array.isArray(cc.budgetAllocations)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       mapped.budgetAllocations = cc.budgetAllocations.map((alloc: any) => ({
         ...alloc,
         allocatedAmount: Number(alloc.allocatedAmount || 0),

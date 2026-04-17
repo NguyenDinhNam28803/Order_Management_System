@@ -82,6 +82,7 @@ export default function SmartSearch() {
     const lower = q.toLowerCase();
     const hits: SearchResult[] = [];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (prs ?? []).slice(0, 50).forEach((pr: any) => {
       if (
         pr.prNumber?.toLowerCase().includes(lower) ||
@@ -99,6 +100,7 @@ export default function SmartSearch() {
       }
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (pos ?? []).slice(0, 50).forEach((po: any) => {
       if (
         po.poNumber?.toLowerCase().includes(lower) ||
@@ -146,6 +148,7 @@ export default function SmartSearch() {
       // Also surface any structured data rows as result cards
       const rows: unknown[] = Array.isArray(answerObj?.data) ? answerObj.data : [];
       setResults(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         rows.slice(0, 5).map((row: any, i: number) => ({
           id:       row.id ?? `rag-${i}`,
           type:     "AI" as const,
@@ -367,7 +370,7 @@ export default function SmartSearch() {
           {query && !isLoading && !error && !aiAnswer && results.length === 0 && (
             <div className="p-8 text-center">
               <Search size={28} className="mx-auto mb-3 text-[#64748B] opacity-40" />
-              <p className="text-[13px] text-[#94A3B8]">Không tìm thấy kết quả cho "{query}"</p>
+              <p className="text-[13px] text-[#94A3B8]">Không tìm thấy kết quả cho &quot;{query}&quot;</p>
               <p className="text-[11px] text-[#64748B] mt-1">Thử đặt câu hỏi tự nhiên để AI tìm giúp bạn</p>
             </div>
           )}

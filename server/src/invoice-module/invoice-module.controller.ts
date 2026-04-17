@@ -81,9 +81,11 @@ export class InvoiceModuleController {
 
   @Post(':id/approve-exception')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
-  @ApiOperation({ summary: 'Finance duyệt bỏ qua exception trong 3-way matching' })
+  @ApiOperation({
+    summary: 'Finance duyệt bỏ qua exception trong 3-way matching',
+  })
   approveException(@Param('id') id: string, @Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.invoiceModuleService.approveMatchingException(id, req.user);
   }
 

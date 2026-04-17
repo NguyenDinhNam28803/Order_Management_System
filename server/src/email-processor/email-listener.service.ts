@@ -51,7 +51,6 @@ export class EmailListenerService implements OnModuleInit {
         struct: true,
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const messages = await connection.search(searchCriteria, fetchOptions);
 
       // Giới hạn 5 email/lần để tránh vượt quota Gemini free tier (15 req/phút)
@@ -65,7 +64,7 @@ export class EmailListenerService implements OnModuleInit {
       for (const message of batch) {
         try {
           // ── Đọc header (from, subject, message-id) ─────────────────────────
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
           const headerPart = message.parts.find(
             (p: any) => p.which === 'HEADER',
           );

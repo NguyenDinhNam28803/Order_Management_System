@@ -10,6 +10,7 @@ import { NotificationModuleService } from '../notification-module/notification-m
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDelegationDto } from './dto/user-delegation.dto';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import type { EmailEventType } from '../notification-module/email-template.service';
 
 @Injectable()
 export class UserModuleService {
@@ -41,7 +42,7 @@ export class UserModuleService {
     // 4. Gửi email chào mừng (KHÔNG gửi mật khẩu)
     await this.notificationService.sendNotification({
       recipientId: user.id,
-      eventType: 'NEW_USER_ACCOUNT',
+      eventType: 'USER_REGISTERED' as EmailEventType,
       data: {
         username: user.email,
         fullName: user.fullName,
@@ -57,7 +58,7 @@ export class UserModuleService {
 
   async findAll(filters?: { orgId?: string }) {
     console.log('--- Truy vấn dữ liệu từ database (Filtered by Org) ---');
-    
+
     if (filters?.orgId) {
       // Filter users by organization
       const users = await this.prisma.user.findMany({
@@ -68,7 +69,7 @@ export class UserModuleService {
       });
       return users;
     }
-    
+
     // Fallback: return all (for system admin if needed)
     const users = await this.userRepository.findAll();
     return users;

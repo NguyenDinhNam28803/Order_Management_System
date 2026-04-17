@@ -204,7 +204,10 @@ export class BudgetModuleService {
     });
   }
 
-  async findAllocationOne(id: string, orgId?: string): Promise<BudgetAllocation> {
+  async findAllocationOne(
+    id: string,
+    orgId?: string,
+  ): Promise<BudgetAllocation> {
     const allocation = await this.prisma.budgetAllocation.findUnique({
       where: { id },
       include: {

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { randomBytes } from 'crypto';
 
@@ -36,42 +40,70 @@ export class ExternalTokenService {
    * Tạo external token và link cho vendor/external user
    */
   async createToken(dto: CreateExternalTokenDto): Promise<ExternalTokenResult> {
-    const { type, referenceId, targetEmail, metadata = {}, expiresInDays = 7 } = dto;
+    const {
+      type,
+      referenceId,
+      targetEmail,
+      metadata = {},
+      expiresInDays = 7,
+    } = dto;
 
     // Generate random token (32 bytes = 64 hex characters)
     const token = randomBytes(32).toString('hex');
-    
+
     // Calculate expiration date
-    const expiresAt = new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(
+      Date.now() + expiresInDays * 24 * 60 * 60 * 1000,
+    );
 
     // Create token record using raw query since externalToken may not be in Prisma client yet
-    const externalToken = await this.prisma.$executeRawUnsafe(`
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const _externalToken = (await this.prisma.$executeRawUnsafe(
+      `
       INSERT INTO "ExternalToken" (id, token, type, "referenceId", "targetEmail", metadata, "expiresAt", "createdAt")
       VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, NOW())
       RETURNING id, token, type, "referenceId", "targetEmail", metadata, "expiresAt", "createdAt", "usedAt"
-    `, token, type, referenceId, targetEmail, JSON.stringify(metadata), expiresAt) as any;
-    
+    `,
+      token,
+      type,
+      referenceId,
+      targetEmail,
+      JSON.stringify(metadata),
+      expiresAt,
+    )) as any;
+
     // For now, query it back
-    const createdToken = await this.prisma.$queryRawUnsafe(`
+    const createdToken = await this.prisma.$queryRawUnsafe(
+      `
       SELECT * FROM "ExternalToken" WHERE token = $1
-    `, token) as any[];
-    
-    if (!createdToken || createdToken.length === 0) {
+    `,
+      token,
+    );
+
+    if (!createdToken) {
       throw new BadRequestException('Failed to create token');
     }
-    
+
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     const externalTokenRecord = createdToken[0];
+    const tokenId: string = externalTokenRecord.id;
+    const tokenVal: string = externalTokenRecord.token;
+    const tokenType: TokenType = externalTokenRecord.type;
+    const tokenRefId: string = externalTokenRecord.referenceId;
+    const tokenEmail: string = externalTokenRecord.targetEmail;
+    const tokenExpiry: Date = externalTokenRecord.expiresAt;
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 
     // Generate link based on type and frontend URL
     const link = this.generateLink(type, token);
 
     return {
-      id: externalTokenRecord.id,
-      token: externalTokenRecord.token,
-      type: externalTokenRecord.type,
-      referenceId: externalTokenRecord.referenceId,
-      targetEmail: externalTokenRecord.targetEmail,
-      expiresAt: externalTokenRecord.expiresAt,
+      id: tokenId,
+      token: tokenVal,
+      type: tokenType,
+      referenceId: tokenRefId,
+      targetEmail: tokenEmail,
+      expiresAt: tokenExpiry,
       link,
     };
   }
@@ -80,34 +112,47 @@ export class ExternalTokenService {
    * Validate và lấy thông tin token
    */
   async validateToken(token: string): Promise<ExternalTokenResult> {
-    const tokens = await this.prisma.$queryRawUnsafe(`
+    const tokens = await this.prisma.$queryRawUnsafe(
+      `
       SELECT * FROM "ExternalToken" WHERE token = $1
-    `, token) as any[];
+    `,
+      token,
+    );
 
-    if (!tokens || tokens.length === 0) {
+    // || tokens.length === 0
+    if (!tokens) {
       throw new NotFoundException('Token không tồn tại hoặc đã hết hạn');
     }
 
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     const externalToken = tokens[0];
+    const externalTokenId: string = externalToken.id;
+    const externalTokenVal: string = externalToken.token;
+    const externalTokenType: TokenType = externalToken.type;
+    const externalTokenRefId: string = externalToken.referenceId;
+    const externalTokenEmail: string = externalToken.targetEmail;
+    const externalTokenExpiry: Date = externalToken.expiresAt;
+    const externalTokenUsedAt: Date | null = externalToken.usedAt;
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 
     // Check if token is expired
-    if (new Date() > new Date(externalToken.expiresAt)) {
+    if (new Date() > new Date(externalTokenExpiry)) {
       throw new BadRequestException('Token đã hết hạn');
     }
 
     // Check if token is already used
-    if (externalToken.usedAt) {
+    if (externalTokenUsedAt) {
       throw new BadRequestException('Token đã được sử dụng');
     }
 
     return {
-      id: externalToken.id,
-      token: externalToken.token,
-      type: externalToken.type,
-      referenceId: externalToken.referenceId,
-      targetEmail: externalToken.targetEmail,
-      expiresAt: externalToken.expiresAt,
-      link: this.generateLink(externalToken.type, externalToken.token),
+      id: externalTokenId,
+      token: externalTokenVal,
+      type: externalTokenType,
+      referenceId: externalTokenRefId,
+      targetEmail: externalTokenEmail,
+      expiresAt: externalTokenExpiry,
+      link: this.generateLink(externalTokenType, externalTokenVal),
     };
   }
 
@@ -115,18 +160,24 @@ export class ExternalTokenService {
    * Mark token as used
    */
   async markTokenAsUsed(token: string): Promise<void> {
-    await this.prisma.$executeRawUnsafe(`
+    await this.prisma.$executeRawUnsafe(
+      `
       UPDATE "ExternalToken" SET "usedAt" = NOW() WHERE token = $1
-    `, token);
+    `,
+      token,
+    );
   }
 
   /**
    * Revoke/delete token
    */
   async revokeToken(token: string): Promise<void> {
-    await this.prisma.$executeRawUnsafe(`
+    await this.prisma.$executeRawUnsafe(
+      `
       DELETE FROM "ExternalToken" WHERE token = $1
-    `, token);
+    `,
+      token,
+    );
   }
 
   /**
@@ -136,14 +187,18 @@ export class ExternalTokenService {
     referenceId: string,
     type?: TokenType,
   ): Promise<ExternalTokenResult[]> {
-    const tokens = await this.prisma.$queryRawUnsafe(`
+    const tokens: any[] = await this.prisma.$queryRawUnsafe(
+      `
       SELECT * FROM "ExternalToken"
       WHERE "referenceId" = $1
         AND "expiresAt" > NOW()
         AND "usedAt" IS NULL
         ${type ? `AND type = '${type}'` : ''}
-    `, referenceId) as any[];
+    `,
+      referenceId,
+    );
 
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     return tokens.map((t) => ({
       id: t.id,
       token: t.token,
@@ -153,6 +208,7 @@ export class ExternalTokenService {
       expiresAt: t.expiresAt,
       link: this.generateLink(t.type, t.token),
     }));
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   }
 
   /**
@@ -160,7 +216,7 @@ export class ExternalTokenService {
    */
   private generateLink(type: TokenType, token: string): string {
     const baseUrl = process.env.FRONTEND_URL || 'https://your-domain.com';
-    
+
     const pathMap: Record<TokenType, string> = {
       [TokenType.RFQ_QUOTE]: '/rfq/quote',
       [TokenType.PO_CONFIRM]: '/po/confirm',
@@ -181,6 +237,6 @@ export class ExternalTokenService {
       WHERE "expiresAt" < NOW() OR "usedAt" IS NOT NULL
     `);
 
-    return result as number;
+    return result;
   }
 }

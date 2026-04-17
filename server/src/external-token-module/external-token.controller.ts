@@ -1,10 +1,23 @@
-import { Controller, Post, Get, Delete, Body, Param, Query } from '@nestjs/common';
-import type { ExternalTokenService, CreateExternalTokenDto, TokenType } from './external-token.service';
+import {
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
+import type {
+  CreateExternalTokenDto,
+  TokenType,
+} from './external-token.service';
 import { ExternalTokenService as ExternalTokenServiceImpl } from './external-token.service';
 
 @Controller('external-token')
 export class ExternalTokenController {
-  constructor(private readonly externalTokenService: ExternalTokenServiceImpl) {}
+  constructor(
+    private readonly externalTokenService: ExternalTokenServiceImpl,
+  ) {}
 
   @Post('create')
   async createToken(@Body() dto: CreateExternalTokenDto) {
@@ -33,6 +46,9 @@ export class ExternalTokenController {
     @Param('referenceId') referenceId: string,
     @Query('type') type?: TokenType,
   ) {
-    return this.externalTokenService.getActiveTokensByReference(referenceId, type);
+    return this.externalTokenService.getActiveTokensByReference(
+      referenceId,
+      type,
+    );
   }
 }

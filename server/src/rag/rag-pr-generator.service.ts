@@ -113,11 +113,11 @@ export class RagPrGeneratorService {
       }
 
       // Also get products from RAG (vector search) as supplementary
-      const ragProductIds = new Set(
-        chunks
-          .filter((c) => c.source_table === 'products')
-          .map((c) => c.source_id),
-      );
+      // const ragProductIds = new Set(
+      //   chunks
+      //     .filter((c) => c.source_table === 'products')
+      //     .map((c) => c.source_id),
+      // );
 
       // 2. Get cost centers and budget allocation for the org
       const costCenters = orgId
@@ -129,31 +129,38 @@ export class RagPrGeneratorService {
         : [];
 
       // 2b. Get budget allocations for user's department (to help AI choose cost center)
-      const budgetAllocations = orgId && user?.deptId
-        ? await this.prisma.budgetAllocation.findMany({
-            where: {
-              orgId,
-              deptId: user.deptId,
-              status: 'APPROVED',
-              budgetPeriod: {
-                isActive: true,
+      const budgetAllocations =
+        orgId && user?.deptId
+          ? await this.prisma.budgetAllocation.findMany({
+              where: {
+                orgId,
+                deptId: user.deptId,
+                status: 'APPROVED',
+                budgetPeriod: {
+                  isActive: true,
+                },
               },
-            },
-            select: {
-              id: true,
-              budgetPeriodId: true,
-              costCenterId: true,
-              categoryId: true,
-              allocatedAmount: true,
-              spentAmount: true,
-              committedAmount: true,
-              costCenter: { select: { name: true, code: true } },
-              category: { select: { name: true, id: true } },
-              budgetPeriod: { select: { periodType: true, fiscalYear: true, periodNumber: true } },
-            },
-            take: 20,
-          })
-        : [];
+              select: {
+                id: true,
+                budgetPeriodId: true,
+                costCenterId: true,
+                categoryId: true,
+                allocatedAmount: true,
+                spentAmount: true,
+                committedAmount: true,
+                costCenter: { select: { name: true, code: true } },
+                category: { select: { name: true, id: true } },
+                budgetPeriod: {
+                  select: {
+                    periodType: true,
+                    fiscalYear: true,
+                    periodNumber: true,
+                  },
+                },
+              },
+              take: 20,
+            })
+          : [];
 
       // 4. Determine price limit based on user role
       const priceLimit = this.getPriceLimitByRole(user?.role);
@@ -182,7 +189,7 @@ export class RagPrGeneratorService {
       const processedItems = await this.processNewProducts(
         draftPr.items,
         orgId,
-        allProducts,
+        // allProducts,
       );
 
       return {
@@ -205,7 +212,7 @@ export class RagPrGeneratorService {
           })),
         ],
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating PR draft:', error);
       return {
         success: false,
@@ -229,7 +236,7 @@ export class RagPrGeneratorService {
   private async processNewProducts(
     items: PrDraftItem[],
     orgId: string,
-    dbProducts: any[],
+    // dbProducts: any[],
   ): Promise<PrDraftItem[]> {
     const processedItems: PrDraftItem[] = [];
 
@@ -257,7 +264,10 @@ export class RagPrGeneratorService {
         processedItems.push({
           ...item,
           productId: existingProduct.id,
-          sku: item.sku || existingProduct.sku || this.generateSku(item.productDesc),
+          sku:
+            item.sku ||
+            existingProduct.sku ||
+            this.generateSku(item.productDesc),
           categoryId: item.categoryId || existingProduct.categoryId,
         });
         continue;
@@ -267,9 +277,7 @@ export class RagPrGeneratorService {
       const aiProductInfo = await this.searchProductFromAI(item.productDesc);
 
       if (aiProductInfo) {
-        console.log(
-          `[RAG] AI found product info for: ${item.productDesc}`,
-        );
+        console.log(`[RAG] AI found product info for: ${item.productDesc}`);
 
         // Find or create category
         const category = await this.findOrCreateCategory(
@@ -279,20 +287,18 @@ export class RagPrGeneratorService {
         );
 
         // Create new product in database
-        const newProduct = await this.createProductFromAI(
-          {
-            name: aiProductInfo.name || item.productDesc,
-            description: aiProductInfo.description || item.productDesc,
-            sku: aiProductInfo.sku || this.generateSku(item.productDesc),
-            unitPriceRef: item.estimatedPrice,
-            categoryId: category.id,
-            orgId,
-            unit: item.unit || 'PCS',
-            currency: item.currency as CurrencyCode,
-            type: ProductType.NON_CATALOG,
-            attributes: aiProductInfo.attributes || {},
-          },
-        );
+        const newProduct = await this.createProductFromAI({
+          name: aiProductInfo.name || item.productDesc,
+          description: aiProductInfo.description || item.productDesc,
+          sku: aiProductInfo.sku || this.generateSku(item.productDesc),
+          unitPriceRef: item.estimatedPrice,
+          categoryId: category.id,
+          orgId,
+          unit: item.unit || 'PCS',
+          currency: item.currency as CurrencyCode,
+          type: ProductType.NON_CATALOG,
+          attributes: aiProductInfo.attributes || {},
+        });
 
         console.log(
           `[RAG] Created new product: ${newProduct.name} (ID: ${newProduct.id})`,
@@ -316,19 +322,17 @@ export class RagPrGeneratorService {
           orgId,
         );
 
-        const newProduct = await this.createProductFromAI(
-          {
-            name: item.productDesc,
-            description: item.specNote || item.productDesc,
-            sku: item.sku || this.generateSku(item.productDesc),
-            unitPriceRef: item.estimatedPrice,
-            categoryId: category.id,
-            orgId,
-            unit: item.unit || 'PCS',
-            currency: item.currency as CurrencyCode,
-            type: ProductType.NON_CATALOG,
-          },
-        );
+        const newProduct = await this.createProductFromAI({
+          name: item.productDesc,
+          description: item.specNote || item.productDesc,
+          sku: item.sku || this.generateSku(item.productDesc),
+          unitPriceRef: item.estimatedPrice,
+          categoryId: category.id,
+          orgId,
+          unit: item.unit || 'PCS',
+          currency: item.currency as CurrencyCode,
+          type: ProductType.NON_CATALOG,
+        });
 
         processedItems.push({
           ...item,
@@ -348,6 +352,7 @@ export class RagPrGeneratorService {
   private async findProductInDb(
     productDesc: string,
     orgId: string,
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   ): Promise<any | null> {
     const searchTerms = productDesc
       .toLowerCase()
@@ -642,15 +647,22 @@ ${
 ${costCenters.map((c, i) => `${i + 1}. ${c.name} (ID: ${c.id}, Code: ${c.code})`).join('\n') || 'Không có cost center'}
 
 ## BUDGET ALLOCATIONS (Ngân sách đã cấp phát theo danh mục - CHỈ được dùng các cost center có ngân sách phù hợp):
-${budgetAllocations.map((b, i) => {
-  const available = Number(b.allocatedAmount) - Number(b.spentAmount) - Number(b.committedAmount);
-  return `${i + 1}. Cost Center: ${b.costCenter?.name || 'N/A'} (${b.costCenter?.code || 'N/A'})
+${
+  budgetAllocations
+    .map((b, i) => {
+      const available =
+        Number(b.allocatedAmount) -
+        Number(b.spentAmount) -
+        Number(b.committedAmount);
+      return `${i + 1}. Cost Center: ${b.costCenter?.name || 'N/A'} (${b.costCenter?.code || 'N/A'})
    - Cost Center ID: ${b.costCenterId}
    - Danh mục: ${b.category?.name || 'Ngân sách chung (không có danh mục)'}
    - Category ID: ${b.categoryId || 'N/A'}
    - Ngân sách còn lại: ${available.toLocaleString('vi-VN')} VND
    - Kỳ ngân sách: ${b.budgetPeriod?.periodType || 'N/A'} ${b.budgetPeriod?.fiscalYear || ''} (P${b.budgetPeriod?.periodNumber || 'N/A'})`;
-}).join('\n') || 'Không có ngân sách nào được phân bổ'}
+    })
+    .join('\n') || 'Không có ngân sách nào được phân bổ'
+}
 
 ## USER INFO (Thông tin người tạo PR):
 - Role: ${user?.role || 'REQUESTER'}
@@ -807,8 +819,8 @@ ${budgetAllocations.map((b, i) => {
         confidence: parsed.confidence || 0.8,
         reasoning: parsed.reasoning || 'Đã phân tích yêu cầu và tạo PR Draft',
       };
-    } catch (e) {
-      console.error('Failed to parse LLM response:', content);
+    } catch (e: any) {
+      console.error('Failed to parse LLM response:', e.message);
       throw new Error('Invalid LLM response format');
     }
   }

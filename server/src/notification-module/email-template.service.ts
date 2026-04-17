@@ -7,17 +7,15 @@ export type EmailEventType =
   | 'PO_APPROVAL_REQUEST'
   | 'PO_APPROVED'
   // ── Magic Link templates (open process) ──
-  | 'RFQ_MAGIC_LINK'          // NCC báo giá qua link, không cần đăng nhập
-  | 'PR_APPROVAL_LINK'        // Approver duyệt PR qua email 1-click
-  | 'PO_CONFIRM_LINK'         // NCC xác nhận nhận PO
-  | 'GRN_MILESTONE_UPDATE'    // NCC cập nhật trạng thái giao hàng
-  | 'INVOICE_SUBMIT_LINK'     // NCC nộp hóa đơn sau GRN
-  | 'PAYMENT_CONFIRMED'       // Xác nhận đã thanh toán thành công
-  | string;
+  | 'RFQ_MAGIC_LINK' // NCC báo giá qua link, không cần đăng nhập
+  | 'PR_APPROVAL_LINK' // Approver duyệt PR qua email 1-click
+  | 'PO_CONFIRM_LINK' // NCC xác nhận nhận PO
+  | 'GRN_MILESTONE_UPDATE' // NCC cập nhật trạng thái giao hàng
+  | 'INVOICE_SUBMIT_LINK' // NCC nộp hóa đơn sau GRN
+  | 'PAYMENT_CONFIRMED'; // Xác nhận đã thanh toán thành công
 
 @Injectable()
 export class EmailTemplatesService {
-
   // ── Helpers ────────────────────────────────────────────────────────────────
   private fmt(amount: number): string {
     return new Intl.NumberFormat('vi-VN').format(amount) + ' VNĐ';
@@ -25,7 +23,11 @@ export class EmailTemplatesService {
 
   private fmtDate(val: string | Date): string {
     const d = typeof val === 'string' ? new Date(val) : val;
-    return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return d.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
   }
 
   /**
@@ -33,19 +35,31 @@ export class EmailTemplatesService {
    */
   render(eventType: EmailEventType, data: Record<string, any>): string {
     switch (eventType) {
-      case 'USER_LOGIN':            return this.templateWelcomeBack(data);
-      case 'USER_REGISTERED':       return this.templateNewMember(data);
-      case 'RFQ_INVITATION':        return this.templateRfqInvitation(data);
-      case 'PO_APPROVAL_REQUEST':   return this.templatePoApprovalRequest(data);
-      case 'PO_APPROVED':           return this.templatePoApproved(data);
+      case 'USER_LOGIN':
+        return this.templateWelcomeBack(data);
+      case 'USER_REGISTERED':
+        return this.templateNewMember(data);
+      case 'RFQ_INVITATION':
+        return this.templateRfqInvitation(data);
+      case 'PO_APPROVAL_REQUEST':
+        return this.templatePoApprovalRequest(data);
+      case 'PO_APPROVED':
+        return this.templatePoApproved(data);
       // ── Magic Link ──
-      case 'RFQ_MAGIC_LINK':        return this.templateRfqMagicLink(data);
-      case 'PR_APPROVAL_LINK':      return this.templatePrApprovalLink(data);
-      case 'PO_CONFIRM_LINK':       return this.templatePoConfirmLink(data);
-      case 'GRN_MILESTONE_UPDATE':  return this.templateGrnMilestoneUpdate(data);
-      case 'INVOICE_SUBMIT_LINK':   return this.templateInvoiceSubmitLink(data);
-      case 'PAYMENT_CONFIRMED':     return this.templatePaymentConfirmed(data);
-      default:                      return this.templateGeneric(data);
+      case 'RFQ_MAGIC_LINK':
+        return this.templateRfqMagicLink(data);
+      case 'PR_APPROVAL_LINK':
+        return this.templatePrApprovalLink(data);
+      case 'PO_CONFIRM_LINK':
+        return this.templatePoConfirmLink(data);
+      case 'GRN_MILESTONE_UPDATE':
+        return this.templateGrnMilestoneUpdate(data);
+      case 'INVOICE_SUBMIT_LINK':
+        return this.templateInvoiceSubmitLink(data);
+      case 'PAYMENT_CONFIRMED':
+        return this.templatePaymentConfirmed(data);
+      default:
+        return this.templateGeneric(data);
     }
   }
 
@@ -61,23 +75,30 @@ export class EmailTemplatesService {
   // }
   // ═══════════════════════════════════════════════════════════════════════════
   private templateRfqMagicLink(data: Record<string, any>): string {
-    const rfqCode      = data.rfqCode      ?? '';
-    const rfqTitle     = data.rfqTitle     ?? '';
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const rfqCode = data.rfqCode ?? '';
+    const rfqTitle = data.rfqTitle ?? '';
     const supplierName = data.supplierName ?? 'Quý đối tác';
-    const rfqLink      = data.rfqLink      ?? '#';
-    const deadline     = data.deadline     ? this.fmtDate(data.deadline) : '';
-    const contactName  = data.contactPerson ?? '';
-    const contactEmail = data.contactEmail  ?? '';
-    const payTerms     = data.paymentTerms  ?? '';
-    const items: Array<{ name: string; qty: number; unit: string }> = data.items ?? [];
+    const rfqLink = data.rfqLink ?? '#';
+    const deadline = data.deadline ? this.fmtDate(data.deadline) : '';
+    const contactName = data.contactPerson ?? '';
+    const contactEmail = data.contactEmail ?? '';
+    const payTerms = data.paymentTerms ?? '';
+    const items: Array<{ name: string; qty: number; unit: string }> =
+      data.items ?? [];
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 
-    const rows = items.map((item, i) => `
+    const rows = items
+      .map(
+        (item, i) => `
       <tr>
         <td>${i + 1}</td>
         <td>${item.name}</td>
         <td style="text-align:center">${item.qty}</td>
         <td style="text-align:center">${item.unit}</td>
-      </tr>`).join('');
+      </tr>`,
+      )
+      .join('');
 
     const content = `
       <div class="header">
@@ -111,9 +132,9 @@ export class EmailTemplatesService {
         <hr class="divider"/>
 
         <table class="info-table">
-          ${contactName  ? `<tr><td>Người liên hệ</td><td>${contactName} · ${contactEmail}</td></tr>` : ''}
-          ${deadline     ? `<tr><td>Hạn chót</td><td>${deadline}</td></tr>` : ''}
-          ${payTerms     ? `<tr><td>Điều kiện TT</td><td>${payTerms}</td></tr>` : ''}
+          ${contactName ? `<tr><td>Người liên hệ</td><td>${contactName} · ${contactEmail}</td></tr>` : ''}
+          ${deadline ? `<tr><td>Hạn chót</td><td>${deadline}</td></tr>` : ''}
+          ${payTerms ? `<tr><td>Điều kiện TT</td><td>${payTerms}</td></tr>` : ''}
         </table>
       </div>
       <div class="footer">
@@ -136,18 +157,20 @@ export class EmailTemplatesService {
   // }
   // ═══════════════════════════════════════════════════════════════════════════
   private templatePrApprovalLink(data: Record<string, any>): string {
-    const prCode          = data.prCode          ?? '';
-    const prTitle         = data.prTitle         ?? '';
-    const approverName    = data.approverName    ?? '';
-    const requesterName   = data.requesterName   ?? '';
-    const requesterDept   = data.requesterDept   ?? '';
-    const totalAmount     = Number(data.totalAmount     ?? 0);
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const prCode = data.prCode ?? '';
+    const prTitle = data.prTitle ?? '';
+    const approverName = data.approverName ?? '';
+    const requesterName = data.requesterName ?? '';
+    const requesterDept = data.requesterDept ?? '';
+    const totalAmount = Number(data.totalAmount ?? 0);
     const remainingBudget = Number(data.remainingBudget ?? 0);
-    const justification   = data.justification   ?? '';
-    const slaDeadline     = data.slaDeadline     ? this.fmtDate(data.slaDeadline) : '';
-    const approveLink     = data.approveLink     ?? '#';
-    const rejectLink      = data.rejectLink      ?? '#';
-    const detailLink      = data.detailLink      ?? '#';
+    const justification = data.justification ?? '';
+    const slaDeadline = data.slaDeadline ? this.fmtDate(data.slaDeadline) : '';
+    const approveLink = data.approveLink ?? '#';
+    const rejectLink = data.rejectLink ?? '#';
+    const detailLink = data.detailLink ?? '#';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 
     const content = `
       <div class="header">
@@ -200,27 +223,47 @@ export class EmailTemplatesService {
   // }
   // ═══════════════════════════════════════════════════════════════════════════
   private templatePoConfirmLink(data: Record<string, any>): string {
-    const poCode         = data.poCode         ?? '';
-    const supplierName   = data.supplierName   ?? 'Quý đối tác';
-    const confirmLink    = data.confirmLink    ?? '#';
-    const poPdfUrl       = data.poPdfUrl       ?? '#';
-    const issuedDate     = data.issuedDate     ? this.fmtDate(data.issuedDate)   : '';
-    const deliveryDate   = data.deliveryDate   ? this.fmtDate(data.deliveryDate) : '';
-    const deliveryAddr   = data.deliveryAddress ?? '';
-    const paymentTerms   = data.paymentTerms   ?? '';
-    const penalty        = Number(data.latePenaltyPct ?? 0.1);
-    const contactEmail   = data.contactEmail   ?? '';
-    const contactPhone   = data.contactPhone   ?? '';
-    const totalAmount    = Number(data.totalAmount ?? 0);
-    const items: Array<{ name: string; qty: number; unitPrice: number; total: number }> = data.items ?? [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poCode = data.poCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = data.supplierName ?? 'Quý đối tác';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const confirmLink = data.confirmLink ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poPdfUrl = data.poPdfUrl ?? '#';
+    const issuedDate = data.issuedDate ? this.fmtDate(data.issuedDate) : '';
+    const deliveryDate = data.deliveryDate
+      ? this.fmtDate(data.deliveryDate)
+      : '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const deliveryAddr = data.deliveryAddress ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const paymentTerms = data.paymentTerms ?? '';
+    const penalty = Number(data.latePenaltyPct ?? 0.1);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const contactEmail = data.contactEmail ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const contactPhone = data.contactPhone ?? '';
+    const totalAmount = Number(data.totalAmount ?? 0);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const items: Array<{
+      name: string;
+      qty: number;
+      unitPrice: number;
+      total: number;
+    }> = data.items ?? [];
 
-    const rows = items.map(item => `
+    const rows = items
+      .map(
+        (item) => `
       <tr>
         <td>${item.name}</td>
         <td style="text-align:center">${item.qty}</td>
         <td style="text-align:right">${this.fmt(item.unitPrice)}</td>
         <td style="text-align:right">${this.fmt(item.total)}</td>
-      </tr>`).join('');
+      </tr>`,
+      )
+      .join('');
 
     const content = `
       <div class="header">
@@ -288,21 +331,34 @@ export class EmailTemplatesService {
   // }
   // ═══════════════════════════════════════════════════════════════════════════
   private templateGrnMilestoneUpdate(data: Record<string, any>): string {
-    const poCode         = data.poCode         ?? '';
-    const supplierName   = data.supplierName   ?? 'Quý đối tác';
-    const updateLink     = data.updateLink     ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poCode = data.poCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = data.supplierName ?? 'Quý đối tác';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const updateLink = data.updateLink ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const warehouseEmail = data.warehouseEmail ?? '';
-    const expectedDel    = data.expectedDelivery ? this.fmtDate(data.expectedDelivery) : '';
+    const expectedDel = data.expectedDelivery
+      ? this.fmtDate(data.expectedDelivery)
+      : '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const completedSteps: string[] = data.completedSteps ?? [];
-    const currentStep:    string   = data.currentStep    ?? '';
-    const pendingSteps:   string[] = data.pendingSteps   ?? [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const currentStep: string = data.currentStep ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const pendingSteps: string[] = data.pendingSteps ?? [];
 
-    const doneItems = completedSteps.map(s => `
+    const doneItems = completedSteps
+      .map(
+        (s) => `
       <tr>
         <td style="padding:7px 12px;color:#059669">
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669;margin-right:8px;vertical-align:middle"></span>${s}
         </td>
-      </tr>`).join('');
+      </tr>`,
+      )
+      .join('');
 
     const activeItem = `
       <tr style="background:#eff6ff">
@@ -311,12 +367,16 @@ export class EmailTemplatesService {
         </td>
       </tr>`;
 
-    const pendingItems = pendingSteps.map(s => `
+    const pendingItems = pendingSteps
+      .map(
+        (s) => `
       <tr>
         <td style="padding:7px 12px;color:#9ca3af">
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d1d5db;margin-right:8px;vertical-align:middle"></span>${s}
         </td>
-      </tr>`).join('');
+      </tr>`,
+      )
+      .join('');
 
     const content = `
       <div class="header">
@@ -366,17 +426,28 @@ export class EmailTemplatesService {
   // }
   // ═══════════════════════════════════════════════════════════════════════════
   private templateInvoiceSubmitLink(data: Record<string, any>): string {
-    const poCode          = data.poCode          ?? '';
-    const grnCode         = data.grnCode         ?? '';
-    const supplierName    = data.supplierName    ?? 'Quý đối tác';
-    const submitLink      = data.submitLink      ?? '#';
-    const financeEmail    = data.financeEmail    ?? '';
-    const grnConfirmedAt  = data.grnConfirmedAt  ? this.fmtDate(data.grnConfirmedAt)      : '';
-    const poAmount        = Number(data.poAmount ?? 0);
-    const grnPercent      = Number(data.grnPercent ?? 100);
-    const paymentTerms    = data.paymentTerms    ?? '';
-    const estPayDate      = data.estimatedPaymentDate ? this.fmtDate(data.estimatedPaymentDate) : '';
-    const financeContact  = data.financeContact  ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poCode = data.poCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const grnCode = data.grnCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = data.supplierName ?? 'Quý đối tác';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const submitLink = data.submitLink ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const financeEmail = data.financeEmail ?? '';
+    const grnConfirmedAt = data.grnConfirmedAt
+      ? this.fmtDate(data.grnConfirmedAt)
+      : '';
+    const poAmount = Number(data.poAmount ?? 0);
+    const grnPercent = Number(data.grnPercent ?? 100);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const paymentTerms = data.paymentTerms ?? '';
+    const estPayDate = data.estimatedPaymentDate
+      ? this.fmtDate(data.estimatedPaymentDate)
+      : '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const financeContact = data.financeContact ?? '';
 
     const content = `
       <div class="header">
@@ -441,17 +512,26 @@ export class EmailTemplatesService {
   // }
   // ═══════════════════════════════════════════════════════════════════════════
   private templatePaymentConfirmed(data: Record<string, any>): string {
-    const paymentCode   = data.paymentCode   ?? '';
-    const invoiceCode   = data.invoiceCode   ?? '';
-    const poCode        = data.poCode        ?? '';
-    const supplierName  = data.supplierName  ?? 'Quý đối tác';
-    const amount        = Number(data.amount ?? 0);
-    const bankRef       = data.bankRef       ?? '';
-    const paidAt        = data.paidAt        ? this.fmtDate(data.paidAt) : '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const paymentCode = data.paymentCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const invoiceCode = data.invoiceCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poCode = data.poCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = data.supplierName ?? 'Quý đối tác';
+    const amount = Number(data.amount ?? 0);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const bankRef = data.bankRef ?? '';
+    const paidAt = data.paidAt ? this.fmtDate(data.paidAt) : '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const paymentMethod = data.paymentMethod ?? 'Chuyển khoản ngân hàng';
-    const historyLink   = data.historyLink   ?? '#';
-    const financeEmail  = data.financeEmail  ?? '';
-    const financePhone  = data.financePhone  ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const historyLink = data.historyLink ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const financeEmail = data.financeEmail ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const financePhone = data.financePhone ?? '';
 
     const content = `
       <div class="header">
@@ -507,9 +587,13 @@ export class EmailTemplatesService {
   // ═══════════════════════════════════════════════════════════════════════════
 
   private templateRfqInvitation(data: Record<string, any>): string {
-    const rfqNumber    = data.rfqNumber    ?? '';
-    const rfqTitle     = data.rfqTitle     ?? '';
-    const deadline     = data.deadline     ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const rfqNumber = data.rfqNumber ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const rfqTitle = data.rfqTitle ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const deadline = data.deadline ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const itemsSummary = data.itemsSummary ?? '';
 
     const content = `
@@ -533,10 +617,14 @@ export class EmailTemplatesService {
   }
 
   private templatePoApprovalRequest(data: Record<string, any>): string {
-    const poNumber    = data.poNumber    ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poNumber = data.poNumber ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const supplierName = data.supplierName ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const totalAmount = data.totalAmount ?? '0';
-    const currency    = data.currency    ?? 'VND';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const currency = data.currency ?? 'VND';
 
     const content = `
       <div class="header">
@@ -558,6 +646,7 @@ export class EmailTemplatesService {
   }
 
   private templatePoApproved(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const poNumber = data.poNumber ?? '';
     const content = `
       <div class="header">
@@ -572,11 +661,16 @@ export class EmailTemplatesService {
   }
 
   private templateWelcomeBack(data: Record<string, any>): string {
-    const name     = data.name    ?? 'bạn';
-    const time     = data.loginAt ?? new Date().toLocaleString('vi-VN');
-    const device   = data.device  ?? 'Không xác định';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const name = data.name ?? 'bạn';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const time = data.loginAt ?? new Date().toLocaleString('vi-VN');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const device = data.device ?? 'Không xác định';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const location = data.location ?? 'Không xác định';
-    const dashUrl  = data.dashUrl  ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const dashUrl = data.dashUrl ?? '#';
 
     const content = `
       <div class="header">
@@ -605,12 +699,18 @@ export class EmailTemplatesService {
   }
 
   private templateNewMember(data: Record<string, any>): string {
-    const name      = data.name         ?? 'bạn';
-    const email     = data.email        ?? '';
-    const role      = data.role         ?? 'Member';
-    const org       = data.orgName      ?? 'Hệ thống';
-    const loginUrl  = data.loginUrl     ?? '#';
-    const tempPass  = data.tempPassword;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const name = data.name ?? 'bạn';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const email = data.email ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const role = data.role ?? 'Member';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const org = data.orgName ?? 'Hệ thống';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const loginUrl = data.loginUrl ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const tempPass = data.tempPassword;
 
     const content = `
       <div class="header">
@@ -643,7 +743,9 @@ export class EmailTemplatesService {
   }
 
   private templateGeneric(data: Record<string, any>): string {
-    const title   = data.title   ?? 'Thông báo hệ thống';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const title = data.title ?? 'Thông báo hệ thống';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const message = data.message ?? '';
     const content = `
       <div class="header">

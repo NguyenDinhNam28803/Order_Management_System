@@ -4,7 +4,10 @@ import bull from 'bull';
 import { NotificationRepository } from './notification.repository';
 import { EmailService } from './email.service';
 import { SmsService } from './sms.service';
-import { EmailTemplatesService } from './email-template.service';
+import {
+  EmailEventType,
+  EmailTemplatesService,
+} from './email-template.service';
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { CreateNotificationTemplateDto } from './dto/create-notification-template.dto';
 import { NotificationChannel, NotificationStatus } from '@prisma/client';
@@ -170,7 +173,7 @@ export class NotificationModuleService {
   async sendDirectEmail(
     to: string,
     subject: string,
-    eventType: string,
+    eventType: EmailEventType,
     data: Record<string, any>,
   ): Promise<void> {
     try {
@@ -178,7 +181,10 @@ export class NotificationModuleService {
       await this.emailQueue.add('send-email', { to, subject, body });
       this.logger.log(`Direct email queued → ${to} [${eventType}]`);
     } catch (error) {
-      this.logger.error(`Failed to queue direct email to ${to} [${eventType}]:`, error);
+      this.logger.error(
+        `Failed to queue direct email to ${to} [${eventType}]:`,
+        error,
+      );
     }
   }
 
@@ -195,7 +201,7 @@ export class NotificationModuleService {
   async sendExternalEmailWithMagicLink(params: {
     to: string;
     subject: string;
-    eventType: string;
+    eventType: EmailEventType;
     data: Record<string, any>;
     referenceId: string;
     tokenType: TokenType;

@@ -293,19 +293,40 @@ export class RfqmoduleService {
 
     // State machine: define valid forward/backward transitions
     const ALLOWED_TRANSITIONS: Partial<Record<RfqStatus, RfqStatus[]>> = {
-      [RfqStatus.DRAFT]:              [RfqStatus.SENT, RfqStatus.CANCELLED],
-      [RfqStatus.SENT]:               [RfqStatus.SUPPLIER_REVIEWING, RfqStatus.CANCELLED],
-      [RfqStatus.SUPPLIER_REVIEWING]: [RfqStatus.QUOTATION_RECEIVED, RfqStatus.CANCELLED],
-      [RfqStatus.QUOTATION_RECEIVED]: [RfqStatus.AI_ANALYZING, RfqStatus.REQUESTER_REVIEW, RfqStatus.CANCELLED],
-      [RfqStatus.AI_ANALYZING]:       [RfqStatus.AI_RECOMMENDED, RfqStatus.QUOTATION_RECEIVED],
-      [RfqStatus.AI_RECOMMENDED]:     [RfqStatus.REQUESTER_REVIEW, RfqStatus.NEGOTIATION],
-      [RfqStatus.REQUESTER_REVIEW]:   [RfqStatus.SELECTION_CONFIRMED, RfqStatus.NEGOTIATION, RfqStatus.CANCELLED],
-      [RfqStatus.NEGOTIATION]:        [RfqStatus.AWARD_PENDING, RfqStatus.SELECTION_CONFIRMED, RfqStatus.CANCELLED],
-      [RfqStatus.SELECTION_CONFIRMED]:[RfqStatus.AWARD_PENDING],
-      [RfqStatus.AWARD_PENDING]:      [RfqStatus.AWARDED, RfqStatus.CANCELLED],
-      [RfqStatus.AWARDED]:            [RfqStatus.CLOSED],
-      [RfqStatus.CLOSED]:             [],
-      [RfqStatus.CANCELLED]:          [],
+      [RfqStatus.DRAFT]: [RfqStatus.SENT, RfqStatus.CANCELLED],
+      [RfqStatus.SENT]: [RfqStatus.SUPPLIER_REVIEWING, RfqStatus.CANCELLED],
+      [RfqStatus.SUPPLIER_REVIEWING]: [
+        RfqStatus.QUOTATION_RECEIVED,
+        RfqStatus.CANCELLED,
+      ],
+      [RfqStatus.QUOTATION_RECEIVED]: [
+        RfqStatus.AI_ANALYZING,
+        RfqStatus.REQUESTER_REVIEW,
+        RfqStatus.CANCELLED,
+      ],
+      [RfqStatus.AI_ANALYZING]: [
+        RfqStatus.AI_RECOMMENDED,
+        RfqStatus.QUOTATION_RECEIVED,
+      ],
+      [RfqStatus.AI_RECOMMENDED]: [
+        RfqStatus.REQUESTER_REVIEW,
+        RfqStatus.NEGOTIATION,
+      ],
+      [RfqStatus.REQUESTER_REVIEW]: [
+        RfqStatus.SELECTION_CONFIRMED,
+        RfqStatus.NEGOTIATION,
+        RfqStatus.CANCELLED,
+      ],
+      [RfqStatus.NEGOTIATION]: [
+        RfqStatus.AWARD_PENDING,
+        RfqStatus.SELECTION_CONFIRMED,
+        RfqStatus.CANCELLED,
+      ],
+      [RfqStatus.SELECTION_CONFIRMED]: [RfqStatus.AWARD_PENDING],
+      [RfqStatus.AWARD_PENDING]: [RfqStatus.AWARDED, RfqStatus.CANCELLED],
+      [RfqStatus.AWARDED]: [RfqStatus.CLOSED],
+      [RfqStatus.CLOSED]: [],
+      [RfqStatus.CANCELLED]: [],
     };
 
     const allowed = ALLOWED_TRANSITIONS[rfq.status] ?? [];

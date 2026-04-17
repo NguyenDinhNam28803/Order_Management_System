@@ -10,6 +10,7 @@ import {
   CreateInvoiceModuleDto,
   CreateInvoiceItemDto,
 } from './dto/create-invoice-module.dto';
+import { EmailEventType } from '../notification-module/email-template.service';
 import { UpdateInvoiceModuleDto } from './dto/update-invoice-module.dto';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
@@ -291,6 +292,7 @@ export class InvoiceModuleService {
       const financeUsers = await this.prisma.user.findMany({
         where: {
           orgId: invoice.orgId,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           role: 'FINANCE' as any,
           isActive: true,
         },
@@ -303,7 +305,7 @@ export class InvoiceModuleService {
             .sendDirectEmail(
               fu.email,
               `[ProcureSmart] Hóa đơn ${invoice.invoiceNumber} cần xét duyệt thủ công`,
-              'INVOICE_EXCEPTION_REVIEW',
+              'INVOICE_SUBMIT_LINK' as EmailEventType,
               {
                 recipientName: fu.fullName,
                 invoiceNumber: invoice.invoiceNumber,

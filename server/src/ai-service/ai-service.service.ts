@@ -38,10 +38,10 @@ export interface AiQuotationAnalysis {
 
 /** Dữ liệu trích xuất từ email báo giá nhà cung cấp */
 export interface QuotationEmailData {
-  rfqNumber?: string;          // Mã RFQ được đề cập trong email
-  quotationNumber?: string;    // Mã báo giá của NCC
+  rfqNumber?: string; // Mã RFQ được đề cập trong email
+  quotationNumber?: string; // Mã báo giá của NCC
   totalPrice?: number;
-  currency?: string;           // VND | USD | EUR
+  currency?: string; // VND | USD | EUR
   leadTimeDays?: number;
   validityDays?: number;
   paymentTerms?: string;
@@ -55,31 +55,35 @@ export interface QuotationEmailData {
 
 /** Dữ liệu trích xuất từ email xác nhận PO */
 export interface PoConfirmationEmailData {
-  poNumber?: string;           // Mã PO được xác nhận
-  confirmedDate?: string;      // ISO date string
-  estimatedDelivery?: string;  // ISO date string
+  poNumber?: string; // Mã PO được xác nhận
+  confirmedDate?: string; // ISO date string
+  estimatedDelivery?: string; // ISO date string
   notes?: string;
 }
 
 /** Dữ liệu trích xuất từ email thông báo giao hàng */
 export interface ShippingNotificationEmailData {
-  poNumber?: string;           // Mã PO liên quan
+  poNumber?: string; // Mã PO liên quan
   trackingNumber?: string;
-  carrier?: string;            // Đơn vị vận chuyển
-  shippedDate?: string;        // ISO date string
-  estimatedArrival?: string;   // ISO date string
+  carrier?: string; // Đơn vị vận chuyển
+  shippedDate?: string; // ISO date string
+  estimatedArrival?: string; // ISO date string
   notes?: string;
 }
 
 export type SupplierEmailIntent =
-  | 'QUOTATION'              // NCC gửi báo giá
-  | 'PO_CONFIRMATION'        // NCC xác nhận đã nhận / đồng ý PO
-  | 'SHIPPING_NOTIFICATION'  // NCC thông báo đang giao hàng
-  | 'GENERAL_INQUIRY';       // Không thuộc 3 loại trên
+  | 'QUOTATION' // NCC gửi báo giá
+  | 'PO_CONFIRMATION' // NCC xác nhận đã nhận / đồng ý PO
+  | 'SHIPPING_NOTIFICATION' // NCC thông báo đang giao hàng
+  | 'GENERAL_INQUIRY'; // Không thuộc 3 loại trên
 
 export interface AiEmailAnalysis {
   intent: SupplierEmailIntent;
-  data: QuotationEmailData | PoConfirmationEmailData | ShippingNotificationEmailData | Record<string, unknown>;
+  data:
+    | QuotationEmailData
+    | PoConfirmationEmailData
+    | ShippingNotificationEmailData
+    | Record<string, unknown>;
   confidence: number;
 }
 
@@ -148,7 +152,6 @@ TRẢ VỀ JSON:
     return this.parseSpecificJson<AiEmailAnalysis>(result.text ?? '');
   }
 
-
   async onModuleInit() {
     await this.listModels();
   }
@@ -182,22 +185,30 @@ TRẢ VỀ JSON:
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
-    const parsed = this.parseSpecificJson<AiQuotationAnalysis>(result.text ?? '');
+    const parsed = this.parseSpecificJson<AiQuotationAnalysis>(
+      result.text ?? '',
+    );
 
     // VALIDATION: Ensure score matches assessment
     // If assessment indicates major issues (unreasonable price, fraud suspicion), cap the score
     const assessmentLower = parsed.assessment?.toLowerCase() || '';
-    const hasPriceIssue = assessmentLower.includes('vô lý') ||
-                         assessmentLower.includes('quá cao') ||
-                         assessmentLower.includes('gian lận') ||
-                         assessmentLower.includes('không hợp lý') ||
-                         assessmentLower.includes('vượt xa giá trị');
+    const hasPriceIssue =
+      assessmentLower.includes('vô lý') ||
+      assessmentLower.includes('quá cao') ||
+      assessmentLower.includes('gian lận') ||
+      assessmentLower.includes('không hợp lý') ||
+      assessmentLower.includes('vượt xa giá trị');
 
-    const hasManyCons = parsed.cons && parsed.cons.length > 0 && parsed.cons.length >= (parsed.pros?.length || 0);
+    const hasManyCons =
+      parsed.cons &&
+      parsed.cons.length > 0 &&
+      parsed.cons.length >= (parsed.pros?.length || 0);
 
     // If there are significant issues, ensure score doesn't exceed 3
     if ((hasPriceIssue || hasManyCons) && parsed.score > 3) {
-      console.warn(`[AI Validation] Score ${parsed.score} too high for problematic quotation. Capping to 3.`);
+      console.warn(
+        `[AI Validation] Score ${parsed.score} too high for problematic quotation. Capping to 3.`,
+      );
       parsed.score = 3;
     }
 

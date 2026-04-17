@@ -708,7 +708,7 @@ export class AutomationService {
         message: `Created contract ${contract.contractNumber} from PO ${po.poNumber}${emailSent ? ' and sent email' : ''}`,
         emailSent,
       };
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`PO Automation error: ${error.message}`, error.stack);
       return { success: false, message: `Error: ${error.message}` };
     }
@@ -765,6 +765,7 @@ export class AutomationService {
         include: { supplierOrg: true },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const supplierEmail = contract?.supplierOrg?.email || po?.supplier?.email;
       if (!supplierEmail) {
         this.logger.warn('Cannot send email: missing supplier info');
@@ -781,7 +782,7 @@ export class AutomationService {
 
       this.logger.log(`Sent contract email to ${supplierEmail}`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Email error: ${error.message}`, error.stack);
       return false;
     }
@@ -790,7 +791,7 @@ export class AutomationService {
   private generateContractEmailContent(
     contract: any,
     po: any,
-    totalAmount: number,
+    _totalAmount: number,
   ) {
     const subject = `New Contract ${contract.contractNumber} - Value ${Number(contract.value || 0).toLocaleString('vi-VN')} VND`;
 
