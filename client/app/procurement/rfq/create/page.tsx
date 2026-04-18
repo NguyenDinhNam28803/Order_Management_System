@@ -91,6 +91,14 @@ export default function CreateRFQPage() {
     const [showAiSuggestions, setShowAiSuggestions] = useState(false);
     const [addedAiVendors, setAddedAiVendors] = useState<Set<string>>(new Set());
 
+    // Auto-trigger AI khi targetPR đã load xong và có items
+    useEffect(() => {
+        if (targetPR && targetPR.items && targetPR.items.length > 0) {
+            fetchAiSuggestions();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [targetPR?.id]);
+
     // Filter organizations to exclude current user's org
     const realVendors = React.useMemo(() => 
         (organizations || []).filter((o: Organization) => o.id !== currentUser?.orgId),
@@ -480,26 +488,29 @@ export default function CreateRFQPage() {
                                 )}
                             </div>
 
-                            {/* AI Suggestion Button */}
+                            {/* AI status — auto-triggered on page load */}
                             <div className="flex items-center justify-between">
-                                <button
-                                    type="button"
-                                    onClick={fetchAiSuggestions}
-                                    disabled={isAiLoading}
-                                    className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white px-4 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-all shadow-md shadow-violet-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
+                                <div className="flex items-center gap-2 text-[11px]">
                                     {isAiLoading ? (
-                                        <>
-                                            <Loader2 size={18} className="animate-spin" />
-                                            AI đang phân tích...
-                                        </>
+                                        <span className="text-violet-400 flex items-center gap-1.5">
+                                            <Loader2 size={13} className="animate-spin" />
+                                            AI đang phân tích sản phẩm…
+                                        </span>
+                                    ) : aiSuggestions.length > 0 ? (
+                                        <span className="text-emerald-400 flex items-center gap-1.5">
+                                            <Sparkles size={13} />
+                                            AI đã gợi ý {aiSuggestions.length} nhà cung cấp
+                                        </span>
                                     ) : (
-                                        <>
-                                            <Sparkles size={18} />
-                                            Gợi ý nhà cung cấp bằng AI
-                                        </>
+                                        <button
+                                            type="button"
+                                            onClick={fetchAiSuggestions}
+                                            className="flex items-center gap-1.5 text-violet-400 hover:text-violet-300 transition-colors font-bold"
+                                        >
+                                            <Sparkles size={13} /> Chạy lại gợi ý AI
+                                        </button>
                                     )}
-                                </button>
+                                </div>
                                 <span className="text-[10px] text-[#64748B] font-medium italic">
                                     Dựa trên {targetPR?.items?.length || 0} sản phẩm trong PR
                                 </span>

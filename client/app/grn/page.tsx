@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 interface PO {
     id: string;
-    vendor: string;
+    vendor?: string;
     status: string;
 }
 

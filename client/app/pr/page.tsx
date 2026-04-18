@@ -55,12 +55,13 @@ export default function PRPage() {
 
         if (activeTab === "Phê duyệt") {
             const pendingPrIds = (approvals || []).map((a: ApprovalWorkflow) => a.documentId);
-            const result = prs.filter((p: PR) => pendingPrIds.includes(p.id));
+            const allPrs = prs.length > 0 ? prs : (myPrs || []);
+            const result = allPrs.filter((p: PR) => pendingPrIds.includes(p.id));
             console.log("Phê duyệt tab - found:", result.length);
             return result;
         }
         
-        const pool = prs;
+        const pool = isProcOrAdmin ? prs : (myPrs || []);
         console.log("Pool size:", pool.length);
         console.log("Pool statuses:", pool.map((p: PR) => p.status));
         
@@ -226,7 +227,7 @@ export default function PRPage() {
                                         </button>
                                     </div>
                                 )}
-                                {row.status.includes('PENDING') && (
+                                {row.status?.includes('PENDING') && (
                                     <span className="text-[9px] font-bold text-[#64748B] bg-[#0F1117] px-2 py-1 rounded border border-[rgba(148,163,184,0.1)]">
                                         Đang xử lý
                                     </span>
@@ -279,7 +280,7 @@ export default function PRPage() {
                         </div>
                     </div>
                 </div>                
-                {displayData.length === 0 && (
+                {displayData.length === 0 ? (
                     <div className="p-20 text-center flex flex-col items-center justify-center space-y-4">
                         <div className="h-16 w-16 rounded-2xl bg-[#0F1117] flex items-center justify-center text-[#64748B] border border-[rgba(148,163,184,0.1)]">
                             <FileText size={28} />
@@ -289,6 +290,8 @@ export default function PRPage() {
                             <p className="text-[#64748B] text-sm">Chưa có yêu cầu nào được thiết lập cho mục này.</p>
                         </div>
                     </div>
+                ) : (
+                    <ERPTable columns={columns} data={displayData} />
                 )}
             </div>
         </main>

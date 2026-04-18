@@ -168,6 +168,13 @@ export class ContractModuleService {
     });
   }
 
+  async findActiveBySupplierAndOrg(supplierId: string, orgId: string) {
+    return this.prisma.contract.findFirst({
+      where: { supplierId, orgId, status: ContractStatus.ACTIVE },
+      select: { id: true, contractNumber: true, endDate: true, value: true },
+    });
+  }
+
   async remove(id: string) {
     // Prisma sẽ tự động xóa milestones nếu bạn cấu hình onDelete: Cascade trong schema
     // Nếu không, hãy xóa thủ công trong transaction

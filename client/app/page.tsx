@@ -1006,7 +1006,7 @@ export default function Dashboard() {
                                             return (
                                                 <tr key={po.id} className="hover:bg-[#0F1117]/50 transition-colors group">
                                                     <td className="font-bold text-[#F8FAFC]">{po.poNumber || po.id.substring(0, 8)}</td>
-                                                    <td className="font-semibold text-[#94A3B8] truncate max-w-[120px]">{typeof po.vendor === 'string' ? po.vendor : (po.vendor as Organization)?.name || "Vendor"}</td>
+                                                    <td className="font-semibold text-[#94A3B8] truncate max-w-[120px]">{po.supplier?.name || po.vendor || "Vendor"}</td>
                                                     <td>
                                                         <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-full ${statusDisplay.bg} ${statusDisplay.color}`}>
                                                             {statusDisplay.label}

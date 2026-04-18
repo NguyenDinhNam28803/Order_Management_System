@@ -1015,3 +1015,23 @@ select.erp-input {
   width: 4px; height: 4px; border-radius: 50%;
   background: #30363D; flex-shrink: 0;
 }
+/* ── Form helpers (used in procurement/pos) ── */
+.form-input, .form-select {
+  width: 100%;
+  background: #0F1117;
+  border: 1px solid rgba(148,163,184,0.1);
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #F8FAFC;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+  appearance: none;
+}
+.form-input:focus, .form-select:focus {
+  border-color: rgba(59,130,246,0.4);
+  background: #161922;
+}
+.form-input::placeholder { color: #64748B; font-weight: 500; }
+.form-select option { background: #161922; color: #F8FAFC; }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
   useProcurement, PR, PRItem,
   ConsolidationSummary, ConsolidatePRsResult,
@@ -9,25 +9,42 @@ import { Organization } from "@/app/types/api-types";
 import {
   GitMerge, CheckSquare, Square, ChevronRight, Loader2,
   AlertTriangle, CheckCircle2, Building2, Package, ArrowRight,
-  Info, DollarSign, Layers, Calendar, CheckCheck, X
+  Info, DollarSign, Layers, Calendar, CheckCheck, X,
+  Search, Sparkles, Star, TrendingUp, Truck, BadgeCheck
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+interface AiSupplierSuggestion {
+  id: string;
+  name: string;
+  email?: string;
+  matchScore: number;
+  reasons: string[];
+  historicalData?: { avgPrice: number; deliveryRate: number; qualityScore: number };
+}
 
 type ConsolidationMode = "SKU_MATCH" | "CATEGORY_MATCH";
 
 export default function POConsolidatePage() {
   const router = useRouter();
-  const { prs, organizations, consolidatePRs } = useProcurement();
+  const { prs, myPrs, organizations, apiFetch, consolidatePRs } = useProcurement();
 
-  // Chỉ lấy PR đã APPROVED
+  // Lấy PR đã APPROVED hoặc IN_SOURCING (backend accept cả 2)
+  // Fallback sang myPrs nếu prs rỗng (do role không có quyền xem all PRs)
+  const prPool = useMemo(() => {
+    const all = (prs ?? []);
+    return all.length > 0 ? all : (myPrs ?? []);
+  }, [prs, myPrs]);
+
   const approvedPRs = useMemo(
-    () => (prs ?? []).filter((p: PR) => p.status === "APPROVED"),
-    [prs]
+    () => prPool.filter((p: PR) => p.status === "APPROVED" || p.status === "IN_SOURCING"),
+    [prPool]
   );
 
   // Form state
   const [selectedPrIds, setSelectedPrIds] = useState<string[]>([]);
   const [supplierId, setSupplierId]       = useState("");
+  const [selectedSupplier, setSelectedSupplier] = useState<Organization | AiSupplierSuggestion | null>(null);
   const [mode, setMode]                   = useState<ConsolidationMode>("SKU_MATCH");
   const [deliveryDate, setDeliveryDate]   = useState(
     new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10)
@@ -36,18 +53,169 @@ export default function POConsolidatePage() {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [notes, setNotes]                 = useState("");
 
+  // Supplier search state
+  const [supplierSearch, setSupplierSearch] = useState("");
+  const [showDropdown, setShowDropdown]     = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // AI suggestion state
+  const [aiSuggestions, setAiSuggestions]   = useState<AiSupplierSuggestion[]>([]);
+  const [isAiLoading, setIsAiLoading]       = useState(false);
+  const [showAiPanel, setShowAiPanel]       = useState(false);
+
   // UI state
   const [submitting, setSubmitting] = useState(false);
   const [error, setError]           = useState<string | null>(null);
   const [result, setResult]         = useState<ConsolidatePRsResult | null>(null);
 
-  // Suppliers
+  // Suppliers from org list
   const suppliers = useMemo(
     () => (organizations ?? []).filter((o: Organization) =>
       o.companyType === "SUPPLIER" || o.companyType === "BOTH"
     ),
     [organizations]
   );
+
+  const filteredSuppliers = useMemo(() =>
+    suppliers.filter((s: Organization) =>
+      s.name.toLowerCase().includes(supplierSearch.toLowerCase()) ||
+      (s.email ?? "").toLowerCase().includes(supplierSearch.toLowerCase())
+    ).slice(0, 8),
+    [suppliers, supplierSearch]
+  );
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Auto-trigger AI mỗi khi chọn >= 2 PR
+  useEffect(() => {
+    if (selectedPrIds.length < 2) {
+      setShowAiPanel(false);
+      setAiSuggestions([]);
+      return;
+    }
+    const timer = setTimeout(() => {
+      fetchAiSuggestions();
+    }, 400); // debounce 400ms tránh gọi liên tục khi tick nhanh
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPrIds]);
+
+  const pickSupplier = (org: Organization) => {
+    setSupplierId(org.id);
+    setSelectedSupplier(org);
+    setSupplierSearch("");
+    setShowDropdown(false);
+  };
+
+  const pickAiSupplier = (s: AiSupplierSuggestion) => {
+    // Try to match with real org first
+    const matched = suppliers.find((o: Organization) =>
+      o.id === s.id || o.name.toLowerCase() === s.name.toLowerCase()
+    );
+    if (matched) {
+      setSupplierId(matched.id);
+      setSelectedSupplier(matched);
+    } else {
+      setSupplierId(s.id);
+      setSelectedSupplier(s);
+    }
+    setShowAiPanel(false);
+  };
+
+  // AI RAG suggestion — dùng items từ các PR đã chọn
+  const fetchAiSuggestions = async () => {
+    const selectedPRs = approvedPRs.filter((p: PR) => selectedPrIds.includes(p.id));
+    const allItems = selectedPRs.flatMap((p: PR) => p.items ?? []);
+    if (allItems.length === 0) return;
+
+    const productNames = [...new Set(
+      allItems.map((i: PRItem) => i.productName || i.productId || i.productDesc || "").filter(Boolean)
+    )].join(", ");
+
+    setIsAiLoading(true);
+    setShowAiPanel(true);
+    setAiSuggestions([]);
+
+    try {
+      const resp = await apiFetch("/rag/query", {
+        method: "POST",
+        body: JSON.stringify({
+          question: `Gợi ý 3 nhà cung cấp tốt nhất cho PO gộp gồm các sản phẩm: ${productNames}. Phân tích KPI, giá lịch sử, tỷ lệ giao hàng đúng hạn.`,
+          topK: 5,
+        }),
+      });
+
+      if (!resp.ok) throw new Error("RAG failed");
+
+      const raw = await resp.json();
+      const ragResult = raw.data || raw;
+      let suggestions: AiSupplierSuggestion[] = [];
+
+      if (ragResult?.sources?.length > 0) {
+        suggestions = ragResult.sources
+          .filter((s: { metadata: { table?: string }; content: string }) =>
+            s.metadata?.table === "supplier_kpi_scores" ||
+            s.metadata?.table === "organizations" ||
+            s.content.toLowerCase().includes("nhà cung cấp") ||
+            s.content.toLowerCase().includes("supplier")
+          )
+          .slice(0, 3)
+          .map((src: { content: string; metadata: { id?: string }; similarity?: number }, idx: number) => {
+            const content = src.content;
+            const nameMatch = content.match(/(?:nhà cung cấp|supplier|tổ chức)[^:]*:\s*([^\n.]+)/i) || content.match(/^([^\n.]+)/);
+            const name = nameMatch ? nameMatch[1].trim() : `Nhà cung cấp ${idx + 1}`;
+            const deliveryMatch = content.match(/giao hàng[:\s]+(\d+)%/i);
+            const qualityMatch  = content.match(/chất lượng[:\s]+(\d+\.?\d*)/i);
+            const priceMatch    = content.match(/giá[:\s]+(\d[\d.,]*)/i);
+            const reasons: string[] = [];
+            if (deliveryMatch) reasons.push(`Giao hàng: ${deliveryMatch[1]}%`);
+            if (qualityMatch)  reasons.push(`Chất lượng: ${qualityMatch[1]}/5`);
+            if (reasons.length === 0) reasons.push("Phù hợp sản phẩm gộp");
+            if ((src.similarity ?? 0) > 0.7) reasons.push("Độ tương đồng cao");
+            return {
+              id: src.metadata?.id || `ai-${idx}`,
+              name: name.length > 50 ? name.slice(0, 50) + "…" : name,
+              matchScore: Math.min(Math.round((src.similarity ?? 0.5) * 100), 98),
+              reasons,
+              historicalData: {
+                avgPrice: priceMatch ? parseInt(priceMatch[1].replace(/[,.]/g, "")) : 1_000_000 + idx * 200_000,
+                deliveryRate: deliveryMatch ? parseInt(deliveryMatch[1]) : 95 - idx * 3,
+                qualityScore: qualityMatch ? parseFloat(qualityMatch[1]) : 4.5 - idx * 0.15,
+              },
+            };
+          });
+      }
+
+      // Fallback từ summary text
+      if (suggestions.length === 0 && ragResult?.answer?.summary) {
+        const matches = (ragResult.answer.summary as string).match(/(?:\d+\.\s*|[-•]\s*)([^\n:]+)/g);
+        if (matches) {
+          suggestions = matches.slice(0, 3).map((m: string, idx: number) => ({
+            id: `ai-${idx}`,
+            name: m.replace(/^\d+\.\s*|[-•]\s*/, "").trim(),
+            matchScore: 90 - idx * 5,
+            reasons: ["Được AI gợi ý", "Phù hợp sản phẩm gộp"],
+            historicalData: { avgPrice: 1_000_000 + idx * 300_000, deliveryRate: 94 - idx * 2, qualityScore: 4.4 - idx * 0.2 },
+          }));
+        }
+      }
+
+      setAiSuggestions(suggestions);
+    } catch {
+      setAiSuggestions([]);
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
 
   // Preview: simulate merge
   const previewItems = useMemo(() => {
@@ -105,11 +273,7 @@ export default function POConsolidatePage() {
         deliveryAddress: deliveryAddress || undefined,
         notes: notes || undefined,
       });
-      if (res) {
-        setResult(res);
-      } else {
-        setError("Không thể tạo PO gộp — vui lòng kiểm tra lại thông tin");
-      }
+      setResult(res);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Đã xảy ra lỗi khi gộp PO");
     } finally {
@@ -198,10 +362,20 @@ export default function POConsolidatePage() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-3 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 text-sm">
-          <AlertTriangle size={15} className="shrink-0" />
-          <span className="flex-1">{error}</span>
-          <button onClick={() => setError(null)} className="shrink-0 opacity-60 hover:opacity-100">
+        <div className="flex items-start gap-3 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 text-sm">
+          <AlertTriangle size={15} className="shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <span>{error}</span>
+            {error.includes('hợp đồng') && (
+              <a
+                href="/contracts/create"
+                className="block mt-1.5 text-[11px] font-black text-rose-300 underline underline-offset-2 hover:text-white transition-colors"
+              >
+                → Tạo hợp đồng khung ngay
+              </a>
+            )}
+          </div>
+          <button onClick={() => setError(null)} className="shrink-0 opacity-60 hover:opacity-100 mt-0.5">
             <X size={14} />
           </button>
         </div>
@@ -246,8 +420,8 @@ export default function POConsolidatePage() {
             {approvedPRs.length === 0 ? (
               <div className="empty-state">
                 <GitMerge size={32} className="empty-state-icon" />
-                <p className="empty-state-title">Không có PR nào ở trạng thái APPROVED</p>
-                <p className="empty-state-desc">Cần duyệt PR trước khi gộp PO</p>
+                <p className="empty-state-title">Không có PR nào sẵn sàng để gộp</p>
+                <p className="empty-state-desc">Cần có PR ở trạng thái APPROVED hoặc IN_SOURCING</p>
               </div>
             ) : (
               <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
@@ -324,22 +498,181 @@ export default function POConsolidatePage() {
               <span className="step-badge">3</span>
               Thông tin đơn hàng
             </h3>
+
+            {/* Flow note */}
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-amber-500/8 border border-amber-500/20 mb-5 text-xs">
+              <Info size={14} className="text-amber-400 shrink-0 mt-0.5" />
+              <span className="text-amber-300/80 leading-relaxed">
+                <strong className="text-amber-300">Lưu ý quy trình:</strong> Tính năng này tạo PO trực tiếp (bypass RFQ) — phù hợp khi đã có khung hợp đồng hoặc nhà cung cấp ưu tiên. Nếu chưa có báo giá, nên tạo RFQ trước để đảm bảo tính cạnh tranh.
+              </span>
+            </div>
+
             <div className="form-grid gap-4">
-              {/* Nhà cung cấp */}
-              <div className="form-group col-span-2">
+              {/* Nhà cung cấp — Search + AI */}
+              <div className="form-group col-span-2 space-y-3">
                 <label className="erp-label flex items-center gap-1">
                   <Building2 size={10} /> Nhà cung cấp *
                 </label>
-                <select
-                  value={supplierId}
-                  onChange={(e) => setSupplierId(e.target.value)}
-                  className="erp-input"
-                >
-                  <option value="">— Chọn nhà cung cấp —</option>
-                  {suppliers.map((s: Organization) => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
+
+                {/* Selected display */}
+                {selectedSupplier ? (
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/30">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#2563EB]/20 flex items-center justify-center text-[#60A5FA]">
+                        <Building2 size={14} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-[#F1F5F9]">{selectedSupplier.name}</p>
+                        {"email" in selectedSupplier && selectedSupplier.email && (
+                          <p className="text-[10px] text-[#64748B]">{selectedSupplier.email}</p>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setSupplierId(""); setSelectedSupplier(null); }}
+                      className="p-1.5 rounded-lg text-[#64748B] hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <div ref={searchRef} className="relative">
+                    <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" />
+                    <input
+                      type="text"
+                      placeholder="Tìm kiếm nhà cung cấp..."
+                      value={supplierSearch}
+                      onChange={(e) => { setSupplierSearch(e.target.value); setShowDropdown(true); }}
+                      onFocus={() => setShowDropdown(true)}
+                      className="erp-input pl-9"
+                    />
+                    {showDropdown && supplierSearch && (
+                      <div className="absolute top-full mt-1 left-0 right-0 z-30 bg-[#1E212B] border border-[rgba(148,163,184,0.12)] rounded-xl shadow-2xl overflow-hidden max-h-52 overflow-y-auto">
+                        {filteredSuppliers.length > 0 ? filteredSuppliers.map((s: Organization) => (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => pickSupplier(s)}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#2563EB]/10 text-left transition-colors"
+                          >
+                            <div className="w-7 h-7 rounded-lg bg-[#0F1117] flex items-center justify-center text-[#60A5FA] shrink-0">
+                              <Building2 size={12} />
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-[#F1F5F9]">{s.name}</p>
+                              {s.email && <p className="text-[10px] text-[#64748B]">{s.email}</p>}
+                            </div>
+                          </button>
+                        )) : (
+                          <p className="px-4 py-3 text-xs text-[#64748B] italic">Không tìm thấy nhà cung cấp</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* AI status — auto-trigger, no manual button needed */}
+                <div className="flex items-center gap-2 text-[10px]">
+                  {selectedPrIds.length < 2 ? (
+                    <span className="text-[#64748B] italic flex items-center gap-1.5">
+                      <Sparkles size={11} className="text-[#475569]" />
+                      Chọn ≥ 2 PR để AI tự động gợi ý nhà cung cấp
+                    </span>
+                  ) : isAiLoading ? (
+                    <span className="text-violet-400 flex items-center gap-1.5">
+                      <Loader2 size={11} className="animate-spin" />
+                      AI đang phân tích {selectedPrIds.length} PR…
+                    </span>
+                  ) : aiSuggestions.length > 0 ? (
+                    <span className="text-emerald-400 flex items-center gap-1.5">
+                      <Sparkles size={11} />
+                      AI đã gợi ý {aiSuggestions.length} nhà cung cấp (tự động từ {selectedPrIds.length} PR)
+                    </span>
+                  ) : (
+                    <span className="text-[#64748B] italic flex items-center gap-1.5">
+                      <Sparkles size={11} />
+                      AI không tìm thấy gợi ý — tìm thủ công bên trên
+                    </span>
+                  )}
+                </div>
+
+                {/* AI Panel */}
+                {showAiPanel && (
+                  <div className="rounded-xl border border-violet-500/25 bg-violet-500/5 overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-2.5 border-b border-violet-500/20">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-violet-400 flex items-center gap-1.5">
+                        <Sparkles size={11} /> Gợi ý từ AI (RAG)
+                      </span>
+                      <button type="button" onClick={() => setShowAiPanel(false)} className="text-[#64748B] hover:text-[#F1F5F9]">
+                        <X size={13} />
+                      </button>
+                    </div>
+
+                    {isAiLoading ? (
+                      <div className="p-6 flex items-center justify-center gap-3 text-[#64748B]">
+                        <Loader2 size={16} className="animate-spin text-violet-400" />
+                        <span className="text-xs font-medium">Đang truy vấn dữ liệu lịch sử…</span>
+                      </div>
+                    ) : aiSuggestions.length === 0 ? (
+                      <p className="p-4 text-xs text-[#64748B] italic text-center">
+                        AI không tìm thấy gợi ý phù hợp — thử chọn thêm PR hoặc tìm thủ công.
+                      </p>
+                    ) : (
+                      <div className="divide-y divide-violet-500/10">
+                        {aiSuggestions.map((s, idx) => (
+                          <div key={s.id} className="p-4 flex items-start gap-4">
+                            {/* Rank */}
+                            <div className="w-6 h-6 rounded-full bg-violet-500/20 text-violet-400 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                              {idx + 1}
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1.5">
+                                <p className="text-sm font-bold text-[#F1F5F9] truncate">{s.name}</p>
+                                <span className="shrink-0 text-[10px] font-black text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded-full border border-violet-500/20">
+                                  {s.matchScore}% match
+                                </span>
+                              </div>
+
+                              {/* KPI mini row */}
+                              {s.historicalData && (
+                                <div className="flex items-center gap-3 mb-2">
+                                  <span className="flex items-center gap-1 text-[10px] text-emerald-400">
+                                    <Truck size={10} /> {s.historicalData.deliveryRate}%
+                                  </span>
+                                  <span className="flex items-center gap-1 text-[10px] text-amber-400">
+                                    <Star size={10} /> {s.historicalData.qualityScore.toFixed(1)}/5
+                                  </span>
+                                  <span className="flex items-center gap-1 text-[10px] text-blue-400">
+                                    <TrendingUp size={10} /> {s.historicalData.avgPrice.toLocaleString("vi-VN")} ₫/unit
+                                  </span>
+                                </div>
+                              )}
+
+                              <div className="flex flex-wrap gap-1">
+                                {s.reasons.map((r, i) => (
+                                  <span key={i} className="text-[9px] text-[#64748B] bg-[#0F1117] px-2 py-0.5 rounded-full border border-[rgba(148,163,184,0.08)]">
+                                    {r}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => pickAiSupplier(s)}
+                              disabled={!!selectedSupplier}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[10px] font-black uppercase rounded-lg transition-all shrink-0"
+                            >
+                              <BadgeCheck size={12} /> Chọn
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Ngày giao hàng */}

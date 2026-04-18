@@ -92,7 +92,8 @@ export interface POItem {
 }
 
 export interface PO {
-    id: string; poNumber: string; vendor: string; supplierId?: string; orgId?: string; items: POItem[]; status: PoStatus | string; total: number; createdAt?: string;
+    id: string; poNumber: string; vendor?: string; supplierId?: string; orgId?: string; items: POItem[]; status: PoStatus | string; total?: number; totalAmount?: number; createdAt?: string;
+    supplier?: { id?: string; name?: string; [key: string]: unknown };
 }
 
 export interface RFQ {
@@ -287,7 +288,7 @@ export interface ProcurementContextType extends ProcurementState {
     createDispute: (d: Partial<Dispute>) => Promise<boolean>;
     createReview: (d: { type: 'BUYER' | 'SUPPLIER'; rating: number; comment: string; relatedId: string }) => Promise<boolean>;
     // PO Consolidation
-    consolidatePRs: (dto: ConsolidatePRsInput) => Promise<ConsolidatePRsResult | null>;
+    consolidatePRs: (dto: ConsolidatePRsInput) => Promise<ConsolidatePRsResult>;
     // RAG / AI Sync
     syncRAG: () => Promise<boolean>;
     ingestRAGEntity: (entity: string) => Promise<boolean>;
@@ -1550,7 +1551,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [notify]);
 
     // ========== PO Consolidation ==========
-    const consolidatePRs = useCallback(async (dto: ConsolidatePRsInput): Promise<ConsolidatePRsResult | null> => {
+    const consolidatePRs = useCallback(async (dto: ConsolidatePRsInput): Promise<ConsolidatePRsResult> => {
         const resp = await apiFetch('/purchase-orders/consolidate', {
             method: 'POST',
             body: JSON.stringify(dto),
@@ -1561,9 +1562,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             notify(`PO gộp ${data.poNumber} tạo thành công`, 'success');
             return data as ConsolidatePRsResult;
         }
-        const errText = await resp.text().catch(() => '');
-        notify(errText || 'Không thể tạo PO gộp', 'error');
-        return null;
+        const errBody = await resp.json().catch(() => ({}));
+        const errMsg = errBody?.message || 'Không thể tạo PO gộp';
+        notify(errMsg, 'error');
+        throw new Error(errMsg);
     }, [apiFetch, notify]);
 
     // ========== RAG / AI Sync ==========

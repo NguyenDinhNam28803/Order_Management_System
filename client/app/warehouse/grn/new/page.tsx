@@ -14,7 +14,7 @@ interface POItem {
 
 interface PO {
     id: string;
-    vendor: string;
+    vendor?: string;
     items: POItem[];
     createdAt?: string;
 }

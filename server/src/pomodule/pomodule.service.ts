@@ -14,6 +14,7 @@ import { ApprovalModuleService } from '../approval-module/approval-module.servic
 import { SupplierKpimoduleService } from '../supplier-kpimodule/supplier-kpimodule.service';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { AutomationService } from '../common/automation/automation.service';
+import { ContractModuleService } from '../contract-module/contract-module.service';
 
 @Injectable()
 export class PomoduleService {
@@ -26,6 +27,7 @@ export class PomoduleService {
     private readonly supplierKpiService: SupplierKpimoduleService,
     private readonly budgetService: BudgetModuleService,
     private readonly automationService: AutomationService,
+    private readonly contractService: ContractModuleService,
   ) {}
 
   async create(createPoDto: CreatePoDto, user: JwtPayload) {
@@ -290,6 +292,27 @@ export class PomoduleService {
     }
     const orgId = orgIds[0];
 
+    // ── Kiểm tra hợp đồng khung ACTIVE với nhà cung cấp ─────────────────────
+    const activeContract =
+      await this.contractService.findActiveBySupplierAndOrg(supplierId, orgId);
+
+    if (!activeContract) {
+      throw new BadRequestException(
+        'Không tìm thấy hợp đồng khung ACTIVE với nhà cung cấp này. ' +
+          'Vui lòng tạo hợp đồng khung trước, hoặc sử dụng luồng RFQ để đấu thầu.',
+      );
+    }
+
+    if (
+      activeContract.endDate &&
+      new Date(activeContract.endDate) < new Date(deliveryDate)
+    ) {
+      throw new BadRequestException(
+        `Hợp đồng khung (${activeContract.contractNumber}) sẽ hết hạn trước ngày giao hàng. ` +
+          'Vui lòng gia hạn hợp đồng hoặc chọn ngày giao hàng sớm hơn.',
+      );
+    }
+
     // ── Bước 2: Gom tất cả PR items vào 1 danh sách phẳng ───────────────────
     // Đính kèm prId và costCenterId của PR mẹ vào từng item
     type FlatItem = {
@@ -439,6 +462,7 @@ export class PomoduleService {
           orgId,
           supplierId,
           buyerId: user.sub,
+          contractId: activeContract.id,
           status: PoStatus.DRAFT,
           totalAmount,
           currency: prs[0].currency,

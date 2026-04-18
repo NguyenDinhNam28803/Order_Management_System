@@ -106,7 +106,7 @@ export default function MatchingPage() {
                         <div className="flex gap-4">
                             <div className="erp-card !p-4 border-dashed bg-slate-50/50 flex items-center gap-3">
                                 <Lock size={16} className="text-slate-400" />
-                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Ngân sách đang khóa: <span className="text-erp-navy">{activePO.total.toLocaleString()} ₫</span></span>
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Ngân sách đang khóa: <span className="text-erp-navy">{(activePO.total ?? activePO.totalAmount ?? 0).toLocaleString()} ₫</span></span>
                             </div>
                         </div>
                         <div className="flex gap-3">
