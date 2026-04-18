@@ -329,8 +329,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const baseUrl = 'http://localhost:5000';
-        // process.env.NEXT_PUBLIC_API_URL ||
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000';
         return fetch(`${baseUrl}${url}`, { ...options, headers });
     }, []);
 

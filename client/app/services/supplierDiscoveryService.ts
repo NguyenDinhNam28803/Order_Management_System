@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
 
 function getToken(): string {
   if (typeof document === 'undefined') return '';
