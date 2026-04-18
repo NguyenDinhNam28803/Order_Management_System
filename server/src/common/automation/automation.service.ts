@@ -904,12 +904,15 @@ Procurement System
   private async notifyWarehouseTeam(po: any, grn: any): Promise<void> {
     try {
       const warehouseUsers = await this.prisma.user.findMany({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         where: { orgId: po.orgId, role: UserRole.WAREHOUSE, isActive: true },
         select: { id: true, orgId: true },
       });
 
       if (warehouseUsers.length === 0) {
-        this.logger.warn(`No active WAREHOUSE users found in org ${po.orgId} to notify`);
+        this.logger.warn(
+          `No active WAREHOUSE users found in org ${po.orgId} to notify`,
+        );
         return;
       }
 
@@ -923,6 +926,7 @@ Procurement System
           subject: `Chuẩn bị nhận hàng: PO ${po.poNumber}`,
           body: `Nhà cung cấp đã xác nhận PO ${po.poNumber}. Phiếu nhập kho nháp ${grn.grnNumber} đã được tạo. Vui lòng vào module Kho vận để xác nhận nhận hàng thực tế.`,
           referenceType: 'GRN',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           referenceId: grn.id,
           status: NotificationStatus.SENT,
         })),
@@ -932,7 +936,9 @@ Procurement System
         `Warehouse notification sent to ${warehouseUsers.length} user(s) for GRN ${grn.grnNumber}`,
       );
     } catch (error) {
-      this.logger.error(`Failed to send warehouse notification for GRN ${grn.grnNumber}: ${error}`);
+      this.logger.error(
+        `Failed to send warehouse notification for GRN ${grn.grnNumber}: ${error}`,
+      );
     }
   }
 }
