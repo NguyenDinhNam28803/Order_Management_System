@@ -13,6 +13,7 @@ export default function NotificationInbox() {
     const { currentUser, apiFetch, refreshData, prs, myPrs, approvals } = useProcurement();
     const [isOpen, setIsOpen] = useState(false);
     const [filter, setFilter] = useState<'PENDING' | 'ALL' | 'APPROVED'>('PENDING');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [notifications, setNotifications] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -208,6 +209,7 @@ export default function NotificationInbox() {
     );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const NotificationItem = ({ item }: { item: any }) => {
     const isPending = item.status === 'PENDING';
     

@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Min,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { CurrencyCode, BudgetPeriodType } from '@prisma/client';
@@ -77,6 +78,7 @@ export class CreateBudgetAllocationDto {
   @ApiProperty({ example: 1000000.0 })
   @IsNumber()
   @IsNotEmpty()
+  @Min(0)
   allocatedAmount!: number;
 
   @ApiPropertyOptional({ enum: CurrencyCode, default: CurrencyCode.VND })

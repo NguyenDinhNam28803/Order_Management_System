@@ -525,13 +525,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const submitPR = useCallback(async (id: string) => {
         const resp = await apiFetch(`/procurement-requests/${id}/submit`, { method: 'POST' });
         if (resp.ok) { notify("Gửi duyệt thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Gửi duyệt thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const updatePR = useCallback(async (id: string, d: UpdatePrDto) => {
         const resp = await apiFetch(`/procurement-requests/${id}`, { method: 'PATCH', body: JSON.stringify(d) });
         if (resp.ok) { notify("Cập nhật thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Cập nhật thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const fetchPrDetail = useCallback(async (id: string) => {
@@ -544,29 +544,29 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const actionApproval = useCallback(async (id: string, action: 'APPROVE' | 'REJECT', comment?: string) => {
         const resp = await apiFetch(`/approvals/${id}/action`, { method: 'POST', body: JSON.stringify({ action, comment }) });
         if (resp.ok) { notify("Phê duyệt thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Phê duyệt thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const addBudgetAllocation = useCallback(async (d: CreateBudgetAllocationPayload) => {
         const resp = await apiFetch('/budgets/allocations', { method: 'POST', body: JSON.stringify(d) });
-        if (resp.ok) { 
+        if (resp.ok) {
             const res = await resp.json();
-            await refreshData(); 
-            return res.data || res; 
+            await refreshData();
+            return res.data || res;
         }
-        return false;
-    }, [apiFetch, refreshData]);
+        notify("Tạo phân bổ ngân sách thất bại", "error"); return false;
+    }, [apiFetch, refreshData, notify]);
 
     const submitAllocation = useCallback(async (id: string) => {
         const resp = await apiFetch(`/budgets/allocations/${id}/submit`, { method: 'PATCH' });
         if (resp.ok) { notify("Đã gửi duyệt ngân sách", "success"); await refreshData(); return true; }
-        return false;
+        notify("Gửi duyệt ngân sách thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const approveAllocation = useCallback(async (id: string) => {
         const resp = await apiFetch(`/budgets/allocations/${id}/approve`, { method: 'PATCH' });
         if (resp.ok) { notify("Đã duyệt ngân sách thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Duyệt ngân sách thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const rejectAllocation = useCallback(async (id: string, reason: string) => {
@@ -578,50 +578,50 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const distributeAnnualBudget = useCallback(async (costCenterId: string, fiscalYear: number) => {
         const resp = await apiFetch(`/budgets/distribute-annual/${costCenterId}/${fiscalYear}`, { method: 'POST' });
         if (resp.ok) { notify("Phân bổ 20/80 thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Phân bổ ngân sách thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const reconcileQuarter = useCallback(async (costCenterId: string, fiscalYear: number, quarter: number) => {
         const resp = await apiFetch(`/budgets/reconcile-quarter/${costCenterId}/${fiscalYear}/${quarter}`, { method: 'POST' });
         if (resp.ok) { notify("Quyết toán thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Quyết toán thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const approveOverride = useCallback(async (id: string) => {
         const resp = await apiFetch(`/budgets/overrides/${id}/approve`, { method: 'PATCH' });
         if (resp.ok) { notify("Đã duyệt vượt định mức", "success"); await refreshData(); return true; }
-        return false;
+        notify("Duyệt vượt định mức thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const rejectOverride = useCallback(async (id: string, reason: string) => {
         const resp = await apiFetch(`/budgets/overrides/${id}/reject`, { method: 'PATCH', body: JSON.stringify({ reason }) });
         if (resp.ok) { notify("Đã từ chối", "info"); await refreshData(); return true; }
-        return false;
+        notify("Từ chối vượt định mức thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createPO = useCallback(async (d: CreatePoDto) => {
         const resp = await apiFetch('/purchase-orders', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Tạo đơn hàng thành công!", "success"); await refreshData(); return true; }
-        return false;
+        notify("Tạo đơn hàng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createPOFromPR = useCallback(async (prId: string, supplierId?: string) => {
-        const resp = await apiFetch('/purchase-orders/create-from-pr', { 
-            method: 'POST', 
-            body: JSON.stringify({ prId, supplierId }) 
+        const resp = await apiFetch('/purchase-orders/create-from-pr', {
+            method: 'POST',
+            body: JSON.stringify({ prId, supplierId })
         });
-        if (resp.ok) { 
+        if (resp.ok) {
             const result = await resp.json();
-            notify("Tạo đơn hàng từ PR thành công!", "success"); 
-            await refreshData(); 
-            return result.data || result; 
+            notify("Tạo đơn hàng từ PR thành công!", "success");
+            await refreshData();
+            return result.data || result;
         }
-        return null;
+        notify("Tạo đơn hàng từ PR thất bại", "error"); return null;
     }, [apiFetch, refreshData, notify]);
 
     const processPOAutomation = useCallback(async (poId: string) => {
         const resp = await apiFetch(`/po-automation/process/${poId}`, { method: 'POST' });
-        if (resp.ok) { 
+        if (resp.ok) {
             const result = await resp.json();
             if (result.contractCreated) {
                 notify(result.message, "success");
@@ -631,30 +631,30 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             await refreshData();
             return result;
         }
-        return null;
+        notify("Xử lý tự động PO thất bại", "error"); return null;
     }, [apiFetch, refreshData, notify]);
 
     const ackPO = useCallback(async (id: string) => {
         const resp = await apiFetch(`/purchase-orders/${id}/acknowledge`, { method: 'POST' });
         if (resp.ok) { notify("Đã xác nhận đơn hàng", "success"); await refreshData(); return true; }
-        return false;
+        notify("Xác nhận đơn hàng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const rejectPO = useCallback(async (id: string) => {
         const resp = await apiFetch(`/purchase-orders/${id}/reject`, { method: 'POST' });
-        if (resp.ok) { 
-            notify("Đã từ chối đơn hàng", "success"); 
-            await refreshData(); 
+        if (resp.ok) {
+            notify("Đã từ chối đơn hàng", "success");
+            await refreshData();
             const res = await resp.json();
             return res.data || res;
         }
-        return null;
+        notify("Từ chối đơn hàng thất bại", "error"); return null;
     }, [apiFetch, refreshData, notify]);
 
     const shipPO = useCallback(async (id: string) => {
         const resp = await apiFetch(`/purchase-orders/${id}/status`, { method: 'PUT', body: JSON.stringify({ status: 'SHIPPED' }) });
         if (resp.ok) { notify("Đã cập nhật trạng thái giao hàng", "success"); await refreshData(); return true; }
-        return false;
+        notify("Cập nhật trạng thái giao hàng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const fetchQuarterlyAllocation = useCallback(async (cc: string, year: number, quarter: number) => {
@@ -665,46 +665,46 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const createRFQ = useCallback(async (d: CreateRfqDto) => {
         const resp = await apiFetch('/request-for-quotations', { method: 'POST', body: JSON.stringify(d) });
-        if (resp.ok) { 
-            notify("Tạo RFQ thành công!", "success"); 
-            await refreshData(); 
+        if (resp.ok) {
+            notify("Tạo RFQ thành công!", "success");
+            await refreshData();
             const res = await resp.json();
-            return res.data || res; 
+            return res.data || res;
         }
-        return null;
+        notify("Tạo RFQ thất bại", "error"); return null;
     }, [apiFetch, refreshData, notify]);
 
     const awardQuotation = useCallback(async (rfqId: string, quotationId: string) => {
-        const resp = await apiFetch(`/request-for-quotations/${rfqId}/award`, { 
-            method: 'PUT', 
-            body: JSON.stringify({ quotationId }) 
+        const resp = await apiFetch(`/request-for-quotations/${rfqId}/award`, {
+            method: 'PUT',
+            body: JSON.stringify({ quotationId })
         });
         if (resp.ok) { notify("Đã chọn nhà thầu thành công!", "success"); await refreshData(); return true; }
-        return false;
+        notify("Chọn nhà thầu thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createGRN = useCallback(async (d: CreateGrnDto) => {
         const resp = await apiFetch('/grn', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Nhập kho thành công!", "success"); await refreshData(); return true; }
-        return false;
+        notify("Nhập kho thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createInvoice = useCallback(async (d: CreateInvoiceDto) => {
         const resp = await apiFetch('/invoices', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Tạo hóa đơn thành công!", "success"); await refreshData(); return true; }
-        return false;
+        notify("Tạo hóa đơn thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const payInvoice = useCallback(async (id: string) => {
         const resp = await apiFetch(`/invoices/${id}/pay`, { method: 'POST' });
         if (resp.ok) { notify("Đã thanh toán hóa đơn", "success"); await refreshData(); return true; }
-        return false;
+        notify("Thanh toán hóa đơn thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const matchInvoice = useCallback(async (id: string) => {
         const resp = await apiFetch(`/invoices/${id}/run-matching`, { method: 'POST' });
         if (resp.ok) { notify("Đã thực hiện đối soát 3 bên", "success"); await refreshData(); return true; }
-        return false;
+        notify("Đối soát 3 bên thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const convertQuoteToPR = useCallback(async (qrId: string) => {
@@ -860,41 +860,41 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const removeUser = useCallback(async (id: string) => {
         const resp = await apiFetch(`/users/${id}`, { method: 'DELETE' });
         if (resp.ok) { notify("Đã xóa người dùng", "success"); await refreshData(); return true; }
-        return false;
+        notify("Xóa người dùng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const updateGrnItemQc = useCallback(async (id: string, itemId: string, status: string, notes?: string) => {
-        const resp = await apiFetch(`/grn/${id}/items/${itemId}/qc`, { 
-            method: 'PATCH', 
-            body: JSON.stringify({ status, notes }) 
+        const resp = await apiFetch(`/grn/${id}/items/${itemId}/qc`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status, notes })
         });
         if (resp.ok) { notify("Cập nhật kết quả QC thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Cập nhật kết quả QC thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createContract = useCallback(async (d: Partial<Contract>) => {
         const resp = await apiFetch('/contracts', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Tạo hợp đồng thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Tạo hợp đồng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const signContract = useCallback(async (id: string, isBuyer: boolean) => {
         const resp = await apiFetch(`/contracts/${id}/sign`, { method: 'POST', body: JSON.stringify({ isBuyer }) });
         if (resp.ok) { notify("Ký hợp đồng thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Ký hợp đồng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createDispute = useCallback(async (d: Partial<Dispute>) => {
         const resp = await apiFetch('/disputes', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Tạo khiếu nại thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Tạo khiếu nại thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createReview = useCallback(async (d: { type: 'BUYER' | 'SUPPLIER', rating: number, comment: string, relatedId: string }) => {
         const url = d.type === 'BUYER' ? '/reviews/buyer-rating' : '/reviews/supplier-review';
         const resp = await apiFetch(url, { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Đã gửi đánh giá thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Gửi đánh giá thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     // ========== Auth Module ==========
@@ -1349,22 +1349,22 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const confirmPO = useCallback(async (id: string) => {
         const resp = await apiFetch(`/purchase-orders/${id}/confirm`, { method: 'POST' });
-        if (resp.ok) { 
-            notify("Đã xác nhận đơn hàng", "success"); 
+        if (resp.ok) {
+            notify("Đã xác nhận đơn hàng", "success");
             const res = await resp.json();
-            return res.data || res; 
+            return res.data || res;
         }
-        return null;
+        notify("Xác nhận đơn hàng thất bại", "error"); return null;
     }, [apiFetch, notify]);
 
     const submitPO = useCallback(async (id: string) => {
         const resp = await apiFetch(`/purchase-orders/${id}/submit`, { method: 'POST' });
-        if (resp.ok) { 
-            notify("Đã gửi đơn hàng phê duyệt", "success"); 
+        if (resp.ok) {
+            notify("Đã gửi đơn hàng phê duyệt", "success");
             const res = await resp.json();
-            return res.data || res; 
+            return res.data || res;
         }
-        return null;
+        notify("Gửi đơn hàng phê duyệt thất bại", "error"); return null;
     }, [apiFetch, notify]);
 
     // ========== Invoices ==========
@@ -1376,12 +1376,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const runMatching = useCallback(async (id: string) => {
         const resp = await apiFetch(`/invoices/${id}/run-matching`, { method: 'POST' });
-        if (resp.ok) { 
-            notify("Đã thực hiện đối soát 3 bên", "success"); 
+        if (resp.ok) {
+            notify("Đã thực hiện đối soát 3 bên", "success");
             const res = await resp.json();
-            return res.data || res; 
+            return res.data || res;
         }
-        return null;
+        notify("Đối soát 3 bên thất bại", "error"); return null;
     }, [apiFetch, notify]);
 
     // ========== Supplier KPI ==========
