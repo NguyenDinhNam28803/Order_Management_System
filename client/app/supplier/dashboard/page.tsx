@@ -39,10 +39,11 @@ interface RFQ {
 }
 
 // --- Mock Data ---
-const currentSupplier = {
-  id: '6c7f4a14-9238-419c-ba0f-fa8da8eb0253',
-  name: 'Công ty Cổ phần Công nghệ ABC'
-};
+// const currentSupplier = {
+//   id: '6c7f4a14-9238-419c-ba0f-fa8da8eb0253',
+//   name: 'Công ty Cổ phần Công nghệ ABC'
+// };
+ 
 
 const initialRFQs: RFQ[] = [
   {
@@ -133,7 +134,7 @@ export default function SupplierDashboard() {
   const mergedRFQs = useMemo(() => {
     // 1. Get RFQs from context
     const relevantContextRfqs = (contextRfqs || []).filter((r: ContextRFQ) => 
-      r.supplierIds?.includes(currentUser?.orgId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253")
+      r.supplierIds?.includes(currentUser?.orgId || "")
     ).map((cr: ContextRFQ) => {
       const crWithOrg = cr as ContextRFQ & { orgId?: string };
       const buyerOrgName = organizations?.find((o: ContextOrg) => o.id === crWithOrg.orgId)?.name || "Phòng Hành chính";
@@ -156,7 +157,7 @@ export default function SupplierDashboard() {
 
     // 2. Get QuoteRequests from context
     const relevantContextQRs = (contextQRs || []).filter((qr) => 
-      qr.supplierIds?.includes(currentUser?.orgId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253")
+      qr.supplierIds?.includes(currentUser?.orgId || "")
     ).map((qr) => {
       return {
         rfqId: qr.qrNumber,
@@ -271,8 +272,8 @@ export default function SupplierDashboard() {
           items: contextQR.items.map(it => ({
             ...it,
             unitPrice: parseFloat(quotationData[it.id]?.unitPrice || "0"),
-            supplierName: currentUser?.fullName || "Công ty CP Công nghệ ABC",
-            supplierId: currentUser?.orgId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253"
+            supplierName: currentUser?.fullName || "Nhà cung cấp",
+            supplierId: currentUser?.orgId || ""
           }))
         });
       }
@@ -338,8 +339,8 @@ export default function SupplierDashboard() {
               ABC
             </div>
             <div className="overflow-hidden">
-              <p className="text-[10px] font-black truncate text-[#F8FAFC]">{currentSupplier.name}</p>
-              <p className="text-[8px] font-bold text-[#64748B] uppercase">ID: {currentSupplier.id}</p>
+              <p className="text-[10px] font-black truncate text-[#F8FAFC]">{currentUser?.fullName || "Nhà cung cấp"}</p>
+              <p className="text-[8px] font-bold text-[#64748B] uppercase">ID: {currentUser?.orgId || "N/A"}</p>
             </div>
           </div>
           <div className="px-3 py-1.5 bg-[#3B82F6]/10 text-[#3B82F6] rounded-lg text-[10px] font-black uppercase tracking-wider text-center border border-[#3B82F6]/20">Nhà cung cấp</div>
@@ -621,7 +622,7 @@ export default function SupplierDashboard() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-black text-[#F8FAFC] leading-none mb-0.5">{currentSupplier.name}</p>
+                <p className="text-[10px] font-black text-[#F8FAFC] leading-none mb-0.5">{currentUser?.fullName || "Nhà cung cấp"}</p>
                 <p className="text-[8px] font-bold text-emerald-400 uppercase tracking-tighter">Trạng thái: Online</p>
               </div>
               <div className="w-8 h-8 rounded-full bg-[#161922] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">

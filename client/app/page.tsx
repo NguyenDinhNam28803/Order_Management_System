@@ -78,7 +78,7 @@ export default function Dashboard() {
     const handleConfirmCatalogAction = async (pr: PR) => {
         const success = await confirmCatalogPrice({
             prId: pr.id,
-            supplierId: pr.preferredSupplierId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253",
+            supplierId: pr.preferredSupplierId || "",
             price: pr.totalEstimate || 0,
             stock: 10,
             leadTime: 3
