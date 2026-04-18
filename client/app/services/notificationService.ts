@@ -5,7 +5,7 @@
 
 import { EmailEventType, NotificationTemplate, NotificationPayload, TemplateData } from "../types/notification-types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export interface RenderTemplateRequest {
   eventType: EmailEventType;

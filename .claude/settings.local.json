@@ -19,7 +19,11 @@
       "Bash(curl -s --connect-timeout 5 http://procuresmart.io.vn:5000)",
       "Bash(curl -s --connect-timeout 3 http://localhost:5000)",
       "Bash(curl *)",
-      "Bash(awk '{print $NF}')"
+      "Bash(awk '{print $NF}')",
+      "Bash(chmod +x /tmp/analyze.sh)",
+      "Bash(bash /tmp/analyze.sh)",
+      "Bash(chmod +x /tmp/analyze_comprehensive.sh)",
+      "Bash(bash /tmp/analyze_comprehensive.sh)"
     ]
   }
 }
