@@ -1,6 +1,5 @@
 "use client";
-// TODO : Sửa lỗi
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PR, PRItem, useProcurement } from "../../context/ProcurementContext";
 import { 
@@ -12,7 +11,7 @@ import {
 import Select from "react-select";
 
 export default function RFQCreatePage() {
-    const { prs, apiFetch, refreshData, notify, currentUser, createRFQ, createRFQConsolidated } = useProcurement();
+    const { prs, organizations, refreshData, notify, createRFQConsolidated } = useProcurement();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,15 +38,13 @@ export default function RFQCreatePage() {
     // Only approved PRs can be sourced
     const approvedPRs = prs.filter((pr: PR) => pr.status === "APPROVED" || pr.status === "PENDING_QUOTATION");
 
-    // Sample vendors for testing
-    const vendors = [
-        { value: "Thiên Long Digital", label: "Thiên Long Digital - IT Equipment" },
-        { value: "Hòa Phát Furniture", label: "Hòa Phát Furniture - Office" },
-        { value: "Sunhouse Group", label: "Sunhouse Group - Appliances" },
-        { value: "FPT Information System", label: "FPT Information System - Software/Server" },
-        { value: "Thế giới di động", label: "Thế giới di động - Retail/Consumer Electronics" },
-        { value: "Hanoi Hardware", label: "Hanoi Hardware - Hardware & Construction" }
-    ];
+    // Real supplier list from context — filter organizations of type SUPPLIER
+    const vendorOptions = useMemo(() =>
+        organizations
+            .filter(o => o.companyType === "SUPPLIER" && o.isActive)
+            .map(o => ({ value: o.id, label: `${o.name}${o.industry ? ` — ${o.industry}` : ""}` })),
+        [organizations]
+    );
 
     const addPRItems = (prId: string) => {
         const pr = approvedPRs.find((p: PR) => p.id === prId);
@@ -88,40 +85,20 @@ export default function RFQCreatePage() {
 
         setIsSubmitting(true);
         try {
-            // Simplified API call for demonstration
-            const payload = {
-                title: form.title || "RFQ Manual Creation",
-                description: form.description,
-                deadline: form.deadline,
-                vendorName: form.vendor,
-                itemIds: form.items.map((i) => i.id).filter((id): id is string => !!id),
-                prIds: Array.from(new Set(form.items.map((i) => i.prId)))
-            };
+            const uniquePrIds: string[] = Array.from(new Set(form.items.map((i) => i.prId)));
 
-            const res = await apiFetch("/request-for-quotations", {
-                method: "POST",
-                body: JSON.stringify(payload)
+            const success = await createRFQConsolidated({
+                title: form.title || "RFQ Manual Creation",
+                prIds: uniquePrIds,
+                deadline: form.deadline,
+                supplierIds: [form.vendor], // form.vendor is now a real Organization UUID
             });
 
-            if (res.ok) {
-                // Consolidated logic: create ONE RFQ with multiple items
-                const uniquePrIds: string[] = Array.from(new Set(form.items.map((i) => i.prId)));
-                
-                await createRFQConsolidated({
-                    title: form.title,
-                    prIds: uniquePrIds,
-                    deadline: form.deadline,
-                    supplierIds: [form.vendor]
-                });
-                
-                notify("Đã tạo RFQ và gửi yêu cầu báo giá thành công!", "success");
+            if (success) {
                 refreshData();
                 setTimeout(() => router.push("/sourcing"), 1500);
-            } else {
-                notify("Không thể tạo RFQ tự động", "error");
             }
         } catch (err) {
-            console.error(err);
             notify("Lỗi hệ thống khi tạo RFQ", "error");
         } finally {
             setIsSubmitting(false);
@@ -196,7 +173,7 @@ export default function RFQCreatePage() {
                                     Chọn Nhà cung cấp mục tiêu
                                 </label>
                                 <Select
-                                    options={vendors}
+                                    options={vendorOptions}
                                     onChange={(opt) => setForm({...form, vendor: opt?.value || ""})}
                                     placeholder="Chọn nhà cung cấp nhận RFQ..."
                                     className="text-sm font-bold"

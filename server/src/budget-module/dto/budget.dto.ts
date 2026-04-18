@@ -77,8 +77,8 @@ export class CreateBudgetAllocationDto {
 
   @ApiProperty({ example: 1000000.0 })
   @IsNumber()
-  @IsNotEmpty()
   @Min(0)
+  @IsNotEmpty()
   allocatedAmount!: number;
 
   @ApiPropertyOptional({ enum: CurrencyCode, default: CurrencyCode.VND })

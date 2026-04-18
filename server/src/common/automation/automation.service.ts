@@ -12,6 +12,9 @@ import {
   GrnStatus,
   QcResult,
   PriceVolatility,
+  NotificationChannel,
+  NotificationStatus,
+  UserRole,
 } from '@prisma/client';
 
 interface AutomationConfig {
@@ -132,8 +135,8 @@ export class AutomationService {
         `Draft GRN ${grn.grnNumber} created successfully for PO ${po.poNumber}. Items count: ${po.items.length}`,
       );
 
-      // TODO: Gửi thông báo cho bộ phận kho
-      // await this.notificationService.notifyWarehouseTeam(po, grn);
+      // Gửi thông báo in-app cho tất cả user có role WAREHOUSE trong cùng org
+      await this.notifyWarehouseTeam(po, grn);
 
       return grn;
     } catch (error) {
@@ -896,5 +899,40 @@ Procurement System
     `;
 
     return { subject, body };
+  }
+
+  private async notifyWarehouseTeam(po: any, grn: any): Promise<void> {
+    try {
+      const warehouseUsers = await this.prisma.user.findMany({
+        where: { orgId: po.orgId, role: UserRole.WAREHOUSE, isActive: true },
+        select: { id: true, orgId: true },
+      });
+
+      if (warehouseUsers.length === 0) {
+        this.logger.warn(`No active WAREHOUSE users found in org ${po.orgId} to notify`);
+        return;
+      }
+
+      await this.prisma.notification.createMany({
+        data: warehouseUsers.map((u) => ({
+          recipientId: u.id,
+          orgId: u.orgId,
+          eventType: 'GRN_DRAFT_CREATED',
+          channel: NotificationChannel.IN_APP,
+          priority: 2,
+          subject: `Chuẩn bị nhận hàng: PO ${po.poNumber}`,
+          body: `Nhà cung cấp đã xác nhận PO ${po.poNumber}. Phiếu nhập kho nháp ${grn.grnNumber} đã được tạo. Vui lòng vào module Kho vận để xác nhận nhận hàng thực tế.`,
+          referenceType: 'GRN',
+          referenceId: grn.id,
+          status: NotificationStatus.SENT,
+        })),
+      });
+
+      this.logger.log(
+        `Warehouse notification sent to ${warehouseUsers.length} user(s) for GRN ${grn.grnNumber}`,
+      );
+    } catch (error) {
+      this.logger.error(`Failed to send warehouse notification for GRN ${grn.grnNumber}: ${error}`);
+    }
   }
 }
