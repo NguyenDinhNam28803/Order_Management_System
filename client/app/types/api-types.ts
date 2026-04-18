@@ -667,6 +667,7 @@ export interface Contract {
     milestones?: ContractMilestone[];
     supplier?: Organization;
     organization?: Organization;
+    notes?: string;
 }
 
 export enum DisputeStatus {
