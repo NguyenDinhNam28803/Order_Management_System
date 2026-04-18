@@ -18,7 +18,8 @@
       "Bash(xargs grep *)",
       "Bash(curl -s --connect-timeout 5 http://procuresmart.io.vn:5000)",
       "Bash(curl -s --connect-timeout 3 http://localhost:5000)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(awk '{print $NF}')"
     ]
   }
 }

@@ -10,6 +10,7 @@ import { GrnStatus, PoStatus } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { UpdateGrnItemQcResultDto } from './dto/update-grn-item-qc.dto';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
+import { TokenType } from '../external-token-module/external-token.service';
 
 @Injectable()
 export class GrnmoduleService {
@@ -94,6 +95,9 @@ export class GrnmoduleService {
       where: { id: poId },
       data: { status: PoStatus.IN_PROGRESS },
     });
+
+    // Gửi magic link cho NCC để cập nhật trạng thái giao hàng
+    void this.notifyGrnMilestoneUpdate(grn.id, po).catch(() => {});
 
     return grn;
   }
@@ -192,6 +196,53 @@ export class GrnmoduleService {
     void this.notifyGrnConfirmed(id, grn).catch(() => {});
 
     return result;
+  }
+
+  private async notifyGrnMilestoneUpdate(grnId: string, po: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierOrgId: string | undefined = po?.supplierId;
+    if (!supplierOrgId) return;
+
+    const supplierUser = await this.prisma.user.findFirst({
+      where: {
+        orgId: supplierOrgId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        role: 'SUPPLIER' as any,
+        isActive: true,
+      },
+      include: { organization: true },
+    });
+    if (!supplierUser?.email) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName: string =
+      (supplierUser.organization as any)?.name ??
+      supplierUser.fullName ??
+      supplierUser.email;
+
+    await this.notificationService.sendExternalEmailWithMagicLink({
+      to: supplierUser.email,
+      subject: `[Cập nhật giao hàng] ${po.poNumber as string}`,
+      eventType: 'GRN_MILESTONE_UPDATE',
+      referenceId: grnId,
+      tokenType: TokenType.GRN_MILESTONE,
+      expiresInDays: 7,
+      data: {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        poCode: po.poNumber,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        supplierName,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        expectedDelivery: po.deliveryDate ?? new Date(),
+        completedSteps: ['Đặt hàng', 'Xác nhận PO'],
+        currentStep: 'Đang giao hàng',
+        pendingSteps: ['Xác nhận nhận hàng'],
+        warehouseEmail:
+          process.env['WAREHOUSE_EMAIL'] ??
+          process.env['EMAIL_FROM_EMAIL'] ??
+          '',
+      },
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

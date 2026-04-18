@@ -2,15 +2,23 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
 import { ContractStatus, DocumentType, ApprovalStatus } from '@prisma/client';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 
 @Injectable()
 export class ContractModuleService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(ContractModuleService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationModuleService,
+  ) {}
 
   async create(
     createContractDto: CreateContractDto,
@@ -182,5 +190,76 @@ export class ContractModuleService {
       await tx.contractMilestone.deleteMany({ where: { contractId: id } });
       return tx.contract.delete({ where: { id } });
     });
+  }
+
+  @Cron('0 8 * * *')
+  async checkContractExpiry() {
+    try {
+      const now = new Date();
+      const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+      const expiringContracts = await this.prisma.contract.findMany({
+        where: {
+          status: ContractStatus.ACTIVE,
+          endDate: { gte: now, lte: in30Days },
+        },
+        include: { supplierOrg: true },
+      });
+
+      if (expiringContracts.length === 0) return;
+
+      const orgIds = [...new Set(expiringContracts.map((c) => c.orgId))];
+
+      for (const orgId of orgIds) {
+        const procurementUsers = await this.prisma.user.findMany({
+          where: {
+            orgId,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            role: { in: ['PROCUREMENT', 'ADMIN'] as any },
+            isActive: true,
+          },
+        });
+
+        const orgContracts = expiringContracts.filter((c) => c.orgId === orgId);
+
+        for (const contract of orgContracts) {
+          const daysLeft = Math.ceil(
+            (contract.endDate!.getTime() - now.getTime()) /
+              (1000 * 60 * 60 * 24),
+          );
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const supplierName =
+            (contract.supplierOrg as any)?.name ?? 'Nhà cung cấp';
+
+          for (const user of procurementUsers) {
+            if (!user.email) continue;
+            await this.notificationService
+              .sendDirectEmail(
+                user.email,
+                `[Cảnh báo] Hợp đồng ${contract.contractNumber} sắp hết hạn`,
+                'CONTRACT_EXPIRY_WARNING',
+                {
+                  name: user.fullName || user.email,
+                  contractCode: contract.contractNumber,
+                  contractTitle: contract.title,
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                  supplierName,
+                  expiryDate: contract.endDate,
+                  daysLeft,
+                  loginUrl:
+                    process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn/',
+                },
+              )
+              .catch(() => {});
+          }
+        }
+      }
+
+      this.logger.log(
+        `Contract expiry check: ${expiringContracts.length} contracts notified`,
+      );
+    } catch (err: any) {
+      this.logger.error(`checkContractExpiry failed: ${err.message}`);
+    }
   }
 }

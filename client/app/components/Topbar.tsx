@@ -4,7 +4,10 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useProcurement } from "../context/ProcurementContext";
 import { usePathname } from "next/navigation";
 import { Bell, Search, User, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
+import Link from "next/link";
 import NotificationInbox from "./NotificationInbox";
+
+const SUPPLIER_DISCOVERY_ROLES = ['PROCUREMENT', 'ADMIN', 'DIRECTOR', 'CEO', 'PLATFORM_ADMIN'];
 
 // Breadcrumb label overrides
 const PAGE_LABELS: Record<string, string> = {
@@ -58,7 +61,8 @@ const PAGE_LABELS: Record<string, string> = {
     "users":         "Người dùng",
     "profile":       "Hồ sơ",
     "settings":      "Cài đặt",
-    "sourcing":      "Nguồn hàng",
+    "sourcing":          "Nguồn hàng",
+    "supplier-discovery":"Khám phá NCC (AI)",
     "help":          "Trợ giúp",
 };
 
@@ -67,9 +71,10 @@ export default function Topbar() {
     const { currentUser, apiFetch } = useProcurement();
     const pathname = usePathname() ?? "/";
     const [showNotifications, setShowNotifications] = useState(false);
-    const [notifications, setNotifications] = useState<any[]>([]);
+    const [notifications, setNotifications] = useState<unknown[]>([]);
     const notifRef = useRef<HTMLDivElement>(null);
 
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
     const fetchNotifications = useCallback(async () => {
         if (!currentUser?.id) return;
         try {
@@ -86,6 +91,7 @@ export default function Topbar() {
 
     useEffect(() => {
         if (currentUser?.id) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             fetchNotifications();
             // Optional: interval fetch
             const interval = setInterval(fetchNotifications, 60000);
@@ -147,6 +153,17 @@ export default function Topbar() {
             {/* ── Right: Actions ── */}
             <div className="flex items-center gap-2 shrink-0">
 
+                {/* Quick: Khám phá NCC — chỉ hiện với role được phép */}
+                {SUPPLIER_DISCOVERY_ROLES.includes(currentUser?.role ?? '') && pathname !== '/procurement/supplier-discovery' && (
+                    <Link
+                        href="/procurement/supplier-discovery"
+                        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-all duration-150 shrink-0"
+                    >
+                        <Sparkles size={11} className="shrink-0" />
+                        Khám phá NCC
+                    </Link>
+                )}
+
                 {/* Search with ⌘K hint */}
                 <div className="hidden md:flex relative group">
                     <Search
@@ -200,6 +217,7 @@ export default function Topbar() {
                             
                             <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
                                 {notifications.length > 0 ? (
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     notifications.map((n: any) => (
                                         <div key={n.id} className="p-4 border-b border-[rgba(240,246,252,0.03)] hover:bg-[#2D333B]/50 transition-colors cursor-pointer group">
                                             <div className="flex justify-between items-start mb-1">

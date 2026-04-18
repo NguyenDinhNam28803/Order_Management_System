@@ -13,6 +13,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 
 export interface AuthTokens {
   accessToken: string;
@@ -30,6 +31,7 @@ export class AuthModuleRepository {
     private readonly hashPasswordService: HashPasswordService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   /**
@@ -70,6 +72,22 @@ export class AuthModuleRepository {
 
     const tokens = await this.generateToken(user);
     await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
+
+    void this.notificationService
+      .sendDirectEmail(
+        user.email,
+        '[SPMS] Đăng nhập thành công',
+        'USER_LOGIN',
+        {
+          name: user.fullName || user.email,
+          loginAt: new Date().toLocaleString('vi-VN'),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          dashUrl:
+            this.configService.get('FRONTEND_URL') ??
+            'http://procuresmart.io.vn/',
+        },
+      )
+      .catch(() => {});
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, hashedRefreshToken, ...userInfo } = user;

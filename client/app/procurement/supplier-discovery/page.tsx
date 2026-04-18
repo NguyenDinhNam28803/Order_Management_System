@@ -1,0 +1,643 @@
+"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Search, Sparkles, X, ChevronDown, ChevronUp, Globe, Phone, Mail,
+  MapPin, Star, CheckCircle2, Clock, Download, ArrowUpRight,
+  Loader2, AlertCircle, Building2, Shield, Zap, DollarSign,
+  Send, MessageSquare, Import, Filter, RefreshCw, BadgeCheck,
+} from "lucide-react";
+import {
+  searchSuppliers, importSupplier, fetchDiscoveryCategories,
+  DiscoveredSupplier, DiscoverSupplierDto, ProductCategory, SearchPriority,
+} from "../../services/supplierDiscoveryService";
+
+// ─── Status badge ───────────────────────────────────────────────────────────
+const StatusBadge = ({ status }: { status: DiscoveredSupplier['status'] }) => {
+  if (status === 'WORKED_BEFORE')
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"><BadgeCheck size={10} />Đã hợp tác</span>;
+  if (status === 'IN_SYSTEM')
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30"><CheckCircle2 size={10} />Trong hệ thống</span>;
+  return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/15 text-slate-400 border border-slate-500/30"><Sparkles size={10} />Mới</span>;
+};
+
+// ─── AI Score bar ────────────────────────────────────────────────────────────
+const ScoreBar = ({ score }: { score: number }) => {
+  const color = score >= 80 ? '#10B981' : score >= 60 ? '#F59E0B' : '#EF4444';
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-1.5 bg-[rgba(240,246,252,0.06)] rounded-full overflow-hidden">
+        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, background: color }} />
+      </div>
+      <span className="text-[11px] font-black tabular-nums" style={{ color }}>{score}</span>
+    </div>
+  );
+};
+
+// ─── Supplier Card ───────────────────────────────────────────────────────────
+const SupplierCard = ({
+  supplier, selected, onToggleSelect, onImport, importing,
+}: {
+  supplier: DiscoveredSupplier;
+  selected: boolean;
+  onToggleSelect: () => void;
+  onImport: (s: DiscoveredSupplier) => void;
+  importing: boolean;
+}) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className={`rounded-xl border transition-all duration-200 ${selected ? 'border-blue-500/50 bg-blue-500/5' : 'border-[rgba(240,246,252,0.08)] bg-[#161B22]'} hover:border-[rgba(240,246,252,0.15)]`}>
+      <div className="p-4">
+        {/* Header row */}
+        <div className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={onToggleSelect}
+            className="mt-1 rounded border-[rgba(240,246,252,0.2)] accent-blue-500"
+          />
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2 mb-1">
+              <h3 className="text-sm font-bold text-[#E6EDF3] truncate">{supplier.name}</h3>
+              <StatusBadge status={supplier.status} />
+            </div>
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[#8B949E]">
+              {supplier.province && <span className="flex items-center gap-1"><MapPin size={10} />{supplier.province}</span>}
+              {supplier.industry && <span className="flex items-center gap-1"><Building2 size={10} />{supplier.industry}</span>}
+              {supplier.website && (
+                <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-400 hover:underline">
+                  <Globe size={10} />{supplier.website.replace(/^https?:\/\//, '')}
+                </a>
+              )}
+            </div>
+          </div>
+          {/* AI Score */}
+          <div className="shrink-0 w-28">
+            <p className="text-[9px] font-semibold text-[#484F58] uppercase tracking-wider mb-1">AI Score</p>
+            <ScoreBar score={supplier.aiScore} />
+          </div>
+        </div>
+
+        {/* AI Summary */}
+        {supplier.aiSummary && (
+          <p className="mt-2.5 text-[11.5px] text-[#8B949E] leading-relaxed line-clamp-2 pl-6">
+            {supplier.aiSummary}
+          </p>
+        )}
+
+        {/* Match reasons */}
+        {supplier.matchReasons.length > 0 && (
+          <div className="mt-2 pl-6 flex flex-wrap gap-1.5">
+            {supplier.matchReasons.map((r, i) => (
+              <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-[rgba(59,130,246,0.1)] text-blue-300 border border-blue-500/20">{r}</span>
+            ))}
+          </div>
+        )}
+
+        {/* Contacts row */}
+        <div className="mt-3 pl-6 flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
+          {supplier.phone && <span className="flex items-center gap-1 text-[#8B949E]"><Phone size={10} />{supplier.phone}</span>}
+          {supplier.email && <span className="flex items-center gap-1 text-[#8B949E]"><Mail size={10} />{supplier.email}</span>}
+          {supplier.address && <span className="flex items-center gap-1 text-[#8B949E]"><MapPin size={10} />{supplier.address}</span>}
+        </div>
+
+        {/* Expanded detail */}
+        {expanded && (
+          <div className="mt-3 pl-6 space-y-2">
+            {supplier.products.length > 0 && (
+              <div>
+                <p className="text-[10px] font-semibold text-[#484F58] uppercase mb-1">Sản phẩm / Dịch vụ</p>
+                <div className="flex flex-wrap gap-1">
+                  {supplier.products.map((p, i) => (
+                    <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-[rgba(240,246,252,0.05)] text-[#8B949E] border border-[rgba(240,246,252,0.08)]">{p}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {supplier.certifications.length > 0 && (
+              <div>
+                <p className="text-[10px] font-semibold text-[#484F58] uppercase mb-1">Chứng chỉ</p>
+                <div className="flex flex-wrap gap-1">
+                  {supplier.certifications.map((c, i) => (
+                    <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1"><Shield size={8} />{c}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {supplier.taxCode && <p className="text-[11px] text-[#8B949E]">Mã số thuế: <span className="text-[#E6EDF3] font-mono">{supplier.taxCode}</span></p>}
+            <a href={supplier.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[10px] text-blue-400 hover:underline">
+              <ArrowUpRight size={10} />Nguồn dữ liệu
+            </a>
+          </div>
+        )}
+
+        {/* Action bar */}
+        <div className="mt-3 pl-6 flex items-center gap-2">
+          <button
+            onClick={() => setExpanded(v => !v)}
+            className="flex items-center gap-1 text-[11px] text-[#8B949E] hover:text-[#E6EDF3] transition-colors"
+          >
+            {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            {expanded ? 'Thu gọn' : 'Chi tiết'}
+          </button>
+
+          {supplier.status === 'NEW' && (
+            <button
+              onClick={() => onImport(supplier)}
+              disabled={importing}
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-blue-500/15 text-blue-400 border border-blue-500/30 hover:bg-blue-500/25 transition-colors disabled:opacity-50"
+            >
+              {importing ? <Loader2 size={11} className="animate-spin" /> : <Import size={11} />}
+              Thêm vào hệ thống
+            </button>
+          )}
+          {supplier.status === 'IN_SYSTEM' && (
+            <span className="ml-auto text-[10px] text-[#484F58]">Đã có trong hệ thống</span>
+          )}
+          {supplier.status === 'WORKED_BEFORE' && (
+            <span className="ml-auto text-[10px] text-emerald-500">Đã từng hợp tác</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Compare Panel ───────────────────────────────────────────────────────────
+const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[]; onClose: () => void }) => (
+  <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="bg-[#161B22] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-auto">
+      <div className="flex items-center justify-between p-4 border-b border-[rgba(240,246,252,0.08)]">
+        <h3 className="font-bold text-[#E6EDF3]">So sánh Nhà cung cấp</h3>
+        <button onClick={onClose} className="text-[#484F58] hover:text-[#E6EDF3] transition-colors"><X size={16} /></button>
+      </div>
+      <div className="p-4 overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr>
+              <td className="text-[10px] text-[#484F58] uppercase font-semibold pr-4 pb-3 w-28">Tiêu chí</td>
+              {suppliers.map((s, i) => (
+                <th key={i} className="text-left pb-3 px-3 font-bold text-[#E6EDF3]">{s.name}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[rgba(240,246,252,0.05)]">
+            {[
+              { label: 'AI Score', render: (s: DiscoveredSupplier) => <ScoreBar score={s.aiScore} /> },
+              { label: 'Tỉnh/Thành', render: (s: DiscoveredSupplier) => s.province || '—' },
+              { label: 'Ngành', render: (s: DiscoveredSupplier) => s.industry || '—' },
+              { label: 'Email', render: (s: DiscoveredSupplier) => s.email || '—' },
+              { label: 'Điện thoại', render: (s: DiscoveredSupplier) => s.phone || '—' },
+              { label: 'Chứng chỉ', render: (s: DiscoveredSupplier) => s.certifications.join(', ') || '—' },
+              { label: 'Sản phẩm', render: (s: DiscoveredSupplier) => s.products.slice(0, 3).join(', ') || '—' },
+              { label: 'Trạng thái', render: (s: DiscoveredSupplier) => <StatusBadge status={s.status} /> },
+            ].map(row => (
+              <tr key={row.label}>
+                <td className="text-[10px] text-[#484F58] uppercase font-semibold py-2.5 pr-4">{row.label}</td>
+                {suppliers.map((s, i) => (
+                  <td key={i} className="py-2.5 px-3 text-[12px] text-[#8B949E]">{row.render(s)}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+);
+
+// ─── Main Page ───────────────────────────────────────────────────────────────
+export default function SupplierDiscoveryPage() {
+  const [query, setQuery] = useState('');
+  const [categories, setCategories] = useState<ProductCategory[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [products, setProducts] = useState('');
+  const [location, setLocation] = useState('');
+  const [companySize, setCompanySize] = useState<'' | 'STARTUP' | 'SME' | 'ENTERPRISE'>('');
+  const [priorities, setPriorities] = useState<SearchPriority[]>([]);
+  const [limit, setLimit] = useState(10);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [results, setResults] = useState<DiscoveredSupplier[] | null>(null);
+  const [queryUsed, setQueryUsed] = useState('');
+
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [comparing, setComparing] = useState(false);
+  const [importingIdx, setImportingIdx] = useState<number | null>(null);
+  const [importedSet, setImportedSet] = useState<Set<number>>(new Set());
+
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
+  const [chatLoading, setChatLoading] = useState(false);
+
+  useEffect(() => {
+    fetchDiscoveryCategories().then(setCategories).catch(() => {});
+  }, []);
+
+  const togglePriority = (p: SearchPriority) =>
+    setPriorities(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
+
+  const toggleCategory = (name: string) =>
+    setSelectedCategories(prev => prev.includes(name) ? prev.filter(x => x !== name) : [...prev, name]);
+
+  const handleSearch = useCallback(async () => {
+    if (!query.trim()) return;
+    setLoading(true);
+    setError('');
+    setResults(null);
+    setSelected(new Set());
+    try {
+      const dto: DiscoverSupplierDto = {
+        query: query.trim(),
+        categories: selectedCategories.length ? selectedCategories : undefined,
+        products: products.trim() || undefined,
+        location: location.trim() || undefined,
+        companySize: companySize || undefined,
+        priorities: priorities.length ? priorities : undefined,
+        limit,
+      };
+      const res = await searchSuppliers(dto);
+      setResults(res.suppliers);
+      setQueryUsed(res.query);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      setError(e.message || 'Tìm kiếm thất bại');
+    } finally {
+      setLoading(false);
+    }
+  }, [query, selectedCategories, products, location, companySize, priorities, limit]);
+
+  const handleImport = async (supplier: DiscoveredSupplier, idx: number) => {
+    setImportingIdx(idx);
+    try {
+      await importSupplier({
+        name: supplier.name,
+        email: supplier.email,
+        phone: supplier.phone,
+        website: supplier.website,
+        address: supplier.address,
+        province: supplier.province,
+        industry: supplier.industry,
+        taxCode: supplier.taxCode,
+      });
+      setImportedSet(prev => new Set([...prev, idx]));
+      if (results) {
+        const updated = [...results];
+        updated[idx] = { ...updated[idx], status: 'IN_SYSTEM' };
+        setResults(updated);
+      }
+    } catch {
+      alert('Import thất bại. Vui lòng thử lại.');
+    } finally {
+      setImportingIdx(null);
+    }
+  };
+
+  const selectedSuppliers = results ? [...selected].map(i => results[i]).filter(Boolean) : [];
+
+  const handleExport = () => {
+    if (!results) return;
+    const rows = [
+      ['Tên', 'Website', 'Email', 'Điện thoại', 'Địa chỉ', 'Tỉnh/Thành', 'Ngành', 'AI Score', 'Trạng thái'],
+      ...results.map(s => [s.name, s.website, s.email ?? '', s.phone ?? '', s.address ?? '', s.province ?? '', s.industry ?? '', s.aiScore, s.status]),
+    ];
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'supplier-discovery.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleAiChat = async () => {
+    if (!chatInput.trim() || !results) return;
+    const userMsg = chatInput.trim();
+    setChatMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setChatInput('');
+    setChatLoading(true);
+    try {
+      const supplierSummary = results.slice(0, 5).map(s =>
+        `${s.name} (score: ${s.aiScore}, tỉnh: ${s.province ?? 'N/A'}, ngành: ${s.industry ?? 'N/A'})`
+      ).join('\n');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/ai-service/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          message: `Dưới đây là danh sách nhà cung cấp tìm được:\n${supplierSummary}\n\nCâu hỏi: ${userMsg}`,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json() as { reply?: string; response?: string };
+        setChatMessages(prev => [...prev, { role: 'ai', text: data.reply ?? data.response ?? 'AI không trả lời được lúc này.' }]);
+      } else {
+        setChatMessages(prev => [...prev, { role: 'ai', text: 'Không thể kết nối AI lúc này.' }]);
+      }
+    } catch {
+      setChatMessages(prev => [...prev, { role: 'ai', text: 'Lỗi kết nối AI.' }]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
+  const PRIORITY_OPTIONS: { key: SearchPriority; label: string; icon: React.ReactNode }[] = [
+    { key: 'PRICE', label: 'Giá tốt', icon: <DollarSign size={11} /> },
+    { key: 'DELIVERY_SPEED', label: 'Giao nhanh', icon: <Zap size={11} /> },
+    { key: 'ISO_CERTIFIED', label: 'Chứng chỉ ISO', icon: <Shield size={11} /> },
+    { key: 'EXPERIENCE', label: 'Kinh nghiệm', icon: <Star size={11} /> },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#0D1117] text-[#E6EDF3]">
+      <div className="max-w-5xl mx-auto px-4 py-8">
+
+        {/* ── Page header ── */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+              <Sparkles size={15} className="text-white" />
+            </div>
+            <h1 className="text-xl font-black text-[#E6EDF3]">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
+            <span className="ml-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/30 uppercase tracking-wider">Beta</span>
+          </div>
+          <p className="text-[12px] text-[#8B949E]">Tìm kiếm nhà cung cấp từ nguồn bên ngoài bằng AI · Gemini + Tavily Search</p>
+        </div>
+
+        {/* ── Search form ── */}
+        <div className="bg-[#161B22] border border-[rgba(240,246,252,0.08)] rounded-2xl p-4 mb-5">
+          {/* Main query */}
+          <div className="flex gap-2 mb-3">
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#484F58]" />
+              <input
+                type="text"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                placeholder="VD: nhà cung cấp laptop văn phòng Hà Nội..."
+                className="w-full pl-9 pr-4 py-2.5 bg-[#0D1117] border border-[rgba(240,246,252,0.1)] rounded-xl text-sm text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-violet-500/50 transition-colors"
+              />
+            </div>
+            <button
+              onClick={handleSearch}
+              disabled={loading || !query.trim()}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-blue-600 text-white hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-violet-500/20"
+            >
+              {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+              Tìm kiếm AI
+            </button>
+          </div>
+
+          {/* Quick filters */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <input
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+              placeholder="Khu vực..."
+              className="w-32 px-3 py-1.5 text-[12px] bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-violet-500/40"
+            />
+            <select
+              value={companySize}
+              onChange={e => setCompanySize(e.target.value as '' | 'STARTUP' | 'SME' | 'ENTERPRISE')}
+              className="px-3 py-1.5 text-[12px] bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#8B949E] focus:outline-none focus:border-violet-500/40"
+            >
+              <option value="">Quy mô</option>
+              <option value="STARTUP">Startup</option>
+              <option value="SME">SME</option>
+              <option value="ENTERPRISE">Enterprise</option>
+            </select>
+            {PRIORITY_OPTIONS.map(p => (
+              <button
+                key={p.key}
+                onClick={() => togglePriority(p.key)}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${priorities.includes(p.key) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#484F58] border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.2)]'}`}
+              >
+                {p.icon}{p.label}
+              </button>
+            ))}
+            <button
+              onClick={() => setShowAdvanced(v => !v)}
+              className="flex items-center gap-1 text-[11px] text-[#484F58] hover:text-[#8B949E] ml-auto"
+            >
+              <Filter size={11} />Nâng cao {showAdvanced ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+            </button>
+          </div>
+
+          {/* Advanced filters */}
+          {showAdvanced && (
+            <div className="mt-3 pt-3 border-t border-[rgba(240,246,252,0.06)] grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <p className="text-[10px] text-[#484F58] uppercase font-semibold mb-2">Sản phẩm cụ thể</p>
+                <input
+                  value={products}
+                  onChange={e => setProducts(e.target.value)}
+                  placeholder="VD: laptop Dell, máy in HP..."
+                  className="w-full px-3 py-2 text-[12px] bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-violet-500/40"
+                />
+              </div>
+              <div>
+                <p className="text-[10px] text-[#484F58] uppercase font-semibold mb-2">Số kết quả (1-20)</p>
+                <input
+                  type="number"
+                  min={1} max={20}
+                  value={limit}
+                  onChange={e => setLimit(Math.min(20, Math.max(1, Number(e.target.value))))}
+                  className="w-24 px-3 py-2 text-[12px] bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#E6EDF3] focus:outline-none focus:border-violet-500/40"
+                />
+              </div>
+              {categories.length > 0 && (
+                <div className="col-span-full">
+                  <p className="text-[10px] text-text-muted uppercase font-semibold mb-2">Danh mục sản phẩm</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {categories.map(c => (
+                      <button
+                        key={c.id}
+                        onClick={() => toggleCategory(c.name)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${selectedCategories.includes(c.name) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#8B949E] border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.2)]'}`}
+                      >
+                        {c.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ── Error ── */}
+        {error && (
+          <div className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            <AlertCircle size={14} />{error}
+          </div>
+        )}
+
+        {/* ── Loading skeleton ── */}
+        {loading && (
+          <div className="space-y-3">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#161B22] p-4 animate-pulse">
+                <div className="h-4 w-48 bg-[rgba(240,246,252,0.05)] rounded mb-2" />
+                <div className="h-3 w-72 bg-[rgba(240,246,252,0.03)] rounded mb-3" />
+                <div className="h-3 w-full bg-[rgba(240,246,252,0.03)] rounded" />
+              </div>
+            ))}
+            <p className="text-center text-[12px] text-text-muted flex items-center justify-center gap-2">
+              <Loader2 size={12} className="animate-spin" />AI đang tìm kiếm và phân tích nhà cung cấp...
+            </p>
+          </div>
+        )}
+
+        {/* ── Results ── */}
+        {results && !loading && (
+          <>
+            {/* Results header */}
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-sm font-bold text-[#E6EDF3]">{results.length} nhà cung cấp tìm thấy</p>
+                {queryUsed && <p className="text-[10px] text-[#484F58] mt-0.5">Query: &quot;{queryUsed}&quot;</p>}
+              </div>
+              <div className="flex items-center gap-2">
+                {selected.size >= 2 && (
+                  <button
+                    onClick={() => setComparing(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors"
+                  >
+                    <RefreshCw size={11} />So sánh ({selected.size})
+                  </button>
+                )}
+                <button
+                  onClick={handleExport}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[rgba(240,246,252,0.05)] text-[#8B949E] border border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.15)] transition-colors"
+                >
+                  <Download size={11} />Export CSV
+                </button>
+              </div>
+            </div>
+
+            {results.length === 0 ? (
+              <div className="text-center py-16 text-[#484F58]">
+                <Search size={32} className="mx-auto mb-3 opacity-30" />
+                <p className="font-semibold">Không tìm thấy kết quả</p>
+                <p className="text-[12px] mt-1">Thử thay đổi từ khóa hoặc mở rộng tiêu chí tìm kiếm</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {results.map((s, i) => (
+                  <SupplierCard
+                    key={i}
+                    supplier={s}
+                    selected={selected.has(i)}
+                    onToggleSelect={() => setSelected(prev => {
+                      const n = new Set(prev);
+                      n.has(i) ? n.delete(i) : n.add(i);
+                      return n;
+                    })}
+                    onImport={(sup) => handleImport(sup, i)}
+                    importing={importingIdx === i}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* ── AI Chat ── */}
+            <div className="mt-8 bg-[#161B22] border border-[rgba(240,246,252,0.08)] rounded-2xl overflow-hidden">
+              <button
+                onClick={() => setChatOpen(v => !v)}
+                className="w-full flex items-center gap-2 p-4 text-left hover:bg-[rgba(240,246,252,0.03)] transition-colors"
+              >
+                <MessageSquare size={14} className="text-violet-400" />
+                <span className="font-bold text-sm text-[#E6EDF3]">Hỏi AI về kết quả tìm kiếm</span>
+                {chatOpen ? <ChevronUp size={14} className="ml-auto text-[#484F58]" /> : <ChevronDown size={14} className="ml-auto text-[#484F58]" />}
+              </button>
+
+              {chatOpen && (
+                <div className="border-t border-[rgba(240,246,252,0.06)]">
+                  {/* Messages */}
+                  <div className="p-4 space-y-3 max-h-64 overflow-y-auto">
+                    {chatMessages.length === 0 && (
+                      <div className="space-y-1.5">
+                        {['Tại sao nhà cung cấp đầu điểm cao nhất?', 'So sánh 2 nhà cung cấp hàng đầu', 'Nhà nào phù hợp nhất nếu cần giao nhanh?'].map(q => (
+                          <button
+                            key={q}
+                            onClick={() => setChatInput(q)}
+                            className="block w-full text-left text-[11px] px-3 py-2 rounded-lg bg-[rgba(240,246,252,0.03)] border border-[rgba(240,246,252,0.06)] text-[#8B949E] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                          >
+                            {q}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {chatMessages.map((m, i) => (
+                      <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[80%] px-3 py-2 rounded-xl text-[12px] leading-relaxed ${m.role === 'user' ? 'bg-violet-500/20 text-violet-200' : 'bg-[rgba(240,246,252,0.05)] text-[#8B949E]'}`}>
+                          {m.text}
+                        </div>
+                      </div>
+                    ))}
+                    {chatLoading && (
+                      <div className="flex justify-start">
+                        <div className="px-3 py-2 rounded-xl bg-[rgba(240,246,252,0.05)] text-[#484F58] text-[12px] flex items-center gap-2">
+                          <Loader2 size={11} className="animate-spin" />AI đang phân tích...
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Input */}
+                  <div className="p-3 border-t border-[rgba(240,246,252,0.06)] flex gap-2">
+                    <input
+                      value={chatInput}
+                      onChange={e => setChatInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleAiChat()}
+                      placeholder="Hỏi AI về nhà cung cấp trong kết quả..."
+                      className="flex-1 px-3 py-2 text-[12px] bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-violet-500/40"
+                    />
+                    <button
+                      onClick={handleAiChat}
+                      disabled={chatLoading || !chatInput.trim()}
+                      className="px-3 py-2 rounded-lg bg-violet-500/20 text-violet-400 border border-violet-500/30 hover:bg-violet-500/30 transition-colors disabled:opacity-50"
+                    >
+                      <Send size={13} />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Empty state */}
+        {!results && !loading && !error && (
+          <div className="text-center py-20 text-[#484F58]">
+            <Sparkles size={40} className="mx-auto mb-4 opacity-20" />
+            <p className="font-bold text-[#8B949E]">Nhập từ khóa để bắt đầu tìm kiếm</p>
+            <p className="text-[12px] mt-1">AI sẽ tìm kiếm và phân tích nhà cung cấp từ nguồn dữ liệu bên ngoài</p>
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              {['nhà cung cấp laptop văn phòng Hà Nội', 'vật tư y tế TP.HCM', 'dịch vụ in ấn Đà Nẵng'].map(s => (
+                <button
+                  key={s}
+                  onClick={() => { setQuery(s); }}
+                  className="px-3 py-1.5 rounded-lg text-[11px] bg-[rgba(240,246,252,0.04)] border border-[rgba(240,246,252,0.08)] text-[#8B949E] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Compare modal ── */}
+      {comparing && selectedSuppliers.length >= 2 && (
+        <ComparePanel suppliers={selectedSuppliers} onClose={() => setComparing(false)} />
+      )}
+    </div>
+  );
+}

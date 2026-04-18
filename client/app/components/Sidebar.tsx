@@ -71,9 +71,10 @@ const navigation: NavGroup[] = [
     {
         group: "Nguồn hàng",
         dot: "#06B6D4",
-        roles: ["PROCUREMENT", "PLATFORM_ADMIN"],
+        roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"],
         items: [
-            { name: "Nguồn hàng & Báo giá", icon: Search, path: "/sourcing", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Nguồn hàng & Báo giá",   icon: Search,    path: "/sourcing",                       roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Khám phá NCC (AI)",        icon: Sparkles,  path: "/procurement/supplier-discovery", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
         ]
     },
     {

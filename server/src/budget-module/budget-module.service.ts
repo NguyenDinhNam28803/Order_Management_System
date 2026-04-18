@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -20,12 +21,16 @@ import {
 } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { AuditModuleService } from '../audit-module/audit-module.service';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 
 @Injectable()
 export class BudgetModuleService {
+  private readonly logger = new Logger(BudgetModuleService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly auditService: AuditModuleService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   // Budget Period
@@ -423,6 +428,8 @@ export class BudgetModuleService {
       user,
     );
 
+    void this.checkBudgetWarning(updated, orgId).catch(() => {});
+
     return updated;
   }
 
@@ -521,6 +528,11 @@ export class BudgetModuleService {
         },
         user,
       );
+
+      const alloc = await this.prisma.budgetAllocation.findFirst({
+        where: { costCenterId, budgetPeriodId: period.id },
+      });
+      if (alloc) void this.checkBudgetWarning(alloc, orgId).catch(() => {});
     }
   }
 
@@ -1113,5 +1125,64 @@ export class BudgetModuleService {
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  private async checkBudgetWarning(
+    allocation: BudgetAllocation,
+    orgId: string,
+  ): Promise<void> {
+    const allocated = Number(allocation.allocatedAmount);
+    if (allocated <= 0) return;
+
+    const usedAmount =
+      Number(allocation.committedAmount) + Number(allocation.spentAmount);
+    const usedPercent = Math.round((usedAmount / allocated) * 100);
+    if (usedPercent < 80) return;
+
+    const financeUsers = await this.prisma.user.findMany({
+      where: {
+        orgId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        role: { in: ['FINANCE', 'ADMIN'] as any },
+        isActive: true,
+      },
+    });
+
+    const dept = allocation.deptId
+      ? await this.prisma.department.findUnique({
+          where: { id: allocation.deptId },
+          select: { name: true },
+        })
+      : null;
+
+    const deptName = dept?.name ?? 'Phòng ban';
+    const now = new Date();
+    const budgetPeriod = `Q${Math.ceil((now.getMonth() + 1) / 3)}/${now.getFullYear()}`;
+
+    for (const user of financeUsers) {
+      if (!user.email) continue;
+      await this.notificationService
+        .sendDirectEmail(
+          user.email,
+          `[Cảnh báo ngân sách] ${deptName} đã dùng ${usedPercent}%`,
+          'BUDGET_LIMIT_WARNING',
+          {
+            name: user.fullName || user.email,
+            deptName,
+            budgetPeriod,
+            usedPercent,
+            usedAmount,
+            totalBudget: allocated,
+            remainingAmount: allocated - usedAmount,
+            loginUrl:
+              process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn/',
+          },
+        )
+        .catch(() => {});
+    }
+
+    this.logger.warn(
+      `Budget warning sent: ${deptName} at ${usedPercent}% (${orgId})`,
+    );
   }
 }

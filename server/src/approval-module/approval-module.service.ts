@@ -129,6 +129,7 @@ export class ApprovalModuleService {
             docLabel,
             docId,
             totalAmount,
+            docType,
           );
         }
       }
@@ -235,6 +236,7 @@ export class ApprovalModuleService {
         docLabel,
         currentStep.documentId,
         docAmount,
+        currentStep.documentType,
       );
       return {
         status: 'PARTIALLY_APPROVED',
@@ -500,6 +502,7 @@ export class ApprovalModuleService {
     docLabel: string,
     docId: string,
     totalAmount: number,
+    docType?: DocumentType,
   ): Promise<void> {
     try {
       const approver = await this.prisma.user.findUnique({
@@ -507,19 +510,55 @@ export class ApprovalModuleService {
       });
       if (!approver?.email) return;
 
-      await this.notificationService.sendDirectEmail(
-        approver.email,
-        `[OMS] Yêu cầu phê duyệt ${docLabel} mới`,
-        'PO_APPROVAL_REQUEST',
-        {
-          name: approver.fullName ?? approver.email,
-          docType: docLabel,
-          docId,
-          totalAmount:
-            new Intl.NumberFormat('vi-VN').format(totalAmount) + ' VNĐ',
-          approveLink: `${process.env.FRONTEND_URL ?? ''}/approvals`,
-        },
-      );
+      const frontendUrl =
+        process.env.FRONTEND_URL ?? 'http://procuresmart.io.vn/';
+
+      if (docType === DocumentType.PURCHASE_REQUISITION) {
+        const pr = await this.prisma.purchaseRequisition.findUnique({
+          where: { id: docId },
+          include: {
+            requester: { select: { fullName: true } },
+            department: { select: { name: true } },
+          },
+        });
+
+        await this.notificationService.sendDirectEmail(
+          approver.email,
+          `[OMS] Yêu cầu phê duyệt PR: ${pr?.prNumber ?? docId}`,
+          'PR_APPROVAL_LINK',
+          {
+            prCode: pr?.prNumber ?? docId,
+            prTitle: pr?.title ?? docLabel,
+            approverName: approver.fullName ?? approver.email,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            requesterName: (pr?.requester as any)?.fullName ?? 'Người dùng',
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            requesterDept: (pr?.department as any)?.name ?? '',
+            totalAmount,
+            remainingBudget: 0,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            justification: (pr as any)?.justification ?? '',
+            slaDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
+            approveLink: `${frontendUrl}/approvals`,
+            rejectLink: `${frontendUrl}/approvals`,
+            detailLink: `${frontendUrl}/pr/${docId}`,
+          },
+        );
+      } else {
+        await this.notificationService.sendDirectEmail(
+          approver.email,
+          `[OMS] Yêu cầu phê duyệt ${docLabel} mới`,
+          'PO_APPROVAL_REQUEST',
+          {
+            name: approver.fullName ?? approver.email,
+            docType: docLabel,
+            docId,
+            totalAmount:
+              new Intl.NumberFormat('vi-VN').format(totalAmount) + ' VNĐ',
+            approveLink: `${frontendUrl}/approvals`,
+          },
+        );
+      }
     } catch (err: any) {
       this.logger.warn(
         `notifyApprover failed for ${approverId}: ${err.message}`,
