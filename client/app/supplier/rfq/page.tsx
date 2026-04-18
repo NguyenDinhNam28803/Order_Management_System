@@ -77,7 +77,7 @@ export default function SupplierRFQ() {
         
         if (newQuote && newQuote.id) {
             await submitQuotation(newQuote.id);
-            notify(`Báo giá cho RFQ ${activeRFQ.id} đã được gửi thành công!`, "success");
+            notify(`Báo giá đã được gửi thành công!`, "success");
         } else {
             notify("Có lỗi khi gửi báo giá", "error");
         }
@@ -112,19 +112,13 @@ export default function SupplierRFQ() {
                             <span className="text-[#64748B]">Hạn nộp: {activeRFQ.deadline ? new Date(activeRFQ.deadline).toLocaleDateString('vi-VN') : 'Không giới hạn'}</span>
                         </div>
                         <h1 className="text-4xl font-black text-[#F8FAFC] tracking-tighter uppercase mb-2">
-                             {activeRFQ.rfqNumber || activeRFQ.id.substring(0, 8)}
+                             {activeRFQ.rfqNumber || "RFQ-***"}
                         </h1>
                         <p className="text-2xl font-black text-[#3B82F6] tracking-tight">{activeRFQ.title || activeRFQ.pr?.title || "Yêu cầu báo giá chính thức"}</p>
                         <p className="text-sm font-bold text-[#64748B] mt-3 flex items-center gap-2">
                              <span className="h-1 w-4 bg-[#3B82F6] rounded-full"></span>
                              Từ: <span className="text-[#F8FAFC]">{activeRFQ.pr && activeRFQ.pr.department ? (typeof activeRFQ.pr.department === 'object' ? activeRFQ.pr.department.name : activeRFQ.pr.department) : "ProcurePro Network"}</span>
                         </p>
-                    </div>
-                    <div className="text-right">
-                        <div className="p-4 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-xl shadow-black/20 flex flex-col items-end">
-                            <div className="text-[10px] font-black uppercase text-[#3B82F6] tracking-[0.3em] mb-1">MÃ GIAO DỊCH (UUID)</div>
-                            <div className="text-[11px] font-mono font-bold text-[#64748B] lowercase">{activeRFQ.id}</div>
-                        </div>
                     </div>
                 </div>
 
@@ -138,10 +132,6 @@ export default function SupplierRFQ() {
                                 </h3>
                             </div>
                             <div className="p-6 space-y-5">
-                                <div className="flex justify-between items-center group">
-                                    <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">Mã PR Hệ thống</span>
-                                    <span className="text-xs font-black text-[#3B82F6]">{activeRFQ.pr?.prNumber || "N/A"}</span>
-                                </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">Người liên hệ</span>
                                     <span className="text-xs font-black text-[#F8FAFC]">
@@ -376,8 +366,7 @@ export default function SupplierRFQ() {
                                         onClick={() => { setSelectedRfqId(r.id); setViewState("DETAIL"); }}
                                     >
                                         <td className="px-6 py-8">
-                                            <div className="font-black text-[#F8FAFC] text-sm uppercase tracking-tighter group-hover:text-[#3B82F6] transition-colors">{r.rfqNumber || r.id.substring(0, 8)}</div>
-                                            <div className="text-[9px] font-bold text-[#64748B]">UUID: {r.id.substring(0, 4)}...</div>
+                                            <div className="font-black text-[#F8FAFC] text-sm uppercase tracking-tighter group-hover:text-[#3B82F6] transition-colors">{r.rfqNumber || "RFQ-***"}</div>
                                         </td>
                                         <td className="py-8">
                                             <div className="flex items-center gap-3">

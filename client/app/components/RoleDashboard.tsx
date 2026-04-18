@@ -379,16 +379,16 @@ export function WarehouseDashboard() {
         </h3>
         <div className="space-y-3">
           {[
-            { time: "09:00", po: "PO-2024-156", supplier: "TechCorp VN", items: "Máy chủ Dell R750", status: "incoming" },
-            { time: "11:30", po: "PO-2024-157", supplier: "OfficeMart", items: "Văn phòng phẩm Q1", status: "incoming" },
-            { time: "14:00", po: "PO-2024-155", supplier: "Cloud Solutions", items: "Thiết bị mạng", status: "delayed" },
-            { time: "16:00", po: "PO-2024-154", supplier: "BuildRight Co.", items: "Vật liệu xây dựng", status: "incoming" },
-          ].map((delivery) => (
-            <div key={delivery.po} className="flex items-center gap-4 p-3 bg-[#161922] rounded-lg border border-[rgba(148,163,184,0.05)]">
+            { time: "09:00", po: "***", supplier: "TechCorp VN", items: "Máy chủ Dell R750", status: "incoming" },
+            { time: "11:30", po: "***", supplier: "OfficeMart", items: "Văn phòng phẩm Q1", status: "incoming" },
+            { time: "14:00", po: "***", supplier: "Cloud Solutions", items: "Thiết bị mạng", status: "delayed" },
+            { time: "16:00", po: "***", supplier: "BuildRight Co.", items: "Vật liệu xây dựng", status: "incoming" },
+          ].map((delivery, idx) => (
+            <div key={idx} className="flex items-center gap-4 p-3 bg-[#161922] rounded-lg border border-[rgba(148,163,184,0.05)]">
               <div className="text-sm font-mono text-[#64748B] w-16">{delivery.time}</div>
               <div className={`w-2 h-2 rounded-full ${delivery.status === "incoming" ? "bg-emerald-400" : "bg-amber-400"}`} />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-[#F8FAFC]">{delivery.po}</p>
+                <p className="text-sm font-semibold text-[#F8FAFC]">***</p>
                 <p className="text-xs text-[#64748B]">{delivery.supplier} • {delivery.items}</p>
               </div>
               <span className={`text-xs font-semibold px-2 py-1 rounded ${

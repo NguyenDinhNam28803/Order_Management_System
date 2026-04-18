@@ -139,7 +139,7 @@ export default function CreateRFQPage() {
             const response = await apiFetch('/rag/query', {
                 method: 'POST',
                 body: JSON.stringify({
-                    question: `Gợi ý 3 nhà cung cấp tốt nhất cho sản phẩm: ${productNames}. Phân tích dựa trên KPI, giá cả lịch sử, tỷ lệ giao hàng đúng hạn và chất lượng.`,
+                    question: "Gợi ý 3 nhà cung cấp tốt nhất cho sản phẩm: " + productNames + ". Phân tích dựa trên KPI, giá cả lịch sử, tỷ lệ giao hàng đúng hạn và chất lượng.",
                     topK: 5
                 })
             });
@@ -278,7 +278,7 @@ export default function CreateRFQPage() {
             // Updated to match backend CreateRfqDto
             const payload = {
                 prId: prId as string,
-                title: `RFQ for ${targetPR?.prNumber || targetPR?.id}`,
+                title: "RFQ cho " + (targetPR?.title || 'yêu cầu mua hàng') + "",
                 description: note,
                 deadline: new Date(deadline).toISOString(),
                 supplierIds: selectedVendors.map(v => v.id),
@@ -311,7 +311,7 @@ export default function CreateRFQPage() {
         } catch (err) {
             console.error(err);
             const errorMessage = err instanceof Error ? err.message : "Unknown error";
-            alert(`Có lỗi xảy ra khi tạo RFQ: ${errorMessage}`);
+            alert("Có lỗi xảy ra khi tạo RFQ: " + errorMessage);
         } finally {
             setIsSubmitting(false);
         }
@@ -375,7 +375,7 @@ export default function CreateRFQPage() {
                                 </div>
                                 <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">Thông tin PR gốc</span>
                             </div>
-                            <h2 className="text-2xl font-black mb-1 text-[#F8FAFC]">{targetPR.prNumber || "PR-" + targetPR.id.substring(0,8).toUpperCase()}</h2>
+                            <h2 className="text-2xl font-black mb-1 text-[#F8FAFC]">Thông tin yêu cầu</h2>
                             <p className="text-[#94A3B8] text-sm font-medium">{targetPR.title}</p>
                         </div>
                         <div className="p-8 space-y-6">
@@ -398,7 +398,7 @@ export default function CreateRFQPage() {
                                     {(targetPR.items || []).map((item: PRItem, idx: number) => (
                                         <div key={idx} className="flex justify-between items-start">
                                             <div className="flex flex-col">
-                                                <span className="text-[11px] font-black text-[#94A3B8]">{item.productId || "Sản phẩm " + (idx+1)}</span>
+                                                <span className="text-[11px] font-black text-[#94A3B8]">{item.productName || item.productDesc || item.description || "Sản phẩm " + (idx+1)}</span>
                                                 <span className="text-[10px] text-[#64748B] font-bold">{item.qty} {item.unit}</span>
                                             </div>
                                             <span className="text-[11px] font-black text-[#64748B]">{(Number(item.estimatedPrice) || 0).toLocaleString()}</span>
@@ -545,11 +545,11 @@ export default function CreateRFQPage() {
                                             {aiSuggestions.map((suggestion, idx) => (
                                                 <div
                                                     key={suggestion.id}
-                                                    className={`relative bg-[#0F1117] rounded-xl p-5 border transition-all ${
+                                                    className={"relative bg-[#0F1117] rounded-xl p-5 border transition-all " + (
                                                         addedAiVendors.has(suggestion.id)
-                                                            ? 'border-emerald-500/30 bg-emerald-500/5'
-                                                            : 'border-[rgba(148,163,184,0.1)] hover:border-violet-500/30'
-                                                    }`}
+                                                            ? "border-emerald-500/30 bg-emerald-500/5"
+                                                            : "border-[rgba(148,163,184,0.1)] hover:border-violet-500/30"
+                                                    )}
                                                 >
                                                     {/* Rank Badge */}
                                                     <div className="absolute -top-3 -left-2 h-6 w-6 rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center text-white text-xs font-black shadow-lg">
@@ -602,11 +602,11 @@ export default function CreateRFQPage() {
                                                             type="button"
                                                             onClick={() => addAiVendor(suggestion)}
                                                             disabled={addedAiVendors.has(suggestion.id)}
-                                                            className={`shrink-0 px-3 py-1.5 rounded-lg font-black text-xs uppercase tracking-wider transition-all ${
+                                                            className={"shrink-0 px-3 py-1.5 rounded-lg font-black text-xs uppercase tracking-wider transition-all " + (
                                                                 addedAiVendors.has(suggestion.id)
-                                                                    ? 'bg-emerald-500/10 text-emerald-400 cursor-default'
-                                                                    : 'bg-violet-500 hover:bg-violet-400 text-white shadow-lg shadow-violet-500/20'
-                                                            }`}
+                                                                    ? "bg-emerald-500/10 text-emerald-400 cursor-default"
+                                                                    : "bg-violet-500 hover:bg-violet-400 text-white shadow-lg shadow-violet-500/20"
+                                                            )}
                                                         >
                                                             {addedAiVendors.has(suggestion.id) ? (
                                                                 <span className="flex items-center gap-1">
@@ -671,7 +671,7 @@ export default function CreateRFQPage() {
                                             className="w-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl h-14 px-4 text-[#F8FAFC] font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-[#3B82F6] transition-all placeholder:text-[#64748B]"
                                             value={deadline ? (() => {
                                                 const [y, m, d] = deadline.split('-');
-                                                return `${d}-${m}-${y}`;
+                                                return d + "-" + m + "-" + y;
                                             })() : ""}
                                         />
                                         <input 

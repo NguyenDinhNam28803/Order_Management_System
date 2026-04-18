@@ -104,7 +104,7 @@ export default function WarehouseDashboard() {
                                 {incomingPOs.map((po, idx) => (
                                     <tr key={idx} className="cursor-pointer hover:bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]" onClick={() => router.push(`/warehouse/grn/new?po=${po.id}`)}>
                                         <td className="py-4 px-4">
-                                            <div className="font-bold text-[#F8FAFC] text-xs truncate">{po.id.replace('PO-', '#PO-')}</div>
+                                            <div className="font-bold text-[#F8FAFC] text-xs truncate">PO-***</div>
                                         </td>
                                         <td className="py-4 px-4">
                                             <div className="font-bold text-[#94A3B8] text-xs truncate">{po.vendor}</div>

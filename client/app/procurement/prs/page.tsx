@@ -16,7 +16,7 @@ import Link from "next/link";
 
 // Local interfaces removed in favor of global definitions in ProcurementContext.
 export default function ProcurementControlPage() {
-    const { prs, currentUser, apiFetch, refreshData, notify } = useProcurement();
+    const { prs, currentUser, apiFetch, refreshData, notify, organizations } = useProcurement();
     const [searchTerm, setSearchTerm] = useState("");
 
     const formatDate = (ds?: string) => {
@@ -34,9 +34,18 @@ export default function ProcurementControlPage() {
     const { confirmCatalogPrice } = useProcurement();
 
     const handleConfirmCatalog = async (pr: PR) => {
+        // Use preferred supplier from PR, or first available organization, or current user's org
+        const supplierId = pr.preferredSupplierId || 
+                          organizations[0]?.id || 
+                          currentUser?.orgId || 
+                          "";
+        if (!supplierId) {
+            notify("Không tìm thấy nhà cung cấp", "error");
+            return;
+        }
         const success = await confirmCatalogPrice({
             prId: pr.id,
-            supplierId: pr.preferredSupplierId || "6c7f4a14-9238-419c-ba0f-fa8da8eb0253",
+            supplierId,
             price: pr.totalEstimate || 0,
             stock: 10,
             leadTime: 3
@@ -101,7 +110,7 @@ export default function ProcurementControlPage() {
                         <FileText size={18} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-black text-[#F8FAFC] tracking-tight">{row.prNumber || row.id.substring(0,8)}</span>
+                        <span className="font-black text-[#F8FAFC] tracking-tight">Yêu cầu mua</span>
                         <span className="text-[9px] text-[#64748B] font-bold uppercase">{formatDate(row.createdAt)}</span>
                     </div>
                 </div>
@@ -139,7 +148,6 @@ export default function ProcurementControlPage() {
                     <span className="text-xs font-black text-[#F8FAFC]">
                         {typeof row.department === 'string' ? row.department : row.department?.name || "N/A"}
                     </span>
-                    <span className="text-[10px] text-[#64748B] font-bold">CC: {row.costCenterId || "DEFAULT"}</span>
                 </div>
             )
         },
@@ -279,7 +287,7 @@ export default function ProcurementControlPage() {
                                 </div>
                                 <div>
                                     <h2 className="text-xl font-black text-[#F8FAFC]">Xác nhận giá Catalog</h2>
-                                    <p className="text-[#64748B] font-bold text-sm">{confirmModal.prNumber}</p>
+                                    <p className="text-[#64748B] font-bold text-sm">Chi tiết yêu cầu</p>
                                 </div>
                             </div>
                         </div>
@@ -287,7 +295,9 @@ export default function ProcurementControlPage() {
                             <div className="bg-[#0F1117] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex justify-between items-center mb-4">
                                     <span className="text-[#64748B] font-bold text-sm">Nhà cung cấp:</span>
-                                    <span className="text-[#3B82F6] font-black uppercase tracking-tight">{confirmModal.preferredSupplierId || "NCC mặc định"}</span>
+                                    <span className="text-[#3B82F6] font-black uppercase tracking-tight">
+                                        {organizations.find(o => o.id === confirmModal.preferredSupplierId)?.name || "NCC mặc định"}
+                                    </span>
                                 </div>
                                 <div className="pt-4 border-t border-[rgba(148,163,184,0.05)]">
                                     <label className="text-[10px] font-black uppercase text-[#64748B] mb-2 block tracking-widest">Số lượng yêu cầu</label>
@@ -300,9 +310,13 @@ export default function ProcurementControlPage() {
                             <div>
                                 <label className="text-[10px] font-black uppercase text-[#64748B] mb-2 block tracking-widest">Nhà cung cấp ưu tiên</label>
                                 <select className="erp-input w-full h-12 font-bold" defaultValue={confirmModal.preferredSupplierId}>
-                                    <option value="6c7f4a14-9238-419c-ba0f-fa8da8eb0253">ABC Supplier (VnEconomy)</option>
-                                    <option value="SUP-002">Hòa Phát Furniture</option>
-                                    <option value="SUP-003">Thiên Long Digital</option>
+                                    {organizations.length > 0 ? (
+                                        organizations.map(org => (
+                                            <option key={org.id} value={org.id}>{org.name} ({org.code})</option>
+                                        ))
+                                    ) : (
+                                        <option value="">Không có nhà cung cấp</option>
+                                    )}
                                 </select>
                             </div>
 

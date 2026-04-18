@@ -86,7 +86,7 @@ export default function AmendmentsPage() {
                                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                                         {amendments.map((am) => (
                                             <tr key={am.id} className="hover:bg-[#0F1117]/30 transition-all group">
-                                                <td className="px-8 py-8 font-black text-[#F8FAFC]">{am.poNumber}</td>
+                                                <td className="px-8 py-8 font-black text-[#F8FAFC]">Đơn hàng</td>
                                                 <td className="px-8 py-8">
                                                     <span className="w-8 h-8 rounded-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[10px] font-black text-[#64748B]">
                                                         {am.amendmentNumber}
@@ -125,7 +125,7 @@ export default function AmendmentsPage() {
 
                         {selectedPOHistory && (
                             <AmendmentHistoryTimeline 
-                                poNumber={selectedPOHistory} 
+                                poNumber="***" 
                                 history={amendments.filter(a => a.poNumber === selectedPOHistory)}
                                 onClose={() => setSelectedPOHistory(null)}
                                 getBadgeColor={getBadgeColor}

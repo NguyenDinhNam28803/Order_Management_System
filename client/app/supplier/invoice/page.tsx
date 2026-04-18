@@ -164,7 +164,7 @@ export default function SupplierInvoice() {
                             onChange={(e) => setSelectedPO(e.target.value)}
                         >
                             <option value="">-- Chọn đơn đã hoàn tất nhập kho --</option>
-                            {allPos.map((po) => <option key={po.id} value={po.id}>{po.poNumber} (Kho xác nhận đủ)</option>)}
+                            {allPos.map((po, idx) => <option key={po.id} value={po.id}>Đơn hàng {idx + 1} (Kho xác nhận đủ)</option>)}
                         </select>
                         {selectedPO && <div className="text-[10px] font-black uppercase text-emerald-400 tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded-lg ml-auto border border-emerald-500/20">Kho Locked: {currentPO?.status === 'SHIPPED' || currentPO?.status === 'IN_PROGRESS' ? 'Yes' : 'No'}</div>}
                     </div>

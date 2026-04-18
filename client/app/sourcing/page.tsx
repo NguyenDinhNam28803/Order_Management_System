@@ -80,7 +80,7 @@ export default function SourcingPage() {
                     if (newPO?.id) {
                         const poTotal = Number(newPO.totalAmount || newPO.total || 0);
                         if (poTotal >= 50000000) {
-                            notify(`PO ${newPO.poNumber} đạt ngưỡng 50M VND. Đang tạo hợp đồng...`, "info");
+                            notify(`Đơn hàng đạt ngưỡng 50M VND. Đang tạo hợp đồng...`, "info");
                             const result = await processPOAutomation(newPO.id);
                             if (result?.contractCreated) {
                                 notify(result.message, "success");
@@ -244,7 +244,7 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
                         <tr key={pr.id} className="border-b border-[rgba(148,163,184,0.05)] hover:bg-[#0F1117]/50 transition-colors">
                             <td className="px-6 py-5">
                                 <div className="flex flex-col">
-                                    <span className="font-black text-[#F8FAFC] mb-0.5 uppercase">{pr.prNumber || pr.id.substring(0,8)}</span>
+                                    <span className="font-black text-[#F8FAFC] mb-0.5 uppercase">Yêu cầu mua</span>
                                     <span className="text-xs text-[#94A3B8] font-bold">{pr.title}</span>
                                 </div>
                             </td>
@@ -368,7 +368,7 @@ function POManagement({ pos }: { pos: PO[] | null }) {
             {(pos || []).map((po) => (
                 <div key={po.id} className="bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-[32px] p-6 flex justify-between items-center group hover:border-[#3B82F6]/20 transition-all shadow-lg shadow-[#3B82F6]/5">
                     <div className="flex gap-6 items-center">
-                        <div className="w-16 h-16 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center font-black text-[#64748B] text-lg group-hover:bg-[#3B82F6] group-hover:text-white transition-all shadow-inner">{po.poNumber.split('-').pop()}</div>
+                        <div className="w-16 h-16 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center font-black text-[#64748B] text-lg group-hover:bg-[#3B82F6] group-hover:text-white transition-all shadow-inner">***</div>
                         <div>
                             <h4 className="font-black text-[#F8FAFC] text-base uppercase tracking-tight">{po.vendor}</h4>
                             <span className="text-[11px] font-black text-[#3B82F6] uppercase tracking-[0.1em]">{(po.total || 0).toLocaleString()} ₫ | {getStatusLabel(po.status)}</span>

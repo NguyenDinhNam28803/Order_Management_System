@@ -14,6 +14,7 @@ interface POItem {
 
 interface PO {
     id: string;
+    poNumber?: string;
     vendor?: string;
     items: POItem[];
     createdAt?: string;
@@ -156,7 +157,7 @@ export default function CreateGRN() {
                         <div className="absolute top-0 right-0 p-4 opacity-5"><Package size={150} /></div>
                         <div>
                             <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-1">Incoming Shipment</div>
-                            <h2 className="text-2xl font-black text-[#F8FAFC]">{activePO.id}</h2>
+                            <h2 className="text-2xl font-black text-[#F8FAFC]">Đơn hàng nhập kho</h2>
                             <p className="text-sm text-[#94A3B8] font-medium">Bên giao: <span className="font-bold text-[#F8FAFC]">{activePO.vendor}</span></p>
                         </div>
                         <div className="flex flex-col text-right mt-4 md:mt-0 relative z-10">
@@ -239,7 +240,6 @@ export default function CreateGRN() {
                                             {/* Item Info & QC Dropdown */}
                                             <div className="w-full xl:w-1/3 border-r border-[rgba(148,163,184,0.1)] pr-6">
                                                 <h4 className="font-bold text-[#F8FAFC] mb-2">{item.description}</h4>
-                                                <p className="text-[10px] text-[#64748B] mb-4">Mã nội bộ: SP-100{item.id}</p>
                                                 
                                                 <label className="text-[9px] font-black uppercase text-[#64748B] tracking-widest mb-1 block">Kết quả QC Dropdown</label>
                                                 <select 

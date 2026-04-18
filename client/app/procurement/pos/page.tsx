@@ -226,7 +226,7 @@ export default function POManagementPage() {
                                                         <FileText size={15} />
                                                     </div>
                                                     <div>
-                                                        <p className="font-black text-[#F8FAFC] text-sm leading-none">{po.poNumber}</p>
+                                                        <p className="font-black text-[#F8FAFC] text-sm leading-none">Đơn hàng</p>
                                                         {!(po as POMockData).rfqId && (
                                                             <span className="text-[8px] font-black text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 mt-1 inline-block">
                                                                 AUTO
@@ -239,9 +239,6 @@ export default function POManagementPage() {
                                             {/* Nhà cung cấp */}
                                             <td className="px-5 py-4">
                                                 <p className="font-bold text-[#F8FAFC]">{(po as POMockData).supplier?.name || (po as POMockData).vendorName || "N/A"}</p>
-                                                <p className="text-[10px] text-[#64748B] font-mono mt-0.5">
-                                                    {((po as POMockData).supplier?.id || (po as POMockData).supplierId || "").substring(0, 8)}...
-                                                </p>
                                             </td>
 
                                             {/* PR → RFQ */}
@@ -249,7 +246,7 @@ export default function POManagementPage() {
                                                 <div className="flex items-center gap-2 flex-wrap">
                                                     {(po as POMockData).prId ? (
                                                         <span className="text-[10px] font-black text-[#94A3B8] bg-[#0F1117] px-2.5 py-1 rounded-lg border border-[rgba(148,163,184,0.1)]">
-                                                            {(po as POMockData).prId}
+                                                            PR-***
                                                         </span>
                                                     ) : (
                                                         <span className="text-[10px] text-[#64748B] italic">—</span>
@@ -258,7 +255,7 @@ export default function POManagementPage() {
                                                         <>
                                                             <ChevronRight size={12} className="text-[#64748B]" />
                                                             <span className="text-[10px] font-black text-[#3B82F6] bg-[#3B82F6]/10 px-2.5 py-1 rounded-lg border border-[#3B82F6]/20">
-                                                                {(po as POMockData).rfqId}
+                                                                RFQ-***
                                                             </span>
                                                         </>
                                                     )}
@@ -416,7 +413,7 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                                 >
                                     <option value="">— Chọn PR —</option>
                                     {prs.filter(p => p.status === "APPROVED").map(p => (
-                                        <option key={p.id} value={p.prNumber}>{p.prNumber} – {p.title}</option>
+                                        <option key={p.id} value={p.id}>Yêu cầu – {p.title}</option>
                                     ))}
                                 </select>
                             </Field>
@@ -598,7 +595,7 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <h3 className="font-black text-[#F8FAFC]">{data.poNumber}</h3>
+                                <h3 className="font-black text-[#F8FAFC]">Đơn hàng</h3>
                                 <StatusBadge status={data.status} />
                             </div>
                             <p className="text-[10px] text-[#64748B] font-medium mt-0.5">

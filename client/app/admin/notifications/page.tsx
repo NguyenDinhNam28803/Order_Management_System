@@ -45,7 +45,7 @@ const samplePRApprovalData: PRApprovalLinkData = {
 };
 
 const samplePOConfirmData: POConfirmLinkData = {
-  poCode: "PO-2024-0089",
+  poCode: "***",
   supplierName: "Công ty Thiên Long",
   confirmLink: "https://procuresmart.vn/external/po/confirm/def456",
   poPdfUrl: "https://procuresmart.vn/po/PO-2024-0089/pdf",
@@ -63,7 +63,7 @@ const samplePOConfirmData: POConfirmLinkData = {
 };
 
 const sampleGRNData: GrnMilestoneUpdateData = {
-  poCode: "PO-2024-0075",
+  poCode: "***",
   supplierName: "Công ty Việt Tiến",
   updateLink: "https://procuresmart.vn/external/grn/update/ghi789",
   completedSteps: ["Xác nhận đơn hàng", "Chuẩn bị hàng"],
@@ -72,7 +72,7 @@ const sampleGRNData: GrnMilestoneUpdateData = {
 };
 
 const sampleInvoiceData: InvoiceSubmitLinkData = {
-  poCode: "PO-2024-0066",
+  poCode: "***",
   grnCode: "GRN-2024-0123",
   submitLink: "https://procuresmart.vn/external/invoice/submit/jkl012",
   poAmount: 50000000,

@@ -66,14 +66,14 @@ export default function SupplierPO() {
         if (found) {
             setSearchedPO(found);
             console.log("PO found:", found);
-            notify(`Tìm thấy PO: ${found.id}`, "info");
+            notify(`Tìm thấy PO`, "info");
         } else {
             // Thử fetch từ server
             const fetched = await fetchPOById(poIdInput);
             if (fetched) {
                 setSearchedPO(fetched);
                 console.log("PO fetched from server:", fetched);
-                notify(`Tìm thấy PO từ server: ${fetched.id}`, "info");
+                notify(`Tìm thấy PO từ server`, "info");
             } else {
                 setSearchedPO(null);
                 notify("Không tìm thấy PO", "error");
@@ -147,7 +147,7 @@ export default function SupplierPO() {
                         <div className="flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-widest text-[#64748B]">
                             PO Mới <span className="text-emerald-400 font-bold ml-1">{po.createdAt}</span>
                         </div>
-                        <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">{po.id}</h1>
+                        <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">Đơn hàng mới</h1>
                         <p className="text-sm font-bold text-[#94A3B8] mt-1">Hợp đồng mua bán từ ProcurePro</p>
                     </div>
                     {/* Action Banner (6.3 Spec) */}
@@ -193,7 +193,7 @@ export default function SupplierPO() {
                                     <h1 className="text-3xl font-black text-[#F8FAFC] mb-6 border-b-2 border-[rgba(148,163,184,0.1)] pb-4">PURCHASE ORDER</h1>
                                     <div className="flex justify-between text-sm mb-8 text-[#94A3B8] font-sans">
                                         <div><strong className="text-[#F8FAFC]">TO:</strong> {po.vendor}<br/><strong className="text-[#F8FAFC]">ATTN:</strong> Account Manager</div>
-                                        <div><strong className="text-[#F8FAFC]">PO#:</strong> {po.id}<br/><strong className="text-[#F8FAFC]">DATE:</strong> {po.createdAt}</div>
+                                        <div><strong className="text-[#F8FAFC]">DATE:</strong> {po.createdAt}</div>
                                     </div>
                                     <table className="erp-table text-xs font-sans mb-8">
                                         <thead><tr className="bg-[#0F1117]"><th className="p-2 text-left text-[#64748B]">Item</th><th className="p-2 text-center text-[#64748B]">Qty</th><th className="p-2 text-right text-[#64748B]">Price</th></tr></thead>
@@ -314,7 +314,7 @@ export default function SupplierPO() {
                 {searchedPO && (
                     <div className="mt-3 p-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-lg text-xs text-[#F8FAFC]">
                         <p><strong className="text-[#3B82F6]">PO ID:</strong> {searchedPO.id}</p>
-                        <p><strong className="text-[#3B82F6]">PO Number:</strong> {searchedPO.poNumber}</p>
+                        <p><strong className="text-[#3B82F6]">Mã đơn:</strong> ***</p>
                         <p><strong className="text-[#3B82F6]">Status:</strong> {searchedPO.status}</p>
                         <p><strong className="text-[#3B82F6]">Supplier ID:</strong> {searchedPO.supplierId || 'N/A'}</p>
                         <p><strong className="text-[#3B82F6]">Your ID:</strong> {supplierId}</p>
@@ -349,8 +349,8 @@ export default function SupplierPO() {
                                 <tr key={p.id} className={`hover:bg-[#0F1117]/50 transition-colors ${p.supplierId === supplierId ? 'bg-[#3B82F6]/5' : ''}`}>
                                     {/* PO Number */}
                                     <td className="py-4 px-4">
-                                        <div className="font-bold text-[#F8FAFC] text-xs mb-1 truncate" title={p.poNumber || p.id}>
-                                            {p.poNumber || p.id}
+                                        <div className="font-bold text-[#F8FAFC] text-xs mb-1 truncate">
+                                            Đơn hàng
                                         </div>
                                         <div className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider truncate">
                                             {"ProcurePro"}
@@ -458,7 +458,7 @@ export default function SupplierPO() {
                         <div className="flex justify-between items-center p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117] rounded-t-2xl">
                             <div>
                                 <h2 className="text-xl font-black text-[#F8FAFC] tracking-tight">Chi tiết Purchase Order</h2>
-                                <p className="text-sm text-[#64748B]">{selectedPO.poNumber || selectedPO.id}</p>
+                                <p className="text-sm text-[#64748B]">Chi tiết đơn hàng</p>
                             </div>
                             <button 
                                 onClick={closeModal}

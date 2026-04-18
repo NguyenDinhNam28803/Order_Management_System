@@ -311,7 +311,7 @@ export default function RFQCreatePage() {
                                             </td>
                                             <td className="px-4 py-5">
                                                 <div className="text-[10px] font-black text-white bg-[#3B82F6] px-2 py-0.5 rounded-full inline-block uppercase tracking-widest">
-                                                    {item.prNumber}
+                                                    SP
                                                 </div>
                                             </td>
                                             <td className="px-4 py-5 text-center font-black text-[#F8FAFC] text-sm">{item.qty || 0}</td>
@@ -366,7 +366,7 @@ export default function RFQCreatePage() {
                                 >
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20 uppercase tracking-widest">
-                                            {pr.prNumber || pr.id.substring(0,8)}
+                                            Yêu cầu
                                         </div>
                                         <div className="text-[10px] font-black text-[#64748B] uppercase">{pr.createdAt ? new Date(pr.createdAt).toLocaleDateString() : "No Date"}</div>
                                     </div>

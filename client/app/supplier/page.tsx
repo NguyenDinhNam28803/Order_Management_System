@@ -547,7 +547,7 @@ export default function SupplierPortalPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#F8FAFC] truncate">{po.poNumber || po.id?.substring(0, 8)}</span>
+                        <span className="font-bold text-[#F8FAFC] truncate">Đơn hàng</span>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           po.status === "ACKNOWLEDGED" ? "bg-emerald-500/10 text-emerald-400" :
                           po.status === "PENDING" ? "bg-amber-500/10 text-amber-400" :

@@ -241,7 +241,7 @@ export default function SupplierKPIPage() {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-[#F8FAFC]">KPI Đánh Giá Nhà Cung Cấp</h2>
-                  <p className="text-sm text-[#64748B]">ID: {supplierId}</p>
+                  <p className="text-sm text-[#64748B]">Đánh giá hiệu suất theo quý</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-[rgba(148,163,184,0.1)]">
