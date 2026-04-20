@@ -140,7 +140,10 @@ export class AutomationService {
 
       // Gửi email magic link /grn/update cho NCC để cập nhật thông tin vận chuyển
       void this.notifySupplierGrnMilestone(grn.id, po).catch((e) =>
-        this.logger.error(`Failed to send GRN milestone email for PO ${po.poNumber}`, e),
+        this.logger.error(
+          `Failed to send GRN milestone email for PO ${po.poNumber}`,
+          e,
+        ),
       );
 
       return grn;
@@ -947,7 +950,10 @@ Procurement System
     }
   }
 
-  private async notifySupplierGrnMilestone(grnId: string, po: any): Promise<void> {
+  private async notifySupplierGrnMilestone(
+    grnId: string,
+    po: any,
+  ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const supplierOrgId: string | undefined = po?.supplierId;
     if (!supplierOrgId) return;
@@ -994,6 +1000,8 @@ Procurement System
       },
     });
 
-    this.logger.log(`GRN milestone email sent to ${supplierUser.email} for GRN ${grnId}`);
+    this.logger.log(
+      `GRN milestone email sent to ${supplierUser.email} for GRN ${grnId}`,
+    );
   }
 }
