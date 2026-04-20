@@ -1,14 +1,56 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, createContext, useContext } from "react";
 import { CheckCircle2, XCircle, AlertTriangle, Info, X } from "lucide-react";
 import { useProcurement, Notification } from "../context/ProcurementContext";
+
+// Local context for standalone use
+interface ToastContextType {
+    notifications: Notification[];
+    notify: (message: string, type?: Notification['type']) => void;
+    removeNotification: (id: number) => void;
+}
+
+const ToastContext = createContext<ToastContextType | undefined>(undefined);
+
+export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+
+    const notify = useCallback((message: string, type: Notification['type'] = 'info') => {
+        const id = Date.now() + Math.random();
+        setNotifications(prev => [...prev, { id, message, type }]);
+    }, []);
+
+    const removeNotification = useCallback((id: number) => {
+        setNotifications(prev => prev.filter(n => n.id !== id));
+    }, []);
+
+    return (
+        <ToastContext.Provider value={{ notifications, notify, removeNotification }}>
+            {children}
+        </ToastContext.Provider>
+    );
+};
+
+export const useToast = () => {
+    // Try local context first
+    const local = useContext(ToastContext);
+    if (local) return local;
+
+    // Fallback to ProcurementContext logic (bridged)
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const proc = useProcurement(); 
+    return {
+        notifications: proc.notifications,
+        notify: proc.notify,
+        removeNotification: proc.removeNotification
+    };
+};
 
 /**
  * ToastItem - Individual toast notification with progress bar and hover pause
  */
-const ToastItem = ({ notification }: { notification: Notification }) => {
-    const { removeNotification } = useProcurement();
+const ToastItem = ({ notification, onRemove }: { notification: Notification, onRemove: (id: number) => void }) => {
     const [isPaused, setIsPaused] = useState(false);
     const duration = 5000;
     const startTimeRef = useRef<number>(0);
@@ -16,8 +58,8 @@ const ToastItem = ({ notification }: { notification: Notification }) => {
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const remove = useCallback(() => {
-        removeNotification(notification.id);
-    }, [notification.id, removeNotification]);
+        onRemove(notification.id);
+    }, [notification.id, onRemove]);
 
     const startTimer = useCallback((time: number) => {
         if (timerRef.current) clearTimeout(timerRef.current);
@@ -90,14 +132,24 @@ const ToastItem = ({ notification }: { notification: Notification }) => {
 /**
  * ToastContainer - Global container for all notifications
  */
-export default function ToastContainer() {
-    const { notifications, currentUser } = useProcurement();
+export const ToastContainer: React.FC = () => {
+    const { notifications, removeNotification } = useToast();
+    
+    // For role filtering, try to get currentUser if ProcurementContext is available
+    let currentUser: any = null;
+    try {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const proc = useProcurement();
+        currentUser = proc.currentUser;
+    } catch {
+        // Silently fail if ProcurementContext is not present
+    }
 
     if (!notifications || notifications.length === 0) return null;
 
-    // Filter notifications based on role parity with existing logic in AppContent
+    // Filter notifications based on role parity
     const filteredNotifications = notifications.filter((n: Notification) => 
-        !n.role || n.role === currentUser?.role
+        !n.role || (currentUser && n.role === currentUser.role)
     );
 
     if (filteredNotifications.length === 0) return null;
@@ -105,7 +157,7 @@ export default function ToastContainer() {
     return (
         <div className="toast-container-global">
             {filteredNotifications.map((t) => (
-                <ToastItem key={t.id} notification={t} />
+                <ToastItem key={t.id} notification={t} onRemove={removeNotification} />
             ))}
             <style jsx global>{`
                 .toast-container-global {
@@ -258,3 +310,5 @@ export default function ToastContainer() {
         </div>
     );
 }
+
+export default ToastContainer;
