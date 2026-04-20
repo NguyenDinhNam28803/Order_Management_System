@@ -174,7 +174,7 @@ export class ExternalTokenController {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             qtyOffered: item.qtyOffered ?? null,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            discountPct: item.discountPct ?? null,
+            discountPct: item.discountPct ?? 0,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             leadTimeDays: item.leadTimeDays ?? null,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
