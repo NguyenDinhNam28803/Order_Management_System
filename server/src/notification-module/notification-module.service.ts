@@ -243,17 +243,25 @@ export class NotificationModuleService {
         submitLink: tokenResult.link,
       });
 
-      // 3. Thêm vào queue gửi email
-      await this.emailQueue.add('send-email', {
-        to,
-        subject,
-        body: emailBody,
-        tokenId: tokenResult.id,
-      });
-
-      this.logger.log(
-        `External email with magic link queued: ${to} - ${eventType}`,
-      );
+      // 3. Thêm vào queue — nếu Redis không sẵn sàng thì gửi trực tiếp
+      try {
+        await this.emailQueue.add('send-email', {
+          to,
+          subject,
+          body: emailBody,
+          tokenId: tokenResult.id,
+        });
+        this.logger.log(
+          `External email with magic link queued: ${to} - ${eventType}`,
+        );
+      } catch (queueError) {
+        this.logger.warn(
+          `Email queue unavailable, sending directly to ${to}`,
+          queueError,
+        );
+        await this.emailService.sendEmail(to, subject, emailBody);
+        this.logger.log(`External email sent directly: ${to} - ${eventType}`);
+      }
 
       return {
         success: true,

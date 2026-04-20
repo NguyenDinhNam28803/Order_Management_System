@@ -4,6 +4,7 @@ import {
   BadRequestException,
   Inject,
   forwardRef,
+  Logger,
 } from '@nestjs/common';
 import { PrStatus } from '@prisma/client';
 import { CreateRfqDto } from './dto/create-rfq.dto';
@@ -31,6 +32,8 @@ export class RFQItem {
 
 @Injectable()
 export class RfqmoduleService {
+  private readonly logger = new Logger(RfqmoduleService.name);
+
   constructor(
     private readonly repository: RfqRepository,
     private readonly aiService: AiService,
@@ -230,9 +233,16 @@ export class RfqmoduleService {
       rfqNumber,
     );
 
-    // Gửi email cho các nhà cung cấp
+    // Gửi email cho các nhà cung cấp — lỗi email KHÔNG làm fail toàn bộ request
     if (createRfqDto.supplierIds?.length > 0) {
-      await this.sendInvitationEmails(rfq, createRfqDto.supplierIds);
+      try {
+        await this.sendInvitationEmails(rfq, createRfqDto.supplierIds);
+      } catch (emailError) {
+        this.logger.error(
+          `RFQ ${rfq.rfqNumber} created but failed to send invitation emails`,
+          emailError,
+        );
+      }
     }
 
     return rfq;

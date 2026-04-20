@@ -674,6 +674,27 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         notify("Tạo RFQ thất bại", "error"); return null;
     }, [apiFetch, refreshData, notify]);
 
+    const createRFQConsolidated = useCallback(async (d: ConsolidateRfqDto): Promise<boolean> => {
+        const { prIds, title, description, deadline, supplierIds } = d;
+        let anySuccess = false;
+        let anyFail = false;
+        for (const prId of prIds) {
+            const resp = await apiFetch('/request-for-quotations', {
+                method: 'POST',
+                body: JSON.stringify({ prId, title, description, deadline, supplierIds })
+            });
+            if (resp.ok) { anySuccess = true; }
+            else { anyFail = true; }
+        }
+        if (anySuccess) {
+            notify(anyFail ? "Một số RFQ tạo thành công, một số thất bại" : "Tạo RFQ thành công!", anyFail ? "info" : "success");
+            await refreshData();
+        } else {
+            notify("Tạo RFQ thất bại", "error");
+        }
+        return anySuccess && !anyFail;
+    }, [apiFetch, refreshData, notify]);
+
     const awardQuotation = useCallback(async (rfqId: string, quotationId: string) => {
         const resp = await apiFetch(`/request-for-quotations/${rfqId}/award`, {
             method: 'PUT',
@@ -1611,7 +1632,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         approveOverride, rejectOverride, convertQuoteToPR,
         removeNotification, notify,
         createPO, createPOFromPR, processPOAutomation, ackPO, shipPO, fetchPOById, confirmPO, submitPO, fetchSupplierPOs, rejectPO,
-        createRFQ, createRFQConsolidated: async () => true, awardQuotation,
+        createRFQ, createRFQConsolidated, awardQuotation,
         addDept, updateDept, removeDept,
         addUser, updateUser, removeUser,
         addOrganization, updateOrganization, removeOrganization,
