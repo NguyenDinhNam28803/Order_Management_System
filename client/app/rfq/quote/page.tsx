@@ -186,7 +186,7 @@ export default function RfqQuotePage() {
   // ── Render states ──────────────────────────────────────────────────────────
   if (pageState === "loading") {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center text-gray-900">
         <div className="text-center">
           <Loader2 className="w-10 h-10 text-blue-600 animate-spin mx-auto mb-3" />
           <p className="text-gray-600 font-medium">Đang tải thông tin yêu cầu báo giá...</p>
@@ -197,7 +197,7 @@ export default function RfqQuotePage() {
 
   if (pageState === "error") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-rose-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-rose-100 flex items-center justify-center p-4 text-gray-900">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-800 mb-2">Link không hợp lệ</h2>
@@ -213,7 +213,7 @@ export default function RfqQuotePage() {
 
   if (pageState === "submitted") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4 text-gray-900">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-800 mb-2">Gửi báo giá thành công!</h2>
@@ -244,7 +244,7 @@ export default function RfqQuotePage() {
   const deadlineColor = remaining <= 1 ? "text-red-600" : remaining <= 3 ? "text-orange-500" : "text-gray-600";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10 px-4 text-gray-900">
       <div className="max-w-3xl mx-auto space-y-5">
 
         {/* Header card */}

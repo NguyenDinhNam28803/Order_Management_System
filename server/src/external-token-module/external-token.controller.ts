@@ -190,4 +190,91 @@ export class ExternalTokenController {
 
     return { success: true, quotation };
   }
+
+  // ── PO Confirm public endpoints ─────────────────────────────────────────────
+
+  /**
+   * Lấy thông tin PO từ magic link token (không cần đăng nhập).
+   * GET /external-token/po-public/:token
+   */
+  @Get('po-public/:token')
+  async getPoByToken(@Param('token') token: string) {
+    const tokenInfo = await this.externalTokenService.validateToken(token);
+
+    const po = await this.prisma.purchaseOrder.findUnique({
+      where: { id: tokenInfo.referenceId },
+      include: {
+        items: true,
+        supplier: { select: { name: true } },
+        buyer: { select: { fullName: true, email: true } },
+      },
+    });
+
+    if (!po) throw new BadRequestException('PO không tồn tại');
+
+    return {
+      token: tokenInfo,
+      po: {
+        id: po.id,
+        poNumber: po.poNumber,
+        status: po.status,
+        totalAmount: Number(po.totalAmount),
+        currency: po.currency,
+        paymentTerms: po.paymentTerms ?? null,
+        deliveryAddress: po.deliveryAddress ?? null,
+        deliveryDate: po.deliveryDate,
+        issuedAt: po.issuedAt,
+        notes: po.notes ?? null,
+        supplierName: po.supplier?.name ?? null,
+        contactPerson: po.buyer?.fullName ?? null,
+        contactEmail: po.buyer?.email ?? null,
+        items: po.items.map((i: any) => ({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          id: i.id,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          description: i.description,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          qty: Number(i.qty),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          unit: i.unit,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          unitPrice: Number(i.unitPrice),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          total: Number(i.total),
+        })),
+      },
+    };
+  }
+
+  /**
+   * NCC xác nhận nhận PO qua magic link (không cần đăng nhập).
+   * POST /external-token/po-public/:token/confirm
+   * Body: { notes?: string }
+   */
+  @Post('po-public/:token/confirm')
+  async confirmPoByToken(
+    @Param('token') token: string,
+    @Body() body: any,
+  ) {
+    const tokenInfo = await this.externalTokenService.validateToken(token);
+
+    const po = await this.prisma.purchaseOrder.findUnique({
+      where: { id: tokenInfo.referenceId },
+    });
+    if (!po) throw new BadRequestException('PO không tồn tại');
+
+    await this.prisma.purchaseOrder.update({
+      where: { id: po.id },
+      data: {
+        status: 'ACKNOWLEDGED',
+        acknowledgedAt: new Date(),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        notes: body.notes ? `${po.notes ?? ''}\n[NCC xác nhận]: ${body.notes}`.trim() : po.notes,
+      },
+    });
+
+    await this.externalTokenService.markTokenAsUsed(token);
+
+    return { success: true };
+  }
 }
