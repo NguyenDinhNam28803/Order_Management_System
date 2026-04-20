@@ -14,12 +14,14 @@ import type {
 } from './external-token.service';
 import { ExternalTokenService as ExternalTokenServiceImpl } from './external-token.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { AutomationService } from '../common/automation/automation.service';
 
 @Controller('external-token')
 export class ExternalTokenController {
   constructor(
     private readonly externalTokenService: ExternalTokenServiceImpl,
     private readonly prisma: PrismaService,
+    private readonly automationService: AutomationService,
   ) {}
 
   @Post('create')
@@ -274,6 +276,118 @@ export class ExternalTokenController {
     });
 
     await this.externalTokenService.markTokenAsUsed(token);
+
+    // Trigger automation: tạo GRN draft, notify warehouse, gửi email /grn/update cho NCC
+    void this.automationService.handlePoSupplierAccepted(po.id, po.supplierId).catch(() => {});
+
+    return { success: true };
+  }
+
+  // ── GRN Shipment Update public endpoints ────────────────────────────────────
+
+  /**
+   * Lấy thông tin GRN + PO từ token (không cần đăng nhập).
+   * GET /external-token/grn-public/:token
+   */
+  @Get('grn-public/:token')
+  async getGrnByToken(@Param('token') token: string) {
+    const tokenInfo = await this.externalTokenService.validateToken(token);
+
+    const grn = await this.prisma.goodsReceipt.findUnique({
+      where: { id: tokenInfo.referenceId },
+      include: {
+        po: {
+          include: {
+            supplier: { select: { name: true } },
+            buyer:    { select: { fullName: true, email: true } },
+            shipmentTracking: { orderBy: { createdAt: 'desc' }, take: 1 },
+          },
+        },
+      },
+    });
+
+    if (!grn) throw new BadRequestException('GRN không tồn tại');
+
+    const po = grn.po as any;
+    const latestTracking = (po.shipmentTracking?.[0] ?? null) as any;
+
+    return {
+      token: tokenInfo,
+      grn: {
+        id: grn.id,
+        grnNumber: grn.grnNumber,
+        po: {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          poNumber: po.poNumber,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          deliveryDate: po.deliveryDate,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          supplierName: po.supplier?.name ?? null,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          contactPerson: po.buyer?.fullName ?? null,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          contactEmail: po.buyer?.email ?? null,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          paymentTerms: po.paymentTerms ?? null,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          deliveryAddress: po.deliveryAddress ?? null,
+        },
+        tracking: latestTracking ? {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          trackingNumber: latestTracking.trackingNumber ?? null,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          carrier: latestTracking.carrier ?? null,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          shippedAt: latestTracking.shippedAt ?? null,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          estimatedArrival: latestTracking.estimatedArrival ?? null,
+        } : null,
+      },
+    };
+  }
+
+  /**
+   * NCC cập nhật thông tin vận chuyển qua magic link.
+   * POST /external-token/grn-public/:token/update
+   * Body: { trackingNumber, carrier, shippedAt?, estimatedArrival?, notes? }
+   */
+  @Post('grn-public/:token/update')
+  async updateShipmentByToken(
+    @Param('token') token: string,
+    @Body() body: any,
+  ) {
+    const tokenInfo = await this.externalTokenService.validateToken(token);
+
+    const grn = await this.prisma.goodsReceipt.findUnique({
+      where: { id: tokenInfo.referenceId },
+    });
+    if (!grn) throw new BadRequestException('GRN không tồn tại');
+
+    // Tạo tracking record mới (lịch sử nhiều lần cập nhật)
+    await this.prisma.poShipmentTracking.create({
+      data: {
+        poId: grn.poId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        trackingNumber: body.trackingNumber ?? null,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        carrier: body.carrier ?? null,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        shippedAt: body.shippedAt ? new Date(body.shippedAt as string) : null,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        estimatedArrival: body.estimatedArrival ? new Date(body.estimatedArrival as string) : null,
+        status: 'SHIPPED',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        notes: body.notes ?? null,
+      },
+    });
+
+    // Cập nhật PO status → SHIPPED
+    await this.prisma.purchaseOrder.update({
+      where: { id: grn.poId },
+      data: { status: 'SHIPPED' },
+    });
+
+    // Token GRN_MILESTONE không mark as used — NCC có thể cập nhật lại tracking
 
     return { success: true };
   }

@@ -138,6 +138,11 @@ export class AutomationService {
       // Gửi thông báo in-app cho tất cả user có role WAREHOUSE trong cùng org
       await this.notifyWarehouseTeam(po, grn);
 
+      // Gửi email magic link /grn/update cho NCC để cập nhật thông tin vận chuyển
+      void this.notifySupplierGrnMilestone(grn.id, po).catch((e) =>
+        this.logger.error(`Failed to send GRN milestone email for PO ${po.poNumber}`, e),
+      );
+
       return grn;
     } catch (error) {
       this.logger.error(`Failed to create draft GRN for PO ${poId}: ${error!}`);
@@ -940,5 +945,55 @@ Procurement System
         `Failed to send warehouse notification for GRN ${grn.grnNumber}: ${error}`,
       );
     }
+  }
+
+  private async notifySupplierGrnMilestone(grnId: string, po: any): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierOrgId: string | undefined = po?.supplierId;
+    if (!supplierOrgId) return;
+
+    const supplierUser = await this.prisma.user.findFirst({
+      where: {
+        orgId: supplierOrgId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        role: 'SUPPLIER' as any,
+        isActive: true,
+      },
+      include: { organization: true },
+    });
+    if (!supplierUser?.email) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName: string =
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (supplierUser.organization as any)?.name ??
+      supplierUser.fullName ??
+      supplierUser.email;
+
+    await this.notificationService.sendExternalEmailWithMagicLink({
+      to: supplierUser.email,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      subject: `[Cập nhật giao hàng] ${po.poNumber as string}`,
+      eventType: 'GRN_MILESTONE_UPDATE',
+      referenceId: grnId,
+      tokenType: TokenType.GRN_MILESTONE,
+      expiresInDays: 7,
+      data: {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        poCode: po.poNumber,
+        supplierName,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        expectedDelivery: po.deliveryDate ?? new Date(),
+        completedSteps: ['Đặt hàng', 'Xác nhận PO'],
+        currentStep: 'Đang giao hàng',
+        pendingSteps: ['Xác nhận nhận hàng'],
+        warehouseEmail:
+          process.env['WAREHOUSE_EMAIL'] ??
+          process.env['EMAIL_FROM_EMAIL'] ??
+          '',
+      },
+    });
+
+    this.logger.log(`GRN milestone email sent to ${supplierUser.email} for GRN ${grnId}`);
   }
 }
