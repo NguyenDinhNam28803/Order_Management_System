@@ -317,7 +317,7 @@ export default function RfqQuotePage() {
               <h2 className="font-semibold text-gray-800">Danh sách hàng hóa cần báo giá</h2>
             </div>
             <div className="divide-y divide-gray-50">
-              {rfq.items.map((item, idx) => (
+              {rfq.items?.map((item, idx) => (
                 <div key={item.id} className="px-6 py-4">
                   <div className="flex items-start justify-between mb-3">
                     <div>
