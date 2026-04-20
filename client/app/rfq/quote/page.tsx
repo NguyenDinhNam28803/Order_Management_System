@@ -88,24 +88,34 @@ export default function RfqQuotePage() {
   const loadRfq = useCallback(async (t: string) => {
     try {
       const res = await fetch(`${API}/external-token/rfq-public/${t}`);
+      const json = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        throw new Error((err as any).message ?? "Token không hợp lệ hoặc đã hết hạn");
+        throw new Error((json as any).message ?? "Token không hợp lệ hoặc đã hết hạn");
       }
-      const data = await res.json();
-      setRfq(data.rfq);
-      setTokenInfo(data.token);
+
+      // Backend wraps responses via TransformInterceptor: { status, message, data: { rfq, token } }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload = (json as any).data ?? json;
+      const rfqData: RfqInfo = payload.rfq;
+      const tokenData: TokenInfo = payload.token;
+
+      if (!rfqData) throw new Error("Không tìm thấy thông tin RFQ");
+      if (!Array.isArray(rfqData.items)) rfqData.items = [];
+
+      setRfq(rfqData);
+      setTokenInfo(tokenData);
       setItemForms(
-        data.rfq.items.map((item: RfqItem) => ({
+        rfqData.items.map((item: RfqItem) => ({
           rfqItemId: item.id,
           unitPrice: "",
           qtyOffered: String(item.qty),
           notes: "",
         }))
       );
-      if (data.rfq.paymentTerms) setPaymentTerms(data.rfq.paymentTerms);
-      if (data.rfq.deliveryTerms) setDeliveryTerms(data.rfq.deliveryTerms);
+      if (rfqData.paymentTerms) setPaymentTerms(rfqData.paymentTerms);
+      if (rfqData.deliveryTerms) setDeliveryTerms(rfqData.deliveryTerms);
       setPageState("form");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
