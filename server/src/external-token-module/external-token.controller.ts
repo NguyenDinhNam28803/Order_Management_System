@@ -165,8 +165,10 @@ export class ExternalTokenController {
         items: {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           create: (body.items ?? []).map((item: any) => ({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            rfqItemId: item.rfqItemId,
+            rfqItem: {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              connect: { id: item.rfqItemId },
+            },
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             unitPrice: item.unitPrice,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

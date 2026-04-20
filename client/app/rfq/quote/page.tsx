@@ -365,7 +365,7 @@ export default function RfqQuotePage() {
                           next[idx] = { ...next[idx], unitPrice: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -379,7 +379,7 @@ export default function RfqQuotePage() {
                           next[idx] = { ...next[idx], qtyOffered: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div className="md:col-span-1">
@@ -393,7 +393,7 @@ export default function RfqQuotePage() {
                           next[idx] = { ...next[idx], notes: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   </div>
@@ -435,7 +435,7 @@ export default function RfqQuotePage() {
                   required
                   value={leadTimeDays}
                   onChange={(e) => setLeadTimeDays(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -445,7 +445,7 @@ export default function RfqQuotePage() {
                   placeholder="Net 30, COD, 50% trước..."
                   value={paymentTerms}
                   onChange={(e) => setPaymentTerms(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -455,7 +455,7 @@ export default function RfqQuotePage() {
                   placeholder="DDP, FOB, CIF..."
                   value={deliveryTerms}
                   onChange={(e) => setDeliveryTerms(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -465,7 +465,7 @@ export default function RfqQuotePage() {
                   placeholder="Thông tin bổ sung, ưu đãi đặc biệt..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
               </div>
             </div>
