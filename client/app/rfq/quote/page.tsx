@@ -3,8 +3,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
   CheckCircle, AlertCircle, Clock, FileText, Building2,
-  Mail, Phone, CalendarDays, Package, Send, Loader2, ChevronRight
+  Mail, Phone, CalendarDays, Package, Send, Loader2, ChevronRight,
+  Bell
 } from "lucide-react";
+import { ToastProvider, ToastContainer, useToast } from "../../components/Toast";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
@@ -63,6 +65,16 @@ const daysLeft = (deadline: string) => {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function RfqQuotePage() {
+  return (
+    <ToastProvider>
+      <RfqQuotePageContent />
+      <ToastContainer />
+    </ToastProvider>
+  );
+}
+
+function RfqQuotePageContent() {
+  const { notify } = useToast();
   const [token, setToken] = useState<string>("");
   const [pageState, setPageState] = useState<PageState>("loading");
   const [errorMsg, setErrorMsg] = useState("");
@@ -174,6 +186,7 @@ export default function RfqQuotePage() {
         throw new Error((err as any).message ?? "Gửi báo giá thất bại");
       }
 
+      notify("Báo giá của bạn đã được gửi thành công!", "success");
       setPageState("submitted");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
@@ -218,7 +231,7 @@ export default function RfqQuotePage() {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-800 mb-2">Gửi báo giá thành công!</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-4">
-            Báo giá của bạn cho <strong>{rfq?.title}</strong> ({rfq?.rfqNumber}) đã được ghi nhận.
+            Báo giá của bạn cho <strong>{rfq?.title}</strong> (RFQ-********) đã được ghi nhận.
           </p>
           <div className="bg-green-50 rounded-xl p-4 text-left text-sm space-y-2">
             <div className="flex justify-between">
@@ -253,7 +266,7 @@ export default function RfqQuotePage() {
             <div className="flex items-center gap-2 mb-1">
               <span className="text-blue-200 text-xs font-semibold tracking-widest uppercase">Mời báo giá</span>
               <ChevronRight className="w-3 h-3 text-blue-300" />
-              <span className="text-blue-200 text-xs font-semibold">{rfq.rfqNumber}</span>
+              <span className="text-blue-200 text-xs font-semibold">RFQ-********</span>
             </div>
             <h1 className="text-white text-xl font-bold leading-snug">{rfq.title}</h1>
           </div>
@@ -261,7 +274,7 @@ export default function RfqQuotePage() {
           <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm border-b border-gray-100">
             <div>
               <p className="text-gray-400 text-xs mb-0.5">Mã RFQ</p>
-              <p className="font-semibold text-gray-800">{rfq.rfqNumber}</p>
+              <p className="font-semibold text-gray-800">********</p>
             </div>
             <div>
               <p className="text-gray-400 text-xs mb-0.5">Hạn chót</p>

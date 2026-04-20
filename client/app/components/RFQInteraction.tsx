@@ -111,6 +111,7 @@ export default function RFQInteraction({ rfqId }: RFQInteractionProps) {
         }
         try {
             await inviteSuppliersToRFQ(rfqId, selectedSuppliers);
+            notify("Đã gửi yêu cầu báo giá thành công", "success");
         } catch {
             // continue even if invite call fails
         }
@@ -180,7 +181,7 @@ export default function RFQInteraction({ rfqId }: RFQInteractionProps) {
                 <h2 style={{ margin: '0 0 10px 0', color: '#1a1a1a' }}>Nghiệp vụ Xử lý Báo giá (RFQ)</h2>
                 {rfq && (
                     <div style={{ fontSize: '14px', color: '#666' }}>
-                        <strong>RFQ:</strong> {rfq.rfqNumber} | 
+                        <strong>RFQ:</strong> ******** | 
                         <strong> Trạng thái:</strong> {rfq.status}
                     </div>
                 )}

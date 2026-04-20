@@ -310,8 +310,8 @@ export default function POConsolidatePage() {
           </div>
 
           <div className="flex flex-wrap gap-1.5 justify-center mb-6">
-            {s.sourcePrNumbers.map((n) => (
-              <span key={n} className="ref-tag">{n}</span>
+            {s.sourcePrNumbers.map((n, idx) => (
+              <span key={idx} className="ref-tag">********</span>
             ))}
           </div>
 
@@ -441,7 +441,7 @@ export default function POConsolidatePage() {
                         ? <CheckSquare size={15} className="text-[#60A5FA] shrink-0" />
                         : <Square size={15} className="text-[#475569] shrink-0" />}
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-[#F1F5F9] font-mono truncate">{pr.prNumber}</p>
+                        <p className="text-xs font-bold text-[#F1F5F9] font-mono truncate">********</p>
                         <p className="text-[10px] text-[#64748B] truncate mt-0.5">{pr.title ?? pr.description ?? "—"}</p>
                       </div>
                       <div className="text-right shrink-0">
@@ -786,9 +786,9 @@ export default function POConsolidatePage() {
                       </div>
                       {/* Sources */}
                       <div className="flex flex-wrap gap-1 mt-2">
-                        {item.sources.map((src) => (
-                          <span key={src.prNumber} className="source-pill">
-                            {src.prNumber}: <span className="text-[#F1F5F9]">{src.qty}</span>
+                        {item.sources.map((src, sIdx) => (
+                          <span key={sIdx} className="source-pill">
+                            ********: <span className="text-[#F1F5F9]">{src.qty}</span>
                           </span>
                         ))}
                       </div>

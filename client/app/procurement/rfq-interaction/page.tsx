@@ -1,8 +1,12 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import RFQInteraction from "../../components/RFQInteraction";
 
 export default function RFQInteractionPage() {
+    const searchParams = useSearchParams();
+    const rfqId = searchParams.get("id") || "";
+
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
             <div className="mt-12 mb-8">
@@ -10,8 +14,8 @@ export default function RFQInteractionPage() {
                 <p className="text-slate-400 font-medium">Demo quy trình tự động lọc & so sánh giá cho Bộ phận Thu mua</p>
             </div>
 
-            <div className="bg-slate-50 p-12 rounded-[40px] border border-slate-100 shadow-inner">
-                <RFQInteraction rfqId={""} />
+            <div className="bg-white p-12 rounded-[40px] border border-slate-100 shadow-inner">
+                <RFQInteraction rfqId={rfqId} />
             </div>
 
             <div className="mt-12 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">

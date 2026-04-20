@@ -196,7 +196,7 @@ export default function SupplierPortalPage() {
             id: "1",
             type: "rfq",
             title: "Yêu cầu báo giá mới",
-            description: "RFQ-2024-015 - Nâng cấp hệ thống server",
+            description: "RFQ-******** - Nâng cấp hệ thống server",
             date: "2 giờ trước",
             status: "PENDING",
             priority: "high"
@@ -499,7 +499,7 @@ export default function SupplierPortalPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#F8FAFC] truncate">{rfq.rfqNumber || rfq.id?.substring(0, 8)}</span>
+                        <span className="font-bold text-[#F8FAFC] truncate">********</span>
                         <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-bold">
                           Chờ báo giá
                         </span>

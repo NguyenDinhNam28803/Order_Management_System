@@ -166,7 +166,7 @@ export default function QuotationManagementPage() {
                         <FileText size={20} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-black text-[#F8FAFC] tracking-tight">{row.rfqNumber || row.id.substring(0, 8)}</span>
+                        <span className="font-black text-[#F8FAFC] tracking-tight">********</span>
                         <span className="text-[9px] text-[#64748B] font-bold uppercase">{formatDate(row.createdAt)}</span>
                     </div>
                 </div>

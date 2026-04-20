@@ -312,9 +312,21 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     });
 
     const notify = useCallback((message: string, type: Notification['type'] = 'info') => {
-        const id = Date.now();
-        setState(prev => ({ ...prev, notifications: [...prev.notifications, { id, message, type }] }));
-        setTimeout(() => setState(prev => ({ ...prev, notifications: prev.notifications.filter(n => n.id !== id) })), 5000);
+        const id = Date.now() + Math.random();
+        console.log(`[Notification] ${type}: ${message}`);
+        console.log(`[NOTIFY] ${type.toUpperCase()}: ${message}`);
+        setState(prev => ({ 
+            ...prev, 
+            notifications: [...prev.notifications, { id, message, type }] 
+        }));
+        
+        // Auto-remove after 6 seconds (slightly longer than before)
+        setTimeout(() => {
+            setState(prev => ({ 
+                ...prev, 
+                notifications: prev.notifications.filter(n => n.id !== id) 
+            }));
+        }, 6000);
     }, []);
 
     const removeNotification = useCallback((id: number) => {
@@ -524,7 +536,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const submitPR = useCallback(async (id: string) => {
         const resp = await apiFetch(`/procurement-requests/${id}/submit`, { method: 'POST' });
-        if (resp.ok) { notify("Gửi duyệt thành công", "success"); await refreshData(); return true; }
+        if (resp.ok) {
+            notify("Gửi duyệt thành công", "success");
+            refreshData(); // Run in background
+            return true;
+        }
         notify("Gửi duyệt thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
@@ -543,7 +559,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const actionApproval = useCallback(async (id: string, action: 'APPROVE' | 'REJECT', comment?: string) => {
         const resp = await apiFetch(`/approvals/${id}/action`, { method: 'POST', body: JSON.stringify({ action, comment }) });
-        if (resp.ok) { notify("Phê duyệt thành công", "success"); await refreshData(); return true; }
+        if (resp.ok) {
+            notify("Phê duyệt thành công", "success");
+            refreshData(); // background
+            return true;
+        }
         notify("Phê duyệt thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
@@ -551,7 +571,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         const resp = await apiFetch('/budgets/allocations', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) {
             const res = await resp.json();
-            await refreshData();
+            refreshData(); // background
             return res.data || res;
         }
         notify("Tạo phân bổ ngân sách thất bại", "error"); return false;
@@ -559,7 +579,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const submitAllocation = useCallback(async (id: string) => {
         const resp = await apiFetch(`/budgets/allocations/${id}/submit`, { method: 'PATCH' });
-        if (resp.ok) { notify("Đã gửi duyệt ngân sách", "success"); await refreshData(); return true; }
+        if (resp.ok) {
+            notify("Đã gửi duyệt ngân sách", "success");
+            refreshData(); // background
+            return true;
+        }
         notify("Gửi duyệt ngân sách thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
@@ -667,7 +691,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         const resp = await apiFetch('/request-for-quotations', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) {
             notify("Tạo RFQ thành công!", "success");
-            await refreshData();
+            refreshData(); // Run in background
             const res = await resp.json();
             return res.data || res;
         }
@@ -688,7 +712,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         }
         if (anySuccess) {
             notify(anyFail ? "Một số RFQ tạo thành công, một số thất bại" : "Tạo RFQ thành công!", anyFail ? "info" : "success");
-            await refreshData();
+            refreshData(); // background
         } else {
             notify("Tạo RFQ thất bại", "error");
         }
@@ -700,7 +724,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             method: 'PUT',
             body: JSON.stringify({ quotationId })
         });
-        if (resp.ok) { notify("Đã chọn nhà thầu thành công!", "success"); await refreshData(); return true; }
+        if (resp.ok) {
+            notify("Đã chọn nhà thầu thành công!", "success");
+            refreshData(); // background
+            return true;
+        }
         notify("Chọn nhà thầu thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 

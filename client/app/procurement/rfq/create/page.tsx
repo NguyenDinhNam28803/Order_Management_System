@@ -285,32 +285,26 @@ export default function CreateRFQPage() {
                 minSuppliers: selectedVendors.length
             };
 
-            // Call the context function which handles the demo logic
-            const success = await createRFQ(payload);
+            // createRFQ in context already handles:
+            // 1. API call to /request-for-quotations
+            // 2. notify("Tạo RFQ thành công!", "success")
+            // 3. refreshData()
+            const result = await createRFQ(payload);
 
-            if (!success) {
-                throw new Error("Failed to create RFQ locally");
+            if (!result) {
+                throw new Error("Không thể tạo RFQ. Vui lòng kiểm tra lại kết nối.");
             }
 
-            // Also send to API for real persistence (if backend is running)
-            // But wrap in try/catch to not block the demo if it fails
-            try {
-                await apiFetch('/request-for-quotations', {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-            } catch (err) {
-                console.warn("Backend still unavailable, continuing with demo state.");
-            }
-
+            // Trigger success state immediately
             setIsSuccess(true);
-            refreshData();
+            
+            // Redirect after a short delay
             setTimeout(() => {
                 router.push("/procurement/prs");
-            }, 2000);
+            }, 2500);
         } catch (err) {
             console.error(err);
-            const errorMessage = err instanceof Error ? err.message : "Unknown error";
+            const errorMessage = err instanceof Error ? err.message : "Lỗi không xác định";
             alert("Có lỗi xảy ra khi tạo RFQ: " + errorMessage);
         } finally {
             setIsSubmitting(false);
