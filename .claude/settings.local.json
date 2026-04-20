@@ -23,7 +23,9 @@
       "Bash(chmod +x /tmp/analyze.sh)",
       "Bash(bash /tmp/analyze.sh)",
       "Bash(chmod +x /tmp/analyze_comprehensive.sh)",
-      "Bash(bash /tmp/analyze_comprehensive.sh)"
+      "Bash(bash /tmp/analyze_comprehensive.sh)",
+      "Bash(xargs ls *)",
+      "Bash(xargs cat *)"
     ]
   }
 }

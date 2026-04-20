@@ -14,16 +14,25 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
     const pathname = usePathname();
     const router   = useRouter();
 
-    const isWhiteListed = pathname === "/login" || pathname === "/register";
+    const isAuthPage = pathname === "/login" || pathname === "/register";
+
+    // Public routes không cần đăng nhập: auth pages + magic-link external pages
+    const isExternalPage =
+        pathname.startsWith("/rfq/quote") ||
+        pathname.startsWith("/po/confirm") ||
+        pathname.startsWith("/grn/update") ||
+        pathname.startsWith("/invoice/submit");
+
+    const isWhiteListed = isAuthPage || isExternalPage;
 
     useEffect(() => {
         if (isAuthChecking) return;
         if (!currentUser && !isWhiteListed) router.push("/login");
-        if (currentUser  && isWhiteListed)  router.push("/");
-    }, [currentUser, isAuthChecking, isWhiteListed, router]);
+        if (currentUser  && isAuthPage)     router.push("/");   // chỉ redirect login/register, không redirect external pages
+    }, [currentUser, isAuthChecking, isWhiteListed, isAuthPage, router]);
 
-    // ── Auth checking loading screen ──
-    if (isAuthChecking) {
+    // ── Auth checking loading screen (skip với external magic-link pages) ──
+    if (isAuthChecking && !isExternalPage) {
         return (
             <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-5">
@@ -50,7 +59,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
     if (!currentUser && !isWhiteListed) return null;
 
-    // ── Auth pages (login / register) ──
+    // ── Auth pages + external magic-link pages (không sidebar, không topbar) ──
     if (isWhiteListed) return (
         <main className="animate-in fade-in duration-500 min-h-screen bg-[#0D1117] text-[#E6EDF3]">
             {children}
