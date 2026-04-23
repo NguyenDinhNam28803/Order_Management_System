@@ -149,7 +149,7 @@ export default function PODetailPage() {
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#64748B]">PR Tham Chiếu</div>
               <p className="text-sm font-bold text-[#3B82F6] cursor-pointer hover:underline" onClick={() => router.push(`/pr/${po.prId}`)}>
-                {po.pr?.prNumber || po.prId}
+                {po.pr?.prNumber || (po.prId ? `PR-${po.prId.substring(0, 8)}...` : 'N/A')}
               </p>
             </div>
             <div className="space-y-1">

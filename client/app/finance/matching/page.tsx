@@ -74,10 +74,10 @@ export default function FinanceMatching() {
                     <button onClick={() => router.back()} className="w-10 h-10 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-full flex justify-center items-center text-[#64748B] hover:text-[#F8FAFC] hover:border-[#3B82F6]/30 shadow-sm transition-all"><ArrowLeft size={16}/></button>
                     <div>
                         <div className="flex items-center gap-2 mb-1 text-[10px] font-black uppercase text-[#64748B] tracking-widest">
-                            Nhà CC: {invoice?.vendor || "N/A"} <span className="text-[#3B82F6] bg-[#3B82F6]/10 px-2 rounded ml-2 border border-[#3B82F6]/20">Payment: Net 30</span>
+                            Nhà CC: {invoice?.vendor?.length && invoice.vendor.length > 16 ? "Supplier-***" : (invoice?.vendor || "N/A")} <span className="text-[#3B82F6] bg-[#3B82F6]/10 px-2 rounded ml-2 border border-[#3B82F6]/20">Payment: Net 30</span>
                         </div>
                         <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight flex items-center gap-4">
-                            Hóa Đơn {invId}
+                            Hóa Đơn ***
                             {isException ? (
                                 <span className="text-[12px] uppercase font-black tracking-widest text-rose-400 bg-rose-500/10 px-4 py-1.5 border border-rose-500/20 rounded-full shadow-sm flex items-center gap-1">
                                     <ShieldAlert size={14}/> EXCEPTION DETECTED

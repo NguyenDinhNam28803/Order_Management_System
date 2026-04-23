@@ -233,7 +233,7 @@ export default function InvoiceDetailPage() {
                   {invoice.invoiceNumber}
                 </h1>
                 <p className="text-text-secondary text-sm mt-1">
-                  ID: {invoice.id?.slice(0, 8)}... | Ngày: {formatDate(invoice.invoiceDate)}
+                  ID: *** | Ngày: {formatDate(invoice.invoiceDate)}
                 </p>
               </div>
             </div>
@@ -374,7 +374,7 @@ export default function InvoiceDetailPage() {
                       {invoice.matchingResult.map((result, idx) => (
                         <tr key={idx} className="border-b border-border/50">
                           <td className="py-3 px-4 text-text-primary font-mono text-sm">
-                            {result.poItemId?.slice(0, 8)}...
+                            ***
                           </td>
                           <td className="py-3 px-4 text-center">
                             {result.qtyMatch ? (

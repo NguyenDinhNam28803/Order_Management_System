@@ -180,14 +180,14 @@ export default function FinanceDashboard() {
                                             <div className="h-8 w-8 rounded-lg bg-[#3B82F6]/10 text-[#3B82F6] flex items-center justify-center font-bold text-[10px] group-hover:bg-[#3B82F6] group-hover:text-white transition-colors duration-300 border border-[#3B82F6]/20">
                                                 ID
                                             </div>
-                                            <span className="font-bold text-[#F8FAFC] tracking-tight">{inv.id}</span>
+                                            <span className="font-bold text-[#F8FAFC] tracking-tight">INV-***</span>
                                         </div>
                                     </td>
                                     <td>
                                         <div className="text-sm font-bold text-[#F8FAFC]">{inv.vendor}</div>
                                         <div className="text-[10px] text-[#64748B] font-medium uppercase tracking-tighter">Verified Partner</div>
                                     </td>
-                                    <td className=" text-[#3B82F6] text-[11px] font-bold">#{inv.poId}</td>
+                                    <td className=" text-[#3B82F6] text-[11px] font-bold">PO-***</td>
                                     <td className="text-right font-bold text-[#F8FAFC] text-sm">{formatVND(inv.amount)} ₫</td>
                                     <td className="text-[#64748B] text-[11px] font-semibold">{inv.createdAt}</td>
                                     <td className="text-center">

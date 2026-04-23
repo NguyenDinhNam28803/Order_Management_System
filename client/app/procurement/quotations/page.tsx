@@ -258,7 +258,7 @@ export default function QuotationManagementPage() {
                     <div className="flex flex-col">
                         <span className="font-black text-[#F8FAFC] text-sm">{row.supplier?.name || "Chưa có tên"}</span>
                         <div className="flex items-center gap-2 text-[10px] text-[#64748B]">
-                            <span className="bg-[#0F1117] px-2 py-0.5 rounded border border-[rgba(148,163,184,0.1)]">{row.supplierId.substring(0, 8)}</span>
+                            <span className="bg-[#0F1117] px-2 py-0.5 rounded border border-[rgba(148,163,184,0.1)]">***</span>
                             {row.supplier?.email && (
                                 <span className="flex items-center gap-1">
                                     <Mail size={10} /> {row.supplier.email}

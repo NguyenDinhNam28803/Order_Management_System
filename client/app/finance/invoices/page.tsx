@@ -171,7 +171,7 @@ export default function FinanceInvoicesPage() {
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-[#F8FAFC]">{inv.invoiceNumber}</p>
-                                                    <p className="text-xs text-[#64748B]">ID: {inv.id.slice(0, 8)}...</p>
+                                                    <p className="text-xs text-[#64748B]">ID: ***</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -183,10 +183,10 @@ export default function FinanceInvoicesPage() {
                                         </td>
                                         <td className="px-6 py-5">
                                             <span className="text-xs font-black text-[#64748B] uppercase tracking-tight bg-[#0F1117] px-2 py-1 rounded border border-[rgba(148,163,184,0.1)]">
-                                                {inv.po?.poNumber || inv.poId?.slice(0, 8)}...
+                                                {inv.po?.poNumber || "PO-***"}
                                             </span>
                                             {inv.grnId && (
-                                                <p className="text-xs text-emerald-400 mt-1">GRN: {inv.grnId.slice(0, 8)}...</p>
+                                                <p className="text-xs text-emerald-400 mt-1">GRN: ***</p>
                                             )}
                                         </td>
                                         <td className="px-6 py-5 text-right">

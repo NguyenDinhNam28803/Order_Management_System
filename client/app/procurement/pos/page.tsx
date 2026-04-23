@@ -623,7 +623,7 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                             {data.supplier?.name || data.vendorName || "N/A"}
                         </p>
                         <p className="text-xs text-[#64748B] font-mono mt-1">
-                            ID: {(data.supplier?.id || data.supplierId || "").substring(0, 16)}
+                            ID: ***
                         </p>
                     </section>
 
@@ -631,11 +631,11 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                     <div className="grid grid-cols-2 gap-3">
                         <section className="bg-[#3B82F6]/5 border border-[#3B82F6]/15 rounded-xl p-4">
                             <p className="text-[9px] font-black text-[#3B82F6] uppercase tracking-widest mb-1.5">Yêu cầu PR</p>
-                            <p className="font-black text-[#F8FAFC] text-sm">{(data as POMockData).prId || "—"}</p>
+                            <p className="font-black text-[#F8FAFC] text-sm">{(data as POMockData).prId ? "PR-***" : "—"}</p>
                         </section>
                         <section className="bg-[#8B5CF6]/5 border border-[#8B5CF6]/15 rounded-xl p-4">
                             <p className="text-[9px] font-black text-[#8B5CF6] uppercase tracking-widest mb-1.5">Báo giá RFQ</p>
-                            <p className="font-black text-[#F8FAFC] text-sm">{(data as POMockData).rfqId || "—"}</p>
+                            <p className="font-black text-[#F8FAFC] text-sm">{(data as POMockData).rfqId ? "RFQ-***" : "—"}</p>
                         </section>
                     </div>
 

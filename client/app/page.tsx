@@ -280,7 +280,7 @@ export default function Dashboard() {
                                          ) : (
                                              personalPRs.slice(0, 5).map((pr) => (
                                                  <tr key={pr.id} className="hover:bg-[#0F1117]/50 transition-all group">
-                                                     <td className="px-8 py-6 font-black text-[#F8FAFC] text-xs tracking-tighter">{pr.prNumber || pr.id.substring(0, 8)}</td>
+                                                     <td className="px-8 py-6 font-black text-[#F8FAFC] text-xs tracking-tighter">{pr.prNumber || "PR-***"}</td>
                                                      <td className="px-8 py-6 font-semibold text-[#94A3B8] text-[11px] truncate max-w-[180px]" title={pr.title}>{pr.title}</td>
                                                      <td className="px-8 py-6 text-[#64748B] font-bold text-[10px]">{formatDate(pr.createdAt)}</td>
                                                      <td className="px-8 py-6 font-black text-[#F8FAFC] text-right tracking-tight">{formatVND(pr.totalEstimate || 0)}</td>
@@ -718,7 +718,7 @@ export default function Dashboard() {
                                 {cfoPendingPRs.length > 0 ? cfoPendingPRs.map((pr) => (
                                     <tr key={pr.id} className="hover:bg-[#0F1117]/50 transition-colors group">
                                         <td className="px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#3B82F6] bg-[#161922]"/></td>
-                                        <td className="font-bold text-[#F8FAFC] tracking-tight">{pr.prNumber || pr.id.substring(0, 8)}</td>
+                                        <td className="font-bold text-[#F8FAFC] tracking-tight">{pr.prNumber || "PR-***"}</td>
                                         <td><span className={`px-2.5 py-1 rounded-lg font-black text-[9px] uppercase ${Number(pr.totalEstimate) > 50000000 ? 'bg-[#3B82F6]/10 text-[#3B82F6]' : 'bg-[#1A1D23] text-[#64748B]'}`}>{Number(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
                                         <td className="font-medium text-[#94A3B8]">{pr.title}</td>
                                         <td className="text-center">
@@ -1005,7 +1005,7 @@ export default function Dashboard() {
                                             const statusDisplay = getStatusDisplay(po.status);
                                             return (
                                                 <tr key={po.id} className="hover:bg-[#0F1117]/50 transition-colors group">
-                                                    <td className="font-bold text-[#F8FAFC]">{po.poNumber || po.id.substring(0, 8)}</td>
+                                                    <td className="font-bold text-[#F8FAFC]">{po.poNumber || "PO-***"}</td>
                                                     <td className="font-semibold text-[#94A3B8] truncate max-w-[120px]">{po.supplier?.name || po.vendor || "Vendor"}</td>
                                                     <td>
                                                         <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-full ${statusDisplay.bg} ${statusDisplay.color}`}>
@@ -1464,7 +1464,7 @@ export default function Dashboard() {
                                             <td className="px-8 text-center">
                                                 <input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#3B82F6] bg-[#161922]" />
                                             </td>
-                                            <td className="font-bold text-[#F8FAFC]">{pr.prNumber || pr.id.substring(0, 8)}</td>
+                                            <td className="font-bold text-[#F8FAFC]">{pr.prNumber || "PR-***"}</td>
                                             <td className="text-[#64748B] font-medium">{formatDate(pr.createdAt)}</td>
                                             <td className="text-center">
                                                 <span className={`px-2.5 py-1 ${priorityInfo.color} text-white rounded-lg font-black text-[9px] uppercase shadow-sm`}>
@@ -1634,7 +1634,7 @@ export default function Dashboard() {
                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                         {(prs || []).slice(0, 5).map(pr => (
                             <tr key={pr.id} className="hover:bg-[#0F1117]/50 transition-colors">
-                                <td className="font-bold text-[#F8FAFC]">{pr.prNumber || pr.id.substring(0, 8)}</td>
+                                <td className="font-bold text-[#F8FAFC]">{pr.prNumber || "PR-***"}</td>
                                 <td className="font-semibold text-[#64748B]">{typeof pr.department === 'object' ? pr.department?.name : (pr.department || "N/A")}</td>
                                 <td className="text-right font-black text-[#F8FAFC]">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                 <td className="text-right text-[#64748B]"><button onClick={() => setSelectedPRDetails(pr)} className="p-2 hover:bg-[#0F1117] rounded-xl transition-colors"><Eye size={16} /></button></td>

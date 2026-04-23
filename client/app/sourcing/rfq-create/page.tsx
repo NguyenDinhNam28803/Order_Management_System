@@ -59,7 +59,7 @@ export default function RFQCreatePage() {
         const newItems: RFQItem[] = pr.items?.map((item: PRItem) => ({
             ...item,
             prId: pr.id,
-            prNumber: pr.prNumber || pr.id.substring(0, 8),
+            prNumber: pr.prNumber || "PR-***",
             selected: true
         })) || [];
 

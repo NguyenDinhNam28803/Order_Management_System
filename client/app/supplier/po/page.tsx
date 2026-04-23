@@ -342,7 +342,7 @@ export default function SupplierPO() {
                             const totalAmount = p.total || items.reduce((sum: number, item: { qty?: number; unitPrice?: number }) => sum + ((item.qty || 0) * (item.unitPrice || 0)), 0);
                             const firstItem = items[0];
                             const itemName = firstItem?.description || 'Sản phẩm';
-                            const itemCode = firstItem?.id?.substring(0, 8) || '';
+                            const itemCode = firstItem?.id ? "***" : "N/A";
                             const moreItems = items.length > 1 ? `+${items.length - 1} sản phẩm khác` : '';
 
                             return (
