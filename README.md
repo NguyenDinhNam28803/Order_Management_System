@@ -33,6 +33,17 @@ Hệ thống **E-Procurement** và **Order Management** chuẩn Enterprise cho d
 8. [Biến môi trường](#8-biến-môi-trường)
 9. [Phân quyền người dùng (RBAC)](#9-phân-quyền-người-dùng-rbac)
 10. [API Overview](#10-api-overview)
+11. [Kịch bản Test Luồng Nghiệp vụ](#11-kịch-bản-test-luồng-nghiệp-vụ)
+    - 11.1 [Tài khoản test](#111-tài-khoản-test)
+    - 11.2 [Kịch bản 1 — Luồng thành công hoàn chỉnh (Happy Path)](#112-kịch-bản-1--luồng-thành-công-hoàn-chỉnh-happy-path)
+    - 11.3 [Kịch bản 2 — PR Vượt ngân sách, Yêu cầu Override](#113-kịch-bản-2--pr-vượt-ngân-sách-yêu-cầu-override)
+    - 11.4 [Kịch bản 3 — PR Bị từ chối cấp 1, Yêu cầu bổ sung thông tin](#114-kịch-bản-3--pr-bị-từ-chối-cấp-1-yêu-cầu-bổ-sung-thông-tin)
+    - 11.5 [Kịch bản 4 — PR Giá trị lớn, Duyệt 3 cấp](#115-kịch-bản-4--pr-giá-trị-lớn-duyệt-3-cấp)
+    - 11.6 [Kịch bản 5 — RFQ Nhiều báo giá, NCC được chọn từ chối](#116-kịch-bản-5--rfq-nhiều-báo-giá-ncc-được-chọn-từ-chối)
+    - 11.7 [Kịch bản 6 — GRN Phát hiện hàng lỗi, Tạo phiếu trả hàng](#117-kịch-bản-6--grn-phát-hiện-hàng-lỗi-tạo-phiếu-trả-hàng)
+    - 11.8 [Kịch bản 7 — Hóa đơn Không khớp, Finance xử lý ngoại lệ](#118-kịch-bản-7--hóa-đơn-không-khớp-finance-xử-lý-ngoại-lệ)
+    - 11.9 [Kịch bản 8 — Email tự động phân loại](#119-kịch-bản-8--email-tự-động-phân-loại)
+    - 11.10 [Checklist kiểm tra tổng hợp](#1110-checklist-kiểm-tra-tổng-hợp)
 
 ---
 
