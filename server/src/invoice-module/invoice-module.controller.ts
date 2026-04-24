@@ -9,6 +9,7 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
+import { ApiProperty, ApiOperation as _Op } from '@nestjs/swagger';
 import { InvoiceModuleService } from './invoice-module.service';
 import { CreateInvoiceModuleDto } from './dto/create-invoice-module.dto';
 import { UpdateInvoiceModuleDto } from './dto/update-invoice-module.dto';
@@ -16,6 +17,17 @@ import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 import { Roles } from '../common/roles.guard';
+
+class CreateFromTextDto {
+  @ApiProperty({ description: 'Nội dung text hoá đơn (copy từ email / Zalo / điện thoại)' })
+  rawText: string;
+
+  @ApiProperty({ description: 'UUID của nhà cung cấp' })
+  supplierId: string;
+
+  @ApiProperty({ description: 'UUID của tổ chức mua hàng' })
+  orgId: string;
+}
 
 @ApiTags('Invoice Management')
 @ApiBearerAuth('JWT-auth')
@@ -113,5 +125,23 @@ export class InvoiceModuleController {
   @ApiOperation({ summary: 'Xóa hóa đơn theo ID' })
   remove(@Param('id') id: string) {
     return this.invoiceModuleService.remove(id);
+  }
+
+  /**
+   * Dán nội dung hoá đơn từ email / Zalo / điện thoại → AI phân tích → tạo invoice draft
+   */
+  @Post('from-text')
+  @ApiOperation({
+    summary: 'Tạo hoá đơn từ text (AI)',
+    description:
+      'Procurement dán nội dung NCC gửi qua email/Zalo/điện thoại. AI trích xuất số liệu và tạo hoá đơn DRAFT để kiểm tra lại.',
+  })
+  createFromText(@Body() dto: CreateFromTextDto, @Request() req: any) {
+    return this.invoiceModuleService.createFromText(
+      dto.rawText,
+      dto.supplierId,
+      dto.orgId,
+      req.user,
+    );
   }
 }

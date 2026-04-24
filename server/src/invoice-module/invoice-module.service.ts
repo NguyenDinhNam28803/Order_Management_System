@@ -5,7 +5,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { InvoiceStatus, PoStatus, Prisma } from '@prisma/client';
+import { InvoiceStatus, PoStatus, CurrencyCode, Prisma } from '@prisma/client';
+import { AiService } from '../ai-service/ai-service.service';
 import {
   CreateInvoiceModuleDto,
   CreateInvoiceItemDto,
@@ -29,6 +30,7 @@ export class InvoiceModuleService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationModuleService,
+    private readonly aiService: AiService,
   ) {}
 
   /**
@@ -405,6 +407,108 @@ export class InvoiceModuleService {
     return this.prisma.supplierInvoice.delete({
       where: { id },
     });
+  }
+
+  /**
+   * Dùng AI phân tích nội dung text (từ email / Zalo / điện thoại) để tạo hoá đơn tự động.
+   * Procurement paste nội dung NCC gửi vào → AI trích xuất số liệu → tạo invoice draft.
+   */
+  async createFromText(
+    rawText: string,
+    supplierId: string,
+    orgId: string,
+    user: JwtPayload,
+  ) {
+    // 1. Dùng AI phân tích nội dung
+    const analysis = await this.aiService.analyzeEmailContent(rawText);
+
+    if (analysis.intent !== 'INVOICE_SUBMISSION' || analysis.confidence < 0.5) {
+      throw new BadRequestException(
+        `Nội dung không được nhận diện là hoá đơn (intent: ${analysis.intent}, confidence: ${analysis.confidence}). Vui lòng nhập tay.`,
+      );
+    }
+
+    const data = analysis.data as {
+      invoiceNumber?: string;
+      poNumber?: string;
+      invoiceDate?: string;
+      dueDate?: string;
+      subtotal?: number;
+      taxRate?: number;
+      taxAmount?: number;
+      totalAmount?: number;
+      currency?: string;
+      paymentTerms?: string;
+      eInvoiceRef?: string;
+      notes?: string;
+    };
+
+    // 2. Tìm PO liên quan
+    let po: { id: string } | null = null;
+    if (data.poNumber) {
+      po = await this.prisma.purchaseOrder.findFirst({
+        where: { poNumber: data.poNumber, supplierId },
+        select: { id: true },
+      });
+    }
+    if (!po) {
+      po = await this.prisma.purchaseOrder.findFirst({
+        where: {
+          supplierId,
+          orgId,
+          status: { in: [PoStatus.SHIPPED, PoStatus.GRN_CREATED, PoStatus.ACKNOWLEDGED, PoStatus.IN_PROGRESS] },
+        },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true },
+      });
+    }
+    if (!po) {
+      throw new BadRequestException(
+        'Không tìm thấy PO phù hợp. Vui lòng tạo hoá đơn thủ công và chọn PO.',
+      );
+    }
+
+    // 3. Tính tài chính
+    const subtotal = data.subtotal ?? data.totalAmount ?? 0;
+    const taxRate = data.taxRate ?? 10;
+    const taxAmount = data.taxAmount ?? (subtotal * taxRate) / 100;
+    const totalAmount = data.totalAmount ?? subtotal + taxAmount;
+    const currency = (data.currency as CurrencyCode) ?? CurrencyCode.VND;
+    const invoiceNumber = data.invoiceNumber ?? `INV-AI-${Date.now()}`;
+
+    // 4. Tạo hoá đơn với status DRAFT để procurement xem lại trước khi submit
+    const invoice = await this.prisma.supplierInvoice.create({
+      data: {
+        invoiceNumber,
+        status: InvoiceStatus.DRAFT,
+        invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : new Date(),
+        dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+        subtotal,
+        taxRate,
+        taxAmount,
+        totalAmount,
+        currency,
+        paymentTerms: data.paymentTerms ?? undefined,
+        eInvoiceRef: data.eInvoiceRef ?? undefined,
+        notes: `[AI từ text] confidence: ${analysis.confidence}${data.notes ? `\n${data.notes}` : ''}`,
+        po: { connect: { id: po.id } },
+        supplier: { connect: { id: supplierId } },
+        buyerOrg: { connect: { id: orgId } },
+      },
+    });
+
+    this.logger.log(
+      `[AI-Text] Tạo hoá đơn draft ${invoice.id} (${invoiceNumber}) bởi ${user.email}`,
+    );
+
+    return {
+      ...invoice,
+      subtotal: Number(invoice.subtotal),
+      taxRate: invoice.taxRate ? Number(invoice.taxRate) : null,
+      totalAmount: Number(invoice.totalAmount),
+      aiConfidence: analysis.confidence,
+      message: 'Hoá đơn draft được tạo từ AI. Vui lòng kiểm tra và submit.',
+    };
   }
 
   async findAll(orgId: string) {

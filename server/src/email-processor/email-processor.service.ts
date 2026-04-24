@@ -6,12 +6,15 @@ import {
   QuotationEmailData,
   PoConfirmationEmailData,
   ShippingNotificationEmailData,
+  InvoiceEmailData,
 } from '../ai-service/ai-service.service';
 import {
   RfqStatus,
   PoStatus,
   QuotationStatus,
   CompanyType,
+  InvoiceStatus,
+  CurrencyCode,
 } from '@prisma/client';
 
 export interface IncomingEmailData {
@@ -19,6 +22,7 @@ export interface IncomingEmailData {
   subject: string;
   body: string;
   messageId: string;
+  attachments?: string[];
 }
 
 export interface EmailProcessResult {
@@ -127,6 +131,13 @@ export class EmailProcessorService {
           analysis.data as ShippingNotificationEmailData,
           supplier.id,
           subject,
+        );
+      case 'INVOICE_SUBMISSION':
+        return this.handleInvoiceSubmission(
+          analysis.data as InvoiceEmailData,
+          supplier.id,
+          subject,
+          emailData.messageId,
         );
       default:
         return { success: false, reason: 'Unhandled intent', ingested: true };
@@ -368,6 +379,121 @@ export class EmailProcessorService {
       entityId: po.id,
       ingested: true,
     };
+  }
+
+  // ── Xử lý email hoá đơn từ nhà cung cấp ─────────────────────────────────
+  private async handleInvoiceSubmission(
+    data: InvoiceEmailData,
+    supplierId: string,
+    subject: string,
+    messageId: string,
+  ): Promise<EmailProcessResult> {
+    // 1. Tìm PO liên quan (theo poNumber hoặc PO mới nhất ở trạng thái phù hợp)
+    const po = await this.findPoForInvoice(data.poNumber, supplierId);
+    if (!po) {
+      this.logger.warn(
+        `Không tìm thấy PO cho hoá đơn từ supplier ${supplierId}, poNumber: ${data.poNumber ?? 'N/A'}`,
+      );
+      return {
+        success: false,
+        intent: 'INVOICE_SUBMISSION',
+        reason: 'No matching PO found',
+        ingested: true,
+      };
+    }
+
+    // 2. Tìm GRN mới nhất của PO này (nếu có)
+    const grn = await this.prisma.goodsReceipt.findFirst({
+      where: { poId: po.id },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true },
+    });
+
+    // 3. Sinh số hoá đơn nếu AI không trích được
+    const invoiceNumber =
+      data.invoiceNumber ?? `INV-EMAIL-${Date.now()}`;
+
+    // Tránh tạo trùng nếu email bị xử lý 2 lần
+    const existing = await this.prisma.supplierInvoice.findFirst({
+      where: { invoiceNumber, supplierId },
+      select: { id: true },
+    });
+    if (existing) {
+      this.logger.log(`Hoá đơn ${invoiceNumber} đã tồn tại, bỏ qua`);
+      return {
+        success: true,
+        intent: 'INVOICE_SUBMISSION',
+        action: 'duplicate_skipped',
+        entityId: existing.id,
+        ingested: true,
+      };
+    }
+
+    // 4. Tính toán các giá trị tài chính
+    const subtotal = data.subtotal ?? data.totalAmount ?? 0;
+    const taxRate = data.taxRate ?? 10;
+    const taxAmount = data.taxAmount ?? (subtotal * taxRate) / 100;
+    const totalAmount = data.totalAmount ?? subtotal + taxAmount;
+    const currency = (data.currency as CurrencyCode) ?? CurrencyCode.VND;
+
+    // 5. Tạo hoá đơn với status SUBMITTED (chờ procurement xác nhận)
+    const invoice = await this.prisma.supplierInvoice.create({
+      data: {
+        invoiceNumber,
+        status: InvoiceStatus.SUBMITTED,
+        invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : new Date(),
+        dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+        subtotal,
+        taxRate,
+        taxAmount,
+        totalAmount,
+        currency,
+        paymentTerms: data.paymentTerms ?? undefined,
+        eInvoiceRef: data.eInvoiceRef ?? undefined,
+        notes: `[Tạo tự động từ email] ${subject}\nMessage-ID: ${messageId}${data.notes ? `\n${data.notes}` : ''}`,
+        po: { connect: { id: po.id } },
+        supplier: { connect: { id: supplierId } },
+        buyerOrg: { connect: { id: po.orgId } },
+        grn: grn ? { connect: { id: grn.id } } : undefined,
+      },
+    });
+
+    this.logger.log(
+      `Tạo hoá đơn ${invoice.id} (${invoiceNumber}) từ email NCC ${supplierId}`,
+    );
+
+    return {
+      success: true,
+      intent: 'INVOICE_SUBMISSION',
+      action: 'invoice_created',
+      entityId: invoice.id,
+      ingested: true,
+    };
+  }
+
+  // ── Tìm PO phù hợp để gắn hoá đơn ───────────────────────────────────────
+  private async findPoForInvoice(
+    poNumber: string | null | undefined,
+    supplierId: string,
+  ): Promise<{ id: string; orgId: string } | null> {
+    if (poNumber) {
+      const po = await this.prisma.purchaseOrder.findFirst({
+        where: { poNumber, supplierId },
+        select: { id: true, orgId: true },
+      });
+      if (po) return po;
+    }
+    // Fallback: PO mới nhất đã giao hàng / đang tiến hành
+    return this.prisma.purchaseOrder.findFirst({
+      where: {
+        supplierId,
+        status: {
+          in: [PoStatus.SHIPPED, PoStatus.GRN_CREATED, PoStatus.IN_PROGRESS, PoStatus.ACKNOWLEDGED],
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, orgId: true },
+    });
   }
 
   // ── Tìm PO theo số PO hoặc NCC + trạng thái ──────────────────────────────

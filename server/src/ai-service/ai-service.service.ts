@@ -71,11 +71,34 @@ export interface ShippingNotificationEmailData {
   notes?: string;
 }
 
+/** Dữ liệu trích xuất từ email hoá đơn nhà cung cấp */
+export interface InvoiceEmailData {
+  invoiceNumber?: string;   // Số hoá đơn (VD: INV-2026-001, HD-123)
+  poNumber?: string;        // Số PO liên quan
+  invoiceDate?: string;     // Ngày xuất hoá đơn (ISO 8601)
+  dueDate?: string;         // Hạn thanh toán (ISO 8601)
+  subtotal?: number;        // Tiền trước thuế
+  taxRate?: number;         // % thuế (VD: 10)
+  taxAmount?: number;       // Tiền thuế
+  totalAmount?: number;     // Tổng tiền sau thuế
+  currency?: string;        // VND | USD | EUR
+  paymentTerms?: string;    // Điều khoản thanh toán
+  eInvoiceRef?: string;     // Mã hoá đơn điện tử / ký hiệu hoá đơn
+  items?: {
+    description: string;
+    qty: number;
+    unitPrice: number;
+    lineTotal?: number;
+  }[];
+  notes?: string;
+}
+
 export type SupplierEmailIntent =
-  | 'QUOTATION' // NCC gửi báo giá
-  | 'PO_CONFIRMATION' // NCC xác nhận đã nhận / đồng ý PO
+  | 'QUOTATION'            // NCC gửi báo giá
+  | 'PO_CONFIRMATION'      // NCC xác nhận đã nhận / đồng ý PO
   | 'SHIPPING_NOTIFICATION' // NCC thông báo đang giao hàng
-  | 'GENERAL_INQUIRY'; // Không thuộc 3 loại trên
+  | 'INVOICE_SUBMISSION'   // NCC gửi hoá đơn thanh toán
+  | 'GENERAL_INQUIRY';     // Không thuộc 4 loại trên
 
 export interface AiEmailAnalysis {
   intent: SupplierEmailIntent;
@@ -83,6 +106,7 @@ export interface AiEmailAnalysis {
     | QuotationEmailData
     | PoConfirmationEmailData
     | ShippingNotificationEmailData
+    | InvoiceEmailData
     | Record<string, unknown>;
   confidence: number;
 }
@@ -128,7 +152,17 @@ CÁC LOẠI EMAIL (intent):
    Dấu hiệu: mã vận đơn, tracking number, tên hãng vận chuyển, ngày dự kiến đến
    data cần trích: poNumber, trackingNumber, carrier, shippedDate, estimatedArrival, notes
 
-4. GENERAL_INQUIRY — Không thuộc 3 loại trên (hỏi thông tin, khiếu nại, khác)
+4. INVOICE_SUBMISSION — Nhà cung cấp gửi hoá đơn yêu cầu thanh toán
+   Dấu hiệu: số hoá đơn (INV-xxx / HD-xxx / hoá đơn số), tổng tiền phải thanh toán, kỳ hạn thanh toán, VAT/thuế
+   Có thể kèm: "kính gửi", "đề nghị thanh toán", "invoice", "hóa đơn", "payment due", số PO liên quan
+   data cần trích: invoiceNumber, poNumber, invoiceDate, dueDate, subtotal, taxRate, taxAmount, totalAmount, currency, paymentTerms, eInvoiceRef, items[{description,qty,unitPrice,lineTotal}], notes
+
+5. GENERAL_INQUIRY — Không thuộc 4 loại trên (hỏi thông tin, khiếu nại, khác)
+
+ƯU TIÊN PHÂN LOẠI:
+- Nếu email có số hoá đơn VÀ tổng tiền → INVOICE_SUBMISSION (dù có thêm thông tin khác)
+- Nếu email chỉ có giá + không có số hoá đơn → QUOTATION
+- INVOICE_SUBMISSION khác QUOTATION: hoá đơn là yêu cầu thanh toán chính thức (sau khi giao hàng), báo giá là đề xuất giá trước khi mua
 
 LUẬT QUAN TRỌNG:
 - Chỉ trả về JSON thuần, KHÔNG markdown, KHÔNG giải thích
@@ -139,7 +173,7 @@ LUẬT QUAN TRỌNG:
 
 TRẢ VỀ JSON:
 {
-  "intent": "QUOTATION" | "PO_CONFIRMATION" | "SHIPPING_NOTIFICATION" | "GENERAL_INQUIRY",
+  "intent": "QUOTATION" | "PO_CONFIRMATION" | "SHIPPING_NOTIFICATION" | "INVOICE_SUBMISSION" | "GENERAL_INQUIRY",
   "confidence": number,
   "data": { ... (theo loại intent tương ứng ở trên) }
 }`;

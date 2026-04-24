@@ -16,8 +16,85 @@ type InvoiceWithDetails = Invoice & {
 };
 import {
   FileText, Eye, Pencil, Trash2, Search, Filter,
-  TrendingUp, Clock, CheckCircle2, AlertTriangle, Plus
+  TrendingUp, Clock, CheckCircle2, AlertTriangle, Plus, Sparkles, Loader2, X
 } from "lucide-react";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+function getToken() {
+  if (typeof document === "undefined") return "";
+  const m = document.cookie.match(/(?:^|;\s*)token=([^;]*)/);
+  return m ? decodeURIComponent(m[1]) : "";
+}
+
+function AiInvoiceModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const [rawText, setRawText] = useState("");
+  const [supplierId, setSupplierId] = useState("");
+  const [orgId, setOrgId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ invoiceNumber?: string; totalAmount?: number; aiConfidence?: number; message?: string } | null>(null);
+  const [err, setErr] = useState("");
+
+  const submit = async () => {
+    if (!rawText.trim() || !supplierId.trim() || !orgId.trim()) { setErr("Vui lòng điền đủ các trường."); return; }
+    setLoading(true); setErr(""); setResult(null);
+    try {
+      const res = await fetch(`${API_BASE}/invoices/from-text`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({ rawText, supplierId, orgId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Lỗi không xác định");
+      setResult(data);
+      onCreated();
+    } catch (e: any) { setErr(e.message); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="w-full max-w-lg rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#161B22] p-6 shadow-2xl">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-base font-bold text-[#E6EDF3]"><Sparkles size={16} className="text-purple-400" />Nhập hoá đơn bằng AI</h2>
+          <button onClick={onClose}><X size={16} className="text-[#8B949E] hover:text-[#E6EDF3]" /></button>
+        </div>
+        <p className="mb-4 text-xs text-[#8B949E]">Dán nội dung hoá đơn từ email, Zalo, hoặc ghi chú qua điện thoại. AI sẽ tự trích xuất số liệu và tạo hoá đơn DRAFT để bạn kiểm tra lại.</p>
+        {err && <div className="mb-3 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-2 text-xs text-red-400">{err}</div>}
+        {result ? (
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-emerald-400 space-y-1">
+            <p className="font-bold">✓ Hoá đơn đã tạo: {result.invoiceNumber}</p>
+            <p>Tổng tiền: {result.totalAmount?.toLocaleString("vi-VN")} VND</p>
+            <p className="text-xs text-[#8B949E]">Độ tin cậy AI: {((result.aiConfidence ?? 0) * 100).toFixed(0)}% · {result.message}</p>
+            <button onClick={onClose} className="mt-2 text-xs text-blue-400 hover:underline">Đóng</button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div>
+              <label className="mb-1 block text-xs text-[#8B949E]">Nội dung hoá đơn *</label>
+              <textarea rows={6} value={rawText} onChange={e => setRawText(e.target.value)} placeholder={"Ví dụ:\nHoá đơn số: HD-2026-055\nNgày: 24/04/2026\nPO: PO-2026-012\nThành tiền: 15,000,000 VND\nThuế 10%: 1,500,000 VND\nTổng cộng: 16,500,000 VND"} className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#0D1117] px-3 py-2 text-xs text-[#E6EDF3] placeholder:text-[#484F58] focus:outline-none focus:border-purple-500/50 resize-none" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1 block text-xs text-[#8B949E]">Supplier ID *</label>
+                <input value={supplierId} onChange={e => setSupplierId(e.target.value)} placeholder="UUID nhà cung cấp" className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#0D1117] px-3 py-2 text-xs text-[#E6EDF3] placeholder:text-[#484F58] focus:outline-none focus:border-purple-500/50" />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-[#8B949E]">Org ID *</label>
+                <input value={orgId} onChange={e => setOrgId(e.target.value)} placeholder="UUID tổ chức" className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#0D1117] px-3 py-2 text-xs text-[#E6EDF3] placeholder:text-[#484F58] focus:outline-none focus:border-purple-500/50" />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 pt-1">
+              <button onClick={onClose} className="px-4 py-2 text-xs text-[#8B949E] hover:text-[#E6EDF3]">Huỷ</button>
+              <button disabled={loading} onClick={submit} className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-xs font-semibold text-white hover:bg-purple-500 disabled:opacity-50">
+                {loading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}Phân tích & Tạo
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // Map server InvoiceStatus → display
 const STATUS_MAP: Record<string, { label: string; cls: string }> = {
@@ -39,6 +116,7 @@ export default function InvoicesPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showAiModal, setShowAiModal] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -94,19 +172,34 @@ export default function InvoicesPage() {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
+      {showAiModal && (
+        <AiInvoiceModal
+          onClose={() => setShowAiModal(false)}
+          onCreated={async () => { await fetchInvoices(); setShowAiModal(false); }}
+        />
+      )}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-black text-[#F8FAFC] tracking-tight">Quản lý Hóa đơn</h1>
           <p className="text-xs text-[#64748B] mt-0.5">Theo dõi và xử lý tất cả hóa đơn nhà cung cấp</p>
         </div>
-        <Link
-          href="/supplier/invoice"
-          className="btn-primary text-xs gap-2"
-        >
-          <Plus size={14} />
-          Tạo hóa đơn
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowAiModal(true)}
+            className="flex items-center gap-2 rounded-xl border border-purple-500/30 bg-purple-600/10 px-3 py-2 text-xs font-semibold text-purple-400 hover:bg-purple-600/20 transition-colors"
+          >
+            <Sparkles size={14} />
+            Nhập từ AI
+          </button>
+          <Link
+            href="/supplier/invoice"
+            className="btn-primary text-xs gap-2"
+          >
+            <Plus size={14} />
+            Tạo hóa đơn
+          </Link>
+        </div>
       </div>
 
       {/* Error Banner */}
