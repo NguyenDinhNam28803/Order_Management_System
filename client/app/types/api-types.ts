@@ -314,6 +314,8 @@ export interface Organization {
     logoUrl?: string;
     isActive: boolean;
     kycStatus: KycStatus;
+    supplierTier?: string;
+    kycVerifiedAt?: string;
     trustScore: number;
     metadata: Record<string, unknown>;
     createdAt: string;

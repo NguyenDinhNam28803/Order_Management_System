@@ -37,6 +37,7 @@ import { AutomationModule } from './common/automation/automation.module';
 import { RagModule } from './rag/rag.module';
 import { EmailProcessorModule } from './email-processor/email-processor.module';
 import { SupplierDiscoveryModule } from './supplier-discovery/supplier-discovery.module';
+import { SupplierVettingModule } from './supplier-vetting-module/supplier-vetting-module.module';
 
 @Module({
   imports: [
@@ -110,6 +111,7 @@ import { SupplierDiscoveryModule } from './supplier-discovery/supplier-discovery
     RagModule,
     EmailProcessorModule,
     SupplierDiscoveryModule,
+    SupplierVettingModule,
   ],
   controllers: [AppController],
   providers: [
