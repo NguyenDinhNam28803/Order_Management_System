@@ -3,18 +3,22 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useProcurement } from '@/app/context/ProcurementContext';
-import { 
-  FileText, 
-  CheckCircle2, 
-  AlertCircle, 
-  Clock, 
+import { Contract } from '@/app/types/api-types';
+
+import {
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
   XCircle,
   Building2,
   ShoppingCart,
   Calendar,
   ArrowLeft,
   RefreshCw,
-  CreditCard
+  CreditCard,
+  FileSignature,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -22,12 +26,50 @@ import { useRouter } from 'next/navigation';
 export default function InvoiceDetailPage() {
   const params = useParams();
   const invoiceId = params.id as string;
-  const { fetchInvoiceById, runMatching, payInvoice, notify } = useProcurement();
+  const { fetchInvoiceById, runMatching, payInvoice, createContract, notify } = useProcurement();
   const router = useRouter();
   const [invoice, setInvoice] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+
+  // Contract modal state
+  const [showContractModal, setShowContractModal] = useState(false);
+  const [contractForm, setContractForm] = useState({
+    title: '',
+    contractType: 'SUPPLY',
+    value: '',
+    startDate: '',
+    endDate: '',
+  });
+  const [creatingContract, setCreatingContract] = useState(false);
+
+  const handleCreateContract = async () => {
+    if (!contractForm.title.trim()) {
+      notify('Vui lòng nhập tiêu đề hợp đồng', 'error');
+      return;
+    }
+    if (!invoice?.supplier?.id) {
+      notify('Không tìm thấy thông tin nhà cung cấp', 'error');
+      return;
+    }
+    setCreatingContract(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const payload: any = {
+      title: contractForm.title.trim(),
+      supplierId: invoice.supplier.id,
+      contractType: contractForm.contractType || undefined,
+      value: contractForm.value ? Number(contractForm.value) : undefined,
+      startDate: contractForm.startDate || undefined,
+      endDate: contractForm.endDate || undefined,
+    };
+    const ok = await createContract(payload as Partial<Contract>);
+    setCreatingContract(false);
+    if (ok) {
+      setShowContractModal(false);
+      setContractForm({ title: '', contractType: 'SUPPLY', value: '', startDate: '', endDate: '' });
+    }
+  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -234,13 +276,23 @@ export default function InvoiceDetailPage() {
             )}
 
             {invoice.grnId && (
-              <Link 
+              <Link
                 href={`/warehouse/grn/${invoice.grnId}`}
                 className="inline-flex items-center gap-2 bg-bg-primary hover:bg-bg-secondary border border-border text-text-primary px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors"
               >
                 <CheckCircle2 size={16} />
                 Xem GRN
               </Link>
+            )}
+
+            {invoice.supplier?.id && (
+              <button
+                onClick={() => setShowContractModal(true)}
+                className="inline-flex items-center gap-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-400 px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors"
+              >
+                <FileSignature size={16} />
+                Tạo hợp đồng
+              </button>
             )}
           </div>
         </div>
@@ -512,6 +564,127 @@ export default function InvoiceDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Contract Creation Modal */}
+      {showContractModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-bg-secondary border border-border rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-black text-text-primary flex items-center gap-2">
+                <FileSignature size={20} className="text-purple-400" />
+                Tạo hợp đồng mới
+              </h2>
+              <button
+                onClick={() => setShowContractModal(false)}
+                className="p-2 rounded-lg hover:bg-bg-primary text-text-secondary transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {invoice.supplier && (
+              <div className="mb-4 p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl text-sm text-purple-300">
+                Nhà cung cấp: <span className="font-bold">{invoice.supplier.name}</span>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1.5">
+                  Tiêu đề hợp đồng <span className="text-rose-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={contractForm.title}
+                  onChange={(e) => setContractForm(f => ({ ...f, title: e.target.value }))}
+                  placeholder="VD: Hợp đồng cung ứng Q2/2026"
+                  className="w-full bg-bg-primary border border-border rounded-xl px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:border-purple-500/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1.5">
+                  Loại hợp đồng
+                </label>
+                <select
+                  value={contractForm.contractType}
+                  onChange={(e) => setContractForm(f => ({ ...f, contractType: e.target.value }))}
+                  className="w-full bg-bg-primary border border-border rounded-xl px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:border-purple-500/50"
+                >
+                  <option value="SUPPLY">Cung ứng hàng hóa</option>
+                  <option value="SERVICE">Dịch vụ</option>
+                  <option value="FRAMEWORK">Hợp đồng khung</option>
+                  <option value="ONE_TIME">Một lần</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1.5">
+                  Giá trị hợp đồng (VND)
+                </label>
+                <input
+                  type="number"
+                  value={contractForm.value}
+                  onChange={(e) => setContractForm(f => ({ ...f, value: e.target.value }))}
+                  placeholder={String(invoice.totalAmount ?? '')}
+                  className="w-full bg-bg-primary border border-border rounded-xl px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:border-purple-500/50"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1.5">
+                    Ngày bắt đầu
+                  </label>
+                  <input
+                    type="date"
+                    value={contractForm.startDate}
+                    onChange={(e) => setContractForm(f => ({ ...f, startDate: e.target.value }))}
+                    className="w-full bg-bg-primary border border-border rounded-xl px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:border-purple-500/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1.5">
+                    Ngày kết thúc
+                  </label>
+                  <input
+                    type="date"
+                    value={contractForm.endDate}
+                    onChange={(e) => setContractForm(f => ({ ...f, endDate: e.target.value }))}
+                    className="w-full bg-bg-primary border border-border rounded-xl px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:border-purple-500/50"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowContractModal(false)}
+                className="flex-1 py-2.5 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:bg-bg-primary font-semibold text-sm transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleCreateContract}
+                disabled={creatingContract}
+                className="flex-1 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {creatingContract ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Đang tạo...
+                  </>
+                ) : (
+                  <>
+                    <FileSignature size={16} />
+                    Tạo hợp đồng
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

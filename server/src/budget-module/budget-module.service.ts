@@ -448,24 +448,29 @@ export class BudgetModuleService {
 
     if (!period) return;
 
-    const updated = await this.prisma.budgetAllocation.updateMany({
-      where: {
-        costCenterId,
-        budgetPeriodId: period.id,
-        committedAmount: { gte: amount }, // Chỉ giảm nếu committed >= amount để tránh âm
-      },
-      data: {
-        committedAmount: { decrement: amount },
-      },
+    const released = await this.prisma.$transaction(async (tx) => {
+      const alloc = await tx.budgetAllocation.findFirst({
+        where: { costCenterId, budgetPeriodId: period.id },
+        select: { id: true, committedAmount: true },
+      });
+      if (!alloc) return 0;
+
+      const current = Number(alloc.committedAmount);
+      const newCommitted = Math.max(0, current - amount);
+      await tx.budgetAllocation.update({
+        where: { id: alloc.id },
+        data: { committedAmount: newCommitted },
+      });
+      return current - newCommitted;
     });
 
-    if (updated.count > 0) {
+    if (released > 0) {
       await this.auditService.create(
         {
           action: 'RELEASE_BUDGET',
           entityType: 'BudgetAllocation',
-          entityId: costCenterId, // CC ID used as entity ID for summary log
-          newValue: { releasedAmount: amount },
+          entityId: costCenterId,
+          newValue: { releasedAmount: released },
         },
         user,
       );
