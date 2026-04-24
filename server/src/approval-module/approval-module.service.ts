@@ -51,6 +51,29 @@ export class ApprovalModuleService {
   }) {
     const { docType, docId, totalAmount, orgId, requesterId, user } = params;
 
+    // Idempotency guard: if workflow steps already exist for this document,
+    // the previous attempt created them but failed before updating status —
+    // just update the status and return to avoid duplicate workflow chains.
+    const existingSteps = await this.prisma.approvalWorkflow.count({
+      where: { documentType: docType, documentId: docId },
+    });
+    if (existingSteps > 0) {
+      const hasPending = await this.prisma.approvalWorkflow.count({
+        where: {
+          documentType: docType,
+          documentId: docId,
+          status: ApprovalStatus.PENDING,
+        },
+      });
+      const retryStatus = hasPending > 0 ? 'PENDING_APPROVAL' : 'APPROVED';
+      await this.updateSourceDocumentStatus(docType, docId, retryStatus, user);
+      return {
+        message: 'Workflow already exists, status synced',
+        stepsCreated: existingSteps,
+        allAutoApproved: hasPending === 0,
+      };
+    }
+
     const rules = await this.prisma.approvalMatrixRule.findMany({
       where: {
         orgId,
@@ -62,7 +85,7 @@ export class ApprovalModuleService {
     });
 
     if (rules.length === 0) {
-      console.log(`No rules found for ${docType} ${docId}. Auto-approving...`);
+      this.logger.log(`No rules found for ${docType} ${docId}. Auto-approving...`);
       await this.updateSourceDocumentStatus(docType, docId, 'APPROVED', user);
       return { message: 'No rules found. Document auto-approved.' };
     }
@@ -111,12 +134,19 @@ export class ApprovalModuleService {
       });
     }
 
-    await this.prisma.approvalWorkflow.createMany({
-      data: workflowData,
-    });
+    await this.prisma.approvalWorkflow.createMany({ data: workflowData });
 
     const finalStatus = allAutoApproved ? 'APPROVED' : 'PENDING_APPROVAL';
-    await this.updateSourceDocumentStatus(docType, docId, finalStatus, user);
+    try {
+      await this.updateSourceDocumentStatus(docType, docId, finalStatus, user);
+    } catch (err) {
+      // Status update failed — roll back workflow so the idempotency guard above
+      // doesn't block a clean retry on the next submit attempt.
+      await this.prisma.approvalWorkflow.deleteMany({
+        where: { documentType: docType, documentId: docId },
+      });
+      throw err;
+    }
 
     // ── Gửi email thông báo cho từng approver chưa được tự động duyệt ────────
     if (!allAutoApproved) {
