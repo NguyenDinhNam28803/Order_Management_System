@@ -17,6 +17,7 @@ import {
   GrnStatus,
   InvoiceStatus,
   PaymentStatus,
+  VettingStatus,
 } from '@prisma/client';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
@@ -488,6 +489,17 @@ export class ApprovalModuleService {
         // );
         break;
       }
+
+      case DocumentType.SUPPLIER_VETTING: {
+        let vStatus: VettingStatus = VettingStatus.PENDING_APPROVAL;
+        if (actionStatus === 'APPROVED') vStatus = VettingStatus.APPROVED;
+        if (actionStatus === 'REJECTED') vStatus = VettingStatus.REJECTED;
+        await this.prisma.supplierVettingRequest.update({
+          where: { id },
+          data: { status: vStatus },
+        });
+        break;
+      }
     }
 
     if (actionStatus === 'APPROVED') {
@@ -621,6 +633,7 @@ export class ApprovalModuleService {
       [DocumentType.SUPPLIER_INVOICE]: 'Hóa đơn nhà cung cấp',
       [DocumentType.PAYMENT]: 'Thanh toán',
       [DocumentType.BUDGET_ALLOCATION]: 'Phân bổ ngân sách',
+      [DocumentType.SUPPLIER_VETTING]: 'Xét duyệt nhà cung cấp',
     };
     return labels[docType] ?? docType;
   }

@@ -6,7 +6,7 @@ import {
     FileCheck, ShieldAlert, Users, Settings, LogOut,
     FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers,
     ShieldCheck, MessageSquare, History, FileText,
-    Bell, Command, Star, Zap, Brain, PlusCircle, GitMerge, Sparkles
+    Bell, Command, Star, Zap, Brain, PlusCircle, GitMerge, Sparkles, UserCheck
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -74,7 +74,9 @@ const navigation: NavGroup[] = [
         dot: "#06B6D4",
         roles: ["PROCUREMENT", "PLATFORM_ADMIN"],
         items: [
-            { name: "Nguồn hàng & Báo giá", icon: Search, path: "/sourcing", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Nguồn hàng & Báo giá",   icon: Search,     path: "/sourcing",                         roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Khám phá NCC (AI)",        icon: Sparkles,   path: "/procurement/supplier-discovery",  roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
+            { name: "Xét duyệt NCC",            icon: UserCheck,  path: "/procurement/supplier-vetting",    roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
         ]
     },
     {
