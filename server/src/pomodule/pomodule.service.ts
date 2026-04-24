@@ -414,7 +414,7 @@ export class PomoduleService {
       });
     }
 
-    // ── Bước 5: Reserve budget theo từng costCenter ───────────────────────────
+    // ── Bước 5: Tính budget theo từng costCenter ─────────────────────────────
     //
     // Vì các PR có thể từ nhiều phòng ban khác nhau (nhiều costCenter),
     // cần tính xem mỗi costCenter phải trả bao nhiêu rồi reserve riêng.
@@ -439,20 +439,13 @@ export class PomoduleService {
       }
     }
 
-    // Gọi BudgetService.reserveBudget cho từng costCenter
-    for (const [costCenterId, amount] of budgetByCostCenter) {
-      await this.budgetService.reserveBudget(costCenterId, orgId, amount, user);
-      this.logger.log(
-        `Reserved ${amount.toLocaleString('vi-VN')} VND for costCenter ${costCenterId}`,
-      );
-    }
-
     const totalAmount = consolidatedItems.reduce((sum, i) => sum + i.total, 0);
 
     // PO gộp có prefix PO-CONS để phân biệt với PO thường
     const poNumber = `PO-CONS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
     // ── Bước 6: Tạo PO + items + sources trong 1 transaction ─────────────────
+    // Budget reservation xảy ra SAU transaction để nếu thất bại có thể compensate
     const po = await this.prisma.$transaction(async (tx) => {
       // A. Tạo PO gộp
       // prId để null vì PO này có nhiều PR nguồn (track qua PoItemSource)
@@ -516,6 +509,57 @@ export class PomoduleService {
       return newPo;
     });
 
+    // ── Bước 7: Reserve budget SAU transaction (compensation nếu thất bại) ────
+    // PO đã được tạo thành công. Giờ mới reserve budget từng costCenter.
+    // Nếu reserve thất bại → xóa PO và reset PR về APPROVED (compensating transaction).
+    const reservedCostCenters: Array<{ costCenterId: string; amount: number }> =
+      [];
+    try {
+      for (const [costCenterId, amount] of budgetByCostCenter) {
+        await this.budgetService.reserveBudget(
+          costCenterId,
+          orgId,
+          amount,
+          user,
+        );
+        reservedCostCenters.push({ costCenterId, amount });
+        this.logger.log(
+          `Reserved ${amount.toLocaleString('vi-VN')} VND for costCenter ${costCenterId}`,
+        );
+      }
+    } catch (budgetError) {
+      this.logger.error(
+        `Budget reservation failed for consolidated PO ${po.poNumber}. Rolling back...`,
+        budgetError,
+      );
+      // Giải phóng các budget đã reserve trước đó
+      for (const { costCenterId, amount } of reservedCostCenters) {
+        await this.budgetService
+          .releaseBudget(costCenterId, orgId, amount, user)
+          .catch((e: unknown) =>
+            this.logger.error(
+              `Failed to release budget for ${costCenterId}`,
+              e,
+            ),
+          );
+      }
+      // Xóa PO vừa tạo và reset PR về APPROVED
+      await this.prisma
+        .$transaction(async (tx) => {
+          await tx.poItemSource.deleteMany({ where: { prId: { in: prIds } } });
+          await tx.poItem.deleteMany({ where: { poId: po.id } });
+          await tx.purchaseOrder.delete({ where: { id: po.id } });
+          await tx.purchaseRequisition.updateMany({
+            where: { id: { in: prIds } },
+            data: { status: PrStatus.APPROVED },
+          });
+        })
+        .catch((e: unknown) =>
+          this.logger.error(`Compensation rollback failed for PO ${po.id}`, e),
+        );
+      throw budgetError;
+    }
+
     this.logger.log(
       `Created consolidated PO ${po.poNumber} from ${prIds.length} PRs, ` +
         `${consolidatedItems.length} merged items, total: ${totalAmount.toLocaleString('vi-VN')} VND`,
@@ -529,7 +573,7 @@ export class PomoduleService {
         sourcePrNumbers: prs.map((p) => p.prNumber),
         mergedItemCount: consolidatedItems.length,
         totalOriginalItems: allItems.length,
-        savedItems: allItems.length - consolidatedItems.length, // Số item đã gộp được
+        savedItems: allItems.length - consolidatedItems.length,
         totalAmount,
         budgetReservedByCostCenter: Object.fromEntries(budgetByCostCenter),
       },

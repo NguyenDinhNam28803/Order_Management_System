@@ -285,16 +285,38 @@ export class PrmoduleService {
       }
 
       // 3. Kích hoạt luồng duyệt (Multi-level Approval)
-      await this.approvalService.initiateWorkflow({
-        docType: DocumentType.PURCHASE_REQUISITION,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        docId: pr.id,
-        totalAmount: Number(pr.totalEstimate),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        orgId: pr.orgId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        requesterId: pr.requesterId,
-      });
+      try {
+        await this.approvalService.initiateWorkflow({
+          docType: DocumentType.PURCHASE_REQUISITION,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          docId: pr.id,
+          totalAmount: Number(pr.totalEstimate),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          orgId: pr.orgId,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          requesterId: pr.requesterId,
+        });
+      } catch (workflowError) {
+        // Workflow thất bại → hoàn trả ngân sách đã rào để tránh double-reservation lần retry
+        if (pr.costCenterId) {
+          await this.budgetService
+            .releaseBudget(
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              pr.costCenterId,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              pr.orgId,
+              Number(pr.totalEstimate),
+              user,
+            )
+            .catch((releaseErr: unknown) => {
+              console.error(
+                '[PR-SUBMIT] Failed to release budget after workflow error:',
+                releaseErr,
+              );
+            });
+        }
+        throw workflowError;
+      }
 
       console.log(`[PR-SUBMIT] Workflow initiated for PR: ${pr.id}`);
 

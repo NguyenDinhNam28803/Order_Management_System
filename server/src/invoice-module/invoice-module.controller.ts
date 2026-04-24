@@ -105,17 +105,6 @@ export class InvoiceModuleController {
   }
 
   /**
-   * Đánh dấu hóa đơn là đã thanh toán
-   * @param id ID của hóa đơn
-   * @returns Hóa đơn sau khi được cập nhật trạng thái
-   */
-  @Post(':id/pay')
-  @ApiOperation({ summary: 'Thanh toán hóa đơn' })
-  pay(@Param('id') id: string) {
-    return this.invoiceModuleService.markAsPaid(id);
-  }
-
-  /**
    * Xóa một hóa đơn khỏi hệ thống theo ID
    * @param id ID của hóa đơn cần xóa
    * @returns Kết quả xóa

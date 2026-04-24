@@ -27,7 +27,13 @@ import {
   RejectVettingDto,
 } from './dto/supplier-vetting.dto';
 
-const ALLOWED_ROLES = ['PROCUREMENT', 'ADMIN', 'DIRECTOR', 'CEO', 'PLATFORM_ADMIN'];
+const ALLOWED_ROLES = [
+  'PROCUREMENT',
+  'ADMIN',
+  'DIRECTOR',
+  'CEO',
+  'PLATFORM_ADMIN',
+];
 const APPROVER_ROLES = ['ADMIN', 'DIRECTOR', 'CEO', 'PLATFORM_ADMIN'];
 
 @ApiTags('Supplier Vetting')

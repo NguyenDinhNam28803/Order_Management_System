@@ -924,7 +924,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const createContract = useCallback(async (d: Partial<Contract>) => {
         const resp = await apiFetch('/contracts', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Tạo hợp đồng thành công", "success"); await refreshData(); return true; }
-        notify("Tạo hợp đồng thất bại", "error"); return false;
+        try {
+            const errBody = await resp.json();
+            const msg = errBody?.message ?? errBody?.error ?? "Tạo hợp đồng thất bại";
+            notify(Array.isArray(msg) ? msg.join('; ') : String(msg), "error");
+        } catch { notify("Tạo hợp đồng thất bại", "error"); }
+        return false;
     }, [apiFetch, refreshData, notify]);
 
     const signContract = useCallback(async (id: string, isBuyer: boolean) => {
