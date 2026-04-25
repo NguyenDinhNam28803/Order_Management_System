@@ -120,15 +120,6 @@ export default function SupplierDashboard() {
   const [selectedRfq, setSelectedRfq] = useState<RFQ | null>(null);
   const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
 
-  // DEBUG LOG
-  useEffect(() => {
-    console.log("--- Supplier Dashboard State ---");
-    console.log("Current User:", currentUser?.email, "Role:", currentUser?.role, "OrgId:", currentUser?.orgId);
-    console.log("Total QRs in context:", contextQRs?.length);
-    if (contextQRs && contextQRs.length > 0) {
-        console.log("Sample QR SupplierIds:", contextQRs[0].supplierIds);
-    }
-  }, [currentUser, contextQRs]);
 
   // Derive final RFQ list from context
   const mergedRFQs = useMemo(() => {

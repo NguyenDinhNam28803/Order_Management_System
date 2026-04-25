@@ -31,7 +31,6 @@ export class EmailRagService {
     this.imapConfig = {
       imap: {
         user: this.configService.get<string>('EMAIL_USER')!,
-        // EMAIL_PASS trong .env là App Password Gmail (xhqz arwr inls gklb)
         password: this.configService.get<string>('EMAIL_PASS')!,
         host:
           this.configService.get<string>('EMAIL_IMAP_HOST') ?? 'imap.gmail.com',

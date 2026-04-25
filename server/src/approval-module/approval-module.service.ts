@@ -154,15 +154,40 @@ export class ApprovalModuleService {
     // ── Gửi email thông báo cho từng approver chưa được tự động duyệt ────────
     if (!allAutoApproved) {
       const docLabel = this.getDocumentLabel(docType);
-      for (const step of workflowData) {
-        if (step.status === ApprovalStatus.PENDING) {
-          void this.notifyApprover(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            step.approverId,
+      const pendingSteps = workflowData.filter(
+        (s) => s.status === ApprovalStatus.PENDING,
+      );
+
+      if (pendingSteps.length > 0) {
+        // Batch-load tất cả approvers trong 1 query thay vì N queries
+        const approverIds = pendingSteps.map((s) => s.approverId);
+        const approvers = await this.prisma.user.findMany({
+          where: { id: { in: approverIds } },
+        });
+        const approverMap = new Map(approvers.map((u) => [u.id, u]));
+
+        // Load document 1 lần thay vì lặp lại N lần trong notifyApprover
+        let prDoc: any = null;
+        if (docType === DocumentType.PURCHASE_REQUISITION) {
+          prDoc = await this.prisma.purchaseRequisition.findUnique({
+            where: { id: docId },
+            include: {
+              requester: { select: { fullName: true } },
+              department: { select: { name: true } },
+            },
+          });
+        }
+
+        for (const step of pendingSteps) {
+          const approver = approverMap.get(step.approverId);
+          if (!approver) continue;
+          void this.notifyApproverWithData(
+            approver,
             docLabel,
             docId,
             totalAmount,
             docType,
+            prDoc,
           );
         }
       }
@@ -540,6 +565,66 @@ export class ApprovalModuleService {
   }
 
   // ── Helpers thông báo email ──────────────────────────────────────────────────
+
+  /** Gửi email với dữ liệu approver và document đã được load sẵn (tránh N+1). */
+  private async notifyApproverWithData(
+    approver: { id: string; email: string | null; fullName: string | null },
+    docLabel: string,
+    docId: string,
+    totalAmount: number,
+    docType?: DocumentType,
+    prDoc?: any,
+  ): Promise<void> {
+    try {
+      if (!approver.email) return;
+
+      const frontendUrl =
+        process.env.FRONTEND_URL ?? 'http://procuresmart.io.vn/';
+
+      if (docType === DocumentType.PURCHASE_REQUISITION) {
+        await this.notificationService.sendDirectEmail(
+          approver.email,
+          `[OMS] Yêu cầu phê duyệt PR: ${prDoc?.prNumber ?? docId}`,
+          'PR_APPROVAL_LINK',
+          {
+            prCode: prDoc?.prNumber ?? docId,
+            prTitle: prDoc?.title ?? docLabel,
+            approverName: approver.fullName ?? approver.email,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            requesterName: (prDoc?.requester as any)?.fullName ?? 'Người dùng',
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            requesterDept: (prDoc?.department as any)?.name ?? '',
+            totalAmount,
+            remainingBudget: 0,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            justification: (prDoc as any)?.justification ?? '',
+            slaDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
+            approveLink: `${frontendUrl}/approvals`,
+            rejectLink: `${frontendUrl}/approvals`,
+            detailLink: `${frontendUrl}/pr/${docId}`,
+          },
+        );
+      } else {
+        await this.notificationService.sendDirectEmail(
+          approver.email,
+          `[OMS] Yêu cầu phê duyệt ${docLabel} mới`,
+          'PO_APPROVAL_REQUEST',
+          {
+            name: approver.fullName ?? approver.email,
+            docType: docLabel,
+            docId,
+            totalAmount:
+              new Intl.NumberFormat('vi-VN').format(totalAmount) + ' VNĐ',
+            approveLink: `${frontendUrl}/approvals`,
+          },
+        );
+      }
+    } catch (err: any) {
+      this.logger.warn(
+        `notifyApproverWithData failed for ${approver.id}: ${err.message}`,
+      );
+    }
+  }
 
   /** Gửi email thông báo cho approver khi có tài liệu chờ duyệt */
   private async notifyApprover(

@@ -57,8 +57,6 @@ export class UserModuleService {
   // ... (findAll, findOne, update, remove remain unchanged)
 
   async findAll(filters?: { orgId?: string }) {
-    console.log('--- Truy vấn dữ liệu từ database (Filtered by Org) ---');
-
     if (filters?.orgId) {
       // Filter users by organization
       const users = await this.prisma.user.findMany({
@@ -76,7 +74,6 @@ export class UserModuleService {
   }
 
   async findOne(id: string) {
-    console.log(`--- Truy vấn dữ liệu từ database (User ${id}) ---`);
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -87,7 +84,6 @@ export class UserModuleService {
   }
 
   async findByEmail(email: string) {
-    console.log(`--- Truy vấn dữ liệu từ database (Email ${email}) ---`);
     const user = await this.userRepository.findByEmail(email);
     // if (user) {
     //   await this.cacheManager.set(cacheKey, user);

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmbeddingService } from './embedding.service';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +10,7 @@ import { CurrencyCode, ProductType } from '@prisma/client';
 
 @Injectable()
 export class RagPrGeneratorService {
+  private readonly logger = new Logger(RagPrGeneratorService.name);
   private readonly fptBaseUrl: string;
   private readonly fptApiKey: string;
   private readonly fptModel: string;
@@ -55,13 +56,13 @@ export class RagPrGeneratorService {
 
       // ALWAYS search products directly from DB - this is the PRIMARY source
       let dbProducts: any[] = [];
-      console.log(`[RAG] orgId:`, orgId);
+      this.logger.log(`generatePrDraft orgId: ${orgId}`);
       if (orgId) {
         const searchTerms = prompt
           .toLowerCase()
           .split(/\s+/)
           .filter((w) => w.length > 2);
-        console.log(`[RAG] Searching DB with terms:`, searchTerms);
+        this.logger.log(`Searching DB with terms: ${searchTerms.join(', ')}`);
 
         if (searchTerms.length > 0) {
           // Build OR conditions properly for Prisma
@@ -102,14 +103,9 @@ export class RagPrGeneratorService {
             orderBy: { updatedAt: 'desc' },
           });
         }
-        console.log(
-          `[RAG] Found ${dbProducts.length} products from DB:`,
-          dbProducts.map((p) => p.name),
-        );
+        this.logger.log(`Found ${dbProducts.length} products from DB`);
       } else {
-        console.log(
-          `[RAG] Warning: No orgId provided, cannot search DB products`,
-        );
+        this.logger.warn('No orgId provided, cannot search DB products');
       }
 
       // Also get products from RAG (vector search) as supplementary
@@ -164,9 +160,7 @@ export class RagPrGeneratorService {
 
       // 4. Determine price limit based on user role
       const priceLimit = this.getPriceLimitByRole(user?.role);
-      console.log(
-        `[RAG] User role: ${user?.role}, Price limit: ${priceLimit.toLocaleString('vi-VN')} VND`,
-      );
+      this.logger.log(`User role: ${user?.role}, price limit: ${priceLimit.toLocaleString('vi-VN')} VND`);
 
       // 5. Build context for LLM
       const { context, allProducts } = this.buildContext(
@@ -213,7 +207,7 @@ export class RagPrGeneratorService {
         ],
       };
     } catch (error: any) {
-      console.error('Error generating PR draft:', error);
+      this.logger.error(`generatePrDraft error: ${error.message}`);
       return {
         success: false,
         title: '',
@@ -247,9 +241,7 @@ export class RagPrGeneratorService {
         continue;
       }
 
-      console.log(
-        `[RAG] Item "${item.productDesc}" has no productId. Searching from AI knowledge...`,
-      );
+      this.logger.log(`Item "${item.productDesc}" has no productId, searching from AI...`);
 
       // Try to find matching product in DB first (by name/description)
       const existingProduct = await this.findProductInDb(
@@ -258,9 +250,7 @@ export class RagPrGeneratorService {
       );
 
       if (existingProduct) {
-        console.log(
-          `[RAG] Found existing product: ${existingProduct.name} (ID: ${existingProduct.id})`,
-        );
+        this.logger.log(`Found existing product: ${existingProduct.name} (${existingProduct.id})`);
         processedItems.push({
           ...item,
           productId: existingProduct.id,
@@ -277,7 +267,7 @@ export class RagPrGeneratorService {
       const aiProductInfo = await this.searchProductFromAI(item.productDesc);
 
       if (aiProductInfo) {
-        console.log(`[RAG] AI found product info for: ${item.productDesc}`);
+        this.logger.log(`AI found product info for: ${item.productDesc}`);
 
         // Find or create category
         const category = await this.findOrCreateCategory(
@@ -300,9 +290,7 @@ export class RagPrGeneratorService {
           attributes: aiProductInfo.attributes || {},
         });
 
-        console.log(
-          `[RAG] Created new product: ${newProduct.name} (ID: ${newProduct.id})`,
-        );
+        this.logger.log(`Created new product: ${newProduct.name} (${newProduct.id})`);
 
         processedItems.push({
           ...item,
@@ -312,9 +300,7 @@ export class RagPrGeneratorService {
         });
       } else {
         // If AI couldn't find info, create product with available info
-        console.log(
-          `[RAG] AI couldn't find product info. Creating with basic info...`,
-        );
+        this.logger.log(`AI couldn't find product info, creating with basic info...`);
 
         const category = await this.findOrCreateCategory(
           'Tổng hợp',
@@ -440,7 +426,7 @@ Lưu ý:
       });
 
       if (!response.ok) {
-        console.error(`[RAG] AI search error: ${response.status}`);
+        this.logger.error(`AI search HTTP error: ${response.status}`);
         return null;
       }
 
@@ -461,7 +447,7 @@ Lưu ý:
         attributes: parsed.attributes || {},
       };
     } catch (error) {
-      console.error('[RAG] Error searching product from AI:', error);
+      this.logger.error(`searchProductFromAI error: ${error instanceof Error ? error.message : String(error)}`);
       return null;
     }
   }
@@ -499,9 +485,7 @@ Lưu ý:
       },
     });
 
-    console.log(
-      `[RAG] Created new category: ${newCategory.name} (ID: ${newCategory.id})`,
-    );
+    this.logger.log(`Created new category: ${newCategory.name} (${newCategory.id})`);
 
     return newCategory;
   }
@@ -820,7 +804,7 @@ ${
         reasoning: parsed.reasoning || 'Đã phân tích yêu cầu và tạo PR Draft',
       };
     } catch (e: any) {
-      console.error('Failed to parse LLM response:', e.message);
+      this.logger.error(`Failed to parse LLM response: ${e.message}`);
       throw new Error('Invalid LLM response format');
     }
   }

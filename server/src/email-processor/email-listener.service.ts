@@ -153,14 +153,7 @@ export class EmailListenerService implements OnModuleInit {
             messageId,
             attachments: attachmentNames,
           };
-          console.log('[EmailListener] AI đọc được email:', {
-            messageId: emailData.messageId,
-            from: emailData.from,
-            subject: emailData.subject,
-            bodyPreview:
-              emailData.body.slice(0, 200) +
-              (emailData.body.length > 200 ? '...' : ''),
-          });
+          this.logger.log(`Email nhận: "${emailData.subject}" (id: ${emailData.messageId})`);
 
           // ── Lọc email trước khi xử lý (system rules → AI) ────────────────
           const filterResult = await this.emailFilter.filter(emailData);

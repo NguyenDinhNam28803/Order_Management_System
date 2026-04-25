@@ -18,6 +18,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AutomationService } from '../common/automation/automation.service';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
+import {
+  SubmitQuotationDto,
+  ConfirmPoDto,
+  UpdateShipmentDto,
+} from './dto/external-token-public.dto';
 
 @Controller('external-token')
 export class ExternalTokenController {
@@ -128,7 +133,7 @@ export class ExternalTokenController {
   @Post('rfq-public/:token/submit')
   async submitQuotationByToken(
     @Param('token') token: string,
-    @Body() body: any,
+    @Body() body: SubmitQuotationDto,
   ) {
     const tokenInfo = await this.externalTokenService.validateToken(token);
 
@@ -256,7 +261,7 @@ export class ExternalTokenController {
   @Post('po-public/:token/confirm')
   async confirmPoByToken(
     @Param('token') token: string,
-    @Body() body: any,
+    @Body() body: ConfirmPoDto,
   ) {
     const tokenInfo = await this.externalTokenService.validateToken(token);
 
@@ -351,7 +356,7 @@ export class ExternalTokenController {
   @Post('grn-public/:token/update')
   async updateShipmentByToken(
     @Param('token') token: string,
-    @Body() body: any,
+    @Body() body: UpdateShipmentDto,
   ) {
     const tokenInfo = await this.externalTokenService.validateToken(token);
 

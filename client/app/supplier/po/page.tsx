@@ -38,14 +38,7 @@ export default function SupplierPO() {
     // Lọc thủ công từ global pos state
     const supplierId = currentUser?.orgId || "";
     const supplierPOs = allPos.filter((p) => p.supplierId === supplierId);
-    console.log("supplierPOs", supplierPOs)
-    // Debug: Nếu không tìm thấy PO nào, hiển thị tất cả để kiểm tra
     const [showAll, setShowAll] = useState(false);
-    if (supplierPOs.length === 0 && pos.length > 0 && !showAll) {
-        console.log("Không tìm thấy PO cho supplier:", supplierId);
-        console.log("Tất cả PO:", pos);
-        console.log("CurrentUser:", currentUser);
-    }
     
     // Nếu không có PO cho supplier, hiển thị tất cả PO để debug
     const displayPOs = supplierPOs.length > 0 || showAll ? supplierPOs : pos;
@@ -65,14 +58,12 @@ export default function SupplierPO() {
         const found = pos.find(p => p.id === poIdInput || p.poNumber === poIdInput);
         if (found) {
             setSearchedPO(found);
-            console.log("PO found:", found);
             notify(`Tìm thấy PO`, "info");
         } else {
             // Thử fetch từ server
             const fetched = await fetchPOById(poIdInput);
             if (fetched) {
                 setSearchedPO(fetched);
-                console.log("PO fetched from server:", fetched);
                 notify(`Tìm thấy PO từ server`, "info");
             } else {
                 setSearchedPO(null);
@@ -82,11 +73,6 @@ export default function SupplierPO() {
     };
 
     const openModal = (po: PO) => {
-        console.log("Opening modal with PO:", po);
-        console.log("PO items:", po.items);
-        console.log("PO products:", po.items);
-        console.log("PO lines:", po.items);
-        console.log("PO poLines:", po.items);
         setSelectedPO(po);
         setIsModalOpen(true);
     };

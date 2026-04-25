@@ -108,10 +108,7 @@ export class EmailFilterService {
       subjectLower.includes(kw),
     );
     if (blockedSubject) {
-      console.log(
-        `[EmailFilter] BLOCKED (system) — subject chứa từ khoá spam: "${blockedSubject}"`,
-        { from: email.from, subject: email.subject },
-      );
+      this.logger.log(`BLOCKED — subject chứa spam keyword: "${blockedSubject}"`);
       return {
         shouldProcess: false,
         filterType: 'system_blocked',
@@ -123,10 +120,7 @@ export class EmailFilterService {
       fromLower.includes(kw),
     );
     if (blockedSender) {
-      console.log(
-        `[EmailFilter] BLOCKED (system) — sender là auto/no-reply: "${blockedSender}"`,
-        { from: email.from, subject: email.subject },
-      );
+      this.logger.log(`BLOCKED — sender là auto/no-reply: "${blockedSender}"`);
       return {
         shouldProcess: false,
         filterType: 'system_blocked',
@@ -135,11 +129,7 @@ export class EmailFilterService {
     }
 
     if (email.body.trim().length < 10) {
-      console.log(`[EmailFilter] BLOCKED (system) — body quá ngắn hoặc rỗng`, {
-        from: email.from,
-        subject: email.subject,
-        bodyLength: email.body.trim().length,
-      });
+      this.logger.log(`BLOCKED — body quá ngắn (${email.body.trim().length} ký tự)`);
       return {
         shouldProcess: false,
         filterType: 'system_blocked',
@@ -153,10 +143,7 @@ export class EmailFilterService {
         fromLower.includes(`@${domain.toLowerCase()}`),
       );
       if (trusted) {
-        console.log(
-          `[EmailFilter] ALLOWED (system) — trusted domain: "${trusted}"`,
-          { from: email.from, subject: email.subject },
-        );
+        this.logger.log(`ALLOWED — trusted domain: "${trusted}"`);
         return {
           shouldProcess: true,
           filterType: 'system_allowed',
@@ -170,10 +157,7 @@ export class EmailFilterService {
       subjectLower.includes(kw),
     );
     if (procurementKw) {
-      console.log(
-        `[EmailFilter] ALLOWED (system) — subject khớp procurement keyword: "${procurementKw}"`,
-        { from: email.from, subject: email.subject },
-      );
+      this.logger.log(`ALLOWED — subject khớp procurement keyword: "${procurementKw}"`);
       return {
         shouldProcess: true,
         filterType: 'system_allowed',
@@ -182,9 +166,7 @@ export class EmailFilterService {
     }
 
     // ── Tầng 2: AI filter cho email mơ hồ ────────────────────────────────────
-    console.log(
-      `[EmailFilter] Chuyển sang AI filter cho email mơ hồ: "${email.subject}"`,
-    );
+    this.logger.log(`Chuyển sang AI filter: "${email.subject}"`);
     return await this.filterWithAi(email, subjectLower, bodyLower);
   }
 
@@ -217,12 +199,7 @@ Trả lời JSON (KHÔNG markdown):
       // analyzeEmailContent trả về AiEmailAnalysis, dùng confidence làm cơ sở
       const shouldProcess = result.confidence >= 0.6;
 
-      console.log(`[EmailFilter] AI filter result cho "${email.subject}":`, {
-        shouldProcess,
-        confidence: result.confidence,
-        intent: result.intent,
-        from: email.from,
-      });
+      this.logger.log(`AI filter result cho "${email.subject}": shouldProcess=${shouldProcess} confidence=${result.confidence} intent=${result.intent}`);
 
       return {
         shouldProcess,
