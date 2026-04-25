@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { ContractStatus, CurrencyCode, Contract } from "../../types/api-types";
 import { Organization } from "../../context/ProcurementContext";
+import ContractSignModal from "../../components/ContractSignModal";
 
 // ── Status config ─────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<string, { label: string; bg: string; text: string; border: string; dot: string }> = {
@@ -52,7 +53,7 @@ export default function ContractsPage() {
     const [deleteId, setDeleteId]       = useState<string | null>(null);
     const [approveTarget, setApprove]   = useState<Contract | null>(null);
     const [approverId, setApproverId]   = useState("");
-    const [signingId, setSigningId]     = useState<string | null>(null);
+    const [signTarget, setSignTarget]   = useState<Contract | null>(null);
     const [saving, setSaving]           = useState(false);
     const [form, setForm]               = useState<Partial<Contract>>({ ...EMPTY });
 
@@ -125,14 +126,6 @@ export default function ContractsPage() {
         setSaving(true);
         try { await submitContractForApproval(approveTarget.id, approverId); closeModal(); }
         finally { setSaving(false); }
-    };
-
-    const handleSign = async (id: string) => {
-        setSigningId(id);
-        try {
-            const isBuyer = currentUser?.role !== "SUPPLIER";
-            await signContract(id, isBuyer);
-        } finally { setSigningId(null); }
     };
 
     const setField = (k: keyof Contract, v: unknown) => setForm(f => ({ ...f, [k]: v }));
@@ -332,13 +325,11 @@ export default function ContractsPage() {
                                                     {/* Ký hợp đồng */}
                                                     {canSign && (
                                                         <button
-                                                            onClick={() => handleSign(c.id)}
-                                                            disabled={signingId === c.id}
-                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all disabled:opacity-50"
+                                                            onClick={() => setSignTarget(c)}
+                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all"
                                                             title="Ký hợp đồng"
                                                         >
-                                                            <PenTool size={12} />
-                                                            {signingId === c.id ? "Đang ký..." : "Ký"}
+                                                            <PenTool size={12} /> Ký
                                                         </button>
                                                     )}
 
@@ -615,6 +606,15 @@ export default function ContractsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Digital Signing Modal */}
+            <ContractSignModal
+                contract={signTarget}
+                isBuyer={currentUser?.role !== "SUPPLIER"}
+                signerName={currentUser?.fullName || currentUser?.name || currentUser?.email || ""}
+                onClose={() => setSignTarget(null)}
+                onConfirm={signContract}
+            />
 
             <style jsx>{`
                 .modal-input {

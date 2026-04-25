@@ -1,4 +1,5 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_BASE = "http://localhost:5000";
+// process.env.NEXT_PUBLIC_API_URL ||
 
 function getToken(): string {
   if (typeof document === 'undefined') return '';
@@ -44,6 +45,7 @@ export interface DiscoverySearchResult {
   total: number;
   query: string;
   suppliers: DiscoveredSupplier[];
+  isDemoData?: boolean;
 }
 
 interface ApiResponse<T> {

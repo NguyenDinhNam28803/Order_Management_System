@@ -36,6 +36,7 @@ export interface DiscoverySearchResult {
   total: number;
   query: string;
   suppliers: DiscoveredSupplier[];
+  isDemoData?: boolean;
 }
 
 @Injectable()
@@ -107,7 +108,12 @@ export class SupplierDiscoveryService {
       return b.aiScore - a.aiScore;
     });
 
-    return { total: filtered.length, query: searchQuery, suppliers: filtered };
+    return {
+      total: filtered.length,
+      query: searchQuery,
+      suppliers: filtered,
+      isDemoData: this.webSearch.isMockMode,
+    };
   }
 
   async enrich(url: string, content?: string): Promise<ExtractedSupplierInfo> {
@@ -252,7 +258,7 @@ CHỈ TRẢ VỀ JSON ARRAY (không markdown):
 
     try {
       const result = await this.client.models.generateContent({
-        model: 'gemini-2.0-flash-lite',
+        model: 'gemini-2.0-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
       });
 

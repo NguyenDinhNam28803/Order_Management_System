@@ -12,14 +12,20 @@ export interface WebSearchResult {
 export class WebSearchService {
   private readonly logger = new Logger(WebSearchService.name);
   private readonly tavilyApiKey: string | undefined;
+  private _usingMock = false;
+
+  get isMockMode(): boolean {
+    return this._usingMock;
+  }
 
   constructor(private readonly configService: ConfigService) {
     this.tavilyApiKey = this.configService.get<string>('TAVILY_API_KEY');
+    if (!this.tavilyApiKey) this._usingMock = true;
   }
 
   async search(query: string, maxResults = 10): Promise<WebSearchResult[]> {
     if (!this.tavilyApiKey) {
-      this.logger.warn('TAVILY_API_KEY not set — using mock results');
+      this.logger.warn('TAVILY_API_KEY not set — using mock results for development');
       return this.mockResults(query);
     }
 
@@ -37,6 +43,15 @@ export class WebSearchService {
           max_results: maxResults,
         }),
       });
+
+      if (response.status === 401 || response.status === 403) {
+        this.logger.error(
+          `Tavily API key is invalid or unauthorized (${response.status}). ` +
+          'Using mock results. Please update TAVILY_API_KEY in your .env file.',
+        );
+        this._usingMock = true;
+        return this.mockResults(query);
+      }
 
       if (!response.ok) {
         throw new Error(`Tavily API error: ${response.status}`);
@@ -59,6 +74,7 @@ export class WebSearchService {
       }));
     } catch (err: any) {
       this.logger.error(`Web search failed: ${err.message}`);
+      this._usingMock = true;
       return this.mockResults(query);
     }
   }

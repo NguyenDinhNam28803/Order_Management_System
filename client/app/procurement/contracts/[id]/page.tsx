@@ -3,41 +3,27 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useProcurement } from "../../../context/ProcurementContext";
-import { 
-    ChevronLeft, FileText, Calendar, DollarSign, User, ShieldCheck, 
-    CheckCircle, AlertCircle, PenTool, Download, Printer 
+import {
+    ChevronLeft, FileText, Calendar, DollarSign, User, ShieldCheck,
+    CheckCircle, AlertCircle, PenTool,
 } from "lucide-react";
 import { Contract, ContractStatus } from "../../../types/api-types";
+import ContractSignModal from "../../../components/ContractSignModal";
 
 export default function ContractDetailPage() {
     const params = useParams();
     const router = useRouter();
-    const { contracts, signContract, currentUser, notify } = useProcurement();
+    const { contracts, signContract, currentUser } = useProcurement();
     const [contract, setContract] = useState<Contract | null>(null);
-    const [isSigning, setIsSigning] = useState(false);
+    const [signTarget, setSignTarget] = useState<Contract | null>(null);
 
     useEffect(() => {
         if (params.id) {
             const found = contracts.find(c => c.id === params.id);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             if (found) setContract(found);
         }
     }, [params.id, contracts]);
-
-    const handleSign = async () => {
-        if (!contract) return;
-        setIsSigning(true);
-        try {
-            const isBuyer = currentUser?.role !== "SUPPLIER";
-            const success = await signContract(contract.id, isBuyer);
-            if (success) {
-                notify("Ký hợp đồng thành công!", "success");
-            }
-        } catch (error) {
-            notify("Lỗi khi ký hợp đồng", "error");
-        } finally {
-            setIsSigning(false);
-        }
-    };
 
     if (!contract) {
         return (
@@ -81,7 +67,7 @@ export default function ContractDetailPage() {
                 </div>
             </div>
 
-            <button 
+            <button
                 onClick={() => router.back()}
                 className="flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors"
             >
@@ -101,7 +87,6 @@ export default function ContractDetailPage() {
                             </div>
                         </section>
 
-
                         <section className="space-y-4">
                             <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                                 <DollarSign size={20} className="text-green-500" /> Lộ trình thanh toán (Milestones)
@@ -116,7 +101,7 @@ export default function ContractDetailPage() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-50">
-                                        {contract.milestones?.map((m, idx) => (
+                                        {contract.milestones?.map((m) => (
                                             <tr key={m.id}>
                                                 <td className="px-4 py-3 font-medium">{m.title}</td>
                                                 <td className="px-4 py-3 text-gray-500">{new Date(m.dueDate).toLocaleDateString('vi-VN')}</td>
@@ -166,7 +151,7 @@ export default function ContractDetailPage() {
                             <h3 className="font-bold text-gray-800 flex items-center gap-2">
                                 <ShieldCheck size={20} className="text-blue-500" /> Xác thực & Chữ ký
                             </h3>
-                            
+
                             <div className="space-y-4">
                                 <div className="flex items-center gap-3">
                                     <div className={`p-1.5 rounded-full ${contract.buyerSignedAt ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
@@ -194,13 +179,12 @@ export default function ContractDetailPage() {
                             </div>
 
                             {(canSign || isSupplierSignPending) && (
-                                <button 
-                                    onClick={handleSign}
-                                    disabled={isSigning}
-                                    className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                                <button
+                                    onClick={() => setSignTarget(contract)}
+                                    className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg flex items-center justify-center gap-2"
                                 >
                                     <PenTool size={18} />
-                                    {isSigning ? "Đang xử lý chữ ký..." : "Ký xác nhận ngay"}
+                                    Ký xác nhận ngay
                                 </button>
                             )}
 
@@ -214,6 +198,15 @@ export default function ContractDetailPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Digital Signing Modal */}
+            <ContractSignModal
+                contract={signTarget}
+                isBuyer={currentUser?.role !== "SUPPLIER"}
+                signerName={currentUser?.fullName || currentUser?.name || currentUser?.email || ""}
+                onClose={() => setSignTarget(null)}
+                onConfirm={signContract}
+            />
         </div>
     );
 }

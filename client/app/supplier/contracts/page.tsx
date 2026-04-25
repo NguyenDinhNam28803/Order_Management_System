@@ -19,13 +19,12 @@ import {
     Bell,
     PenTool,
     X,
-    Download,
-    Send,
     CheckCircle,
     Signature,
     RefreshCw
 } from "lucide-react";
 import { ContractStatus } from "../../types/api-types";
+import ContractSignModal from "../../components/ContractSignModal";
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; icon: React.ReactNode }> = {
     ACTIVE: {
@@ -82,13 +81,11 @@ export default function SupplierContractsPage() {
     const [statusFilter, setStatusFilter] = useState<string>("ALL");
     const [supplierContracts, setSupplierContracts] = useState<Contract[]>([]);
     const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
-    const [isSignModalOpen, setIsSignModalOpen] = useState(false);
+    const [signTarget, setSignTarget] = useState<Contract | null>(null);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
     const [notifications, setNotifications] = useState<ContractNotification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
-    const [signatureConfirmText, setSignatureConfirmText] = useState("");
-    const [isSigning, setIsSigning] = useState(false);
 
     const supplierId = currentUser?.orgId || currentUser?.id || "";
 
@@ -135,39 +132,8 @@ export default function SupplierContractsPage() {
         );
     };
 
-    const handleSignContract = async () => {
-        if (!selectedContract || signatureConfirmText !== "TÔI ĐỒNG Ý KÝ") return;
-
-        setIsSigning(true);
-        try {
-            const success = await signContract(selectedContract.id, false); // false = supplier signing
-            if (success) {
-                setIsSignModalOpen(false);
-                setSignatureConfirmText("");
-                setSelectedContract(null);
-                loadContracts();
-
-                // Add success notification
-                const newNotification: ContractNotification = {
-                    id: Date.now().toString(),
-                    contractId: selectedContract.id,
-                    title: "Ký hợp đồng thành công",
-                    message: `Bạn đã ký hợp đồng ${selectedContract.contractNumber} thành công`,
-                    type: "success",
-                    read: false,
-                    createdAt: new Date().toISOString()
-                };
-                setNotifications(prev => [newNotification, ...prev]);
-            }
-        } finally {
-            setIsSigning(false);
-        }
-    };
-
     const openSignModal = (contract: Contract) => {
-        setSelectedContract(contract);
-        setIsSignModalOpen(true);
-        setSignatureConfirmText("");
+        setSignTarget(contract);
     };
 
     const openDetailModal = (contract: Contract) => {
@@ -370,110 +336,30 @@ export default function SupplierContractsPage() {
                 </div>
             </div>
 
-            {/* Sign Contract Modal */}
-            {isSignModalOpen && selectedContract && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F1117]/90 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#161922] rounded-2xl w-full max-w-lg shadow-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
-                        {/* Header */}
-                        <div className="flex justify-between items-center p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117]">
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
-                                    <PenTool size={20} />
-                                </div>
-                                <div>
-                                    <h2 className="text-lg font-black text-[#F8FAFC]">Ký hợp đồng</h2>
-                                    <p className="text-xs text-[#64748B]">#{selectedContract.contractNumber}</p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => setIsSignModalOpen(false)}
-                                className="p-2 hover:bg-[#1A1D23] rounded-lg transition-colors"
-                            >
-                                <X size={20} className="text-[#64748B]" />
-                            </button>
-                        </div>
-
-                        {/* Content */}
-                        <div className="p-6 space-y-6">
-                            {/* Contract Info */}
-                            <div className="p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
-                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <span className="text-[10px] font-black uppercase text-[#64748B]">Tiêu đề</span>
-                                        <p className="font-bold text-[#F8FAFC]">{selectedContract.title}</p>
-                                    </div>
-                                    <div>
-                                        <span className="text-[10px] font-black uppercase text-[#64748B]">Khách hàng</span>
-                                        <p className="font-bold text-[#F8FAFC]">{selectedContract.organization?.name || "N/A"}</p>
-                                    </div>
-                                    <div>
-                                        <span className="text-[10px] font-black uppercase text-[#64748B]">Giá trị</span>
-                                        <p className="font-bold text-emerald-400">{new Intl.NumberFormat('vi-VN').format(selectedContract.totalValue || 0)} {selectedContract.currency || 'VND'}</p>
-                                    </div>
-                                    <div>
-                                        <span className="text-[10px] font-black uppercase text-[#64748B]">Thời hạn</span>
-                                        <p className="font-bold text-[#F8FAFC]">{new Date(selectedContract.startDate).toLocaleDateString('vi-VN')} - {new Date(selectedContract.endDate).toLocaleDateString('vi-VN')}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Warning */}
-                            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                                <div className="flex items-start gap-3">
-                                    <AlertCircle size={20} className="text-amber-400 shrink-0 mt-0.5" />
-                                    <div>
-                                        <p className="text-sm font-bold text-amber-400">Xác nhận ký hợp đồng</p>
-                                        <p className="text-xs text-amber-400/80 mt-1">
-                                            Việc ký hợp đồng đồng nghĩa với việc bạn đồng ý với tất cả các điều khoản và cam kết thực hiện đúng nghĩa vụ của nhà cung cấp.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Signature Confirmation */}
-                            <div>
-                                <label className="block text-sm font-bold text-[#94A3B8] mb-2">
-                                    Nhập <span className="text-[#F8FAFC]">TÔI ĐỒNG Ý KÝ</span> để xác nhận
-                                </label>
-                                <input
-                                    type="text"
-                                    value={signatureConfirmText}
-                                    onChange={(e) => setSignatureConfirmText(e.target.value)}
-                                    placeholder="Nhập TÔI ĐỒNG Ý KÝ"
-                                    className="w-full px-4 py-3 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-blue-500/50 transition-all uppercase"
-                                />
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex gap-3 pt-2">
-                                <button
-                                    onClick={() => setIsSignModalOpen(false)}
-                                    className="flex-1 px-4 py-3 rounded-xl bg-[#0F1117] text-[#64748B] font-bold text-sm hover:text-[#F8FAFC] transition-all border border-[rgba(148,163,184,0.1)]"
-                                >
-                                    Hủy bỏ
-                                </button>
-                                <button
-                                    onClick={handleSignContract}
-                                    disabled={signatureConfirmText !== "TÔI ĐỒNG Ý KÝ" || isSigning}
-                                    className="flex-1 px-4 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 disabled:bg-[#1A1D23] disabled:text-[#64748B] text-white font-bold text-sm transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
-                                >
-                                    {isSigning ? (
-                                        <>
-                                            <RefreshCw size={16} className="animate-spin" />
-                                            Đang xử lý...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <PenTool size={16} />
-                                            Xác nhận ký
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Digital Signing Modal */}
+            <ContractSignModal
+                contract={signTarget}
+                isBuyer={false}
+                signerName={currentUser?.fullName || currentUser?.name || currentUser?.email || ""}
+                onClose={() => setSignTarget(null)}
+                onConfirm={async (id, isBuyer) => {
+                    const ok = await signContract(id, isBuyer);
+                    if (ok) {
+                        loadContracts();
+                        const newNotification: ContractNotification = {
+                            id: Date.now().toString(),
+                            contractId: id,
+                            title: "Ký hợp đồng thành công",
+                            message: `Bạn đã ký hợp đồng thành công`,
+                            type: "success",
+                            read: false,
+                            createdAt: new Date().toISOString(),
+                        };
+                        setNotifications(prev => [newNotification, ...prev]);
+                    }
+                    return ok;
+                }}
+            />
 
             {/* Contract Detail Modal */}
             {isDetailModalOpen && selectedContract && (
@@ -557,7 +443,7 @@ export default function SupplierContractsPage() {
                                     <button
                                         onClick={() => {
                                             setIsDetailModalOpen(false);
-                                            openSignModal(selectedContract);
+                                            setSignTarget(selectedContract);
                                         }}
                                         className="flex-1 px-4 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
                                     >
