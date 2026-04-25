@@ -33,7 +33,12 @@ export class EmailService {
     }
   }
 
-  async sendEmail(to: string, subject: string, body: string) {
+  async sendEmail(
+    to: string,
+    subject: string,
+    body: string,
+    attachments?: { filename: string; content: Buffer; contentType: string }[],
+  ) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const info = await this.transporter.sendMail({
@@ -41,6 +46,11 @@ export class EmailService {
         to,
         subject,
         html: body,
+        attachments: attachments?.map((a) => ({
+          filename: a.filename,
+          content: a.content,
+          contentType: a.contentType,
+        })),
       });
       this.logger.log(`Email sent: ${info.messageId}`);
       return true;

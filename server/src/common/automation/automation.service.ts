@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { RfqmoduleService } from '../../rfqmodule/rfqmodule.service';
 import { EmailService } from '../../notification-module/email.service';
 import { NotificationModuleService } from '../../notification-module/notification-module.service';
+import { PdfGeneratorService } from '../../notification-module/pdf-generator.service';
 import { TokenType } from '../../external-token-module/external-token.service';
 import {
   DocumentType,
@@ -37,6 +38,7 @@ export class AutomationService {
     private readonly rfqService: RfqmoduleService,
     private readonly emailService: EmailService,
     private readonly notificationService: NotificationModuleService,
+    private readonly pdfGenerator: PdfGeneratorService,
   ) {}
 
   /**
@@ -531,6 +533,77 @@ export class AutomationService {
     this.logger.log(
       `PO_CONFIRM_LINK email sent to ${supplierUser.email} for PO ${po['poNumber'] as string}`,
     );
+
+    // Gửi thêm email đính kèm PDF PO để nhà cung cấp lưu hồ sơ
+    try {
+      const poFull = await this.prisma.purchaseOrder.findUnique({
+        where: { id: po['id'] as string },
+        include: {
+          items: true,
+          supplier: true,
+          buyer: { include: { organization: true } },
+          pr: true,
+        },
+      });
+
+      if (poFull) {
+        const buyerOrg = (poFull.buyer as any)?.organization ?? {};
+        const supplierOrg = poFull.supplier ?? {};
+        const subtotal = poFull.items.reduce(
+          (sum, i) => sum + Number(i.total ?? 0),
+          0,
+        );
+
+        const pdfBuffer = await this.pdfGenerator.generatePoPdf({
+          poNumber: poFull.poNumber,
+          issuedDate: poFull.createdAt,
+          deliveryDate: poFull.deliveryDate,
+          paymentTerms: poFull.paymentTerms ?? undefined,
+          deliveryAddress: poFull.deliveryAddress ?? undefined,
+          notes: poFull.notes ?? undefined,
+          buyerOrg: {
+            name: buyerOrg.name ?? 'Buyer',
+            address: buyerOrg.address,
+            email: buyerOrg.email,
+          },
+          supplierOrg: {
+            name: (supplierOrg as any).name ?? supplierName,
+            address: (supplierOrg as any).address,
+            email: (supplierOrg as any).email,
+          },
+          items: poFull.items.map((i) => ({
+            lineNumber: i.lineNumber,
+            description: i.description,
+            qty: Number(i.qty),
+            unit: i.unit ?? undefined,
+            unitPrice: Number(i.unitPrice),
+            total: Number(i.total ?? 0),
+          })),
+          subtotal,
+          totalAmount: Number(poFull.totalAmount),
+          currency: poFull.currency ?? 'VND',
+        });
+
+        await this.emailService.sendEmail(
+          supplierUser.email,
+          `[Đính kèm PDF] Đơn mua hàng ${poFull.poNumber}`,
+          `<p>Kính gửi <strong>${supplierName}</strong>,</p>
+           <p>Vui lòng tìm đơn mua hàng <strong>${poFull.poNumber}</strong> đính kèm theo email này để lưu hồ sơ.</p>
+           <p>Để xác nhận hoặc từ chối đơn hàng, vui lòng sử dụng link trong email trước đó.</p>
+           <p>Trân trọng,<br/>Đội Mua Hàng</p>`,
+          [
+            {
+              filename: `${poFull.poNumber}.pdf`,
+              content: pdfBuffer,
+              contentType: 'application/pdf',
+            },
+          ],
+        );
+        this.logger.log(`PDF PO attached email sent to ${supplierUser.email}`);
+      }
+    } catch (pdfErr) {
+      this.logger.warn(`Failed to send PDF PO email: ${pdfErr}`);
+    }
   }
 
   /**

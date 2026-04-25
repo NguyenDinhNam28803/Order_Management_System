@@ -18,6 +18,7 @@ import { ApprovalModuleService } from '../approval-module/approval-module.servic
 import { AiService } from '../ai-service/ai-service.service';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { BudgetOverrideService } from '../budget-module/budget-override.service';
+import { EmailService } from '../notification-module/email.service';
 
 @Injectable()
 export class PrmoduleService {
@@ -28,6 +29,7 @@ export class PrmoduleService {
     private readonly aiService: AiService,
     private readonly budgetService: BudgetModuleService,
     private readonly budgetOverrideService: BudgetOverrideService,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(
@@ -241,10 +243,6 @@ export class PrmoduleService {
             budgetError.message.includes('Vượt hạn mức ngân sách')
           ) {
             // TỰ ĐỘNG tạo yêu cầu duyệt vượt mức nếu hết tiền
-            console.log(
-              `[PR-SUBMIT] Budget exceeded. Creating override request for PR: ${pr.id}`,
-            );
-
             // Tìm allocation hiện tại để lấy ID
             const allocation = await this.budgetService.findQuarterlyAllocation(
               // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -272,9 +270,13 @@ export class PrmoduleService {
               await this.prisma.purchaseRequisition.update({
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 where: { id: pr.id },
-
                 data: { status: PrStatus.PENDING_OVERRIDE },
               });
+
+              // Thông báo Finance qua email
+              void this.notifyFinanceBudgetExceeded(pr, allocation, user).catch(
+                () => {},
+              );
 
               // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               return this.findOne(pr.id);
@@ -340,5 +342,89 @@ export class PrmoduleService {
 
   async findMyPrs(userId: string): Promise<PurchaseRequisition[]> {
     return this.repository.findByRequester(userId);
+  }
+
+  private async notifyFinanceBudgetExceeded(
+    pr: any,
+    allocation: any,
+    requester: JwtPayload,
+  ) {
+    const financeUsers = await this.prisma.user.findMany({
+      where: {
+        orgId: requester.orgId,
+        role: UserRole.FINANCE,
+        isActive: true,
+      },
+      select: { id: true, email: true, fullName: true },
+    });
+
+    if (financeUsers.length === 0) return;
+
+    const allocated = Number(allocation.allocatedAmount ?? 0);
+    const committed = Number(allocation.committedAmount ?? 0);
+    const spent = Number(allocation.spentAmount ?? 0);
+    const available = allocated - committed - spent;
+    const requested = Number(pr.totalEstimate ?? 0);
+    const exceeded = requested - available;
+
+    const fmt = (n: number) =>
+      n.toLocaleString('vi-VN', { maximumFractionDigits: 0 }) + ' VND';
+
+    const emailBody = `
+<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;border:1px solid #e2e8f0;border-radius:8px">
+  <div style="background:#dc2626;color:#fff;padding:16px 20px;border-radius:6px 6px 0 0;margin:-20px -20px 20px">
+    <h2 style="margin:0;font-size:18px">⚠️ Cảnh báo vượt ngân sách</h2>
+  </div>
+  <p>Kính gửi <strong>${'Finance Team'}</strong>,</p>
+  <p>Một phiếu mua hàng (PR) vừa được gửi duyệt nhưng <strong>vượt hạn mức ngân sách</strong>. Yêu cầu cần được xem xét và phê duyệt.</p>
+
+  <table style="width:100%;border-collapse:collapse;margin:16px 0">
+    <tr style="background:#f8fafc">
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:bold;width:40%">Số PR</td>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0">${pr.prNumber ?? pr.id}</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:bold">Người tạo</td>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0">${requester.email ?? 'N/A'}</td>
+    </tr>
+    <tr style="background:#f8fafc">
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:bold">Lý do / Mô tả</td>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0">${pr.justification ?? pr.title ?? '—'}</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:bold">Ngân sách được phân bổ</td>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0">${fmt(allocated)}</td>
+    </tr>
+    <tr style="background:#f8fafc">
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:bold">Đã sử dụng (committed + spent)</td>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0">${fmt(committed + spent)}</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:bold">Còn khả dụng</td>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;color:#16a34a">${fmt(available)}</td>
+    </tr>
+    <tr style="background:#fef2f2">
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:bold">Số tiền PR yêu cầu</td>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;color:#dc2626;font-weight:bold">${fmt(requested)}</td>
+    </tr>
+    <tr style="background:#fef2f2">
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:bold">Vượt ngân sách</td>
+      <td style="padding:10px 14px;border:1px solid #e2e8f0;color:#dc2626;font-weight:bold">+${fmt(exceeded)}</td>
+    </tr>
+  </table>
+
+  <p>PR hiện đang ở trạng thái <strong>PENDING_OVERRIDE</strong>. Vui lòng đăng nhập vào hệ thống để xem xét và phê duyệt yêu cầu vượt ngân sách này.</p>
+  <p style="color:#64748b;font-size:13px">Email này được gửi tự động bởi hệ thống OMS.</p>
+</div>`;
+
+    await Promise.allSettled(
+      financeUsers.map((u) =>
+        this.emailService.sendEmail(
+          u.email,
+          `[OMS] ⚠️ PR vượt ngân sách cần duyệt — ${pr.prNumber ?? pr.id}`,
+          emailBody,
+        ),
+      ),
+    );
   }
 }
