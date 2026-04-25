@@ -31,6 +31,7 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { formatVND } from "../utils/formatUtils";
+import { ErrorBoundary } from "../components/shared/ErrorBoundary";
 
 // Tooltip Component
 const Tooltip = ({ children, content, position = 'top' }: { children: React.ReactNode; content: React.ReactNode; position?: 'top' | 'bottom' | 'left' | 'right' }) => {
@@ -352,6 +353,7 @@ export default function SupplierPortalPage() {
   }
 
   return (
+    <ErrorBoundary>
     <main className="min-h-screen bg-[#0F1117] p-6 animate-in fade-in duration-500">
       {/* Header */}
       <div className="mb-8">
@@ -822,5 +824,6 @@ export default function SupplierPortalPage() {
         </div>
       </div>
     </main>
+    </ErrorBoundary>
   );
 }

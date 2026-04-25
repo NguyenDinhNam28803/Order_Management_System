@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
@@ -31,6 +32,8 @@ export class PrmoduleService {
     private readonly budgetOverrideService: BudgetOverrideService,
     private readonly emailService: EmailService,
   ) {}
+
+  private readonly logger = new Logger(PrmoduleService.name);
 
   async create(
     createPrDto: CreatePrDto,
@@ -153,7 +156,7 @@ export class PrmoduleService {
       createPrDto,
       user.sub,
       orgId,
-      deptId,
+      deptId!,
       prNumber,
     );
   }
@@ -218,7 +221,7 @@ export class PrmoduleService {
         );
       }
 
-      console.log(`[PR-SUBMIT] Submitting PR: ${id} (Status: ${pr.status})`);
+      this.logger.log(`Submitting PR: ${id} (Status: ${pr.status})`);
 
       if (pr.status !== PrStatus.DRAFT) {
         throw new BadRequestException(
@@ -311,8 +314,8 @@ export class PrmoduleService {
               user,
             )
             .catch((releaseErr: unknown) => {
-              console.error(
-                '[PR-SUBMIT] Failed to release budget after workflow error:',
+              this.logger.error(
+                'Failed to release budget after workflow error',
                 releaseErr,
               );
             });
@@ -320,14 +323,14 @@ export class PrmoduleService {
         throw workflowError;
       }
 
-      console.log(`[PR-SUBMIT] Workflow initiated for PR: ${pr.id}`);
+      this.logger.log(`Workflow initiated for PR: ${pr.id}`);
 
       // 4. Trạng thái PENDING_APPROVAL đã được cập nhật bên trong initiateWorkflow
       // nhưng ta vẫn trả về PR mới nhất để đồng bộ UI
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return this.findOne(pr.id);
     } catch (error) {
-      console.error('[PR-SUBMIT] CRITICAL ERROR:', error);
+      this.logger.error('CRITICAL ERROR in PR submit', error);
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException

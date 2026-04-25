@@ -341,12 +341,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const baseUrl = 'http://localhost:5000';
-        // process.env.NEXT_PUBLIC_API_URL ||
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         return fetch(`${baseUrl}${url}`, { ...options, headers });
     }, []);
 
-    const refreshData = useCallback(async () => {
+    const refreshDataCore = useCallback(async () => {
         setState(prev => ({ ...prev, loadingMyPrs: true }));
         try {
             const userJson = Cookies.get('user');
@@ -467,11 +466,21 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 ...(newAuditLogs       !== null && { auditLogs: newAuditLogs }),
                 loadingMyPrs: false,
             }));
-        } catch (e) {
-            console.error("Refresh Data Error", e);
+        } catch {
             setState(prev => ({ ...prev, loadingMyPrs: false }));
         }
     }, [apiFetch]);
+
+    const refreshData = useCallback(async (attempt = 0): Promise<void> => {
+        try {
+            await refreshDataCore();
+        } catch {
+            if (attempt < 2) {
+                await new Promise(res => setTimeout(res, (attempt + 1) * 1000));
+                return refreshData(attempt + 1);
+            }
+        }
+    }, [refreshDataCore]);
 
     // Restore user from cookies on mount
     const refreshDataRef = useRef(refreshData);

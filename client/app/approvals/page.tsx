@@ -10,13 +10,15 @@ import {
 import { useProcurement, PR } from "../context/ProcurementContext";
 import { formatVND } from "../utils/formatUtils";
 import { useRouter } from "next/navigation";
+import { TableSkeleton } from "../components/shared/TableSkeleton";
+import { ErrorBoundary } from "../components/shared/ErrorBoundary";
 
 interface PendingPR extends PR {
     workflowId: string;
 }
 
 export default function ApprovalsPage() {
-    const { prs, costCenters, departments, approvals, actionApproval, currentUser, notify, refreshData, budgetAllocations, budgetPeriods } = useProcurement();
+    const { prs, costCenters, departments, approvals, actionApproval, currentUser, notify, refreshData, budgetAllocations, budgetPeriods, loadingMyPrs } = useProcurement();
     const router = useRouter();
 
     const now = new Date();
@@ -102,7 +104,19 @@ export default function ApprovalsPage() {
     const finalBudget = quarterAlloc ? currentBudget : (prCostCenter ? (Number(prCostCenter.budgetAnnual) - Number(prCostCenter.budgetUsed)) : 0);
     const projectedRemaining = selectedPR ? (finalBudget - (Number(selectedPR.totalEstimate) || 0)) : 0;
 
+    if (loadingMyPrs) {
+        return (
+            <main className="p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+                <div className="max-w-6xl mx-auto">
+                    <div className="h-8 bg-gray-700 rounded w-48 mb-6 animate-pulse" />
+                    <TableSkeleton rows={6} cols={5} />
+                </div>
+            </main>
+        );
+    }
+
     return (
+        <ErrorBoundary>
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
 
             <div className="flex flex-1 overflow-hidden">
@@ -401,6 +415,7 @@ export default function ApprovalsPage() {
                 </div>
             )}
         </main>
+        </ErrorBoundary>
     );
 }
 

@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RfqmoduleService } from '../../rfqmodule/rfqmodule.service';
 import { EmailService } from '../../notification-module/email.service';
@@ -27,11 +28,7 @@ interface AutomationConfig {
 @Injectable()
 export class AutomationService {
   private readonly logger = new Logger(AutomationService.name);
-  private config: AutomationConfig = {
-    contractThreshold: 50000000,
-    defaultContractDays: 365,
-    autoSendEmail: true,
-  };
+  private readonly config: AutomationConfig;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -39,7 +36,23 @@ export class AutomationService {
     private readonly emailService: EmailService,
     private readonly notificationService: NotificationModuleService,
     private readonly pdfGenerator: PdfGeneratorService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.config = {
+      contractThreshold: this.configService.get<number>(
+        'CONTRACT_THRESHOLD',
+        50000000,
+      ),
+      defaultContractDays: this.configService.get<number>(
+        'CONTRACT_DEFAULT_DAYS',
+        365,
+      ),
+      autoSendEmail: this.configService.get<boolean>(
+        'AUTO_SEND_EMAIL',
+        true,
+      ),
+    };
+  }
 
   /**
    * Xử lý sau khi một tài liệu được duyệt hoàn toàn
@@ -426,20 +439,16 @@ export class AutomationService {
                   this.logger.log(
                     `Auto-created contract ${result.contractNumber} for PO ${po.poNumber}`,
                   );
-                  console.log('Tạo hợp đồng thành công !');
                 } else {
                   this.logger.warn(
                     `Contract not created for PO ${po.poNumber}: ${result?.message}`,
                   );
-                  console.log('Tạo hợp đồng thất bại !');
                 }
               })
               .catch((err) => {
                 this.logger.error(
                   `Error in contract automation for PO ${po.poNumber}: ${err.message}`,
                 );
-                console.log('Tạo hợp đồng thất bại !');
-                console.log(err);
               });
           });
         } else {
@@ -473,8 +482,7 @@ export class AutomationService {
     const supplierUser = await this.prisma.user.findFirst({
       where: {
         orgId: supplierId as string,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        role: 'SUPPLIER' as any,
+        role: UserRole.SUPPLIER,
         isActive: true,
       },
       include: { organization: true },
@@ -1034,8 +1042,7 @@ Procurement System
     const supplierUser = await this.prisma.user.findFirst({
       where: {
         orgId: supplierOrgId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        role: 'SUPPLIER' as any,
+        role: UserRole.SUPPLIER,
         isActive: true,
       },
       include: { organization: true },

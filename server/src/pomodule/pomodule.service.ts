@@ -162,10 +162,7 @@ export class PomoduleService {
         po.supplierId,
       );
     } catch (automationError) {
-      console.error(
-        'Failed to create GRN draft automatically:',
-        automationError,
-      );
+      this.logger.error('Failed to create GRN draft automatically', automationError);
       // Don't fail the confirmation if automation fails
     }
 
@@ -175,7 +172,7 @@ export class PomoduleService {
         po.orgId,
       );
     } catch (aiError) {
-      console.error('AI Evaluation failed, continuing flow:', aiError);
+      this.logger.error('AI Evaluation failed, continuing flow', aiError);
     }
 
     if (po.prId) {

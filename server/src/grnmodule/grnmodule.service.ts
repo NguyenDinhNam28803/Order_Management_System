@@ -58,22 +58,29 @@ export class GrnmoduleService {
       }
     }
 
-    // 3. Validate Quantity (Received vs PO)
+    // 3. Validate Quantity (Received vs PO) — single batch query instead of N+1
+    const incomingPoItemIds = items.map((i) => i.poItemId);
+    const prevReceivedRows = await this.prisma.grnItem.groupBy({
+      by: ['poItemId'],
+      where: {
+        poItemId: { in: incomingPoItemIds },
+        grn: { status: { not: GrnStatus.DISPUTED } },
+      },
+      _sum: { receivedQty: true },
+    });
+    const prevReceivedMap = new Map<string, number>(
+      prevReceivedRows.map((r) => [
+        r.poItemId,
+        Number(r._sum.receivedQty) || 0,
+      ]),
+    );
+
     for (const item of items) {
       const poItem = po.items.find((i) => i.id === item.poItemId);
       if (!poItem) continue;
 
-      const previouslyReceived = await this.prisma.grnItem.aggregate({
-        where: {
-          poItemId: item.poItemId,
-          grn: { status: { not: GrnStatus.DISPUTED } },
-        },
-        _sum: { receivedQty: true },
-      });
-
       const totalReceived =
-        (Number(previouslyReceived._sum.receivedQty) || 0) +
-        Number(item.receivedQty);
+        (prevReceivedMap.get(item.poItemId) || 0) + Number(item.receivedQty);
       if (totalReceived > Number(poItem.qty)) {
         throw new BadRequestException(
           `Tổng số lượng nhận (${totalReceived}) vượt quá số lượng đặt hàng (${poItem.qty.toString()}) cho item ${poItem.sku}`,
@@ -171,17 +178,25 @@ export class GrnmoduleService {
     });
 
     if (po) {
-      let allReceived = true;
-      for (const poItem of po.items) {
-        const received = await this.prisma.grnItem.aggregate({
-          where: { poItemId: poItem.id, grn: { status: GrnStatus.CONFIRMED } },
-          _sum: { acceptedQty: true },
-        });
-        if ((Number(received._sum.acceptedQty) || 0) < Number(poItem.qty)) {
-          allReceived = false;
-          break;
-        }
-      }
+      // Batch query instead of N+1 per PO item
+      const confirmedRows = await this.prisma.grnItem.groupBy({
+        by: ['poItemId'],
+        where: {
+          poItemId: { in: po.items.map((i) => i.id) },
+          grn: { status: GrnStatus.CONFIRMED },
+        },
+        _sum: { acceptedQty: true },
+      });
+      const confirmedMap = new Map<string, number>(
+        confirmedRows.map((r) => [
+          r.poItemId,
+          Number(r._sum.acceptedQty) || 0,
+        ]),
+      );
+      const allReceived = po.items.every(
+        (poItem) =>
+          (confirmedMap.get(poItem.id) || 0) >= Number(poItem.qty),
+      );
 
       // Nếu đã nhận đủ, chuyển PO sang trạng thái COMPLETED hoặc GRN_CREATED (Dựa trên Enum)
       if (allReceived) {

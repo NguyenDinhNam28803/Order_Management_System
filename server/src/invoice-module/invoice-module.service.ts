@@ -5,7 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { InvoiceStatus, PoStatus, CurrencyCode, Prisma } from '@prisma/client';
+import { InvoiceStatus, PoStatus, CurrencyCode, Prisma, UserRole } from '@prisma/client';
 import { AiService } from '../ai-service/ai-service.service';
 import {
   CreateInvoiceModuleDto,
@@ -294,8 +294,7 @@ export class InvoiceModuleService {
       const financeUsers = await this.prisma.user.findMany({
         where: {
           orgId: invoice.orgId,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          role: 'FINANCE' as any,
+          role: UserRole.FINANCE,
           isActive: true,
         },
         select: { id: true, email: true, fullName: true },

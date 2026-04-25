@@ -4,9 +4,11 @@ import { useState } from "react";
 import { FileText, Lock, Search, Filter, ArrowRight, ShieldCheck, FileCheck, Send, DownloadCloud, UploadCloud, Eye, CheckCircle } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter, useSearchParams } from "next/navigation";
+import { TableSkeleton } from "../components/shared/TableSkeleton";
+import { ErrorBoundary } from "../components/shared/ErrorBoundary";
 
 export default function POPage() {
-    const { pos, prs } = useProcurement();
+    const { pos, prs, loadingMyPrs } = useProcurement();
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -47,6 +49,15 @@ export default function POPage() {
             setIsSubmitting(false);
         }, 2000);
     };
+
+    if (loadingMyPrs) {
+        return (
+            <main className="pt-16 px-8 pb-12">
+                <div className="h-8 bg-gray-200 rounded w-64 mb-6 animate-pulse" />
+                <TableSkeleton rows={7} cols={6} />
+            </main>
+        );
+    }
 
     if (showPreview) {
         return (
@@ -386,6 +397,7 @@ export default function POPage() {
 
     // Default LIST view
     return (
+        <ErrorBoundary>
         <main className="pt-16 px-8 pb-12">
 
             <div className="mt-8 flex justify-between items-end mb-8">
@@ -465,5 +477,6 @@ export default function POPage() {
                 </table>
             </div>
         </main>
+        </ErrorBoundary>
     );
 }
