@@ -37,7 +37,14 @@ export interface AiQuotationAnalysis {
 }
 
 export interface AiEmailAnalysis {
-  intent: 'CREATE_PR' | 'UPDATE_PO' | 'GENERAL_INQUIRY';
+  intent:
+    | 'CREATE_PR'
+    | 'UPDATE_PO'
+    | 'GENERAL_INQUIRY'
+    | 'QUOTATION'
+    | 'PO_CONFIRMATION'
+    | 'SHIPPING_NOTIFICATION'
+    | 'INVOICE_SUBMISSION';
   data: any;
   confidence: number;
 }
@@ -92,16 +99,16 @@ export class AiService implements OnModuleInit {
     `;
 
     const result = await this.withRetry(
-      () => this.client.models.generateContent({
-        model: 'gemini-3.1-flash-lite-preview',
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      }),
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-3.1-flash-lite-preview',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
       'analyzeEmailContent',
     );
 
     return this.parseSpecificJson<AiEmailAnalysis>(result.text ?? '');
   }
-
 
   async onModuleInit() {
     await this.listModels();
@@ -132,28 +139,37 @@ export class AiService implements OnModuleInit {
     `;
 
     const result = await this.withRetry(
-      () => this.client.models.generateContent({
-        model: 'gemini-3.1-flash-lite-preview',
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      }),
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-3.1-flash-lite-preview',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
       'analyzeQuotation',
     );
 
-    const parsed = this.parseSpecificJson<AiQuotationAnalysis>(result.text ?? '');
+    const parsed = this.parseSpecificJson<AiQuotationAnalysis>(
+      result.text ?? '',
+    );
 
     // VALIDATION: Ensure score matches assessment
     // If assessment indicates major issues (unreasonable price, fraud suspicion), cap the score
     const assessmentLower = parsed.assessment?.toLowerCase() || '';
-    const hasPriceIssue = assessmentLower.includes('vô lý') ||
-                         assessmentLower.includes('quá cao') ||
-                         assessmentLower.includes('gian lận') ||
-                         assessmentLower.includes('không hợp lý') ||
-                         assessmentLower.includes('vượt xa giá trị');
+    const hasPriceIssue =
+      assessmentLower.includes('vô lý') ||
+      assessmentLower.includes('quá cao') ||
+      assessmentLower.includes('gian lận') ||
+      assessmentLower.includes('không hợp lý') ||
+      assessmentLower.includes('vượt xa giá trị');
 
-    const hasManyCons = parsed.cons && parsed.cons.length > 0 && parsed.cons.length >= (parsed.pros?.length || 0);
+    const hasManyCons =
+      parsed.cons &&
+      parsed.cons.length > 0 &&
+      parsed.cons.length >= (parsed.pros?.length || 0);
 
     if ((hasPriceIssue || hasManyCons) && parsed.score > 3) {
-      this.logger.warn(`Score ${parsed.score} capped to 3 for problematic quotation`);
+      this.logger.warn(
+        `Score ${parsed.score} capped to 3 for problematic quotation`,
+      );
       parsed.score = 3;
     }
 
@@ -186,10 +202,11 @@ export class AiService implements OnModuleInit {
     `;
 
     const result = await this.withRetry(
-      () => this.client.models.generateContent({
-        model: 'gemini-3.1-flash-lite-preview',
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      }),
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-3.1-flash-lite-preview',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
       'analyzeSupplierPerformance',
     );
 
@@ -229,15 +246,16 @@ export class AiService implements OnModuleInit {
       ];
 
       let response = await this.withRetry(
-        () => this.client.models.generateContent({
-          model: 'gemini-3.1-flash-lite-preview',
-          config: {
-            systemInstruction: { parts: [{ text: systemInstruction }] },
-            thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
-            tools: tools,
-          },
-          contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-        }),
+        () =>
+          this.client.models.generateContent({
+            model: 'gemini-3.1-flash-lite-preview',
+            config: {
+              systemInstruction: { parts: [{ text: systemInstruction }] },
+              thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
+              tools: tools,
+            },
+            contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+          }),
         'askAiAboutDatabase',
       );
 
@@ -278,17 +296,18 @@ export class AiService implements OnModuleInit {
 
         chatHistory.push({ role: 'function', parts: functionResponses });
         response = await this.withRetry(
-          () => this.client.models.generateContent({
-            model: 'gemini-3.1-flash-lite-preview',
-            config: { tools: tools },
-            contents: chatHistory,
-          }),
+          () =>
+            this.client.models.generateContent({
+              model: 'gemini-3.1-flash-lite-preview',
+              config: { tools: tools },
+              contents: chatHistory,
+            }),
           'askAiAboutDatabase:toolLoop',
         );
       }
 
       return this.parseSpecificJson<AiDatabaseResponse>(response.text ?? '');
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`askAiAboutDatabase failed: ${error.message}`);
       return {
         success: false,
@@ -323,7 +342,7 @@ export class AiService implements OnModuleInit {
           typeof v === 'bigint' ? v.toString() : v,
         ),
       );
-    } catch (error) {
+    } catch (error: any) {
       return { error: error.message };
     }
   }

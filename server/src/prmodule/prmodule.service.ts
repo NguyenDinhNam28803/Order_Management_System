@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
 import { PrRepository } from './pr.repository';
