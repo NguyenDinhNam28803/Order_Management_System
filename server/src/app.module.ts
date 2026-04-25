@@ -30,7 +30,8 @@ import { BudgetModuleModule } from './budget-module/budget-module.module';
 import { AuditModuleModule } from './audit-module/audit-module.module';
 import { SystemConfigModuleModule } from './system-config-module/system-config-module.module';
 import { AiServiceModule } from './ai-service/ai-service.module';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { CostCenterModuleModule } from './cost-center-module/cost-center-module.module';
 import { OrganizationModuleModule } from './organization-module/organization-module.module';
 import { AutomationModule } from './common/automation/automation.module';
@@ -38,6 +39,7 @@ import { RagModule } from './rag/rag.module';
 import { EmailProcessorModule } from './email-processor/email-processor.module';
 import { SupplierDiscoveryModule } from './supplier-discovery/supplier-discovery.module';
 import { SupplierVettingModule } from './supplier-vetting-module/supplier-vetting-module.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -112,15 +114,16 @@ import { SupplierVettingModule } from './supplier-vetting-module/supplier-vettin
     EmailProcessorModule,
     SupplierDiscoveryModule,
     SupplierVettingModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     HashPasswordService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

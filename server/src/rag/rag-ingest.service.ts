@@ -25,6 +25,15 @@ type SourceTable =
   | 'disputes'
   | 'notifications';
 
+// Whitelist of allowed source_table values — prevents SQL injection via sourceTable
+const ALLOWED_SOURCE_TABLES = new Set<string>([
+  'customers', 'products', 'purchase_requisitions', 'rfq_requests',
+  'rfq_quotations', 'purchase_orders', 'goods_receipts', 'supplier_invoices',
+  'payments', 'contracts', 'supplier_kpi_scores', 'users', 'departments',
+  'organizations', 'grn_items', 'invoice_items', 'budget_allocations',
+  'pr_items', 'disputes', 'notifications', 'emails',
+]);
+
 @Injectable()
 export class RagIngestService {
   private readonly logger = new Logger(RagIngestService.name);
@@ -101,10 +110,15 @@ export class RagIngestService {
     const sourceIds = [...new Set(rows.map((r) => r.sourceId))];
     const sourceTable = rows[0].sourceTable;
 
-    // Xóa chunks cũ của các record này
+    if (!ALLOWED_SOURCE_TABLES.has(sourceTable)) {
+      throw new Error(`Invalid sourceTable: "${sourceTable}"`);
+    }
+
+    // $executeRawUnsafe needed because Prisma tagged template can't parameterize
+    // the ANY($2::text[]) array cast. sourceTable is validated against ALLOWED_SOURCE_TABLES above.
     await this.prisma.$executeRawUnsafe(
-      `DELETE FROM document_embeddings 
-     WHERE source_table = $1 
+      `DELETE FROM document_embeddings
+     WHERE source_table = $1
      AND source_id = ANY($2::text[])`,
       sourceTable,
       sourceIds,
@@ -124,6 +138,8 @@ export class RagIngestService {
       return `($${base + 1}, $${base + 2}::vector, $${base + 3}, $${base + 4}, $${base + 5}::jsonb)`;
     });
 
+    // $executeRawUnsafe needed for ::vector and ::jsonb type casts in the VALUES clause.
+    // Placeholders are generated from a numeric counter (not user input); all values are bound params.
     await this.prisma.$executeRawUnsafe(
       `INSERT INTO document_embeddings
        (content, embedding, source_table, source_id, metadata)
@@ -578,8 +594,12 @@ export class RagIngestService {
   }) {
     const { content, vector, sourceTable, sourceId, metadata } = params;
 
-    // Prisma $executeRaw không nhận template literal tốt với vector cast
-    // Dùng $executeRawUnsafe để control string hoàn toàn
+    if (!ALLOWED_SOURCE_TABLES.has(sourceTable)) {
+      throw new Error(`Invalid sourceTable: "${sourceTable}"`);
+    }
+
+    // $executeRawUnsafe needed for ::vector and ::jsonb type casts.
+    // sourceTable validated against ALLOWED_SOURCE_TABLES; all other values are bound params.
     const vectorStr = `[${vector.join(',')}]`;
     const metadataStr = JSON.stringify(metadata);
 

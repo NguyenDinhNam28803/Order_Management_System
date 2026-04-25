@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { PrismaService } from '../prisma/prisma.service';
@@ -44,7 +44,7 @@ export interface AiEmailAnalysis {
 
 @Injectable()
 export class AiService implements OnModuleInit {
-  // ... (giữ nguyên constructor và các method khác)
+  private readonly logger = new Logger(AiService.name);
   private client: GoogleGenAI;
 
   constructor(
@@ -55,9 +55,25 @@ export class AiService implements OnModuleInit {
     if (!apiKey) {
       throw new Error('GEMINI_API_KEY is not defined in environment variables');
     }
-    this.client = new GoogleGenAI({
-      apiKey: apiKey,
-    });
+    this.client = new GoogleGenAI({ apiKey });
+  }
+
+  /** Retry wrapper: up to 3 attempts with 1s / 2s exponential backoff. */
+  private async withRetry<T>(fn: () => Promise<T>, label: string): Promise<T> {
+    const MAX_ATTEMPTS = 3;
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        return await fn();
+      } catch (err: any) {
+        if (attempt === MAX_ATTEMPTS) throw err;
+        const delayMs = attempt * 1000;
+        this.logger.warn(
+          `${label} failed (attempt ${attempt}/${MAX_ATTEMPTS}), retrying in ${delayMs}ms: ${err.message}`,
+        );
+        await new Promise((res) => setTimeout(res, delayMs));
+      }
+    }
+    throw new Error('unreachable');
   }
   /**
    * Phân tích nội dung email bằng AI
@@ -75,10 +91,13 @@ export class AiService implements OnModuleInit {
       }
     `;
 
-    const result = await this.client.models.generateContent({
-      model: 'gemini-3.1-flash-lite-preview',
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    });
+    const result = await this.withRetry(
+      () => this.client.models.generateContent({
+        model: 'gemini-3.1-flash-lite-preview',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      }),
+      'analyzeEmailContent',
+    );
 
     return this.parseSpecificJson<AiEmailAnalysis>(result.text ?? '');
   }
@@ -112,10 +131,13 @@ export class AiService implements OnModuleInit {
       }
     `;
 
-    const result = await this.client.models.generateContent({
-      model: 'gemini-3.1-flash-lite-preview',
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    });
+    const result = await this.withRetry(
+      () => this.client.models.generateContent({
+        model: 'gemini-3.1-flash-lite-preview',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      }),
+      'analyzeQuotation',
+    );
 
     const parsed = this.parseSpecificJson<AiQuotationAnalysis>(result.text ?? '');
 
@@ -130,9 +152,8 @@ export class AiService implements OnModuleInit {
 
     const hasManyCons = parsed.cons && parsed.cons.length > 0 && parsed.cons.length >= (parsed.pros?.length || 0);
 
-    // If there are significant issues, ensure score doesn't exceed 3
     if ((hasPriceIssue || hasManyCons) && parsed.score > 3) {
-      console.warn(`[AI Validation] Score ${parsed.score} too high for problematic quotation. Capping to 3.`);
+      this.logger.warn(`Score ${parsed.score} capped to 3 for problematic quotation`);
       parsed.score = 3;
     }
 
@@ -164,10 +185,13 @@ export class AiService implements OnModuleInit {
       }
     `;
 
-    const result = await this.client.models.generateContent({
-      model: 'gemini-3.1-flash-lite-preview',
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    });
+    const result = await this.withRetry(
+      () => this.client.models.generateContent({
+        model: 'gemini-3.1-flash-lite-preview',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      }),
+      'analyzeSupplierPerformance',
+    );
 
     return this.parseSpecificJson<AiSupplierEvaluation>(result.text ?? '');
   }
@@ -204,15 +228,18 @@ export class AiService implements OnModuleInit {
         },
       ];
 
-      let response = await this.client.models.generateContent({
-        model: 'gemini-3.1-flash-lite-preview',
-        config: {
-          systemInstruction: { parts: [{ text: systemInstruction }] },
-          thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
-          tools: tools,
-        },
-        contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-      });
+      let response = await this.withRetry(
+        () => this.client.models.generateContent({
+          model: 'gemini-3.1-flash-lite-preview',
+          config: {
+            systemInstruction: { parts: [{ text: systemInstruction }] },
+            thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
+            tools: tools,
+          },
+          contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+        }),
+        'askAiAboutDatabase',
+      );
 
       const chatHistory: any[] = [
         { role: 'user', parts: [{ text: userPrompt }] },
@@ -250,16 +277,19 @@ export class AiService implements OnModuleInit {
         }
 
         chatHistory.push({ role: 'function', parts: functionResponses });
-        response = await this.client.models.generateContent({
-          model: 'gemini-3.1-flash-lite-preview',
-          config: { tools: tools },
-          contents: chatHistory,
-        });
+        response = await this.withRetry(
+          () => this.client.models.generateContent({
+            model: 'gemini-3.1-flash-lite-preview',
+            config: { tools: tools },
+            contents: chatHistory,
+          }),
+          'askAiAboutDatabase:toolLoop',
+        );
       }
 
       return this.parseSpecificJson<AiDatabaseResponse>(response.text ?? '');
     } catch (error) {
-      console.error('Error in askAiAboutDatabase:', error);
+      this.logger.error(`askAiAboutDatabase failed: ${error.message}`);
       return {
         success: false,
         summary: 'Lỗi hệ thống AI.',
@@ -315,8 +345,7 @@ export class AiService implements OnModuleInit {
       try {
         return JSON.parse(cleaned) as T;
       } catch {
-        // Trả về object rỗng nếu không parse được thay vì throw để app không crash
-        console.error('AI response parse failed:', text);
+        this.logger.error(`AI response parse failed: ${text.slice(0, 200)}`);
         return {} as T;
       }
     }

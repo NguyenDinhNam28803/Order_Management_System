@@ -170,12 +170,11 @@ export class EmailRagService {
         const vector = await this.embedding.embed(content);
         const vectorStr = `[${vector.join(',')}]`;
 
-        // Upsert: xóa record cũ (nếu có) rồi insert mới — tránh lỗi 42P10
-        // (ON CONFLICT yêu cầu unique constraint, nhưng bảng chưa có)
-        await this.prisma.$executeRawUnsafe(
-          `DELETE FROM document_embeddings WHERE source_table = 'emails' AND source_id = $1`,
-          email.messageId,
-        );
+        // Delete existing embedding then insert new one (no unique constraint yet)
+        await this.prisma.$executeRaw`
+          DELETE FROM document_embeddings WHERE source_table = 'emails' AND source_id = ${email.messageId}
+        `;
+        // $executeRawUnsafe needed for ::vector and ::jsonb type casts; all values are bound params.
         await this.prisma.$executeRawUnsafe(
           `
           INSERT INTO document_embeddings
@@ -225,11 +224,10 @@ export class EmailRagService {
     const vector = await this.embedding.embed(content);
     const vectorStr = `[${vector.join(',')}]`;
 
-    // Upsert: xóa record cũ (nếu có) rồi insert mới — tránh lỗi 42P10
-    await this.prisma.$executeRawUnsafe(
-      `DELETE FROM document_embeddings WHERE source_table = 'emails' AND source_id = $1`,
-      email.messageId,
-    );
+    await this.prisma.$executeRaw`
+      DELETE FROM document_embeddings WHERE source_table = 'emails' AND source_id = ${email.messageId}
+    `;
+    // $executeRawUnsafe needed for ::vector and ::jsonb type casts; all values are bound params.
     await this.prisma.$executeRawUnsafe(
       `
       INSERT INTO document_embeddings

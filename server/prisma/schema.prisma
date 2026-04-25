@@ -205,6 +205,7 @@ model User {
   createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
   hashedRefreshToken       String?                @map("hashed_refresh_token") @db.VarChar(255)
+  refreshTokenExpiresAt    DateTime?              @map("refresh_token_expires_at") @db.Timestamptz(6)
   approvalMatrixRules      ApprovalMatrixRule[]
   approvalWorkflows        ApprovalWorkflow[]     @relation("ApprovalApprover")
   approvalDelegations      ApprovalWorkflow[]     @relation("ApprovalDelegatedFrom")
@@ -810,6 +811,7 @@ model GoodsReceipt {
   invoices              SupplierInvoice[]
 
   @@index([poId])
+  @@index([orgId, status])
   @@map("goods_receipts")
 }
 
@@ -915,6 +917,7 @@ model SupplierInvoice {
 
   @@index([poId])
   @@index([supplierId])
+  @@index([orgId, status])
   @@map("supplier_invoices")
 }
 
@@ -1325,6 +1328,8 @@ model BudgetAllocation {
 
   @@unique([budgetPeriodId, costCenterId, deptId, categoryId])
   @@index([budgetCode])
+  @@index([orgId, status])
+  @@index([costCenterId, status])
   @@map("budget_allocations")
 }
 

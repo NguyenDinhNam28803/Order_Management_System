@@ -18,9 +18,16 @@ import { ApprovalModuleService } from '../approval-module/approval-module.servic
 import { AiService } from '../ai-service/ai-service.service';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { BudgetOverrideService } from '../budget-module/budget-override.service';
+import { EmailService } from '../notification-module/email.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PrmoduleService {
+  private readonly logger = new Logger(PrmoduleService.name);
+  private readonly ceilL1: number;
+  private readonly ceilL2: number;
+  private readonly ceilL3: number;
+
   constructor(
     private readonly repository: PrRepository,
     private readonly prisma: PrismaService,
@@ -28,7 +35,13 @@ export class PrmoduleService {
     private readonly aiService: AiService,
     private readonly budgetService: BudgetModuleService,
     private readonly budgetOverrideService: BudgetOverrideService,
-  ) {}
+    private readonly emailService: EmailService,
+    private readonly configService: ConfigService,
+  ) {
+    this.ceilL1 = this.configService.get<number>('PR_CEILING_L1', 10_000_000);
+    this.ceilL2 = this.configService.get<number>('PR_CEILING_L2', 30_000_000);
+    this.ceilL3 = this.configService.get<number>('PR_CEILING_L3', 100_000_000);
+  }
 
   async create(
     createPrDto: CreatePrDto,
@@ -84,8 +97,7 @@ export class PrmoduleService {
     const isPlatformAdmin = role === UserRole.PLATFORM_ADMIN;
 
     if (!isPlatformAdmin) {
-      if (totalAmount < 10000000) {
-        // Mọi Role nghiệp vụ đều có quyền tạo PR dưới 10tr
+      if (totalAmount < this.ceilL1) {
         const allowedRoles: UserRole[] = [
           UserRole.REQUESTER,
           UserRole.DEPT_APPROVER,
@@ -97,21 +109,19 @@ export class PrmoduleService {
             'Bạn không có quyền khởi tạo yêu cầu mua sắm.',
           );
         }
-      } else if (totalAmount >= 10000000 && totalAmount < 30000000) {
-        // Chỉ Approver trở lên mới được tạo PR từ 10tr - 30tr
+      } else if (totalAmount >= this.ceilL1 && totalAmount < this.ceilL2) {
         const allowedRoles: UserRole[] = [
-          UserRole.REQUESTER, // test hợp đồng
+          UserRole.REQUESTER,
           UserRole.DEPT_APPROVER,
           UserRole.DIRECTOR,
           UserRole.CEO,
         ];
         if (!allowedRoles.includes(role)) {
           throw new BadRequestException(
-            'Hạn mức khởi tạo của bạn tối đa là 10 triệu VND.',
+            `Hạn mức khởi tạo của bạn tối đa là ${this.ceilL1.toLocaleString('vi-VN')} VND.`,
           );
         }
-      } else if (totalAmount >= 30000000 && totalAmount < 100000000) {
-        // Chỉ Director trở lên mới được tạo PR từ 30tr - 100tr
+      } else if (totalAmount >= this.ceilL2 && totalAmount < this.ceilL3) {
         const allowedRoles: UserRole[] = [
           UserRole.DIRECTOR,
           UserRole.CEO,
@@ -119,14 +129,13 @@ export class PrmoduleService {
         ];
         if (!allowedRoles.includes(role)) {
           throw new BadRequestException(
-            'Hạn mức khởi tạo của bạn tối đa là 30 triệu VND.',
+            `Hạn mức khởi tạo của bạn tối đa là ${this.ceilL2.toLocaleString('vi-VN')} VND.`,
           );
         }
-      } else if (totalAmount >= 100000000) {
-        // Chỉ CEO mới được tạo PR trên 100tr
+      } else if (totalAmount >= this.ceilL3) {
         if (role !== UserRole.CEO) {
           throw new BadRequestException(
-            'Hạn mức khởi tạo của bạn tối đa là 100 triệu VND.',
+            `Hạn mức khởi tạo của bạn tối đa là ${this.ceilL3.toLocaleString('vi-VN')} VND.`,
           );
         }
       }
