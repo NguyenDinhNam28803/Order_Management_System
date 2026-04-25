@@ -42,11 +42,7 @@ export default function QuotationManagementPage() {
         setLoading(true);
         try {
             const quotes = await fetchQuotationsByRfq(rfqId);
-            console.log("📊 Quotations loaded:", quotes);
             if (quotes && Array.isArray(quotes)) {
-                quotes.forEach((q, i) => {
-                    console.log(`  [${i}] ID: ${q.id}, Status: ${q.status}, Supplier: ${q.supplier?.name || q.supplierId}`);
-                });
                 // Enrich supplier data from organizations
                 const enrichedQuotes = quotes.map(q => {
                     const supplierOrg = organizations?.find((o: Organization) => o.id === q.supplierId);

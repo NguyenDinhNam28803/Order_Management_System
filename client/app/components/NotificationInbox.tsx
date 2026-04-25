@@ -22,7 +22,6 @@ export default function NotificationInbox() {
         if (!currentUser?.id) return;
         setIsLoading(true);
         try {
-            console.log("Fetching notifications for:", currentUser.id);
             const response = await apiFetch(`/notifications/recipient/${currentUser.id}`);
             if (response.ok) {
                 const res = await response.json();

@@ -313,8 +313,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const notify = useCallback((message: string, type: Notification['type'] = 'info') => {
         const id = Date.now() + Math.random();
-        console.log(`[Notification] ${type}: ${message}`);
-        console.log(`[NOTIFY] ${type.toUpperCase()}: ${message}`);
         setState(prev => ({ 
             ...prev, 
             notifications: [...prev.notifications, { id, message, type }] 
@@ -1279,7 +1277,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         const resp = await apiFetch('/request-for-quotations/my-supplier-rfqs');
         if (resp.ok) {
             const res = await resp.json();
-            console.log("My supplier RFQs:", res.data);
             return res.data || res;
         }
         return [];

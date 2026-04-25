@@ -106,9 +106,6 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
         })),
       };
 
-      // DEBUG: Log dữ liệu gửi đi
-      console.log('[AIPrGenerator] Sending PR data:', prData);
-
       const res = await addPR(prData);
 
       if (!res) {

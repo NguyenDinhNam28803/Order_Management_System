@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   BadRequestException,
   ConflictException,
@@ -12,6 +13,7 @@ import {
 
 @Injectable()
 export class CostCenterModuleService {
+  private readonly logger = new Logger(CostCenterModuleService.name);
   constructor(private prisma: PrismaService) {}
 
   // Helper chuyển đổi Decimal sang Number cho Frontend

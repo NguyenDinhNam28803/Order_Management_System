@@ -26,8 +26,6 @@ export default function FinanceInvoicesPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState<string>("ALL");
 
-    console.log(invoices);
-
     // Filter invoices
     const invoicesWithDetails = invoices as InvoiceWithDetails[];
     const filteredInvoices = invoicesWithDetails.filter((inv: InvoiceWithDetails) => {

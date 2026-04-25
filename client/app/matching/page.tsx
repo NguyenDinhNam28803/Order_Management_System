@@ -9,7 +9,6 @@ export default function MatchingPage() {
     const { pos } = useProcurement();
     const router = useRouter();
     
-    console.log(pos);
     // Find PO that is COMMITTED (simulating that it's been received but not paid)
     const activePO = pos.find((p) => p.status === "MATCHING");
 
