@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import DOMPurify from "dompurify";
 import { 
   EmailEventType, 
   TemplateData,
@@ -83,7 +84,13 @@ export default function NotificationTemplatePreview({
     }
   };
 
-  const displayPreview = showServerPreview && serverPreview ? serverPreview : clientPreview;
+  const rawPreview = showServerPreview && serverPreview ? serverPreview : clientPreview;
+  const displayPreview = useMemo(() => ({
+    ...rawPreview,
+    html: typeof window !== "undefined"
+      ? DOMPurify.sanitize(rawPreview.html, { USE_PROFILES: { html: true } })
+      : rawPreview.html,
+  }), [rawPreview]);
 
   return (
     <div className={`bg-[#161922] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden ${className}`}>

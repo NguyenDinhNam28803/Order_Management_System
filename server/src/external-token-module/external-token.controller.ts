@@ -7,6 +7,7 @@ import {
   Param,
   Query,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import type {
   CreateExternalTokenDto,
@@ -15,6 +16,8 @@ import type {
 import { ExternalTokenService as ExternalTokenServiceImpl } from './external-token.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AutomationService } from '../common/automation/automation.service';
+import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('external-token')
 export class ExternalTokenController {
@@ -24,28 +27,35 @@ export class ExternalTokenController {
     private readonly automationService: AutomationService,
   ) {}
 
+  // ── Internal management endpoints — JWT required ────────────────────────────
+
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   async createToken(@Body() dto: CreateExternalTokenDto) {
     return this.externalTokenService.createToken(dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('validate/:token')
   async validateToken(@Param('token') token: string) {
     return this.externalTokenService.validateToken(token);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('use/:token')
   async markTokenAsUsed(@Param('token') token: string) {
     await this.externalTokenService.markTokenAsUsed(token);
     return { success: true };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('revoke/:token')
   async revokeToken(@Param('token') token: string) {
     await this.externalTokenService.revokeToken(token);
     return { success: true };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('by-reference/:referenceId')
   async getActiveTokensByReference(
     @Param('referenceId') referenceId: string,
@@ -57,7 +67,7 @@ export class ExternalTokenController {
     );
   }
 
-  // ── Public endpoints — no JWT required ─────────────────────────────────────
+  // ── Public endpoints — no JWT, strict rate limiting ─────────────────────────
 
   /**
    * Lấy thông tin RFQ từ magic link token (không cần đăng nhập).
@@ -113,8 +123,8 @@ export class ExternalTokenController {
   /**
    * Nộp báo giá qua magic link token (không cần đăng nhập).
    * POST /external-token/rfq-public/:token/submit
-   * Body: { supplierId, totalPrice, leadTimeDays, paymentTerms?, deliveryTerms?, notes?, items: [{rfqItemId, unitPrice, qtyOffered?, notes?}] }
    */
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('rfq-public/:token/submit')
   async submitQuotationByToken(
     @Param('token') token: string,
@@ -128,7 +138,6 @@ export class ExternalTokenController {
     });
     if (!rfq) throw new BadRequestException('RFQ không tồn tại');
 
-    // Tìm supplierId từ targetEmail nếu body không truyền
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     let supplierId: string = body.supplierId;
     if (!supplierId) {
@@ -187,7 +196,6 @@ export class ExternalTokenController {
       include: { items: true },
     });
 
-    // Đánh dấu token đã dùng — không thể gửi báo giá lại qua link này
     await this.externalTokenService.markTokenAsUsed(token);
 
     return { success: true, quotation };
@@ -195,10 +203,6 @@ export class ExternalTokenController {
 
   // ── PO Confirm public endpoints ─────────────────────────────────────────────
 
-  /**
-   * Lấy thông tin PO từ magic link token (không cần đăng nhập).
-   * GET /external-token/po-public/:token
-   */
   @Get('po-public/:token')
   async getPoByToken(@Param('token') token: string) {
     const tokenInfo = await this.externalTokenService.validateToken(token);
@@ -248,11 +252,7 @@ export class ExternalTokenController {
     };
   }
 
-  /**
-   * NCC xác nhận nhận PO qua magic link (không cần đăng nhập).
-   * POST /external-token/po-public/:token/confirm
-   * Body: { notes?: string }
-   */
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('po-public/:token/confirm')
   async confirmPoByToken(
     @Param('token') token: string,
@@ -271,24 +271,23 @@ export class ExternalTokenController {
         status: 'ACKNOWLEDGED',
         acknowledgedAt: new Date(),
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        notes: body.notes ? `${po.notes ?? ''}\n[NCC xác nhận]: ${body.notes}`.trim() : po.notes,
+        notes: body.notes
+          ? `${po.notes ?? ''}\n[NCC xác nhận]: ${body.notes}`.trim()
+          : po.notes,
       },
     });
 
     await this.externalTokenService.markTokenAsUsed(token);
 
-    // Trigger automation: tạo GRN draft, notify warehouse, gửi email /grn/update cho NCC
-    void this.automationService.handlePoSupplierAccepted(po.id, po.supplierId).catch(() => {});
+    void this.automationService
+      .handlePoSupplierAccepted(po.id, po.supplierId)
+      .catch(() => {});
 
     return { success: true };
   }
 
   // ── GRN Shipment Update public endpoints ────────────────────────────────────
 
-  /**
-   * Lấy thông tin GRN + PO từ token (không cần đăng nhập).
-   * GET /external-token/grn-public/:token
-   */
   @Get('grn-public/:token')
   async getGrnByToken(@Param('token') token: string) {
     const tokenInfo = await this.externalTokenService.validateToken(token);
@@ -299,7 +298,7 @@ export class ExternalTokenController {
         po: {
           include: {
             supplier: { select: { name: true } },
-            buyer:    { select: { fullName: true, email: true } },
+            buyer: { select: { fullName: true, email: true } },
             shipmentTracking: { orderBy: { createdAt: 'desc' }, take: 1 },
           },
         },
@@ -332,25 +331,23 @@ export class ExternalTokenController {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           deliveryAddress: po.deliveryAddress ?? null,
         },
-        tracking: latestTracking ? {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          trackingNumber: latestTracking.trackingNumber ?? null,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          carrier: latestTracking.carrier ?? null,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          shippedAt: latestTracking.shippedAt ?? null,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          estimatedArrival: latestTracking.estimatedArrival ?? null,
-        } : null,
+        tracking: latestTracking
+          ? {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              trackingNumber: latestTracking.trackingNumber ?? null,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              carrier: latestTracking.carrier ?? null,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              shippedAt: latestTracking.shippedAt ?? null,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              estimatedArrival: latestTracking.estimatedArrival ?? null,
+            }
+          : null,
       },
     };
   }
 
-  /**
-   * NCC cập nhật thông tin vận chuyển qua magic link.
-   * POST /external-token/grn-public/:token/update
-   * Body: { trackingNumber, carrier, shippedAt?, estimatedArrival?, notes? }
-   */
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('grn-public/:token/update')
   async updateShipmentByToken(
     @Param('token') token: string,
@@ -363,7 +360,6 @@ export class ExternalTokenController {
     });
     if (!grn) throw new BadRequestException('GRN không tồn tại');
 
-    // Tạo tracking record mới (lịch sử nhiều lần cập nhật)
     await this.prisma.poShipmentTracking.create({
       data: {
         poId: grn.poId,
@@ -374,20 +370,19 @@ export class ExternalTokenController {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         shippedAt: body.shippedAt ? new Date(body.shippedAt as string) : null,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        estimatedArrival: body.estimatedArrival ? new Date(body.estimatedArrival as string) : null,
+        estimatedArrival: body.estimatedArrival
+          ? new Date(body.estimatedArrival as string)
+          : null,
         status: 'SHIPPED',
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         notes: body.notes ?? null,
       },
     });
 
-    // Cập nhật PO status → SHIPPED
     await this.prisma.purchaseOrder.update({
       where: { id: grn.poId },
       data: { status: 'SHIPPED' },
     });
-
-    // Token GRN_MILESTONE không mark as used — NCC có thể cập nhật lại tracking
 
     return { success: true };
   }

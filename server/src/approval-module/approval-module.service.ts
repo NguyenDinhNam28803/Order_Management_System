@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AutomationService } from '../common/automation/automation.service';
+import { EventsGateway } from '../gateway/events.gateway';
 import {
   DocumentType,
   ApprovalStatus,
@@ -37,6 +38,7 @@ export class ApprovalModuleService {
     private readonly userService: UserModuleService,
     private readonly auditService: AuditModuleService,
     private readonly notificationService: NotificationModuleService,
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   /**
@@ -217,13 +219,13 @@ export class ApprovalModuleService {
         'REJECTED',
         user,
       );
-      // Thông báo cho người yêu cầu biết tài liệu bị từ chối
       void this.notifyRequesterOnResult(
         currentStep.documentType,
         currentStep.documentId,
         'REJECTED',
         comment,
       );
+      void this.emitApprovalEvent(currentStep, 'REJECTED', user.orgId);
       return { status: 'REJECTED', message: 'Tài liệu đã bị từ chối.' };
     }
 
@@ -250,6 +252,7 @@ export class ApprovalModuleService {
         currentStep.documentId,
         'APPROVED',
       );
+      void this.emitApprovalEvent(currentStep, 'APPROVED', user.orgId);
       return {
         status: 'FULLY_APPROVED',
         message: 'Tài liệu đã được duyệt hoàn toàn.',
@@ -771,5 +774,19 @@ export class ApprovalModuleService {
       [DocumentType.SUPPLIER_VETTING]: 'Xét duyệt nhà cung cấp',
     };
     return labels[docType] ?? docType;
+  }
+
+  private emitApprovalEvent(step: any, status: 'APPROVED' | 'REJECTED', orgId: string) {
+    try {
+      this.eventsGateway.emitApprovalUpdate(orgId, {
+        workflowId: step.id as string,
+        documentId: step.documentId as string,
+        documentType: step.documentType as string,
+        status,
+        approverId: step.approverId as string | undefined,
+      });
+    } catch {
+      // Never block the main flow on WS emit failure
+    }
   }
 }

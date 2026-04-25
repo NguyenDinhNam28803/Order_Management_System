@@ -7,6 +7,7 @@ import { AutomationModule } from '../common/automation/automation.module';
 import { UserModuleModule } from '../user-module/user-module.module';
 import { AuditModuleModule } from '../audit-module/audit-module.module';
 import { NotificationModuleModule } from '../notification-module/notification-module.module';
+import { GatewayModule } from '../gateway/gateway.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { NotificationModuleModule } from '../notification-module/notification-mo
     AutomationModule,
     UserModuleModule,
     AuditModuleModule,
-    NotificationModuleModule, // Dùng sendDirectEmail để notify approver/requester
+    NotificationModuleModule,
+    GatewayModule,
   ],
   controllers: [ApprovalModuleController],
   providers: [ApprovalModuleService],
