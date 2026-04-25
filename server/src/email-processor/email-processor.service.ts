@@ -3,12 +3,6 @@ import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailRagService, ParsedEmail } from '../rag/email-rag.service';
 import {
-  QuotationEmailData,
-  PoConfirmationEmailData,
-  ShippingNotificationEmailData,
-  InvoiceEmailData,
-} from '../ai-service/ai-service.service';
-import {
   RfqStatus,
   PoStatus,
   QuotationStatus,
@@ -32,6 +26,46 @@ export interface EmailProcessResult {
   entityId?: string;
   reason?: string;
   ingested: boolean;
+}
+
+export interface QuotationEmailData {
+  rfqNumber?: string;
+  quotationNumber?: string;
+  totalPrice?: number;
+  currency?: string;
+  leadTimeDays?: number;
+  validityDays?: number;
+  paymentTerms?: string;
+}
+
+export interface PoConfirmationEmailData {
+  poNumber: string;
+  estimatedDelivery?: string;
+  notes?: string;
+}
+
+export interface ShippingNotificationEmailData {
+  poNumber: string;
+  trackingNumber?: string;
+  carrier?: string;
+  shippedDate?: string;
+  estimatedArrival?: string;
+  notes?: string;
+}
+
+export interface InvoiceEmailData {
+  poNumber: string;
+  invoiceNumber?: string;
+  invoiceDate?: string;
+  dueDate?: string;
+  subtotal?: number;
+  taxRate?: number;
+  taxAmount?: number;
+  totalAmount?: number;
+  currency?: string;
+  paymentTerms?: string;
+  eInvoiceRef?: string;
+  notes?: string;
 }
 
 @Injectable()
@@ -410,8 +444,7 @@ export class EmailProcessorService {
     });
 
     // 3. Sinh số hoá đơn nếu AI không trích được
-    const invoiceNumber =
-      data.invoiceNumber ?? `INV-EMAIL-${Date.now()}`;
+    const invoiceNumber = data.invoiceNumber ?? `INV-EMAIL-${Date.now()}`;
 
     // Tránh tạo trùng nếu email bị xử lý 2 lần
     const existing = await this.prisma.supplierInvoice.findFirst({
@@ -488,7 +521,12 @@ export class EmailProcessorService {
       where: {
         supplierId,
         status: {
-          in: [PoStatus.SHIPPED, PoStatus.GRN_CREATED, PoStatus.IN_PROGRESS, PoStatus.ACKNOWLEDGED],
+          in: [
+            PoStatus.SHIPPED,
+            PoStatus.GRN_CREATED,
+            PoStatus.IN_PROGRESS,
+            PoStatus.ACKNOWLEDGED,
+          ],
         },
       },
       orderBy: { createdAt: 'desc' },

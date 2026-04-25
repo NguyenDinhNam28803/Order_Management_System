@@ -193,12 +193,17 @@ export class AuthModuleRepository {
       }
 
       // Kiểm tra refresh token hết hạn
-      if (user.refreshTokenExpiresAt && user.refreshTokenExpiresAt < new Date()) {
+      if (
+        user.refreshTokenExpiresAt &&
+        user.refreshTokenExpiresAt < new Date()
+      ) {
         await this.prisma.user.update({
           where: { id: user.id },
           data: { hashedRefreshToken: null, refreshTokenExpiresAt: null },
         });
-        throw new ForbiddenException('Refresh token đã hết hạn, vui lòng đăng nhập lại');
+        throw new ForbiddenException(
+          'Refresh token đã hết hạn, vui lòng đăng nhập lại',
+        );
       }
 
       const refreshTokenMatches = await bcrypt.compare(
@@ -300,7 +305,10 @@ export class AuthModuleRepository {
 
   private async updateRefreshTokenHash(userId: string, refreshToken: string) {
     const hash = await bcrypt.hash(refreshToken, 10);
-    const refreshTokenTtlDays = this.configService.get<number>('REFRESH_TOKEN_TTL_DAYS', 7);
+    const refreshTokenTtlDays = this.configService.get<number>(
+      'REFRESH_TOKEN_TTL_DAYS',
+      7,
+    );
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + refreshTokenTtlDays);
     await this.prisma.user.update({
