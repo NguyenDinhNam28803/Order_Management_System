@@ -17,9 +17,7 @@ export default function SupplierRFQ() {
         const loadRFQs = async () => {
             setLoading(true);
             try {
-                console.log("Fetching RFQs for supplier:", currentUser?.orgId);
                 const rfqs = await fetchMySupplierRFQs();
-                console.log("Received RFQs:", rfqs);
                 setMyRfqs(rfqs);
             } catch (error) {
                 console.error("Error fetching RFQs:", error);

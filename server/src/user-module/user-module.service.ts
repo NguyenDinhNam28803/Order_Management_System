@@ -10,6 +10,7 @@ import { NotificationModuleService } from '../notification-module/notification-m
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDelegationDto } from './dto/user-delegation.dto';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import type { EmailEventType } from '../notification-module/email-template.service';
 
 @Injectable()
 export class UserModuleService {
@@ -41,7 +42,7 @@ export class UserModuleService {
     // 4. Gửi email chào mừng (KHÔNG gửi mật khẩu)
     await this.notificationService.sendNotification({
       recipientId: user.id,
-      eventType: 'NEW_USER_ACCOUNT',
+      eventType: 'USER_REGISTERED' as EmailEventType,
       data: {
         username: user.email,
         fullName: user.fullName,
@@ -56,8 +57,6 @@ export class UserModuleService {
   // ... (findAll, findOne, update, remove remain unchanged)
 
   async findAll(filters?: { orgId?: string }) {
-    console.log('--- Truy vấn dữ liệu từ database (Filtered by Org) ---');
-    
     if (filters?.orgId) {
       // Filter users by organization
       const users = await this.prisma.user.findMany({
@@ -68,14 +67,13 @@ export class UserModuleService {
       });
       return users;
     }
-    
+
     // Fallback: return all (for system admin if needed)
     const users = await this.userRepository.findAll();
     return users;
   }
 
   async findOne(id: string) {
-    console.log(`--- Truy vấn dữ liệu từ database (User ${id}) ---`);
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -86,7 +84,6 @@ export class UserModuleService {
   }
 
   async findByEmail(email: string) {
-    console.log(`--- Truy vấn dữ liệu từ database (Email ${email}) ---`);
     const user = await this.userRepository.findByEmail(email);
     // if (user) {
     //   await this.cacheManager.set(cacheKey, user);

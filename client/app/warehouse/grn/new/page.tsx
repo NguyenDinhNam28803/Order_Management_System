@@ -42,7 +42,6 @@ export default function CreateGRN() {
 
     const handleSearch = () => {
         const found = allPos.find((p) => (p.id.includes(poLookup.trim())) && p.status === "SHIPPED");
-        console.log(found)
         if (found) {
             setActivePO(found);
             // Initialize forms
@@ -103,7 +102,6 @@ export default function CreateGRN() {
                     if (q.status !== 'PASS') {
                         // Gọi API cập nhật QC chi tiết cho từng item trong GRN
                         // Lưu ý: Cần ID của GRN vừa tạo. Giả sử API createGRN trả về data.
-                        console.log(`Cập nhật QC cho sản phẩm ${item.id}: ${q.status} - ${q.reason}`);
                     }
                 }
 

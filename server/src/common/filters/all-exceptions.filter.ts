@@ -4,16 +4,16 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
+  private readonly logger = new Logger(AllExceptionsFilter.name);
+
   catch(exception: unknown, host: ArgumentsHost) {
-    console.error('--- EXCEPTION CAUGHT BY GLOBAL FILTER ---', exception);
-    if (exception instanceof Error) {
-      console.error('Stack:', exception.stack);
-    }
+    this.logger.error('Unhandled exception', exception instanceof Error ? exception.stack : String(exception));
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

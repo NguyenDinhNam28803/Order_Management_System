@@ -70,7 +70,6 @@ export class RfqmoduleController {
     description: 'Trả về danh sách tất cả yêu cầu báo giá cho tổ chức hiện tại',
   })
   async findAll(@Request() req: { user: JwtPayload }) {
-    console.log('User:', req.user);
     return this.rfqService.findAll(req.user);
   }
 

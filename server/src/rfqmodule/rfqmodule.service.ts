@@ -64,7 +64,6 @@ export class RfqmoduleService {
     const suggestedSupplierIds =
       await this.aiService.getCompanySuggestion(items);
 
-    console.log(suggestedSupplierIds);
     if (
       !suggestedSupplierIds ||
       !suggestedSupplierIds.data ||

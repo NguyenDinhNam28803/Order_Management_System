@@ -204,7 +204,7 @@ export default function NotificationAdminPage() {
                     eventType={template.type}
                     data={template.data}
                     recipientEmail={template.recipient}
-                    onSend={() => console.log("Send", template.type)}
+                    onSend={() => {}}
                   />
                 </div>
               ))}

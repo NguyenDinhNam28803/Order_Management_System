@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import * as imaps from 'imap-simple';
 import { EmailProcessorService } from './email-processor.service';
+import { EmailFilterService } from './email-filter.service';
 
 @Injectable()
 export class EmailListenerService implements OnModuleInit {
@@ -12,6 +13,7 @@ export class EmailListenerService implements OnModuleInit {
   constructor(
     private configService: ConfigService,
     private emailProcessor: EmailProcessorService,
+    private emailFilter: EmailFilterService,
   ) {
     this.imapConfig = {
       imap: {
@@ -49,7 +51,6 @@ export class EmailListenerService implements OnModuleInit {
         struct: true,
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const messages = await connection.search(searchCriteria, fetchOptions);
 
       // Giới hạn 5 email/lần để tránh vượt quota Gemini free tier (15 req/phút)
@@ -63,18 +64,21 @@ export class EmailListenerService implements OnModuleInit {
       for (const message of batch) {
         try {
           // ── Đọc header (from, subject, message-id) ─────────────────────────
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
           const headerPart = message.parts.find(
             (p: any) => p.which === 'HEADER',
           );
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const header: Record<string, string[]> = headerPart?.body ?? {};
 
-          // ── Đọc phần body text/plain ───────────────────────────────────────
+          // ── Đọc phần body text/plain + text/html + attachment metadata ───
           let body = '';
+          const attachmentNames: string[] = [];
           if (message.attributes.struct) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             const allParts = imaps.getParts(message.attributes.struct as any);
+
+            // 1. Ưu tiên text/plain
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const textPart = allParts.find(
               (part: any) =>
@@ -88,6 +92,46 @@ export class EmailListenerService implements OnModuleInit {
                 ? raw.toString('utf-8')
                 : String(raw ?? '');
             }
+
+            // 2. Fallback: lấy text/html nếu không có text/plain
+            if (!body.trim()) {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              const htmlPart = allParts.find(
+                (part: any) =>
+                  part.type?.toLowerCase() === 'text' &&
+                  part.subtype?.toLowerCase() === 'html',
+              );
+              if (htmlPart) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const raw = await connection.getPartData(message, htmlPart);
+                const html = Buffer.isBuffer(raw)
+                  ? raw.toString('utf-8')
+                  : String(raw ?? '');
+                // Strip HTML tags để AI đọc được
+                body = html
+                  .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+                  .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+                  .replace(/<[^>]+>/g, ' ')
+                  .replace(/&nbsp;/g, ' ')
+                  .replace(/&amp;/g, '&')
+                  .replace(/&lt;/g, '<')
+                  .replace(/&gt;/g, '>')
+                  .replace(/\s{2,}/g, ' ')
+                  .trim();
+              }
+            }
+
+            // 3. Thu thập tên file đính kèm để AI biết có attachment nào
+            for (const part of allParts) {
+              const disposition = (part as any).disposition;
+              const params = (part as any).params ?? {};
+              const dispParams = disposition?.params ?? {};
+              const filename =
+                dispParams.filename ?? params.name ?? (part as any).filename;
+              if (filename) {
+                attachmentNames.push(String(filename));
+              }
+            }
           }
 
           // ── Sanitize message-id dùng làm source_id trong DB ───────────────
@@ -96,13 +140,35 @@ export class EmailListenerService implements OnModuleInit {
           );
           const messageId = rawMessageId.replace(/[<>\s]/g, '').slice(0, 200);
 
-          // ── Gửi đến EmailProcessorService (ingest RAG + phân tích AI) ──────
-          await this.emailProcessor.processIncomingEmail({
+          // ── Log email AI đọc được ─────────────────────────────────────────
+          // Thêm danh sách file đính kèm vào body để AI biết context
+          const attachmentNote =
+            attachmentNames.length > 0
+              ? `\n\n[File đính kèm: ${attachmentNames.join(', ')}]`
+              : '';
+          const emailData = {
             from: String(header.from?.[0] ?? ''),
             subject: String(header.subject?.[0] ?? '(no subject)'),
-            body: body.slice(0, 5000), // Giới hạn để tránh prompt AI quá dài
+            body: (body + attachmentNote).slice(0, 6000),
             messageId,
-          });
+            attachments: attachmentNames,
+          };
+          this.logger.log(`Email nhận: "${emailData.subject}" (id: ${emailData.messageId})`);
+
+          // ── Lọc email trước khi xử lý (system rules → AI) ────────────────
+          const filterResult = await this.emailFilter.filter(emailData);
+          if (!filterResult.shouldProcess) {
+            this.logger.log(
+              `Email "${emailData.subject}" bị lọc [${filterResult.filterType}]: ${filterResult.reason}`,
+            );
+            continue;
+          }
+          this.logger.log(
+            `Email "${emailData.subject}" vượt qua bộ lọc [${filterResult.filterType}]: ${filterResult.reason}`,
+          );
+
+          // ── Gửi đến EmailProcessorService (ingest RAG + phân tích AI) ──────
+          await this.emailProcessor.processIncomingEmail(emailData);
 
           // Delay 4s giữa các email để tránh vượt Gemini free tier 15 req/phút
           await new Promise((resolve) => setTimeout(resolve, 4000));

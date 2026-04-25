@@ -99,7 +99,6 @@ export default function DeliveryTrackingPage() {
 
     const handleUpdateTracking = (data: Partial<DeliveryInfo>) => {
         // In real app, this would call API to update delivery info
-        console.log("Update tracking:", data);
         setEditingDelivery(null);
     };
 

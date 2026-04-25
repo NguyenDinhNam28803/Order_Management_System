@@ -111,7 +111,6 @@ export default function ProcurementSupplierDetailPage() {
         
         try {
             const kpis = await fetchSupplierKPIReport(supplierId);
-            console.log("KPI Data from API:", kpis);
             setKpiHistory(kpis || []);
         } catch (error) {
             console.error("Failed to fetch KPI history:", error);

@@ -225,7 +225,7 @@ export class PrmoduleService {
         );
       }
 
-      console.log(`[PR-SUBMIT] Submitting PR: ${id} (Status: ${pr.status})`);
+      this.logger.log(`Submitting PR: ${id} (Status: ${pr.status})`);
 
       if (pr.status !== PrStatus.DRAFT) {
         throw new BadRequestException(
@@ -250,9 +250,7 @@ export class PrmoduleService {
             budgetError.message.includes('Vượt hạn mức ngân sách')
           ) {
             // TỰ ĐỘNG tạo yêu cầu duyệt vượt mức nếu hết tiền
-            console.log(
-              `[PR-SUBMIT] Budget exceeded. Creating override request for PR: ${pr.id}`,
-            );
+            this.logger.log(`Budget exceeded. Creating override request for PR: ${pr.id}`);
 
             // Tìm allocation hiện tại để lấy ID
             const allocation = await this.budgetService.findQuarterlyAllocation(
@@ -305,14 +303,14 @@ export class PrmoduleService {
         requesterId: pr.requesterId,
       });
 
-      console.log(`[PR-SUBMIT] Workflow initiated for PR: ${pr.id}`);
+      this.logger.log(`Workflow initiated for PR: ${pr.id}`);
 
       // 4. Trạng thái PENDING_APPROVAL đã được cập nhật bên trong initiateWorkflow
       // nhưng ta vẫn trả về PR mới nhất để đồng bộ UI
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return this.findOne(pr.id);
     } catch (error) {
-      console.error('[PR-SUBMIT] CRITICAL ERROR:', error);
+      this.logger.error(`submitPR failed: ${error instanceof Error ? error.message : String(error)}`);
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException

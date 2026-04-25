@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmbeddingService } from './embedding.service';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +10,7 @@ import { CurrencyCode, ProductType } from '@prisma/client';
 
 @Injectable()
 export class RagPrGeneratorService {
+  private readonly logger = new Logger(RagPrGeneratorService.name);
   private readonly fptBaseUrl: string;
   private readonly fptApiKey: string;
   private readonly fptModel: string;
@@ -55,13 +56,13 @@ export class RagPrGeneratorService {
 
       // ALWAYS search products directly from DB - this is the PRIMARY source
       let dbProducts: any[] = [];
-      console.log(`[RAG] orgId:`, orgId);
+      this.logger.log(`generatePrDraft orgId: ${orgId}`);
       if (orgId) {
         const searchTerms = prompt
           .toLowerCase()
           .split(/\s+/)
           .filter((w) => w.length > 2);
-        console.log(`[RAG] Searching DB with terms:`, searchTerms);
+        this.logger.log(`Searching DB with terms: ${searchTerms.join(', ')}`);
 
         if (searchTerms.length > 0) {
           // Build OR conditions properly for Prisma
@@ -102,22 +103,17 @@ export class RagPrGeneratorService {
             orderBy: { updatedAt: 'desc' },
           });
         }
-        console.log(
-          `[RAG] Found ${dbProducts.length} products from DB:`,
-          dbProducts.map((p) => p.name),
-        );
+        this.logger.log(`Found ${dbProducts.length} products from DB`);
       } else {
-        console.log(
-          `[RAG] Warning: No orgId provided, cannot search DB products`,
-        );
+        this.logger.warn('No orgId provided, cannot search DB products');
       }
 
       // Also get products from RAG (vector search) as supplementary
-      const ragProductIds = new Set(
-        chunks
-          .filter((c) => c.source_table === 'products')
-          .map((c) => c.source_id),
-      );
+      // const ragProductIds = new Set(
+      //   chunks
+      //     .filter((c) => c.source_table === 'products')
+      //     .map((c) => c.source_id),
+      // );
 
       // 2. Get cost centers and budget allocation for the org
       const costCenters = orgId
@@ -129,37 +125,42 @@ export class RagPrGeneratorService {
         : [];
 
       // 2b. Get budget allocations for user's department (to help AI choose cost center)
-      const budgetAllocations = orgId && user?.deptId
-        ? await this.prisma.budgetAllocation.findMany({
-            where: {
-              orgId,
-              deptId: user.deptId,
-              status: 'APPROVED',
-              budgetPeriod: {
-                isActive: true,
+      const budgetAllocations =
+        orgId && user?.deptId
+          ? await this.prisma.budgetAllocation.findMany({
+              where: {
+                orgId,
+                deptId: user.deptId,
+                status: 'APPROVED',
+                budgetPeriod: {
+                  isActive: true,
+                },
               },
-            },
-            select: {
-              id: true,
-              budgetPeriodId: true,
-              costCenterId: true,
-              categoryId: true,
-              allocatedAmount: true,
-              spentAmount: true,
-              committedAmount: true,
-              costCenter: { select: { name: true, code: true } },
-              category: { select: { name: true, id: true } },
-              budgetPeriod: { select: { periodType: true, fiscalYear: true, periodNumber: true } },
-            },
-            take: 20,
-          })
-        : [];
+              select: {
+                id: true,
+                budgetPeriodId: true,
+                costCenterId: true,
+                categoryId: true,
+                allocatedAmount: true,
+                spentAmount: true,
+                committedAmount: true,
+                costCenter: { select: { name: true, code: true } },
+                category: { select: { name: true, id: true } },
+                budgetPeriod: {
+                  select: {
+                    periodType: true,
+                    fiscalYear: true,
+                    periodNumber: true,
+                  },
+                },
+              },
+              take: 20,
+            })
+          : [];
 
       // 4. Determine price limit based on user role
       const priceLimit = this.getPriceLimitByRole(user?.role);
-      console.log(
-        `[RAG] User role: ${user?.role}, Price limit: ${priceLimit.toLocaleString('vi-VN')} VND`,
-      );
+      this.logger.log(`User role: ${user?.role}, price limit: ${priceLimit.toLocaleString('vi-VN')} VND`);
 
       // 5. Build context for LLM
       const { context, allProducts } = this.buildContext(
@@ -182,7 +183,7 @@ export class RagPrGeneratorService {
       const processedItems = await this.processNewProducts(
         draftPr.items,
         orgId,
-        allProducts,
+        // allProducts,
       );
 
       return {
@@ -205,8 +206,8 @@ export class RagPrGeneratorService {
           })),
         ],
       };
-    } catch (error) {
-      console.error('Error generating PR draft:', error);
+    } catch (error: any) {
+      this.logger.error(`generatePrDraft error: ${error.message}`);
       return {
         success: false,
         title: '',
@@ -229,7 +230,7 @@ export class RagPrGeneratorService {
   private async processNewProducts(
     items: PrDraftItem[],
     orgId: string,
-    dbProducts: any[],
+    // dbProducts: any[],
   ): Promise<PrDraftItem[]> {
     const processedItems: PrDraftItem[] = [];
 
@@ -240,9 +241,7 @@ export class RagPrGeneratorService {
         continue;
       }
 
-      console.log(
-        `[RAG] Item "${item.productDesc}" has no productId. Searching from AI knowledge...`,
-      );
+      this.logger.log(`Item "${item.productDesc}" has no productId, searching from AI...`);
 
       // Try to find matching product in DB first (by name/description)
       const existingProduct = await this.findProductInDb(
@@ -251,13 +250,14 @@ export class RagPrGeneratorService {
       );
 
       if (existingProduct) {
-        console.log(
-          `[RAG] Found existing product: ${existingProduct.name} (ID: ${existingProduct.id})`,
-        );
+        this.logger.log(`Found existing product: ${existingProduct.name} (${existingProduct.id})`);
         processedItems.push({
           ...item,
           productId: existingProduct.id,
-          sku: item.sku || existingProduct.sku || this.generateSku(item.productDesc),
+          sku:
+            item.sku ||
+            existingProduct.sku ||
+            this.generateSku(item.productDesc),
           categoryId: item.categoryId || existingProduct.categoryId,
         });
         continue;
@@ -267,9 +267,7 @@ export class RagPrGeneratorService {
       const aiProductInfo = await this.searchProductFromAI(item.productDesc);
 
       if (aiProductInfo) {
-        console.log(
-          `[RAG] AI found product info for: ${item.productDesc}`,
-        );
+        this.logger.log(`AI found product info for: ${item.productDesc}`);
 
         // Find or create category
         const category = await this.findOrCreateCategory(
@@ -279,24 +277,20 @@ export class RagPrGeneratorService {
         );
 
         // Create new product in database
-        const newProduct = await this.createProductFromAI(
-          {
-            name: aiProductInfo.name || item.productDesc,
-            description: aiProductInfo.description || item.productDesc,
-            sku: aiProductInfo.sku || this.generateSku(item.productDesc),
-            unitPriceRef: item.estimatedPrice,
-            categoryId: category.id,
-            orgId,
-            unit: item.unit || 'PCS',
-            currency: item.currency as CurrencyCode,
-            type: ProductType.NON_CATALOG,
-            attributes: aiProductInfo.attributes || {},
-          },
-        );
+        const newProduct = await this.createProductFromAI({
+          name: aiProductInfo.name || item.productDesc,
+          description: aiProductInfo.description || item.productDesc,
+          sku: aiProductInfo.sku || this.generateSku(item.productDesc),
+          unitPriceRef: item.estimatedPrice,
+          categoryId: category.id,
+          orgId,
+          unit: item.unit || 'PCS',
+          currency: item.currency as CurrencyCode,
+          type: ProductType.NON_CATALOG,
+          attributes: aiProductInfo.attributes || {},
+        });
 
-        console.log(
-          `[RAG] Created new product: ${newProduct.name} (ID: ${newProduct.id})`,
-        );
+        this.logger.log(`Created new product: ${newProduct.name} (${newProduct.id})`);
 
         processedItems.push({
           ...item,
@@ -306,9 +300,7 @@ export class RagPrGeneratorService {
         });
       } else {
         // If AI couldn't find info, create product with available info
-        console.log(
-          `[RAG] AI couldn't find product info. Creating with basic info...`,
-        );
+        this.logger.log(`AI couldn't find product info, creating with basic info...`);
 
         const category = await this.findOrCreateCategory(
           'Tổng hợp',
@@ -316,19 +308,17 @@ export class RagPrGeneratorService {
           orgId,
         );
 
-        const newProduct = await this.createProductFromAI(
-          {
-            name: item.productDesc,
-            description: item.specNote || item.productDesc,
-            sku: item.sku || this.generateSku(item.productDesc),
-            unitPriceRef: item.estimatedPrice,
-            categoryId: category.id,
-            orgId,
-            unit: item.unit || 'PCS',
-            currency: item.currency as CurrencyCode,
-            type: ProductType.NON_CATALOG,
-          },
-        );
+        const newProduct = await this.createProductFromAI({
+          name: item.productDesc,
+          description: item.specNote || item.productDesc,
+          sku: item.sku || this.generateSku(item.productDesc),
+          unitPriceRef: item.estimatedPrice,
+          categoryId: category.id,
+          orgId,
+          unit: item.unit || 'PCS',
+          currency: item.currency as CurrencyCode,
+          type: ProductType.NON_CATALOG,
+        });
 
         processedItems.push({
           ...item,
@@ -348,6 +338,7 @@ export class RagPrGeneratorService {
   private async findProductInDb(
     productDesc: string,
     orgId: string,
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   ): Promise<any | null> {
     const searchTerms = productDesc
       .toLowerCase()
@@ -435,7 +426,7 @@ Lưu ý:
       });
 
       if (!response.ok) {
-        console.error(`[RAG] AI search error: ${response.status}`);
+        this.logger.error(`AI search HTTP error: ${response.status}`);
         return null;
       }
 
@@ -456,7 +447,7 @@ Lưu ý:
         attributes: parsed.attributes || {},
       };
     } catch (error) {
-      console.error('[RAG] Error searching product from AI:', error);
+      this.logger.error(`searchProductFromAI error: ${error instanceof Error ? error.message : String(error)}`);
       return null;
     }
   }
@@ -494,9 +485,7 @@ Lưu ý:
       },
     });
 
-    console.log(
-      `[RAG] Created new category: ${newCategory.name} (ID: ${newCategory.id})`,
-    );
+    this.logger.log(`Created new category: ${newCategory.name} (${newCategory.id})`);
 
     return newCategory;
   }
@@ -642,15 +631,22 @@ ${
 ${costCenters.map((c, i) => `${i + 1}. ${c.name} (ID: ${c.id}, Code: ${c.code})`).join('\n') || 'Không có cost center'}
 
 ## BUDGET ALLOCATIONS (Ngân sách đã cấp phát theo danh mục - CHỈ được dùng các cost center có ngân sách phù hợp):
-${budgetAllocations.map((b, i) => {
-  const available = Number(b.allocatedAmount) - Number(b.spentAmount) - Number(b.committedAmount);
-  return `${i + 1}. Cost Center: ${b.costCenter?.name || 'N/A'} (${b.costCenter?.code || 'N/A'})
+${
+  budgetAllocations
+    .map((b, i) => {
+      const available =
+        Number(b.allocatedAmount) -
+        Number(b.spentAmount) -
+        Number(b.committedAmount);
+      return `${i + 1}. Cost Center: ${b.costCenter?.name || 'N/A'} (${b.costCenter?.code || 'N/A'})
    - Cost Center ID: ${b.costCenterId}
    - Danh mục: ${b.category?.name || 'Ngân sách chung (không có danh mục)'}
    - Category ID: ${b.categoryId || 'N/A'}
    - Ngân sách còn lại: ${available.toLocaleString('vi-VN')} VND
    - Kỳ ngân sách: ${b.budgetPeriod?.periodType || 'N/A'} ${b.budgetPeriod?.fiscalYear || ''} (P${b.budgetPeriod?.periodNumber || 'N/A'})`;
-}).join('\n') || 'Không có ngân sách nào được phân bổ'}
+    })
+    .join('\n') || 'Không có ngân sách nào được phân bổ'
+}
 
 ## USER INFO (Thông tin người tạo PR):
 - Role: ${user?.role || 'REQUESTER'}
@@ -807,8 +803,8 @@ ${budgetAllocations.map((b, i) => {
         confidence: parsed.confidence || 0.8,
         reasoning: parsed.reasoning || 'Đã phân tích yêu cầu và tạo PR Draft',
       };
-    } catch (e) {
-      console.error('Failed to parse LLM response:', content);
+    } catch (e: any) {
+      this.logger.error(`Failed to parse LLM response: ${e.message}`);
       throw new Error('Invalid LLM response format');
     }
   }

@@ -23,8 +23,6 @@ export default function SupplierInvoice() {
     const { allPos, grns, createInvoice, currentUser } = useProcurement();
     const router = useRouter();
 
-    console.log("allPos", allPos);
-    
     const [selectedPO, setSelectedPO] = useState("");
     
     // Get supplier's orgId from current user
@@ -55,14 +53,8 @@ export default function SupplierInvoice() {
         return null;
     }).filter((p): p is DeliverablePO => p !== null);
 
-    console.log("deliverablePOs", deliverablePOs);
-
     const currentPO = allPos.find((p) => p.id === selectedPO);
     const currentGRN = grns.find((g: GRN) => g.poId === currentPO?.id);
-    
-    // Debug log
-    console.log("currentPO:", currentPO?.id);
-    console.log("currentGRN:", currentGRN?.id, currentGRN?.grnNumber);
     
     const [invoiceItems, setInvoiceItems] = useState<{ [key: string]: number }>({});
     const [vat, setVat] = useState(10);
@@ -87,17 +79,11 @@ export default function SupplierInvoice() {
         setInvoiceItems(prev => ({ ...prev, [itemId]: val }));
     };
 
-    // Debug: log currentPO items
-    console.log("currentPO items:", currentPO?.items);
-
     const subTotal = currentPO?.items.reduce((sum, item) => {
         const qty = invoiceItems[item.id] ?? 0;
-        // PO items có unitPrice và total, không có estimatedPrice
         const rawPrice = item.unitPrice ?? item.total;
         const price = typeof rawPrice === 'number' ? rawPrice : Number(rawPrice) || 0;
-        const lineTotal = qty * price;
-        console.log(`Item ${item.id}: qty=${qty}, rawPrice=${rawPrice}, parsedPrice=${price}, lineTotal=${lineTotal}`);
-        return sum + lineTotal;
+        return sum + qty * price;
     }, 0) || 0;
 
     const vatAmount = subTotal * (vat / 100);
@@ -135,8 +121,6 @@ export default function SupplierInvoice() {
             invoiceDate: new Date().toISOString().split('T')[0],
             items: items
         };
-        
-        console.log("Invoice payload:", payload);
         
         createInvoice(payload);
         alert(`Đã xuất Hóa đơn ${invoiceNo} (Invoice) cho ${currentPO.id} thành công!`);

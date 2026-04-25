@@ -84,9 +84,7 @@ export class CostCenterModuleService {
 
   async findAll(orgId: string) {
     if (!orgId) {
-      console.warn(
-        '[CostCenterModuleService] findAll called with missing orgId',
-      );
+      this.logger.warn('findAll called with missing orgId');
       return [];
     }
 
@@ -108,7 +106,7 @@ export class CostCenterModuleService {
       });
       return results.map((cc) => this.mapCostCenter(cc));
     } catch (error: any) {
-      console.error('[CostCenterModuleService] findAll error:', error);
+      this.logger.error(`findAll error: ${error.message}`);
       throw new BadRequestException(
         'Không thể tải danh sách trung tâm chi phí: ' + error.message,
       );
@@ -170,7 +168,7 @@ export class CostCenterModuleService {
 
       return this.mapCostCenter(result);
     } catch (error: any) {
-      console.error(`[CostCenterModuleService] update error for ${id}:`, error);
+      this.logger.error(`update error for ${id}: ${error.message}`);
       throw new BadRequestException(
         `Không thể cập nhật Cost Center: ${error.message}`,
       );
