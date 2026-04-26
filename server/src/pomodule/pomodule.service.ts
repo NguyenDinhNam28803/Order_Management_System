@@ -162,7 +162,10 @@ export class PomoduleService {
         po.supplierId,
       );
     } catch (automationError) {
-      this.logger.error('Failed to create GRN draft automatically', automationError);
+      this.logger.error(
+        'Failed to create GRN draft automatically',
+        automationError,
+      );
       // Don't fail the confirmation if automation fails
     }
 

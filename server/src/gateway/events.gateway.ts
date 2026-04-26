@@ -4,12 +4,17 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
-  MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
+
+interface JwtPayload {
+  sub: string;
+  orgId: string;
+  role: string;
+}
 
 @Injectable()
 @WebSocketGateway({
@@ -21,7 +26,7 @@ import { Server, Socket } from 'socket.io';
 })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
-  server: Server;
+  server!: Server;
 
   private readonly logger = new Logger(EventsGateway.name);
 
@@ -38,10 +43,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return;
       }
 
-      const payload = await this.jwtService.verifyAsync(token);
-      client.data.userId = payload.sub as string;
-      client.data.orgId = payload.orgId as string;
-      client.data.role = payload.role as string;
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
+      client.data.userId = payload.sub;
+      client.data.orgId = payload.orgId;
+      client.data.role = payload.role;
 
       // Tham gia room theo orgId — broadcasts sẽ gửi tới cả org
       void client.join(`org:${payload.orgId}`);
@@ -77,45 +82,60 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // ── Domain events ────────────────────────────────────────────────────────
 
-  emitApprovalUpdate(orgId: string, payload: {
-    workflowId: string;
-    documentId: string;
-    documentType: string;
-    status: string;
-    approverId?: string;
-  }) {
+  emitApprovalUpdate(
+    orgId: string,
+    payload: {
+      workflowId: string;
+      documentId: string;
+      documentType: string;
+      status: string;
+      approverId?: string;
+    },
+  ) {
     this.broadcastToOrg(orgId, 'approval:updated', payload);
   }
 
-  emitInvoiceStatusChange(orgId: string, payload: {
-    invoiceId: string;
-    invoiceNumber: string;
-    status: string;
-  }) {
+  emitInvoiceStatusChange(
+    orgId: string,
+    payload: {
+      invoiceId: string;
+      invoiceNumber: string;
+      status: string;
+    },
+  ) {
     this.broadcastToOrg(orgId, 'invoice:status_changed', payload);
   }
 
-  emitPoStatusChange(orgId: string, payload: {
-    poId: string;
-    poNumber: string;
-    status: string;
-  }) {
+  emitPoStatusChange(
+    orgId: string,
+    payload: {
+      poId: string;
+      poNumber: string;
+      status: string;
+    },
+  ) {
     this.broadcastToOrg(orgId, 'po:status_changed', payload);
   }
 
-  emitBudgetAlert(orgId: string, payload: {
-    allocationId: string;
-    costCenterId: string;
-    message: string;
-  }) {
+  emitBudgetAlert(
+    orgId: string,
+    payload: {
+      allocationId: string;
+      costCenterId: string;
+      message: string;
+    },
+  ) {
     this.broadcastToOrg(orgId, 'budget:alert', payload);
   }
 
-  emitGrnUpdate(orgId: string, payload: {
-    grnId: string;
-    grnNumber: string;
-    status: string;
-  }) {
+  emitGrnUpdate(
+    orgId: string,
+    payload: {
+      grnId: string;
+      grnNumber: string;
+      status: string;
+    },
+  ) {
     this.broadcastToOrg(orgId, 'grn:updated', payload);
   }
 }

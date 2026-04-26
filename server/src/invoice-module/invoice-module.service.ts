@@ -5,7 +5,13 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { InvoiceStatus, PoStatus, CurrencyCode, Prisma, UserRole } from '@prisma/client';
+import {
+  InvoiceStatus,
+  PoStatus,
+  CurrencyCode,
+  Prisma,
+  UserRole,
+} from '@prisma/client';
 import { AiService } from '../ai-service/ai-service.service';
 import {
   CreateInvoiceModuleDto,
@@ -473,7 +479,14 @@ export class InvoiceModuleService {
         where: {
           supplierId,
           orgId,
-          status: { in: [PoStatus.SHIPPED, PoStatus.GRN_CREATED, PoStatus.ACKNOWLEDGED, PoStatus.IN_PROGRESS] },
+          status: {
+            in: [
+              PoStatus.SHIPPED,
+              PoStatus.GRN_CREATED,
+              PoStatus.ACKNOWLEDGED,
+              PoStatus.IN_PROGRESS,
+            ],
+          },
         },
         orderBy: { createdAt: 'desc' },
         select: { id: true },

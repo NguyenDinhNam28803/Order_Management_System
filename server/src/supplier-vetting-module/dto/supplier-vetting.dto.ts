@@ -11,19 +11,24 @@ import {
 } from 'class-validator';
 
 export const CHECK_TYPES = [
-  'BUSINESS_LICENSE',   // Giấy phép kinh doanh
-  'TAX_CODE',           // Mã số thuế
+  'BUSINESS_LICENSE', // Giấy phép kinh doanh
+  'TAX_CODE', // Mã số thuế
   'CERTIFICATE_OF_ORIGIN', // Chứng nhận xuất xứ (CO)
-  'CUSTOMS_DOCS',       // Chứng từ hải quan
+  'CUSTOMS_DOCS', // Chứng từ hải quan
   'TAX_AUTHORITY_CALL', // Xác minh qua cơ quan thuế (gọi điện)
-  'FIELD_VISIT',        // Khảo sát thực địa
-  'PRICE_COMPARISON',   // So sánh giá so với thị trường
-  'QUALITY_STANDARD',   // Tiêu chuẩn chất lượng
+  'FIELD_VISIT', // Khảo sát thực địa
+  'PRICE_COMPARISON', // So sánh giá so với thị trường
+  'QUALITY_STANDARD', // Tiêu chuẩn chất lượng
 ] as const;
 
 export type CheckType = (typeof CHECK_TYPES)[number];
 
-export const CHECK_STATUSES = ['PENDING', 'PASSED', 'FAILED', 'SKIPPED'] as const;
+export const CHECK_STATUSES = [
+  'PENDING',
+  'PASSED',
+  'FAILED',
+  'SKIPPED',
+] as const;
 export type CheckStatus = (typeof CHECK_STATUSES)[number];
 
 // ─── Create Vetting Request ────────────────────────────────────────────────────
@@ -39,7 +44,10 @@ export class CreateVettingRequestDto {
   @IsOptional()
   assignedToId?: string;
 
-  @ApiPropertyOptional({ example: -15.5, description: 'Giá thấp hơn thị trường bao nhiêu % (âm = rẻ hơn)' })
+  @ApiPropertyOptional({
+    example: -15.5,
+    description: 'Giá thấp hơn thị trường bao nhiêu % (âm = rẻ hơn)',
+  })
   @IsNumber()
   @Min(-100)
   @Max(200)
@@ -59,12 +67,16 @@ export class UpdateVettingCheckDto {
   @IsEnum(CHECK_STATUSES)
   checkStatus!: CheckStatus;
 
-  @ApiPropertyOptional({ example: 'https://storage.example.com/docs/gp-kinh-doanh.pdf' })
+  @ApiPropertyOptional({
+    example: 'https://storage.example.com/docs/gp-kinh-doanh.pdf',
+  })
   @IsString()
   @IsOptional()
   fileUrl?: string;
 
-  @ApiPropertyOptional({ example: 'Đã xác minh qua tổng cục thuế ngày 24/04/2026' })
+  @ApiPropertyOptional({
+    example: 'Đã xác minh qua tổng cục thuế ngày 24/04/2026',
+  })
   @IsString()
   @IsOptional()
   notes?: string;
@@ -80,7 +92,9 @@ export class SubmitVettingDto {
   @IsOptional()
   overallScore?: number;
 
-  @ApiPropertyOptional({ example: 'Nhà cung cấp đáp ứng đầy đủ tiêu chí pháp lý và giá tốt' })
+  @ApiPropertyOptional({
+    example: 'Nhà cung cấp đáp ứng đầy đủ tiêu chí pháp lý và giá tốt',
+  })
   @IsString()
   @IsOptional()
   notes?: string;

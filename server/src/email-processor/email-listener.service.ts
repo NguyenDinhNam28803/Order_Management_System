@@ -3,7 +3,9 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import * as imaps from 'imap-simple';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require('pdf-parse') as (buf: Buffer) => Promise<{ text: string }>;
+const pdfParse = require('pdf-parse') as (
+  buf: Buffer,
+) => Promise<{ text: string }>;
 import { EmailProcessorService } from './email-processor.service';
 import { EmailFilterService } from './email-filter.service';
 
@@ -125,11 +127,15 @@ export class EmailListenerService implements OnModuleInit {
 
             // 3. Thu thập tên file đính kèm + trích xuất nội dung PDF
             for (const part of allParts) {
-              const disposition = (part as any).disposition;
-              const params = (part as any).params ?? {};
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              const disposition = part.disposition;
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              const params = part.params ?? {};
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               const dispParams = disposition?.params ?? {};
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               const filename =
-                dispParams.filename ?? params.name ?? (part as any).filename;
+                dispParams.filename ?? params.name ?? part.filename;
               if (!filename) continue;
 
               attachmentNames.push(String(filename));
@@ -139,7 +145,7 @@ export class EmailListenerService implements OnModuleInit {
                 disposition?.type?.toLowerCase() === 'attachment' ||
                 String(filename).toLowerCase().endsWith('.pdf');
               const isPdf =
-                (part as any).subtype?.toLowerCase() === 'pdf' ||
+                part.subtype?.toLowerCase() === 'pdf' ||
                 String(filename).toLowerCase().endsWith('.pdf');
 
               if (isPdf && isAttachment && !body.trim()) {
@@ -184,7 +190,9 @@ export class EmailListenerService implements OnModuleInit {
             messageId,
             attachments: attachmentNames,
           };
-          this.logger.log(`Email nhận: "${emailData.subject}" (id: ${emailData.messageId})`);
+          this.logger.log(
+            `Email nhận: "${emailData.subject}" (id: ${emailData.messageId})`,
+          );
 
           // ── Lọc email trước khi xử lý (system rules → AI) ────────────────
           const filterResult = await this.emailFilter.filter(emailData);
@@ -205,7 +213,9 @@ export class EmailListenerService implements OnModuleInit {
           try {
             await connection.addFlags(message.attributes.uid, ['\\Seen']);
           } catch (flagErr: any) {
-            this.logger.warn(`Không thể đánh dấu SEEN cho uid ${message.attributes.uid}: ${flagErr.message}`);
+            this.logger.warn(
+              `Không thể đánh dấu SEEN cho uid ${message.attributes.uid}: ${flagErr.message}`,
+            );
           }
 
           // Delay 4s giữa các email để tránh vượt Gemini free tier 15 req/phút

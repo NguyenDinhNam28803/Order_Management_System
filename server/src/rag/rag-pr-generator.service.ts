@@ -160,7 +160,9 @@ export class RagPrGeneratorService {
 
       // 4. Determine price limit based on user role
       const priceLimit = this.getPriceLimitByRole(user?.role);
-      this.logger.log(`User role: ${user?.role}, price limit: ${priceLimit.toLocaleString('vi-VN')} VND`);
+      this.logger.log(
+        `User role: ${user?.role}, price limit: ${priceLimit.toLocaleString('vi-VN')} VND`,
+      );
 
       // 5. Build context for LLM
       const { context, allProducts } = this.buildContext(
@@ -241,7 +243,9 @@ export class RagPrGeneratorService {
         continue;
       }
 
-      this.logger.log(`Item "${item.productDesc}" has no productId, searching from AI...`);
+      this.logger.log(
+        `Item "${item.productDesc}" has no productId, searching from AI...`,
+      );
 
       // Try to find matching product in DB first (by name/description)
       const existingProduct = await this.findProductInDb(
@@ -250,7 +254,9 @@ export class RagPrGeneratorService {
       );
 
       if (existingProduct) {
-        this.logger.log(`Found existing product: ${existingProduct.name} (${existingProduct.id})`);
+        this.logger.log(
+          `Found existing product: ${existingProduct.name} (${existingProduct.id})`,
+        );
         processedItems.push({
           ...item,
           productId: existingProduct.id,
@@ -290,7 +296,9 @@ export class RagPrGeneratorService {
           attributes: aiProductInfo.attributes || {},
         });
 
-        this.logger.log(`Created new product: ${newProduct.name} (${newProduct.id})`);
+        this.logger.log(
+          `Created new product: ${newProduct.name} (${newProduct.id})`,
+        );
 
         processedItems.push({
           ...item,
@@ -300,7 +308,9 @@ export class RagPrGeneratorService {
         });
       } else {
         // If AI couldn't find info, create product with available info
-        this.logger.log(`AI couldn't find product info, creating with basic info...`);
+        this.logger.log(
+          `AI couldn't find product info, creating with basic info...`,
+        );
 
         const category = await this.findOrCreateCategory(
           'Tổng hợp',
@@ -447,7 +457,9 @@ Lưu ý:
         attributes: parsed.attributes || {},
       };
     } catch (error) {
-      this.logger.error(`searchProductFromAI error: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `searchProductFromAI error: ${error instanceof Error ? error.message : String(error)}`,
+      );
       return null;
     }
   }
@@ -485,7 +497,9 @@ Lưu ý:
       },
     });
 
-    this.logger.log(`Created new category: ${newCategory.name} (${newCategory.id})`);
+    this.logger.log(
+      `Created new category: ${newCategory.name} (${newCategory.id})`,
+    );
 
     return newCategory;
   }

@@ -27,11 +27,27 @@ type SourceTable =
 
 // Whitelist of allowed source_table values — prevents SQL injection via sourceTable
 const ALLOWED_SOURCE_TABLES = new Set<string>([
-  'customers', 'products', 'purchase_requisitions', 'rfq_requests',
-  'rfq_quotations', 'purchase_orders', 'goods_receipts', 'supplier_invoices',
-  'payments', 'contracts', 'supplier_kpi_scores', 'users', 'departments',
-  'organizations', 'grn_items', 'invoice_items', 'budget_allocations',
-  'pr_items', 'disputes', 'notifications', 'emails',
+  'customers',
+  'products',
+  'purchase_requisitions',
+  'rfq_requests',
+  'rfq_quotations',
+  'purchase_orders',
+  'goods_receipts',
+  'supplier_invoices',
+  'payments',
+  'contracts',
+  'supplier_kpi_scores',
+  'users',
+  'departments',
+  'organizations',
+  'grn_items',
+  'invoice_items',
+  'budget_allocations',
+  'pr_items',
+  'disputes',
+  'notifications',
+  'emails',
 ]);
 
 @Injectable()

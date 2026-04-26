@@ -105,6 +105,7 @@ export function previewTemplate(
 }
 
 function generateSubject(eventType: EmailEventType, data: TemplateData): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const d = data as Record<string, any>;
   
   switch (eventType) {
@@ -126,6 +127,7 @@ function generateSubject(eventType: EmailEventType, data: TemplateData): string 
 }
 
 function generatePreviewHtml(eventType: EmailEventType, data: TemplateData): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const d = data as Record<string, any>;
   
   // Basic preview styling
@@ -308,10 +310,22 @@ export function getTemplateConfig(eventType: EmailEventType): {
       icon: 'UserPlus',
       color: '#64748B',
     },
+    'NEW_USER_ACCOUNT': {
+      name: 'New User Account',
+      description: 'Tài khoản mới tạo',
+      icon: 'UserPlus',
+      color: '#64748B',
+    },
     'RFQ_INVITATION': {
       name: 'RFQ Invitation',
       description: 'Mời tham gia RFQ',
       icon: 'Mail',
+      color: '#3B82F6',
+    },
+    'QUOTATION_RECEIVED': {
+      name: 'Quotation Received',
+      description: 'Nhận báo giá',
+      icon: 'Inbox',
       color: '#3B82F6',
     },
     'PO_APPROVAL_REQUEST': {
@@ -325,6 +339,42 @@ export function getTemplateConfig(eventType: EmailEventType): {
       description: 'Thông báo PO đã được duyệt',
       icon: 'CheckCircle',
       color: '#10B981',
+    },
+    'PR_APPROVED': {
+      name: 'PR Approved',
+      description: 'Thông báo PR đã được duyệt',
+      icon: 'CheckCircle',
+      color: '#10B981',
+    },
+    'PR_REJECTED': {
+      name: 'PR Rejected',
+      description: 'Thông báo PR bị từ chối',
+      icon: 'XCircle',
+      color: '#EF4444',
+    },
+    'GRN_CONFIRMED': {
+      name: 'GRN Confirmed',
+      description: 'Xác nhận nhập kho',
+      icon: 'Package',
+      color: '#10B981',
+    },
+    'INVOICE_RECEIVED': {
+      name: 'Invoice Received',
+      description: 'Nhận hóa đơn',
+      icon: 'Receipt',
+      color: '#10B981',
+    },
+    'CONTRACT_EXPIRY_WARNING': {
+      name: 'Contract Expiry',
+      description: 'Cảnh báo hết hạn hợp đồng',
+      icon: 'AlertTriangle',
+      color: '#F59E0B',
+    },
+    'BUDGET_LIMIT_WARNING': {
+      name: 'Budget Limit',
+      description: 'Cảnh báo ngân sách',
+      icon: 'AlertTriangle',
+      color: '#F59E0B',
     },
   };
   

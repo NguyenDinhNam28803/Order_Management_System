@@ -251,7 +251,9 @@ export class PrmoduleService {
             budgetError.message.includes('Vượt hạn mức ngân sách')
           ) {
             // TỰ ĐỘNG tạo yêu cầu duyệt vượt mức nếu hết tiền
-            this.logger.log(`Budget exceeded. Creating override request for PR: ${pr.id}`);
+            this.logger.log(
+              `Budget exceeded. Creating override request for PR: ${pr.id}`,
+            );
 
             // Tìm allocation hiện tại để lấy ID
             const allocation = await this.budgetService.findQuarterlyAllocation(
@@ -311,7 +313,9 @@ export class PrmoduleService {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return this.findOne(pr.id);
     } catch (error) {
-      this.logger.error(`submitPR failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `submitPR failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException

@@ -81,7 +81,10 @@ describe('InvoiceModuleService', () => {
       providers: [
         InvoiceModuleService,
         { provide: PrismaService, useValue: mockPrisma },
-        { provide: NotificationModuleService, useValue: mockNotificationService },
+        {
+          provide: NotificationModuleService,
+          useValue: mockNotificationService,
+        },
         { provide: AiService, useValue: mockAiService },
       ],
     }).compile();
@@ -98,7 +101,9 @@ describe('InvoiceModuleService', () => {
   describe('markAsPaid()', () => {
     it('throws NotFoundException when invoice not found', async () => {
       mockPrisma.supplierInvoice.findUnique.mockResolvedValue(null);
-      await expect(service.markAsPaid('bad-id')).rejects.toThrow(NotFoundException);
+      await expect(service.markAsPaid('bad-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('throws BadRequestException when invoice status is not PAYMENT_APPROVED', async () => {
@@ -108,7 +113,9 @@ describe('InvoiceModuleService', () => {
         po: {},
         totalAmount: 1000,
       });
-      await expect(service.markAsPaid('inv-1')).rejects.toThrow(BadRequestException);
+      await expect(service.markAsPaid('inv-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('updates invoice to PAID status inside transaction', async () => {
@@ -127,9 +134,11 @@ describe('InvoiceModuleService', () => {
         taxRate: null,
         totalAmount: 1000,
       };
-      mockPrisma.$transaction.mockImplementation(async (fn: any) => {
+      mockPrisma.$transaction.mockImplementation((fn: any) => {
         const tx = {
-          supplierInvoice: { update: jest.fn().mockResolvedValue(updatedInvoice) },
+          supplierInvoice: {
+            update: jest.fn().mockResolvedValue(updatedInvoice),
+          },
           budgetAllocation: { findFirst: jest.fn().mockResolvedValue(null) },
         };
         return fn(tx);
@@ -144,7 +153,9 @@ describe('InvoiceModuleService', () => {
 
   describe('runThreeWayMatching()', () => {
     it('sets AUTO_APPROVED when qty and price are within tolerance', async () => {
-      mockPrisma.supplierInvoice.findUnique.mockResolvedValue(makeInvoiceWithItems());
+      mockPrisma.supplierInvoice.findUnique.mockResolvedValue(
+        makeInvoiceWithItems(),
+      );
       mockPrisma.supplierInvoice.update.mockResolvedValue({});
       mockPrisma.user.findMany.mockResolvedValue([]);
 
@@ -152,7 +163,10 @@ describe('InvoiceModuleService', () => {
 
       expect(mockPrisma.supplierInvoice.update).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ status: InvoiceStatus.AUTO_APPROVED }),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: expect.objectContaining({
+            status: InvoiceStatus.AUTO_APPROVED,
+          }),
         }),
       );
     });
@@ -171,7 +185,10 @@ describe('InvoiceModuleService', () => {
 
       expect(mockPrisma.supplierInvoice.update).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ status: InvoiceStatus.EXCEPTION_REVIEW }),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: expect.objectContaining({
+            status: InvoiceStatus.EXCEPTION_REVIEW,
+          }),
         }),
       );
     });
@@ -190,7 +207,10 @@ describe('InvoiceModuleService', () => {
 
       expect(mockPrisma.supplierInvoice.update).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ status: InvoiceStatus.EXCEPTION_REVIEW }),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: expect.objectContaining({
+            status: InvoiceStatus.EXCEPTION_REVIEW,
+          }),
         }),
       );
     });
@@ -208,7 +228,10 @@ describe('InvoiceModuleService', () => {
 
       expect(mockPrisma.supplierInvoice.update).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ status: InvoiceStatus.EXCEPTION_REVIEW }),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: expect.objectContaining({
+            status: InvoiceStatus.EXCEPTION_REVIEW,
+          }),
         }),
       );
     });
@@ -227,7 +250,10 @@ describe('InvoiceModuleService', () => {
 
       expect(mockPrisma.supplierInvoice.update).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ status: InvoiceStatus.AUTO_APPROVED }),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: expect.objectContaining({
+            status: InvoiceStatus.AUTO_APPROVED,
+          }),
         }),
       );
     });

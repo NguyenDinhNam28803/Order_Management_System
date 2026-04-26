@@ -32,9 +32,7 @@ export class SupplierVettingService {
     });
     if (!supplier) throw new NotFoundException('Nhà cung cấp không tồn tại');
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const vetting = await this.prisma.$transaction(async (tx) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const req = await tx.supplierVettingRequest.create({
         data: {
           orgId: user.orgId,
@@ -43,13 +41,12 @@ export class SupplierVettingService {
           assignedToId: dto.assignedToId,
           priceVsMarket: dto.priceVsMarket,
           notes: dto.notes,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
           status: VettingStatus.IN_REVIEW,
         },
       });
 
       const checks = CHECK_TYPES.map((checkType) => ({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         vettingId: req.id,
         checkType,
         checkStatus: 'PENDING',

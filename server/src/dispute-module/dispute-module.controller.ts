@@ -30,28 +30,58 @@ export class DisputeModuleController {
    * @returns Tranh chấp vừa tạo
    */
   @Post()
-  @Roles(UserRole.REQUESTER, UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.DEPT_APPROVER, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.REQUESTER,
+    UserRole.PROCUREMENT,
+    UserRole.FINANCE,
+    UserRole.DEPT_APPROVER,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({ summary: 'Tạo khiếu nại/tranh chấp mới' })
   create(@Body() createDisputeModuleDto: CreateDisputeModuleDto) {
     return this.disputeModuleService.create(createDisputeModuleDto);
   }
 
   @Get()
-  @Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.DEPT_APPROVER, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.PROCUREMENT,
+    UserRole.FINANCE,
+    UserRole.DEPT_APPROVER,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({ summary: 'Lấy tất cả khiếu nại/tranh chấp' })
   findAll() {
     return this.disputeModuleService.findAll();
   }
 
   @Get(':id')
-  @Roles(UserRole.REQUESTER, UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.DEPT_APPROVER, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.REQUESTER,
+    UserRole.PROCUREMENT,
+    UserRole.FINANCE,
+    UserRole.DEPT_APPROVER,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({ summary: 'Lấy chi tiết khiếu nại/tranh chấp theo ID' })
   findOne(@Param('id') id: string) {
     return this.disputeModuleService.findOne(+id);
   }
 
   @Patch(':id')
-  @Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.DEPT_APPROVER, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+  @Roles(
+    UserRole.PROCUREMENT,
+    UserRole.FINANCE,
+    UserRole.DEPT_APPROVER,
+    UserRole.DIRECTOR,
+    UserRole.CEO,
+    UserRole.PLATFORM_ADMIN,
+  )
   @ApiOperation({ summary: 'Cập nhật khiếu nại/tranh chấp theo ID' })
   update(
     @Param('id') id: string,

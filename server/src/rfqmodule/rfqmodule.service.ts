@@ -259,7 +259,7 @@ export class RfqmoduleService {
     });
 
     // Chuẩn hoá items sang format mà template RFQ_MAGIC_LINK cần
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     const items: Array<{ name: string; qty: number; unit: string }> = (
       rfq.items as any[]
     ).map((i) => ({
@@ -279,7 +279,6 @@ export class RfqmoduleService {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const supplierName: string =
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         (supplier as any).organization?.name ??
         supplier.fullName ??
         supplier.email;

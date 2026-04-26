@@ -88,7 +88,9 @@ export class ApprovalModuleService {
     });
 
     if (rules.length === 0) {
-      this.logger.log(`No rules found for ${docType} ${docId}. Auto-approving...`);
+      this.logger.log(
+        `No rules found for ${docType} ${docId}. Auto-approving...`,
+      );
       await this.updateSourceDocumentStatus(docType, docId, 'APPROVED', user);
       return { message: 'No rules found. Document auto-approved.' };
     }
@@ -587,17 +589,19 @@ export class ApprovalModuleService {
           `[OMS] Yêu cầu phê duyệt PR: ${prDoc?.prNumber ?? docId}`,
           'PR_APPROVAL_LINK',
           {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             prCode: prDoc?.prNumber ?? docId,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             prTitle: prDoc?.title ?? docLabel,
             approverName: approver.fullName ?? approver.email,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            requesterName: (prDoc?.requester as any)?.fullName ?? 'Người dùng',
+            requesterName: prDoc?.requester?.fullName ?? 'Người dùng',
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            requesterDept: (prDoc?.department as any)?.name ?? '',
+            requesterDept: prDoc?.department?.name ?? '',
             totalAmount,
             remainingBudget: 0,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            justification: (prDoc as any)?.justification ?? '',
+            justification: prDoc?.justification ?? '',
             slaDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
             approveLink: `${frontendUrl}/approvals`,
             rejectLink: `${frontendUrl}/approvals`,
@@ -861,7 +865,11 @@ export class ApprovalModuleService {
     return labels[docType] ?? docType;
   }
 
-  private emitApprovalEvent(step: any, status: 'APPROVED' | 'REJECTED', orgId: string) {
+  private emitApprovalEvent(
+    step: any,
+    status: 'APPROVED' | 'REJECTED',
+    orgId: string,
+  ) {
     try {
       this.eventsGateway.emitApprovalUpdate(orgId, {
         workflowId: step.id as string,

@@ -47,10 +47,7 @@ export class AutomationService {
         'CONTRACT_DEFAULT_DAYS',
         365,
       ),
-      autoSendEmail: this.configService.get<boolean>(
-        'AUTO_SEND_EMAIL',
-        true,
-      ),
+      autoSendEmail: this.configService.get<boolean>('AUTO_SEND_EMAIL', true),
     };
   }
 
@@ -555,6 +552,7 @@ export class AutomationService {
       });
 
       if (poFull) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const buyerOrg = (poFull.buyer as any)?.organization ?? {};
         const supplierOrg = poFull.supplier ?? {};
         const subtotal = poFull.items.reduce(
@@ -570,13 +568,19 @@ export class AutomationService {
           deliveryAddress: poFull.deliveryAddress ?? undefined,
           notes: poFull.notes ?? undefined,
           buyerOrg: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             name: buyerOrg.name ?? 'Buyer',
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             address: buyerOrg.address,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             email: buyerOrg.email,
           },
           supplierOrg: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             name: (supplierOrg as any).name ?? supplierName,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             address: (supplierOrg as any).address,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             email: (supplierOrg as any).email,
           },
           items: poFull.items.map((i) => ({
@@ -1051,14 +1055,13 @@ Procurement System
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const supplierName: string =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (supplierUser.organization as any)?.name ??
       supplierUser.fullName ??
       supplierUser.email;
 
     await this.notificationService.sendExternalEmailWithMagicLink({
       to: supplierUser.email,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       subject: `[Cập nhật giao hàng] ${po.poNumber as string}`,
       eventType: 'GRN_MILESTONE_UPDATE',
       referenceId: grnId,

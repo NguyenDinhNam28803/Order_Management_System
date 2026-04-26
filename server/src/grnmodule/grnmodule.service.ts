@@ -188,14 +188,10 @@ export class GrnmoduleService {
         _sum: { acceptedQty: true },
       });
       const confirmedMap = new Map<string, number>(
-        confirmedRows.map((r) => [
-          r.poItemId,
-          Number(r._sum.acceptedQty) || 0,
-        ]),
+        confirmedRows.map((r) => [r.poItemId, Number(r._sum.acceptedQty) || 0]),
       );
       const allReceived = po.items.every(
-        (poItem) =>
-          (confirmedMap.get(poItem.id) || 0) >= Number(poItem.qty),
+        (poItem) => (confirmedMap.get(poItem.id) || 0) >= Number(poItem.qty),
       );
 
       // Nếu đã nhận đủ, chuyển PO sang trạng thái COMPLETED hoặc GRN_CREATED (Dựa trên Enum)
@@ -245,7 +241,7 @@ export class GrnmoduleService {
       data: {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         poCode: po.poNumber,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
         supplierName,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         expectedDelivery: po.deliveryDate ?? new Date(),

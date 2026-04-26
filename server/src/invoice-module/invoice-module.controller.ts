@@ -19,14 +19,16 @@ import { UserRole } from '@prisma/client';
 import { Roles } from '../common/roles.guard';
 
 class CreateFromTextDto {
-  @ApiProperty({ description: 'Nội dung text hoá đơn (copy từ email / Zalo / điện thoại)' })
-  rawText: string;
+  @ApiProperty({
+    description: 'Nội dung text hoá đơn (copy từ email / Zalo / điện thoại)',
+  })
+  rawText!: string;
 
   @ApiProperty({ description: 'UUID của nhà cung cấp' })
-  supplierId: string;
+  supplierId!: string;
 
   @ApiProperty({ description: 'UUID của tổ chức mua hàng' })
-  orgId: string;
+  orgId!: string;
 }
 
 @ApiTags('Invoice Management')

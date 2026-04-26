@@ -1183,10 +1183,14 @@ export class EmailTemplatesService implements OnModuleInit {
 
         <p style="margin:12px 0">${statusBadge}</p>
 
-        ${matchingStatus === 'EXCEPTION_REVIEW' ? `
+        ${
+          matchingStatus === 'EXCEPTION_REVIEW'
+            ? `
         <div class="alert" style="background:#fff7ed;border-color:#f97316;color:#7c2d12">
           ⚠️ Hóa đơn này có sai lệch so với PO/GRN vượt mức cho phép. Cần kiểm tra thủ công trước khi duyệt thanh toán.
-        </div>` : ''}
+        </div>`
+            : ''
+        }
 
         <div class="btn-wrap">
           <a href="${loginUrl}" class="btn">Xem & Xử lý hóa đơn</a>
