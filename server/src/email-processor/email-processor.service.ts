@@ -266,7 +266,7 @@ export class EmailProcessorService {
     const { quotationId, isNew } = await this.prisma.$transaction(
       async (tx) => {
         const existing = await tx.rfqQuotation.findFirst({
-          where: { rfqId: rfq!.id, supplierId },
+          where: { rfqId: rfq.id, supplierId },
           select: { id: true },
         });
 
@@ -297,7 +297,7 @@ export class EmailProcessorService {
         } else {
           const newQ = await tx.rfqQuotation.create({
             data: {
-              rfqId: rfq!.id,
+              rfqId: rfq.id,
               supplierId,
               quotationNumber,
               totalPrice,
@@ -318,26 +318,29 @@ export class EmailProcessorService {
         // Tạo RfqQuotationItem khi AI trích xuất được line items
         const emailItems = data.items ?? [];
         if (emailItems.length > 0 && rfqItems.length > 0) {
-          const itemsToCreate = emailItems.map((emailItem, idx) => {
-            // Tìm RfqItem khớp theo mô tả (không phân biệt hoa thường)
-            const descLower = (emailItem.description ?? '').toLowerCase();
-            let rfqItem = rfqItems.find((r) =>
-              r.description.toLowerCase().includes(descLower) ||
-              descLower.includes(r.description.toLowerCase()),
-            );
-            // Fallback: khớp theo thứ tự index nếu không tìm được
-            if (!rfqItem) rfqItem = rfqItems[idx];
-            if (!rfqItem) return null;
+          const itemsToCreate = emailItems
+            .map((emailItem, idx) => {
+              // Tìm RfqItem khớp theo mô tả (không phân biệt hoa thường)
+              const descLower = (emailItem.description ?? '').toLowerCase();
+              let rfqItem = rfqItems.find(
+                (r) =>
+                  r.description.toLowerCase().includes(descLower) ||
+                  descLower.includes(r.description.toLowerCase()),
+              );
+              // Fallback: khớp theo thứ tự index nếu không tìm được
+              if (!rfqItem) rfqItem = rfqItems[idx];
+              if (!rfqItem) return null;
 
-            return {
-              quotationId: qId,
-              rfqItemId: rfqItem.id,
-              unitPrice: emailItem.unitPrice ?? 0,
-              qtyOffered: emailItem.qty ?? null,
-              leadTimeDays: leadTimeDays ?? null,
-              notes: emailItem.unit ? `unit: ${emailItem.unit}` : null,
-            };
-          }).filter((item): item is NonNullable<typeof item> => item !== null);
+              return {
+                quotationId: qId,
+                rfqItemId: rfqItem.id,
+                unitPrice: emailItem.unitPrice ?? 0,
+                qtyOffered: emailItem.qty ?? null,
+                leadTimeDays: leadTimeDays ?? null,
+                notes: emailItem.unit ? `unit: ${emailItem.unit}` : null,
+              };
+            })
+            .filter((item): item is NonNullable<typeof item> => item !== null);
 
           if (itemsToCreate.length > 0) {
             await tx.rfqQuotationItem.createMany({ data: itemsToCreate });
@@ -346,7 +349,7 @@ export class EmailProcessorService {
 
         // Cập nhật RFQ status nếu cần
         const rfqCurrent = await tx.rfqRequest.findUnique({
-          where: { id: rfq!.id },
+          where: { id: rfq.id },
           select: { status: true },
         });
         if (
@@ -356,10 +359,10 @@ export class EmailProcessorService {
           rfqCurrent.status !== RfqStatus.CLOSED
         ) {
           await tx.rfqRequest.update({
-            where: { id: rfq!.id },
+            where: { id: rfq.id },
             data: { status: RfqStatus.QUOTATION_RECEIVED },
           });
-          this.logger.log(`RFQ ${rfq!.id} → QUOTATION_RECEIVED`);
+          this.logger.log(`RFQ ${rfq.id} → QUOTATION_RECEIVED`);
         }
 
         return { quotationId: qId, isNew: created };
@@ -402,7 +405,10 @@ export class EmailProcessorService {
       this.prisma.rfqQuotation.count({ where: { rfqId } }),
     ]);
 
-    const creator = rfq?.createdBy as { fullName?: string; email?: string } | null;
+    const creator = rfq?.createdBy as {
+      fullName?: string;
+      email?: string;
+    } | null;
     if (!rfq || !creator?.email) return;
 
     await this.notificationService.sendDirectEmail(
@@ -585,7 +591,9 @@ export class EmailProcessorService {
         data: {
           invoiceNumber,
           status: InvoiceStatus.MATCHING,
-          invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : new Date(),
+          invoiceDate: data.invoiceDate
+            ? new Date(data.invoiceDate)
+            : new Date(),
           dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
           subtotal,
           taxRate: taxRate ?? undefined,
@@ -625,9 +633,12 @@ export class EmailProcessorService {
       );
 
     // 7. Thông báo đội Finance về hóa đơn mới (non-blocking)
-    void this.notifyFinanceInvoiceReceived(invoice.id, supplierId, po.orgId).catch(
-      (err: Error) =>
-        this.logger.warn(`Gửi thông báo Finance thất bại: ${err.message}`),
+    void this.notifyFinanceInvoiceReceived(
+      invoice.id,
+      supplierId,
+      po.orgId,
+    ).catch((err: Error) =>
+      this.logger.warn(`Gửi thông báo Finance thất bại: ${err.message}`),
     );
 
     return {

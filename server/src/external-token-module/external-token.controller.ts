@@ -23,6 +23,7 @@ import {
   ConfirmPoDto,
   UpdateShipmentDto,
 } from './dto/external-token-public.dto';
+import { CurrencyCode } from '@prisma/client';
 
 @Controller('external-token')
 export class ExternalTokenController {
@@ -161,23 +162,16 @@ export class ExternalTokenController {
         rfqId: rfq.id,
         supplierId,
         quotationNumber,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         totalPrice: body.totalPrice,
-        currency: (body.currency ?? 'VND') as any,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        currency: (body.currency as CurrencyCode) ?? 'VND',
         leadTimeDays: body.leadTimeDays,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         paymentTerms: body.paymentTerms ?? null,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         deliveryTerms: body.deliveryTerms ?? null,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         validityDays: body.validityDays ?? 30,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         notes: body.notes ?? null,
         status: 'SUBMITTED',
         submittedAt: new Date(),
         items: {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           create: (body.items ?? []).map((item: any) => ({
             rfqItem: {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -242,13 +236,10 @@ export class ExternalTokenController {
           id: i.id,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           description: i.description,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           qty: Number(i.qty),
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           unit: i.unit,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           unitPrice: Number(i.unitPrice),
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           total: Number(i.total),
         })),
       },
@@ -273,7 +264,6 @@ export class ExternalTokenController {
       data: {
         status: 'ACKNOWLEDGED',
         acknowledgedAt: new Date(),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         notes: body.notes
           ? `${po.notes ?? ''}\n[NCC xác nhận]: ${body.notes}`.trim()
           : po.notes,
@@ -310,8 +300,10 @@ export class ExternalTokenController {
 
     if (!grn) throw new BadRequestException('GRN không tồn tại');
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const po = grn.po as any;
-    const latestTracking = (po.shipmentTracking?.[0] ?? null) as any;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const latestTracking = po.shipmentTracking?.[0] ?? null;
 
     return {
       token: tokenInfo,
@@ -366,18 +358,13 @@ export class ExternalTokenController {
     await this.prisma.poShipmentTracking.create({
       data: {
         poId: grn.poId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         trackingNumber: body.trackingNumber ?? null,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         carrier: body.carrier ?? null,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        shippedAt: body.shippedAt ? new Date(body.shippedAt as string) : null,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        shippedAt: body.shippedAt ? new Date(body.shippedAt) : null,
         estimatedArrival: body.estimatedArrival
-          ? new Date(body.estimatedArrival as string)
+          ? new Date(body.estimatedArrival)
           : null,
         status: 'SHIPPED',
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         notes: body.notes ?? null,
       },
     });

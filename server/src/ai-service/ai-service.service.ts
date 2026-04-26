@@ -90,7 +90,12 @@ export interface AiEmailAnalysis {
     | 'SHIPPING_NOTIFICATION'
     | 'INVOICE_SUBMISSION'
     | 'GENERAL_INQUIRY';
-  data: QuotationEmailExtract | PoConfirmationEmailExtract | ShippingEmailExtract | InvoiceEmailExtract | Record<string, never>;
+  data:
+    | QuotationEmailExtract
+    | PoConfirmationEmailExtract
+    | ShippingEmailExtract
+    | InvoiceEmailExtract
+    | Record<string, never>;
   confidence: number;
 }
 
@@ -506,7 +511,9 @@ Lưu ý:
           `AI response parse failed (${parseErr.message}): "${text.slice(0, 300)}"`,
         );
         // Throw instead of returning an empty object to surface failures early
-        throw new Error(`AI returned unparseable response: ${parseErr.message}`);
+        throw new Error(
+          `AI returned unparseable response: ${parseErr.message}`,
+        );
       }
     }
   }

@@ -10,11 +10,7 @@ import { NotificationModuleModule } from '../notification-module/notification-mo
 import { InvoiceModuleModule } from '../invoice-module/invoice-module.module';
 
 @Module({
-  imports: [
-    RagModule,
-    NotificationModuleModule,
-    InvoiceModuleModule,
-  ],
+  imports: [RagModule, NotificationModuleModule, InvoiceModuleModule],
   providers: [
     EmailProcessorService,
     EmailListenerService,
