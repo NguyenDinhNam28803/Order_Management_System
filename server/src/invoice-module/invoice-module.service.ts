@@ -193,6 +193,24 @@ export class InvoiceModuleService {
       }
     }
 
+    // Hoá đơn không có dòng hàng (thường do tạo từ email PDF không parse được)
+    // → không thể đối soát, chuyển sang EXCEPTION_REVIEW để Finance xử lý thủ công
+    if (invoice.items.length === 0) {
+      await this.prisma.supplierInvoice.update({
+        where: { id: invoiceId },
+        data: {
+          status: InvoiceStatus.EXCEPTION_REVIEW,
+          exceptionReason:
+            'Hoá đơn không có dòng hàng chi tiết — không thể đối soát tự động. Cần kiểm tra và nhập thủ công.',
+          matchedAt: new Date(),
+        },
+      });
+      this.logger.warn(
+        `[3-Way] Invoice ${invoiceId} has no line items — set EXCEPTION_REVIEW`,
+      );
+      return;
+    }
+
     // Cấu hình dung sai (Có thể chuyển sang SystemConfig sau này)
     const QTY_TOLERANCE_PCT = 0.02; // 2% cho số lượng
     const PRICE_TOLERANCE_PCT = 0.01; // 1% cho đơn giá

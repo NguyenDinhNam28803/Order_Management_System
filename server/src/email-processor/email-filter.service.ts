@@ -177,34 +177,22 @@ export class EmailFilterService {
     _bodyLower: string,
   ): Promise<EmailFilterResult> {
     try {
-      const prompt = `Bạn là bộ lọc email cho hệ thống quản lý mua hàng (Order Management System).
+      const result = await this.aiService.filterEmailRelevance(
+        email.subject,
+        email.from,
+        email.body,
+      );
 
-Phân tích email sau và cho biết có nên xử lý không:
+      const shouldProcess = result.relevant && result.confidence >= 0.65;
 
-Subject: ${email.subject}
-From: ${email.from}
-Body (200 ký tự đầu): ${email.body.slice(0, 200)}
-
-Hệ thống CHỈ xử lý các email liên quan đến:
-- Yêu cầu mua hàng (Purchase Requisition)
-- Đặt hàng, báo giá, hợp đồng với nhà cung cấp
-- Phê duyệt / từ chối đơn hàng
-- Thông báo giao hàng, hóa đơn
-
-Trả lời JSON (KHÔNG markdown):
-{"relevant": true/false, "reason": "lý do ngắn gọn", "confidence": 0.0-1.0}`;
-
-      const result = await this.aiService.analyzeEmailContent(prompt);
-
-      // analyzeEmailContent trả về AiEmailAnalysis, dùng confidence làm cơ sở
-      const shouldProcess = (result.confidence ?? 0) >= 0.65;
-
-      this.logger.log(`AI filter result cho "${email.subject}": shouldProcess=${shouldProcess} confidence=${result.confidence} intent=${result.intent}`);
+      this.logger.log(
+        `AI filter "${email.subject}": relevant=${result.relevant} confidence=${result.confidence.toFixed(2)} — ${result.reason}`,
+      );
 
       return {
         shouldProcess,
         filterType: shouldProcess ? 'ai_allowed' : 'ai_blocked',
-        reason: `AI confidence=${result.confidence.toFixed(2)}, intent=${result.intent}`,
+        reason: `AI: ${result.reason} (confidence=${result.confidence.toFixed(2)})`,
       };
     } catch (err: any) {
       // Nếu AI lỗi → mặc định cho qua để không mất email quan trọng

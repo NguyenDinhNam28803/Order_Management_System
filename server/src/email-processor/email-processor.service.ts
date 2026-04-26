@@ -574,8 +574,8 @@ export class EmailProcessorService {
 
     // 4. Tính toán các giá trị tài chính
     const subtotal = data.subtotal ?? data.totalAmount ?? 0;
-    const taxRate = data.taxRate ?? 10;
-    const taxAmount = data.taxAmount ?? (subtotal * taxRate) / 100;
+    const taxRate = data.taxRate ?? null; // null: không áp đặt thuế suất nếu NCC không ghi
+    const taxAmount = data.taxAmount ?? (taxRate !== null ? (subtotal * taxRate) / 100 : 0);
     const totalAmount = data.totalAmount ?? subtotal + taxAmount;
     const currency = (data.currency as CurrencyCode) ?? CurrencyCode.VND;
 
@@ -588,7 +588,7 @@ export class EmailProcessorService {
           invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : new Date(),
           dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
           subtotal,
-          taxRate,
+          taxRate: taxRate ?? undefined,
           taxAmount,
           totalAmount,
           currency,
@@ -664,22 +664,9 @@ export class EmailProcessorService {
 
     const frontendUrl = process.env['FRONTEND_URL'] ?? '#';
 
-    // Chờ matching hoàn thành để lấy status thực tế (tối đa 5s)
-    let matchingStatus = 'PENDING';
-    for (let i = 0; i < 5; i++) {
-      await new Promise((r) => setTimeout(r, 1000));
-      const updated = await this.prisma.supplierInvoice.findUnique({
-        where: { id: invoiceId },
-        select: { status: true },
-      });
-      if (
-        updated?.status === InvoiceStatus.AUTO_APPROVED ||
-        updated?.status === InvoiceStatus.EXCEPTION_REVIEW
-      ) {
-        matchingStatus = updated.status;
-        break;
-      }
-    }
+    // Gửi thông báo ngay với matchingStatus=PENDING — Finance vào hệ thống xem kết quả thực
+    // Không dùng polling busy-wait vì 3-way matching là async và có thể mất > 5s
+    const matchingStatus = 'PENDING';
 
     for (const fu of financeUsers) {
       if (!fu.email) continue;

@@ -2,6 +2,8 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import * as imaps from 'imap-simple';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pdfParse = require('pdf-parse') as (buf: Buffer) => Promise<{ text: string }>;
 import { EmailProcessorService } from './email-processor.service';
 import { EmailFilterService } from './email-filter.service';
 
@@ -47,7 +49,7 @@ export class EmailListenerService implements OnModuleInit {
       const searchCriteria = ['UNSEEN'];
       const fetchOptions = {
         bodies: ['HEADER', 'TEXT'],
-        markSeen: true,
+        markSeen: false, // Đánh dấu SEEN thủ công sau khi xử lý thành công để tránh mất email nếu lỗi giữa chừng
         struct: true,
       };
 
@@ -121,15 +123,44 @@ export class EmailListenerService implements OnModuleInit {
               }
             }
 
-            // 3. Thu thập tên file đính kèm để AI biết có attachment nào
+            // 3. Thu thập tên file đính kèm + trích xuất nội dung PDF
             for (const part of allParts) {
               const disposition = (part as any).disposition;
               const params = (part as any).params ?? {};
               const dispParams = disposition?.params ?? {};
               const filename =
                 dispParams.filename ?? params.name ?? (part as any).filename;
-              if (filename) {
-                attachmentNames.push(String(filename));
+              if (!filename) continue;
+
+              attachmentNames.push(String(filename));
+
+              // Trích xuất nội dung text từ PDF để AI có thể đọc số liệu
+              const isAttachment =
+                disposition?.type?.toLowerCase() === 'attachment' ||
+                String(filename).toLowerCase().endsWith('.pdf');
+              const isPdf =
+                (part as any).subtype?.toLowerCase() === 'pdf' ||
+                String(filename).toLowerCase().endsWith('.pdf');
+
+              if (isPdf && isAttachment && !body.trim()) {
+                try {
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                  const raw = await connection.getPartData(message, part);
+                  const buf = Buffer.isBuffer(raw)
+                    ? raw
+                    : Buffer.from(String(raw ?? ''), 'binary');
+                  const parsed = await pdfParse(buf);
+                  if (parsed.text?.trim()) {
+                    body = parsed.text.trim();
+                    this.logger.log(
+                      `PDF extracted from "${String(filename)}": ${body.length} chars`,
+                    );
+                  }
+                } catch (pdfErr: any) {
+                  this.logger.warn(
+                    `PDF parse failed for "${String(filename)}": ${pdfErr.message}`,
+                  );
+                }
               }
             }
           }
@@ -169,6 +200,13 @@ export class EmailListenerService implements OnModuleInit {
 
           // ── Gửi đến EmailProcessorService (ingest RAG + phân tích AI) ──────
           await this.emailProcessor.processIncomingEmail(emailData);
+
+          // Đánh dấu SEEN sau khi xử lý thành công (tránh mất email nếu xử lý lỗi)
+          try {
+            await connection.addFlags(message.attributes.uid, ['\\Seen']);
+          } catch (flagErr: any) {
+            this.logger.warn(`Không thể đánh dấu SEEN cho uid ${message.attributes.uid}: ${flagErr.message}`);
+          }
 
           // Delay 4s giữa các email để tránh vượt Gemini free tier 15 req/phút
           await new Promise((resolve) => setTimeout(resolve, 4000));
