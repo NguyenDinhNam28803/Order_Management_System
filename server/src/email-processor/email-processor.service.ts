@@ -3,6 +3,7 @@ import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailRagService, ParsedEmail } from '../rag/email-rag.service';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
+import { InvoiceModuleService } from '../invoice-module/invoice-module.service';
 import {
   RfqStatus,
   PoStatus,
@@ -10,6 +11,7 @@ import {
   CompanyType,
   InvoiceStatus,
   CurrencyCode,
+  UserRole,
 } from '@prisma/client';
 
 const CONFIDENCE_THRESHOLD = 0.65;
@@ -87,6 +89,7 @@ export class EmailProcessorService {
     private readonly prisma: PrismaService,
     private readonly emailRagService: EmailRagService,
     private readonly notificationService: NotificationModuleService,
+    private readonly invoiceService: InvoiceModuleService,
   ) {}
 
   /**
@@ -553,7 +556,7 @@ export class EmailProcessorService {
     // 3. Sinh số hoá đơn nếu AI không trích được
     const invoiceNumber = data.invoiceNumber ?? `INV-EMAIL-${Date.now()}`;
 
-    // Tránh tạo trùng nếu email bị xử lý 2 lần
+    // Idempotency: tránh tạo trùng nếu email bị xử lý 2 lần
     const existing = await this.prisma.supplierInvoice.findFirst({
       where: { invoiceNumber, supplierId },
       select: { id: true },
@@ -576,30 +579,55 @@ export class EmailProcessorService {
     const totalAmount = data.totalAmount ?? subtotal + taxAmount;
     const currency = (data.currency as CurrencyCode) ?? CurrencyCode.VND;
 
-    // 5. Tạo hoá đơn với status SUBMITTED (chờ procurement xác nhận)
-    const invoice = await this.prisma.supplierInvoice.create({
-      data: {
-        invoiceNumber,
-        status: InvoiceStatus.SUBMITTED,
-        invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : new Date(),
-        dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
-        subtotal,
-        taxRate,
-        taxAmount,
-        totalAmount,
-        currency,
-        paymentTerms: data.paymentTerms ?? undefined,
-        eInvoiceRef: data.eInvoiceRef ?? undefined,
-        notes: `[Tạo tự động từ email] ${subject}\nMessage-ID: ${messageId}${data.notes ? `\n${data.notes}` : ''}`,
-        po: { connect: { id: po.id } },
-        supplier: { connect: { id: supplierId } },
-        buyerOrg: { connect: { id: po.orgId } },
-        grn: grn ? { connect: { id: grn.id } } : undefined,
-      },
+    // 5. Tạo hoá đơn + cập nhật PO status trong transaction
+    const invoice = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.supplierInvoice.create({
+        data: {
+          invoiceNumber,
+          status: InvoiceStatus.MATCHING,
+          invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : new Date(),
+          dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+          subtotal,
+          taxRate,
+          taxAmount,
+          totalAmount,
+          currency,
+          paymentTerms: data.paymentTerms ?? undefined,
+          eInvoiceRef: data.eInvoiceRef ?? undefined,
+          notes: `[Tạo tự động từ email] ${subject}\nMessage-ID: ${messageId}${data.notes ? `\n${data.notes}` : ''}`,
+          po: { connect: { id: po.id } },
+          supplier: { connect: { id: supplierId } },
+          buyerOrg: { connect: { id: po.orgId } },
+          grn: grn ? { connect: { id: grn.id } } : undefined,
+        },
+      });
+
+      // Cập nhật PO → INVOICED (nhất quán với luồng tạo qua UI)
+      await tx.purchaseOrder.update({
+        where: { id: po.id },
+        data: { status: PoStatus.INVOICED },
+      });
+
+      return created;
     });
 
     this.logger.log(
-      `Tạo hoá đơn ${invoice.id} (${invoiceNumber}) từ email NCC ${supplierId}`,
+      `Tạo hoá đơn ${invoice.id} (${invoiceNumber}) từ email NCC ${supplierId} — PO ${po.id} → INVOICED`,
+    );
+
+    // 6. Kích hoạt 3-way matching (non-blocking)
+    this.invoiceService
+      .runThreeWayMatching(invoice.id)
+      .catch((err: Error) =>
+        this.logger.error(
+          `3-way matching thất bại cho invoice ${invoice.id}: ${err.message}`,
+        ),
+      );
+
+    // 7. Thông báo đội Finance về hóa đơn mới (non-blocking)
+    void this.notifyFinanceInvoiceReceived(invoice.id, supplierId, po.orgId).catch(
+      (err: Error) =>
+        this.logger.warn(`Gửi thông báo Finance thất bại: ${err.message}`),
     );
 
     return {
@@ -609,6 +637,75 @@ export class EmailProcessorService {
       entityId: invoice.id,
       ingested: true,
     };
+  }
+
+  /** Thông báo toàn bộ Finance team khi nhận hóa đơn mới qua email */
+  private async notifyFinanceInvoiceReceived(
+    invoiceId: string,
+    supplierId: string,
+    orgId: string,
+  ): Promise<void> {
+    const [invoice, supplier, financeUsers] = await Promise.all([
+      this.prisma.supplierInvoice.findUnique({
+        where: { id: invoiceId },
+        include: { po: { select: { poNumber: true } } },
+      }),
+      this.prisma.organization.findUnique({
+        where: { id: supplierId },
+        select: { name: true },
+      }),
+      this.prisma.user.findMany({
+        where: { orgId, role: UserRole.FINANCE, isActive: true },
+        select: { id: true, email: true, fullName: true },
+      }),
+    ]);
+
+    if (!invoice) return;
+
+    const frontendUrl = process.env['FRONTEND_URL'] ?? '#';
+
+    // Chờ matching hoàn thành để lấy status thực tế (tối đa 5s)
+    let matchingStatus = 'PENDING';
+    for (let i = 0; i < 5; i++) {
+      await new Promise((r) => setTimeout(r, 1000));
+      const updated = await this.prisma.supplierInvoice.findUnique({
+        where: { id: invoiceId },
+        select: { status: true },
+      });
+      if (
+        updated?.status === InvoiceStatus.AUTO_APPROVED ||
+        updated?.status === InvoiceStatus.EXCEPTION_REVIEW
+      ) {
+        matchingStatus = updated.status;
+        break;
+      }
+    }
+
+    for (const fu of financeUsers) {
+      if (!fu.email) continue;
+      await this.notificationService
+        .sendDirectEmail(
+          fu.email,
+          `[Hóa đơn mới] ${invoice.invoiceNumber} từ ${supplier?.name ?? supplierId}`,
+          'INVOICE_RECEIVED',
+          {
+            name: fu.fullName ?? fu.email,
+            invoiceNumber: invoice.invoiceNumber,
+            supplierName: supplier?.name ?? 'Nhà cung cấp',
+            poNumber: invoice.po?.poNumber ?? '',
+            totalAmount: Number(invoice.totalAmount),
+            invoiceDate: invoice.invoiceDate,
+            dueDate: invoice.dueDate ?? null,
+            matchingStatus,
+            loginUrl: `${frontendUrl}/finance/invoices/${invoiceId}`,
+          },
+        )
+        .catch((err: Error) =>
+          this.logger.warn(
+            `Gửi email Finance ${fu.id} thất bại: ${err.message}`,
+          ),
+        );
+    }
   }
 
   // ── Tìm PO phù hợp để gắn hoá đơn ───────────────────────────────────────

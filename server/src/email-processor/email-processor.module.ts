@@ -7,11 +7,13 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { RagModule } from '../rag/rag.module';
 import { NotificationModuleModule } from '../notification-module/notification-module.module';
+import { InvoiceModuleModule } from '../invoice-module/invoice-module.module';
 
 @Module({
   imports: [
     RagModule,
     NotificationModuleModule,
+    InvoiceModuleModule,
   ],
   providers: [
     EmailProcessorService,
