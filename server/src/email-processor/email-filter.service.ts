@@ -108,7 +108,9 @@ export class EmailFilterService {
       subjectLower.includes(kw),
     );
     if (blockedSubject) {
-      this.logger.log(`BLOCKED — subject chứa spam keyword: "${blockedSubject}"`);
+      this.logger.log(
+        `BLOCKED — subject chứa spam keyword: "${blockedSubject}"`,
+      );
       return {
         shouldProcess: false,
         filterType: 'system_blocked',
@@ -129,7 +131,9 @@ export class EmailFilterService {
     }
 
     if (email.body.trim().length < 10) {
-      this.logger.log(`BLOCKED — body quá ngắn (${email.body.trim().length} ký tự)`);
+      this.logger.log(
+        `BLOCKED — body quá ngắn (${email.body.trim().length} ký tự)`,
+      );
       return {
         shouldProcess: false,
         filterType: 'system_blocked',
@@ -157,7 +161,9 @@ export class EmailFilterService {
       subjectLower.includes(kw),
     );
     if (procurementKw) {
-      this.logger.log(`ALLOWED — subject khớp procurement keyword: "${procurementKw}"`);
+      this.logger.log(
+        `ALLOWED — subject khớp procurement keyword: "${procurementKw}"`,
+      );
       return {
         shouldProcess: true,
         filterType: 'system_allowed',
@@ -197,9 +203,11 @@ Trả lời JSON (KHÔNG markdown):
       const result = await this.aiService.analyzeEmailContent(prompt);
 
       // analyzeEmailContent trả về AiEmailAnalysis, dùng confidence làm cơ sở
-      const shouldProcess = result.confidence >= 0.6;
+      const shouldProcess = (result.confidence ?? 0) >= 0.65;
 
-      this.logger.log(`AI filter result cho "${email.subject}": shouldProcess=${shouldProcess} confidence=${result.confidence} intent=${result.intent}`);
+      this.logger.log(
+        `AI filter result cho "${email.subject}": shouldProcess=${shouldProcess} confidence=${result.confidence} intent=${result.intent}`,
+      );
 
       return {
         shouldProcess,

@@ -197,7 +197,7 @@ describe('InvoiceModuleService', () => {
 
     it('sets EXCEPTION_REVIEW when grnItem is missing', async () => {
       const invoice = makeInvoiceWithItems();
-      (invoice.items[0] as any).grnItem = null;
+      invoice.items[0].grnItem = null;
       invoice.grn.items = []; // no fallback match either
 
       mockPrisma.supplierInvoice.findUnique.mockResolvedValue(invoice);

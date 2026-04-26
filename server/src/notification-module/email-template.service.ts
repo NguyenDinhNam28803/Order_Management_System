@@ -20,6 +20,7 @@ export type EmailEventType =
   | 'PO_CONFIRM_LINK' // NCC xác nhận nhận PO
   | 'GRN_MILESTONE_UPDATE' // NCC cập nhật trạng thái giao hàng
   | 'INVOICE_SUBMIT_LINK' // NCC nộp hóa đơn sau GRN
+  | 'INVOICE_RECEIVED' // Tài chính nhận được hóa đơn từ NCC (email/portal)
   | 'PAYMENT_CONFIRMED'; // Xác nhận đã thanh toán thành công
 
 @Injectable()
@@ -79,6 +80,7 @@ export class EmailTemplatesService implements OnModuleInit {
     GRN_CONFIRMED: '#0f766e',
     GRN_MILESTONE_UPDATE: '#b45309',
     INVOICE_SUBMIT_LINK: '#1e40af',
+    INVOICE_RECEIVED: '#0f766e',
     BUDGET_LIMIT_WARNING: '#f59e0b',
     PAYMENT_CONFIRMED: '#065f46',
   };
@@ -153,6 +155,7 @@ export class EmailTemplatesService implements OnModuleInit {
       QUOTATION_RECEIVED: 'Báo giá mới',
       CONTRACT_EXPIRY_WARNING: 'Cảnh báo hợp đồng',
       GRN_CONFIRMED: 'Nhận hàng',
+      INVOICE_RECEIVED: 'Hóa đơn mới',
       BUDGET_LIMIT_WARNING: 'Cảnh báo ngân sách',
     };
     const label = labelMap[eventType] ?? 'Thông báo hệ thống';
@@ -212,6 +215,8 @@ export class EmailTemplatesService implements OnModuleInit {
         return this.templateGrnMilestoneUpdate(data);
       case 'INVOICE_SUBMIT_LINK':
         return this.templateInvoiceSubmitLink(data);
+      case 'INVOICE_RECEIVED':
+        return this.templateInvoiceReceived(data);
       case 'PAYMENT_CONFIRMED':
         return this.templatePaymentConfirmed(data);
       default:
@@ -1122,6 +1127,69 @@ export class EmailTemplatesService implements OnModuleInit {
 
         <div class="btn-wrap">
           <a href="${loginUrl}" class="btn">Xem chi tiết GRN</a>
+        </div>
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base('#0f766e', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INVOICE_RECEIVED — Thông báo tài chính khi nhận hóa đơn mới từ NCC
+  // data: { name, invoiceNumber, supplierName, poNumber, totalAmount (number),
+  //         invoiceDate (string|Date), dueDate? (string|Date),
+  //         matchingStatus ('AUTO_APPROVED'|'EXCEPTION_REVIEW'|'PENDING'),
+  //         loginUrl }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateInvoiceReceived(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const name = data.name ?? 'bạn';
+    const invoiceNumber = data.invoiceNumber ?? '';
+    const supplierName = data.supplierName ?? 'Nhà cung cấp';
+    const poNumber = data.poNumber ?? '';
+    const totalAmount = Number(data.totalAmount ?? 0);
+    const invoiceDate = data.invoiceDate ? this.fmtDate(data.invoiceDate) : '';
+    const dueDate = data.dueDate ? this.fmtDate(data.dueDate) : '';
+    const matchingStatus: string = data.matchingStatus ?? 'PENDING';
+    const loginUrl = data.loginUrl ?? '#';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const statusBadge =
+      matchingStatus === 'AUTO_APPROVED'
+        ? '<span style="display:inline-block;background:#dcfce7;color:#166534;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:4px">✅ Đối soát tự động thành công</span>'
+        : matchingStatus === 'EXCEPTION_REVIEW'
+          ? '<span style="display:inline-block;background:#fee2e2;color:#991b1b;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:4px">⚠️ Cần xét duyệt thủ công</span>'
+          : '<span style="display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:4px">🔄 Đang xử lý đối soát</span>';
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Hóa đơn mới</div>
+        <h1>Nhận được hóa đơn ${invoiceNumber}</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${name}</strong>,</p>
+        <p>Hệ thống vừa ghi nhận hóa đơn mới từ nhà cung cấp qua email. Vui lòng vào hệ thống để xem xét và xử lý thanh toán.</p>
+
+        <table class="info-table">
+          <tr><td>Số hóa đơn</td><td><strong>${invoiceNumber}</strong></td></tr>
+          <tr><td>Nhà cung cấp</td><td>${supplierName}</td></tr>
+          <tr><td>Đơn đặt hàng</td><td>${poNumber}</td></tr>
+          <tr><td>Tổng tiền</td><td><strong style="color:#0f766e">${this.fmt(totalAmount)}</strong></td></tr>
+          <tr><td>Ngày hóa đơn</td><td>${invoiceDate}</td></tr>
+          ${dueDate ? `<tr><td>Hạn thanh toán</td><td><strong>${dueDate}</strong></td></tr>` : ''}
+        </table>
+
+        <p style="margin:12px 0">${statusBadge}</p>
+
+        ${matchingStatus === 'EXCEPTION_REVIEW' ? `
+        <div class="alert" style="background:#fff7ed;border-color:#f97316;color:#7c2d12">
+          ⚠️ Hóa đơn này có sai lệch so với PO/GRN vượt mức cho phép. Cần kiểm tra thủ công trước khi duyệt thanh toán.
+        </div>` : ''}
+
+        <div class="btn-wrap">
+          <a href="${loginUrl}" class="btn">Xem & Xử lý hóa đơn</a>
         </div>
       </div>
       <div class="footer">
