@@ -78,7 +78,7 @@ describe('RfqmoduleService', () => {
     it('throws NotFoundException when PR is not APPROVED', async () => {
       mockPrisma.purchaseRequisition.findFirst.mockResolvedValue({
         id: 'pr-1',
-        status: PrStatus.PENDING,
+        status: PrStatus.PENDING_APPROVAL,
       });
 
       await expect(service.create(dto, makeUser())).rejects.toThrow(
