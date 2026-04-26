@@ -197,7 +197,7 @@ Trả lời JSON (KHÔNG markdown):
       const result = await this.aiService.analyzeEmailContent(prompt);
 
       // analyzeEmailContent trả về AiEmailAnalysis, dùng confidence làm cơ sở
-      const shouldProcess = result.confidence >= 0.6;
+      const shouldProcess = (result.confidence ?? 0) >= 0.65;
 
       this.logger.log(`AI filter result cho "${email.subject}": shouldProcess=${shouldProcess} confidence=${result.confidence} intent=${result.intent}`);
 

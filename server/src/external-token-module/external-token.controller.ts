@@ -143,8 +143,7 @@ export class ExternalTokenController {
     });
     if (!rfq) throw new BadRequestException('RFQ không tồn tại');
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    let supplierId: string = body.supplierId;
+    let supplierId: string = body.supplierId ?? '';
     if (!supplierId) {
       const user = await this.prisma.user.findFirst({
         where: { email: tokenInfo.targetEmail },
@@ -164,8 +163,7 @@ export class ExternalTokenController {
         quotationNumber,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         totalPrice: body.totalPrice,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        currency: body.currency ?? 'VND',
+        currency: (body.currency ?? 'VND') as any,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         leadTimeDays: body.leadTimeDays,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

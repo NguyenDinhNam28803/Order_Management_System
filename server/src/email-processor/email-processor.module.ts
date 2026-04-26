@@ -6,10 +6,12 @@ import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { RagModule } from '../rag/rag.module';
+import { NotificationModuleModule } from '../notification-module/notification-module.module';
 
 @Module({
   imports: [
-    RagModule, // Cần EmailRagService để ingest email vào vector store ngay lập tức
+    RagModule,
+    NotificationModuleModule,
   ],
   providers: [
     EmailProcessorService,

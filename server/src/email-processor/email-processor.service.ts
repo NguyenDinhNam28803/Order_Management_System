@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailRagService, ParsedEmail } from '../rag/email-rag.service';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 import {
   RfqStatus,
   PoStatus,
@@ -10,6 +11,8 @@ import {
   InvoiceStatus,
   CurrencyCode,
 } from '@prisma/client';
+
+const CONFIDENCE_THRESHOLD = 0.65;
 
 export interface IncomingEmailData {
   from: string;
@@ -36,6 +39,13 @@ export interface QuotationEmailData {
   leadTimeDays?: number;
   validityDays?: number;
   paymentTerms?: string;
+  deliveryTerms?: string;
+  items?: Array<{
+    description: string;
+    qty: number;
+    unitPrice: number;
+    unit?: string;
+  }>;
 }
 
 export interface PoConfirmationEmailData {
@@ -76,6 +86,7 @@ export class EmailProcessorService {
     private readonly aiService: AiService,
     private readonly prisma: PrismaService,
     private readonly emailRagService: EmailRagService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   /**
@@ -113,9 +124,9 @@ export class EmailProcessorService {
       `Email "${subject}" từ ${from} → intent: ${analysis.intent}, confidence: ${analysis.confidence}`,
     );
 
-    if (analysis.confidence < 0.65) {
+    if ((analysis.confidence ?? 0) < CONFIDENCE_THRESHOLD) {
       this.logger.log(
-        `Confidence thấp (${analysis.confidence}), bỏ qua xử lý tự động`,
+        `Confidence thấp (${analysis.confidence ?? 'undefined'}), bỏ qua xử lý tự động`,
       );
       return { success: false, reason: 'Low confidence', ingested: true };
     }
@@ -184,19 +195,18 @@ export class EmailProcessorService {
     supplierId: string,
     subject: string,
   ): Promise<EmailProcessResult> {
-    // Tìm RFQ theo rfqNumber hoặc RFQ mở mới nhất của NCC này
+    // ── 1. Tìm RFQ theo rfqNumber hoặc RFQ mở mới nhất của NCC này ──────────
     let rfq: { id: string; orgId: string } | null = null;
 
     if (data.rfqNumber) {
       rfq = await this.prisma.rfqRequest.findFirst({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         where: { rfqNumber: data.rfqNumber },
         select: { id: true, orgId: true },
       });
     }
 
     if (!rfq) {
-      // Fallback: RFQ ở trạng thái SENT hoặc OPEN có NCC này trong danh sách mời
+      // Fallback: RFQ ở trạng thái SENT hoặc SUPPLIER_REVIEWING có NCC trong danh sách mời
       rfq = await this.prisma.rfqRequest.findFirst({
         where: {
           status: { in: [RfqStatus.SENT, RfqStatus.SUPPLIER_REVIEWING] },
@@ -218,96 +228,193 @@ export class EmailProcessorService {
         ingested: true,
       };
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     const quotationNumber = data.quotationNumber ?? `QUO-EMAIL-${Date.now()}`;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const totalPrice = data.totalPrice ?? 0;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const leadTimeDays = data.leadTimeDays ?? 7;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const validityDays = data.validityDays ?? 30;
 
-    // Tạo hoặc cập nhật RfqQuotation
-    const existing = await this.prisma.rfqQuotation.findFirst({
-      where: { rfqId: rfq.id, supplierId },
+    // ── 2. Idempotency: kiểm tra quotationNumber đã tồn tại chưa ───────────
+    const byNumber = await this.prisma.rfqQuotation.findFirst({
+      where: { quotationNumber, supplierId },
+      select: { id: true },
     });
-
-    let quotationId: string;
-
-    if (existing) {
-      await this.prisma.rfqQuotation.update({
-        where: { id: existing.id },
-        data: {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          quotationNumber,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          totalPrice,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          currency: (data.currency as any) ?? 'VND',
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          leadTimeDays,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          validityDays,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          paymentTerms: data.paymentTerms ?? null,
-          notes: subject,
-          status: QuotationStatus.SUBMITTED,
-          submittedAt: new Date(),
-        },
-      });
-      quotationId = existing.id;
-      this.logger.log(`Đã cập nhật RfqQuotation ${existing.id} từ email`);
-    } else {
-      const created = await this.prisma.rfqQuotation.create({
-        data: {
-          rfqId: rfq.id,
-          supplierId,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          quotationNumber,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          totalPrice,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          currency: (data.currency as any) ?? 'VND',
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          leadTimeDays,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          validityDays,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          paymentTerms: data.paymentTerms ?? null,
-          notes: subject,
-          status: QuotationStatus.SUBMITTED,
-          submittedAt: new Date(),
-        },
-      });
-      quotationId = created.id;
-      this.logger.log(`Đã tạo RfqQuotation ${created.id} từ email`);
+    if (byNumber) {
+      this.logger.log(
+        `Báo giá ${quotationNumber} đã tồn tại (${byNumber.id}), bỏ qua`,
+      );
+      return {
+        success: true,
+        intent: 'QUOTATION',
+        action: 'duplicate_skipped',
+        entityId: byNumber.id,
+        ingested: true,
+      };
     }
 
-    // Chuyển RFQ sang QUOTATION_RECEIVED nếu chưa ở trạng thái đó
-    const rfqFull = await this.prisma.rfqRequest.findUnique({
-      where: { id: rfq.id },
-      select: { status: true },
+    // ── 3. Lấy RfqItem records để map với line items từ email ────────────────
+    const rfqItems = await this.prisma.rfqItem.findMany({
+      where: { rfqId: rfq.id },
+      select: { id: true, description: true, lineNumber: true },
+      orderBy: { lineNumber: 'asc' },
     });
-    if (
-      rfqFull &&
-      rfqFull.status !== RfqStatus.QUOTATION_RECEIVED &&
-      rfqFull.status !== RfqStatus.AWARDED &&
-      rfqFull.status !== RfqStatus.CLOSED
-    ) {
-      await this.prisma.rfqRequest.update({
-        where: { id: rfq.id },
-        data: { status: RfqStatus.QUOTATION_RECEIVED },
-      });
-      this.logger.log(`RFQ ${rfq.id} → QUOTATION_RECEIVED`);
-    }
+
+    // ── 4. Transaction: tạo/cập nhật quotation + status + line items ─────────
+    const { quotationId, isNew } = await this.prisma.$transaction(
+      async (tx) => {
+        const existing = await tx.rfqQuotation.findFirst({
+          where: { rfqId: rfq!.id, supplierId },
+          select: { id: true },
+        });
+
+        let qId: string;
+        let created = false;
+
+        if (existing) {
+          await tx.rfqQuotation.update({
+            where: { id: existing.id },
+            data: {
+              quotationNumber,
+              totalPrice,
+              currency: (data.currency as CurrencyCode) ?? CurrencyCode.VND,
+              leadTimeDays,
+              validityDays,
+              paymentTerms: data.paymentTerms ?? null,
+              deliveryTerms: data.deliveryTerms ?? null,
+              notes: `[Email] ${subject}`,
+              status: QuotationStatus.SUBMITTED,
+              submittedAt: new Date(),
+            },
+          });
+          // Xóa line items cũ rồi tạo lại với dữ liệu mới
+          await tx.rfqQuotationItem.deleteMany({
+            where: { quotationId: existing.id },
+          });
+          qId = existing.id;
+        } else {
+          const newQ = await tx.rfqQuotation.create({
+            data: {
+              rfqId: rfq!.id,
+              supplierId,
+              quotationNumber,
+              totalPrice,
+              currency: (data.currency as CurrencyCode) ?? CurrencyCode.VND,
+              leadTimeDays,
+              validityDays,
+              paymentTerms: data.paymentTerms ?? null,
+              deliveryTerms: data.deliveryTerms ?? null,
+              notes: `[Email] ${subject}`,
+              status: QuotationStatus.SUBMITTED,
+              submittedAt: new Date(),
+            },
+          });
+          qId = newQ.id;
+          created = true;
+        }
+
+        // Tạo RfqQuotationItem khi AI trích xuất được line items
+        const emailItems = data.items ?? [];
+        if (emailItems.length > 0 && rfqItems.length > 0) {
+          const itemsToCreate = emailItems.map((emailItem, idx) => {
+            // Tìm RfqItem khớp theo mô tả (không phân biệt hoa thường)
+            const descLower = (emailItem.description ?? '').toLowerCase();
+            let rfqItem = rfqItems.find((r) =>
+              r.description.toLowerCase().includes(descLower) ||
+              descLower.includes(r.description.toLowerCase()),
+            );
+            // Fallback: khớp theo thứ tự index nếu không tìm được
+            if (!rfqItem) rfqItem = rfqItems[idx];
+            if (!rfqItem) return null;
+
+            return {
+              quotationId: qId,
+              rfqItemId: rfqItem.id,
+              unitPrice: emailItem.unitPrice ?? 0,
+              qtyOffered: emailItem.qty ?? null,
+              leadTimeDays: leadTimeDays ?? null,
+              notes: emailItem.unit ? `unit: ${emailItem.unit}` : null,
+            };
+          }).filter((item): item is NonNullable<typeof item> => item !== null);
+
+          if (itemsToCreate.length > 0) {
+            await tx.rfqQuotationItem.createMany({ data: itemsToCreate });
+          }
+        }
+
+        // Cập nhật RFQ status nếu cần
+        const rfqCurrent = await tx.rfqRequest.findUnique({
+          where: { id: rfq!.id },
+          select: { status: true },
+        });
+        if (
+          rfqCurrent &&
+          rfqCurrent.status !== RfqStatus.QUOTATION_RECEIVED &&
+          rfqCurrent.status !== RfqStatus.AWARDED &&
+          rfqCurrent.status !== RfqStatus.CLOSED
+        ) {
+          await tx.rfqRequest.update({
+            where: { id: rfq!.id },
+            data: { status: RfqStatus.QUOTATION_RECEIVED },
+          });
+          this.logger.log(`RFQ ${rfq!.id} → QUOTATION_RECEIVED`);
+        }
+
+        return { quotationId: qId, isNew: created };
+      },
+    );
+
+    this.logger.log(
+      `${isNew ? 'Tạo' : 'Cập nhật'} RfqQuotation ${quotationId} từ email NCC ${supplierId}`,
+    );
+
+    // ── 5. Gửi thông báo QUOTATION_RECEIVED cho người phụ trách RFQ ──────────
+    void this.notifyQuotationReceivedFromEmail(rfq.id, supplierId).catch(
+      (err: Error) =>
+        this.logger.warn(`Gửi thông báo quotation thất bại: ${err.message}`),
+    );
 
     return {
       success: true,
       intent: 'QUOTATION',
-      action: existing ? 'updated_quotation' : 'created_quotation',
+      action: isNew ? 'created_quotation' : 'updated_quotation',
       entityId: quotationId,
       ingested: true,
     };
+  }
+
+  /** Gửi email QUOTATION_RECEIVED tới người tạo RFQ */
+  private async notifyQuotationReceivedFromEmail(
+    rfqId: string,
+    supplierId: string,
+  ): Promise<void> {
+    const [rfq, supplierOrg, quotationCount] = await Promise.all([
+      this.prisma.rfqRequest.findUnique({
+        where: { id: rfqId },
+        include: { createdBy: { select: { fullName: true, email: true } } },
+      }),
+      this.prisma.organization.findUnique({
+        where: { id: supplierId },
+        select: { name: true },
+      }),
+      this.prisma.rfqQuotation.count({ where: { rfqId } }),
+    ]);
+
+    const creator = rfq?.createdBy as { fullName?: string; email?: string } | null;
+    if (!rfq || !creator?.email) return;
+
+    await this.notificationService.sendDirectEmail(
+      creator.email,
+      `[Báo giá mới] ${rfq.rfqNumber} — ${rfq.title ?? ''}`,
+      'QUOTATION_RECEIVED',
+      {
+        name: creator.fullName ?? creator.email,
+        rfqNumber: rfq.rfqNumber,
+        rfqTitle: rfq.title ?? '',
+        supplierName: supplierOrg?.name ?? 'Nhà cung cấp',
+        quotationCount,
+        loginUrl: process.env['FRONTEND_URL'] ?? '#',
+      },
+    );
   }
 
   // ── Xử lý email xác nhận PO từ nhà cung cấp ─────────────────────────────
@@ -577,18 +684,49 @@ export class EmailProcessorService {
     });
     if (byEmail) return byEmail;
 
-    // 2. Khớp theo domain website (domain từ email @domain.com vs website domain.com)
-    const domain = email.split('@')[1];
-    if (domain) {
-      const byDomain = await this.prisma.organization.findFirst({
-        where: {
-          website: { contains: domain, mode: 'insensitive' },
+    // 2. Khớp user có email này (nhân viên NCC gửi từ email cá nhân)
+    const byUserEmail = await this.prisma.user.findFirst({
+      where: {
+        email: { equals: email, mode: 'insensitive' },
+        isActive: true,
+        organization: {
           companyType: { in: [CompanyType.SUPPLIER, CompanyType.BOTH] },
           isActive: true,
         },
-        select: { id: true },
+      },
+      select: { orgId: true },
+    });
+    if (byUserEmail?.orgId) {
+      return { id: byUserEmail.orgId };
+    }
+
+    // 3. Khớp theo domain — so sánh suffix domain chính xác (tránh substring false-positive)
+    const domain = email.split('@')[1]?.toLowerCase();
+    if (domain) {
+      const candidates = await this.prisma.organization.findMany({
+        where: {
+          website: { not: null },
+          companyType: { in: [CompanyType.SUPPLIER, CompanyType.BOTH] },
+          isActive: true,
+        },
+        select: { id: true, website: true },
       });
-      if (byDomain) return byDomain;
+
+      for (const org of candidates) {
+        if (!org.website) continue;
+        // Chuẩn hoá website: bỏ http(s)://, www., trailing slash
+        const websiteDomain = org.website
+          .toLowerCase()
+          .replace(/^https?:\/\//, '')
+          .replace(/^www\./, '')
+          .split('/')[0];
+
+        // Khớp chính xác domain (e.g. "co.uk" sẽ không khớp với "acmeco.uk")
+        const emailRootDomain = domain.replace(/^www\./, '');
+        if (websiteDomain === emailRootDomain) {
+          return { id: org.id };
+        }
+      }
     }
 
     return null;
