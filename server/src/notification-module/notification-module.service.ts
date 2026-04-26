@@ -16,6 +16,7 @@ import {
   ExternalTokenService,
   TokenType,
 } from '../external-token-module/external-token.service';
+import { EventsGateway } from '../gateway/events.gateway';
 
 @Injectable()
 export class NotificationModuleService {
@@ -28,7 +29,8 @@ export class NotificationModuleService {
     private readonly prisma: PrismaService,
     private readonly emailTemplates: EmailTemplatesService,
     private readonly externalTokenService: ExternalTokenService,
-    @InjectQueue('email-queue') private readonly emailQueue: bull.Queue, // Thêm queue
+    private readonly eventsGateway: EventsGateway,
+    @InjectQueue('email-queue') private readonly emailQueue: bull.Queue,
   ) {}
 
   onModuleInit() {
@@ -70,7 +72,7 @@ export class NotificationModuleService {
 
       const renderedBody =
         template.channel === NotificationChannel.EMAIL
-          ? await this.emailTemplates.render(eventType as any, {
+          ? this.emailTemplates.render(eventType as any, {
               ...data,
               name: user.fullName ?? user.email,
               email: user.email,
@@ -88,6 +90,18 @@ export class NotificationModuleService {
         referenceType,
         referenceId,
         status: NotificationStatus.QUEUED,
+      });
+
+      // Push realtime tới client ngay lập tức qua WebSocket
+      this.eventsGateway.broadcastToUser(recipientId, 'notification:new', {
+        id: notification.id,
+        eventType,
+        subject: renderedSubject,
+        body: renderedBody,
+        referenceType: referenceType ?? null,
+        referenceId: referenceId ?? null,
+        status: NotificationStatus.QUEUED,
+        createdAt: notification.createdAt,
       });
 
       try {
@@ -169,15 +183,46 @@ export class NotificationModuleService {
    * Gửi email trực tiếp không cần template trong DB.
    * Dùng nội bộ (vd: ApprovalModuleService) khi cần notify ngay mà không
    * phụ thuộc vào cấu hình template trong database.
+   * Tự động tạo DB record + push WebSocket nếu tìm thấy user nội bộ theo email.
    */
   async sendDirectEmail(
     to: string,
     subject: string,
     eventType: EmailEventType,
     data: Record<string, any>,
+    referenceType?: string,
+    referenceId?: string,
   ): Promise<void> {
     try {
-      const body = await this.emailTemplates.render(eventType, data);
+      const body = this.emailTemplates.render(eventType, data);
+
+      // Tạo in-app notification record nếu người nhận là user nội bộ
+      const user = await this.prisma.user.findUnique({ where: { email: to } });
+      if (user) {
+        const notification = await this.repository.createNotification({
+          recipientId: user.id,
+          orgId: user.orgId,
+          eventType,
+          channel: NotificationChannel.EMAIL,
+          priority: 2,
+          subject,
+          body,
+          referenceType: referenceType ?? null,
+          referenceId: referenceId ?? null,
+          status: NotificationStatus.QUEUED,
+        });
+        this.eventsGateway.broadcastToUser(user.id, 'notification:new', {
+          id: notification.id,
+          eventType,
+          subject,
+          body,
+          referenceType: referenceType ?? null,
+          referenceId: referenceId ?? null,
+          status: NotificationStatus.QUEUED,
+          createdAt: notification.createdAt,
+        });
+      }
+
       await this.emailQueue.add('send-email', { to, subject, body });
       this.logger.log(`Direct email queued → ${to} [${eventType}]`);
     } catch (error) {
@@ -228,7 +273,7 @@ export class NotificationModuleService {
       });
 
       // 2. Render email template với link
-      const emailBody = await this.emailTemplates.render(eventType, {
+      const emailBody = this.emailTemplates.render(eventType, {
         ...data,
         email: to,
         // Thêm các biến link vào template

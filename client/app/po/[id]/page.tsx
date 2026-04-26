@@ -5,13 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useProcurement, PO, POItem } from '@/app/context/ProcurementContext';
 import { ArrowLeft, CheckCircle2, Clock, FileText, Send, Building2, User, FileDigit, Calendar } from 'lucide-react';
 
-// Extended PO with API-specific fields
-type ExtendedPOItem = POItem & {
-    product?: { name?: string };
-    quantity?: number;
-    unitPrice?: number;
-    lineTotal?: number;
-};
+type ExtendedPOItem = POItem;
 
 type POWithDetails = PO & {
     supplier?: { name?: string };
@@ -189,13 +183,13 @@ export default function PODetailPage() {
               {po.items && po.items.length > 0 ? po.items.map((item: ExtendedPOItem, idx: number) => (
                 <tr key={item.id}>
                   <td className="text-center font-bold text-[#64748B]">{idx + 1}</td>
-                  <td className="font-bold text-[#F8FAFC]">{item.product?.name || "N/A"}</td>
-                  <td className="text-right font-bold text-[#3B82F6]">{item.quantity}</td>
+                  <td className="font-bold text-[#F8FAFC]">{item.description || "N/A"}</td>
+                  <td className="text-right font-bold text-[#3B82F6]">{item.qty}</td>
                   <td className="text-right font-semibold text-[#94A3B8]">
                     {item.unitPrice?.toLocaleString('vi-VN')} ₫
                   </td>
                   <td className="text-right font-black text-emerald-400">
-                    {item.lineTotal?.toLocaleString('vi-VN')} ₫
+                    {item.total?.toLocaleString('vi-VN')} ₫
                   </td>
                 </tr>
               )) : (

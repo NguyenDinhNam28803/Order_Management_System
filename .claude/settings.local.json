@@ -26,7 +26,8 @@
       "Bash(bash /tmp/analyze_comprehensive.sh)",
       "Bash(xargs ls *)",
       "Bash(xargs cat *)",
-      "Bash(grep -E \"\\\\.\\(ts|js\\)$\")"
+      "Bash(grep -E \"\\\\.\\(ts|js\\)$\")",
+      "Bash(npm install *)"
     ]
   }
 }

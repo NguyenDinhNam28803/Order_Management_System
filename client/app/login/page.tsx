@@ -20,10 +20,10 @@ export default function LoginPage() {
     const demoUsers = [
         // === ProcureSmart Company Only ===
         { name: "IT Requester", email: "itrequesterprocuresmart@gmail.com", role: "REQUESTER" },
-        { name: "IT Manager", email: "itmanageprocuresmart@gmail.com", role: "DEPT_APPROVER" },
+        { name: "IT Manager", email: "lyhung.dn81@gmail.com", role: "DEPT_APPROVER" },
         { name: "Procurement", email: "procurementprocuresmart@gmail.com", role: "PROCUREMENT" },
         { name: "Finance", email: "financeprocuresmart@gmail.com", role: "FINANCE" },
-        { name: "Warehouse", email: "warehouseprocuresmart@gmail.com", role: "WAREHOUSE" },
+        { name: "Warehouse", email: "hunglctb00380@fpt.edu.vn", role: "WAREHOUSE" },
         { name: "Admin", email: "adminprocuresmart@gmail.com", role: "PLATFORM_ADMIN" },
     ];
 
