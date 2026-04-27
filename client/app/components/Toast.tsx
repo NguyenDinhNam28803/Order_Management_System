@@ -226,13 +226,13 @@ export const ToastContainer: React.FC = () => {
                 }
 
                 .toast-close {
-                    background: #000000;
+                    background: rgba(0, 0, 0, 0.05);
                     border: none;
-                    color: #000000;
+                    color: #64748b;
                     cursor: pointer;
-                    width: 24px;
-                    height: 24px;
-                    border-radius: 8px;
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 10px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -241,9 +241,10 @@ export const ToastContainer: React.FC = () => {
                 }
 
                 .toast-close:hover {
-                    background: #000000;
-                    color: #0f172a;
-                    transform: rotate(90deg);
+                    background: #ef4444;
+                    color: #FFFFFF;
+                    transform: rotate(90deg) scale(1.1);
+                    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
                 }
 
                 /* Progress Bar */

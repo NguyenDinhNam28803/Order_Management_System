@@ -46,16 +46,16 @@ export default function StatsCard({
 }: StatsCardProps) {
   return (
     <div
-      className={`${colorClasses[color]} rounded-2xl p-4 border relative overflow-hidden ${className}`}
+      className={`${colorClasses[color]} rounded-xl p-3.5 border relative overflow-hidden ${className}`}
     >
       <div className="relative z-10">
-        <div className="flex items-start justify-between mb-3">
-          <div className={`p-2 rounded-lg ${iconBgClasses[color]}`}>
-            <Icon size={18} className={colorClasses[color].split(" ").pop()} />
+        <div className="flex items-start justify-between mb-2">
+          <div className={`p-1.5 rounded-lg ${iconBgClasses[color]}`}>
+            <Icon size={16} className={colorClasses[color].split(" ").pop()} />
           </div>
           {trend && (
             <div
-              className={`flex items-center gap-1 text-xs font-medium ${
+              className={`flex items-center gap-1 text-[10px] font-medium ${
                 trend.isPositive ? "text-black" : "text-black"
               }`}
             >
@@ -63,16 +63,16 @@ export default function StatsCard({
             </div>
           )}
         </div>
-
-        <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-1">
+        
+        <p className="text-[9px] font-black uppercase tracking-widest text-[#000000] mb-0.5">
           {title}
         </p>
-        <h3 className="text-3xl font-black text-[#000000]">{value}</h3>
+        <h3 className="text-2xl font-black text-[#000000] leading-tight">{value}</h3>
         {subValue && (
-          <p className="text-sm text-[#000000] mt-1">{subValue}</p>
+          <p className="text-xs text-[#000000] mt-0.5 opacity-70">{subValue}</p>
         )}
 
-        {children && <div className="mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">{children}</div>}
+        {children && <div className="mt-2 pt-2 border-t border-[rgba(148,163,184,0.05)]">{children}</div>}
       </div>
 
       {/* Background decoration */}
