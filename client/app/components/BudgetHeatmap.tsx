@@ -24,40 +24,40 @@ export default function BudgetHeatmap() {
     }).sort((a, b) => b.ratio - a.ratio);
 
     const getHeatColor = (ratio: number) => {
-        if (ratio >= 90) return "bg-rose-500/80 border-rose-500 shadow-rose-500/20";
-        if (ratio >= 70) return "bg-orange-500/80 border-orange-500 shadow-orange-500/20";
+        if (ratio >= 90) return "bg-[#A52A2A]/80 border-[#A52A2A] shadow-[#A52A2A]/20";
+        if (ratio >= 70) return "bg-[#B8860B]/80 border-[#B8860B] shadow-[#B8860B]/20";
         if (ratio >= 40) return "bg-[#B4533A]/80 border-[#B4533A] shadow-[#B4533A]/20";
-        return "bg-emerald-500/80 border-emerald-500 shadow-emerald-500/20";
+        return "bg-[#3E6D4E]/80 border-[#3E6D4E] shadow-[#3E6D4E]/20";
     };
 
     const getTagColor = (ratio: number) => {
-        if (ratio >= 90) return "bg-rose-900/40 text-black border border-rose-500/30";
-        if (ratio >= 70) return "bg-orange-900/40 text-black border border-orange-500/30";
+        if (ratio >= 90) return "bg-[#A52A2A]/20 text-[#A52A2A] border border-[#A52A2A]/30";
+        if (ratio >= 70) return "bg-[#B8860B]/20 text-[#B8860B] border border-[#B8860B]/30";
         if (ratio >= 40) return "bg-[#B4533A]/20 text-[#B4533A] border border-[#B4533A]/30";
-        return "bg-emerald-900/40 text-black border border-emerald-500/30";
+        return "bg-[#3E6D4E]/20 text-emerald-400 border border-[#3E6D4E]/30";
     };
 
     return (
         <div className="erp-card bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden group">
             <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#1A1D26]">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-[#B4533A] text-[#000000] rounded-2xl shadow-lg shadow-[#B4533A]/20 group-hover:scale-110 transition-transform duration-500">
+                    <div className="p-3 bg-[#B4533A] text-[#F2EFE9] rounded-2xl shadow-lg shadow-[#B4533A]/20 group-hover:scale-110 transition-transform duration-500">
                         <LayoutGrid size={22} />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black text-[#000000] tracking-tight uppercase">Budget Consumption Heatmap</h3>
-                        <p className="text-[10px] font-black text-[#000000] uppercase tracking-[0.2em] mt-0.5">Real-time Department Spending Intensity</p>
+                        <div className="text-lg font-black text-[#F2EFE9] tracking-tight uppercase">Budget Consumption Heatmap</div>
+                        <p className="text-[10px] font-black text-[#F2EFE9]/70 uppercase tracking-[0.2em] mt-0.5">Real-time Department Spending Intensity</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
                    <div className="flex items-center gap-2">
                         <div className="flex -space-x-1.5">
-                            <div className="h-4 w-4 bg-emerald-500 rounded-full border-2 border-[#FAF8F5] shadow-sm"></div>
-                            <div className="h-4 w-4 bg-[#B4533A] rounded-full border-2 border-[#FAF8F5] shadow-sm"></div>
-                            <div className="h-4 w-4 bg-orange-500 rounded-full border-2 border-[#FAF8F5] shadow-sm"></div>
-                            <div className="h-4 w-4 bg-rose-500 rounded-full border-2 border-[#FAF8F5] shadow-sm"></div>
+                            <div className="h-4 w-4 bg-[#3E6D4E] rounded-full border-2 border-[#1A1D26] shadow-sm"></div>
+                            <div className="h-4 w-4 bg-[#B4533A] rounded-full border-2 border-[#1A1D26] shadow-sm"></div>
+                            <div className="h-4 w-4 bg-[#B8860B] rounded-full border-2 border-[#1A1D26] shadow-sm"></div>
+                            <div className="h-4 w-4 bg-[#A52A2A] rounded-full border-2 border-[#1A1D26] shadow-sm"></div>
                         </div>
-                        <span className="text-[10px] font-black text-[#000000] uppercase tracking-widest ml-1">Intensity Scale</span>
+                        <span className="text-[10px] font-black text-[#F2EFE9] uppercase tracking-widest ml-1">Intensity Scale</span>
                    </div>
                 </div>
             </div>
@@ -75,17 +75,17 @@ export default function BudgetHeatmap() {
                         {/* Content Overlay */}
                         <div className="relative z-10 flex flex-col h-full justify-between">
                             <div className="flex justify-between items-start">
-                                <div className="h-10 w-10 rounded-[16px] bg-white/10 backdrop-blur-xl flex items-center justify-center text-[#000000] border border-white/20 shadow-lg">
+                                <div className="h-10 w-10 rounded-[16px] bg-white/10 backdrop-blur-xl flex items-center justify-center text-[#F2EFE9] border border-white/20 shadow-lg">
                                     <ArrowUpRight size={18} />
                                 </div>
-                                <span className="text-[11px] font-black px-3 py-1 rounded-full backdrop-blur-xl border border-white/20 text-[#000000] shadow-sm font-mono tracking-tighter">
+                                <span className="text-[11px] font-black px-3 py-1 rounded-full backdrop-blur-xl border border-white/20 text-[#F2EFE9] shadow-sm font-mono tracking-tighter">
                                     {item.ratio.toFixed(1)}%
                                 </span>
                             </div>
                             
                             <div className="mt-auto">
-                                <div className="text-[10px] font-black text-[#000000]/50 uppercase tracking-[0.2em] mb-1.5 leading-none">{item.code}</div>
-                                <div className="text-sm font-black text-[#000000] leading-tight break-words drop-shadow-sm" title={item.name}>{item.name}</div>
+                                <div className="text-[10px] font-black text-[#F2EFE9]/60 uppercase tracking-[0.2em] mb-1.5 leading-none">{item.code}</div>
+                                <div className="text-sm font-black text-[#F2EFE9] leading-tight break-words drop-shadow-sm" title={item.name}>{item.name}</div>
                                 
                                 <div className="mt-4 h-1.5 w-full bg-white/20 rounded-full overflow-hidden border border-white/5 backdrop-blur-sm">
                                     <div className="h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all duration-1000" style={{ width: `${item.ratio}%` }}></div>
@@ -94,9 +94,9 @@ export default function BudgetHeatmap() {
                         </div>
 
                         {/* Tooltip-like popup on hover */}
-                        <div className="absolute inset-0 z-20 bg-slate-900/90 backdrop-blur-sm opacity-0 group-hover/item:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
-                            <div className="text-[10px] font-black text-black uppercase tracking-widest mb-2">Detailed Analysis</div>
-                            <div className="text-xs font-bold text-[#000000] mb-3">{formatVND(item.used)} / {formatVND(item.allocated)}</div>
+                        <div className="absolute inset-0 z-20 bg-slate-900/95 backdrop-blur-md opacity-0 group-hover/item:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
+                            <div className="text-[10px] font-black text-[#F2EFE9]/50 uppercase tracking-widest mb-2">Detailed Analysis</div>
+                            <div className="text-xs font-bold text-[#F2EFE9] mb-3">{formatVND(item.used)} / {formatVND(item.allocated)}</div>
                             <div className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase ${getTagColor(item.ratio)}`}>
                                 {item.ratio >= 90 ? "Critical / Over" : item.ratio >= 70 ? "Warning / High" : "Optimal"}
                             </div>

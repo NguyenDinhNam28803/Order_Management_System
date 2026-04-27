@@ -38,7 +38,7 @@ const Tooltip = ({ children, content, position = 'top' }: { children: React.Reac
                     position === 'left' ? 'right-full top-1/2 -translate-y-1/2 mr-2' :
                     'left-full top-1/2 -translate-y-1/2 ml-2'
                 }`}>
-                    <div className="bg-[#1A1D23] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-xl max-w-xs text-xs text-[#000000]">
+                    <div className="bg-[#1A1D23] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-xl max-w-xs text-xs text-[#F2EFE9]">
                         {content}
                         <div className={`absolute ${
                             position === 'top' ? 'top-full left-1/2 -translate-x-1/2 border-t-[#1A1D23]' :
@@ -215,7 +215,7 @@ export default function ProcurementSuppliersPage() {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
             case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
             case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
-            default: return "bg-[#1A1D23] text-[#000000] border-[rgba(148,163,184,0.1)]";
+            default: return "bg-[#1A1D23] text-[#F2EFE9] border-[rgba(148,163,184,0.1)]";
         }
     };
 
@@ -253,33 +253,43 @@ export default function ProcurementSuppliersPage() {
                 </div>
 
                 {/* Filters */}
-                <div className="flex flex-wrap items-center gap-4 mb-6">
-                    <div className="relative flex-1 max-w-md">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000]" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm nhà cung cấp..."
-                            className="w-full bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl pl-12 pr-4 py-3 text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/50"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                        <Filter size={16} className="text-[#000000]" />
-                        {["ALL", "GOLD", "SILVER", "BRONZE"].map((tier) => (
-                            <button
-                                key={tier}
-                                onClick={() => setSelectedTier(tier)}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
-                                    selectedTier === tier
-                                        ? "bg-[#B4533A] text-[#000000]"
-                                        : "bg-[#FAF8F5] text-[#000000] border border-[rgba(148,163,184,0.1)] hover:text-[#000000]"
-                                }`}
-                            >
-                                {tier === "ALL" ? "Tất cả" : tier}
-                            </button>
-                        ))}
+                <div className="bg-[#FAF8F5] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 mb-8">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex-1 flex gap-3">
+                            <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
+                                <Search size={20} className="text-[#B4533A]" />
+                            </div>
+                            <div className="relative flex-1">
+                                <input
+                                    type="text"
+                                    placeholder="Tìm kiếm nhà cung cấp..."
+                                    className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                            <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
+                                <Filter size={18} className="text-[#B4533A]" />
+                            </div>
+                            <div className="flex bg-[#FFFFFF] p-1 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-sm">
+                                {["ALL", "GOLD", "SILVER", "BRONZE"].map((tier) => (
+                                    <button
+                                        key={tier}
+                                        onClick={() => setSelectedTier(tier)}
+                                        className={`px-6 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                            selectedTier === tier
+                                                ? "bg-[#B4533A] text-black shadow-lg shadow-[#B4533A]/20"
+                                                : "text-[#000000] hover:bg-[#FAF8F5]"
+                                        }`}
+                                    >
+                                        {tier === "ALL" ? "Tất cả" : tier}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -386,7 +396,7 @@ export default function ProcurementSuppliersPage() {
                                             <p className="text-[#000000]">Tính: (Số PO đúng hạn / Tổng PO) × 100</p>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#1A1D23] transition-colors">
+                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#1A1D23] hover:text-[#F2EFE9] transition-colors">
                                             <TrendingUp size={14} className="text-black mx-auto mb-1" />
                                             <p className="text-[10px] text-[#000000]">OTD</p>
                                             <p className="text-xs font-bold text-[#000000]">
@@ -406,7 +416,7 @@ export default function ProcurementSuppliersPage() {
                                             </ul>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#1A1D23] transition-colors">
+                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#1A1D23] hover:text-[#F2EFE9] transition-colors">
                                             <Award size={14} className="text-[#B4533A] mx-auto mb-1" />
                                             <p className="text-[10px] text-[#000000]">Chất lượng</p>
                                             <p className="text-xs font-bold text-[#000000]">
@@ -426,7 +436,7 @@ export default function ProcurementSuppliersPage() {
                                             </ul>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#1A1D23] transition-colors">
+                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#1A1D23] hover:text-[#F2EFE9] transition-colors">
                                             <Star size={14} className="text-yellow-400 mx-auto mb-1" />
                                             <p className="text-[10px] text-[#000000]">Giá</p>
                                             <p className="text-xs font-bold text-[#000000]">
@@ -448,7 +458,7 @@ export default function ProcurementSuppliersPage() {
                                             </ul>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#1A1D23] transition-colors">
+                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#1A1D23] hover:text-[#F2EFE9] transition-colors">
                                             <BarChart3 size={14} className="text-black mx-auto mb-1" />
                                             <p className="text-[10px] text-[#000000]">Thủ công</p>
                                             <p className="text-xs font-bold text-[#000000]">
@@ -470,14 +480,14 @@ export default function ProcurementSuppliersPage() {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => router.push(`/procurement/suppliers/${supplier.id}`)}
-                                        className="flex-1 bg-[#FFFFFF] hover:bg-[#1A1D23] text-[#000000] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
+                                        className="flex-1 bg-[#FFFFFF] hover:bg-[#1A1D23] text-[#000000] hover:text-[#F2EFE9] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
                                     >
                                         <Eye size={14} />
                                         Xem chi tiết
                                     </button>
                                     <button
                                         onClick={() => router.push(`/supplier/${supplier.id}/kpi-evaluation`)}
-                                        className="flex-1 bg-[#FAF8F5] hover:bg-[#1A1D23] text-[#000000] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
+                                        className="flex-1 bg-[#FAF8F5] hover:bg-[#1A1D23] text-[#000000] hover:text-[#F2EFE9] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
                                     >
                                         <BarChart3 size={14} />
                                         KPI

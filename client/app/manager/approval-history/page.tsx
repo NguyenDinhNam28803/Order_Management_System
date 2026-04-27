@@ -26,12 +26,12 @@ export default function ApprovalHistoryPage() {
             </header>
 
             {/* Filter Bar */}
-            <div className="bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] p-6 mb-8 shadow-xl shadow-[#B4533A]/5 flex flex-wrap gap-6 items-end">
+            <div className="bg-[#FAF8F5] p-6 rounded-[32px] border border-[rgba(148,163,184,0.1)] mb-8 shadow-2xl shadow-[#B4533A]/5 flex flex-wrap gap-6 items-end">
                 <div className="flex-1 min-w-[200px]">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#000000] mb-2">Loại chứng từ</label>
+                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#B4533A] mb-3 leading-none">Loại chứng từ</label>
                     <div className="relative">
-                        <FolderTree size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000]" />
-                        <select className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl py-3 pl-12 pr-4 text-sm font-bold text-[#000000] outline-none appearance-none cursor-pointer">
+                        <FolderTree size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
+                        <select className="w-full h-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-12 pr-10 text-sm font-bold text-[#000000] focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer">
                             <option value="ALL">Tất cả chứng từ</option>
                             <option value="PURCHASE_REQUISITION">Yêu cầu mua hàng (PR)</option>
                             <option value="PURCHASE_ORDER">Đơn đặt hàng (PO)</option>
@@ -40,10 +40,10 @@ export default function ApprovalHistoryPage() {
                 </div>
 
                 <div className="flex-1 min-w-[200px]">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#000000] mb-2">Quyết định</label>
+                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#B4533A] mb-3 leading-none">Quyết định</label>
                     <div className="relative">
-                        <CheckCircle size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000]" />
-                        <select className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl py-3 pl-12 pr-4 text-sm font-bold text-[#000000] outline-none appearance-none cursor-pointer">
+                        <CheckCircle size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
+                        <select className="w-full h-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-12 pr-10 text-sm font-bold text-[#000000] focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer">
                             <option value="ALL">Tất cả trạng thái</option>
                             <option value="APPROVED">Đã phê duyệt</option>
                             <option value="REJECTED">Đã từ chối</option>
@@ -51,9 +51,9 @@ export default function ApprovalHistoryPage() {
                     </div>
                 </div>
 
-                <div className="bg-[#B4533A] text-[#000000] h-12 flex items-center justify-center px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-[#B4533A]/20 cursor-pointer hover:bg-[#A85032] transition-all active:scale-95">
+                <button className="bg-[#B4533A] text-black h-14 flex items-center justify-center px-10 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#B4533A]/20 cursor-pointer hover:bg-[#A85032] transition-all active:scale-95 border-none">
                     Áp dụng bộ lọc
-                </div>
+                </button>
             </div>
 
             {/* History Table */}
