@@ -44,194 +44,149 @@ export class EmailListenerService implements OnModuleInit {
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     let connection: imaps.ImapSimple | undefined;
-    try {
-      connection = await imaps.connect(this.imapConfig);
-      await connection.openBox('INBOX');
+    let retries = 2;
 
-      const searchCriteria = ['UNSEEN'];
-      const fetchOptions = {
-        bodies: ['HEADER', 'TEXT'],
-        markSeen: false, // Đánh dấu SEEN thủ công sau khi xử lý thành công để tránh mất email nếu lỗi giữa chừng
-        struct: true,
-      };
+    while (retries > 0) {
+      try {
+        connection = await imaps.connect(this.imapConfig);
+        await connection.openBox('INBOX');
 
-      const messages = await connection.search(searchCriteria, fetchOptions);
+        const searchCriteria = ['UNSEEN'];
+        const fetchOptions = {
+          bodies: ['HEADER', 'TEXT'],
+          markSeen: false,
+          struct: true,
+        };
 
-      // Giới hạn 5 email/lần để tránh vượt quota Gemini free tier (15 req/phút)
-      const batch = messages.slice(0, 5);
-      if (messages.length > 5) {
-        this.logger.warn(
-          `${messages.length} unseen emails found — processing first 5, rest deferred to next cycle`,
-        );
-      }
+        const messages = await connection.search(searchCriteria, fetchOptions);
 
-      for (const message of batch) {
-        try {
-          // ── Đọc header (from, subject, message-id) ─────────────────────────
-
-          const headerPart = message.parts.find(
-            (p: any) => p.which === 'HEADER',
+        const batch = messages.slice(0, 5);
+        if (messages.length > 5) {
+          this.logger.warn(
+            `${messages.length} unseen emails found — processing first 5`,
           );
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const header: Record<string, string[]> = headerPart?.body ?? {};
+        }
 
-          // ── Đọc phần body text/plain + text/html + attachment metadata ───
-          let body = '';
-          const attachmentNames: string[] = [];
-          if (message.attributes.struct) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            const allParts = imaps.getParts(message.attributes.struct as any);
-
-            // 1. Ưu tiên text/plain
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const textPart = allParts.find(
-              (part: any) =>
-                part.type?.toLowerCase() === 'text' &&
-                part.subtype?.toLowerCase() === 'plain',
+        for (const message of batch) {
+          try {
+            const headerPart = message.parts.find(
+              (p: any) => p.which === 'HEADER',
             );
-            if (textPart) {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              const raw = await connection.getPartData(message, textPart);
-              body = Buffer.isBuffer(raw)
-                ? raw.toString('utf-8')
-                : String(raw ?? '');
-            }
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const header: Record<string, string[]> = headerPart?.body ?? {};
 
-            // 2. Fallback: lấy text/html nếu không có text/plain
-            if (!body.trim()) {
+            let body = '';
+            const attachmentNames: string[] = [];
+            if (message.attributes.struct) {
+              const allParts = imaps.getParts(message.attributes.struct as any);
+
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              const htmlPart = allParts.find(
+              const textPart = allParts.find(
                 (part: any) =>
                   part.type?.toLowerCase() === 'text' &&
-                  part.subtype?.toLowerCase() === 'html',
+                  part.subtype?.toLowerCase() === 'plain',
               );
-              if (htmlPart) {
+              if (textPart) {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                const raw = await connection.getPartData(message, htmlPart);
-                const html = Buffer.isBuffer(raw)
+                const raw = await connection.getPartData(message, textPart);
+                body = Buffer.isBuffer(raw)
                   ? raw.toString('utf-8')
                   : String(raw ?? '');
-                // Strip HTML tags để AI đọc được
-                body = html
-                  .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-                  .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-                  .replace(/<[^>]+>/g, ' ')
-                  .replace(/&nbsp;/g, ' ')
-                  .replace(/&amp;/g, '&')
-                  .replace(/&lt;/g, '<')
-                  .replace(/&gt;/g, '>')
-                  .replace(/\s{2,}/g, ' ')
-                  .trim();
               }
-            }
 
-            // 3. Thu thập tên file đính kèm + trích xuất nội dung PDF
-            for (const part of allParts) {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              const disposition = part.disposition;
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              const params = part.params ?? {};
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              const dispParams = disposition?.params ?? {};
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              const filename =
-                dispParams.filename ?? params.name ?? part.filename;
-              if (!filename) continue;
-
-              attachmentNames.push(String(filename));
-
-              // Trích xuất nội dung text từ PDF để AI có thể đọc số liệu
-              const isAttachment =
-                disposition?.type?.toLowerCase() === 'attachment' ||
-                String(filename).toLowerCase().endsWith('.pdf');
-              const isPdf =
-                part.subtype?.toLowerCase() === 'pdf' ||
-                String(filename).toLowerCase().endsWith('.pdf');
-
-              if (isPdf && isAttachment && !body.trim()) {
-                try {
+              if (!body.trim()) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const htmlPart = allParts.find(
+                  (part: any) =>
+                    part.type?.toLowerCase() === 'text' &&
+                    part.subtype?.toLowerCase() === 'html',
+                );
+                if (htmlPart) {
                   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                  const raw = await connection.getPartData(message, part);
-                  const buf = Buffer.isBuffer(raw)
-                    ? raw
-                    : Buffer.from(String(raw ?? ''), 'binary');
-                  const parsed = await pdfParse(buf);
-                  if (parsed.text?.trim()) {
-                    body = parsed.text.trim();
-                    this.logger.log(
-                      `PDF extracted from "${String(filename)}": ${body.length} chars`,
-                    );
+                  const raw = await connection.getPartData(message, htmlPart);
+                  const html = Buffer.isBuffer(raw)
+                    ? raw.toString('utf-8')
+                    : String(raw ?? '');
+                  body = html
+                    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+                    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+                    .replace(/<[^>]+>/g, ' ')
+                    .replace(/\s{2,}/g, ' ')
+                    .trim();
+                }
+              }
+
+              for (const part of allParts) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const disposition = part.disposition;
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const filename =
+                  disposition?.params?.filename ??
+                  part.params?.name ??
+                  part.filename;
+                if (!filename) continue;
+                attachmentNames.push(String(filename));
+
+                if (part.subtype?.toLowerCase() === 'pdf' && !body.trim()) {
+                  try {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    const raw = await connection.getPartData(message, part);
+                    const buf = Buffer.isBuffer(raw)
+                      ? raw
+                      : Buffer.from(String(raw ?? ''), 'binary');
+                    const parsed = await pdfParse(buf);
+                    if (parsed.text?.trim()) body = parsed.text.trim();
+                  } catch (pdfErr: any) {
+                    this.logger.warn(`PDF parse failed: ${pdfErr.message}`);
                   }
-                } catch (pdfErr: any) {
-                  this.logger.warn(
-                    `PDF parse failed for "${String(filename)}": ${pdfErr.message}`,
-                  );
                 }
               }
             }
-          }
 
-          // ── Sanitize message-id dùng làm source_id trong DB ───────────────
-          const rawMessageId = String(
-            header['message-id']?.[0] ?? `uid-${message.attributes.uid}`,
-          );
-          const messageId = rawMessageId.replace(/[<>\s]/g, '').slice(0, 200);
-
-          // ── Log email AI đọc được ─────────────────────────────────────────
-          // Thêm danh sách file đính kèm vào body để AI biết context
-          const attachmentNote =
-            attachmentNames.length > 0
-              ? `\n\n[File đính kèm: ${attachmentNames.join(', ')}]`
-              : '';
-          const emailData = {
-            from: String(header.from?.[0] ?? ''),
-            subject: String(header.subject?.[0] ?? '(no subject)'),
-            body: (body + attachmentNote).slice(0, 6000),
-            messageId,
-            attachments: attachmentNames,
-          };
-          this.logger.log(
-            `Email nhận: "${emailData.subject}" (id: ${emailData.messageId})`,
-          );
-
-          // ── Lọc email trước khi xử lý (system rules → AI) ────────────────
-          const filterResult = await this.emailFilter.filter(emailData);
-          if (!filterResult.shouldProcess) {
-            this.logger.log(
-              `Email "${emailData.subject}" bị lọc [${filterResult.filterType}]: ${filterResult.reason}`,
+            const rawMessageId = String(
+              header['message-id']?.[0] ?? `uid-${message.attributes.uid}`,
             );
-            continue;
+            const messageId = rawMessageId.replace(/[<>\s]/g, '').slice(0, 200);
+
+            const emailData = {
+              from: String(header.from?.[0] ?? ''),
+              subject: String(header.subject?.[0] ?? '(no subject)'),
+              body: (
+                body +
+                (attachmentNames.length > 0
+                  ? `\n\n[File: ${attachmentNames.join(', ')}]`
+                  : '')
+              ).slice(0, 6000),
+              messageId,
+              attachments: attachmentNames,
+            };
+
+            const filterResult = await this.emailFilter.filter(emailData);
+            if (filterResult.shouldProcess) {
+              await this.emailProcessor.processIncomingEmail(emailData);
+              await connection.addFlags(message.attributes.uid, ['\\Seen']);
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 4000));
+          } catch (msgErr: any) {
+            this.logger.error(`Error processing message: ${msgErr.message}`);
           }
-          this.logger.log(
-            `Email "${emailData.subject}" vượt qua bộ lọc [${filterResult.filterType}]: ${filterResult.reason}`,
-          );
-
-          // ── Gửi đến EmailProcessorService (ingest RAG + phân tích AI) ──────
-          await this.emailProcessor.processIncomingEmail(emailData);
-
-          // Đánh dấu SEEN sau khi xử lý thành công (tránh mất email nếu xử lý lỗi)
-          try {
-            await connection.addFlags(message.attributes.uid, ['\\Seen']);
-          } catch (flagErr: any) {
-            this.logger.warn(
-              `Không thể đánh dấu SEEN cho uid ${message.attributes.uid}: ${flagErr.message}`,
-            );
-          }
-
-          // Delay 4s giữa các email để tránh vượt Gemini free tier 15 req/phút
-          await new Promise((resolve) => setTimeout(resolve, 4000));
-        } catch (msgErr: any) {
-          this.logger.error(`Error processing message: ${msgErr.message}`);
         }
-      }
-    } catch (error: any) {
-      this.logger.error(`IMAP polling error: ${error.message}`);
-    } finally {
-      if (connection) {
-        try {
-          connection.end();
-        } catch {
-          /* ignore */
+        break; // Success
+      } catch (error: any) {
+        retries--;
+        this.logger.error(
+          `IMAP session error (retries left: ${retries}): ${error.message}`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+      } finally {
+        if (connection) {
+          try {
+            connection.end();
+          } catch (e) {
+            this.logger.warn('Error closing IMAP connection: ' + e);
+          }
+          connection = undefined;
         }
       }
     }

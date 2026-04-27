@@ -37,9 +37,27 @@ export class AuditModuleController {
   }
 
   /**
-   * Lấy tất cả các nhật ký kiểm tra cho tổ chức hiện tại
-   * @param req Thông tin người dùng từ JWT
-   * @returns Danh sách nhật ký kiểm tra
+   * Lấy danh sách nhật ký kiểm tra có phân trang
+   * @param page Trang hiện tại
+   * @param limit Số lượng log mỗi trang
+   * @param req Thông tin người dùng
+   */
+  @Get('paginated')
+  @ApiOperation({ summary: 'Lấy nhật ký kiểm tra theo phân trang' })
+  async findPaginated(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: { user: JwtPayload },
+  ) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+    const data = await this.auditService.findPaginated(req.user, skip, take);
+    const total = await this.auditService.count(req.user);
+    return { data, total, page: Number(page), limit: Number(limit) };
+  }
+
+  /**
+   * Lấy tất cả các nhật ký kiểm tra cho tổ chức hiện tại (vẫn giữ để tránh breaking change)
    */
   @Get()
   @ApiOperation({ summary: 'Lấy tất cả nhật ký kiểm tra của tổ chức' })

@@ -1,4 +1,9 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleInit,
+  OnModuleDestroy,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -9,28 +14,30 @@ export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  private pool: Pool; // ✅ Giữ ref để đóng đúng cách
+  private static pool: Pool | null = null;
+  private static logger = new Logger('PrismaService');
 
-  constructor(private configService: ConfigService) {
-    const pool = new Pool({
-      connectionString: configService.get<string>('DATABASE_URL'),
-      max: 20, // ✅ 10–20 là đủ cho NestJS
-      idleTimeoutMillis: 30000, // ✅ 30s thay vì 10s
-      connectionTimeoutMillis: 5000,
-      allowExitOnIdle: false, // ✅ Không tự tắt pool
-    });
+  constructor(configService: ConfigService) {
+    if (!PrismaService.pool) {
+      PrismaService.logger.log('Initializing shared database connection pool.');
+      PrismaService.pool = new Pool({
+        connectionString: configService.get<string>('DATABASE_URL'),
+        max: 5,
+        idleTimeoutMillis: 60000,
+        connectionTimeoutMillis: 10000,
+        allowExitOnIdle: false,
+      });
+    }
 
-    const adapter = new PrismaPg(pool);
+    const adapter = new PrismaPg(PrismaService.pool);
 
     super({
       adapter,
       log:
         process.env.NODE_ENV === 'development'
           ? ['query', 'warn', 'error']
-          : ['warn', 'error'], // ✅ Tắt query log ở production
+          : ['warn', 'error'],
     });
-
-    this.pool = pool; // ✅ Lưu lại ref
   }
 
   async onModuleInit() {
@@ -39,6 +46,5 @@ export class PrismaService
 
   async onModuleDestroy() {
     await this.$disconnect();
-    await this.pool.end(); // ✅ Đóng pg pool riêng — quan trọng!
   }
 }

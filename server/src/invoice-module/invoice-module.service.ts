@@ -561,6 +561,32 @@ export class InvoiceModuleService {
     }));
   }
 
+  async findPaginated(orgId: string, skip: number, take: number) {
+    const invoices = await this.prisma.supplierInvoice.findMany({
+      where: { orgId },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take,
+      include: { po: true, supplier: true, items: true },
+    });
+    return invoices.map((inv) => ({
+      ...inv,
+      subtotal: Number(inv.subtotal),
+      taxRate: inv.taxRate ? Number(inv.taxRate) : null,
+      totalAmount: Number(inv.totalAmount),
+      items: inv.items?.map((item) => ({
+        ...item,
+        qty: Number(item.qty),
+        unitPrice: Number(item.unitPrice),
+        total: Number(item.total),
+      })),
+    }));
+  }
+
+  async count(orgId: string) {
+    return this.prisma.supplierInvoice.count({ where: { orgId } });
+  }
+
   async findOne(id: string) {
     const inv = await this.prisma.supplierInvoice.findUnique({
       where: { id },

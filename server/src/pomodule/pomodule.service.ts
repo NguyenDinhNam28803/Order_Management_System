@@ -232,6 +232,22 @@ export class PomoduleService {
     return this.repository.findOne(id);
   }
 
+  async findPaginated(orgId: string, skip: number, take: number) {
+    return this.prisma.purchaseOrder.findMany({
+      where: { orgId },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take,
+      include: { supplier: true },
+    });
+  }
+
+  async count(orgId: string) {
+    return this.prisma.purchaseOrder.count({
+      where: { orgId },
+    });
+  }
+
   // ─── PO Consolidation ────────────────────────────────────────────────────────
 
   /**

@@ -25,7 +25,9 @@ export default function QuotationManagementPage() {
     const [awardModal, setAwardModal] = useState<Quotation | null>(null);
     const [viewQuotation, setViewQuotation] = useState<Quotation | null>(null);
     const [activeModalTab, setActiveModalTab] = useState<'AI' | 'QA' | 'NEGOTIATION'>('AI');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [counterOffersList, setCounterOffersList] = useState<any[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [qaThreadsList, setQaThreadsList] = useState<any[]>([]);
     const [newMsg, setNewMsg] = useState('');
     const [newPrice, setNewPrice] = useState('');
@@ -799,9 +801,11 @@ export default function QuotationManagementPage() {
                             )
                         ) : (
                             // Show RFQ list
-                            <>
-                                <ERPTable columns={rfqColumns} data={filteredRFQs} />
-                                {filteredRFQs.length === 0 && (
+                            <div>
+                                {Array.isArray(filteredRFQs) ? (
+                                    <ERPTable columns={rfqColumns} data={filteredRFQs} />
+                                ) : null}
+                                {(!Array.isArray(filteredRFQs) || filteredRFQs.length === 0) && (
                                     <div className="py-32 text-center">
                                         <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#F2EFE9] mb-6">
                                             <Search size={40} />
@@ -810,7 +814,7 @@ export default function QuotationManagementPage() {
                                         <p className="text-[#000000] font-medium">Chưa có yêu cầu báo giá nào trong hệ thống.</p>
                                     </div>
                                 )}
-                            </>
+                            </div>
                         )}
                     </div>
                 

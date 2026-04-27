@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { PrmoduleService } from './prmodule.service';
 import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
@@ -46,6 +47,23 @@ export class PrmoduleController {
   async suggest(@Body() items: CreatePrItemDto[]) {
     return this.prService.AiSuggest(items);
   }
+  @Get('paginated')
+  @ApiOperation({ summary: 'Lấy PR có phân trang' })
+  async findPaginated(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: { user: JwtPayload },
+  ) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const data = await this.prService.findPaginated(req.user.orgId, skip, take);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const total = await this.prService.count(req.user.orgId);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    return { data, total, page: Number(page), limit: Number(limit) };
+  }
+
   /**
    * Lấy danh sách tất cả các yêu cầu mua sắm của tổ chức hiện tại
    * @param req Thông tin người dùng để lọc theo tổ chức

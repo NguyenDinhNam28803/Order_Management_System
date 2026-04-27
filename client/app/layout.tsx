@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 };
 
 import { ProcurementProvider } from "./context/ProcurementContext";
+import Providers from "./components/Providers";
 import AppContent from "./components/AppContent";
 
 export default function RootLayout({
@@ -33,11 +34,13 @@ export default function RootLayout({
         className={`${sans.variable} ${jetbrainsMono.variable} antialiased bg-[#FFFFFF] text-[#000000] font-sans min-h-screen`}
         suppressHydrationWarning
       >
-        <ProcurementProvider>
-          <AppContent>
-            {children}
-          </AppContent>
-        </ProcurementProvider>
+        <Providers>
+          <ProcurementProvider>
+            <AppContent>
+              {children}
+            </AppContent>
+          </ProcurementProvider>
+        </Providers>
       </body>
     </html>
   );

@@ -297,6 +297,8 @@ export interface ProcurementContextType extends ProcurementState {
     fetchSpendOverview: () => Promise<SpendOverview | null>;
     fetchSpendBySupplier: () => Promise<SpendBySupplier[]>;
     fetchSpendByCategory: () => Promise<SpendByCategory[]>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fetchBuyerDashboard: () => Promise<any>;
 }
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
@@ -1687,6 +1689,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return [];
     }, [apiFetch]);
 
+    const fetchBuyerDashboard = useCallback(async () => {
+        const resp = await apiFetch('/reports/buyer-dashboard');
+        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        return null;
+    }, [apiFetch]);
+
     const contextValue = useMemo<ProcurementContextType>(() => ({
         ...state,
         login, logout, refreshData, apiFetch, addPR, submitPR, updatePR, fetchPrDetail, actionApproval,
@@ -1730,8 +1738,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         consolidatePRs,
         syncRAG, ingestRAGEntity,
         fetchSpendOverview, fetchSpendBySupplier, fetchSpendByCategory,
+        fetchBuyerDashboard,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }), [state]); // callbacks are stable useCallback refs; only state triggers re-render
+    }), [state, fetchBuyerDashboard]); // callbacks are stable useCallback refs; only state triggers re-render
 
     return <ProcurementContext.Provider value={contextValue}>{children}</ProcurementContext.Provider>;
 }

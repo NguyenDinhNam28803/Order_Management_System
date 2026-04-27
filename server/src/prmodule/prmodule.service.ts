@@ -331,4 +331,20 @@ export class PrmoduleService {
   async findMyPrs(userId: string): Promise<PurchaseRequisition[]> {
     return this.repository.findByRequester(userId);
   }
+
+  async findPaginated(orgId: string, skip: number, take: number): Promise<PurchaseRequisition[]> {
+    return this.prisma.purchaseRequisition.findMany({
+      where: { orgId },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take,
+      include: { items: true, requester: true, department: true },
+    });
+  }
+
+  async count(orgId: string): Promise<number> {
+    return this.prisma.purchaseRequisition.count({
+      where: { orgId },
+    });
+  }
 }

@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { ApiProperty, ApiOperation as _Op } from '@nestjs/swagger';
 import { InvoiceModuleService } from './invoice-module.service';
@@ -47,6 +48,27 @@ export class InvoiceModuleController {
   @ApiOperation({ summary: 'Tạo hóa đơn mới' })
   create(@Body() createInvoiceModuleDto: CreateInvoiceModuleDto) {
     return this.invoiceModuleService.create(createInvoiceModuleDto);
+  }
+
+  @Get('paginated')
+  @ApiOperation({ summary: 'Lấy Invoice có phân trang' })
+  async findPaginated(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: any,
+  ) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment
+    const data = await this.invoiceModuleService.findPaginated(
+      req.user.orgId,
+      skip,
+      take,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment
+    const total = await this.invoiceModuleService.count(req.user.orgId);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    return { data, total, page: Number(page), limit: Number(limit) };
   }
 
   /**

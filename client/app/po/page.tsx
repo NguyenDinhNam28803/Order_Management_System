@@ -8,7 +8,11 @@ import { TableSkeleton } from "../components/shared/TableSkeleton";
 import { ErrorBoundary } from "../components/shared/ErrorBoundary";
 
 export default function POPage() {
-    const { pos, prs, loadingMyPrs } = useProcurement();
+    const { prs, loadingMyPrs } = useProcurement();
+    const [page, setPage] = useState(1);
+    const { data: result, isLoading } = usePurchaseOrders(page);
+    const pos = Array.isArray(result?.data) ? result.data : [];
+    
     const router = useRouter();
     const searchParams = useSearchParams();
     

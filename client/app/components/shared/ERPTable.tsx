@@ -37,7 +37,13 @@ export default function ERPTable<T>({ columns, data }: { columns: ERPTableColumn
                                 {columns.map((col, j) => (
                                     <td key={j}>
                                         <div className="text-sm transition-colors">
-                                            {col.render ? col.render(row) : (col.key ? (row[col.key] as React.ReactNode) : null)}
+                                            {col.render 
+                                                ? col.render(row) 
+                                                : (col.key 
+                                                    ? (typeof row[col.key] === 'object' && row[col.key] !== null 
+                                                        ? JSON.stringify(row[col.key]) 
+                                                        : (row[col.key] as React.ReactNode)) 
+                                                    : null)}
                                         </div>
                                     </td>
                                 ))}

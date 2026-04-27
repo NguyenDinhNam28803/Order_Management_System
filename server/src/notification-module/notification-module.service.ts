@@ -107,31 +107,20 @@ export class NotificationModuleService {
       try {
         if (template.channel === NotificationChannel.EMAIL) {
           if (user.email) {
-            try {
-              // Thử đẩy vào hàng đợi trước
-              await this.emailQueue.add('send-email', {
-                to: user.email,
-                subject: renderedSubject || 'OMS Notification',
-                body: renderedBody,
-                notificationId: notification.id,
-              });
-              results.push({ channel: template.channel, status: 'QUEUED' });
-            } catch (queueError: any) {
-              this.logger.warn(
-                `Queue failed, fallback to direct email: ${queueError.message}`,
-              );
-              // Fallback: Gửi trực tiếp nếu Queue lỗi
-              await this.emailService.sendEmail(
-                user.email,
-                renderedSubject || 'OMS Notification',
-                renderedBody,
-              );
-              await this.repository.updateNotificationStatus(
-                notification.id,
-                NotificationStatus.SENT,
-              );
-              results.push({ channel: template.channel, status: 'SENT' });
-            }
+            // Gửi trực tiếp để tránh delay (bypass queue theo yêu cầu)
+            await this.emailService.sendEmail(
+              user.email,
+              renderedSubject || 'OMS Notification',
+              renderedBody,
+            );
+            
+            await this.repository.updateNotificationStatus(
+              notification.id,
+              NotificationStatus.SENT,
+            );
+            
+            this.logger.log(`Email sent directly to ${user.email} (Bypassed Queue)`);
+            results.push({ channel: template.channel, status: 'SENT' });
           } else {
             throw new Error('User does not have an email address');
           }
@@ -228,22 +217,9 @@ export class NotificationModuleService {
         }
       }
 
-      // 2. Gửi email qua Queue với cơ chế fallback
-      try {
-        await this.emailQueue.add('send-email', { 
-          to, 
-          subject, 
-          body, 
-          attachments 
-        });
-        this.logger.log(`Direct email queued → ${to} [${eventType}]`);
-      } catch (queueError) {
-        this.logger.warn(
-          `Email queue failed, falling back to direct email for ${to}: ${queueError}`,
-        );
-        await this.emailService.sendEmail(to, subject, body, attachments);
-        this.logger.log(`Direct email sent successfully to ${to} [${eventType}]`);
-      }
+      // 2. Gửi trực tiếp để tránh delay (bypass queue theo yêu cầu)
+      await this.emailService.sendEmail(to, subject, body, attachments);
+      this.logger.log(`Direct email sent successfully to ${to} [${eventType}] (Bypassed Queue)`);
     } catch (error) {
       this.logger.error(
         `Failed to send direct email to ${to} [${eventType}]:`,
@@ -307,25 +283,9 @@ export class NotificationModuleService {
         submitLink: tokenResult.link,
       });
 
-      // 3. Thêm vào queue — nếu Redis không sẵn sàng thì gửi trực tiếp
-      try {
-        await this.emailQueue.add('send-email', {
-          to,
-          subject,
-          body: emailBody,
-          tokenId: tokenResult.id,
-        });
-        this.logger.log(
-          `External email with magic link queued: ${to} - ${eventType}`,
-        );
-      } catch (queueError) {
-        this.logger.warn(
-          `Email queue unavailable, sending directly to ${to}`,
-          queueError,
-        );
-        await this.emailService.sendEmail(to, subject, emailBody);
-        this.logger.log(`External email sent directly: ${to} - ${eventType}`);
-      }
+      // 3. Gửi trực tiếp để tránh delay (bypass queue theo yêu cầu)
+      await this.emailService.sendEmail(to, subject, emailBody);
+      this.logger.log(`External email sent directly to ${to} [${eventType}] (Bypassed Queue)`);
 
       return {
         success: true,

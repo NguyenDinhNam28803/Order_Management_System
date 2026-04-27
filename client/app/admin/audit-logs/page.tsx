@@ -1,20 +1,33 @@
 "use client";
 
 import React, { useState } from "react";
-import { useProcurement } from "../../context/ProcurementContext";
+import { useAuditLogs } from "../../hooks/useAuditLogs";
+import { AuditLogDetailModal } from "../../components/AuditLogDetailModal";
 import { 
-    History, Search, Filter, Calendar, User, 
-    Activity, Shield, ExternalLink, RefreshCw 
+    History, Search, Filter, Calendar, Shield, ExternalLink, RefreshCw 
 } from "lucide-react";
 
 export default function AuditLogsPage() {
-    const { auditLogs, loadingMyPrs, refreshData } = useProcurement();
+    const [page, setPage] = useState(1);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [selectedLog, setSelectedLog] = useState<any | null>(null);
+    const { data: result, isLoading, refetch } = useAuditLogs(page);
+    
+    // Safety check: ensure auditLogs is always an array
+    const auditLogs = Array.isArray(result?.data) ? result.data : [];
+    
     const [searchTerm, setSearchTerm] = useState("");
     const [entityFilter, setEntityFilter] = useState("ALL");
 
-    const filteredLogs = auditLogs.filter(log => {
-        const matchSearch = log.action.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          log.entityId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    // Guard against undefined data during initial load
+    if (isLoading && auditLogs.length === 0) {
+        return <main className="p-6 text-[#000000]">Đang tải dữ liệu...</main>;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filteredLogs = auditLogs.filter((log: any) => {
+        const matchSearch = log.action?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          log.entityId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           log.user?.fullName?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchEntity = entityFilter === "ALL" || log.entityType === entityFilter;
         return matchSearch && matchEntity;
@@ -28,10 +41,13 @@ export default function AuditLogsPage() {
         return "text-[#000000] bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)]";
     };
 
-    const entityTypes = Array.from(new Set(auditLogs.map(l => l.entityType)));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const entityTypes = Array.from(new Set(auditLogs.map((l: any) => l.entityType)));
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+            {selectedLog && <AuditLogDetailModal data={selectedLog.newValue} onClose={() => setSelectedLog(null)} />}
+            
             <div className="flex justify-between items-center mb-10">
                 <div className="flex items-center gap-3">
                     <div className="p-3 bg-[#B4533A] text-[#000000] rounded-xl shadow-lg shadow-[#B4533A]/20">
@@ -43,10 +59,10 @@ export default function AuditLogsPage() {
                     </div>
                 </div>
                 <button 
-                    onClick={() => refreshData()}
+                    onClick={() => refetch()}
                     className="flex items-center gap-2 px-4 py-2 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl hover:bg-[#1A1D23] text-[#000000] transition-all shadow-sm"
                 >
-                    <RefreshCw size={18} className={loadingMyPrs ? "animate-spin" : ""} /> Làm mới dữ liệu
+                    <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} /> Làm mới dữ liệu
                 </button>
             </div>
 
@@ -90,12 +106,13 @@ export default function AuditLogsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)] text-sm">
-                            {filteredLogs.length > 0 ? filteredLogs.map((log) => (
+                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                            {filteredLogs.length > 0 ? filteredLogs.map((log: any) => (
                                 <tr key={log.id} className="hover:bg-[#FFFFFF]/30 transition-colors group">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-2 text-[#000000]">
                                             <Calendar size={14} />
-                                            {new Date(log.createdAt).toLocaleString('vi-VN')}
+                                            {log.createdAt && typeof log.createdAt === 'string' ? new Date(log.createdAt).toLocaleString('vi-VN') : 'N/A'}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
@@ -118,10 +135,13 @@ export default function AuditLogsPage() {
                                         {log.entityType}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-xs text-[#000000]">
-                                        {log.entityId}
+                                        ***-***-***
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button className="p-1.5 text-[#000000] hover:text-[#B4533A] hover:bg-[#B4533A]/10 rounded-lg transition-all">
+                                        <button 
+                                            onClick={() => setSelectedLog(log)}
+                                            className="p-1.5 text-[#000000] hover:text-[#B4533A] hover:bg-[#B4533A]/10 rounded-xl transition-all"
+                                        >
                                             <ExternalLink size={16} />
                                         </button>
                                     </td>
@@ -130,15 +150,31 @@ export default function AuditLogsPage() {
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center text-[#000000]">
                                         <History size={48} className="mx-auto mb-3 opacity-20" />
-                                        {loadingMyPrs ? "Đang tải dữ liệu..." : "Không tìm thấy nhật ký nào."}
+                                        {isLoading ? "Đang tải dữ liệu..." : "Không tìm thấy nhật ký nào."}
                                     </td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
                 </div>
+                {result && (
+                    <div className="flex items-center justify-between p-4 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] text-sm">
+                        <p>Trang {result.page} / {Math.max(1, Math.ceil((result.total || 1) / (result.limit || 1)))}</p>
+                        <div className="flex gap-2">
+                            <button 
+                                disabled={page === 1}
+                                onClick={() => setPage(p => p - 1)}
+                                className="px-3 py-1 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded hover:bg-[#B4533A]/5 disabled:opacity-50"
+                            >Trước</button>
+                            <button 
+                                disabled={result && page >= Math.ceil((result.total || 1) / (result.limit || 1))}
+                                onClick={() => setPage(p => p + 1)}
+                                className="px-3 py-1 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded hover:bg-[#B4533A]/5 disabled:opacity-50"
+                            >Sau</button>
+                        </div>
+                    </div>
+                )}
             </div>
         </main>
     );
 }
-

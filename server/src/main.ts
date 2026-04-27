@@ -6,6 +6,7 @@ import * as pc from 'picocolors';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { BigIntInterceptor } from './common/interceptors/bigint.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
@@ -23,7 +24,7 @@ async function bootstrap() {
   );
 
   // --- Global Interceptors & Filters ---
-  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalInterceptors(new TransformInterceptor(), new BigIntInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
 
   // --- Cấu hình Swagger chi tiết ---
