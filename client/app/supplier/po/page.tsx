@@ -332,29 +332,29 @@ export default function SupplierPO() {
                             const moreItems = items.length > 1 ? `+${items.length - 1} sản phẩm khác` : '';
 
                             return (
-                                <tr key={p.id} className={`hover:bg-[#FFFFFF]/50 transition-colors ${p.supplierId === supplierId ? 'bg-[#B4533A]/5' : ''}`}>
+                                <tr key={p.id} className={`group hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.05)] ${p.supplierId === supplierId ? 'bg-[#B4533A]/5' : ''}`}>
                                     {/* PO Number */}
                                     <td className="py-4 px-4">
-                                        <div className="font-bold text-[#000000] text-xs mb-1 truncate">
+                                        <div className="font-bold text-[#000000] text-xs mb-1 truncate group-hover:text-[#F2EFE9] transition-colors">
                                             Đơn hàng
                                         </div>
-                                        <div className="text-[9px] font-bold text-[#000000] uppercase tracking-wider truncate">
+                                        <div className="text-[9px] font-bold text-[#000000] uppercase tracking-wider truncate group-hover:text-[#B4533A] transition-colors">
                                             {"ProcurePro"}
                                         </div>
                                     </td>
 
                                     {/* Product Info */}
                                     <td className="py-4 px-4">
-                                        <div className="font-black text-[#000000] text-xs mb-1 uppercase tracking-tight truncate" title={itemName}>
+                                        <div className="font-black text-[#000000] text-xs mb-1 uppercase tracking-tight truncate group-hover:text-[#F2EFE9] transition-colors" title={itemName}>
                                             {itemName}
                                         </div>
                                         {itemCode && (
-                                            <div className="text-[9px] font-bold text-[#000000] uppercase tracking-widest">
-                                                SKU: <span className="text-[#000000]">{itemCode}</span>
+                                            <div className="text-[9px] font-bold text-[#000000] uppercase tracking-widest group-hover:text-[#F2EFE9]/40 transition-colors">
+                                                SKU: <span className="text-[#000000] group-hover:text-[#F2EFE9]/60 transition-colors">{itemCode}</span>
                                             </div>
                                         )}
                                         {moreItems && (
-                                            <div className="text-[9px] text-[#B4533A] mt-1 font-bold">
+                                            <div className="text-[9px] text-[#B4533A] mt-1 font-bold group-hover:text-[#B4533A] transition-colors">
                                                 {moreItems}
                                             </div>
                                         )}
@@ -362,24 +362,24 @@ export default function SupplierPO() {
 
                                     {/* Qty / Total */}
                                     <td className="py-4 px-4 text-center">
-                                        <div className="text-xs font-bold text-[#000000]">
-                                            {totalQty} <span className="text-[#000000] font-normal">SP</span>
+                                        <div className="text-xs font-bold text-[#000000] group-hover:text-[#F2EFE9] transition-colors">
+                                            {totalQty} <span className="text-[#000000] font-normal group-hover:text-[#F2EFE9]/60">SP</span>
                                         </div>
-                                        <div className="text-[10px] font-black text-black mt-1">
+                                        <div className="text-[10px] font-black text-black mt-1 group-hover:text-[#B4533A] transition-colors">
                                             {new Intl.NumberFormat('vi-VN').format(totalAmount)} ₫
                                         </div>
                                     </td>
 
                                     {/* Date */}
                                     <td className="py-4 px-4 text-center">
-                                        <div className="text-xs text-[#000000]">
+                                        <div className="text-xs text-[#000000] group-hover:text-[#F2EFE9] transition-colors">
                                             {p.createdAt ? new Date(p.createdAt).toLocaleDateString("vi-VN") : "N/A"}
                                         </div>
                                     </td>
 
                                     {/* Status */}
                                     <td className="py-4 px-4 text-center">
-                                        <span className={`${p.status === "ISSUED" || p.status === "PENDING" ? "bg-rose-500/10 text-black border border-rose-500/20" : p.status === "REJECTED" ? "bg-rose-500/20 text-black border border-rose-500/30" : p.status === "ACKNOWLEDGED" || p.status === "CONFIRMED" ? "bg-[#B4533A]/10 text-[#CB7A62] border border-[#B4533A]/20" : "bg-emerald-500/10 text-black border border-emerald-500/20"} font-black uppercase px-2 py-1 rounded text-[9px] tracking-widest whitespace-nowrap`}>
+                                        <span className={`${p.status === "ISSUED" || p.status === "PENDING" ? "bg-rose-500/10 text-black border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-black" : p.status === "REJECTED" ? "bg-rose-500/20 text-black border border-rose-500/30 group-hover:bg-rose-700 group-hover:text-white" : p.status === "ACKNOWLEDGED" || p.status === "CONFIRMED" ? "bg-[#B4533A]/10 text-[#CB7A62] border border-[#B4533A]/20 group-hover:bg-[#B4533A] group-hover:text-black" : "bg-emerald-500/10 text-black border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-black"} font-black uppercase px-2 py-1 rounded text-[9px] tracking-widest whitespace-nowrap transition-all`}>
                                             {getStatusLabel(p.status)}
                                         </span>
                                     </td>
@@ -394,7 +394,7 @@ export default function SupplierPO() {
                                                         await ackPO(p.id);
                                                         notify("Đã xác nhận đơn hàng (ACK)", "success");
                                                     }}
-                                                    className="p-2 rounded-lg hover:bg-emerald-500/10 text-black transition-colors"
+                                                    className="p-2 rounded-lg hover:bg-emerald-500/10 text-black transition-colors group-hover:text-emerald-500"
                                                     title="Xác nhận PO"
                                                 >
                                                     <CheckCircle size={16}/>
@@ -407,7 +407,7 @@ export default function SupplierPO() {
                                                         await shipPO(p.id);
                                                         notify("Đã cập nhật vận đơn (ASN/DO)", "success");
                                                     }}
-                                                    className="p-2 rounded-lg hover:bg-[#B4533A]/10 text-[#B4533A] transition-colors"
+                                                    className="p-2 rounded-lg hover:bg-[#B4533A]/10 text-[#B4533A] transition-colors group-hover:bg-[#B4533A] group-hover:text-black"
                                                     title="Báo giao hàng"
                                                 >
                                                     <Truck size={16}/>
@@ -415,7 +415,7 @@ export default function SupplierPO() {
                                             )}
                                             <button 
                                                 onClick={() => openModal(p)}
-                                                className="p-2 rounded-lg hover:bg-[#FFFFFF] text-[#000000] transition-colors"
+                                                className="p-2 rounded-lg hover:bg-[#FFFFFF] text-[#000000] transition-colors group-hover:bg-[#FFFFFF]/10 group-hover:text-[#F2EFE9]"
                                                 title="Xem chi tiết"
                                             >
                                                 <Eye size={16}/>

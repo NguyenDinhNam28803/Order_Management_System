@@ -208,26 +208,35 @@ export default function SupplierVettingListPage() {
       </div>
 
       {/* Filters */}
-      <div className="mb-6 flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px] max-w-xs">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tìm nhà cung cấp..."
-            className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FAF8F5] py-2 pl-9 pr-3 text-sm text-[#000000] placeholder:text-[#000000] focus:border-[#B4533A]/50 focus:outline-none"
-          />
+      <div className="mb-6 flex flex-wrap items-center gap-4">
+        <div className="flex-1 min-w-[300px] flex gap-3">
+          <div className="h-14 w-14 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
+            <Search size={20} className="text-[#B4533A]" />
+          </div>
+          <div className="relative flex-1">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tìm nhà cung cấp..."
+              className="w-full h-14 pl-6 pr-4 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all"
+            />
+          </div>
         </div>
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FAF8F5] px-3 py-2 text-sm text-[#000000] focus:outline-none"
-        >
-          <option value="ALL">Tất cả trạng thái</option>
-          {Object.keys(STATUS_CONFIG).map((s) => (
-            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
-          ))}
-        </select>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="h-14 pl-12 pr-10 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+            >
+              <option value="ALL">Tất cả trạng thái</option>
+              {Object.keys(STATUS_CONFIG).map((s) => (
+                <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Content */}

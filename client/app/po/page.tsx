@@ -405,13 +405,23 @@ export default function POPage() {
                     <h1 className="text-3xl font-black text-erp-navy tracking-tight">Quản lý Đơn mua hàng (PO)</h1>
                     <p className="text-sm text-black mt-1">Theo dõi các đơn hàng đã phát hành và tình trạng ngân sách.</p>
                 </div>
-                <div className="flex gap-4">
-                    <div className="flex bg-white border border-slate-200 rounded-xl px-4 py-2 items-center gap-3">
-                        <Search size={16} className="text-black" />
-                        <input type="text" placeholder="Tìm kiếm PO #, Nhà cung cấp..." className="text-xs bg-transparent outline-none font-bold" />
+            <div className="bg-[#FAF8F5] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 mb-8 flex justify-between items-center">
+                <div className="flex-1 flex gap-3 max-w-xl">
+                    <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
+                        <Search size={20} className="text-[#B4533A]" />
                     </div>
-                    <button className="p-2 bg-white border border-slate-200 rounded-xl text-black hover:text-erp-navy transition-all"><Filter size={20} /></button>
+                    <div className="relative flex-1">
+                        <input 
+                            type="text" 
+                            placeholder="Tìm kiếm PO #, Nhà cung cấp..." 
+                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all" 
+                        />
+                    </div>
                 </div>
+                <button className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#B4533A] shadow-sm hover:bg-[#1A1D23] transition-all">
+                    <Filter size={20} />
+                </button>
+            </div>
             </div>
 
             <div className="erp-card p-0! overflow-hidden shadow-xl shadow-erp-navy/5">

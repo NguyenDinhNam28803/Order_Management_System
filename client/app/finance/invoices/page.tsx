@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
-import { FileText, Search, CheckCircle2, Clock, AlertCircle, ArrowRight, FileCheck, XCircle, CreditCard } from "lucide-react";
+import { FileText, Search, CheckCircle2, Clock, AlertCircle, ArrowRight, FileCheck, XCircle, CreditCard, Filter } from "lucide-react";
 import { formatVND, getStatusLabel } from "@/app/utils/formatUtils";
 import { Organization } from "@/app/types/api-types";
 
@@ -107,32 +107,41 @@ export default function FinanceInvoicesPage() {
             </div>
 
             {/* Filter Bar */}
-            <div className="erp-card p-6 mb-6 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)]">
+            <div className="bg-[#FAF8F5] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 mb-8">
                 <div className="flex flex-col md:flex-row gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000]" size={18} />
-                        <input
-                            className="erp-input pl-12 w-full"
-                            placeholder="Tìm theo số hóa đơn, nhà cung cấp, PO..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                    <div className="flex-1 flex gap-3">
+                        <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
+                            <Search size={20} className="text-[#B4533A]" />
+                        </div>
+                        <div className="relative flex-1">
+                            <input
+                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all"
+                                placeholder="Tìm theo số hóa đơn, nhà cung cấp, PO..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </div>
-                        <select
-                        className="erp-input w-full md:w-48"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <option value="ALL">Tất cả trạng thái</option>
-                        <option value="SUBMITTED">Chờ đối soát</option>
-                        <option value="MATCHING">Đang đối soát</option>
-                        <option value="MATCHED">Đã đối soát</option>
-                        <option value="APPROVED">Đã duyệt</option>
-                        <option value="AUTO_APPROVED">Tự động duyệt</option>
-                        <option value="PAID">Đã thanh toán</option>
-                        <option value="EXCEPTION_REVIEW">Lỗi đối soát</option>
-                        <option value="REJECTED">Từ chối</option>
-                    </select>
+                    <div className="flex gap-3">
+                        <div className="relative">
+                            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
+                            <select
+                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                            >
+                                <option value="ALL">Tất cả trạng thái</option>
+                                <option value="SUBMITTED">Chờ đối soát</option>
+                                <option value="MATCHING">Đang đối soát</option>
+                                <option value="MATCHED">Đã đối soát</option>
+                                <option value="APPROVED">Đã duyệt</option>
+                                <option value="AUTO_APPROVED">Tự động duyệt</option>
+                                <option value="PAID">Đã thanh toán</option>
+                                <option value="EXCEPTION_REVIEW">Lỗi đối soát</option>
+                                <option value="REJECTED">Từ chối</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 

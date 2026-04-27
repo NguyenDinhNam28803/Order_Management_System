@@ -109,7 +109,7 @@ export default function CreateGRN() {
             <div className="mt-8 mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-[#000000] tracking-tight flex items-center gap-3">
-                        Goods Receipt Note (GRN) <span className="text-[10px] font-bold text-[#B4533A] bg-[#B4533A]/10 border border-[#B4533A]/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu Nhập & QC</span>
+                        Goods Receipt Note (GRN) <span className="text-[10px] font-bold text-black bg-[#B4533A]/10 border border-[#B4533A]/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu Nhập & QC</span>
                     </h1>
                     <p className="text-sm text-[#000000] mt-1">Chọn PO đang chờ nhập kho bên dưới để bắt đầu đếm số lượng & kiểm định chất lượng.</p>
                 </div>
@@ -157,7 +157,7 @@ export default function CreateGRN() {
                                 <tbody>
                                     {filteredPos.map((po) => (
                                         <tr key={po.id} className="hover:bg-[#FFFFFF] cursor-pointer" onClick={() => handleSelectPO(po)}>
-                                            <td className="font-black text-[#B4533A]">{po.poNumber || po.id.split('-').pop()}</td>
+                                            <td className="font-black text-black">{po.poNumber || po.id.split('-').pop()}</td>
                                             <td className="font-bold text-[#000000]">{po.supplier?.name || po.vendor || "—"}</td>
                                             <td className="text-center font-bold text-[#000000]">{po.items?.length ?? 0}</td>
                                             <td className="text-[#000000]">{po.createdAt ? new Date(po.createdAt).toLocaleDateString('vi-VN') : "—"}</td>
@@ -253,10 +253,10 @@ export default function CreateGRN() {
                     <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 !p-0 overflow-hidden">
                         <div className="p-4 bg-[#B4533A]/10 border-b border-[#B4533A]/20 flex justify-between items-center">
                             <div className="flex items-center gap-2">
-                                <FileCheck size={16} className="text-[#B4533A]" />
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#B4533A]">Bước 2: Quality Control (QC)</h3>
+                                <FileCheck size={16} className="text-black" />
+                                <h3 className="text-sm font-black uppercase tracking-widest text-black">Bước 2: Quality Control (QC)</h3>
                             </div>
-                            <span className="text-[10px] font-bold text-[#B4533A] bg-[#FFFFFF] px-2 py-1 border border-[#B4533A]/20 rounded">Checklist: Đã áp dụng tiêu chuẩn ISO-9001</span>
+                            <span className="text-[10px] font-bold text-black bg-[#FFFFFF] px-2 py-1 border border-[#B4533A]/20 rounded">Checklist: Đã áp dụng tiêu chuẩn ISO-9001</span>
                         </div>
 
                         <div className="divide-y divide-[rgba(148,163,184,0.1)] bg-[#FAF8F5]">

@@ -288,9 +288,9 @@ export default function Dashboard() {
                                                          <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase border transition-all ${
                                                              pr.status === "APPROVED" ? "bg-emerald-500/10 text-black border-emerald-500/20" : 
                                                              pr.status === "REJECTED" ? "bg-rose-500/10 text-black border-rose-500/20" :
-                                                             pr.status === "DRAFT" ? "bg-[#1A1D23] text-[#000000] border-[rgba(148,163,184,0.1)]" :
+                                                             pr.status === "DRAFT" ? "bg-[#1A1D23] text-[#F2EFE9] border-[rgba(148,163,184,0.1)]" :
                                                              pr.status.includes("PENDING") || pr.status === "SUBMITTED" ? "bg-amber-500/10 text-black border-amber-500/20" :
-                                                             "bg-[#B4533A]/10 text-[#B4533A] border-[#B4533A]/20"
+                                                             "bg-[#B4533A]/10 text-black border-[#B4533A]/20"
                                                          }`}>
                                                              {getStatusLabel(pr.status)}
                                                          </span>
@@ -333,7 +333,7 @@ export default function Dashboard() {
                                                      <span className="text-[10px] font-black text-[#000000]">{qr.qrNumber}</span>
                                                      <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase w-fit ${
                                                          qr.status === 'QUOTED' ? 'bg-emerald-500/10 text-black' : 
-                                                         qr.status === 'SUBMITTED' ? 'bg-[#B4533A]/10 text-[#B4533A]' :
+                                                         qr.status === 'SUBMITTED' ? 'bg-[#B4533A]/10 text-black' :
                                                          'bg-amber-500/10 text-black'
                                                      }`}>{qr.status}</span>
                                                  </div>
@@ -719,7 +719,7 @@ export default function Dashboard() {
                                     <tr key={pr.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
                                         <td className="px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#B4533A] bg-[#FAF8F5]"/></td>
                                         <td className="font-bold text-[#000000] tracking-tight">{pr.prNumber || "PR-***"}</td>
-                                        <td><span className={`px-2.5 py-1 rounded-lg font-black text-[9px] uppercase ${Number(pr.totalEstimate) > 50000000 ? 'bg-[#B4533A]/10 text-[#B4533A]' : 'bg-[#1A1D23] text-[#000000]'}`}>{Number(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
+                                        <td><span className={`px-2.5 py-1 rounded-lg font-black text-[9px] uppercase ${Number(pr.totalEstimate) > 50000000 ? 'bg-[#B4533A]/10 text-black' : 'bg-[#1A1D23] text-[#F2EFE9]'}`}>{Number(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
                                         <td className="font-medium text-[#000000]">{pr.title}</td>
                                         <td className="text-center">
                                             {Number(pr.totalEstimate) > 50000000 ? (
@@ -995,10 +995,10 @@ export default function Dashboard() {
                                             const getStatusDisplay = (status: string) => {
                                                 switch(status) {
                                                     case 'SHIPPED': return { label: 'Đã giao hàng', color: 'text-black', bg: 'bg-emerald-500/20' };
-                                                    case 'SHIPPING': return { label: 'Đang vận chuyển', color: 'text-[#CB7A62]', bg: 'bg-[#B4533A]/20' };
+                                                    case 'SHIPPING': return { label: 'Đang vận chuyển', color: 'text-black', bg: 'bg-[#B4533A]/20' };
                                                     case 'PARTIALLY_RECEIVED': return { label: 'Nhận một phần', color: 'text-black', bg: 'bg-amber-500/20' };
-                                                    case 'ISSUED': return { label: 'Đã gửi NCC', color: 'text-[#000000]', bg: 'bg-[#000000]/20' };
-                                                    default: return { label: status, color: 'text-[#000000]', bg: 'bg-[#000000]/20' };
+                                                    case 'ISSUED': return { label: 'Đã gửi NCC', color: 'text-black', bg: 'bg-[#000000]/20' };
+                                                    default: return { label: status, color: 'text-black', bg: 'bg-[#000000]/20' };
                                                 }
                                             };
                                             const progress = getProgress(po.status);
@@ -1485,7 +1485,7 @@ export default function Dashboard() {
                                                 </span>
                                             </td>
                                             <td className="max-w-[200px] truncate font-medium text-[#000000]">{pr.title}</td>
-                                            <td className="text-right font-black text-[#B4533A] text-sm">{formatVND(pr.totalEstimate || 0)} ₫</td>
+                                            <td className="text-right font-black text-black text-sm">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                             <td className="text-right px-8">
                                                 <div className="flex justify-end gap-1.5">
                                                     <button onClick={() => setSelectedPRDetails(pr)} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#B4533A] hover:border-[#B4533A]/20 rounded-xl transition-all shadow-sm" title="Xem chi tiết">
