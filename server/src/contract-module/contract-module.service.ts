@@ -134,7 +134,10 @@ export class ContractModuleService {
   }
 
   async signContract(id: string, userId: string, isBuyer: boolean) {
-    const contract = await this.prisma.contract.findUnique({ where: { id } });
+    const contract = await this.prisma.contract.findUnique({
+      where: { id },
+      include: { buyerOrg: true, supplierOrg: true },
+    });
     if (!contract) throw new NotFoundException('Hợp đồng không tồn tại');
 
     const updateData: any = {};
@@ -144,24 +147,87 @@ export class ContractModuleService {
       updateData.signedBySupplierId = userId;
     }
 
-    // Nếu cả hai bên đã ký, chuyển trạng thái sang ACTIVE
     const updatedContract = await this.prisma.contract.update({
       where: { id },
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       data: updateData,
+      include: { buyerOrg: true, supplierOrg: true },
     });
 
+    // Cả hai bên đã ký → ACTIVE
     if (updatedContract.signedByBuyerId && updatedContract.signedBySupplierId) {
       return this.prisma.contract.update({
         where: { id },
-        data: {
-          status: ContractStatus.ACTIVE,
-          signedAt: new Date(),
-        },
+        data: { status: ContractStatus.ACTIVE, signedAt: new Date() },
       });
     }
 
+    // Một bên mới ký → nhắc bên còn lại
+    void this.notifyOtherPartyToSign(updatedContract as any, isBuyer);
     return updatedContract;
+  }
+
+  private async notifyOtherPartyToSign(contract: any, buyerJustSigned: boolean): Promise<void> {
+    try {
+      const frontendUrl = process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn';
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const baseData = {
+        contractNumber: contract.contractNumber,
+        contractTitle: contract.title,
+        value: Number(contract.value ?? 0),
+        currency: contract.currency,
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+      };
+
+      if (buyerJustSigned) {
+        const supplierUsers = await this.prisma.user.findMany({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          where: { orgId: contract.supplierId, role: 'SUPPLIER' as any, isActive: true },
+          select: { email: true, fullName: true },
+        });
+        for (const u of supplierUsers) {
+          if (!u.email) continue;
+          void this.notificationService.sendDirectEmail(
+            u.email,
+            `[OMS] Bên mua đã ký — Hợp đồng ${contract.contractNumber as string} cần chữ ký của bạn`,
+            'CONTRACT_SIGN_REQUEST',
+            {
+              ...baseData,
+              recipientName: u.fullName ?? u.email,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              partnerName: contract.buyerOrg?.name ?? 'Bên mua',
+              signingLink: `${frontendUrl}/supplier/contracts`,
+              role: 'supplier',
+            },
+          ).catch(() => {});
+        }
+      } else {
+        const buyerUsers = await this.prisma.user.findMany({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          where: { orgId: contract.orgId, role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as any }, isActive: true },
+          select: { email: true, fullName: true },
+        });
+        for (const u of buyerUsers) {
+          if (!u.email) continue;
+          void this.notificationService.sendDirectEmail(
+            u.email,
+            `[OMS] Nhà cung cấp đã ký — Hợp đồng ${contract.contractNumber as string} cần chữ ký của bạn`,
+            'CONTRACT_SIGN_REQUEST',
+            {
+              ...baseData,
+              recipientName: u.fullName ?? u.email,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              partnerName: contract.supplierOrg?.name ?? 'Nhà cung cấp',
+              signingLink: `${frontendUrl}/procurement/contracts/${contract.id as string}`,
+              role: 'buyer',
+            },
+          ).catch(() => {});
+        }
+      }
+    } catch (err: any) {
+      this.logger.warn(`notifyOtherPartyToSign failed: ${err.message}`);
+    }
   }
 
   async updateMilestone(

@@ -11,6 +11,7 @@ export type EmailEventType =
   | 'PR_APPROVED' // PR được phê duyệt — notify requester
   | 'PR_REJECTED' // PR bị từ chối — notify requester
   | 'QUOTATION_RECEIVED' // Nhận được báo giá — notify procurement
+  | 'CONTRACT_SIGN_REQUEST'   // Yêu cầu ký hợp đồng — notify buyer/supplier
   | 'CONTRACT_EXPIRY_WARNING' // Hợp đồng sắp hết hạn — notify procurement
   | 'GRN_CONFIRMED' // Kho xác nhận nhận hàng — notify supplier/finance
   | 'BUDGET_LIMIT_WARNING' // Ngân sách gần đạt giới hạn — notify finance/manager
@@ -76,6 +77,7 @@ export class EmailTemplatesService implements OnModuleInit {
     PO_APPROVED: '#0d7c4e',
     PO_CONFIRM_LINK: '#0f766e',
     QUOTATION_RECEIVED: '#1d4ed8',
+    CONTRACT_SIGN_REQUEST: '#0f766e',
     CONTRACT_EXPIRY_WARNING: '#b45309',
     GRN_CONFIRMED: '#0f766e',
     GRN_MILESTONE_UPDATE: '#b45309',
@@ -198,6 +200,8 @@ export class EmailTemplatesService implements OnModuleInit {
         return this.templatePrRejected(data);
       case 'QUOTATION_RECEIVED':
         return this.templateQuotationReceived(data);
+      case 'CONTRACT_SIGN_REQUEST':
+        return this.templateContractSignRequest(data);
       case 'CONTRACT_EXPIRY_WARNING':
         return this.templateContractExpiryWarning(data);
       case 'GRN_CONFIRMED':
@@ -1035,6 +1039,59 @@ export class EmailTemplatesService implements OnModuleInit {
       </div>`;
 
     return this.base('#1d4ed8', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONTRACT_SIGN_REQUEST — Yêu cầu ký hợp đồng (gửi cho buyer hoặc supplier)
+  // data: { recipientName, contractNumber, contractTitle, partnerName,
+  //         value (number), currency, startDate, endDate, signingLink, role }
+  // role: 'buyer' | 'supplier'
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateContractSignRequest(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const recipientName  = data.recipientName  ?? 'Quý đối tác';
+    const contractNumber = data.contractNumber  ?? '';
+    const contractTitle  = data.contractTitle   ?? '';
+    const partnerName    = data.partnerName     ?? '';
+    const value          = Number(data.value ?? 0);
+    const currency       = data.currency        ?? 'VND';
+    const startDate      = data.startDate ? this.fmtDate(data.startDate) : '—';
+    const endDate        = data.endDate   ? this.fmtDate(data.endDate)   : '—';
+    const signingLink    = data.signingLink ?? '#';
+    const role           = data.role === 'buyer' ? 'Bên mua' : 'Nhà cung cấp';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const content = `
+      <div class="header" style="background:#0f766e">
+        <div class="header-label">Yêu cầu ký hợp đồng</div>
+        <h1>Hợp đồng ${contractNumber} cần chữ ký của bạn</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${recipientName}</strong>,</p>
+        <p>Hợp đồng sau đây đã được phê duyệt và đang chờ chữ ký điện tử của <strong>${role}</strong>. Vui lòng đăng nhập và hoàn tất ký kết để hợp đồng có hiệu lực.</p>
+
+        <table class="info-table">
+          <tr><td>Mã hợp đồng</td><td><strong>${contractNumber}</strong></td></tr>
+          <tr><td>Tiêu đề</td><td>${contractTitle}</td></tr>
+          <tr><td>Đối tác</td><td><strong>${partnerName}</strong></td></tr>
+          <tr><td>Giá trị</td><td><strong style="color:#0f766e">${this.fmt(value)} ${currency}</strong></td></tr>
+          <tr><td>Thời hạn</td><td>${startDate} → ${endDate}</td></tr>
+          <tr><td>Vai trò ký</td><td>${role}</td></tr>
+        </table>
+
+        <div class="alert" style="background:#f0fdf4;border-color:#0f766e;color:#14532d">
+          ✍️ Vui lòng ký hợp đồng trước khi hết thời hạn để tránh làm trễ tiến độ dự án.
+        </div>
+
+        <div class="btn-wrap">
+          <a href="${signingLink}" class="btn" style="background:#0f766e">Ký hợp đồng ngay</a>
+        </div>
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base('#0f766e', content);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

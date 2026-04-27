@@ -549,15 +549,18 @@ export class ApprovalModuleService {
       }
 
       case DocumentType.CONTRACT: {
-        // APPROVED (auto hoặc sau khi tất cả approver duyệt) → chờ ký số
-        // PENDING_APPROVAL (đang chờ approver) → vẫn PENDING_SIGNATURE
-        // REJECTED → trả về DRAFT
         let cStatus: ContractStatus = ContractStatus.PENDING_SIGNATURE;
         if (actionStatus === 'REJECTED') cStatus = ContractStatus.DRAFT;
+
         await this.prisma.contract.update({
           where: { id },
           data: { status: cStatus },
         });
+
+        // Khi được duyệt → thông báo cả hai bên cần ký
+        if (actionStatus === 'APPROVED' || actionStatus === 'PENDING_APPROVAL') {
+          void this.notifyContractSigningParties(id);
+        }
         break;
       }
     }
@@ -892,6 +895,85 @@ export class ApprovalModuleService {
       [DocumentType.CONTRACT]: 'Hợp đồng',
     };
     return labels[docType] ?? docType;
+  }
+
+  /** Gửi email yêu cầu ký cho cả bên mua lẫn nhà cung cấp */
+  private async notifyContractSigningParties(contractId: string): Promise<void> {
+    try {
+      const contract = await this.prisma.contract.findUnique({
+        where: { id: contractId },
+        include: { buyerOrg: true, supplierOrg: true },
+      });
+      if (!contract) return;
+
+      const frontendUrl = process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn';
+      const baseData = {
+        contractNumber: contract.contractNumber,
+        contractTitle: contract.title,
+        value: Number(contract.value ?? 0),
+        currency: contract.currency,
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+      };
+
+      // ── Thông báo bên mua (PROCUREMENT / DIRECTOR / CEO) ──
+      const buyerUsers = await this.prisma.user.findMany({
+        where: {
+          orgId: contract.orgId,
+          role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as any },
+          isActive: true,
+        },
+        select: { email: true, fullName: true },
+      });
+
+      for (const u of buyerUsers) {
+        if (!u.email) continue;
+        void this.notificationService.sendDirectEmail(
+          u.email,
+          `[OMS] Hợp đồng ${contract.contractNumber} cần chữ ký của bạn`,
+          'CONTRACT_SIGN_REQUEST',
+          {
+            ...baseData,
+            recipientName: u.fullName ?? u.email,
+            partnerName: contract.supplierOrg?.name ?? 'Nhà cung cấp',
+            signingLink: `${frontendUrl}/procurement/contracts/${contractId}`,
+            role: 'buyer',
+          },
+        ).catch(() => {});
+      }
+
+      // ── Thông báo nhà cung cấp (SUPPLIER role trong supplier org) ──
+      const supplierUsers = await this.prisma.user.findMany({
+        where: {
+          orgId: contract.supplierId,
+          role: 'SUPPLIER' as any,
+          isActive: true,
+        },
+        select: { email: true, fullName: true },
+      });
+
+      for (const u of supplierUsers) {
+        if (!u.email) continue;
+        void this.notificationService.sendDirectEmail(
+          u.email,
+          `[OMS] Hợp đồng ${contract.contractNumber} cần chữ ký của bạn`,
+          'CONTRACT_SIGN_REQUEST',
+          {
+            ...baseData,
+            recipientName: u.fullName ?? u.email,
+            partnerName: contract.buyerOrg?.name ?? 'Bên mua',
+            signingLink: `${frontendUrl}/supplier/contracts`,
+            role: 'supplier',
+          },
+        ).catch(() => {});
+      }
+
+      this.logger.log(
+        `Sent CONTRACT_SIGN_REQUEST to ${buyerUsers.length} buyer(s) and ${supplierUsers.length} supplier(s) for contract ${contract.contractNumber}`,
+      );
+    } catch (err: any) {
+      this.logger.warn(`notifyContractSigningParties failed: ${err.message}`);
+    }
   }
 
   private emitApprovalEvent(
