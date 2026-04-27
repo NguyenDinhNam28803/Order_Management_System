@@ -456,7 +456,7 @@ export default function SupplierDashboard() {
       <div className="animate-in slide-in-from-right-8 duration-500">
         <button 
           onClick={() => setSelectedRfq(null)}
-          className="flex items-center gap-2 text-black hover:text-erp-navy font-black uppercase tracking-widest text-[10px] transition-colors mb-6 group"
+          className="flex items-center gap-2 text-black hover:text-brand-primary font-black uppercase tracking-widest text-[10px] transition-colors mb-6 group"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 
           Trở lại danh sách
@@ -470,7 +470,7 @@ export default function SupplierDashboard() {
                 <Calendar size={12} /> Hạn nộp: 15/04/2024
               </span>
             </div>
-            <h1 className="text-3xl font-black text-erp-navy tracking-tight">{selectedRfq.rfqId}: {selectedRfq.projectName}</h1>
+            <h1 className="text-3xl font-black text-brand-primary tracking-tight">{selectedRfq.rfqId}: {selectedRfq.projectName}</h1>
           </div>
           
           <div className="text-right">
@@ -504,7 +504,7 @@ export default function SupplierDashboard() {
                           <div className="font-black text-slate-700">{item.name}</div>
                           <div className="text-[10px] font-bold text-black uppercase tracking-tighter">Mã: {item.id}</div>
                         </td>
-                        <td className="text-center font-black text-erp-navy text-base border-x border-slate-50">
+                        <td className="text-center font-black text-brand-primary text-base border-x border-slate-50">
                           {item.quantity}
                         </td>
                         <td className="p-4 bg-[#F9EFEC]/20">

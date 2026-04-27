@@ -48,7 +48,7 @@ export default function SupplierSuggestionWidget({ items }: { items: PRItem[] })
 
   return (
     <div className="erp-card shadow-sm border border-slate-200 mt-6">
-      <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 flex items-center gap-2 border-b border-slate-100 pb-4">
+      <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary mb-4 flex items-center gap-2 border-b border-slate-100 pb-4">
         <Sparkles size={16} className="text-amber-500" /> AI Gợi ý Nhà cung cấp
       </h3>
       
@@ -59,11 +59,11 @@ export default function SupplierSuggestionWidget({ items }: { items: PRItem[] })
           {suggestions.length > 0 ? (
             suggestions.map((s, i) => (
               <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-slate-200 font-black text-xs text-erp-navy">
+                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-slate-200 font-black text-xs text-brand-primary">
                   {i + 1}
                 </div>
                 <div className="flex-1">
-                  <div className="text-xs font-black text-erp-navy">{s.name}</div>
+                  <div className="text-xs font-black text-brand-primary">{s.name}</div>
                   <div className="text-[10px] text-black">{s.reason}</div>
                 </div>
                 <div className="flex items-center gap-1 text-amber-500 font-black text-xs">

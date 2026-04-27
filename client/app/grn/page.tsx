@@ -40,7 +40,7 @@ export default function GRNPage() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight">Nhập kho & Kiểm định (GRN)</h1>
+                    <h1 className="text-3xl font-black text-brand-primary tracking-tight">Nhập kho & Kiểm định (GRN)</h1>
                     <p className="text-sm text-black mt-1">Xác nhận hàng hóa thực nhận và kiểm soát chất lượng đầu vào.</p>
                 </div>
             </div>
@@ -57,7 +57,7 @@ export default function GRNPage() {
                             <div className="flex items-center gap-3 mb-8">
                                 <div className="p-3 bg-[#F9EFEC] rounded-xl"><Truck size={24} className="text-erp-blue" /></div>
                                 <div>
-                                    <h3 className="text-sm font-black uppercase text-erp-navy">Xác nhận vận chuyển</h3>
+                                    <h3 className="text-sm font-black uppercase text-brand-primary">Xác nhận vận chuyển</h3>
                                     <span className="text-[10px] font-black text-black uppercase">PO #{activePO.id} | {activePO.vendor}</span>
                                 </div>
                             </div>
@@ -117,7 +117,7 @@ export default function GRNPage() {
 
                     <div className="space-y-8">
                         <div className="erp-card">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy mb-8 flex items-center gap-2">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-brand-primary mb-8 flex items-center gap-2">
                                 <CheckCircle2 size={18} className="text-emerald-500" /> Kiểm định chất lượng (QC)
                             </h3>
 
@@ -147,7 +147,7 @@ export default function GRNPage() {
                             </div>
 
                             <div className="mt-10 pt-8 border-t border-slate-100">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy mb-6 flex items-center gap-2">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-brand-primary mb-6 flex items-center gap-2">
                                     <TrendingUp size={18} className="text-erp-blue" /> Đánh giá hiệu suất nhà cung cấp (KPI)
                                 </h3>
 

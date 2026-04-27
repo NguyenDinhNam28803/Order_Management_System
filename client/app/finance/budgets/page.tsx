@@ -165,7 +165,7 @@ export default function FinanceBudgetsPage() {
                             <CheckCircle2 size={32} className="animate-bounce" />
                         </div>
                         <div>
-                            <div className="text-lg font-black text-erp-navy uppercase tracking-tight">Phân bổ thành công!</div>
+                            <div className="text-lg font-black text-brand-primary uppercase tracking-tight">Phân bổ thành công!</div>
                             <p className="text-xs text-black font-bold uppercase tracking-widest mt-1">Đang chuyển về Dashboard...</p>
                         </div>
                     </div>
@@ -178,7 +178,7 @@ export default function FinanceBudgetsPage() {
                     <button 
                         onClick={() => setActiveTab('dashboard')}
                         className={`flex items-center gap-2 px-6 py-2.5 rounded-[18px] text-xs font-black uppercase tracking-wider transition-all ${
-                            activeTab === 'dashboard' ? 'bg-erp-navy text-[#000000] shadow-lg shadow-erp-navy/20' : 'text-black hover:text-erp-navy'
+                            activeTab === 'dashboard' ? 'bg-erp-navy text-[#000000] shadow-lg shadow-erp-navy/20' : 'text-black hover:text-brand-primary'
                         }`}
                     >
                         <LayoutDashboard size={14} /> Tổng quan
@@ -186,7 +186,7 @@ export default function FinanceBudgetsPage() {
                     <button 
                         onClick={() => setActiveTab('tools')}
                         className={`flex items-center gap-2 px-6 py-2.5 rounded-[18px] text-xs font-black uppercase tracking-wider transition-all ${
-                            activeTab === 'tools' ? 'bg-erp-navy text-[#000000] shadow-lg shadow-erp-navy/20' : 'text-black hover:text-erp-navy'
+                            activeTab === 'tools' ? 'bg-erp-navy text-[#000000] shadow-lg shadow-erp-navy/20' : 'text-black hover:text-brand-primary'
                         }`}
                     >
                         <PlusCircle size={14} /> Phân bổ định biên
@@ -240,7 +240,7 @@ export default function FinanceBudgetsPage() {
                     {/* Summary Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
-                            { label: `Ngân sách cấp (${dashLabel})`, val: dashStats.total, color: 'text-erp-navy', bg: 'bg-[#F9EFEC]', icon: Target },
+                            { label: `Ngân sách cấp (${dashLabel})`, val: dashStats.total, color: 'text-brand-primary', bg: 'bg-[#F9EFEC]', icon: Target },
                             { label: `Đã giải ngân (${dashLabel})`, val: dashStats.spent, color: 'text-amber-600', bg: 'bg-amber-50', icon: ArrowUpRight },
                             { label: `Số dư khả dụng (${dashLabel})`, val: dashStats.remaining, color: 'text-green-600', bg: 'bg-green-50', icon: ShieldCheck },
                         ].map((s, idx) => (
@@ -260,7 +260,7 @@ export default function FinanceBudgetsPage() {
                     {/* Main Monitoring Table */}
                     <div className="bg-white rounded-[40px] shadow-xl shadow-erp-navy/5 border border-slate-100 overflow-hidden">
                         <div className="p-8 border-b border-slate-50 flex justify-between items-center">
-                            <h2 className="text-sm font-black text-erp-navy uppercase tracking-widest flex items-center gap-3">
+                            <h2 className="text-sm font-black text-brand-primary uppercase tracking-widest flex items-center gap-3">
                                 <Filter size={18} className="text-erp-blue" /> Giám sát sử dụng Ngân sách
                             </h2>
                         </div>
@@ -281,7 +281,7 @@ export default function FinanceBudgetsPage() {
                                         return (
                                             <tr key={g.costCenterId} className="hover:bg-slate-50/50 transition-colors">
                                                 <td className="px-8 py-6">
-                                                    <div className="font-black text-erp-navy text-sm">{g.deptName}</div>
+                                                    <div className="font-black text-brand-primary text-sm">{g.deptName}</div>
                                                     <div className="text-[10px] font-bold text-black mt-0.5">{g.ccCode} - {g.ccName}</div>
                                                 </td>
                                                 <td className="px-8 py-6 font-black text-slate-600">{formatVND(g.allocatedAmount, true)}</td>
@@ -290,10 +290,10 @@ export default function FinanceBudgetsPage() {
                                                         <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
                                                             <div className={`h-full ${p > 90 ? 'bg-red-500' : p > 70 ? 'bg-amber-500' : 'bg-erp-blue'} transition-all duration-1000`} style={{ width: `${Math.min(p, 100)}%` }}></div>
                                                         </div>
-                                                        <span className="text-[10px] font-black text-erp-navy">{p.toFixed(0)}%</span>
+                                                        <span className="text-[10px] font-black text-brand-primary">{p.toFixed(0)}%</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-6 font-black text-erp-navy">{formatVND(g.allocatedAmount - g.spentAmount, true)}</td>
+                                                <td className="px-8 py-6 font-black text-brand-primary">{formatVND(g.allocatedAmount - g.spentAmount, true)}</td>
                                                 <td className="px-8 py-6">
                                                     <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
                                                         p > 100 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'
@@ -326,7 +326,7 @@ export default function FinanceBudgetsPage() {
                             {/* Department / Year selectors inside the tool */}
                             <div className="flex justify-between items-start mb-12">
                                 <div>
-                                    <h2 className="text-2xl font-black text-erp-navy uppercase tracking-tighter">Cấu hình Định biên</h2>
+                                    <h2 className="text-2xl font-black text-brand-primary uppercase tracking-tighter">Cấu hình Định biên</h2>
                                     <p className="text-xs text-black font-bold uppercase tracking-widest">Quy tắc phân bổ 5 phân đoạn</p>
                                 </div>
                                 <div className="flex gap-4">
@@ -357,7 +357,7 @@ export default function FinanceBudgetsPage() {
                                         readOnly
                                         type="text"
                                         value={formatVND(totalAnnualBudget) || ''}
-                                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-[35px] pl-20 pr-8 py-10 text-5xl font-black text-erp-navy outline-none cursor-not-allowed"
+                                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-[35px] pl-20 pr-8 py-10 text-5xl font-black text-brand-primary outline-none cursor-not-allowed"
                                     />
                                     <div className="absolute right-10 flex flex-col items-end">
                                         <span className="text-[9px] font-black text-erp-blue bg-[#F9EFEC] px-3 py-1.5 rounded-full border border-[#F3DDD6] uppercase tracking-widest">Auto-Synced</span>
@@ -385,7 +385,7 @@ export default function FinanceBudgetsPage() {
                                             type="text"
                                             value={formatVND(buckets[item.key as keyof typeof buckets]) || ''}
                                             onChange={(e) => handleBucketEdit(item.key as keyof typeof buckets, parseMoney(e.target.value))}
-                                            className="w-full bg-transparent text-2xl font-black text-erp-navy outline-none"
+                                            className="w-full bg-transparent text-2xl font-black text-brand-primary outline-none"
                                         />
                                         <div className="text-[10px] font-bold text-black mt-1">{getBucketPercentage(buckets[item.key as keyof typeof buckets]).toFixed(1)}% / Năm</div>
                                     </div>
@@ -415,7 +415,7 @@ export default function FinanceBudgetsPage() {
                                 onClick={handleSave}
                                 className={`w-full py-5 rounded-3xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all ${
                                     isValid && selectedCCId 
-                                    ? 'bg-white text-erp-navy hover:scale-[1.02] shadow-xl' 
+                                    ? 'bg-white text-brand-primary hover:scale-[1.02] shadow-xl' 
                                     : 'bg-white/10 text-[#000000]/30'
                                 }`}
                             >
