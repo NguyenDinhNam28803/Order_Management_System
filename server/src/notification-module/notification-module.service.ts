@@ -65,6 +65,14 @@ export class NotificationModuleService {
 
     const results: any[] = [];
 
+    // Danh sách các sự kiện ưu tiên cao cần gửi trực tiếp
+    const criticalEvents = [
+      'PO_APPROVAL_REQUEST',
+      'PR_APPROVED',
+      'PR_REJECTED',
+      'CONTRACT_SIGN_REQUEST',
+    ];
+
     for (const template of templates) {
       const renderedSubject = template.subject
         ? this.renderTemplate(template.subject, data)
@@ -92,7 +100,6 @@ export class NotificationModuleService {
         status: NotificationStatus.QUEUED,
       });
 
-      // Push realtime tới client ngay lập tức qua WebSocket
       this.eventsGateway.broadcastToUser(recipientId, 'notification:new', {
         id: notification.id,
         eventType,
@@ -107,20 +114,28 @@ export class NotificationModuleService {
       try {
         if (template.channel === NotificationChannel.EMAIL) {
           if (user.email) {
-            // Gửi trực tiếp để tránh delay (bypass queue theo yêu cầu)
-            await this.emailService.sendEmail(
-              user.email,
-              renderedSubject || 'OMS Notification',
-              renderedBody,
-            );
-            
-            await this.repository.updateNotificationStatus(
-              notification.id,
-              NotificationStatus.SENT,
-            );
-            
-            this.logger.log(`Email sent directly to ${user.email} (Bypassed Queue)`);
-            results.push({ channel: template.channel, status: 'SENT' });
+            const isCritical = criticalEvents.includes(eventType);
+
+            if (isCritical) {
+              await this.emailService.sendEmail(
+                user.email,
+                renderedSubject || 'OMS Notification',
+                renderedBody,
+              );
+              await this.repository.updateNotificationStatus(
+                notification.id,
+                NotificationStatus.SENT,
+              );
+              results.push({ channel: template.channel, status: 'SENT' });
+            } else {
+              await this.emailQueue.add('send-email', {
+                to: user.email,
+                subject: renderedSubject || 'OMS Notification',
+                body: renderedBody,
+                notificationId: notification.id,
+              });
+              results.push({ channel: template.channel, status: 'QUEUED' });
+            }
           } else {
             throw new Error('User does not have an email address');
           }
@@ -213,13 +228,17 @@ export class NotificationModuleService {
             createdAt: notification.createdAt,
           });
         } catch (err) {
-          this.logger.warn(`Could not create in-app notification for ${to}: ${err}`);
+          this.logger.warn(
+            `Could not create in-app notification for ${to}: ${err}`,
+          );
         }
       }
 
       // 2. Gửi trực tiếp để tránh delay (bypass queue theo yêu cầu)
       await this.emailService.sendEmail(to, subject, body, attachments);
-      this.logger.log(`Direct email sent successfully to ${to} [${eventType}] (Bypassed Queue)`);
+      this.logger.log(
+        `Direct email sent successfully to ${to} [${eventType}] (Bypassed Queue)`,
+      );
     } catch (error) {
       this.logger.error(
         `Failed to send direct email to ${to} [${eventType}]:`,
@@ -285,7 +304,9 @@ export class NotificationModuleService {
 
       // 3. Gửi trực tiếp để tránh delay (bypass queue theo yêu cầu)
       await this.emailService.sendEmail(to, subject, emailBody);
-      this.logger.log(`External email sent directly to ${to} [${eventType}] (Bypassed Queue)`);
+      this.logger.log(
+        `External email sent directly to ${to} [${eventType}] (Bypassed Queue)`,
+      );
 
       return {
         success: true,

@@ -49,6 +49,13 @@ export class EmailListenerService implements OnModuleInit {
     while (retries > 0) {
       try {
         connection = await imaps.connect(this.imapConfig);
+
+        // Thêm handler bắt lỗi socket để tránh EPIPE gây crash
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (connection as any).imap.socket.on('error', (err: any) => {
+          this.logger.error('IMAP Socket Error:', err.message);
+        });
+
         await connection.openBox('INBOX');
 
         const searchCriteria = ['UNSEEN'];

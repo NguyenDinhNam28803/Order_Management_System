@@ -543,7 +543,8 @@ export default function SupplierDiscoveryPage() {
       const supplierSummary = results.slice(0, 5).map(s =>
         `${s.name} (score: ${s.aiScore}, tỉnh: ${s.province ?? 'N/A'}, ngành: ${s.industry ?? 'N/A'})`
       ).join('\n');
-      const res = await fetch(`${'http://localhost:5000'}/ai-service/chat`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai-service/chat`, {
+
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

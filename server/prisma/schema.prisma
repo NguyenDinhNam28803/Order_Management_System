@@ -1416,6 +1416,19 @@ model DocumentEmbedding {
   @@map("document_embeddings")
 }
 
+model FailedEmail {
+  id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  to           String   @db.VarChar(255)
+  subject      String   @db.VarChar(255)
+  body         String
+  error        String?
+  attempts     Int      @default(0)
+  nextRetryAt  DateTime @default(now()) @map("next_retry_at") @db.Timestamptz(6)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("failed_emails")
+}
+
 // Sửa thêm bảng
 
 model QuotationRequest {

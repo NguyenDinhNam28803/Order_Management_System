@@ -71,6 +71,16 @@ export class PomoduleService {
       );
     }
 
+    // [Thêm mới] Kiểm tra trạng thái nhà cung cấp
+    const supplier = await this.prisma.organization.findUnique({
+      where: { id: supplierId },
+    });
+    if (!supplier || supplier.supplierTier !== 'APPROVED') {
+      throw new BadRequestException(
+        'Nhà cung cấp chưa được duyệt (APPROVED), không thể tạo PO.',
+      );
+    }
+
     // 2. Chuẩn bị dữ liệu PO từ PR
     const poNumber = `PO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 

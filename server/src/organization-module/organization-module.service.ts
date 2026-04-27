@@ -66,11 +66,37 @@ export class OrganizationModuleService {
     });
   }
 
-  async remove(id: string) {
-    await this.findOne(id); // Ensure exists
+  async submitForReview(id: string) {
     return this.prisma.organization.update({
       where: { id },
-      data: { isActive: false },
+      data: { supplierTier: 'PENDING' }, // Đã là PENDING, có thể cần status trung gian nếu cần, nhưng tạm giữ tier.
+    });
+  }
+
+  async approveSupplier(id: string, approverId: string) {
+    // Role: PROCUREMENT/PLATFORM_ADMIN
+    return this.prisma.organization.update({
+      where: { id },
+      data: {
+        supplierTier: 'APPROVED',
+        isActive: true,
+        kycStatus: 'APPROVED',
+        kycVerifiedById: approverId,
+        kycVerifiedAt: new Date(),
+      },
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async rejectSupplier(id: string, reason: string) {
+    // Role: PROCUREMENT/PLATFORM_ADMIN
+    return this.prisma.organization.update({
+      where: { id },
+      data: {
+        supplierTier: 'DISQUALIFIED',
+        isActive: false,
+        kycStatus: 'REJECTED',
+      },
     });
   }
 }

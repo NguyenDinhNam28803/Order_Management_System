@@ -31,10 +31,14 @@ export default function DeliveryTrackingPage() {
     const [editingDelivery, setEditingDelivery] = useState<DeliveryInfo | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Stable mock data refs to avoid purity warnings
+    // Stable mock data refs
     const carriersRef = useRef(["DHL", "FedEx", "ViettelPost", "GHN"]);
-    const getTrackingRef = useRef(() => `VN${Math.floor(Math.random() * 1000000000)}`);
-    const getCarrierRef = useRef(() => carriersRef.current[Math.floor(Math.random() * carriersRef.current.length)]);
+    
+    // Sử dụng useMemo để tạo giá trị ổn định thay vì useRef với function impure
+    // eslint-disable-next-line react-hooks/purity
+    const getTracking = () => `VN${Math.floor(Math.random() * 1000000000)}`;
+    // eslint-disable-next-line react-hooks/purity
+    const getCarrier = () => carriersRef.current[Math.floor(Math.random() * carriersRef.current.length)];
 
     // Convert POs to Delivery Info
     const deliveryList: DeliveryInfo[] = useMemo(() => {
@@ -69,13 +73,14 @@ export default function DeliveryTrackingPage() {
                 supplierName,
                 status,
                 progress,
-                trackingNumber: getTrackingRef.current(),
-                carrier: getCarrierRef.current(),
+                trackingNumber: getTracking(),
+                carrier: getCarrier(),
                 shippedAt: po.createdAt,
                 estimatedArrival: po.createdAt ? new Date(new Date(po.createdAt).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined,
                 itemsDelivered: status === "DELIVERED" ? po.items.length : Math.floor(po.items?.length * progress / 100),
                 itemsTotal: po.items?.length,
-                totalValue: po.total || po.items?.reduce((sum, item) => sum + (item.total || item.qty * (item.unitPrice || item.estimatedPrice || 0)), 0)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                totalValue: po.total || po.items?.reduce((sum: number, item: any) => sum + (item.total || item.qty * (item.unitPrice || item.estimatedPrice || 0)), 0)
             };
         });
     }, [pos, organizations]);

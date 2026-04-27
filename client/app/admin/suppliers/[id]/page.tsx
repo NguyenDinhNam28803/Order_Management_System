@@ -99,6 +99,36 @@ export default function AdminSupplierDetailPage() {
 
     const getTierColor = (tier?: string) => {
         switch (tier) {
+            case 'APPROVED': return 'text-emerald-600 bg-emerald-50';
+            case 'UNDER_REVIEW': return 'text-blue-600 bg-blue-50';
+            case 'DISQUALIFIED': return 'text-red-600 bg-red-50';
+            default: return 'text-amber-600 bg-amber-50';
+        }
+    };
+
+    const handleAction = async (action: 'submit' | 'approve' | 'reject', reason?: string) => {
+            setLoading(true);
+            try {
+                const resp = await apiFetch(`/organizations/${supplierId}/${action}`, {
+                    method: 'POST',
+                    body: action === 'reject' ? JSON.stringify({ reason }) : undefined,
+                   headers: action === 'reject' ? { 'Content-Type': 'application/json' } : {}
+           });
+                if (resp.ok) {
+                    notify(`Thực hiện ${action} thành công`, "success");
+                    window.location.reload();
+                } else {
+                    notify(`Thực hiện ${action} thất bại`, "error");
+                }
+            } catch (error) {
+                notify("Lỗi kết nối", "error");
+            } finally {
+                setLoading(false);
+            }
+       };
+
+    const getRankStyle = (tier?: string) => {
+        switch (tier) {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
             case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
             case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
@@ -163,18 +193,27 @@ export default function AdminSupplierDetailPage() {
                             </div>
                         </div>
                         
-                        <button
-                            onClick={handleEvaluate}
-                            disabled={evaluating}
-                            className="flex items-center gap-2 bg-[#B4533A] hover:bg-[#A85032] text-[#000000] px-6 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50"
-                        >
-                            {evaluating ? (
-                                <Loader2 size={18} className="animate-spin" />
-                            ) : (
-                                <RefreshCw size={18} />
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={handleEvaluate}
+                                disabled={evaluating}
+                                className="flex items-center gap-2 bg-[#B4533A] hover:bg-[#A85032] text-[#FFFFFF] px-6 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50"
+                            >
+                                {evaluating ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
+                                {evaluating ? "Đang đánh giá..." : "Chạy đánh giá AI"}
+                            </button>
+
+                            {/* Action Buttons */}
+                            {supplier.supplierTier === 'PENDING' && (
+                                <button onClick={() => handleAction('submit')} className="bg-blue-600 text-white px-4 py-3 rounded-xl font-bold text-sm">Gửi xét duyệt</button>
                             )}
-                            {evaluating ? "Đang đánh giá..." : "Chạy đánh giá AI"}
-                        </button>
+                            {supplier.supplierTier === 'UNDER_REVIEW' && (
+                                <>
+                                    <button onClick={() => handleAction('approve')} className="bg-emerald-600 text-white px-4 py-3 rounded-xl font-bold text-sm">Duyệt</button>
+                                    <button onClick={() => handleAction('reject')} className="bg-red-600 text-white px-4 py-3 rounded-xl font-bold text-sm">Từ chối</button>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
