@@ -11,6 +11,7 @@ import Link from "next/link";
 import { ContractStatus, CurrencyCode, Contract } from "../../types/api-types";
 import { Organization } from "../../context/ProcurementContext";
 import ContractSignModal from "../../components/ContractSignModal";
+import DateInput from "../../components/shared/DateInput";
 
 // ── Status config ─────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<string, { label: string; bg: string; text: string; border: string; dot: string }> = {
@@ -57,8 +58,6 @@ export default function ContractsPage() {
     const [signTarget, setSignTarget] = useState<Contract | null>(null);
     const [saving, setSaving] = useState(false);
     const [form, setForm] = useState<Partial<Contract>>({ ...EMPTY });
-
-    // ── Prevent background scroll when modal is open ──
 
 
     // ── Derived ──────────────────────────────────────────────────────────────
@@ -459,30 +458,34 @@ export default function ContractsPage() {
 
                                 <FormField label="Giá trị hợp đồng (₫)">
                                     <input
-                                        type="number"
-                                        min={0}
+                                        type="text"
                                         placeholder="0"
-                                        className="modal-input"
-                                        value={form.totalValue || ""}
-                                        onChange={e => setField("totalValue", Number(e.target.value))}
+                                        className="modal-input font-bold"
+                                        value={form.totalValue ? Number(form.totalValue).toLocaleString('en-US') : ""}
+                                        onChange={e => {
+                                            const raw = e.target.value.replace(/,/g, "");
+                                            if (!isNaN(Number(raw)) || raw === "") {
+                                                setField("totalValue", raw === "" ? 0 : Number(raw));
+                                            }
+                                        }}
                                     />
                                 </FormField>
 
                                 <FormField label="Ngày bắt đầu *">
-                                    <input
-                                        type="date"
+                                    <DateInput
+                                        value={(form.startDate as string) || ""}
+                                        onChange={val => setField("startDate", val)}
                                         className="modal-input"
-                                        value={(form.startDate as string)?.slice(0, 10) || ""}
-                                        onChange={e => setField("startDate", e.target.value)}
+                                        required
                                     />
                                 </FormField>
 
                                 <FormField label="Ngày kết thúc *">
-                                    <input
-                                        type="date"
+                                    <DateInput
+                                        value={(form.endDate as string) || ""}
+                                        onChange={val => setField("endDate", val)}
                                         className="modal-input"
-                                        value={(form.endDate as string)?.slice(0, 10) || ""}
-                                        onChange={e => setField("endDate", e.target.value)}
+                                        required
                                     />
                                 </FormField>
 
