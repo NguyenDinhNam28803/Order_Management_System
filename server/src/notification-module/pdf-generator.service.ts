@@ -50,16 +50,25 @@ export class PdfGeneratorService {
         const currency = data.currency ?? 'VND';
         const fmt = (n: number) => n.toLocaleString('vi-VN') + ' ' + currency;
 
-        const regularFontPath = path.join(process.cwd(), 'src/assets/fonts/Arial.ttf');
-        const boldFontPath = path.join(process.cwd(), 'src/assets/fonts/Arial-Bold.ttf');
+        const isContract = data.poNumber.startsWith('CON-');
+        const title = isContract ? 'HỢP ĐỒNG CUNG CẤP' : 'PURCHASE ORDER';
+        
+        // Font paths logic
+        const fontDir = path.join(process.cwd(), 'dist/assets/fonts');
+        const srcFontDir = path.join(process.cwd(), 'src/assets/fonts');
+        
+        let regularFontPath = path.join(fontDir, 'Arial.ttf');
+        let boldFontPath = path.join(fontDir, 'Arial-Bold.ttf');
+        
+        // Fallback to src if dist doesn't exist
+        if (!require('fs').existsSync(regularFontPath)) {
+          regularFontPath = path.join(srcFontDir, 'Arial.ttf');
+          boldFontPath = path.join(srcFontDir, 'Arial-Bold.ttf');
+        }
 
         doc.registerFont('MainFont', regularFontPath);
         doc.registerFont('MainFontBold', boldFontPath);
 
-        // ── Header ──────────────────────────────────────────────────────────
-        const isContract = data.poNumber.startsWith('CON-');
-        const title = isContract ? 'HỢP ĐỒNG MUA BÁN' : 'PURCHASE ORDER';
-        
         // ── Background Header Shading ────────────────────────────────────────
         doc.rect(0, 0, 595, 120).fill('#f8fafc');
         
@@ -93,13 +102,13 @@ export class PdfGeneratorService {
           .font('MainFontBold')
           .fontSize(11)
           .fillColor('#1e293b')
-          .text(data.buyerOrg.name, colLeft, infoY + 14, { width: 230 });
+          .text(data.buyerOrg.name || '____________________', colLeft, infoY + 14, { width: 230 });
         
         doc
           .font('MainFont')
           .fontSize(9)
           .fillColor('#475569')
-          .text(data.buyerOrg.address || '', colLeft, doc.y + 2, { width: 230 });
+          .text(`Email: ${data.buyerOrg.email || '____________________'}`, colLeft, doc.y + 4, { width: 230 });
 
         // NHÀ CUNG CẤP
         doc
@@ -112,32 +121,29 @@ export class PdfGeneratorService {
           .font('MainFontBold')
           .fontSize(11)
           .fillColor('#1e293b')
-          .text(data.supplierOrg.name, colRight, infoY + 14, { width: 235 });
+          .text(data.supplierOrg.name || '____________________', colRight, infoY + 14, { width: 235 });
         
-        if (data.supplierOrg.email) {
-          doc
-            .font('MainFont')
-            .fontSize(9)
-            .fillColor('#475569')
-            .text(`Email: ${data.supplierOrg.email}`, colRight, doc.y + 2);
-        }
+        doc
+          .font('MainFont')
+          .fontSize(9)
+          .fillColor('#475569')
+          .text(`Email: ${data.supplierOrg.email || '____________________'}`, colRight, doc.y + 4);
 
         // ── Metadata Row (Horizontal) ───────────────────────────────────────
         const metaY = 220;
-        doc.rect(50, metaY - 10, 495, 35).fill('#f1f5f9');
+        doc.rect(50, metaY - 10, 495, 45).fill('#f1f5f9');
         
         doc.font('MainFontBold').fontSize(8).fillColor('#64748b');
         doc.text('NGÀY PHÁT HÀNH', 65, metaY);
-        doc.text('HẠN GIAO HÀNG', 215, metaY);
-        doc.text('THANH TOÁN', 385, metaY);
+        doc.text('ĐIỀU KHOẢN THANH TOÁN', 315, metaY);
 
         doc.font('MainFontBold').fontSize(10).fillColor('#1e293b');
-        doc.text(data.issuedDate.toLocaleDateString('vi-VN'), 65, metaY + 12);
-        doc.text(data.deliveryDate ? new Date(data.deliveryDate).toLocaleDateString('vi-VN') : '—', 215, metaY + 12);
-        doc.text(data.paymentTerms ?? 'Net 30', 385, metaY + 12);
+        const dateStr = data.issuedDate ? data.issuedDate.toLocaleDateString('vi-VN') : '____/____/____';
+        doc.text(dateStr, 65, metaY + 14);
+        doc.text(data.paymentTerms ?? 'Net 30', 315, metaY + 14);
 
         // ── Items table ──────────────────────────────────────────────────────
-        const tableTop = 270;
+        const tableTop = 280;
         const cols = {
           no: 50,
           desc: 85,
