@@ -39,12 +39,14 @@
   --color-status-draft:   #000000;
   --color-status-pending: #B8860B;
 
-  /* Typography — Inter for everything */
+  /* Typography — Premium Enterprise Stack */
   --spacing-container: clamp(1rem, 5vw, 2.5rem);
-  --font-sans: var(--font-inter), 'Inter', ui-sans-serif, system-ui;
-  --font-serif: var(--font-inter), 'Inter', serif; 
+  --font-sans: var(--font-jakarta), "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Inter", system-ui, sans-serif;
+  --font-serif: var(--font-jakarta), "SF Pro Display", "Helvetica Neue", serif; 
   --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, monospace;
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-wide: 0.02em;
 }
 
 :root {
@@ -91,6 +93,19 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: var(--transition-smooth);
+  line-height: 1.5;
+  letter-spacing: -0.011em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-text-primary);
+}
+
+strong, b {
+  font-weight: 700;
 }
 
 /* Refined Scrollbar */
@@ -442,7 +457,7 @@ body {
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--letter-spacing-wide);
   color: var(--foreground-secondary);
   margin-bottom: 1rem;
   display: flex;
@@ -687,9 +702,9 @@ select.erp-input {
 .page-title {
   font-size: 1.125rem;
   font-weight: 800;
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   color: #1A1A17;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--letter-spacing-tight);
   line-height: 1.3;
 }
 
