@@ -1403,7 +1403,7 @@ export default function Dashboard() {
                         </h3>
                         <button 
                             disabled={pendingPRCount === 0} 
-                            className={`px-5 py-2 ${pendingPRCount === 0 ? 'bg-[#1A1D23] text-[#000000] cursor-not-allowed' : 'bg-[#B4533A] text-[#000000] hover:bg-[#A85032] transition-all shadow-md'} text-[10px] font-black uppercase tracking-widest rounded-xl`}
+                            className={`px-5 py-2 ${pendingPRCount === 0 ? 'bg-emerald-800 text-emerald-100/80 cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-md shadow-emerald-500/20'} text-[10px] font-black uppercase tracking-widest rounded-xl`}
                         >
                             Duyệt hàng loạt ({pendingPRCount})
                         </button>

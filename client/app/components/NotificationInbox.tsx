@@ -13,6 +13,16 @@ import { getStatusLabel, formatVND } from "../utils/formatUtils";
 import { EmailEventType, EVENT_DISPLAY_CONFIG } from "../types/notification-types";
 import { useSocketIO, NotificationPayload as SocketNotification } from "../hooks/useSocketIO";
 
+// ── Utility to strip HTML tags ─────────────────────────────────────────────
+function stripHtml(html: string) {
+  if (!html) return "";
+  // First remove the head/style tags and their content if they exist
+  const doc = html.replace(/<head[\s\S]*?<\/head>/gi, "")
+                  .replace(/<style[\s\S]*?<\/style>/gi, "");
+  // Then strip all remaining tags
+  return doc.replace(/<[^>]*>?/gm, " ").replace(/\s+/g, " ").trim();
+}
+
 // ── Per-event icon mapping ─────────────────────────────────────────────────
 function getEventIcon(eventType?: EmailEventType) {
   switch (eventType) {
@@ -136,7 +146,7 @@ export default function NotificationInbox() {
       eventType: n.eventType as EmailEventType | undefined,
       type: n.referenceType || 'SYSTEM',
       title: n.subject || 'Thông báo hệ thống',
-      content: n.body,
+      content: stripHtml(n.body),
       requester: 'Hệ thống',
       amount: null as string | null,
       status: (n.status === 'READ' || n.status === 'DELIVERED') ? 'APPROVED' : 'PENDING',
@@ -211,7 +221,7 @@ export default function NotificationInbox() {
       >
         <Bell size={14} className={unreadCount > 0 ? "animate-pulse" : ""} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-black text-[#000000] ring-2 ring-[#FFFFFF]">
+          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-black text-white ring-2 ring-white">
             {unreadCount}
           </span>
         )}
@@ -220,41 +230,44 @@ export default function NotificationInbox() {
       {isOpen && (
         <div className="absolute right-0 mt-3 w-[420px] bg-[#FAF8F5] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl shadow-black/80 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-[#1F2937] to-[#111827] border-b border-[rgba(240,246,252,0.05)]">
-            <div className="flex items-center justify-between mb-4">
+          <div className="p-4 bg-[#111827] border-b border-white/5 shadow-xl relative overflow-hidden">
+            {/* Background decoration */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#B4533A]/10 blur-[50px] -mr-10 -mt-10" />
+            
+            <div className="flex items-center justify-between mb-4 relative z-10">
               <div>
-                <h3 className="text-sm font-bold text-[#000000] tracking-tight flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
                   <Inbox size={16} className="text-[#B4533A]" /> Inbox Hệ thống
                 </h3>
-                <p className="text-[10px] text-[#000000] font-medium mt-0.5">
+                <p className="text-[10px] text-gray-400 font-medium mt-0.5">
                   Bạn có {unreadCount} thông báo chưa xử lý
                 </p>
               </div>
-              <div className="flex bg-[#FFFFFF] p-1 rounded-lg border border-[rgba(240,246,252,0.05)]">
+              <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 backdrop-blur-sm">
                 {(['PENDING', 'ALL', 'APPROVED'] as const).map((f) => (
-                  <button
-                    key={f}
-                    onClick={() => setFilter(f)}
-                    className={`px-3 py-1 rounded-md text-[9px] font-bold transition-all ${
-                      filter === f
-                        ? "bg-[#B4533A] text-[#000000] shadow-sm"
-                        : "text-[#000000] hover:text-[#000000]"
-                    }`}
-                  >
-                    {f === 'PENDING' ? 'MỚI' : f === 'ALL' ? 'TẤT CẢ' : 'ĐÃ XEM'}
-                  </button>
+                    <button
+                      key={f}
+                      onClick={() => setFilter(f)}
+                      className={`px-3 py-1.5 rounded-lg text-[9px] font-bold transition-all duration-200 ${
+                        filter === f
+                          ? "bg-[#B4533A] text-white shadow-lg shadow-[#B4533A]/20"
+                          : "text-gray-400 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      {f === 'PENDING' ? 'MỚI' : f === 'ALL' ? 'TẤT CẢ' : 'ĐÃ XEM'}
+                    </button>
                 ))}
               </div>
             </div>
 
-            <div className="relative">
-              <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" />
+            <div className="relative z-10">
+              <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm kiếm thông báo..."
-                className="w-full bg-[#FFFFFF] border border-[rgba(240,246,252,0.05)] rounded-lg pl-9 pr-4 py-1.5 text-[10px] text-[#000000] placeholder:text-[#000000] outline-none focus:border-[#B4533A]/30 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-[10px] text-white placeholder:text-gray-500 outline-none focus:border-[#B4533A]/50 focus:ring-1 focus:ring-[#B4533A]/50 transition-all backdrop-blur-sm"
               />
             </div>
           </div>
@@ -314,55 +327,58 @@ const NotificationItem = ({ item }: { item: any }) => {
     : isPending ? 'text-[#B4533A]' : 'text-[#000000]';
 
   return (
-    <div className={`p-4 border-b border-[rgba(240,246,252,0.03)] cursor-pointer hover:bg-[#FFFFFF]/60 transition-all relative group overflow-hidden ${!isPending ? 'opacity-50' : ''}`}>
+    <div className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-all relative group overflow-hidden ${!isPending ? 'opacity-60 grayscale-[0.5]' : ''}`}>
       {isPending && (
         <div
           className="absolute left-0 top-0 bottom-0 w-[3px]"
-          style={{ backgroundColor: cfg?.accentHex ?? '#B4533A', boxShadow: `0 0 10px ${cfg?.accentHex ?? '#B4533A'}66`, ...accentStyle }}
+          style={{ 
+            backgroundColor: cfg?.accentHex ?? '#B4533A', 
+            boxShadow: `2px 0 10px ${cfg?.accentHex ?? '#B4533A'}44` 
+          }}
         />
       )}
 
       <div className="flex items-start gap-4">
-        <div className={`mt-1 h-9 w-9 rounded-2xl flex items-center justify-center border shrink-0 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110 ${getIconContainerClass(eventType, isPending)}`}>
+        <div className={`mt-1 h-10 w-10 rounded-xl flex items-center justify-center border shrink-0 transition-all duration-300 group-hover:shadow-md ${getIconContainerClass(eventType, isPending)}`}>
           {getEventIcon(eventType)}
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex justify-between items-start gap-2 mb-1.5">
-            <span className={`text-[9.5px] font-black uppercase tracking-[0.1em] truncate ${typeLabelColorClass}`}>
+          <div className="flex justify-between items-start gap-2 mb-1">
+            <span className={`text-[9px] font-bold uppercase tracking-wider ${typeLabelColorClass}`}>
               {getTypeLabel()}
             </span>
-            <span className="text-[9px] text-[#000000] font-bold whitespace-nowrap bg-[#FFFFFF] px-1.5 py-0.5 rounded border border-[rgba(240,246,252,0.03)]">
+            <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
               {new Date(item.deadline).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
 
-          <h4 className={`text-[12px] font-bold truncate mb-1 leading-tight ${isPending ? "text-[#000000]" : "text-[#000000]"}`}>
+          <h4 className={`text-[13px] font-bold truncate mb-1 leading-tight text-gray-900`}>
             {item.title}
           </h4>
 
-          <p className="text-[10.5px] text-[#000000] font-medium line-clamp-2 mb-2 leading-relaxed opacity-80">
+          <p className="text-[11px] text-gray-600 font-medium line-clamp-2 mb-3 leading-relaxed">
             {item.content}
           </p>
 
-          <div className="flex items-center justify-between mt-auto">
+          <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-2">
               {item.amount && (
-                <span className="text-[12px] font-black text-[#000000] tracking-tight">{item.amount}</span>
+                <span className="text-[12px] font-bold text-[#B4533A] tracking-tight">{item.amount}</span>
               )}
-              <span className="text-[9px] text-[#000000] font-bold uppercase truncate max-w-[120px]">
+              <span className="text-[9px] text-gray-500 font-semibold uppercase truncate max-w-[120px]">
                 {item.requester}
               </span>
             </div>
 
-            <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
               {item.isNotification ? (
-                <button className="h-6 px-3 rounded-lg bg-[#FFFFFF] text-[#000000] border border-[rgba(240,246,252,0.1)] text-[9px] font-black uppercase tracking-widest hover:border-[#B4533A]/50 transition-all">
-                  XEM
+                <button className="h-7 px-4 rounded-lg bg-white text-gray-700 border border-gray-200 text-[10px] font-bold uppercase tracking-wider hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
+                  Chi tiết
                 </button>
               ) : (
-                <button className="h-6 px-3 rounded-lg bg-[#B4533A] text-[#000000] text-[9px] font-black uppercase tracking-widest hover:bg-[#A85032] transition-all shadow-lg shadow-[#B4533A]/20">
-                  XỬ LÝ
+                <button className="h-7 px-4 rounded-lg bg-[#111827] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-black transition-all shadow-md">
+                  Xử lý
                 </button>
               )}
             </div>
