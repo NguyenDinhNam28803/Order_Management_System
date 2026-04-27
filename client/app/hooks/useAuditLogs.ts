@@ -10,7 +10,7 @@ export const useAuditLogs = (page: number = 1, limit: number = 20) => {
             const resp = await apiFetch(`/audit-logs/paginated?page=${page}&limit=${limit}`);
             if (!resp.ok) throw new Error('Failed to fetch audit logs');
             const res = await resp.json();
-            
+
             // Dựa trên dữ liệu API mới: { status: "success", data: { data: [...], total: ... } }
             const payload = res.data || {};
             return {

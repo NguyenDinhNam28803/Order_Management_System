@@ -331,11 +331,11 @@ export default function BudgetAllocationPage() {
                 {costCenters.map(cc => (
                   <div key={cc.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] hover:bg-[#1A1D23] border border-[rgba(148,163,184,0.1)] rounded-3xl transition-all group">
                     <div>
-                      <p className="font-black text-[#000000]">{cc.name}</p>
+                      <p className="font-black text-[#000000] group-hover:text-white transition-colors">{cc.name}</p>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-[10px] font-black uppercase text-[#000000] tracking-widest">{cc.code}</span>
-                        <span className="h-1 w-1 rounded-full bg-[#000000]" />
-                        <span className="text-xs font-bold text-[#B4533A]">Hạn mức năm: {Number(cc.budgetAnnual).toLocaleString()} {cc.currency}</span>
+                        <span className="text-[10px] font-black uppercase text-[#000000] group-hover:text-white/70 tracking-widest transition-colors">{cc.code}</span>
+                        <span className="h-1 w-1 rounded-full bg-[#000000] group-hover:bg-white transition-colors" />
+                        <span className="text-xs font-bold text-[#B4533A] group-hover:text-[#CB7A62] transition-colors">Hạn mức năm: {Number(cc.budgetAnnual).toLocaleString()} {cc.currency}</span>
                       </div>
                     </div>
                     <button 
