@@ -66,7 +66,7 @@ export default function LoginPage() {
                 <div className="flex-1 bg-[#1A1A17] relative flex flex-col justify-center px-12 md:px-20 py-20 overflow-hidden">
                     {/* Background Subtle Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-br from-[#2A2A25] to-transparent opacity-50"></div>
-                    
+
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-auto">
                             <div className="w-10 h-10 bg-[#B4533A] rounded-lg flex items-center justify-center text-white font-serif text-xl font-bold shadow-xl shadow-[#B4533A]/20">P</div>
@@ -75,7 +75,7 @@ export default function LoginPage() {
 
                         <div className="my-auto max-w-xl">
                             <h1 className="text-5xl md:text-7xl font-serif font-bold text-[#F2EFE9] leading-[1.1] tracking-tight mb-8">
-                                Mua sắm doanh nghiệp, <span className="italic text-[#B4533A]">bớt ồn ào.</span>
+                                Mua sắm thông minh, <span className="italic text-[#B4533A]">quy trình tinh gọn.</span>
                             </h1>
                             <p className="text-lg md:text-xl text-[#8C887D] leading-relaxed font-medium max-w-lg">
                                 Một hệ thống duy nhất cho toàn bộ chu trình Procure-to-Pay — từ yêu cầu, phê duyệt đa cấp, RFQ, nhập kho đến đối soát và thanh toán. Tự động hoá bằng AI, minh bạch bằng audit trail.
