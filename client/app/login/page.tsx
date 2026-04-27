@@ -74,8 +74,8 @@ export default function LoginPage() {
                         </div>
 
                         <div className="my-auto max-w-xl">
-                            <h1 className="text-5xl md:text-7xl font-serif font-bold text-[#F2EFE9] leading-[1.1] tracking-tight mb-8">
-                                Mua sắm thông minh, <span className="italic text-[#B4533A]">quy trình tinh gọn.</span>
+                            <h1 className="text-5xl md:text-7xl font-serif font-bold leading-[1.1] tracking-tight mb-8">
+                                <span className="text-white">Mua sắm thông minh,</span> <span className="italic text-[#B4533A]">quy trình tinh gọn.</span>
                             </h1>
                             <p className="text-lg md:text-xl text-[#8C887D] leading-relaxed font-medium max-w-lg">
                                 Một hệ thống duy nhất cho toàn bộ chu trình Procure-to-Pay — từ yêu cầu, phê duyệt đa cấp, RFQ, nhập kho đến đối soát và thanh toán. Tự động hoá bằng AI, minh bạch bằng audit trail.
