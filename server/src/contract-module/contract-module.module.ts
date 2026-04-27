@@ -3,9 +3,10 @@ import { ContractModuleService } from './contract-module.service';
 import { ContractModuleController } from './contract-module.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { NotificationModuleModule } from '../notification-module/notification-module.module';
+import { ApprovalModuleModule } from '../approval-module/approval-module.module';
 
 @Module({
-  imports: [PrismaModule, NotificationModuleModule],
+  imports: [PrismaModule, NotificationModuleModule, ApprovalModuleModule],
   controllers: [ContractModuleController],
   providers: [ContractModuleService],
   exports: [ContractModuleService],

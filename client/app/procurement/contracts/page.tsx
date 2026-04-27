@@ -3,9 +3,9 @@
 import React, { useState, useMemo } from "react";
 import { useProcurement } from "../../context/ProcurementContext";
 import {
-    FileText, Eye, CheckCircle2, Clock, XCircle, Search, Plus, AlertCircle,
-    Calendar, Building2, Banknote, PenTool, Trash2, Pencil, Send, X,
-    ShieldCheck, TrendingUp, RotateCcw, ChevronRight,
+    FileText, Eye, CheckCircle2, Clock, Search, Plus, AlertCircle,
+    Calendar, Building2, PenTool, Trash2, Pencil, Send, X,
+    ShieldCheck, TrendingUp, RotateCcw, ChevronRight, Ban,
 } from "lucide-react";
 import Link from "next/link";
 import { ContractStatus, CurrencyCode, Contract } from "../../types/api-types";
@@ -40,19 +40,20 @@ const EMPTY: Partial<Contract> = {
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function ContractsPage() {
     const {
-        contracts, organizations, users,
+        contracts, organizations,
         createContract, updateContract, removeContract,
-        submitContractForApproval, signContract,
+        submitContractForApproval, terminateContract, signContract,
         currentUser,
     } = useProcurement();
 
     const [search, setSearch]           = useState("");
     const [statusFilter, setStatus]     = useState("ALL");
-    const [modal, setModal]             = useState<"create" | "edit" | "delete" | "approve" | null>(null);
+    const [modal, setModal]             = useState<"create" | "edit" | "delete" | "approve" | "terminate" | null>(null);
     const [editing, setEditing]         = useState<Contract | null>(null);
     const [deleteId, setDeleteId]       = useState<string | null>(null);
     const [approveTarget, setApprove]   = useState<Contract | null>(null);
-    const [approverId, setApproverId]   = useState("");
+    const [terminateTarget, setTerminate] = useState<Contract | null>(null);
+    const [terminateReason, setTerminateReason] = useState("");
     const [signTarget, setSignTarget]   = useState<Contract | null>(null);
     const [saving, setSaving]           = useState(false);
     const [form, setForm]               = useState<Partial<Contract>>({ ...EMPTY });
@@ -61,13 +62,6 @@ export default function ContractsPage() {
     const suppliers = useMemo(
         () => (organizations || []).filter((o: Organization) => o.companyType === "SUPPLIER"),
         [organizations]
-    );
-
-    const approvers = useMemo(
-        () => (users || []).filter((u: { role: string }) =>
-            ["PLATFORM_ADMIN", "DIRECTOR", "CEO", "PROCUREMENT"].includes(u.role)
-        ),
-        [users]
     );
 
     const filtered = useMemo(() => contracts.filter(c => {
@@ -90,7 +84,7 @@ export default function ContractsPage() {
     }), [contracts]);
 
     // ── Helpers ───────────────────────────────────────────────────────────────
-    const closeModal = () => { setModal(null); setEditing(null); setDeleteId(null); setApprove(null); setApproverId(""); };
+    const closeModal = () => { setModal(null); setEditing(null); setDeleteId(null); setApprove(null); setTerminate(null); setTerminateReason(""); };
 
     const openCreate = () => { setForm({ ...EMPTY }); setEditing(null); setModal("create"); };
     const openEdit   = (c: Contract) => {
@@ -122,9 +116,16 @@ export default function ContractsPage() {
     };
 
     const handleApprove = async () => {
-        if (!approveTarget || !approverId) return;
+        if (!approveTarget) return;
         setSaving(true);
-        try { await submitContractForApproval(approveTarget.id, approverId); closeModal(); }
+        try { await submitContractForApproval(approveTarget.id); closeModal(); }
+        finally { setSaving(false); }
+    };
+
+    const handleTerminate = async () => {
+        if (!terminateTarget || !terminateReason.trim()) return;
+        setSaving(true);
+        try { await terminateContract(terminateTarget.id, terminateReason.trim()); closeModal(); }
         finally { setSaving(false); }
     };
 
@@ -366,6 +367,17 @@ export default function ContractsPage() {
                                                         </button>
                                                     )}
 
+                                                    {/* Chấm dứt (ACTIVE only) */}
+                                                    {isActive && (
+                                                        <button
+                                                            onClick={() => { setTerminate(c); setModal("terminate"); }}
+                                                            className="p-2 rounded-lg text-[#64748B] hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+                                                            title="Chấm dứt hợp đồng"
+                                                        >
+                                                            <Ban size={15} />
+                                                        </button>
+                                                    )}
+
                                                     {/* Gia hạn (EXPIRED) */}
                                                     {c.status === "EXPIRED" && (
                                                         <button
@@ -568,26 +580,16 @@ export default function ContractsPage() {
                             </div>
                         </div>
 
-                        <div className="mb-5">
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-2">
-                                Người phê duyệt *
-                            </label>
-                            <select
-                                className="modal-input w-full"
-                                value={approverId}
-                                onChange={e => setApproverId(e.target.value)}
-                            >
-                                <option value="">— Chọn người phê duyệt —</option>
-                                {approvers.map((u: { id: string; name?: string; email?: string; role: string }) => (
-                                    <option key={u.id} value={u.id}>
-                                        {u.name || u.email} ({u.role})
-                                    </option>
-                                ))}
-                            </select>
+                        <div className="bg-[#0F1117] rounded-xl p-4 border border-[rgba(148,163,184,0.08)] mb-5 space-y-2">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">Thông tin hợp đồng</p>
+                            <p className="text-sm font-bold text-[#F8FAFC]">{approveTarget.title}</p>
+                            <p className="text-xs text-[#64748B]">
+                                Giá trị: <span className="text-[#F8FAFC] font-bold">{Number(approveTarget.totalValue || 0).toLocaleString("vi-VN")} {approveTarget.currency}</span>
+                            </p>
                         </div>
 
-                        <p className="text-xs text-[#64748B] bg-[#0F1117] rounded-xl p-3 border border-[rgba(148,163,184,0.08)] mb-5">
-                            Hợp đồng sẽ chuyển sang trạng thái <span className="text-amber-400 font-bold">Chờ duyệt</span> và người được chọn sẽ nhận được thông báo để ký xác nhận.
+                        <p className="text-xs text-[#64748B] bg-amber-500/5 border border-amber-500/15 rounded-xl p-3 mb-5">
+                            Hệ thống sẽ tự động chọn người duyệt theo <span className="text-amber-400 font-bold">quy tắc phê duyệt</span> của tổ chức. Hợp đồng sẽ chuyển sang trạng thái <span className="text-amber-400 font-bold">Chờ ký</span>.
                         </p>
 
                         <div className="flex gap-3 justify-end">
@@ -596,11 +598,60 @@ export default function ContractsPage() {
                             </button>
                             <button
                                 onClick={handleApprove}
-                                disabled={saving || !approverId}
+                                disabled={saving}
                                 className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm transition-all disabled:opacity-50 flex items-center gap-2"
                             >
                                 <Send size={14} />
-                                {saving ? "Đang gửi..." : "Gửi phê duyệt"}
+                                {saving ? "Đang gửi..." : "Xác nhận gửi duyệt"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Terminate Modal */}
+            {modal === "terminate" && terminateTarget && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-[#0F1117]/80 backdrop-blur-sm" onClick={closeModal} />
+                    <div className="relative w-full max-w-md bg-[#161922] rounded-2xl border border-rose-500/20 shadow-2xl p-6">
+                        <div className="flex items-start gap-4 mb-5">
+                            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 flex-shrink-0">
+                                <Ban size={18} />
+                            </div>
+                            <div>
+                                <h3 className="font-black text-[#F8FAFC] mb-0.5">Chấm dứt hợp đồng</h3>
+                                <p className="text-xs text-[#64748B] font-mono">#{terminateTarget.contractNumber}</p>
+                            </div>
+                        </div>
+
+                        <div className="mb-5">
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-2">
+                                Lý do chấm dứt *
+                            </label>
+                            <textarea
+                                rows={3}
+                                placeholder="Nhập lý do chấm dứt hợp đồng..."
+                                className="modal-input w-full resize-none"
+                                value={terminateReason}
+                                onChange={e => setTerminateReason(e.target.value)}
+                            />
+                        </div>
+
+                        <p className="text-xs text-[#64748B] bg-[#0F1117] rounded-xl p-3 border border-[rgba(148,163,184,0.08)] mb-5">
+                            Hành động này sẽ chuyển hợp đồng sang trạng thái <span className="text-rose-400 font-bold">Đã chấm dứt</span>. Lý do sẽ được ghi vào ghi chú hợp đồng.
+                        </p>
+
+                        <div className="flex gap-3 justify-end">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] font-bold text-sm hover:bg-[#1A1D23] transition-all">
+                                Hủy
+                            </button>
+                            <button
+                                onClick={handleTerminate}
+                                disabled={saving || !terminateReason.trim()}
+                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black text-sm transition-all disabled:opacity-50 flex items-center gap-2"
+                            >
+                                <Ban size={14} />
+                                {saving ? "Đang xử lý..." : "Xác nhận chấm dứt"}
                             </button>
                         </div>
                     </div>

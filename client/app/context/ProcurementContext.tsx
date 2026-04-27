@@ -258,7 +258,8 @@ export interface ProcurementContextType extends ProcurementState {
     fetchContractById: (id: string) => Promise<Contract | null>;
     updateContract: (id: string, d: Partial<Contract>) => Promise<boolean>;
     removeContract: (id: string) => Promise<boolean>;
-    submitContractForApproval: (id: string, approverId: string) => Promise<boolean>;
+    submitContractForApproval: (id: string) => Promise<boolean>;
+    terminateContract: (id: string, reason: string) => Promise<boolean>;
     updateContractMilestone: (milestoneId: string, d: UpdateMilestoneDto) => Promise<boolean>;
     fetchContractsBySupplier: (supplierId: string) => Promise<Contract[]>;
     fetchGRNById: (id: string) => Promise<GRN | null>;
@@ -458,7 +459,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 ...(rfqsData       !== null && { rfqs: rfqsData }),
                 ...(grnsData       !== null && { grns: grnsData }),
                 ...(invoicesData   !== null && { invoices: invoicesData }),
-                ...(contractsData  !== null && { contracts: contractsData }),
+                ...(contractsData  !== null && { contracts: (contractsData as Contract[]).map((c) => ({ ...c, totalValue: (c as unknown as Record<string,unknown>).totalValue ?? (c as unknown as Record<string,unknown>).value ?? 0, supplier: (c as unknown as Record<string,unknown>).supplierOrg ?? c.supplier })) as Contract[] }),
                 ...(disputesData   !== null && { disputes: disputesData }),
                 ...(newBudgetOverrides !== null && { budgetOverrides: newBudgetOverrides }),
                 ...(newAuditLogs       !== null && { auditLogs: newAuditLogs }),
@@ -930,7 +931,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData, notify]);
 
     const createContract = useCallback(async (d: Partial<Contract>) => {
-        const resp = await apiFetch('/contracts', { method: 'POST', body: JSON.stringify(d) });
+        // Backend dùng `value`, frontend dùng `totalValue` — map trước khi gửi
+        const { totalValue, ...rest } = d as Contract & { totalValue?: number };
+        const payload = { ...rest, value: totalValue };
+        const resp = await apiFetch('/contracts', { method: 'POST', body: JSON.stringify(payload) });
         if (resp.ok) { notify("Tạo hợp đồng thành công", "success"); await refreshData(); return true; }
         try {
             const errBody = await resp.json();
@@ -1290,7 +1294,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch]);
 
     const updateContract = useCallback(async (id: string, d: Partial<Contract>) => {
-        const resp = await apiFetch(`/contracts/${id}`, { method: 'PATCH', body: JSON.stringify(d) });
+        const { totalValue, ...rest } = d as Contract & { totalValue?: number };
+        const payload = { ...rest, value: totalValue };
+        const resp = await apiFetch(`/contracts/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
         if (resp.ok) { notify("Cập nhật hợp đồng thành công", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
@@ -1301,11 +1307,27 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const submitContractForApproval = useCallback(async (id: string, approverId: string) => {
-        const resp = await apiFetch(`/contracts/${id}/submit`, { method: 'POST', body: JSON.stringify({ approverId }) });
-        if (resp.ok) { notify("Đã gửi hợp đồng để phê duyệt", "success"); return true; }
+    const submitContractForApproval = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/contracts/${id}/submit`, { method: 'POST' });
+        if (resp.ok) { notify("Đã gửi hợp đồng để phê duyệt", "success"); await refreshData(); return true; }
+        try {
+            const errBody = await resp.json();
+            const msg = errBody?.message ?? "Gửi phê duyệt thất bại";
+            notify(Array.isArray(msg) ? msg.join('; ') : String(msg), "error");
+        } catch { notify("Gửi phê duyệt thất bại", "error"); }
         return false;
-    }, [apiFetch, notify]);
+    }, [apiFetch, notify, refreshData]);
+
+    const terminateContract = useCallback(async (id: string, reason: string) => {
+        const resp = await apiFetch(`/contracts/${id}/terminate`, { method: 'POST', body: JSON.stringify({ reason }) });
+        if (resp.ok) { notify("Đã chấm dứt hợp đồng", "success"); await refreshData(); return true; }
+        try {
+            const errBody = await resp.json();
+            const msg = errBody?.message ?? "Chấm dứt hợp đồng thất bại";
+            notify(Array.isArray(msg) ? msg.join('; ') : String(msg), "error");
+        } catch { notify("Chấm dứt hợp đồng thất bại", "error"); }
+        return false;
+    }, [apiFetch, notify, refreshData]);
 
     const updateContractMilestone = useCallback(async (milestoneId: string, d: UpdateMilestoneDto) => {
         const resp = await apiFetch(`/contracts/milestones/${milestoneId}`, { method: 'PATCH', body: JSON.stringify(d) });
@@ -1698,7 +1720,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         inviteSuppliersToRFQ, removeSupplierFromRFQ, searchAndAddSuppliers,
         createCounterOffer, fetchCounterOffersByQuotation, fetchCounterOfferById, respondCounterOffer,
         deleteRFQ, updateRFQStatus, fetchRFQById, fetchSuppliersByRFQ, analyzeQuotationWithAI, fetchMySupplierRFQs,
-        fetchContractById, updateContract, removeContract, submitContractForApproval, updateContractMilestone, fetchContractsBySupplier,
+        fetchContractById, updateContract, removeContract, submitContractForApproval, terminateContract, updateContractMilestone, fetchContractsBySupplier,
         fetchGRNById, updateGRNStatus, confirmGRN,
         fetchInvoiceById, updateInvoice, removeInvoice, fetchInvoices, runMatching,
         createPayment, completePayment, fetchPayments, fetchPaymentById,

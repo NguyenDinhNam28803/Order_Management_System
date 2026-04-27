@@ -18,7 +18,7 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function seed() {
-  const orgId = '58d0a759-0651-4b2b-b8f9-d58d3a3001af';
+  const orgId = '15ec593f-1e29-4e69-b396-17c0ac9ddb2d';
 
   const approvalRules = [
     // --- QUY TẮC CHO PURCHASE_REQUISITION (PR) ---
@@ -75,6 +75,26 @@ async function seed() {
       level: 3,
       approverRole: UserRole.CEO,
       minTotalAmount: 100000000,
+      slaHours: 48,
+      autoEscalateHours: 96,
+    },
+
+    // --- QUY TẮC CHO CONTRACT (Hợp đồng) ---
+    {
+      orgId,
+      documentType: DocumentType.CONTRACT,
+      level: 1,
+      approverRole: UserRole.DIRECTOR,
+      minTotalAmount: 0, // Tất cả hợp đồng cần DIRECTOR duyệt
+      slaHours: 48,
+      autoEscalateHours: 72,
+    },
+    {
+      orgId,
+      documentType: DocumentType.CONTRACT,
+      level: 2,
+      approverRole: UserRole.CEO,
+      minTotalAmount: 100000000, // Hợp đồng >= 100 triệu cần CEO duyệt thêm
       slaHours: 48,
       autoEscalateHours: 96,
     },

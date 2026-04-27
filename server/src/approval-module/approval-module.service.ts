@@ -19,6 +19,7 @@ import {
   InvoiceStatus,
   PaymentStatus,
   VettingStatus,
+  ContractStatus,
 } from '@prisma/client';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
@@ -546,6 +547,19 @@ export class ApprovalModuleService {
         });
         break;
       }
+
+      case DocumentType.CONTRACT: {
+        // APPROVED (auto hoặc sau khi tất cả approver duyệt) → chờ ký số
+        // PENDING_APPROVAL (đang chờ approver) → vẫn PENDING_SIGNATURE
+        // REJECTED → trả về DRAFT
+        let cStatus: ContractStatus = ContractStatus.PENDING_SIGNATURE;
+        if (actionStatus === 'REJECTED') cStatus = ContractStatus.DRAFT;
+        await this.prisma.contract.update({
+          where: { id },
+          data: { status: cStatus },
+        });
+        break;
+      }
     }
 
     if (actionStatus === 'APPROVED') {
@@ -800,6 +814,13 @@ export class ApprovalModuleService {
         });
         return budget?.createdById ?? null;
       }
+      case DocumentType.CONTRACT: {
+        const contract = await this.prisma.contract.findUnique({
+          where: { id: docId },
+          select: { createdById: true },
+        });
+        return contract?.createdById ?? null;
+      }
       default:
         return null;
     }
@@ -846,6 +867,13 @@ export class ApprovalModuleService {
         });
         return Number(budget?.allocatedAmount ?? 0);
       }
+      case DocumentType.CONTRACT: {
+        const contract = await this.prisma.contract.findUnique({
+          where: { id: docId },
+          select: { value: true },
+        });
+        return Number(contract?.value ?? 0);
+      }
       default:
         return 0;
     }
@@ -861,6 +889,7 @@ export class ApprovalModuleService {
       [DocumentType.PAYMENT]: 'Thanh toán',
       [DocumentType.BUDGET_ALLOCATION]: 'Phân bổ ngân sách',
       [DocumentType.SUPPLIER_VETTING]: 'Xét duyệt nhà cung cấp',
+      [DocumentType.CONTRACT]: 'Hợp đồng',
     };
     return labels[docType] ?? docType;
   }

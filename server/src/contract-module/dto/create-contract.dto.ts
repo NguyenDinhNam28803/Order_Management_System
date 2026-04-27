@@ -90,6 +90,18 @@ export class CreateContractDto {
   @IsOptional()
   terms?: string;
 
+  @IsString()
+  @IsOptional()
+  notes?: string;
+
+  @IsString()
+  @IsOptional()
+  fileUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  ndaUrl?: string;
+
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })

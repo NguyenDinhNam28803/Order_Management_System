@@ -49,12 +49,18 @@ export class ContractModuleController {
    * @returns Trạng thái hợp đồng sau khi gửi duyệt
    */
   @Post(':id/submit')
-  @ApiOperation({ summary: 'Gửi hợp đồng để phê duyệt' })
+  @ApiOperation({
+    summary: 'Gửi hợp đồng để phê duyệt (tự động theo ApprovalMatrix)',
+  })
   submitForApproval(
     @Param('id') id: string,
-    @Body('approverId') approverId: string,
+    @Request() req: { user: JwtPayload },
   ) {
-    return this.contractModuleService.submitForApproval(id, approverId);
+    return this.contractModuleService.submitForApproval(
+      id,
+      req.user.sub,
+      req.user.orgId,
+    );
   }
 
   /**
@@ -132,6 +138,17 @@ export class ContractModuleController {
   @ApiOperation({ summary: 'Lấy hợp đồng theo nhà cung cấp' })
   findBySupplier(@Param('supplierId') supplierId: string) {
     return this.contractModuleService.findBySupplier(supplierId);
+  }
+
+  /**
+   * Chấm dứt hợp đồng (ACTIVE hoặc PENDING_SIGNATURE)
+   * @param id ID của hợp đồng
+   * @param reason Lý do chấm dứt
+   */
+  @Post(':id/terminate')
+  @ApiOperation({ summary: 'Chấm dứt hợp đồng' })
+  terminate(@Param('id') id: string, @Body('reason') reason: string) {
+    return this.contractModuleService.terminate(id, reason);
   }
 
   /**
