@@ -57,252 +57,178 @@ export class PdfGeneratorService {
         doc.registerFont('MainFontBold', boldFontPath);
 
         // ── Header ──────────────────────────────────────────────────────────
+        const isContract = data.poNumber.startsWith('CON-');
+        const title = isContract ? 'HỢP ĐỒNG MUA BÁN' : 'PURCHASE ORDER';
+        
+        // ── Background Header Shading ────────────────────────────────────────
+        doc.rect(0, 0, 595, 120).fill('#f8fafc');
+        
         doc
-          .fontSize(20)
+          .fontSize(28)
           .font('MainFontBold')
-          .text('PURCHASE ORDER', { align: 'center' });
+          .fillColor('#1e293b')
+          .text(title, 0, 45, { align: 'center' });
 
         doc
-          .fontSize(13)
+          .fontSize(14)
           .font('MainFontBold')
           .fillColor('#1a56db')
-          .text(data.poNumber, { align: 'center' });
-
-        doc.moveDown(0.5);
-        doc
-          .moveTo(50, doc.y)
-          .lineTo(545, doc.y)
-          .strokeColor('#1a56db')
-          .lineWidth(2)
-          .stroke();
-        doc.moveDown(0.8);
-
-        // ── Buyer & Supplier info (2 columns) ───────────────────────────────
-        const colLeft = 50;
-        const colRight = 300;
-        const startY = doc.y;
-
-        doc
-          .font('MainFontBold')
-          .fontSize(9)
-          .fillColor('#555555')
-          .text('BÊN MUA (BUYER)', colLeft, startY);
-        doc
-          .font('MainFontBold')
-          .fontSize(11)
-          .fillColor('#000000')
-          .text(data.buyerOrg.name, colLeft, doc.y + 2, { width: 220 });
-        if (data.buyerOrg.address)
-          doc
-            .font('MainFont')
-            .fontSize(9)
-            .fillColor('#444')
-            .text(data.buyerOrg.address, colLeft, doc.y + 2, { width: 220 });
-        if (data.buyerOrg.email)
-          doc.text(`Email: ${data.buyerOrg.email}`, colLeft, doc.y + 2, {
-            width: 220,
-          });
-
-        const supplierY = startY;
-        doc
-          .font('MainFontBold')
-          .fontSize(9)
-          .fillColor('#555555')
-          .text('NHÀ CUNG CẤP (SUPPLIER)', colRight, supplierY);
-        doc
-          .font('MainFontBold')
-          .fontSize(11)
-          .fillColor('#000000')
-          .text(data.supplierOrg.name, colRight, supplierY + 14, {
-            width: 220,
-          });
-        if (data.supplierOrg.address)
-          doc
-            .font('MainFont')
-            .fontSize(9)
-            .fillColor('#444')
-            .text(data.supplierOrg.address, colRight, doc.y + 2, {
-              width: 220,
-            });
-        if (data.supplierOrg.email)
-          doc.text(`Email: ${data.supplierOrg.email}`, colRight, doc.y + 2, {
-            width: 220,
-          });
+          .text(data.poNumber, 0, 75, { align: 'center' });
 
         doc.moveDown(2);
 
-        // ── Meta info row ────────────────────────────────────────────────────
-        const metaY = doc.y;
+        // ── Buyer & Supplier info (Grid Layout) ─────────────────────────────
+        const colLeft = 50;
+        const colRight = 310;
+        const infoY = 140;
+
+        // BÊN MUA
         doc
           .font('MainFontBold')
           .fontSize(9)
-          .fillColor('#555')
-          .text('NGÀY PHÁT HÀNH', colLeft, metaY)
+          .fillColor('#64748b')
+          .text('BÊN MUA (BUYER)', colLeft, infoY);
+        
+        doc
+          .font('MainFontBold')
+          .fontSize(11)
+          .fillColor('#1e293b')
+          .text(data.buyerOrg.name, colLeft, infoY + 14, { width: 230 });
+        
+        doc
           .font('MainFont')
-          .fontSize(10)
-          .fillColor('#000')
-          .text(
-            data.issuedDate.toLocaleDateString('vi-VN'),
-            colLeft,
-            metaY + 12,
-          );
+          .fontSize(9)
+          .fillColor('#475569')
+          .text(data.buyerOrg.address || '', colLeft, doc.y + 2, { width: 230 });
 
-        if (data.deliveryDate) {
-          doc
-            .font('MainFontBold')
-            .fontSize(9)
-            .fillColor('#555')
-            .text('NGÀY GIAO HÀNG', 200, metaY)
-            .font('MainFont')
-            .fontSize(10)
-            .fillColor('#000')
-            .text(
-              new Date(data.deliveryDate).toLocaleDateString('vi-VN'),
-              200,
-              metaY + 12,
-            );
-        }
-
+        // NHÀ CUNG CẤP
         doc
           .font('MainFontBold')
           .fontSize(9)
-          .fillColor('#555')
-          .text('ĐIỀU KHOẢN THANH TOÁN', colRight, metaY)
-          .font('MainFont')
-          .fontSize(10)
-          .fillColor('#000')
-          .text(data.paymentTerms ?? 'NET 30', colRight, metaY + 12);
-
-        doc.moveDown(3);
-
-        if (data.deliveryAddress) {
+          .fillColor('#64748b')
+          .text('NHÀ CUNG CẤP (SUPPLIER)', colRight, infoY);
+        
+        doc
+          .font('MainFontBold')
+          .fontSize(11)
+          .fillColor('#1e293b')
+          .text(data.supplierOrg.name, colRight, infoY + 14, { width: 235 });
+        
+        if (data.supplierOrg.email) {
           doc
-            .font('MainFontBold')
-            .fontSize(9)
-            .fillColor('#555')
-            .text('ĐỊA CHỈ GIAO HÀNG')
             .font('MainFont')
             .fontSize(9)
-            .fillColor('#000')
-            .text(data.deliveryAddress);
-          doc.moveDown(0.5);
+            .fillColor('#475569')
+            .text(`Email: ${data.supplierOrg.email}`, colRight, doc.y + 2);
         }
+
+        // ── Metadata Row (Horizontal) ───────────────────────────────────────
+        const metaY = 220;
+        doc.rect(50, metaY - 10, 495, 35).fill('#f1f5f9');
+        
+        doc.font('MainFontBold').fontSize(8).fillColor('#64748b');
+        doc.text('NGÀY PHÁT HÀNH', 65, metaY);
+        doc.text('HẠN GIAO HÀNG', 215, metaY);
+        doc.text('THANH TOÁN', 385, metaY);
+
+        doc.font('MainFontBold').fontSize(10).fillColor('#1e293b');
+        doc.text(data.issuedDate.toLocaleDateString('vi-VN'), 65, metaY + 12);
+        doc.text(data.deliveryDate ? new Date(data.deliveryDate).toLocaleDateString('vi-VN') : '—', 215, metaY + 12);
+        doc.text(data.paymentTerms ?? 'Net 30', 385, metaY + 12);
 
         // ── Items table ──────────────────────────────────────────────────────
-        doc.moveDown(0.5);
-        const tableTop = doc.y;
+        const tableTop = 270;
         const cols = {
           no: 50,
-          desc: 80,
-          qty: 330,
-          unit: 365,
-          price: 410,
-          total: 470,
+          desc: 85,
+          qty: 340,
+          unit: 385,
+          price: 430,
+          total: 495,
         };
-        const rowH = 20;
+        const rowH = 28;
 
-        // Header row
+        // Table Header
         doc.rect(50, tableTop, 495, rowH).fill('#1a56db');
         doc.font('MainFontBold').fontSize(9).fillColor('#ffffff');
-        doc.text('#', cols.no, tableTop + 6, { width: 25, align: 'center' });
-        doc.text('MÔ TẢ SẢN PHẨM / DỊCH VỤ', cols.desc, tableTop + 6, {
-          width: 245,
-        });
-        doc.text('SL', cols.qty, tableTop + 6, { width: 30, align: 'right' });
-        doc.text('ĐVT', cols.unit, tableTop + 6, { width: 40 });
-        doc.text('ĐƠN GIÁ', cols.price, tableTop + 6, {
-          width: 55,
-          align: 'right',
-        });
-        doc.text('THÀNH TIỀN', cols.total, tableTop + 6, {
-          width: 70,
-          align: 'right',
-        });
+        
+        doc.text('#', 50, tableTop + 9, { width: 35, align: 'center' });
+        doc.text('MÔ TẢ SẢN PHẨM / DỊCH VỤ', 85, tableTop + 9, { width: 255, align: 'left' });
+        doc.text('SL', 340, tableTop + 9, { width: 45, align: 'center' });
+        doc.text('ĐVT', 385, tableTop + 9, { width: 45, align: 'center' });
+        doc.text('ĐƠN GIÁ', 430, tableTop + 9, { width: 65, align: 'center' });
+        doc.text('THÀNH TIỀN', 495, tableTop + 9, { width: 50, align: 'center' });
 
         // Item rows
-        let y = tableTop + rowH;
+        let currentY = tableTop + rowH;
         data.items.forEach((item, idx) => {
-          const bg = idx % 2 === 0 ? '#f8fafc' : '#ffffff';
-          doc.rect(50, y, 495, rowH).fill(bg);
-          doc.font('MainFont').fontSize(9).fillColor('#111');
-          doc.text(String(item.lineNumber), cols.no, y + 6, {
-            width: 25,
-            align: 'center',
-          });
-          doc.text(item.description, cols.desc, y + 6, { width: 245 });
-          doc.text(String(item.qty), cols.qty, y + 6, {
-            width: 30,
-            align: 'right',
-          });
-          doc.text(item.unit ?? 'cái', cols.unit, y + 6, { width: 40 });
-          doc.text(fmt(item.unitPrice), cols.price, y + 6, {
-            width: 55,
-            align: 'right',
-          });
-          doc.text(fmt(item.total), cols.total, y + 6, {
-            width: 70,
-            align: 'right',
-          });
-          y += rowH;
+          // Alternating background for rows
+          if (idx % 2 !== 0) {
+            doc.rect(50, currentY, 495, rowH).fill('#f8fafc');
+          }
+          
+          doc.font('MainFont').fontSize(9).fillColor('#334155');
+          doc.text(String(idx + 1), 50, currentY + 9, { width: 35, align: 'center' });
+          doc.text(item.description, 85, currentY + 9, { width: 250 });
+          doc.text(String(item.qty), 340, currentY + 9, { width: 45, align: 'center' });
+          doc.text(item.unit ?? 'PCS', 385, currentY + 9, { width: 45, align: 'center' });
+          doc.text(fmt(item.unitPrice), 430, currentY + 9, { width: 60, align: 'right' });
+          doc.text(fmt(item.total), 495, currentY + 9, { width: 50, align: 'right' });
+          
+          // Border below row
+          doc.moveTo(50, currentY + rowH).lineTo(545, currentY + rowH).strokeColor('#e2e8f0').lineWidth(0.5).stroke();
+          
+          currentY += rowH;
         });
-
-        // Bottom border of table
-        doc
-          .moveTo(50, y)
-          .lineTo(545, y)
-          .strokeColor('#cccccc')
-          .lineWidth(1)
-          .stroke();
 
         // ── Totals ───────────────────────────────────────────────────────────
-        y += 10;
-        const totX = 370;
-        doc.font('MainFont').fontSize(10).fillColor('#333');
-        doc.text('Tạm tính:', totX, y, { width: 100 });
-        doc.text(fmt(data.subtotal), 475, y, { width: 70, align: 'right' });
+        currentY += 15;
+        doc.font('MainFont').fontSize(9).fillColor('#64748b');
+        doc.text('Tạm tính:', 350, currentY, { width: 100, align: 'right' });
+        doc.text(fmt(data.subtotal), 465, currentY, { width: 80, align: 'right' });
 
-        if (data.taxAmount && data.taxAmount > 0) {
-          y += 18;
-          doc.text('Thuế VAT:', totX, y, { width: 100 });
-          doc.text(fmt(data.taxAmount), 475, y, { width: 70, align: 'right' });
-        }
-
-        y += 18;
-        doc.rect(365, y - 4, 180, 24).fill('#1a56db');
-        doc.font('MainFontBold').fontSize(11).fillColor('#ffffff');
-        doc.text('TỔNG CỘNG:', totX, y + 2, { width: 100 });
-        doc.text(fmt(data.totalAmount), 475, y + 2, {
-          width: 70,
-          align: 'right',
-        });
+        currentY += 22;
+        doc.rect(100, currentY, 445, 34).fill('#1a56db');
+        doc.font('MainFontBold').fontSize(12).fillColor('#ffffff');
+        doc.text('TỔNG CỘNG:', 120, currentY + 11, { width: 100 });
+        doc.text(fmt(data.totalAmount), 435, currentY + 11, { width: 100, align: 'right' });
 
         // ── Notes ────────────────────────────────────────────────────────────
+        currentY += 55;
+        doc.font('MainFontBold').fontSize(10).fillColor('#1e293b').text('GHI CHÚ:', 50, currentY);
+        
+        doc.font('MainFont').fontSize(9).fillColor('#475569');
         if (data.notes) {
-          doc.moveDown(2);
-          doc
-            .font('MainFontBold')
-            .fontSize(9)
-            .fillColor('#555')
-            .text('GHI CHÚ:');
-          doc.font('MainFont').fontSize(9).fillColor('#333').text(data.notes);
+          const parts = data.notes.split(' và ');
+          let noteY = currentY + 16;
+          parts.forEach(part => {
+            const prefix = part.trim().startsWith('•') ? '' : '• ';
+            doc.text(`${prefix}${part.trim()}`, 50, noteY, { width: 450 });
+            noteY += 14;
+          });
+          currentY = noteY;
+        } else {
+          doc.text('• Không có ghi chú.', 50, currentY + 16);
+          currentY += 30;
         }
 
         // ── Footer ───────────────────────────────────────────────────────────
         doc.moveDown(2);
         doc
-          .moveTo(50, doc.y)
-          .lineTo(545, doc.y)
-          .strokeColor('#dddddd')
-          .lineWidth(1)
-          .stroke();
-        doc.moveDown(0.3);
+          .font('MainFontBold')
+          .fontSize(10)
+          .fillColor('#1e293b')
+          .text('ĐIỀU KHOẢN VÀ CÓ LIÊN QUAN:', 50, doc.y);
+        
         doc
           .font('MainFont')
           .fontSize(8)
-          .fillColor('#888')
+          .fillColor('#94a3b8')
           .text(
             'Tài liệu này được tạo tự động bởi hệ thống OMS. Vui lòng xác nhận hoặc từ chối qua link đính kèm trong email.',
-            { align: 'center' },
+            50,
+            doc.y + 5,
+            { width: 495 }
           );
 
         doc.end();
