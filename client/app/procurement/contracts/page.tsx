@@ -14,11 +14,11 @@ import ContractSignModal from "../../components/ContractSignModal";
 
 // ── Status config ─────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<string, { label: string; bg: string; text: string; border: string; dot: string }> = {
-    ACTIVE:            { label: "Đang hiệu lực", bg: "bg-emerald-500/10", text: "text-black", border: "border-emerald-500/25", dot: "bg-emerald-400" },
-    PENDING_APPROVAL:  { label: "Chờ duyệt",      bg: "bg-amber-500/10",   text: "text-black",   border: "border-amber-500/25",   dot: "bg-amber-400"   },
-    DRAFT:             { label: "Bản nháp",        bg: "bg-slate-500/10",   text: "text-black",   border: "border-slate-500/25",   dot: "bg-slate-400"   },
-    EXPIRED:           { label: "Hết hạn",         bg: "bg-orange-500/10",  text: "text-black",  border: "border-orange-500/25",  dot: "bg-orange-400"  },
-    TERMINATED:        { label: "Đã chấm dứt",     bg: "bg-rose-500/10",    text: "text-black",    border: "border-rose-500/25",    dot: "bg-rose-400"    },
+    ACTIVE: { label: "Đang hiệu lực", bg: "bg-emerald-500/10", text: "text-black", border: "border-emerald-500/25", dot: "bg-emerald-400" },
+    PENDING_APPROVAL: { label: "Chờ duyệt", bg: "bg-amber-500/10", text: "text-black", border: "border-amber-500/25", dot: "bg-amber-400" },
+    DRAFT: { label: "Bản nháp", bg: "bg-slate-500/10", text: "text-black", border: "border-slate-500/25", dot: "bg-slate-400" },
+    EXPIRED: { label: "Hết hạn", bg: "bg-orange-500/10", text: "text-black", border: "border-orange-500/25", dot: "bg-orange-400" },
+    TERMINATED: { label: "Đã chấm dứt", bg: "bg-rose-500/10", text: "text-black", border: "border-rose-500/25", dot: "bg-rose-400" },
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -46,17 +46,20 @@ export default function ContractsPage() {
         currentUser,
     } = useProcurement();
 
-    const [search, setSearch]           = useState("");
-    const [statusFilter, setStatus]     = useState("ALL");
-    const [modal, setModal]             = useState<"create" | "edit" | "delete" | "approve" | "terminate" | null>(null);
-    const [editing, setEditing]         = useState<Contract | null>(null);
-    const [deleteId, setDeleteId]       = useState<string | null>(null);
-    const [approveTarget, setApprove]   = useState<Contract | null>(null);
+    const [search, setSearch] = useState("");
+    const [statusFilter, setStatus] = useState("ALL");
+    const [modal, setModal] = useState<"create" | "edit" | "delete" | "approve" | "terminate" | null>(null);
+    const [editing, setEditing] = useState<Contract | null>(null);
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [approveTarget, setApprove] = useState<Contract | null>(null);
     const [terminateTarget, setTerminate] = useState<Contract | null>(null);
     const [terminateReason, setTerminateReason] = useState("");
-    const [signTarget, setSignTarget]   = useState<Contract | null>(null);
-    const [saving, setSaving]           = useState(false);
-    const [form, setForm]               = useState<Partial<Contract>>({ ...EMPTY });
+    const [signTarget, setSignTarget] = useState<Contract | null>(null);
+    const [saving, setSaving] = useState(false);
+    const [form, setForm] = useState<Partial<Contract>>({ ...EMPTY });
+
+    // ── Prevent background scroll when modal is open ──
+
 
     // ── Derived ──────────────────────────────────────────────────────────────
     const suppliers = useMemo(
@@ -74,8 +77,8 @@ export default function ContractsPage() {
     }), [contracts, search, statusFilter]);
 
     const stats = useMemo(() => ({
-        total:   contracts.length,
-        active:  contracts.filter(c => c.status === "ACTIVE").length,
+        total: contracts.length,
+        active: contracts.filter(c => c.status === "ACTIVE").length,
         pending: contracts.filter(c => c.status === "PENDING_APPROVAL").length,
         expired: contracts.filter(c => c.status === "EXPIRED").length,
         totalValue: contracts
@@ -87,7 +90,7 @@ export default function ContractsPage() {
     const closeModal = () => { setModal(null); setEditing(null); setDeleteId(null); setApprove(null); setTerminate(null); setTerminateReason(""); };
 
     const openCreate = () => { setForm({ ...EMPTY }); setEditing(null); setModal("create"); };
-    const openEdit   = (c: Contract) => {
+    const openEdit = (c: Contract) => {
         setForm({
             title: c.title, supplierId: c.supplierId, totalValue: c.totalValue,
             currency: c.currency, startDate: c.startDate?.slice(0, 10),
@@ -96,7 +99,7 @@ export default function ContractsPage() {
         setEditing(c);
         setModal("edit");
     };
-    const openDelete  = (id: string) => { setDeleteId(id); setModal("delete"); };
+    const openDelete = (id: string) => { setDeleteId(id); setModal("delete"); };
     const openApprove = (c: Contract) => { setApprove(c); setModal("approve"); };
 
     const handleSave = async () => {
@@ -161,10 +164,10 @@ export default function ContractsPage() {
             {/* ── Stats ── */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                 {[
-                    { label: "Tổng hợp đồng",  value: stats.total,   icon: FileText,    color: "bg-[#B4533A]/10 text-[#B4533A]" },
-                    { label: "Đang hiệu lực",   value: stats.active,  icon: CheckCircle2,color: "bg-emerald-500/10 text-black" },
-                    { label: "Chờ duyệt",        value: stats.pending, icon: Clock,        color: "bg-amber-500/10 text-black" },
-                    { label: "Hết hạn",          value: stats.expired, icon: AlertCircle,  color: "bg-orange-500/10 text-black" },
+                    { label: "Tổng hợp đồng", value: stats.total, icon: FileText, color: "bg-[#B4533A]/10 text-[#B4533A]" },
+                    { label: "Đang hiệu lực", value: stats.active, icon: CheckCircle2, color: "bg-emerald-500/10 text-black" },
+                    { label: "Chờ duyệt", value: stats.pending, icon: Clock, color: "bg-amber-500/10 text-black" },
+                    { label: "Hết hạn", value: stats.expired, icon: AlertCircle, color: "bg-orange-500/10 text-black" },
                     { label: "Tổng giá trị HĐ", value: `${(stats.totalValue / 1e6).toFixed(1)}M ₫`, icon: TrendingUp, color: "bg-purple-500/10 text-black" },
                 ].map(({ label, value, icon: Icon, color }) => (
                     <div key={label} className="bg-[#FAF8F5] rounded-xl p-4 border border-[rgba(148,163,184,0.08)] flex items-center gap-3">
@@ -193,20 +196,19 @@ export default function ContractsPage() {
                 </div>
                 <div className="flex gap-1 bg-[#FFFFFF] border border-[rgba(148,163,184,0.08)] rounded-xl p-1">
                     {[
-                        { k: "ALL",           l: "Tất cả" },
-                        { k: "DRAFT",         l: "Nháp" },
+                        { k: "ALL", l: "Tất cả" },
+                        { k: "DRAFT", l: "Nháp" },
                         { k: "PENDING_APPROVAL", l: "Chờ duyệt" },
-                        { k: "ACTIVE",        l: "Hiệu lực" },
-                        { k: "EXPIRED",       l: "Hết hạn" },
+                        { k: "ACTIVE", l: "Hiệu lực" },
+                        { k: "EXPIRED", l: "Hết hạn" },
                     ].map(({ k, l }) => (
                         <button
                             key={k}
                             onClick={() => setStatus(k)}
-                            className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${
-                                statusFilter === k
-                                    ? "bg-[#B4533A] text-[#000000] shadow"
-                                    : "text-[#000000] hover:text-[#000000]"
-                            }`}
+                            className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${statusFilter === k
+                                ? "bg-[#B4533A] text-[#000000] shadow"
+                                : "text-[#000000] hover:text-[#000000]"
+                                }`}
                         >
                             {l}
                         </button>
@@ -242,14 +244,14 @@ export default function ContractsPage() {
                             </thead>
                             <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
                                 {filtered.map(c => {
-                                    const isActive  = c.status === "ACTIVE";
-                                    const isDraft   = c.status === "DRAFT";
+                                    const isActive = c.status === "ACTIVE";
+                                    const isDraft = c.status === "DRAFT";
                                     const isPending = c.status === "PENDING_APPROVAL";
-                                    const canSign   = isPending && currentUser?.role !== "SUPPLIER"
+                                    const canSign = isPending && currentUser?.role !== "SUPPLIER"
                                         ? !c.buyerSignedAt
                                         : isPending && currentUser?.role === "SUPPLIER"
-                                        ? !c.supplierSignedAt
-                                        : false;
+                                            ? !c.supplierSignedAt
+                                            : false;
 
                                     return (
                                         <tr key={c.id} className="group hover:bg-[#FFFFFF]/60 transition-colors">
@@ -410,26 +412,26 @@ export default function ContractsPage() {
 
             {/* Create / Edit Modal */}
             {(modal === "create" || modal === "edit") && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={closeModal} />
-                    <div className="relative w-full max-w-2xl bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-2xl max-h-[90vh] flex flex-col">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
+                    <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
+                    <div className="relative w-full max-w-2xl bg-[#FAF8F5] rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] max-h-[90vh] flex flex-col pointer-events-auto animate-in zoom-in-95 duration-200">
                         {/* Header */}
-                        <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-2xl flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-[#B4533A]/10 border border-[#B4533A]/20 flex items-center justify-center text-[#B4533A]">
-                                    <FileText size={16} />
+                        <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-[2rem] flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-11 h-11 rounded-2xl bg-[#B4533A]/10 border border-[#B4533A]/20 flex items-center justify-center text-[#B4533A]">
+                                    <FileText size={20} />
                                 </div>
                                 <div>
-                                    <h2 className="font-black text-[#000000]">
+                                    <h2 className="text-lg font-black text-[#000000] tracking-tight">
                                         {modal === "create" ? "Tạo hợp đồng mới" : "Chỉnh sửa hợp đồng"}
                                     </h2>
-                                    <p className="text-[11px] text-[#000000]">
+                                    <p className="text-xs font-bold text-[#000000] opacity-60 uppercase tracking-widest">
                                         {modal === "edit" ? `#${editing?.contractNumber}` : "Điền đầy đủ thông tin hợp đồng"}
                                     </p>
                                 </div>
                             </div>
-                            <button onClick={closeModal} className="p-2 text-[#000000] hover:text-[#000000] hover:bg-[rgba(148,163,184,0.08)] rounded-xl transition-all">
-                                <X size={18} />
+                            <button onClick={closeModal} className="w-10 h-10 flex items-center justify-center text-[#000000] hover:bg-[rgba(148,163,184,0.08)] rounded-xl transition-all">
+                                <X size={20} />
                             </button>
                         </div>
 
@@ -517,7 +519,7 @@ export default function ContractsPage() {
                         </div>
 
                         {/* Footer */}
-                        <div className="px-6 py-4 border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-b-2xl flex justify-end gap-3">
+                        <div className="px-8 py-6 border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-b-[2rem] flex justify-end gap-3">
                             <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#1A1D23] transition-all">
                                 Hủy
                             </button>
@@ -535,9 +537,9 @@ export default function ContractsPage() {
 
             {/* Delete Confirm */}
             {modal === "delete" && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#FAF8F5] rounded-2xl border border-rose-500/20 shadow-2xl p-6">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
+                    <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
+                    <div className="relative w-full max-w-md bg-[#FAF8F5] rounded-[2rem] border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-6">
                             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <Trash2 size={18} />
@@ -567,9 +569,9 @@ export default function ContractsPage() {
 
             {/* Submit for Approval */}
             {modal === "approve" && approveTarget && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#FAF8F5] rounded-2xl border border-amber-500/20 shadow-2xl p-6">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
+                    <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
+                    <div className="relative w-full max-w-md bg-[#FAF8F5] rounded-[2rem] border border-amber-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <ShieldCheck size={18} />
@@ -611,9 +613,9 @@ export default function ContractsPage() {
 
             {/* Terminate Modal */}
             {modal === "terminate" && terminateTarget && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#FAF8F5] rounded-2xl border border-rose-500/20 shadow-2xl p-6">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
+                    <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
+                    <div className="relative w-full max-w-md bg-[#FAF8F5] rounded-[2rem] border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <Ban size={18} />
@@ -696,4 +698,3 @@ function FormField({ label, children, colSpan = 1 }: { label: string; children: 
         </div>
     );
 }
-

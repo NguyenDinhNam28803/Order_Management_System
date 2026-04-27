@@ -199,7 +199,7 @@ export default function BudgetAllocationPage() {
             </thead>
             <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
               {activeAllocations.length > 0 ? activeAllocations.map((item) => {
-                const used = item.spent + item.committed;
+                const used = (Number(item.spent) || 0) + (Number(item.committed) || 0);
                 const percent = item.quota > 0 ? (used / item.quota) * 100 : 0;
                 const remaining = item.quota - used;
 
@@ -207,7 +207,7 @@ export default function BudgetAllocationPage() {
                   <tr key={item.id} className="group hover:bg-[#FFFFFF]/50 transition-colors cursor-pointer">
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-[#1A1D23] flex items-center justify-center text-[#000000] group-hover:bg-[#B4533A] group-hover:text-[#000000] transition-all">
+                        <div className="h-10 w-10 rounded-xl bg-[#B4533A] flex items-center justify-center text-white transition-all">
                           <Building size={20} />
                         </div>
                         <div>
@@ -224,16 +224,13 @@ export default function BudgetAllocationPage() {
                       <div className="flex items-center gap-3">
                         <div className="flex-1 bg-[#1A1D23] h-2 rounded-full overflow-hidden">
                           <div 
-                            className={`h-full rounded-full transition-all duration-1000 ${
-                              percent > 90 ? "bg-red-500" : 
-                              percent > 70 ? "bg-amber-500" : "bg-emerald-500"
-                            }`}
+                            className="h-full rounded-full transition-all duration-1000 bg-[#B4533A]"
                             style={{ width: `${percent}%` }}
                           />
                         </div>
-                        <span className={`text-xs font-black ${
-                          percent > 90 ? "text-red-500" : "text-[#000000]"
-                        }`}>{percent.toFixed(0)}%</span>
+                        <span className="text-xs font-black text-[#B4533A] whitespace-nowrap">
+                          {percent.toFixed(0)}%
+                        </span>
                       </div>
                       <div className="flex justify-between mt-1.5 px-0.5">
                         <span className="text-[9px] font-black text-[#000000] uppercase">Đã dùng: {used.toLocaleString()}</span>

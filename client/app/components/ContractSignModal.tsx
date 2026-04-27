@@ -79,6 +79,22 @@ export default function ContractSignModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contract?.id]);
 
+    // ── Prevent background scroll when modal is open ──
+    useEffect(() => {
+        const mainEl = document.querySelector('main.flex-1.overflow-y-auto');
+        if (contract) {
+            document.body.style.overflow = "hidden";
+            if (mainEl instanceof HTMLElement) mainEl.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+            if (mainEl instanceof HTMLElement) mainEl.style.overflow = "auto";
+        }
+        return () => { 
+            document.body.style.overflow = "unset";
+            if (mainEl instanceof HTMLElement) mainEl.style.overflow = "auto";
+        };
+    }, [contract]);
+
     // Countdown timer while on verify step
     useEffect(() => {
         if (step !== "verify") return;
@@ -150,17 +166,17 @@ export default function ContractSignModal({
     const codeMatches = enteredCode.length === 6 && enteredCode === code;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
             {/* Backdrop — locked during signing */}
             <div
-                className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm"
+                className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto"
                 onClick={step !== "signing" ? onClose : undefined}
             />
 
-            <div className="relative w-full max-w-lg bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+            <div className="relative w-full max-w-lg bg-[#FAF8F5] rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex flex-col max-h-[92vh] overflow-hidden pointer-events-auto animate-in zoom-in-95 duration-200">
 
                 {/* ── Header ── */}
-                <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-2xl flex items-center justify-between shrink-0">
+                <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-[2rem] flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                             <PenTool size={16} className="text-black" />
@@ -222,7 +238,7 @@ export default function ContractSignModal({
                             {/* Legal notice */}
                             <div className="flex gap-3 bg-amber-500/5 border border-amber-500/15 rounded-xl p-3">
                                 <AlertCircle size={15} className="text-black shrink-0 mt-0.5" />
-                                <p className="text-xs text-amber-200/70 leading-relaxed">
+                                <p className="text-xs text-amber-800 leading-relaxed font-medium">
                                     Bằng cách ký hợp đồng này, bạn đồng ý chịu ràng buộc pháp lý bởi tất cả các điều khoản và điều kiện được nêu trong tài liệu.
                                 </p>
                             </div>
@@ -358,7 +374,7 @@ export default function ContractSignModal({
                 </div>
 
                 {/* ── Footer ── */}
-                <div className="px-6 py-4 border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-b-2xl shrink-0">
+                <div className="px-8 py-6 border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-b-[2rem] shrink-0">
                     {step === "review" && (
                         <div className="flex gap-3 justify-end">
                             <button

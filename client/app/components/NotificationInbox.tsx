@@ -79,6 +79,8 @@ function getIconContainerClass(eventType?: EmailEventType, isPending?: boolean):
   if (!eventType) return "bg-[#B4533A]/10 border-[#B4533A]/20";
 
   const cfg = EVENT_DISPLAY_CONFIG[eventType];
+  if (!cfg) return "bg-gray-100 border-gray-200";
+  
   return `${cfg.bgClass} ${cfg.borderClass}`;
 }
 

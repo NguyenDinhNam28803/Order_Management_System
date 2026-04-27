@@ -13,17 +13,17 @@ import { usePathname } from "next/navigation";
 import { useProcurement } from "../context/ProcurementContext";
 
 const roleMapping: Record<string, { label: string; class: string; dot: string }> = {
-    "REQUESTER":     { label: "Người yêu cầu", class: "role-requester", dot: "#000000" },
-    "DEPT_APPROVER": { label: "Trưởng phòng",  class: "role-approver",  dot: "#FBBF24" },
-    "DIRECTOR":      { label: "Giám đốc",       class: "role-director",  dot: "#CB7A62" },
-    "CEO":           { label: "CEO / Board",    class: "role-ceo",       dot: "#A78BFA" },
-    "PROCUREMENT":   { label: "Thu mua",        class: "role-procurement",dot: "#FBBF24" },
-    "WAREHOUSE":     { label: "Kho vận",        class: "role-warehouse", dot: "#F472B6" },
-    "QA":            { label: "Kiểm soát CL",   class: "role-warehouse", dot: "#F472B6" },
-    "FINANCE":       { label: "Tài chính",      class: "role-finance",   dot: "#34D399" },
-    "PLATFORM_ADMIN":{ label: "Quản trị viên",  class: "role-admin",     dot: "#FB7185" },
-    "SUPPLIER":      { label: "Nhà cung cấp",   class: "role-supplier",  dot: "#FB923C" },
-    "SYSTEM":        { label: "Hệ thống AI",    class: "role-admin",     dot: "#FB7185" },
+    "REQUESTER": { label: "Người yêu cầu", class: "role-requester", dot: "#000000" },
+    "DEPT_APPROVER": { label: "Trưởng phòng", class: "role-approver", dot: "#FBBF24" },
+    "DIRECTOR": { label: "Giám đốc", class: "role-director", dot: "#CB7A62" },
+    "CEO": { label: "CEO / Board", class: "role-ceo", dot: "#A78BFA" },
+    "PROCUREMENT": { label: "Thu mua", class: "role-procurement", dot: "#FBBF24" },
+    "WAREHOUSE": { label: "Kho vận", class: "role-warehouse", dot: "#F472B6" },
+    "QA": { label: "Kiểm soát CL", class: "role-warehouse", dot: "#F472B6" },
+    "FINANCE": { label: "Tài chính", class: "role-finance", dot: "#34D399" },
+    "PLATFORM_ADMIN": { label: "Quản trị viên", class: "role-admin", dot: "#FB7185" },
+    "SUPPLIER": { label: "Nhà cung cấp", class: "role-supplier", dot: "#FB923C" },
+    "SYSTEM": { label: "Hệ thống AI", class: "role-admin", dot: "#FB7185" },
 };
 
 interface NavItem {
@@ -46,11 +46,11 @@ const navigation: NavGroup[] = [
         dot: "#B4533A",
         roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "CEO", "FINANCE"],
         items: [
-            { name: "Bảng điều khiển",        icon: LayoutDashboard, path: "/",              roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
-            { name: "Tạo PR mới",              icon: PlusCircle,      path: "/pr/create",     roles: ["DIRECTOR", "CEO", "PLATFORM_ADMIN"] },
-            { name: "Yêu cầu mua hàng (PR)",  icon: FolderTree,      path: "/pr",            roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
-            { name: "Yêu cầu báo giá (QR)",   icon: ShoppingBag,     path: "/quote-requests",roles: ["REQUESTER", "PLATFORM_ADMIN"] },
-            { name: "Kiểm soát PR",            icon: ClipboardCheck,  path: "/procurement/prs",roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
+            { name: "Tạo PR mới", icon: PlusCircle, path: "/pr/create", roles: ["DIRECTOR", "CEO", "PLATFORM_ADMIN"] },
+            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Yêu cầu báo giá (QR)", icon: ShoppingBag, path: "/quote-requests", roles: ["REQUESTER", "PLATFORM_ADMIN"] },
+            { name: "Kiểm soát PR", icon: ClipboardCheck, path: "/procurement/prs", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
         ]
     },
     {
@@ -58,14 +58,14 @@ const navigation: NavGroup[] = [
         dot: "#10B981",
         roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"],
         items: [
-            { name: "Đơn đặt hàng (PO)",            icon: ShoppingBag,  path: "/procurement/pos",         roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
-            { name: "Gộp PO từ nhiều PR",           icon: GitMerge,     path: "/po/consolidate",          roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
-            { name: "Quản lý Báo giá",              icon: FileText,     path: "/procurement/quotations",  roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
-            { name: "Quản lý Hợp đồng",            icon: ShieldCheck,  path: "/procurement/contracts",   roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
-            { name: "Đánh giá Nhà cung cấp",       icon: Star,         path: "/procurement/suppliers",   roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
-            { name: "Khiếu nại & Tranh chấp",      icon: MessageSquare,path: "/procurement/disputes",    roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
-            { name: "Theo dõi giao hàng",           icon: Truck,        path: "/procurement/delivery",    roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
-            { name: "Điều chỉnh PO (Amendments)",  icon: ShieldAlert,  path: "/procurement/amendments",  roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Đơn đặt hàng (PO)", icon: ShoppingBag, path: "/procurement/pos", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Gộp PO từ nhiều PR", icon: GitMerge, path: "/po/consolidate", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Quản lý Báo giá", icon: FileText, path: "/procurement/quotations", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Quản lý Hợp đồng", icon: ShieldCheck, path: "/procurement/contracts", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Đánh giá Nhà cung cấp", icon: Star, path: "/procurement/suppliers", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Khiếu nại & Tranh chấp", icon: MessageSquare, path: "/procurement/disputes", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Theo dõi giao hàng", icon: Truck, path: "/procurement/delivery", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Điều chỉnh PO (Amendments)", icon: ShieldAlert, path: "/procurement/amendments", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
         ]
     },
     {
@@ -73,9 +73,9 @@ const navigation: NavGroup[] = [
         dot: "#06B6D4",
         roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"],
         items: [
-            { name: "Nguồn hàng & Báo giá",   icon: Search,     path: "/sourcing",                         roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
-            { name: "Khám phá NCC (AI)",        icon: Sparkles,   path: "/procurement/supplier-discovery",  roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
-            { name: "Xét duyệt NCC",            icon: UserCheck,  path: "/procurement/supplier-vetting",    roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
+            { name: "Nguồn hàng & Báo giá", icon: Search, path: "/sourcing", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Khám phá NCC (AI)", icon: Sparkles, path: "/procurement/supplier-discovery", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
+            { name: "Xét duyệt NCC", icon: UserCheck, path: "/procurement/supplier-vetting", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
         ]
     },
     {
@@ -83,11 +83,11 @@ const navigation: NavGroup[] = [
         dot: "#F59E0B",
         roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO", "PLATFORM_ADMIN"],
         items: [
-            { name: "Phê duyệt PR",          icon: CheckSquare,  path: "/approvals",                roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO"] },
-            { name: "Phê duyệt PO",          icon: ShoppingCart, path: "/manager/po-approvals",     roles: ["DEPT_APPROVER", "FINANCE", "DIRECTOR"] },
-            { name: "Quản lý Hóa đơn",       icon: FileText,     path: "/finance/invoices",         roles: ["FINANCE", "DIRECTOR"] },
-            { name: "Phê duyệt Thanh toán",  icon: FileCheck,    path: "/payments",                 roles: ["FINANCE", "DIRECTOR"] },
-            { name: "Lịch sử phê duyệt",     icon: ClipboardCheck,path: "/manager/approval-history",roles: ["DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO"] },
+            { name: "Phê duyệt PR", icon: CheckSquare, path: "/approvals", roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO"] },
+            { name: "Phê duyệt PO", icon: ShoppingCart, path: "/manager/po-approvals", roles: ["DEPT_APPROVER", "FINANCE", "DIRECTOR"] },
+            { name: "Quản lý Hóa đơn", icon: FileText, path: "/finance/invoices", roles: ["FINANCE", "DIRECTOR"] },
+            { name: "Phê duyệt Thanh toán", icon: FileCheck, path: "/payments", roles: ["FINANCE", "DIRECTOR"] },
+            { name: "Lịch sử phê duyệt", icon: ClipboardCheck, path: "/manager/approval-history", roles: ["DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO"] },
         ]
     },
     {
@@ -95,11 +95,11 @@ const navigation: NavGroup[] = [
         dot: "#8B5CF6",
         roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN", "DIRECTOR"],
         items: [
-            { name: "Lập ngân sách",            icon: Building,    path: "/manager/budget-planning",  roles: ["DEPT_APPROVER", "PLATFORM_ADMIN"] },
-            { name: "Phân bổ ngân sách",        icon: FolderTree,  path: "/finance/budget-allocation",roles: ["FINANCE", "PLATFORM_ADMIN"] },
-            { name: "Duyệt cấp NS",             icon: CheckSquare, path: "/finance/budget-approval",  roles: ["FINANCE", "DIRECTOR", "PLATFORM_ADMIN", "CEO"] },
-            { name: "Theo dõi chi tiêu",        icon: DollarSign,  path: "/manager/spend-tracking",   roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
-            { name: "Cảnh báo vượt ngân sách",  icon: ShieldAlert, path: "/manager/budget-alerts",    roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
+            { name: "Lập ngân sách", icon: Building, path: "/manager/budget-planning", roles: ["DEPT_APPROVER", "PLATFORM_ADMIN"] },
+            { name: "Phân bổ ngân sách", icon: FolderTree, path: "/finance/budget-allocation", roles: ["FINANCE", "PLATFORM_ADMIN"] },
+            { name: "Duyệt cấp NS", icon: CheckSquare, path: "/finance/budget-approval", roles: ["FINANCE", "DIRECTOR", "PLATFORM_ADMIN", "CEO"] },
+            { name: "Theo dõi chi tiêu", icon: DollarSign, path: "/manager/spend-tracking", roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
+            { name: "Cảnh báo vượt ngân sách", icon: ShieldAlert, path: "/manager/budget-alerts", roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
         ]
     },
     {
@@ -108,7 +108,6 @@ const navigation: NavGroup[] = [
         roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "PLATFORM_ADMIN", "CEO"],
         items: [
             { name: "Báo cáo Chi phí", icon: ClipboardCheck, path: "/reports/spend", roles: ["FINANCE", "DIRECTOR"] },
-            { name: "Báo cáo Công nợ", icon: FolderTree,     path: "/reports/ap",    roles: ["FINANCE", "DIRECTOR"] },
         ]
     },
     {
@@ -116,16 +115,16 @@ const navigation: NavGroup[] = [
         dot: "#EF4444",
         roles: ["PLATFORM_ADMIN"],
         items: [
-            { name: "Quản lý Nhà cung cấp", icon: Truck,          path: "/admin/suppliers",      roles: ["PLATFORM_ADMIN"] },
-            { name: "Quản lý Sản phẩm",     icon: ShoppingBag,    path: "/admin/products",       roles: ["PLATFORM_ADMIN"] },
-            { name: "Quản lý Danh mục",     icon: Layers,          path: "/admin/categories",     roles: ["PLATFORM_ADMIN"] },
-            { name: "Quản lý nhân sự",      icon: Users,           path: "/users",                roles: ["PLATFORM_ADMIN"] },
-            { name: "Quản lý Tổ chức",      icon: LayoutDashboard, path: "/admin/organizations",  roles: ["PLATFORM_ADMIN"] },
-            { name: "Quản lý Phòng ban",    icon: Building,        path: "/admin/departments",    roles: ["PLATFORM_ADMIN"] },
-            { name: "Quản lý Cost Center",  icon: ShieldAlert,     path: "/admin/cost-centers",   roles: ["PLATFORM_ADMIN"] },
-            { name: "Nhật ký hệ thống",     icon: History,         path: "/admin/audit-logs",     roles: ["PLATFORM_ADMIN"] },
-            { name: "AI Admin / RAG Sync",  icon: Brain,           path: "/admin/ai-sync",        roles: ["PLATFORM_ADMIN"] },
-            { name: "Cài đặt hệ thống",     icon: Settings,        path: "/settings",             roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Nhà cung cấp", icon: Truck, path: "/admin/suppliers", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Sản phẩm", icon: ShoppingBag, path: "/admin/products", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Danh mục", icon: Layers, path: "/admin/categories", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý nhân sự", icon: Users, path: "/users", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Tổ chức", icon: LayoutDashboard, path: "/admin/organizations", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Phòng ban", icon: Building, path: "/admin/departments", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Cost Center", icon: ShieldAlert, path: "/admin/cost-centers", roles: ["PLATFORM_ADMIN"] },
+            { name: "Nhật ký hệ thống", icon: History, path: "/admin/audit-logs", roles: ["PLATFORM_ADMIN"] },
+            { name: "AI Admin / RAG Sync", icon: Brain, path: "/admin/ai-sync", roles: ["PLATFORM_ADMIN"] },
+            { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["PLATFORM_ADMIN"] },
         ]
     },
     {
@@ -133,12 +132,12 @@ const navigation: NavGroup[] = [
         dot: "#F97316",
         roles: ["SUPPLIER"],
         items: [
-            { name: "Bảng điều khiển",       icon: LayoutDashboard, path: "/supplier/dashboard",     roles: ["SUPPLIER"] },
-            { name: "Quản lý Sản phẩm",      icon: ShoppingBag,     path: "/supplier/products",      roles: ["SUPPLIER"] },
-            { name: "Yêu cầu báo giá (RFQ)", icon: FolderTree,      path: "/supplier/rfq",           roles: ["SUPPLIER"] },
-            { name: "Đơn đặt hàng (PO)",     icon: ShoppingCart,    path: "/supplier/po",            roles: ["SUPPLIER"] },
-            { name: "Hợp đồng & Ký kết",     icon: ShieldCheck,     path: "/procurement/contracts",  roles: ["SUPPLIER"] },
-            { name: "Gửi hóa đơn (Invoice)", icon: FileCheck,       path: "/supplier/invoice",       roles: ["SUPPLIER"] },
+            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/supplier/dashboard", roles: ["SUPPLIER"] },
+            { name: "Quản lý Sản phẩm", icon: ShoppingBag, path: "/supplier/products", roles: ["SUPPLIER"] },
+            { name: "Yêu cầu báo giá (RFQ)", icon: FolderTree, path: "/supplier/rfq", roles: ["SUPPLIER"] },
+            { name: "Đơn đặt hàng (PO)", icon: ShoppingCart, path: "/supplier/po", roles: ["SUPPLIER"] },
+            { name: "Hợp đồng & Ký kết", icon: ShieldCheck, path: "/procurement/contracts", roles: ["SUPPLIER"] },
+            { name: "Gửi hóa đơn (Invoice)", icon: FileCheck, path: "/supplier/invoice", roles: ["SUPPLIER"] },
         ]
     },
     {
@@ -146,8 +145,8 @@ const navigation: NavGroup[] = [
         dot: "#EC4899",
         roles: ["WAREHOUSE"],
         items: [
-            { name: "Bàn làm việc Kho",   icon: LayoutDashboard, path: "/warehouse/dashboard", roles: ["WAREHOUSE"] },
-            { name: "Kiểm định & Tạo GRN", icon: FileCheck,       path: "/warehouse/grn/new",   roles: ["WAREHOUSE"] },
+            { name: "Bàn làm việc Kho", icon: LayoutDashboard, path: "/warehouse/dashboard", roles: ["WAREHOUSE"] },
+            { name: "Kiểm định & Tạo GRN", icon: FileCheck, path: "/warehouse/grn/new", roles: ["WAREHOUSE"] },
         ]
     },
 ];
@@ -167,10 +166,10 @@ export default function Sidebar() {
 
             {/* ── Logo ── */}
             <div className="flex h-14 items-center gap-2.5 px-3.5 border-b border-[rgba(240,246,252,0.08)] shrink-0">
-                <div className="relative h-7 w-7 rounded-lg bg-gradient-to-br from-[#B4533A] to-[#6366F1] flex items-center justify-center shrink-0 shadow-lg shadow-[#B4533A]/30">
+                <div className="relative h-7 w-7 rounded-lg bg-[#FFFFFF] border-2 border-[#B4533A] flex items-center justify-center shrink-0">
                     <span className="text-[#000000] text-[9px] font-black tracking-tight select-none">PS</span>
                     {/* live dot */}
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[#FAF8F5] status-dot-active" />
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#FAF8F5] status-dot-active" />
                 </div>
                 <div className="flex flex-col min-w-0">
                     <span className="text-[12.5px] font-black tracking-tight text-[#000000] whitespace-nowrap leading-none">
@@ -210,7 +209,7 @@ export default function Sidebar() {
                                         >
                                             <item.icon
                                                 size={14}
-                                                className={`shrink-0 transition-colors ${isActive ? "text-[#CB7A62]" : "text-[#000000]"}`}
+                                                className={`shrink-0 transition-colors ${isActive ? "text-[#CB7A62]" : "text-[#B4533A]"}`}
                                             />
                                             <span className="whitespace-nowrap font-medium text-[12px] truncate leading-snug">
                                                 {item.name}

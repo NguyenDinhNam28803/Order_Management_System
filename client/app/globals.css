@@ -488,6 +488,17 @@ strong, b {
   50% { opacity: 0.5; }
 }
 
+@keyframes loading-bar {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 @keyframes countUp {
   from { opacity: 0; scale: 0.5; }
   to   { opacity: 1; }

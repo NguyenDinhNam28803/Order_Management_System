@@ -781,59 +781,47 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Procurement Stat Cards - Clean Consistent Style */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    {/* PR Sourcing Queue Card */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">PR Chờ Tìm Nguồn</span>
-                            <div className="h-10 w-10 rounded-xl bg-[#B4533A]/10 flex items-center justify-center">
-                                <FileText size={20} className="text-[#B4533A]" />
-                            </div>
-                        </div>
-                        <div className="text-3xl font-black text-[#000000] mb-1">{prSourcingQueue.length}</div>
-                        <div className="text-sm font-bold text-[#000000]">Yêu cầu cần xử lý</div>
-                        <div className="text-[10px] text-[#000000] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Tạo RFQ để lấy báo giá</div>
-                    </div>
+                {/* Procurement Stat Cards - Standardized Style */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <StatsCard
+                        title="PR Chờ Tìm Nguồn"
+                        value={prSourcingQueue.length}
+                        subValue="Yêu cầu cần xử lý"
+                        icon={FileText}
+                        color="blue"
+                    >
+                        <p className="text-[10px] text-[#000000]">Tạo RFQ để lấy báo giá</p>
+                    </StatsCard>
 
-                    {/* Active RFQs Card */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">RFQ Đang Xử Lý</span>
-                            <div className="h-10 w-10 rounded-xl bg-[#B4533A]/10 flex items-center justify-center">
-                                <MessageSquare size={20} className="text-[#CB7A62]" />
-                            </div>
-                        </div>
-                        <div className="text-3xl font-black text-[#CB7A62] mb-1">{activeRfqs.length}</div>
-                        <div className="text-sm font-bold text-[#000000]">Hồ sơ báo giá</div>
-                        <div className="text-[10px] text-[#000000] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Chờ phản hồi từ NCC</div>
-                    </div>
+                    <StatsCard
+                        title="RFQ Đang Xử Lý"
+                        value={activeRfqs.length}
+                        subValue="Hồ sơ báo giá"
+                        icon={MessageSquare}
+                        color="purple"
+                    >
+                        <p className="text-[10px] text-[#000000]">Chờ phản hồi từ NCC</p>
+                    </StatsCard>
 
-                    {/* PO Pending Approval Card */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">PO Chờ Duyệt</span>
-                            <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                                <FileCheck size={20} className="text-black" />
-                            </div>
-                        </div>
-                        <div className="text-3xl font-black text-black mb-1">{poApprovalPending.length}</div>
-                        <div className="text-sm font-bold text-[#000000]">Đơn hàng chờ phê duyệt</div>
-                        <div className="text-[10px] text-[#000000] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Cần duyệt để gửi NCC</div>
-                    </div>
+                    <StatsCard
+                        title="PO Chờ Duyệt"
+                        value={poApprovalPending.length}
+                        subValue="Đơn hàng chờ phê duyệt"
+                        icon={FileCheck}
+                        color="amber"
+                    >
+                        <p className="text-[10px] text-[#000000]">Cần duyệt để gửi NCC</p>
+                    </StatsCard>
 
-                    {/* PO Shipping Card */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">PO Đang Giao</span>
-                            <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                <Truck size={20} className="text-black" />
-                            </div>
-                        </div>
-                        <div className="text-3xl font-black text-black mb-1">{shippingPos.length}</div>
-                        <div className="text-sm font-bold text-[#000000]">Đơn hàng đang vận chuyển</div>
-                        <div className="text-[10px] text-[#000000] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">SHIPPING • SHIPPED • ISSUED</div>
-                    </div>
+                    <StatsCard
+                        title="PO Đang Giao"
+                        value={shippingPos.length}
+                        subValue="Đơn hàng đang vận chuyển"
+                        icon={Truck}
+                        color="green"
+                    >
+                        <p className="text-[10px] text-[#000000]">SHIPPING • SHIPPED • ISSUED</p>
+                    </StatsCard>
                 </div>
 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
@@ -1003,6 +991,8 @@ export default function Dashboard() {
                                             };
                                             const progress = getProgress(po.status);
                                             const statusDisplay = getStatusDisplay(po.status);
+                                            const poTotal = po.total || po.totalAmount || (po.items || []).reduce((sum, item) => sum + ((item.qty || 0) * (item.unitPrice || item.estimatedPrice || 0)), 0);
+                                            
                                             return (
                                                 <tr key={po.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
                                                     <td className="font-bold text-[#000000]">{po.poNumber || "PO-***"}</td>
@@ -1018,17 +1008,16 @@ export default function Dashboard() {
                                                                 <div 
                                                                     className={`h-full transition-all duration-1000 ${
                                                                         po.status === 'SHIPPED' ? 'bg-emerald-500' :
-                                                                        po.status === 'SHIPPING' ? 'bg-[#B4533A]' :
                                                                         po.status === 'PARTIALLY_RECEIVED' ? 'bg-amber-500' :
-                                                                        'bg-[#000000]'
+                                                                        'bg-[#B4533A]'
                                                                     }`} 
                                                                     style={{ width: `${progress}%` }}
                                                                 ></div>
                                                             </div>
-                                                            <span className="text-[9px] font-black text-[#000000]">{progress}%</span>
+                                                            <span className="text-[9px] font-black text-[#B4533A] whitespace-nowrap">{progress}%</span>
                                                         </div>
                                                     </td>
-                                                    <td className="text-right font-black text-[#000000] text-sm">{formatVND(po.total)} ₫</td>
+                                                    <td className="text-right font-black text-[#000000] text-sm">{formatVND(poTotal)} ₫</td>
                                                     <td className="text-right pl-2 pr-6">
                                                         <Link 
                                                             href={`/po/${po.id}`}
