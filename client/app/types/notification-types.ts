@@ -38,12 +38,12 @@ export interface EventDisplayConfig {
 }
 
 export const EVENT_DISPLAY_CONFIG: Record<EmailEventType, EventDisplayConfig> = {
-  USER_LOGIN:               { label: 'Đăng nhập',          colorClass: 'text-blue-400',    bgClass: 'bg-blue-500/10',    borderClass: 'border-blue-500/20',    accentHex: '#3b82f6' },
+  USER_LOGIN:               { label: 'Đăng nhập',          colorClass: 'text-[#CB7A62]',    bgClass: 'bg-[#B4533A]/10',    borderClass: 'border-[#B4533A]/20',    accentHex: '#B4533A' },
   USER_REGISTERED:          { label: 'Tài khoản mới',      colorClass: 'text-emerald-400', bgClass: 'bg-emerald-500/10', borderClass: 'border-emerald-500/20', accentHex: '#10b981' },
   NEW_USER_ACCOUNT:         { label: 'Tài khoản mới',      colorClass: 'text-emerald-400', bgClass: 'bg-emerald-500/10', borderClass: 'border-emerald-500/20', accentHex: '#10b981' },
   RFQ_INVITATION:           { label: 'Mời báo giá',        colorClass: 'text-teal-400',    bgClass: 'bg-teal-500/10',    borderClass: 'border-teal-500/20',    accentHex: '#14b8a6' },
-  RFQ_MAGIC_LINK:           { label: 'Báo giá NCC',        colorClass: 'text-blue-400',    bgClass: 'bg-blue-500/10',    borderClass: 'border-blue-500/20',    accentHex: '#1d4ed8' },
-  QUOTATION_RECEIVED:       { label: 'Nhận báo giá',       colorClass: 'text-blue-400',    bgClass: 'bg-blue-500/10',    borderClass: 'border-blue-500/20',    accentHex: '#1d4ed8' },
+  RFQ_MAGIC_LINK:           { label: 'Báo giá NCC',        colorClass: 'text-[#CB7A62]',    bgClass: 'bg-[#B4533A]/10',    borderClass: 'border-[#B4533A]/20',    accentHex: '#1d4ed8' },
+  QUOTATION_RECEIVED:       { label: 'Nhận báo giá',       colorClass: 'text-[#CB7A62]',    bgClass: 'bg-[#B4533A]/10',    borderClass: 'border-[#B4533A]/20',    accentHex: '#1d4ed8' },
   PO_APPROVAL_REQUEST:      { label: 'Chờ duyệt PO',       colorClass: 'text-amber-400',   bgClass: 'bg-amber-500/10',   borderClass: 'border-amber-500/20',   accentHex: '#f59e0b' },
   PO_APPROVED:              { label: 'PO đã duyệt',        colorClass: 'text-emerald-400', bgClass: 'bg-emerald-500/10', borderClass: 'border-emerald-500/20', accentHex: '#10b981' },
   PO_CONFIRM_LINK:          { label: 'Xác nhận PO',        colorClass: 'text-teal-400',    bgClass: 'bg-teal-500/10',    borderClass: 'border-teal-500/20',    accentHex: '#0f766e' },
@@ -53,7 +53,7 @@ export const EVENT_DISPLAY_CONFIG: Record<EmailEventType, EventDisplayConfig> = 
   GRN_CONFIRMED:            { label: 'Xác nhận nhập kho',  colorClass: 'text-teal-400',    bgClass: 'bg-teal-500/10',    borderClass: 'border-teal-500/20',    accentHex: '#0f766e' },
   GRN_MILESTONE_UPDATE:     { label: 'Cập nhật giao hàng', colorClass: 'text-amber-400',   bgClass: 'bg-amber-500/10',   borderClass: 'border-amber-500/20',   accentHex: '#b45309' },
   INVOICE_RECEIVED:         { label: 'Nhận hóa đơn',       colorClass: 'text-teal-400',    bgClass: 'bg-teal-500/10',    borderClass: 'border-teal-500/20',    accentHex: '#0f766e' },
-  INVOICE_SUBMIT_LINK:      { label: 'Nộp hóa đơn',        colorClass: 'text-blue-400',    bgClass: 'bg-blue-500/10',    borderClass: 'border-blue-500/20',    accentHex: '#1e40af' },
+  INVOICE_SUBMIT_LINK:      { label: 'Nộp hóa đơn',        colorClass: 'text-[#CB7A62]',    bgClass: 'bg-[#B4533A]/10',    borderClass: 'border-[#B4533A]/20',    accentHex: '#1e40af' },
   PAYMENT_CONFIRMED:        { label: 'Thanh toán thành công', colorClass: 'text-emerald-400', bgClass: 'bg-emerald-500/10', borderClass: 'border-emerald-500/20', accentHex: '#065f46' },
   CONTRACT_EXPIRY_WARNING:  { label: 'Hợp đồng sắp hết hạn', colorClass: 'text-amber-400', bgClass: 'bg-amber-500/10',  borderClass: 'border-amber-500/20',   accentHex: '#b45309' },
   BUDGET_LIMIT_WARNING:     { label: 'Cảnh báo ngân sách', colorClass: 'text-amber-400',   bgClass: 'bg-amber-500/10',   borderClass: 'border-amber-500/20',   accentHex: '#f59e0b' },

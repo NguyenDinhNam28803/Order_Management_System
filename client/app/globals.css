@@ -1,67 +1,66 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Dark Enterprise — GitHub Dark + Linear.app inspired
-     3-layer background: #0D1117 → #161B22 → #21262D */
-  --color-bg-primary:   #0D1117;
-  --color-bg-secondary: #161B22;
-  --color-bg-tertiary:  #21262D;
-  --color-bg-card: rgba(33, 38, 45, 0.85);
+  /* Editorial Premium — Cream & Ink inspired */
+  --color-bg-primary:   #F2EFE9;
+  --color-bg-secondary: #FAF8F5;
+  --color-bg-tertiary:  #FFFFFF;
+  --color-bg-card:      #FFFFFF;
 
-  /* Blue #2563EB — action, trust, finance */
-  --color-accent-blue:    #2563EB;
-  --color-accent-emerald: #10B981;
+  /* Ink & Primary */
+  --color-accent-blue:    #B4533A; /* Using Burnt Orange as the primary accent */
+  --color-accent-emerald: #3E6D4E; /* Approved Green */
   --color-accent-violet:  #8B5CF6;
-  --color-accent-amber:   #F59E0B;
-  --color-accent-rose:    #F43F5E;
+  --color-accent-amber:   #B8860B; /* Pending Mustard */
+  --color-accent-rose:    #A52A2A; /* Rejected Deep Red */
 
   /* Text */
-  --color-text-primary:   #E6EDF3;
-  --color-text-secondary: #8B949E;
-  --color-text-muted:     #484F58;
-  --color-text-inverse:   #0D1117;
+  --color-text-primary:   #000000;
+  --color-text-secondary: #000000;
+  --color-text-muted:     #333333;
+  --color-text-inverse:   #FFFFFF;
 
   /* Border & Glass */
-  --color-border:       rgba(240, 246, 252, 0.1);
-  --color-glass-bg:     rgba(33, 38, 45, 0.6);
-  --color-glass-border: rgba(240, 246, 252, 0.15);
+  --color-border:       #D1CDC2;
+  --color-glass-bg:     rgba(255, 255, 255, 0.7);
+  --color-glass-border: #D1CDC2;
 
   /* Legacy aliases */
-  --color-brand-primary:   #2563EB;
-  --color-brand-secondary: #10B981;
-  --color-erp-navy:        #161B22;
-  --color-erp-blue:        #2563EB;
+  --color-brand-primary:   #1A1A17;
+  --color-brand-secondary: #3E6D4E;
+  --color-erp-navy:        #1A1A17;
+  --color-erp-blue:        #B4533A;
 
   /* Semantic status */
-  --color-status-success: #3FB950;
-  --color-status-error:   #F85149;
-  --color-status-warning: #D29922;
-  --color-status-info:    #2563EB;
-  --color-status-draft:   #8B5CF6;
-  --color-status-pending: #D29922;
+  --color-status-success: #3E6D4E;
+  --color-status-error:   #A52A2A;
+  --color-status-warning: #B8860B;
+  --color-status-info:    #B4533A;
+  --color-status-draft:   #000000;
+  --color-status-pending: #B8860B;
 
-  /* Typography — DM Sans for UI, JetBrains Mono for numbers/codes */
+  /* Typography — Inter for everything */
   --spacing-container: clamp(1rem, 5vw, 2.5rem);
-  --font-sans: var(--font-dm-sans), 'DM Sans', ui-sans-serif, system-ui;
+  --font-sans: var(--font-inter), 'Inter', ui-sans-serif, system-ui;
+  --font-serif: var(--font-inter), 'Inter', serif; 
   --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, monospace;
-  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-bounce: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :root {
-  /* Dark Enterprise default */
-  --background:           #0D1117;
-  --background-secondary: #161B22;
-  --background-elevated:  #21262D;
-  --foreground:           #E6EDF3;
-  --foreground-secondary: #8B949E;
-  --card: rgba(33, 38, 45, 0.85);
-  --card-foreground: #E6EDF3;
-  --border: rgba(240, 246, 252, 0.1);
-  --input: rgba(33, 38, 45, 0.6);
-  --ring: #2563EB;
-  --muted: #484F58;
-  --accent: rgba(37, 99, 235, 0.15);
+  /* Editorial Premium Theme */
+  --background:           #FFFFFF;
+  --background-secondary: #FAF8F5;
+  --background-elevated:  #FFFFFF;
+  --foreground:           #000000;
+  --foreground-secondary: #000000;
+  --card: #FFFFFF;
+  --card-foreground: #000000;
+  --border: #D1CDC2;
+  --input: #FFFFFF;
+  --ring: #B4533A;
+  --muted: #333333;
+  --accent: rgba(0, 0, 0, 0.05);
 
   --radius-xl: 0.75rem;
   --radius-lg: 0.5rem;
@@ -71,18 +70,18 @@
 
 /* Light Theme Override */
 [data-theme='light'] {
-  --background: #F8FAFC;
-  --background-secondary: #F1F5F9;
+  --background: #FFFFFF;
+  --background-secondary: #FAF8F5;
   --background-elevated: #FFFFFF;
-  --foreground: #0F172A;
-  --foreground-secondary: #475569;
+  --foreground: #000000;
+  --foreground-secondary: #000000;
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
-  --border: #E2E8F0;
-  --input: #F1F5F9;
-  --ring: #3B82F6;
-  --muted: #64748B;
-  --accent: rgba(59, 130, 246, 0.1);
+  --card-foreground: #000000;
+  --border: #D1CDC2;
+  --input: #FAF8F5;
+  --ring: #B4533A;
+  --muted: #333333;
+  --accent: rgba(0, 0, 0, 0.05);
 }
 
 body {
@@ -143,7 +142,7 @@ body {
   background: rgba(15, 17, 23, 0.6);
   border: 1px solid rgba(148, 163, 184, 0.15);
   border-radius: var(--radius-lg);
-  color: var(--text-primary, #F8FAFC);
+  color: var(--text-primary, #000000);
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   transition: var(--transition-smooth);
@@ -152,14 +151,14 @@ body {
 
 .glass-input:focus {
   outline: none;
-  border-color: #3B82F6;
+  border-color: #B4533A;
   box-shadow: 
     0 0 0 3px rgba(59, 130, 246, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-input::placeholder {
-  color: var(--text-muted, #64748B);
+  color: var(--text-muted, #000000);
 }
 
 /* --- MODERN ERP COMPONENTS --- */
@@ -175,8 +174,8 @@ body {
 }
 
 .erp-card:hover {
-  border-color: rgba(148, 163, 184, 0.2);
-  box-shadow: 0 4px 24px -6px rgba(0, 0, 0, 0.4);
+  border-color: #D1CDC2;
+  box-shadow: 0 2px 12px rgba(26, 26, 23, 0.04);
 }
 
 /* Table wrapper — no hover lift, keeps data rows stable */
@@ -200,7 +199,7 @@ body {
 }
 
 .erp-table thead {
-  background: #0D1117;
+  background: #FAF8F5;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -212,7 +211,7 @@ body {
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748B;
+  color: #000000;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   text-align: left;
   white-space: nowrap;
@@ -221,12 +220,12 @@ body {
 .erp-table td {
   padding: 1rem;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-  color: #F8FAFC;
+  color: #1A1A17;
   transition: background 0.15s;
 }
 
 .erp-table tbody tr:hover td {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(180, 83, 58, 0.1);
 }
 
 .erp-table tbody tr:last-child td {
@@ -275,7 +274,7 @@ body {
 
 .status-info {
   background: rgba(37, 99, 235, 0.15);
-  color: #60A5FA;
+  color: #CB7A62;
   border-color: rgba(37, 99, 235, 0.3);
 }
 
@@ -289,7 +288,7 @@ body {
 }
 .flow-po {
   background: rgba(37, 99, 235, 0.15);
-  color: #60A5FA;
+  color: #CB7A62;
   border-color: rgba(37, 99, 235, 0.3);
 }
 .flow-grn {
@@ -342,7 +341,7 @@ body {
 
 .status-cancelled {
   background: rgba(100, 116, 139, 0.12);
-  color: #64748B;
+  color: #000000;
   border-color: rgba(100, 116, 139, 0.25);
 }
 
@@ -360,11 +359,11 @@ body {
 }
 
 .role-ceo { background: rgba(139, 92, 246, 0.2); color: #A78BFA; border-color: rgba(139, 92, 246, 0.4); }
-.role-director { background: rgba(59, 130, 246, 0.2); color: #60A5FA; border-color: rgba(59, 130, 246, 0.4); }
+.role-director { background: rgba(59, 130, 246, 0.2); color: #CB7A62; border-color: rgba(59, 130, 246, 0.4); }
 .role-finance { background: rgba(16, 185, 129, 0.2); color: #34D399; border-color: rgba(16, 185, 129, 0.4); }
 .role-procurement { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border-color: rgba(245, 158, 11, 0.4); }
 .role-approver { background: rgba(99, 102, 241, 0.2); color: #818CF8; border-color: rgba(99, 102, 241, 0.4); }
-.role-requester { background: rgba(148, 163, 184, 0.2); color: #CBD5E1; border-color: rgba(148, 163, 184, 0.4); }
+.role-requester { background: rgba(148, 163, 184, 0.2); color: #000000; border-color: rgba(148, 163, 184, 0.4); }
 .role-warehouse { background: rgba(236, 72, 153, 0.2); color: #F472B6; border-color: rgba(236, 72, 153, 0.4); }
 .role-supplier { background: rgba(249, 115, 22, 0.2); color: #FB923C; border-color: rgba(249, 115, 22, 0.4); }
 .role-admin { background: rgba(244, 63, 94, 0.2); color: #FB7185; border-color: rgba(244, 63, 94, 0.4); }
@@ -375,8 +374,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-  color: white;
+  background: #1A1A17;
+  color: #F2EFE9;
   padding: 0.625rem 1.25rem;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -384,12 +383,13 @@ body {
   border: none;
   cursor: pointer;
   transition: var(--transition-smooth);
-  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background: #000000;
 }
 
 .btn-primary:active {
@@ -510,7 +510,7 @@ body {
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.meter-used { background: linear-gradient(90deg, #3B82F6, #60A5FA); }
+.meter-used { background: linear-gradient(90deg, #B4533A, #CB7A62); }
 .meter-committed { background: linear-gradient(90deg, #8B5CF6, #A78BFA); }
 .meter-available { background: linear-gradient(90deg, #10B981, #34D399); }
 .meter-warning { background: linear-gradient(90deg, #F59E0B, #FBBF24); }
@@ -521,35 +521,35 @@ body {
 .heatmap-medium { background: rgba(245, 158, 11, 0.2); color: #FBBF24; }
 .heatmap-high { background: rgba(239, 68, 68, 0.2); color: #F87171; }
 
-/* Sidebar Dark — fixed 180px, GitHub Dark layer */
+/* Sidebar Light Editorial */
 .sidebar-dark {
-  background: #161B22;
-  border-right: 1px solid rgba(240, 246, 252, 0.1);
+  background: #F2EFE9;
+  border-right: 1px solid #D1CDC2;
 }
 
 .sidebar-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.4rem 0.625rem;
+  padding: 0.5rem 0.75rem;
   border-radius: var(--radius-md);
-  color: #8B949E;
-  font-size: 0.78rem;
-  font-weight: 500;
+  color: #000000;
+  font-size: 0.8125rem;
+  font-weight: 600;
   transition: var(--transition-smooth);
   cursor: pointer;
   position: relative;
 }
 
 .sidebar-item:hover {
-  background: rgba(240, 246, 252, 0.06);
-  color: #E6EDF3;
+  background: rgba(26, 26, 23, 0.05);
+  color: #1A1A17;
 }
 
 .sidebar-item.active {
-  background: rgba(37, 99, 235, 0.15);
-  color: #60A5FA;
-  border: 1px solid rgba(37, 99, 235, 0.25);
+  background: #1A1A17;
+  color: #F2EFE9;
+  border: 1px solid #1A1A17;
 }
 
 /* Notification Badge */
@@ -588,14 +588,14 @@ body {
 
 /* Gradient Text */
 .gradient-text {
-  background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 50%, #F472B6 100%);
+  background: linear-gradient(135deg, #CB7A62 0%, #A78BFA 50%, #F472B6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-blue {
-  background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #CB7A62 0%, #B4533A 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -634,7 +634,7 @@ body {
 .erp-label {
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--color-text-secondary, #94A3B8);
+  color: var(--color-text-secondary, #000000);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-left: 0.25rem;
@@ -642,24 +642,24 @@ body {
 
 .erp-input {
   width: 100%;
-  background-color: var(--color-bg-primary, #0F1117);
+  background-color: var(--color-bg-primary, #FFFFFF);
   border: 1px solid var(--color-border, rgba(148, 163, 184, 0.1));
   border-radius: var(--radius-lg, 0.75rem);
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--color-text-primary, #F8FAFC);
+  color: var(--color-text-primary, #000000);
   transition: var(--transition-smooth, all 0.3s ease);
   outline: none;
 }
 
 .erp-input:focus {
-  border-color: var(--color-accent-blue, #3B82F6);
+  border-color: var(--color-accent-blue, #B4533A);
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .erp-input::placeholder {
-  color: var(--color-text-muted, #64748B);
+  color: var(--color-text-muted, #000000);
   font-weight: 500;
 }
 
@@ -687,14 +687,15 @@ select.erp-input {
 .page-title {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #F1F5F9;
+  font-family: var(--font-serif);
+  color: #1A1A17;
   letter-spacing: -0.01em;
   line-height: 1.3;
 }
 
 .page-subtitle {
   font-size: 0.75rem;
-  color: #64748B;
+  color: #000000;
   margin-top: 0.125rem;
   font-weight: 500;
 }
@@ -728,7 +729,7 @@ select.erp-input {
 .kpi-label {
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #64748B;
+  color: #000000;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -745,7 +746,7 @@ select.erp-input {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 9999px;
-  background: #2563EB;
+  background: #A85032;
   color: white;
   font-size: 0.6875rem;
   font-weight: 800;
@@ -765,7 +766,7 @@ select.erp-input {
 .detail-label {
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #64748B;
+  color: #000000;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -773,7 +774,8 @@ select.erp-input {
 .detail-value {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #F1F5F9;
+  font-family: var(--font-serif);
+  color: #1A1A17;
 }
 
 /* Info banner */
@@ -786,7 +788,7 @@ select.erp-input {
   background: rgba(59, 130, 246, 0.08);
   border: 1px solid rgba(59, 130, 246, 0.18);
   font-size: 0.8125rem;
-  color: #94A3B8;
+  color: #000000;
   line-height: 1.5;
 }
 
@@ -800,7 +802,7 @@ select.erp-input {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 600;
-  color: #94A3B8;
+  color: #000000;
   white-space: nowrap;
 }
 
@@ -814,7 +816,7 @@ select.erp-input {
   border: 1px solid rgba(148, 163, 184, 0.12);
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #94A3B8;
+  color: #000000;
   font-family: var(--font-mono);
   gap: 0.25rem;
 }
@@ -827,7 +829,7 @@ select.erp-input {
   justify-content: center;
   padding: 3rem 1.5rem;
   text-align: center;
-  color: #64748B;
+  color: #000000;
 }
 
 .empty-state-icon {
@@ -838,12 +840,12 @@ select.erp-input {
 .empty-state-title {
   font-size: 0.875rem;
   font-weight: 700;
-  color: #94A3B8;
+  color: #000000;
 }
 
 .empty-state-desc {
   font-size: 0.75rem;
-  color: #64748B;
+  color: #000000;
   margin-top: 0.25rem;
   opacity: 0.75;
 }
@@ -860,9 +862,9 @@ select.erp-input {
 }
 .sidebar-item.active {
   background: rgba(37, 99, 235, 0.12);
-  color: #60A5FA;
+  color: #CB7A62;
   border: 1px solid rgba(37, 99, 235, 0.22);
-  border-left: 2px solid #3B82F6;
+  border-left: 2px solid #B4533A;
 }
 
 /* AI glow animation */
@@ -925,7 +927,7 @@ select.erp-input {
 .status-dot-active  { background: #3FB950; box-shadow: 0 0 5px rgba(63,185,80,0.6); animation: pulse 2s ease-in-out infinite; }
 .status-dot-pending { background: #D29922; box-shadow: 0 0 5px rgba(210,153,34,0.6); animation: pulse 2s ease-in-out infinite; }
 .status-dot-error   { background: #F85149; }
-.status-dot-offline { background: #484F58; }
+.status-dot-offline { background: #000000; }
 
 /* AI badge / button variant */
 .btn-ai {
@@ -953,7 +955,7 @@ select.erp-input {
   content: '';
   position: absolute; top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #3B82F6, #6366F1, #8B5CF6);
+  background: linear-gradient(90deg, #B4533A, #6366F1, #8B5CF6);
 }
 
 /* Colored erp-card variants */
@@ -967,7 +969,7 @@ select.erp-input {
   display: flex; align-items: center; gap: 0.75rem;
   font-size: 0.6875rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.08em;
-  color: #484F58;
+  color: #000000;
 }
 .divider-label::before,
 .divider-label::after {
@@ -979,7 +981,7 @@ select.erp-input {
 .num-display { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
 /* Topbar breadcrumb separator */
-.breadcrumb-sep { color: #30363D; font-size: 0.75rem; user-select: none; }
+.breadcrumb-sep { color: #000000; font-size: 0.75rem; user-select: none; }
 
 /* Notification dot pulse */
 @keyframes notif-pop {
@@ -994,13 +996,13 @@ select.erp-input {
 .kbd {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 0.125rem 0.375rem;
-  background: rgba(33, 38, 45, 0.9);
-  border: 1px solid rgba(240, 246, 252, 0.12);
+  background: #FAF8F5;
+  border: 1px solid #D1CDC2;
   border-bottom-width: 2px;
   border-radius: 0.25rem;
   font-family: var(--font-mono);
   font-size: 0.625rem; font-weight: 700;
-  color: #8B949E;
+  color: #000000;
   line-height: 1.4;
 }
 
@@ -1009,29 +1011,29 @@ select.erp-input {
   display: flex; align-items: center; gap: 0.4rem;
   font-size: 0.5625rem; font-weight: 800;
   text-transform: uppercase; letter-spacing: 0.12em;
-  color: #30363D;
+  color: #000000;
 }
 .nav-group-dot {
   width: 4px; height: 4px; border-radius: 50%;
-  background: #30363D; flex-shrink: 0;
+  background: #D1CDC2; flex-shrink: 0;
 }
 /* ── Form helpers (used in procurement/pos) ── */
 .form-input, .form-select {
   width: 100%;
-  background: #0F1117;
-  border: 1px solid rgba(148,163,184,0.1);
+  background: #FFFFFF;
+  border: 1px solid #D1CDC2;
   border-radius: 0.625rem;
   padding: 0.5rem 0.75rem;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #F8FAFC;
+  color: #1A1A17;
   outline: none;
   transition: border-color 0.15s, background 0.15s;
   appearance: none;
 }
 .form-input:focus, .form-select:focus {
-  border-color: rgba(59,130,246,0.4);
-  background: #161922;
+  border-color: #B4533A;
+  background: #FAF8F5;
 }
-.form-input::placeholder { color: #64748B; font-weight: 500; }
-.form-select option { background: #161922; color: #F8FAFC; }
+.form-input::placeholder { color: #000000; font-weight: 500; }
+.form-select option { background: #FFFFFF; color: #1A1A17; }

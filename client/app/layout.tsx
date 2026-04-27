@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
 });
@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body
-        className={`${dmSans.variable} ${jetbrainsMono.variable} antialiased bg-[#0D1117] text-[#E6EDF3] font-sans min-h-screen`}
+        className={`${inter.variable} ${jetbrainsMono.variable} antialiased bg-[#FFFFFF] text-[#000000] font-sans min-h-screen`}
         suppressHydrationWarning
       >
         <ProcurementProvider>
@@ -42,3 +42,4 @@ export default function RootLayout({
     </html>
   );
 }
+

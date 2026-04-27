@@ -14,9 +14,9 @@ const SYNC_ENTITIES = [
         name: "Sản phẩm & Vật tư",
         icon: Layers,
         desc: "Product Catalog, Description, SKU, Pricing",
-        color: "text-blue-400",
-        bg: "bg-blue-400/10",
-        border: "border-blue-400/20",
+        color: "text-[#CB7A62]",
+        bg: "bg-[#CB7A62]/10",
+        border: "border-[#CB7A62]/20",
         count: "4,230",
     },
     {
@@ -24,7 +24,7 @@ const SYNC_ENTITIES = [
         name: "Lịch sử Đơn hàng (PO)",
         icon: FileText,
         desc: "PO, Line Items, Tình trạng Giao hàng",
-        color: "text-emerald-400",
+        color: "text-black",
         bg: "bg-emerald-400/10",
         border: "border-emerald-400/20",
         count: "3,810",
@@ -44,7 +44,7 @@ const SYNC_ENTITIES = [
         name: "Hồ sơ Nhà cung cấp",
         icon: Users,
         desc: "Năng lực, SLA, Lịch sử KPI, Hợp đồng",
-        color: "text-amber-400",
+        color: "text-black",
         bg: "bg-amber-400/10",
         border: "border-amber-400/20",
         count: "2,220",
@@ -52,9 +52,9 @@ const SYNC_ENTITIES = [
 ];
 
 const ACTIVITY_LOG = [
-    { time: "10:42", action: "Global Sync hoàn thành",   detail: "12,450 embeddings đã cập nhật", icon: CheckCircle2, color: "text-emerald-400" },
-    { time: "08:15", action: "Partial Sync — products",   detail: "4,230 vectors đã upsert",       icon: Layers,       color: "text-blue-400"   },
-    { time: "Hôm qua", action: "Scheduled Sync",          detail: "Auto-sync chạy thành công",     icon: Clock,        color: "text-[#484F58]"  },
+    { time: "10:42", action: "Global Sync hoàn thành",   detail: "12,450 embeddings đã cập nhật", icon: CheckCircle2, color: "text-black" },
+    { time: "08:15", action: "Partial Sync — products",   detail: "4,230 vectors đã upsert",       icon: Layers,       color: "text-[#CB7A62]"   },
+    { time: "Hôm qua", action: "Scheduled Sync",          detail: "Auto-sync chạy thành công",     icon: Clock,        color: "text-[#000000]"  },
 ];
 
 interface ParsedEmail {
@@ -142,14 +142,14 @@ export default function AISyncPage() {
                 <div>
                     <div className="flex items-center gap-2 mb-2">
                         <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center shadow-lg shadow-violet-500/30">
-                            <Brain size={16} className="text-white" />
+                            <Brain size={16} className="text-[#000000]" />
                         </div>
                         <span className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-400 bg-violet-400/10 border border-violet-400/20 px-2 py-0.5 rounded-md">
                             RAG · Vector DB
                         </span>
                     </div>
-                    <h1 className="text-2xl font-black text-[#F8FAFC] tracking-tight">Huấn luyện & Đồng bộ AI</h1>
-                    <p className="text-[12px] text-[#64748B] mt-1 font-medium">
+                    <h1 className="text-2xl font-black text-[#000000] tracking-tight">Huấn luyện & Đồng bộ AI</h1>
+                    <p className="text-[12px] text-[#000000] mt-1 font-medium">
                         Kết nối Vector Database cho Trợ lý Mua hàng Thông minh ProcureSmart
                     </p>
                 </div>
@@ -157,7 +157,7 @@ export default function AISyncPage() {
                 <button
                     onClick={handleGlobalSync}
                     disabled={isGlobalSyncing}
-                    className="relative flex items-center gap-2.5 bg-gradient-to-r from-[#3B82F6] to-[#6366F1] text-white px-6 py-3 rounded-xl font-bold text-[12px] shadow-xl shadow-blue-500/25 hover:shadow-blue-500/45 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
+                    className="relative flex items-center gap-2.5 bg-gradient-to-r from-[#B4533A] to-[#6366F1] text-[#000000] px-6 py-3 rounded-xl font-bold text-[12px] shadow-xl shadow-[#B4533A]/25 hover:shadow-[#B4533A]/45 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
                 >
                     {isGlobalSyncing && (
                         <div className="absolute inset-0 bg-white/10 transition-all duration-300" style={{ width: `${globalProgress}%` }} />
@@ -172,9 +172,9 @@ export default function AISyncPage() {
             {/* ── Stats Row ── */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
                 {[
-                    { label: "Vector Index",      value: "Active",       icon: Database, color: "text-emerald-400", bg: "bg-emerald-400/10", sub: "pgvector · dim 768" },
-                    { label: "Total Embeddings",  value: "12,450",       icon: Layers,   color: "text-blue-400",    bg: "bg-blue-400/10",    sub: "+320 hôm nay" },
-                    { label: "Lần sync cuối",     value: "2 giờ trước",  icon: Clock,    color: "text-amber-400",   bg: "bg-amber-400/10",   sub: "Auto · 06:00 AM" },
+                    { label: "Vector Index",      value: "Active",       icon: Database, color: "text-black", bg: "bg-emerald-400/10", sub: "pgvector · dim 768" },
+                    { label: "Total Embeddings",  value: "12,450",       icon: Layers,   color: "text-[#CB7A62]",    bg: "bg-[#CB7A62]/10",    sub: "+320 hôm nay" },
+                    { label: "Lần sync cuối",     value: "2 giờ trước",  icon: Clock,    color: "text-black",   bg: "bg-amber-400/10",   sub: "Auto · 06:00 AM" },
                     { label: "Query Speed",       value: "45 ms",        icon: Zap,      color: "text-violet-400",  bg: "bg-violet-400/10",  sub: "avg p95: 82 ms" },
                 ].map((s, i) => (
                     <div key={i} className="erp-card flex items-center gap-3 p-4">
@@ -182,9 +182,9 @@ export default function AISyncPage() {
                             <s.icon size={18} />
                         </div>
                         <div className="min-w-0">
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-[#484F58] truncate">{s.label}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-[#000000] truncate">{s.label}</p>
                             <p className={`text-[17px] font-black leading-tight num-display ${s.color}`}>{s.value}</p>
-                            <p className="text-[9px] text-[#484F58] mt-0.5 truncate">{s.sub}</p>
+                            <p className="text-[9px] text-[#000000] mt-0.5 truncate">{s.sub}</p>
                         </div>
                     </div>
                 ))}
@@ -195,10 +195,10 @@ export default function AISyncPage() {
                 {/* Entity Sync Cards */}
                 <div className="xl:col-span-2 erp-card p-6">
                     <div className="flex items-center justify-between mb-5">
-                        <h2 className="text-[11px] font-black text-[#64748B] uppercase tracking-widest">
+                        <h2 className="text-[11px] font-black text-[#000000] uppercase tracking-widest">
                             Đồng bộ từng phần — Partial Ingestion
                         </h2>
-                        <span className="text-[9px] text-[#484F58] bg-[#21262D] border border-[rgba(240,246,252,0.08)] px-2 py-0.5 rounded-md">
+                        <span className="text-[9px] text-[#000000] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] px-2 py-0.5 rounded-md">
                             4 nguồn dữ liệu
                         </span>
                     </div>
@@ -212,7 +212,7 @@ export default function AISyncPage() {
                                     className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 ${
                                         status === "success" ? "bg-emerald-500/5 border-emerald-500/20"
                                         : status === "error" ? "bg-rose-500/5 border-rose-500/20"
-                                        : `bg-[#0D1117] ${entity.border} hover:border-opacity-50`
+                                        : `bg-[#FFFFFF] ${entity.border} hover:border-opacity-50`
                                     }`}
                                 >
                                     <div className="flex items-center gap-3 min-w-0">
@@ -220,18 +220,18 @@ export default function AISyncPage() {
                                             <Icon size={20} />
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-[12px] font-bold text-[#F8FAFC] truncate">{entity.name}</p>
-                                            <p className="text-[10px] text-[#64748B] truncate max-w-[140px]">{entity.desc}</p>
+                                            <p className="text-[12px] font-bold text-[#000000] truncate">{entity.name}</p>
+                                            <p className="text-[10px] text-[#000000] truncate max-w-[140px]">{entity.desc}</p>
                                             <p className={`text-[9px] font-bold mt-0.5 num-display ${entity.color}`}>{entity.count} vectors</p>
                                         </div>
                                     </div>
                                     <div className="shrink-0 ml-2">
                                         {status === "success" ? (
-                                            <div className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-emerald-500/20">
+                                            <div className="flex items-center gap-1.5 bg-emerald-500/10 text-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-emerald-500/20">
                                                 <CheckCircle2 size={12} /> Done
                                             </div>
                                         ) : status === "error" ? (
-                                            <div className="flex items-center gap-1.5 bg-rose-500/10 text-rose-400 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-rose-500/20">
+                                            <div className="flex items-center gap-1.5 bg-rose-500/10 text-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-rose-500/20">
                                                 <AlertCircle size={12} /> Failed
                                             </div>
                                         ) : (
@@ -255,20 +255,20 @@ export default function AISyncPage() {
                 {/* Activity Log */}
                 <div className="erp-card p-5 flex flex-col">
                     <div className="flex items-center gap-2 mb-4">
-                        <Activity size={14} className="text-[#484F58]" />
-                        <h2 className="text-[11px] font-black text-[#64748B] uppercase tracking-widest">Hoạt động gần đây</h2>
+                        <Activity size={14} className="text-[#000000]" />
+                        <h2 className="text-[11px] font-black text-[#000000] uppercase tracking-widest">Hoạt động gần đây</h2>
                     </div>
                     <div className="space-y-3 flex-1">
                         {ACTIVITY_LOG.map((log, i) => (
                             <div key={i} className="flex items-start gap-3">
-                                <div className="h-7 w-7 rounded-lg bg-[#21262D] flex items-center justify-center shrink-0 mt-0.5">
+                                <div className="h-7 w-7 rounded-lg bg-[#FFFFFF] flex items-center justify-center shrink-0 mt-0.5">
                                     <log.icon size={13} className={log.color} />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-[11px] font-semibold text-[#E6EDF3] leading-snug">{log.action}</p>
-                                    <p className="text-[9px] text-[#484F58] mt-0.5">{log.detail}</p>
+                                    <p className="text-[11px] font-semibold text-[#000000] leading-snug">{log.action}</p>
+                                    <p className="text-[9px] text-[#000000] mt-0.5">{log.detail}</p>
                                 </div>
-                                <span className="text-[9px] text-[#30363D] shrink-0 mt-0.5">{log.time}</span>
+                                <span className="text-[9px] text-[#000000] shrink-0 mt-0.5">{log.time}</span>
                             </div>
                         ))}
                     </div>
@@ -280,8 +280,8 @@ export default function AISyncPage() {
                             { label: "Redis Queue",          ok: true },
                         ].map((s, i) => (
                             <div key={i} className="flex items-center justify-between">
-                                <span className="text-[11px] text-[#8B949E]">{s.label}</span>
-                                <div className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wide ${s.ok ? "text-emerald-400" : "text-rose-400"}`}>
+                                <span className="text-[11px] text-[#000000]">{s.label}</span>
+                                <div className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wide ${s.ok ? "text-black" : "text-black"}`}>
                                     <span className={`status-dot ${s.ok ? "status-dot-active" : "status-dot-error"}`} />
                                     {s.ok ? "Online" : "Offline"}
                                 </div>
@@ -295,37 +295,37 @@ export default function AISyncPage() {
             <div className="erp-card p-6">
                 <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#3B82F6]/20 to-[#6366F1]/20 border border-[#3B82F6]/20 flex items-center justify-center shrink-0">
-                            <Mail size={16} className="text-[#3B82F6]" />
+                        <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#B4533A]/20 to-[#6366F1]/20 border border-[#B4533A]/20 flex items-center justify-center shrink-0">
+                            <Mail size={16} className="text-[#B4533A]" />
                         </div>
                         <div>
-                            <h2 className="text-[13px] font-black text-[#E6EDF3]">Email RAG Ingestion</h2>
-                            <p className="text-[10px] text-[#64748B]">Đọc email Gmail qua IMAP · Nhúng vào Vector DB</p>
+                            <h2 className="text-[13px] font-black text-[#000000]">Email RAG Ingestion</h2>
+                            <p className="text-[10px] text-[#000000]">Đọc email Gmail qua IMAP · Nhúng vào Vector DB</p>
                         </div>
                     </div>
-                    <span className="text-[9px] font-bold text-[#3B82F6] bg-[#3B82F6]/10 border border-[#3B82F6]/20 px-2 py-0.5 rounded-md uppercase tracking-widest">
+                    <span className="text-[9px] font-bold text-[#B4533A] bg-[#B4533A]/10 border border-[#B4533A]/20 px-2 py-0.5 rounded-md uppercase tracking-widest">
                         Gmail IMAP
                     </span>
                 </div>
 
                 {/* Controls */}
                 <div className="flex flex-wrap items-center gap-3 mb-5">
-                    <div className="flex items-center gap-2 bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg px-3 py-2">
-                        <span className="text-[11px] text-[#64748B]">Số email:</span>
+                    <div className="flex items-center gap-2 bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg px-3 py-2">
+                        <span className="text-[11px] text-[#000000]">Số email:</span>
                         <input
                             type="number"
                             min={5}
                             max={200}
                             value={emailLimit}
                             onChange={e => setEmailLimit(Number(e.target.value))}
-                            className="w-14 bg-transparent text-[#E6EDF3] text-[12px] font-bold outline-none text-center"
+                            className="w-14 bg-transparent text-[#000000] text-[12px] font-bold outline-none text-center"
                         />
                     </div>
 
                     <button
                         onClick={handleFetchEmails}
                         disabled={emailsLoading}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#21262D] border border-[rgba(240,246,252,0.1)] hover:border-[#3B82F6]/40 text-[#E6EDF3] rounded-lg text-[11px] font-bold transition-all disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#FFFFFF] border border-[rgba(240,246,252,0.1)] hover:border-[#B4533A]/40 text-[#000000] rounded-lg text-[11px] font-bold transition-all disabled:opacity-50"
                     >
                         {emailsLoading
                             ? <><RefreshCw size={13} className="animate-spin" /> Đang tải…</>
@@ -335,7 +335,7 @@ export default function AISyncPage() {
                     <button
                         onClick={handleIngestEmails}
                         disabled={emailIngestStatus === "loading"}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#3B82F6] to-[#6366F1] text-white rounded-lg text-[11px] font-bold transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-lg shadow-blue-500/20"
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#B4533A] to-[#6366F1] text-[#000000] rounded-lg text-[11px] font-bold transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-lg shadow-[#B4533A]/20"
                     >
                         {emailIngestStatus === "loading"
                             ? <><RefreshCw size={13} className="animate-spin" /> Đang ingest…</>
@@ -344,20 +344,20 @@ export default function AISyncPage() {
 
                     {/* Ingest result badge */}
                     {emailIngestStatus === "success" && emailIngestResult && (
-                        <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-3 py-1.5 rounded-lg text-[10px] font-black">
+                        <div className="flex items-center gap-1.5 text-black bg-emerald-400/10 border border-emerald-400/20 px-3 py-1.5 rounded-lg text-[10px] font-black">
                             <CheckCircle2 size={12} />
                             {emailIngestResult.ingested} đã ingest · {emailIngestResult.skipped} bỏ qua
                         </div>
                     )}
                     {emailIngestStatus === "error" && (
-                        <div className="flex items-center gap-1.5 text-rose-400 bg-rose-400/10 border border-rose-400/20 px-3 py-1.5 rounded-lg text-[10px] font-black">
+                        <div className="flex items-center gap-1.5 text-black bg-rose-400/10 border border-rose-400/20 px-3 py-1.5 rounded-lg text-[10px] font-black">
                             <AlertCircle size={12} /> Lỗi ingest
                         </div>
                     )}
                 </div>
 
                 {emailError && (
-                    <p className="text-[11px] text-rose-400 mb-4 flex items-center gap-1.5">
+                    <p className="text-[11px] text-black mb-4 flex items-center gap-1.5">
                         <AlertCircle size={12} /> {emailError}
                     </p>
                 )}
@@ -367,7 +367,7 @@ export default function AISyncPage() {
                     <div>
                         <button
                             onClick={() => setShowEmails(v => !v)}
-                            className="flex items-center gap-2 text-[11px] font-bold text-[#64748B] hover:text-[#8B949E] mb-3 transition-colors"
+                            className="flex items-center gap-2 text-[11px] font-bold text-[#000000] hover:text-[#000000] mb-3 transition-colors"
                         >
                             {showEmails ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
                             {emails.length} email đã tải
@@ -376,16 +376,16 @@ export default function AISyncPage() {
                         {showEmails && (
                             <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
                                 {emails.map((email, i) => (
-                                    <div key={i} className="flex items-start gap-3 p-3 bg-[#0D1117] border border-[rgba(240,246,252,0.06)] rounded-xl hover:border-[rgba(240,246,252,0.12)] transition-colors">
-                                        <div className="h-8 w-8 rounded-lg bg-[#21262D] flex items-center justify-center shrink-0">
-                                            <Mail size={13} className="text-[#3B82F6]" />
+                                    <div key={i} className="flex items-start gap-3 p-3 bg-[#FFFFFF] border border-[rgba(240,246,252,0.06)] rounded-xl hover:border-[rgba(240,246,252,0.12)] transition-colors">
+                                        <div className="h-8 w-8 rounded-lg bg-[#FFFFFF] flex items-center justify-center shrink-0">
+                                            <Mail size={13} className="text-[#B4533A]" />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <p className="text-[12px] font-semibold text-[#E6EDF3] truncate">{email.subject || "(Không có tiêu đề)"}</p>
-                                            <p className="text-[10px] text-[#64748B] truncate">Từ: {email.from}</p>
-                                            <p className="text-[10px] text-[#484F58] mt-0.5 line-clamp-1">{email.body?.slice(0, 100)}…</p>
+                                            <p className="text-[12px] font-semibold text-[#000000] truncate">{email.subject || "(Không có tiêu đề)"}</p>
+                                            <p className="text-[10px] text-[#000000] truncate">Từ: {email.from}</p>
+                                            <p className="text-[10px] text-[#000000] mt-0.5 line-clamp-1">{email.body?.slice(0, 100)}…</p>
                                         </div>
-                                        <span className="text-[9px] text-[#30363D] shrink-0 mt-0.5">
+                                        <span className="text-[9px] text-[#000000] shrink-0 mt-0.5">
                                             {email.date ? new Date(email.date).toLocaleDateString("vi-VN") : ""}
                                         </span>
                                     </div>
@@ -396,9 +396,9 @@ export default function AISyncPage() {
                 )}
 
                 {/* Info hint */}
-                <div className="mt-4 p-3 bg-[#3B82F6]/5 border border-[#3B82F6]/10 rounded-xl">
-                    <p className="text-[10px] text-[#64748B] leading-relaxed">
-                        <span className="text-[#3B82F6] font-bold">Cách hoạt động:</span> Email từ Gmail INBOX được đọc qua IMAP,
+                <div className="mt-4 p-3 bg-[#B4533A]/5 border border-[#B4533A]/10 rounded-xl">
+                    <p className="text-[10px] text-[#000000] leading-relaxed">
+                        <span className="text-[#B4533A] font-bold">Cách hoạt động:</span> Email từ Gmail INBOX được đọc qua IMAP,
                         nhúng thành vector bằng FPT AI Embedding (768 dim), lưu vào PostgreSQL pgvector.
                         AI Assistant sau đó có thể tìm kiếm và trả lời câu hỏi dựa trên nội dung email.
                     </p>
@@ -407,3 +407,4 @@ export default function AISyncPage() {
         </div>
     );
 }
+

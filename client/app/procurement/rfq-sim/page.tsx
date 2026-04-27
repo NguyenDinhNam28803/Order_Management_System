@@ -95,10 +95,10 @@ export default function RFQClosedLoopSimulation() {
         <div style={{ padding: '40px', maxWidth: '1000px', margin: '0 auto', fontFamily: 'system-ui, sans-serif' }}>
             
             {/* Header & Role Switcher */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', backgroundColor: '#f8fafc', padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', backgroundColor: '#000000', padding: '20px', borderRadius: '16px', border: '1px solid #000000' }}>
                 <div>
                     <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#1e293b' }}>Chu trình RFQ Khép kín (Simulation)</h1>
-                    <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#64748b' }}>Đang quản trị với vai trò: <strong style={{ color: currentRole === 'PO' ? '#2563eb' : '#059669' }}>{currentRole}</strong></p>
+                    <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#000000' }}>Đang quản trị với vai trò: <strong style={{ color: currentRole === 'PO' ? '#A85032' : '#059669' }}>{currentRole}</strong></p>
                 </div>
                 <button 
                     onClick={toggleRole}
@@ -116,22 +116,22 @@ export default function RFQClosedLoopSimulation() {
                     <section>
                         <h2 style={{ fontSize: '18px', marginBottom: '15px' }}>Step 1: Danh sách sản phẩm chờ khởi tạo RFQ</h2>
                         <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-                            <thead style={{ backgroundColor: '#f1f5f9' }}>
+                            <thead style={{ backgroundColor: '#000000' }}>
                                 <tr>
-                                    <th style={{ padding: '15px', textAlign: 'left', fontSize: '13px', color: '#475569' }}>Tên mặt hàng</th>
-                                    <th style={{ padding: '15px', textAlign: 'left', fontSize: '13px', color: '#475569' }}>Phân loại</th>
-                                    <th style={{ padding: '15px', textAlign: 'right', fontSize: '13px', color: '#475569' }}>Hành động</th>
+                                    <th style={{ padding: '15px', textAlign: 'left', fontSize: '13px', color: '#000000' }}>Tên mặt hàng</th>
+                                    <th style={{ padding: '15px', textAlign: 'left', fontSize: '13px', color: '#000000' }}>Phân loại</th>
+                                    <th style={{ padding: '15px', textAlign: 'right', fontSize: '13px', color: '#000000' }}>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {mockProducts.map(p => (
-                                    <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                    <tr key={p.id} style={{ borderBottom: '1px solid #000000' }}>
                                         <td style={{ padding: '15px', fontWeight: 'bold' }}>{p.name}</td>
-                                        <td style={{ padding: '15px', color: '#64748b' }}>{p.category}</td>
+                                        <td style={{ padding: '15px', color: '#000000' }}>{p.category}</td>
                                         <td style={{ padding: '15px', textAlign: 'right' }}>
                                             <button 
                                                 onClick={() => handleCreateRFQ(p)}
-                                                style={{ backgroundColor: '#2563eb', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}
+                                                style={{ backgroundColor: '#A85032', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}
                                             >
                                                 Tạo RFQ
                                             </button>
@@ -147,13 +147,13 @@ export default function RFQClosedLoopSimulation() {
                         <h2 style={{ fontSize: '18px', marginBottom: '15px', color: '#0f172a' }}>Step 3: Phê duyệt báo giá (Quoted)</h2>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                             {rfqList.filter(r => r.status === 'Quoted').length === 0 ? (
-                                <p style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8fafc', borderRadius: '12px', color: '#94a3b8', fontStyle: 'italic' }}>Chưa có báo giá nào từ NCC cần duyệt.</p>
+                                <p style={{ textAlign: 'center', padding: '40px', backgroundColor: '#000000', borderRadius: '12px', color: '#000000', fontStyle: 'italic' }}>Chưa có báo giá nào từ NCC cần duyệt.</p>
                             ) : (
                                 rfqList.filter(r => r.status === 'Quoted').map(r => (
-                                    <div key={r.id} style={{ padding: '20px', backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div key={r.id} style={{ padding: '20px', backgroundColor: 'white', border: '1px solid #000000', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
                                             <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{r.productName}</div>
-                                            <div style={{ fontSize: '12px', color: '#64748b' }}>Đơn giá phản hồi: <strong style={{ color: '#059669', fontSize: '16px' }}>{r.price?.toLocaleString()} VNĐ</strong></div>
+                                            <div style={{ fontSize: '12px', color: '#000000' }}>Đơn giá phản hồi: <strong style={{ color: '#059669', fontSize: '16px' }}>{r.price?.toLocaleString()} VNĐ</strong></div>
                                         </div>
                                         <button 
                                             onClick={() => handleApproveRFQ(r.id)}
@@ -175,19 +175,19 @@ export default function RFQClosedLoopSimulation() {
                     <h2 style={{ fontSize: '18px', marginBottom: '15px' }}>Step 2: Nhà cung cấp báo giá (Pending Supplier)</h2>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         {rfqList.filter(r => r.status === 'Pending_Supplier').length === 0 ? (
-                            <p style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8fafc', borderRadius: '12px', color: '#94a3b8', fontStyle: 'italic' }}>Không có yêu cầu báo giá nào đang chờ.</p>
+                            <p style={{ textAlign: 'center', padding: '40px', backgroundColor: '#000000', borderRadius: '12px', color: '#000000', fontStyle: 'italic' }}>Không có yêu cầu báo giá nào đang chờ.</p>
                         ) : (
                             rfqList.filter(r => r.status === 'Pending_Supplier').map(r => (
-                                <div key={r.id} style={{ padding: '20px', backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', borderLeft: '4px solid #f59e0b' }}>
+                                <div key={r.id} style={{ padding: '20px', backgroundColor: 'white', border: '1px solid #000000', borderRadius: '16px', borderLeft: '4px solid #f59e0b' }}>
                                     <div style={{ marginBottom: '15px' }}>
                                         <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{r.productName}</div>
-                                        <div style={{ fontSize: '11px', color: '#64748b' }}>Từ: PO Procurement | 3 NCC được phân tích bởi AI: <strong>{r.suggestedSuppliers.join(", ")}</strong></div>
+                                        <div style={{ fontSize: '11px', color: '#000000' }}>Từ: PO Procurement | 3 NCC được phân tích bởi AI: <strong>{r.suggestedSuppliers.join(", ")}</strong></div>
                                     </div>
                                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                         <input 
                                             type="number" 
                                             placeholder="Nhập đơn giá (VNĐ)" 
-                                            style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                            style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #000000' }}
                                             onChange={(e) => setTempPrice({ ...tempPrice, [r.id]: Number(e.target.value) })}
                                         />
                                         <button 
@@ -209,7 +209,7 @@ export default function RFQClosedLoopSimulation() {
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
                     <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '24px', maxWidth: '500px', width: '90%' }}>
                         <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}>Khởi tạo RFQ nhanh</h3>
-                        <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>Sản phẩm: <strong>{selectedProduct.name}</strong></p>
+                        <p style={{ color: '#000000', fontSize: '14px', marginBottom: '20px' }}>Sản phẩm: <strong>{selectedProduct.name}</strong></p>
                         
                         <div style={{ backgroundColor: '#f0f9ff', padding: '20px', borderRadius: '16px', border: '1px solid #bae6fd', marginBottom: '25px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
@@ -229,13 +229,13 @@ export default function RFQClosedLoopSimulation() {
                         <div style={{ display: 'flex', gap: '10px' }}>
                             <button 
                                 onClick={confirmSendRFQ}
-                                style={{ flex: 2, backgroundColor: '#2563eb', color: 'white', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                                style={{ flex: 2, backgroundColor: '#A85032', color: 'white', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
                             >
                                 Gửi RFQ đồng loạt
                             </button>
                             <button 
                                 onClick={() => setSelectedProduct(null)}
-                                style={{ flex: 1, backgroundColor: '#f1f5f9', color: '#475569', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                                style={{ flex: 1, backgroundColor: '#000000', color: '#000000', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
                             >
                                 Hủy
                             </button>
@@ -246,12 +246,12 @@ export default function RFQClosedLoopSimulation() {
 
             {/* --- DANH SÁCH HOÀN TẤT --- */}
             <section style={{ marginTop: '60px', opacity: 0.6 }}>
-                <h2 style={{ fontSize: '14px', fontWeight: 'black', textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.1em' }}>Lịch sử chu kỳ hoàn tất (Completed)</h2>
+                <h2 style={{ fontSize: '14px', fontWeight: 'black', textTransform: 'uppercase', color: '#000000', letterSpacing: '0.1em' }}>Lịch sử chu kỳ hoàn tất (Completed)</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '15px' }}>
                     {rfqList.filter(r => r.status === 'Completed').map(r => (
-                        <div key={r.id} style={{ padding: '12px 20px', backgroundColor: '#f8fafc', borderRadius: '8px', fontSize: '13px', display: 'flex', justifyContent: 'space-between' }}>
+                        <div key={r.id} style={{ padding: '12px 20px', backgroundColor: '#000000', borderRadius: '8px', fontSize: '13px', display: 'flex', justifyContent: 'space-between' }}>
                             <span>✅ {r.productName} - <strong>{r.price?.toLocaleString()} VNĐ</strong></span>
-                            <span style={{ color: '#94a3b8' }}>{r.createdAt}</span>
+                            <span style={{ color: '#000000' }}>{r.createdAt}</span>
                         </div>
                     ))}
                 </div>
@@ -259,3 +259,4 @@ export default function RFQClosedLoopSimulation() {
         </div>
     );
 }
+

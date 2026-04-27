@@ -19,27 +19,27 @@ function getEventIcon(eventType?: EmailEventType) {
     case 'USER_LOGIN':
     case 'USER_REGISTERED':
     case 'NEW_USER_ACCOUNT':
-      return <User size={14} className="text-blue-400" />;
+      return <User size={14} className="text-[#CB7A62]" />;
 
     case 'RFQ_INVITATION':
     case 'RFQ_MAGIC_LINK':
       return <Send size={14} className="text-teal-400" />;
 
     case 'QUOTATION_RECEIVED':
-      return <FileText size={14} className="text-blue-400" />;
+      return <FileText size={14} className="text-[#CB7A62]" />;
 
     case 'PO_APPROVAL_REQUEST':
-      return <FileCheck size={14} className="text-amber-400" />;
+      return <FileCheck size={14} className="text-black" />;
 
     case 'PO_APPROVED':
     case 'PO_CONFIRM_LINK':
-      return <BadgeCheck size={14} className="text-emerald-400" />;
+      return <BadgeCheck size={14} className="text-black" />;
 
     case 'PR_APPROVED':
-      return <CheckCircle size={14} className="text-emerald-400" />;
+      return <CheckCircle size={14} className="text-black" />;
 
     case 'PR_REJECTED':
-      return <XCircle size={14} className="text-rose-400" />;
+      return <XCircle size={14} className="text-black" />;
 
     case 'PR_APPROVAL_LINK':
       return <FileText size={14} className="text-violet-400" />;
@@ -50,23 +50,23 @@ function getEventIcon(eventType?: EmailEventType) {
 
     case 'INVOICE_RECEIVED':
     case 'INVOICE_SUBMIT_LINK':
-      return <Receipt size={14} className="text-blue-400" />;
+      return <Receipt size={14} className="text-[#CB7A62]" />;
 
     case 'PAYMENT_CONFIRMED':
-      return <BadgeCheck size={14} className="text-emerald-400" />;
+      return <BadgeCheck size={14} className="text-black" />;
 
     case 'CONTRACT_EXPIRY_WARNING':
     case 'BUDGET_LIMIT_WARNING':
-      return <ShieldAlert size={14} className="text-amber-400" />;
+      return <ShieldAlert size={14} className="text-black" />;
 
     default:
-      return <AlertCircle size={14} className="text-slate-400" />;
+      return <AlertCircle size={14} className="text-black" />;
   }
 }
 
 function getIconContainerClass(eventType?: EmailEventType, isPending?: boolean): string {
-  if (!isPending) return "bg-[#21262D] border-[rgba(240,246,252,0.05)]";
-  if (!eventType) return "bg-[#3B82F6]/10 border-[#3B82F6]/20";
+  if (!isPending) return "bg-[#FFFFFF] border-[rgba(240,246,252,0.05)]";
+  if (!eventType) return "bg-[#B4533A]/10 border-[#B4533A]/20";
 
   const cfg = EVENT_DISPLAY_CONFIG[eventType];
   return `${cfg.bgClass} ${cfg.borderClass}`;
@@ -205,40 +205,40 @@ export default function NotificationInbox() {
         onClick={() => setIsOpen(!isOpen)}
         className={`relative flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${
           isOpen
-            ? "bg-[#3B82F6] border-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20"
-            : "bg-[#21262D] border-[rgba(240,246,252,0.08)] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[rgba(240,246,252,0.18)]"
+            ? "bg-[#B4533A] border-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20"
+            : "bg-[#FFFFFF] border-[rgba(240,246,252,0.08)] text-[#000000] hover:text-[#000000] hover:border-[rgba(240,246,252,0.18)]"
         }`}
       >
         <Bell size={14} className={unreadCount > 0 ? "animate-pulse" : ""} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-black text-white ring-2 ring-[#0D1117]">
+          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-black text-[#000000] ring-2 ring-[#FFFFFF]">
             {unreadCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-[420px] bg-[#161B22] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl shadow-black/80 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="absolute right-0 mt-3 w-[420px] bg-[#FAF8F5] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl shadow-black/80 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-[#1F2937] to-[#111827] border-b border-[rgba(240,246,252,0.05)]">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-sm font-bold text-[#E6EDF3] tracking-tight flex items-center gap-2">
-                  <Inbox size={16} className="text-[#3B82F6]" /> Inbox Hệ thống
+                <h3 className="text-sm font-bold text-[#000000] tracking-tight flex items-center gap-2">
+                  <Inbox size={16} className="text-[#B4533A]" /> Inbox Hệ thống
                 </h3>
-                <p className="text-[10px] text-[#8B949E] font-medium mt-0.5">
+                <p className="text-[10px] text-[#000000] font-medium mt-0.5">
                   Bạn có {unreadCount} thông báo chưa xử lý
                 </p>
               </div>
-              <div className="flex bg-[#0D1117] p-1 rounded-lg border border-[rgba(240,246,252,0.05)]">
+              <div className="flex bg-[#FFFFFF] p-1 rounded-lg border border-[rgba(240,246,252,0.05)]">
                 {(['PENDING', 'ALL', 'APPROVED'] as const).map((f) => (
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
                     className={`px-3 py-1 rounded-md text-[9px] font-bold transition-all ${
                       filter === f
-                        ? "bg-[#3B82F6] text-white shadow-sm"
-                        : "text-[#8B949E] hover:text-[#E6EDF3]"
+                        ? "bg-[#B4533A] text-[#000000] shadow-sm"
+                        : "text-[#000000] hover:text-[#000000]"
                     }`}
                   >
                     {f === 'PENDING' ? 'MỚI' : f === 'ALL' ? 'TẤT CẢ' : 'ĐÃ XEM'}
@@ -248,40 +248,40 @@ export default function NotificationInbox() {
             </div>
 
             <div className="relative">
-              <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#484F58]" />
+              <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm kiếm thông báo..."
-                className="w-full bg-[#0D1117] border border-[rgba(240,246,252,0.05)] rounded-lg pl-9 pr-4 py-1.5 text-[10px] text-[#E6EDF3] placeholder:text-[#484F58] outline-none focus:border-[#3B82F6]/30 transition-all"
+                className="w-full bg-[#FFFFFF] border border-[rgba(240,246,252,0.05)] rounded-lg pl-9 pr-4 py-1.5 text-[10px] text-[#000000] placeholder:text-[#000000] outline-none focus:border-[#B4533A]/30 transition-all"
               />
             </div>
           </div>
 
           {/* Notification List */}
-          <div className="max-h-[480px] overflow-y-auto custom-scrollbar bg-[#0D1117]/30">
+          <div className="max-h-[480px] overflow-y-auto custom-scrollbar bg-[#FFFFFF]/30">
             {isLoading ? (
               <div className="p-16 text-center">
-                <div className="w-8 h-8 border-2 border-[#3B82F6] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                <p className="text-[11px] text-[#484F58] font-medium tracking-widest uppercase">Đang đồng bộ dữ liệu...</p>
+                <div className="w-8 h-8 border-2 border-[#B4533A] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                <p className="text-[11px] text-[#000000] font-medium tracking-widest uppercase">Đang đồng bộ dữ liệu...</p>
               </div>
             ) : mergedItems.length > 0 ? (
               mergedItems.map((item) => <NotificationItem key={item.id} item={item} />)
             ) : (
               <div className="py-20 px-10 text-center">
-                <div className="w-16 h-16 bg-[#21262D] rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[rgba(240,246,252,0.05)] shadow-xl">
-                  <Archive size={24} className="text-[#30363D]" />
+                <div className="w-16 h-16 bg-[#FFFFFF] rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[rgba(240,246,252,0.05)] shadow-xl">
+                  <Archive size={24} className="text-[#000000]" />
                 </div>
-                <h4 className="text-[12px] font-black text-[#484F58] uppercase tracking-widest">Hộp thư sạch sẽ</h4>
-                <p className="text-[10px] text-[#30363D] mt-2 font-medium">Tuyệt vời! Bạn không bỏ lỡ thông báo nào.</p>
+                <h4 className="text-[12px] font-black text-[#000000] uppercase tracking-widest">Hộp thư sạch sẽ</h4>
+                <p className="text-[10px] text-[#000000] mt-2 font-medium">Tuyệt vời! Bạn không bỏ lỡ thông báo nào.</p>
               </div>
             )}
           </div>
 
           {/* Footer */}
-          <div className="p-3 border-t border-[rgba(240,246,252,0.05)] bg-[#161B22]/50 flex justify-center">
-            <button className="text-[10px] font-bold text-[#3B82F6] hover:text-[#60A5FA] flex items-center gap-1.5 transition-all group">
+          <div className="p-3 border-t border-[rgba(240,246,252,0.05)] bg-[#FAF8F5]/50 flex justify-center">
+            <button className="text-[10px] font-bold text-[#B4533A] hover:text-[#CB7A62] flex items-center gap-1.5 transition-all group">
               Xem tất cả thông báo hệ thống <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
@@ -311,14 +311,14 @@ const NotificationItem = ({ item }: { item: any }) => {
 
   const typeLabelColorClass = cfg
     ? cfg.colorClass
-    : isPending ? 'text-[#3B82F6]' : 'text-[#8B949E]';
+    : isPending ? 'text-[#B4533A]' : 'text-[#000000]';
 
   return (
-    <div className={`p-4 border-b border-[rgba(240,246,252,0.03)] cursor-pointer hover:bg-[#21262D]/60 transition-all relative group overflow-hidden ${!isPending ? 'opacity-50' : ''}`}>
+    <div className={`p-4 border-b border-[rgba(240,246,252,0.03)] cursor-pointer hover:bg-[#FFFFFF]/60 transition-all relative group overflow-hidden ${!isPending ? 'opacity-50' : ''}`}>
       {isPending && (
         <div
           className="absolute left-0 top-0 bottom-0 w-[3px]"
-          style={{ backgroundColor: cfg?.accentHex ?? '#3B82F6', boxShadow: `0 0 10px ${cfg?.accentHex ?? '#3B82F6'}66`, ...accentStyle }}
+          style={{ backgroundColor: cfg?.accentHex ?? '#B4533A', boxShadow: `0 0 10px ${cfg?.accentHex ?? '#B4533A'}66`, ...accentStyle }}
         />
       )}
 
@@ -332,36 +332,36 @@ const NotificationItem = ({ item }: { item: any }) => {
             <span className={`text-[9.5px] font-black uppercase tracking-[0.1em] truncate ${typeLabelColorClass}`}>
               {getTypeLabel()}
             </span>
-            <span className="text-[9px] text-[#484F58] font-bold whitespace-nowrap bg-[#0D1117] px-1.5 py-0.5 rounded border border-[rgba(240,246,252,0.03)]">
+            <span className="text-[9px] text-[#000000] font-bold whitespace-nowrap bg-[#FFFFFF] px-1.5 py-0.5 rounded border border-[rgba(240,246,252,0.03)]">
               {new Date(item.deadline).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
 
-          <h4 className={`text-[12px] font-bold truncate mb-1 leading-tight ${isPending ? "text-[#E6EDF3]" : "text-[#8B949E]"}`}>
+          <h4 className={`text-[12px] font-bold truncate mb-1 leading-tight ${isPending ? "text-[#000000]" : "text-[#000000]"}`}>
             {item.title}
           </h4>
 
-          <p className="text-[10.5px] text-[#8B949E] font-medium line-clamp-2 mb-2 leading-relaxed opacity-80">
+          <p className="text-[10.5px] text-[#000000] font-medium line-clamp-2 mb-2 leading-relaxed opacity-80">
             {item.content}
           </p>
 
           <div className="flex items-center justify-between mt-auto">
             <div className="flex items-baseline gap-2">
               {item.amount && (
-                <span className="text-[12px] font-black text-[#E6EDF3] tracking-tight">{item.amount}</span>
+                <span className="text-[12px] font-black text-[#000000] tracking-tight">{item.amount}</span>
               )}
-              <span className="text-[9px] text-[#484F58] font-bold uppercase truncate max-w-[120px]">
+              <span className="text-[9px] text-[#000000] font-bold uppercase truncate max-w-[120px]">
                 {item.requester}
               </span>
             </div>
 
             <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
               {item.isNotification ? (
-                <button className="h-6 px-3 rounded-lg bg-[#21262D] text-[#E6EDF3] border border-[rgba(240,246,252,0.1)] text-[9px] font-black uppercase tracking-widest hover:border-[#3B82F6]/50 transition-all">
+                <button className="h-6 px-3 rounded-lg bg-[#FFFFFF] text-[#000000] border border-[rgba(240,246,252,0.1)] text-[9px] font-black uppercase tracking-widest hover:border-[#B4533A]/50 transition-all">
                   XEM
                 </button>
               ) : (
-                <button className="h-6 px-3 rounded-lg bg-[#3B82F6] text-white text-[9px] font-black uppercase tracking-widest hover:bg-[#2563EB] transition-all shadow-lg shadow-[#3B82F6]/20">
+                <button className="h-6 px-3 rounded-lg bg-[#B4533A] text-[#000000] text-[9px] font-black uppercase tracking-widest hover:bg-[#A85032] transition-all shadow-lg shadow-[#B4533A]/20">
                   XỬ LÝ
                 </button>
               )}
@@ -372,3 +372,4 @@ const NotificationItem = ({ item }: { item: any }) => {
     </div>
   );
 };
+

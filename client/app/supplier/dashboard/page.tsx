@@ -295,28 +295,28 @@ export default function SupplierDashboard() {
   // --- Components ---
 
   const renderSidebar = () => (
-    <div className="w-64 bg-[#161922] min-h-screen p-6 text-white flex flex-col gap-8 hidden lg:flex sticky top-0 border-r border-[rgba(148,163,184,0.1)]">
+    <div className="w-64 bg-[#FAF8F5] min-h-screen p-6 text-[#000000] flex flex-col gap-8 hidden lg:flex sticky top-0 border-r border-[rgba(148,163,184,0.1)]">
       <div className="flex items-center gap-3 px-2">
-        <div className="bg-[#3B82F6]/10 p-2 rounded-xl border border-[#3B82F6]/20">
-          <Building2 size={24} className="text-[#3B82F6]" />
+        <div className="bg-[#B4533A]/10 p-2 rounded-xl border border-[#B4533A]/20">
+          <Building2 size={24} className="text-[#B4533A]" />
         </div>
         <div>
-          <h2 className="text-sm font-black uppercase tracking-widest leading-none text-[#F8FAFC]">ProcurePro</h2>
-          <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Supplier Portal</span>
+          <h2 className="text-sm font-black uppercase tracking-widest leading-none text-[#000000]">ProcurePro</h2>
+          <span className="text-[10px] font-bold text-[#000000] uppercase tracking-tighter">Supplier Portal</span>
         </div>
       </div>
 
       <nav className="flex flex-col gap-2">
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Pending"); }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:bg-[#1A1D23] hover:text-[#F8FAFC]'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20' : 'text-[#000000] hover:bg-[#1A1D23] hover:text-[#000000]'}`}
         >
           <LayoutDashboard size={20} />
           <span>Dashboard</span>
         </button>
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Quoted"); }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:bg-[#1A1D23] hover:text-[#F8FAFC]'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20' : 'text-[#000000] hover:bg-[#1A1D23] hover:text-[#000000]'}`}
         >
           <History size={20} />
           <span>Lịch sử báo giá</span>
@@ -324,17 +324,17 @@ export default function SupplierDashboard() {
       </nav>
 
       <div className="mt-auto">
-        <div className="bg-[#0F1117] rounded-2xl p-4 border border-[rgba(148,163,184,0.1)]">
+        <div className="bg-[#FFFFFF] rounded-2xl p-4 border border-[rgba(148,163,184,0.1)]">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-[#3B82F6] flex items-center justify-center font-black text-xs text-white">
+            <div className="w-8 h-8 rounded-full bg-[#B4533A] flex items-center justify-center font-black text-xs text-[#000000]">
               ABC
             </div>
             <div className="overflow-hidden">
-              <p className="text-[10px] font-black truncate text-[#F8FAFC]">{currentUser?.fullName || "Nhà cung cấp"}</p>
-              <p className="text-[8px] font-bold text-[#64748B] uppercase">ID: {currentUser?.orgId || "N/A"}</p>
+              <p className="text-[10px] font-black truncate text-[#000000]">{currentUser?.fullName || "Nhà cung cấp"}</p>
+              <p className="text-[8px] font-bold text-[#000000] uppercase">ID: {currentUser?.orgId || "N/A"}</p>
             </div>
           </div>
-          <div className="px-3 py-1.5 bg-[#3B82F6]/10 text-[#3B82F6] rounded-lg text-[10px] font-black uppercase tracking-wider text-center border border-[#3B82F6]/20">Nhà cung cấp</div>
+          <div className="px-3 py-1.5 bg-[#B4533A]/10 text-[#B4533A] rounded-lg text-[10px] font-black uppercase tracking-wider text-center border border-[#B4533A]/20">Nhà cung cấp</div>
         </div>
       </div>
     </div>
@@ -344,26 +344,26 @@ export default function SupplierDashboard() {
     <div className="animate-in fade-in duration-500">
       <header className="mb-8 lg:flex items-end justify-between">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-[#F8FAFC] mb-2 uppercase">YÊU CẦU BÁO GIÁ (RFQs)</h1>
-          <p className="text-[#64748B] font-medium">Quản lý và phản hồi các yêu cầu báo giá từ đối tác.</p>
+          <h1 className="text-4xl font-black tracking-tight text-[#000000] mb-2 uppercase">YÊU CẦU BÁO GIÁ (RFQs)</h1>
+          <p className="text-[#000000] font-medium">Quản lý và phản hồi các yêu cầu báo giá từ đối tác.</p>
         </div>
         <div className="flex gap-3 mt-4 lg:mt-0">
-          <div className="flex bg-[#161922] p-1.5 rounded-xl border border-[rgba(148,163,184,0.1)]">
+          <div className="flex bg-[#FAF8F5] p-1.5 rounded-xl border border-[rgba(148,163,184,0.1)]">
           <button 
             onClick={() => setActiveTab("Pending")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:text-[#F8FAFC]'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20' : 'text-[#000000] hover:text-[#000000]'}`}
           >
             Chưa xử lý
           </button>
           <button 
             onClick={() => setActiveTab("CatalogConfirmation")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:text-[#F8FAFC]'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20' : 'text-[#000000] hover:text-[#000000]'}`}
           >
             Xác nhận giá Catalog
           </button>
           <button 
             onClick={() => setActiveTab("Quoted")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20' : 'text-[#94A3B8] hover:text-[#F8FAFC]'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20' : 'text-[#000000] hover:text-[#000000]'}`}
           >
             Đã báo giá
           </button>
@@ -371,10 +371,10 @@ export default function SupplierDashboard() {
         </div>
       </header>
 
-      <div className="bg-[#161922] rounded-2xl overflow-hidden shadow-xl shadow-[#3B82F6]/5 border border-[rgba(148,163,184,0.1)]">
+      <div className="bg-[#FAF8F5] rounded-2xl overflow-hidden shadow-xl shadow-[#B4533A]/5 border border-[rgba(148,163,184,0.1)]">
         <table className="erp-table text-xs text-left w-full" style={{ tableLayout: 'fixed' }}>
-          <thead className="bg-[#0F1117] border-b border-[rgba(148,163,184,0.1)]">
-            <tr className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">
+          <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
+            <tr className="text-[10px] font-black uppercase tracking-widest text-[#000000]">
               <th className="w-[18%] py-4 px-4">Mã RFQ</th>
               <th className="w-[35%] py-4 px-4">Dự án / Yêu cầu</th>
               <th className="w-[15%] py-4 px-4 text-center">Ngày nhận</th>
@@ -387,8 +387,8 @@ export default function SupplierDashboard() {
               <tr>
                 <td colSpan={5} className="py-20 text-center">
                   <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin"></div>
-                    <p className="font-black uppercase tracking-[0.2em] text-xs text-[#64748B]">Đang tải danh sách RFQ...</p>
+                    <div className="w-12 h-12 border-4 border-[#B4533A] border-t-transparent rounded-full animate-spin"></div>
+                    <p className="font-black uppercase tracking-[0.2em] text-xs text-[#000000]">Đang tải danh sách RFQ...</p>
                   </div>
                 </td>
               </tr>
@@ -396,23 +396,23 @@ export default function SupplierDashboard() {
               const isSimulation = rfq.rfqId.includes("SIM");
               const isApiData = !isSimulation && !rfq.rfqId.startsWith("RFQ-2024");
               return (
-                <tr key={rfq.rfqId} className={`group hover:bg-[#0F1117]/50 transition-colors ${isSimulation ? 'bg-[#3B82F6]/5' : ''}`}>
+                <tr key={rfq.rfqId} className={`group hover:bg-[#FFFFFF]/50 transition-colors ${isSimulation ? 'bg-[#B4533A]/5' : ''}`}>
                   <td className="py-4 px-4">
-                    <div className="font-black text-[#F8FAFC] text-xs truncate">{rfq.rfqId}</div>
+                    <div className="font-black text-[#000000] text-xs truncate">{rfq.rfqId}</div>
                     <div className="flex items-center gap-1 mt-1">
-                       {isSimulation && <span className="bg-[#3B82F6] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
-                       {isApiData && <span className="bg-emerald-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">API</span>}
+                       {isSimulation && <span className="bg-[#B4533A] text-[#000000] text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
+                       {isApiData && <span className="bg-emerald-500 text-[#000000] text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">API</span>}
                     </div>
                   </td>
                   <td className="py-4 px-4">
-                    <div className="font-bold text-[#F8FAFC] text-xs truncate" title={rfq.projectName}>{rfq.projectName}</div>
-                    <div className="text-[10px] text-[#64748B] font-medium uppercase mt-1 truncate">
+                    <div className="font-bold text-[#000000] text-xs truncate" title={rfq.projectName}>{rfq.projectName}</div>
+                    <div className="text-[10px] text-[#000000] font-medium uppercase mt-1 truncate">
                       {rfq.items.length} hạng mục • {rfq.items.slice(0, 2).map(i => i.name).join(", ")}{rfq.items.length > 2 ? "..." : ""}
                     </div>
                   </td>
-                  <td className="text-[#64748B] text-xs py-4 px-4 text-center">{rfq.createdAt}</td>
+                  <td className="text-[#000000] text-xs py-4 px-4 text-center">{rfq.createdAt}</td>
                   <td className="py-4 px-4 text-center">
-                    <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : rfq.status === 'CatalogConfirmation' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+                    <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-black border border-amber-500/20' : rfq.status === 'CatalogConfirmation' ? 'bg-[#B4533A]/10 text-[#CB7A62] border border-[#B4533A]/20' : 'bg-emerald-500/10 text-black border border-emerald-500/20'}`}>
                       {rfq.status === 'Pending' ? 'Chờ báo giá' : rfq.status === 'CatalogConfirmation' ? 'Xác nhận giá' : 'Đã báo giá'}
                     </span>
                   </td>
@@ -420,14 +420,14 @@ export default function SupplierDashboard() {
                     {rfq.status === 'Pending' || rfq.status === 'CatalogConfirmation' ? (
                       <button 
                         onClick={() => handleStartQuoting(rfq)}
-                        className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#3B82F6] text-white border-[#3B82F6] shadow-lg' : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20 hover:bg-[#3B82F6]/20'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#B4533A] text-[#000000] border-[#B4533A] shadow-lg' : 'bg-[#B4533A]/10 text-[#B4533A] border-[#B4533A]/20 hover:bg-[#B4533A]/20'}`}
                       >
                         Báo giá <ChevronRight size={14} />
                       </button>
                     ) : (
                       <div className="text-right">
-                        <div className="text-xs font-black text-[#F8FAFC]">{(rfq.totalAmount || 0).toLocaleString()} ₫</div>
-                        <div className="text-[9px] font-bold text-emerald-400 uppercase tracking-tighter">Đã gửi</div>
+                        <div className="text-xs font-black text-[#000000]">{(rfq.totalAmount || 0).toLocaleString()} ₫</div>
+                        <div className="text-[9px] font-bold text-black uppercase tracking-tighter">Đã gửi</div>
                       </div>
                     )}
                   </td>
@@ -437,8 +437,8 @@ export default function SupplierDashboard() {
               <tr>
                 <td colSpan={5} className="py-20 text-center">
                   <div className="flex flex-col items-center gap-3 opacity-30">
-                    <Inbox size={48} className="text-[#64748B]" />
-                    <p className="font-black uppercase tracking-[0.2em] text-xs text-[#64748B]">Không có yêu cầu nào</p>
+                    <Inbox size={48} className="text-[#000000]" />
+                    <p className="font-black uppercase tracking-[0.2em] text-xs text-[#000000]">Không có yêu cầu nào</p>
                   </div>
                 </td>
               </tr>
@@ -456,7 +456,7 @@ export default function SupplierDashboard() {
       <div className="animate-in slide-in-from-right-8 duration-500">
         <button 
           onClick={() => setSelectedRfq(null)}
-          className="flex items-center gap-2 text-slate-400 hover:text-erp-navy font-black uppercase tracking-widest text-[10px] transition-colors mb-6 group"
+          className="flex items-center gap-2 text-black hover:text-erp-navy font-black uppercase tracking-widest text-[10px] transition-colors mb-6 group"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 
           Trở lại danh sách
@@ -466,7 +466,7 @@ export default function SupplierDashboard() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="status-pill status-pending">Đang soạn thảo báo giá</span>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 flex items-center gap-1">
+              <span className="text-[10px] font-black text-black uppercase tracking-widest ml-2 flex items-center gap-1">
                 <Calendar size={12} /> Hạn nộp: 15/04/2024
               </span>
             </div>
@@ -474,7 +474,7 @@ export default function SupplierDashboard() {
           </div>
           
           <div className="text-right">
-            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tổng giá trị dự tính</div>
+            <div className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Tổng giá trị dự tính</div>
             <div className="text-4xl font-black text-erp-blue tracking-tighter">
               {totalValue.toLocaleString()} <span className="text-lg">₫</span>
             </div>
@@ -502,12 +502,12 @@ export default function SupplierDashboard() {
                       <tr key={item.id}>
                         <td className="py-6">
                           <div className="font-black text-slate-700">{item.name}</div>
-                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Mã: {item.id}</div>
+                          <div className="text-[10px] font-bold text-black uppercase tracking-tighter">Mã: {item.id}</div>
                         </td>
                         <td className="text-center font-black text-erp-navy text-base border-x border-slate-50">
                           {item.quantity}
                         </td>
-                        <td className="p-4 bg-blue-50/20">
+                        <td className="p-4 bg-[#F9EFEC]/20">
                           <div className="relative">
                             <input 
                               type="number" 
@@ -533,7 +533,7 @@ export default function SupplierDashboard() {
                   </tbody>
                   <tfoot>
                     <tr className="bg-slate-50 font-black">
-                      <td colSpan={2} className="text-right py-6 uppercase tracking-widest text-slate-400 text-[10px]">Thành tiền (Draft):</td>
+                      <td colSpan={2} className="text-right py-6 uppercase tracking-widest text-black text-[10px]">Thành tiền (Draft):</td>
                       <td className="text-left py-6 pl-4 text-erp-blue text-xl font-black ">
                         {totalValue.toLocaleString()} ₫
                       </td>
@@ -581,11 +581,11 @@ export default function SupplierDashboard() {
               </ul>
             </div>
 
-            <div className="erp-card !p-6 bg-erp-navy text-white border-none shadow-xl shadow-erp-navy/20 relative overflow-hidden group">
+            <div className="erp-card !p-6 bg-erp-navy text-[#000000] border-none shadow-xl shadow-erp-navy/20 relative overflow-hidden group">
               <div className="absolute -right-10 -bottom-10 opacity-5 group-hover:scale-110 transition-transform duration-700"><FileText size={160} /></div>
               <div className="relative z-10">
                 <h4 className="text-xs font-black uppercase tracking-widest text-erp-blue mb-2">Quy tắc Ứng xử</h4>
-                <p className="text-[11px] text-white/70 leading-relaxed">
+                <p className="text-[11px] text-[#000000]/70 leading-relaxed">
                   Bằng việc gửi báo giá, bạn cam kết tính trung thực của thông tin và tuân thủ các quy định về chống tham nhũng của đối tác.
                 </p>
               </div>
@@ -597,15 +597,15 @@ export default function SupplierDashboard() {
   };
 
   return (
-    <div className="flex bg-[#0F1117] min-h-screen font-sans">
+    <div className="flex bg-[#FFFFFF] min-h-screen font-sans">
       {renderSidebar()}
       
       <div className="flex-1 min-w-0">
-        <header className="h-16 bg-[#0F1117]/80 backdrop-blur-md border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between px-8 sticky top-0 z-30">
+        <header className="h-16 bg-[#FFFFFF]/80 backdrop-blur-md border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between px-8 sticky top-0 z-30">
           <div className="flex items-center gap-4">
-            <span className="lg:hidden font-black text-[#F8FAFC]">ProcurePro</span>
+            <span className="lg:hidden font-black text-[#000000]">ProcurePro</span>
             <div className="h-4 w-px bg-[rgba(148,163,184,0.1)] hidden lg:block" />
-            <div className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">
+            <div className="text-[10px] font-black uppercase tracking-widest text-[#000000]">
                Supplier Dashboard <ChevronRight size={10} className="inline mx-1" /> {selectedRfq ? 'RFQ Detail' : 'Overview'}
             </div>
           </div>
@@ -613,11 +613,11 @@ export default function SupplierDashboard() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-black text-[#F8FAFC] leading-none mb-0.5">{currentUser?.fullName || "Nhà cung cấp"}</p>
-                <p className="text-[8px] font-bold text-emerald-400 uppercase tracking-tighter">Trạng thái: Online</p>
+                <p className="text-[10px] font-black text-[#000000] leading-none mb-0.5">{currentUser?.fullName || "Nhà cung cấp"}</p>
+                <p className="text-[8px] font-bold text-black uppercase tracking-tighter">Trạng thái: Online</p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-[#161922] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
-                <Building2 size={16} className="text-[#64748B]" />
+              <div className="w-8 h-8 rounded-full bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                <Building2 size={16} className="text-[#000000]" />
               </div>
             </div>
           </div>
@@ -631,11 +631,11 @@ export default function SupplierDashboard() {
       {/* Notifications */}
       {notification && (
         <div className={`fixed bottom-8 right-8 z-[100] animate-in slide-in-from-bottom-5 p-4 rounded-2xl shadow-2xl border flex items-center gap-3 min-w-[320px] ${
-          notification.type === 'success' ? 'bg-emerald-900 border-emerald-800 text-white' : 
-          notification.type === 'error' ? 'bg-rose-900 border-rose-800 text-white' : 
-          'bg-erp-navy border-slate-800 text-white'
+          notification.type === 'success' ? 'bg-emerald-900 border-emerald-800 text-[#000000]' : 
+          notification.type === 'error' ? 'bg-rose-900 border-rose-800 text-[#000000]' : 
+          'bg-erp-navy border-slate-800 text-[#000000]'
         }`}>
-          {notification.type === 'success' ? <CheckCircle className="text-emerald-400" /> : <AlertCircle className="text-rose-400" />}
+          {notification.type === 'success' ? <CheckCircle className="text-black" /> : <AlertCircle className="text-black" />}
           <div>
             <div className="text-xs font-black uppercase tracking-widest">{notification.type === 'success' ? 'Thành công' : 'Thông báo'}</div>
             <div className="text-[11px] opacity-80 font-medium">{notification.message}</div>
@@ -645,3 +645,4 @@ export default function SupplierDashboard() {
     </div>
   );
 }
+

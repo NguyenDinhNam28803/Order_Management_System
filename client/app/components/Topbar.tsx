@@ -88,23 +88,23 @@ export default function Topbar() {
         .split(" ").slice(-2).map((w: string) => w[0]?.toUpperCase() ?? "").join("").slice(0, 2) || "GU";
 
     return (
-        <header className="sticky top-0 z-40 w-full bg-[#161B22]/96 backdrop-blur-xl border-b border-[rgba(240,246,252,0.08)] h-14 flex items-center justify-between px-5 gap-3">
+        <header className="sticky top-0 z-40 w-full bg-[#FAF8F5]/96 backdrop-blur-xl border-b border-[rgba(240,246,252,0.08)] h-14 flex items-center justify-between px-5 gap-3">
 
             {/* ── Left: Breadcrumb ── */}
             <div className="flex items-center gap-1.5 min-w-0">
                 <div className="flex flex-col min-w-0">
                     {/* mini breadcrumb path */}
                     <div className="hidden sm:flex items-center gap-1 leading-none mb-0.5">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-[#30363D]">ProcureSmart</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-[#000000]">ProcureSmart</span>
                         {breadcrumbParts.length > 1 && breadcrumbParts.slice(0, -1).map((p, i) => (
                             <React.Fragment key={i}>
-                                <ChevronRight size={9} className="text-[#30363D]" />
-                                <span className="text-[9px] font-semibold text-[#484F58] truncate max-w-[60px]">{p.label}</span>
+                                <ChevronRight size={9} className="text-[#000000]" />
+                                <span className="text-[9px] font-semibold text-[#000000] truncate max-w-[60px]">{p.label}</span>
                             </React.Fragment>
                         ))}
                     </div>
                     {/* page title */}
-                    <h2 className="text-[13px] font-bold text-[#E6EDF3] tracking-tight leading-tight truncate flex items-center gap-1.5">
+                    <h2 className="text-[13px] font-bold text-[#000000] tracking-tight leading-tight truncate flex items-center gap-1.5">
                         {isAIPage && <Sparkles size={12} className="text-violet-400 shrink-0" />}
                         {pageTitle}
                     </h2>
@@ -128,14 +128,14 @@ export default function Topbar() {
                 {/* Search with ⌘K hint */}
                 <div className="hidden md:flex relative group">
                     <Search
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-[#484F58] group-focus-within:text-[#3B82F6] transition-colors"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#B4533A] transition-colors"
                         size={13}
                     />
                     <input
                         type="text"
                         placeholder="Tìm kiếm..."
                         readOnly
-                        className="pl-8 pr-16 py-1.5 bg-[#21262D] border border-[rgba(240,246,252,0.08)] rounded-lg text-[11.5px] font-medium text-[#E6EDF3] placeholder:text-[#484F58] focus:outline-none focus:border-[#3B82F6]/40 focus:ring-1 focus:ring-[#3B82F6]/20 w-48 transition-all cursor-pointer hover:border-[rgba(240,246,252,0.15)]"
+                        className="pl-8 pr-16 py-1.5 bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[11.5px] font-medium text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/40 focus:ring-1 focus:ring-[#B4533A]/20 w-48 transition-all cursor-pointer hover:border-[rgba(240,246,252,0.15)]"
                     />
                     <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
                         <span className="kbd">⌘</span>
@@ -148,18 +148,19 @@ export default function Topbar() {
 
                 {/* User Profile */}
                 <div className="flex items-center gap-2 pl-2.5 border-l border-[rgba(240,246,252,0.08)] cursor-pointer hover:bg-[rgba(240,246,252,0.04)] px-2 py-1.5 rounded-lg transition-all group">
-                    <div className="h-7 w-7 rounded-md bg-gradient-to-br from-[#3B82F6]/30 to-[#6366F1]/40 border border-[#3B82F6]/30 flex items-center justify-center text-[#60A5FA] font-black text-[10px] shrink-0 select-none">
+                    <div className="h-7 w-7 rounded-md bg-gradient-to-br from-[#B4533A]/30 to-[#6366F1]/40 border border-[#B4533A]/30 flex items-center justify-center text-[#CB7A62] font-black text-[10px] shrink-0 select-none">
                         {currentUser?.fullName?.charAt(0)?.toUpperCase() || <User size={13} />}
                     </div>
                     <div className="hidden md:flex flex-col leading-none">
-                        <span className="text-[11px] font-bold text-[#E6EDF3] leading-tight">{currentUser?.fullName || "Guest"}</span>
-                        <span className="text-[8.5px] font-semibold uppercase tracking-widest text-[#484F58] mt-0.5">
+                        <span className="text-[11px] font-bold text-[#000000] leading-tight">{currentUser?.fullName || "Guest"}</span>
+                        <span className="text-[8.5px] font-semibold uppercase tracking-widest text-[#000000] mt-0.5">
                             {currentUser?.role?.replace(/_/g, " ") || "No Role"}
                         </span>
                     </div>
-                    <ChevronDown size={11} className="text-[#484F58] group-hover:text-[#8B949E] transition-colors" />
+                    <ChevronDown size={11} className="text-[#000000] group-hover:text-[#000000] transition-colors" />
                 </div>
             </div>
         </header>
     );
 }
+

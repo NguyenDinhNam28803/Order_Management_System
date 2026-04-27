@@ -31,11 +31,11 @@ export class ErrorBoundary extends React.Component<Props, State> {
           <AlertTriangle className="w-12 h-12 text-red-400" />
           <div>
             <p className="font-semibold text-gray-800">Đã xảy ra lỗi</p>
-            <p className="text-sm text-gray-500 mt-1">{this.state.message}</p>
+            <p className="text-sm text-black mt-1">{this.state.message}</p>
           </div>
           <button
             onClick={() => this.setState({ hasError: false, message: "" })}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#A85032] text-[#000000] text-sm hover:bg-[#8F442B] transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Thử lại
@@ -46,3 +46,4 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return this.props.children;
   }
 }
+

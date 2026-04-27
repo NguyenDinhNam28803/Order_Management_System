@@ -519,11 +519,11 @@ function ShoppingCart({ size, className }: { size: number, className?: string })
 const StatusBadge = ({ status, type = "default" }: { status: string, type?: "default" | "success" | "warning" | "danger" | "info" }) => {
     const translatedStatus = getStatusLabel(status);
     const colors = {
-        default: "bg-[#64748B]/10 text-[#94A3B8] border-[#64748B]/20",
-        success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-        warning: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-        danger: "bg-rose-500/10 text-rose-400 border-rose-500/20",
-        info: "bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20"
+        default: "bg-[#000000]/10 text-[#000000] border-[#000000]/20",
+        success: "bg-emerald-500/10 text-black border-emerald-500/20",
+        warning: "bg-amber-500/10 text-black border-amber-500/20",
+        danger: "bg-rose-500/10 text-black border-rose-500/20",
+        info: "bg-[#B4533A]/10 text-[#B4533A] border-[#B4533A]/20"
     };
     
     return (
@@ -534,9 +534,9 @@ const StatusBadge = ({ status, type = "default" }: { status: string, type?: "def
 };
 
 const RoleBadge = ({ role, icon }: { role: string, icon: React.ReactNode }) => (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0F1117] rounded-lg border border-[rgba(148,163,184,0.1)]">
-        <span className="text-[#3B82F6]">{icon}</span>
-        <span className="text-[10px] font-black text-[#F8FAFC] uppercase tracking-wider">{role}</span>
+    <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFFFFF] rounded-lg border border-[rgba(148,163,184,0.1)]">
+        <span className="text-[#B4533A]">{icon}</span>
+        <span className="text-[10px] font-black text-[#000000] uppercase tracking-wider">{role}</span>
     </div>
 );
 
@@ -676,34 +676,34 @@ export default function SimulationPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0F1117] text-[#94A3B8] p-6 font-sans">
+        <div className="min-h-screen bg-[#FFFFFF] text-[#000000] p-6 font-sans">
             <header className="max-w-[1600px] mx-auto flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-gradient-to-br from-[#3B82F6] to-purple-600 rounded-2xl shadow-lg shadow-[#3B82F6]/20">
-                        <Zap className="text-white fill-white/20" size={24} />
+                    <div className="p-3 bg-gradient-to-br from-[#B4533A] to-purple-600 rounded-2xl shadow-lg shadow-[#B4533A]/20">
+                        <Zap className="text-[#000000] fill-white/20" size={24} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black text-[#F8FAFC] tracking-tighter uppercase italic">OMS Simulation</h1>
-                        <p className="text-xs text-[#64748B] font-bold tracking-widest uppercase">Chi tiết quy trình mua hàng</p>
+                        <h1 className="text-2xl font-black text-[#000000] tracking-tighter uppercase italic">OMS Simulation</h1>
+                        <p className="text-xs text-[#000000] font-bold tracking-widest uppercase">Chi tiết quy trình mua hàng</p>
                     </div>
                 </div>
 
-                <div className="flex bg-[#161922] p-1 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                <div className="flex bg-[#FAF8F5] p-1 rounded-2xl border border-[rgba(148,163,184,0.1)]">
                     <button 
                         onClick={() => { setActiveWorkflow("CATALOG"); handleReset(); }}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#3B82F6] text-white shadow-lg" : "text-[#64748B] hover:text-[#F8FAFC]"}`}
+                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#B4533A] text-[#000000] shadow-lg" : "text-[#000000] hover:text-[#000000]"}`}
                     >
                         Workflow 1: Catalog
                     </button>
                     <button 
                         onClick={() => { setActiveWorkflow("NON_CATALOG"); handleReset(); }}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "NON_CATALOG" ? "bg-purple-600 text-white shadow-lg" : "text-[#64748B] hover:text-[#F8FAFC]"}`}
+                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "NON_CATALOG" ? "bg-purple-600 text-[#000000] shadow-lg" : "text-[#000000] hover:text-[#000000]"}`}
                     >
                         Workflow 2: Non-Catalog
                     </button>
                 </div>
 
-                <button onClick={handleReset} className="p-3 text-[#64748B] hover:text-[#F8FAFC] transition-colors bg-[#161922] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                <button onClick={handleReset} className="p-3 text-[#000000] hover:text-[#000000] transition-colors bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <RefreshCw size={18} />
                 </button>
             </header>
@@ -711,7 +711,7 @@ export default function SimulationPage() {
             <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
                 <div className="lg:col-span-4 space-y-4">
-                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#64748B] mb-4 px-2">
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#000000] mb-4 px-2">
                         Quy trình {activeWorkflow === "CATALOG" ? "Catalog (5 bước)" : "Non-Catalog (10 bước)"}
                     </h2>
                     
@@ -726,37 +726,37 @@ export default function SimulationPage() {
                                     key={idx} 
                                     onClick={() => goToStep(step.id)}
                                     className={`cursor-pointer rounded-2xl border transition-all duration-300 ${
-                                        isActive ? "bg-[#161922] border-[#3B82F6]/30" : 
-                                        isCompleted ? "bg-[#161922]/50 border-[rgba(148,163,184,0.1)]" : 
-                                        "bg-[#0F1117] border-[rgba(148,163,184,0.05)] opacity-60"
+                                        isActive ? "bg-[#FAF8F5] border-[#B4533A]/30" : 
+                                        isCompleted ? "bg-[#FAF8F5]/50 border-[rgba(148,163,184,0.1)]" : 
+                                        "bg-[#FFFFFF] border-[rgba(148,163,184,0.05)] opacity-60"
                                     }`}
                                 >
                                     {/* Step Header */}
                                     <div className="p-4 flex items-start gap-3">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                                            isActive ? "bg-[#3B82F6] text-white shadow-lg shadow-[#3B82F6]/20" : 
-                                            isCompleted ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : 
-                                            "bg-[#0F1117] text-[#64748B] border border-[rgba(148,163,184,0.1)]"
+                                            isActive ? "bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20" : 
+                                            isCompleted ? "bg-emerald-500/20 text-black border border-emerald-500/30" : 
+                                            "bg-[#FFFFFF] text-[#000000] border border-[rgba(148,163,184,0.1)]"
                                         }`}>
                                             {isCompleted ? <CheckCircle size={18} /> : step.icon}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
-                                                <span className={`text-[10px] font-black uppercase tracking-wider ${isActive ? "text-[#3B82F6]" : "text-[#64748B]"}`}>
+                                                <span className={`text-[10px] font-black uppercase tracking-wider ${isActive ? "text-[#B4533A]" : "text-[#000000]"}`}>
                                                     Bước {step.id}
                                                 </span>
                                                 <RoleBadge role={step.role} icon={step.roleIcon} />
                                             </div>
-                                            <h4 className={`text-sm font-black uppercase tracking-wide truncate ${isActive ? "text-[#F8FAFC]" : "text-[#94A3B8]"}`}>
+                                            <h4 className={`text-sm font-black uppercase tracking-wide truncate ${isActive ? "text-[#000000]" : "text-[#000000]"}`}>
                                                 {step.title}
                                             </h4>
-                                            <p className="text-[11px] text-[#64748B] leading-tight mt-1 line-clamp-2">
+                                            <p className="text-[11px] text-[#000000] leading-tight mt-1 line-clamp-2">
                                                 {step.description}
                                             </p>
                                         </div>
                                         <ChevronDown 
                                             size={16} 
-                                            className={`text-[#64748B] transition-transform ${isExpanded ? "rotate-180" : ""}`} 
+                                            className={`text-[#000000] transition-transform ${isExpanded ? "rotate-180" : ""}`} 
                                         />
                                     </div>
                                     
@@ -766,10 +766,10 @@ export default function SimulationPage() {
                                             {/* Function */}
                                             <div className="mb-4">
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <Eye size={12} className="text-[#3B82F6]" />
-                                                    <span className="text-[10px] font-black uppercase tracking-wider text-[#64748B]">Chức năng chi tiết</span>
+                                                    <Eye size={12} className="text-[#B4533A]" />
+                                                    <span className="text-[10px] font-black uppercase tracking-wider text-[#000000]">Chức năng chi tiết</span>
                                                 </div>
-                                                <p className="text-xs text-[#94A3B8] leading-relaxed bg-[#0F1117] p-3 rounded-lg border border-[rgba(148,163,184,0.1)]">
+                                                <p className="text-xs text-[#000000] leading-relaxed bg-[#FFFFFF] p-3 rounded-lg border border-[rgba(148,163,184,0.1)]">
                                                     {step.function}
                                                 </p>
                                             </div>
@@ -777,16 +777,16 @@ export default function SimulationPage() {
                                             {/* Data State Changes */}
                                             <div className="mb-4">
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <GitBranch size={12} className="text-purple-400" />
-                                                    <span className="text-[10px] font-black uppercase tracking-wider text-[#64748B]">Thay đổi dữ liệu</span>
+                                                    <GitBranch size={12} className="text-black" />
+                                                    <span className="text-[10px] font-black uppercase tracking-wider text-[#000000]">Thay đổi dữ liệu</span>
                                                 </div>
                                                 <div className="space-y-2">
                                                     {step.dataState.changes.map((change, cidx) => (
-                                                        <div key={cidx} className="flex items-center gap-2 text-[11px] bg-[#0F1117] p-2 rounded-lg border border-[rgba(148,163,184,0.1)]">
-                                                            <span className="text-[#64748B] font-medium">{change.field}:</span>
-                                                            <span className="text-[#64748B] line-through">{change.from}</span>
-                                                            <ArrowRight size={10} className="text-[#3B82F6]" />
-                                                            <span className="text-emerald-400 font-bold">{change.to}</span>
+                                                        <div key={cidx} className="flex items-center gap-2 text-[11px] bg-[#FFFFFF] p-2 rounded-lg border border-[rgba(148,163,184,0.1)]">
+                                                            <span className="text-[#000000] font-medium">{change.field}:</span>
+                                                            <span className="text-[#000000] line-through">{change.from}</span>
+                                                            <ArrowRight size={10} className="text-[#B4533A]" />
+                                                            <span className="text-black font-bold">{change.to}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -795,23 +795,23 @@ export default function SimulationPage() {
                                             {/* Next Steps Flow */}
                                             <div>
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <GitBranch size={12} className="text-amber-400" />
-                                                    <span className="text-[10px] font-black uppercase tracking-wider text-[#64748B]">Luồng tiếp theo</span>
+                                                    <GitBranch size={12} className="text-black" />
+                                                    <span className="text-[10px] font-black uppercase tracking-wider text-[#000000]">Luồng tiếp theo</span>
                                                 </div>
                                                 <div className="space-y-2">
                                                     <div className="flex items-start gap-2 p-2 bg-emerald-500/5 border border-emerald-500/20 rounded-lg">
-                                                        <CheckCircle size={14} className="text-emerald-400 shrink-0 mt-0.5" />
+                                                        <CheckCircle size={14} className="text-black shrink-0 mt-0.5" />
                                                         <div>
-                                                            <span className="text-[10px] font-black uppercase text-emerald-400">Phê duyệt:</span>
-                                                            <p className="text-[11px] text-[#94A3B8] mt-0.5">{step.nextSteps.approved.action}</p>
+                                                            <span className="text-[10px] font-black uppercase text-black">Phê duyệt:</span>
+                                                            <p className="text-[11px] text-[#000000] mt-0.5">{step.nextSteps.approved.action}</p>
                                                         </div>
                                                     </div>
                                                     {step.nextSteps.rejected && (
                                                         <div className="flex items-start gap-2 p-2 bg-rose-500/5 border border-rose-500/20 rounded-lg">
-                                                            <XCircle size={14} className="text-rose-400 shrink-0 mt-0.5" />
+                                                            <XCircle size={14} className="text-black shrink-0 mt-0.5" />
                                                             <div>
-                                                                <span className="text-[10px] font-black uppercase text-rose-400">Từ chối:</span>
-                                                                <p className="text-[11px] text-[#94A3B8] mt-0.5">{step.nextSteps.rejected.action}</p>
+                                                                <span className="text-[10px] font-black uppercase text-black">Từ chối:</span>
+                                                                <p className="text-[11px] text-[#000000] mt-0.5">{step.nextSteps.rejected.action}</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -826,30 +826,30 @@ export default function SimulationPage() {
                 </div>
 
                 <div className="lg:col-span-5">
-                    <div className="bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-[32px] p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden sticky top-6">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#3B82F6]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-[32px] p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden sticky top-6">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#B4533A]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
                         <div className="relative z-10 w-full animate-in fade-in duration-500">
-                            <div className="p-6 bg-[#0F1117] backdrop-blur-3xl rounded-[24px] border border-[rgba(148,163,184,0.1)] shadow-2xl mb-6 inline-block">
+                            <div className="p-6 bg-[#FFFFFF] backdrop-blur-3xl rounded-[24px] border border-[rgba(148,163,184,0.1)] shadow-2xl mb-6 inline-block">
                                 {currentStepData.icon}
                             </div>
                             
                             <div className="mb-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">Bước {currentStepData.id}</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Bước {currentStepData.id}</span>
                             </div>
                             
-                            <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tighter mb-4 uppercase italic">
+                            <h1 className="text-3xl font-black text-[#000000] tracking-tighter mb-4 uppercase italic">
                                 {currentStepData.title}
                             </h1>
                             
-                            <p className="text-[#94A3B8] max-w-md mx-auto text-sm leading-relaxed mb-8">
+                            <p className="text-[#000000] max-w-md mx-auto text-sm leading-relaxed mb-8">
                                 {currentStepData.description}
                             </p>
 
                             {/* Role Badge */}
                             <div className="flex items-center justify-center gap-2 mb-8">
-                                <span className="text-[11px] text-[#64748B]">Thực hiện bởi:</span>
+                                <span className="text-[11px] text-[#000000]">Thực hiện bởi:</span>
                                 <RoleBadge role={currentStepData.role} icon={currentStepData.roleIcon} />
                             </div>
 
@@ -858,10 +858,10 @@ export default function SimulationPage() {
                                 disabled={currentStep === steps.length}
                                 className={`group relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all duration-300 active:scale-95 ${
                                     currentStep === steps.length 
-                                    ? "bg-[#161922] text-[#64748B] cursor-not-allowed border border-[rgba(148,163,184,0.1)]" 
+                                    ? "bg-[#FAF8F5] text-[#000000] cursor-not-allowed border border-[rgba(148,163,184,0.1)]" 
                                     : activeWorkflow === "CATALOG" 
-                                    ? "bg-[#3B82F6] text-white shadow-[#3B82F6]/20 hover:shadow-[#3B82F6]/40 hover:scale-105" 
-                                    : "bg-purple-600 text-white shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105"
+                                    ? "bg-[#B4533A] text-[#000000] shadow-[#B4533A]/20 hover:shadow-[#B4533A]/40 hover:scale-105" 
+                                    : "bg-purple-600 text-[#000000] shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105"
                                 }`}
                             >
                                 {currentStep === steps.length ? "Hoàn tất quy trình" : "Thực hiện bước này"}
@@ -872,14 +872,14 @@ export default function SimulationPage() {
                             {activeWorkflow === "NON_CATALOG" && currentStep === 4 && (
                                 <div className="mt-10 grid grid-cols-3 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     {quotations.map(q => (
-                                        <div key={q.id} className="p-4 bg-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl text-left hover:border-[#3B82F6]/30 transition-all">
+                                        <div key={q.id} className="p-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-left hover:border-[#B4533A]/30 transition-all">
                                             <div className="flex justify-between items-start mb-2">
-                                                <span className="text-[10px] font-black text-[#F8FAFC]">{q.supplier}</span>
-                                                <span className="text-emerald-400 text-[10px] font-black">{q.aiScore}%</span>
+                                                <span className="text-[10px] font-black text-[#000000]">{q.supplier}</span>
+                                                <span className="text-black text-[10px] font-black">{q.aiScore}%</span>
                                             </div>
-                                            <div className="text-xs text-[#3B82F6] font-black">{(q.price/1000000).toFixed(0)}M ₫</div>
-                                            <div className="text-[9px] mt-2 text-[#64748B] uppercase tracking-widest font-black flex items-center gap-1">
-                                                <Bot size={10} className="text-purple-400" /> {q.aiRec}
+                                            <div className="text-xs text-[#B4533A] font-black">{(q.price/1000000).toFixed(0)}M ₫</div>
+                                            <div className="text-[9px] mt-2 text-[#000000] uppercase tracking-widest font-black flex items-center gap-1">
+                                                <Bot size={10} className="text-black" /> {q.aiRec}
                                             </div>
                                         </div>
                                     ))}
@@ -891,57 +891,57 @@ export default function SimulationPage() {
 
                 <div className="lg:col-span-3 space-y-4">
                     {/* Entities */}
-                    <div className="bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl p-5">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#64748B] mb-4 flex items-center gap-2">
+                    <div className="bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl p-5">
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000] mb-4 flex items-center gap-2">
                             <BarChart3 size={14} /> Đối tượng dữ liệu
                         </h3>
                         
                         <div className="space-y-3">
                             {pr && (
-                                <div className="p-3 bg-[#0F1117] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-[#3B82F6]/10 rounded-lg"><FileText size={12} className="text-[#3B82F6]" /></div>
-                                            <span className="text-[11px] font-black text-[#F8FAFC]">{pr.id}</span>
+                                            <div className="p-1.5 bg-[#B4533A]/10 rounded-lg"><FileText size={12} className="text-[#B4533A]" /></div>
+                                            <span className="text-[11px] font-black text-[#000000]">{pr.id}</span>
                                         </div>
                                         <StatusBadge status={pr.status} type={getStatusColor(pr.status)} />
                                     </div>
-                                    <div className="text-[10px] text-[#64748B]">{(pr.total/1000000).toFixed(0)}M ₫</div>
+                                    <div className="text-[10px] text-[#000000]">{(pr.total/1000000).toFixed(0)}M ₫</div>
                                 </div>
                             )}
 
                             {rfq && (
-                                <div className="p-3 bg-[#0F1117] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-amber-500/10 rounded-lg"><Search size={12} className="text-amber-400" /></div>
-                                            <span className="text-[11px] font-black text-[#F8FAFC]">{rfq.id}</span>
+                                            <div className="p-1.5 bg-amber-500/10 rounded-lg"><Search size={12} className="text-black" /></div>
+                                            <span className="text-[11px] font-black text-[#000000]">{rfq.id}</span>
                                         </div>
                                         <StatusBadge status={rfq.status} type={getStatusColor(rfq.status)} />
                                     </div>
-                                    <div className="text-[10px] text-[#64748B] truncate">{rfq.supplier || rfq.title}</div>
+                                    <div className="text-[10px] text-[#000000] truncate">{rfq.supplier || rfq.title}</div>
                                 </div>
                             )}
 
                             {po && (
-                                <div className="p-3 bg-[#0F1117] rounded-xl border border-emerald-500/20">
+                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-emerald-500/20">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-emerald-500/10 rounded-lg"><ShoppingBag size={12} className="text-emerald-400" /></div>
-                                            <span className="text-[11px] font-black text-[#F8FAFC]">{po.id}</span>
+                                            <div className="p-1.5 bg-emerald-500/10 rounded-lg"><ShoppingBag size={12} className="text-black" /></div>
+                                            <span className="text-[11px] font-black text-[#000000]">{po.id}</span>
                                         </div>
                                         <StatusBadge status={po.status} type={getStatusColor(po.status)} />
                                     </div>
-                                    <div className="text-[10px] text-emerald-400 font-black">{(po.total/1000000).toFixed(0)}M ₫</div>
+                                    <div className="text-[10px] text-black font-black">{(po.total/1000000).toFixed(0)}M ₫</div>
                                 </div>
                             )}
 
                             {grn && (
-                                <div className="p-3 bg-[#0F1117] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-purple-500/10 rounded-lg"><Package size={12} className="text-purple-400" /></div>
-                                            <span className="text-[11px] font-black text-[#F8FAFC]">{grn.id}</span>
+                                            <div className="p-1.5 bg-purple-500/10 rounded-lg"><Package size={12} className="text-black" /></div>
+                                            <span className="text-[11px] font-black text-[#000000]">{grn.id}</span>
                                         </div>
                                         <StatusBadge status={grn.status} type="success" />
                                     </div>
@@ -949,39 +949,39 @@ export default function SimulationPage() {
                             )}
 
                             {invoice && (
-                                <div className="p-3 bg-[#0F1117] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-rose-500/10 rounded-lg"><CreditCard size={12} className="text-rose-400" /></div>
-                                            <span className="text-[11px] font-black text-[#F8FAFC]">{invoice.id}</span>
+                                            <div className="p-1.5 bg-rose-500/10 rounded-lg"><CreditCard size={12} className="text-black" /></div>
+                                            <span className="text-[11px] font-black text-[#000000]">{invoice.id}</span>
                                         </div>
                                         <StatusBadge status={invoice.status} type="success" />
                                     </div>
-                                    <div className="text-[10px] text-[#64748B]">{(invoice.total/1000000).toFixed(0)}M ₫</div>
+                                    <div className="text-[10px] text-[#000000]">{(invoice.total/1000000).toFixed(0)}M ₫</div>
                                 </div>
                             )}
 
                             {!pr && !rfq && !po && !grn && !invoice && (
                                 <div className="py-8 text-center border border-dashed border-[rgba(148,163,184,0.1)] rounded-xl">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">Chưa có dữ liệu</span>
-                                    <p className="text-[9px] text-[#64748B] mt-1">Thực hiện các bước để tạo dữ liệu</p>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Chưa có dữ liệu</span>
+                                    <p className="text-[9px] text-[#000000] mt-1">Thực hiện các bước để tạo dữ liệu</p>
                                 </div>
                             )}
                         </div>
                     </div>
 
                     {/* Budget */}
-                    <div className="bg-gradient-to-br from-[#161922] to-[#0F1117] border border-[rgba(148,163,184,0.1)] rounded-2xl p-5">
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
+                    <div className="bg-gradient-to-br from-[#FAF8F5] to-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl p-5">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
                             <Wallet size={14} /> Kiểm soát ngân sách
                         </h3>
                         <div className="space-y-4">
                             <div>
                                 <div className="flex justify-between text-[10px] font-black uppercase mb-1.5">
-                                    <span className="text-amber-400">Committed</span>
-                                    <span className="text-[#F8FAFC]">{(budget.committed/1000000).toFixed(1)}M / {(budget.allocated/1000000).toFixed(0)}M</span>
+                                    <span className="text-black">Committed</span>
+                                    <span className="text-[#000000]">{(budget.committed/1000000).toFixed(1)}M / {(budget.allocated/1000000).toFixed(0)}M</span>
                                 </div>
-                                <div className="h-1.5 w-full bg-[#0F1117] rounded-full overflow-hidden border border-[rgba(148,163,184,0.1)]">
+                                <div className="h-1.5 w-full bg-[#FFFFFF] rounded-full overflow-hidden border border-[rgba(148,163,184,0.1)]">
                                     <div 
                                         className="h-full bg-amber-400 transition-all duration-500" 
                                         style={{ width: `${Math.min((budget.committed / budget.allocated) * 100, 100)}%` }}
@@ -990,20 +990,20 @@ export default function SimulationPage() {
                             </div>
                             <div>
                                 <div className="flex justify-between text-[10px] font-black uppercase mb-1.5">
-                                    <span className="text-[#3B82F6]">Spent</span>
-                                    <span className="text-[#F8FAFC]">{(budget.spent/1000000).toFixed(1)}M</span>
+                                    <span className="text-[#B4533A]">Spent</span>
+                                    <span className="text-[#000000]">{(budget.spent/1000000).toFixed(1)}M</span>
                                 </div>
-                                <div className="h-1.5 w-full bg-[#0F1117] rounded-full overflow-hidden border border-[rgba(148,163,184,0.1)]">
+                                <div className="h-1.5 w-full bg-[#FFFFFF] rounded-full overflow-hidden border border-[rgba(148,163,184,0.1)]">
                                     <div 
-                                        className="h-full bg-[#3B82F6] transition-all duration-500" 
+                                        className="h-full bg-[#B4533A] transition-all duration-500" 
                                         style={{ width: `${Math.min((budget.spent / budget.allocated) * 100, 100)}%` }}
                                     ></div>
                                 </div>
                             </div>
                             <div className="pt-3 border-t border-[rgba(148,163,184,0.1)]">
                                 <div className="flex justify-between text-[10px]">
-                                    <span className="text-[#64748B] uppercase font-bold">Còn lại:</span>
-                                    <span className="text-emerald-400 font-black">{((budget.allocated - budget.committed - budget.spent)/1000000).toFixed(1)}M ₫</span>
+                                    <span className="text-[#000000] uppercase font-bold">Còn lại:</span>
+                                    <span className="text-black font-black">{((budget.allocated - budget.committed - budget.spent)/1000000).toFixed(1)}M ₫</span>
                                 </div>
                             </div>
                         </div>
@@ -1012,13 +1012,13 @@ export default function SimulationPage() {
             </main>
 
             {activeWorkflow === "NON_CATALOG" && currentStep >= 4 && (
-                <div className="fixed bottom-12 right-12 w-80 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-3xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="fixed bottom-12 right-12 w-80 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-3xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2 bg-purple-600 rounded-xl"><Bot size={18} className="text-white" /></div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#F8FAFC]">AI Analyst</span>
+                        <div className="p-2 bg-purple-600 rounded-xl"><Bot size={18} className="text-[#000000]" /></div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[#000000]">AI Analyst</span>
                     </div>
                     <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
-                        <p className="text-[11px] text-emerald-400/80 leading-relaxed font-medium">
+                        <p className="text-[11px] text-black/80 leading-relaxed font-medium">
                             <span className="font-black">ĐỀ XUẤT:</span> HPT Vietnam (Q2) là lựa chọn tối ưu với giá thấp hơn 21% ngân sách.
                         </p>
                     </div>
@@ -1027,3 +1027,4 @@ export default function SimulationPage() {
         </div>
     );
 }
+

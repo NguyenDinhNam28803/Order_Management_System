@@ -93,10 +93,10 @@ export default function NotificationTemplatePreview({
   }), [rawPreview]);
 
   return (
-    <div className={`bg-[#161922] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden ${className}`}>
+    <div className={`bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden ${className}`}>
       {/* Header */}
       <div 
-        className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[#0F1117] transition-colors"
+        className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[#FFFFFF] transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
@@ -107,29 +107,29 @@ export default function NotificationTemplatePreview({
             <Icon size={20} />
           </div>
           <div>
-            <h3 className="font-medium text-[#F8FAFC]">{config.name}</h3>
-            <p className="text-sm text-[#64748B]">{config.description}</p>
+            <h3 className="font-medium text-[#000000]">{config.name}</h3>
+            <p className="text-sm text-[#000000]">{config.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {recipientEmail && (
-            <span className="text-sm text-[#64748B] mr-2">
+            <span className="text-sm text-[#000000] mr-2">
               Gửi đến: {recipientEmail}
             </span>
           )}
-          {isExpanded ? <ChevronUp size={20} className="text-[#64748B]" /> : <ChevronDown size={20} className="text-[#64748B]" />}
+          {isExpanded ? <ChevronUp size={20} className="text-[#000000]" /> : <ChevronDown size={20} className="text-[#000000]" />}
         </div>
       </div>
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="border-t border-[rgba(148,163,184,0.1)] bg-[#0F1117]">
+        <div className="border-t border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
           {/* Action Bar */}
-          <div className="px-4 py-3 bg-[#161922] border-b border-[rgba(148,163,184,0.1)] flex items-center gap-2">
+          <div className="px-4 py-3 bg-[#FAF8F5] border-b border-[rgba(148,163,184,0.1)] flex items-center gap-2">
             <button
               onClick={(e) => { e.stopPropagation(); loadServerPreview(); }}
               disabled={isLoading}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#94A3B8] bg-[#0F1117] border border-[rgba(148,163,184,0.2)] rounded-lg hover:bg-[#3B82F6]/10 hover:text-[#F8FAFC] hover:border-[#3B82F6]/50 disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#000000] bg-[#FFFFFF] border border-[rgba(148,163,184,0.2)] rounded-lg hover:bg-[#B4533A]/10 hover:text-[#000000] hover:border-[#B4533A]/50 disabled:opacity-50 transition-all"
             >
               {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
               {showServerPreview ? 'Ẩn xem trước' : 'Xem trước từ server'}
@@ -138,7 +138,7 @@ export default function NotificationTemplatePreview({
             {onSend && (
               <button
                 onClick={(e) => { e.stopPropagation(); onSend(); }}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#F8FAFC] bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] rounded-lg hover:shadow-lg hover:shadow-[#3B82F6]/30 transition-all"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#000000] bg-gradient-to-r from-[#B4533A] to-[#CB7A62] rounded-lg hover:shadow-lg hover:shadow-[#B4533A]/30 transition-all"
               >
                 <Send size={14} />
                 Gửi email
@@ -162,14 +162,14 @@ export default function NotificationTemplatePreview({
           <div className="p-4 bg-[#0A0A0A]">
             <div className="bg-[#1A1A1A] rounded-lg border border-[rgba(148,163,184,0.1)] overflow-hidden">
               {/* Email Subject */}
-              <div className="px-4 py-3 border-b border-[rgba(148,163,184,0.1)] bg-[#161922]">
-                <span className="text-sm text-[#64748B]">Subject: </span>
-                <span className="text-sm font-medium text-[#F8FAFC]">{displayPreview.subject}</span>
+              <div className="px-4 py-3 border-b border-[rgba(148,163,184,0.1)] bg-[#FAF8F5]">
+                <span className="text-sm text-[#000000]">Subject: </span>
+                <span className="text-sm font-medium text-[#000000]">{displayPreview.subject}</span>
               </div>
               
               {/* Email Body */}
               <div 
-                className="p-4 max-h-96 overflow-y-auto bg-[#0F1117]"
+                className="p-4 max-h-96 overflow-y-auto bg-[#FFFFFF]"
                 dangerouslySetInnerHTML={{ __html: displayPreview.html }}
               />
             </div>
@@ -177,8 +177,8 @@ export default function NotificationTemplatePreview({
 
           {/* Data Preview */}
           <div className="px-4 py-3 border-t border-[rgba(148,163,184,0.1)]">
-            <h4 className="text-sm font-medium text-[#94A3B8] mb-2">Dữ liệu template:</h4>
-            <pre className="text-xs text-[#60A5FA] bg-[#0F1117] p-3 rounded-lg overflow-x-auto border border-[rgba(148,163,184,0.1)]">
+            <h4 className="text-sm font-medium text-[#000000] mb-2">Dữ liệu template:</h4>
+            <pre className="text-xs text-[#CB7A62] bg-[#FFFFFF] p-3 rounded-lg overflow-x-auto border border-[rgba(148,163,184,0.1)]">
               {JSON.stringify(data, null, 2)}
             </pre>
           </div>
@@ -212,3 +212,4 @@ export function InvoiceSubmitLinkPreview(props: Omit<NotificationTemplatePreview
 export function PaymentConfirmedPreview(props: Omit<NotificationTemplatePreviewProps, 'eventType' | 'data'> & { data: PaymentConfirmedData }) {
   return <NotificationTemplatePreview {...props} eventType="PAYMENT_CONFIRMED" data={props.data} />;
 }
+

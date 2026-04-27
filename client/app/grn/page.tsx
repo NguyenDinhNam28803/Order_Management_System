@@ -37,16 +37,16 @@ export default function GRNPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#0F1117] text-[#F8FAFC]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-erp-navy tracking-tight">Nhập kho & Kiểm định (GRN)</h1>
-                    <p className="text-sm text-slate-500 mt-1">Xác nhận hàng hóa thực nhận và kiểm soát chất lượng đầu vào.</p>
+                    <p className="text-sm text-black mt-1">Xác nhận hàng hóa thực nhận và kiểm soát chất lượng đầu vào.</p>
                 </div>
             </div>
 
             {!activePO ? (
-                <div className="erp-card bg-slate-50 border-dashed py-32 text-center text-slate-400">
+                <div className="erp-card bg-slate-50 border-dashed py-32 text-center text-black">
                     <Truck size={48} className="mx-auto mb-4 opacity-10" />
                     <p className="text-xs font-black uppercase tracking-widest">Không có Đơn hàng (PO) nào đang chờ nhập kho</p>
                 </div>
@@ -55,16 +55,16 @@ export default function GRNPage() {
                     <div className="space-y-6">
                         <div className="erp-card">
                             <div className="flex items-center gap-3 mb-8">
-                                <div className="p-3 bg-blue-50 rounded-xl"><Truck size={24} className="text-erp-blue" /></div>
+                                <div className="p-3 bg-[#F9EFEC] rounded-xl"><Truck size={24} className="text-erp-blue" /></div>
                                 <div>
                                     <h3 className="text-sm font-black uppercase text-erp-navy">Xác nhận vận chuyển</h3>
-                                    <span className="text-[10px] font-black text-slate-400 uppercase">PO #{activePO.id} | {activePO.vendor}</span>
+                                    <span className="text-[10px] font-black text-black uppercase">PO #{activePO.id} | {activePO.vendor}</span>
                                 </div>
                             </div>
 
-                            <div className="p-5 bg-blue-50/50 border border-blue-100 rounded-2xl flex justify-between items-center">
+                            <div className="p-5 bg-[#F9EFEC]/50 border border-[#F3DDD6] rounded-2xl flex justify-between items-center">
                                 <div className="space-y-1">
-                                    <span className="block text-[9px] font-black uppercase text-blue-400">Trạng thái định vị (GPS)</span>
+                                    <span className="block text-[9px] font-black uppercase text-[#CB7A62]">Trạng thái định vị (GPS)</span>
                                     <span className="text-xs text-blue-800 font-black">Xưởng sản xuất - Cổng số 4</span>
                                 </div>
                                 <div className="status-pill status-approved">Đã tới cổng</div>
@@ -72,9 +72,9 @@ export default function GRNPage() {
                         </div>
 
                         <div className="erp-card !p-0 overflow-hidden">
-                            <div className="p-6 bg-erp-navy text-white flex justify-between items-center">
+                            <div className="p-6 bg-erp-navy text-[#000000] flex justify-between items-center">
                                 <h3 className="text-xs font-black uppercase tracking-widest">Kiểm đếm SL thực tế</h3>
-                                <Package size={18} className="text-white/40" />
+                                <Package size={18} className="text-[#000000]/40" />
                             </div>
                             <table className="erp-table">
                                 <thead>
@@ -122,7 +122,7 @@ export default function GRNPage() {
                             </h3>
 
                             <div className="grid grid-cols-2 gap-4 mb-8">
-                                <button className="py-4 border-2 border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:border-emerald-500 hover:text-emerald-600 transition-all flex flex-col items-center gap-2">
+                                <button className="py-4 border-2 border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-black hover:border-emerald-500 hover:text-emerald-600 transition-all flex flex-col items-center gap-2">
                                     <CheckCircle2 size={24} /> Pass (Đạt)
                                 </button>
                                 <button className="py-4 border-2 border-erp-red bg-red-50/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-erp-red transition-all flex flex-col items-center gap-2 ring-4 ring-red-100">
@@ -140,7 +140,7 @@ export default function GRNPage() {
                                     <div className="h-40 rounded-2xl overflow-hidden shadow-inner relative group border border-slate-100">
                                         <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=400&auto=format&fit=crop" className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                                            <span className="text-white text-[9px] font-black uppercase">Ảnh 01: Thùng hàng bị móp</span>
+                                            <span className="text-[#000000] text-[9px] font-black uppercase">Ảnh 01: Thùng hàng bị móp</span>
                                         </div>
                                     </div>
                                 </div>
@@ -155,7 +155,7 @@ export default function GRNPage() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <button 
                                             onClick={() => setDeliveryStatus("ON_TIME")}
-                                            className={`py-4 border-2 rounded-2xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "ON_TIME" ? "border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200" : "border-slate-100 bg-white text-slate-400"}`}
+                                            className={`py-4 border-2 rounded-2xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "ON_TIME" ? "border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200" : "border-slate-100 bg-white text-black"}`}
                                         >
                                             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
                                                 <CheckCircle2 size={16} /> Giao đúng hạn
@@ -163,7 +163,7 @@ export default function GRNPage() {
                                         </button>
                                         <button 
                                             onClick={() => setDeliveryStatus("LATE")}
-                                            className={`py-4 border-2 rounded-2xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "LATE" ? "border-amber-500 bg-amber-50 text-amber-700 ring-2 ring-amber-200" : "border-slate-100 bg-white text-slate-400"}`}
+                                            className={`py-4 border-2 rounded-2xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "LATE" ? "border-amber-500 bg-amber-50 text-amber-700 ring-2 ring-amber-200" : "border-slate-100 bg-white text-black"}`}
                                         >
                                             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
                                                 <Clock size={16} /> Giao trễ
@@ -171,17 +171,17 @@ export default function GRNPage() {
                                         </button>
                                     </div>
 
-                                    <div className="p-5 bg-erp-navy rounded-2xl text-white relative overflow-hidden">
+                                    <div className="p-5 bg-erp-navy rounded-2xl text-[#000000] relative overflow-hidden">
                                         <div className="absolute -right-6 -bottom-6 opacity-10">
                                             <Star size={120} fill="currentColor" />
                                         </div>
                                         <div className="relative z-10">
-                                            <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
+                                            <div className="text-[10px] font-black uppercase text-black tracking-widest mb-1">
                                                 Điểm đánh giá hệ thống
                                             </div>
                                             <div className="flex items-end gap-3">
                                                 <span className="text-4xl font-black  leading-none">{finalKpiScore}</span>
-                                                <span className="text-xs font-bold text-slate-400 mb-1">/ 100 pt</span>
+                                                <span className="text-xs font-bold text-black mb-1">/ 100 pt</span>
                                             </div>
                                             
                                             <div className="mt-4 space-y-2">
@@ -220,3 +220,4 @@ export default function GRNPage() {
         </main>
     );
 }
+

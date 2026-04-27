@@ -146,8 +146,8 @@ export default function ShopPage() {
             <div className="bg-gray-50 py-10">
                 <div className="container-custom">
                     <div className="flex items-center gap-2 text-sm">
-                        <Link href="/" className="text-gray-500 hover:text-secondary transition-colors">Home</Link>
-                        <span className="text-gray-400">&gt;</span>
+                        <Link href="/" className="text-black hover:text-secondary transition-colors">Home</Link>
+                        <span className="text-black">&gt;</span>
                         <span className="text-gray-900 font-medium">Shop</span>
                     </div>
                 </div>
@@ -172,7 +172,7 @@ export default function ShopPage() {
                                                 onChange={() => toggleCategory(cat)}
                                                 className="w-4 h-4 rounded border-gray-300 text-secondary focus:ring-secondary cursor-pointer"
                                             />
-                                            <span className={`text-sm transition-colors ${selectedCategories.includes(cat) ? "text-secondary font-bold" : "text-gray-600 group-hover:text-primary"}`}>{cat}</span>
+                                            <span className={`text-sm transition-colors ${selectedCategories.includes(cat) ? "text-secondary font-bold" : "text-black group-hover:text-primary"}`}>{cat}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -192,7 +192,7 @@ export default function ShopPage() {
                                                 onChange={() => toggleBrand(brand)}
                                                 className="w-4 h-4 rounded border-gray-300 text-secondary focus:ring-secondary cursor-pointer"
                                             />
-                                            <span className={`text-sm transition-colors ${selectedBrands.includes(brand) ? "text-secondary font-bold" : "text-gray-600 group-hover:text-primary"}`}>{brand}</span>
+                                            <span className={`text-sm transition-colors ${selectedBrands.includes(brand) ? "text-secondary font-bold" : "text-black group-hover:text-primary"}`}>{brand}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -212,7 +212,7 @@ export default function ShopPage() {
                                         onChange={(e) => setPriceRange(parseInt(e.target.value))}
                                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-secondary mb-6"
                                     />
-                                    <div className="flex justify-between items-center text-xs font-bold text-gray-500">
+                                    <div className="flex justify-between items-center text-xs font-bold text-black">
                                         <span>Min: $0</span>
                                         <span>Max: ${priceRange}</span>
                                     </div>
@@ -227,7 +227,7 @@ export default function ShopPage() {
                                 <Image src="/laptop.png" alt="Shop Banner" fill style={{ objectFit: 'cover' }} className="opacity-60" />
                                 <div className="absolute inset-0 bg-linear-to-r from-black/60 to-transparent flex flex-col justify-center px-12">
                                     <span className="text-secondary font-bold text-sm uppercase tracking-widest mb-2">Up To 30% Offer</span>
-                                    <h2 className="text-4xl font-black text-white leading-tight">New Accessories <br />Collection</h2>
+                                    <h2 className="text-4xl font-black text-[#000000] leading-tight">New Accessories <br />Collection</h2>
                                     <div className="flex gap-2 mt-6">
                                         <div className="w-8 h-1.5 bg-secondary rounded-full"></div>
                                         <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
@@ -238,34 +238,34 @@ export default function ShopPage() {
 
                             {/* Toolbar */}
                             <div className="flex justify-between items-center mb-10 pb-6 border-b border-gray-100">
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-black">
                                     Showing <span className="font-bold text-primary">{filteredProducts.length}</span> of <span className="font-bold text-primary">{initialProducts.length}</span> results
                                 </div>
                                 <div className="flex items-center gap-6">
                                     <div className="flex items-center bg-gray-100 rounded-lg p-1">
                                         <button
                                             onClick={() => setViewMode("grid")}
-                                            className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-primary text-white shadow-md" : "text-gray-400 hover:text-primary"}`}
+                                            className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-primary text-[#000000] shadow-md" : "text-black hover:text-primary"}`}
                                         >
                                             <LayoutGrid size={18} />
                                         </button>
                                         <button
                                             onClick={() => setViewMode("list")}
-                                            className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-primary text-white shadow-md" : "text-gray-400 hover:text-primary"}`}
+                                            className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-primary text-[#000000] shadow-md" : "text-black hover:text-primary"}`}
                                         >
                                             <List size={18} />
                                         </button>
                                     </div>
                                     <div className="h-6 w-px bg-gray-200"></div>
                                     <div className="flex items-center gap-2 text-sm">
-                                        <span className="text-gray-500">Show:</span>
+                                        <span className="text-black">Show:</span>
                                         <div className="flex items-center gap-1 border border-gray-200 px-3 py-1.5 rounded-md cursor-pointer hover:border-primary transition-colors">
                                             <span className="font-bold">16</span>
                                             <ChevronDown size={14} />
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2 text-sm">
-                                        <span className="text-gray-500">Sort by:</span>
+                                        <span className="text-black">Sort by:</span>
                                         <div className="flex items-center gap-1 border border-gray-200 px-3 py-1.5 rounded-md cursor-pointer hover:border-primary transition-colors">
                                             <span className="font-bold">Recent Added</span>
                                             <ChevronDown size={14} />
@@ -297,7 +297,7 @@ export default function ShopPage() {
                                                     {[...Array(5)].map((_, i) => (
                                                         <Star key={i} size={12} fill="#ffb400" stroke="none" />
                                                     ))}
-                                                    <span className="text-[10px] text-gray-400 font-bold ml-1">({product.reviews} reviews)</span>
+                                                    <span className="text-[10px] text-black font-bold ml-1">({product.reviews} reviews)</span>
                                                 </div>
                                                 <div className="text-secondary font-black text-xl mb-4">
                                                     ${product.price}.00
@@ -312,7 +312,7 @@ export default function ShopPage() {
                                 </div>
                             ) : (
                                 <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-                                    <div className="text-gray-400 mb-4 flex justify-center"><ShoppingCart size={48} /></div>
+                                    <div className="text-black mb-4 flex justify-center"><ShoppingCart size={48} /></div>
                                     <p className="text-lg font-bold text-primary">No products found matching your filters.</p>
                                     <button
                                         onClick={() => {
@@ -332,17 +332,17 @@ export default function ShopPage() {
             </div>
 
             {/* Footer */}
-            <footer className="bg-primary text-white py-20 mt-20">
+            <footer className="bg-primary text-[#000000] py-20 mt-20">
                 <div className="container-custom grid grid-cols-4 gap-12">
                     <div className="space-y-8">
                         <h2 className="text-3xl font-black italic text-secondary">e-Shopi</h2>
-                        <p className="text-sm text-gray-400 leading-relaxed max-w-xs">
+                        <p className="text-sm text-black leading-relaxed max-w-xs">
                             We are a leading e-commerce platform providing the best gadgets and electronics at unbeatable prices. Experience the future of shopping.
                         </p>
                     </div>
                     <div className="space-y-8">
                         <h3 className="text-xl font-bold border-b border-white/10 pb-4 inline-block pr-12">Quick Links</h3>
-                        <ul className="space-y-4 text-sm text-gray-400">
+                        <ul className="space-y-4 text-sm text-black">
                             <li className="hover:text-secondary cursor-pointer transition-colors flex items-center gap-2">About Us</li>
                             <li className="hover:text-secondary cursor-pointer transition-colors flex items-center gap-2">Contact Us</li>
                             <li className="hover:text-secondary cursor-pointer transition-colors flex items-center gap-2">Privacy Policy</li>
@@ -351,7 +351,7 @@ export default function ShopPage() {
                     </div>
                     <div className="space-y-8">
                         <h3 className="text-xl font-bold border-b border-white/10 pb-4 inline-block pr-12">Categories</h3>
-                        <ul className="space-y-4 text-sm text-gray-400">
+                        <ul className="space-y-4 text-sm text-black">
                             <li className="hover:text-secondary cursor-pointer transition-colors flex items-center gap-2">Computers & Laptops</li>
                             <li className="hover:text-secondary cursor-pointer transition-colors flex items-center gap-2">Smartphones & Tablets</li>
                             <li className="hover:text-secondary cursor-pointer transition-colors flex items-center gap-2">Audio & Video</li>
@@ -360,9 +360,9 @@ export default function ShopPage() {
                     </div>
                     <div className="space-y-8">
                         <h3 className="text-xl font-bold border-b border-white/10 pb-4 inline-block pr-12">Newsletter</h3>
-                        <p className="text-sm text-gray-400">Subscribe for early access to our latest offers and new product launches.</p>
+                        <p className="text-sm text-black">Subscribe for early access to our latest offers and new product launches.</p>
                         <div className="flex bg-white/5 p-1.5 rounded-full overflow-hidden border border-white/10">
-                            <input type="text" placeholder="Your Email Address" className="bg-transparent px-6 py-2 outline-none text-sm text-white w-full" />
+                            <input type="text" placeholder="Your Email Address" className="bg-transparent px-6 py-2 outline-none text-sm text-[#000000] w-full" />
                             <button className="bg-secondary text-primary px-8 py-2 rounded-full font-bold hover:bg-orange-500 transition-colors">Join</button>
                         </div>
                     </div>
@@ -371,3 +371,4 @@ export default function ShopPage() {
         </main>
     );
 }
+

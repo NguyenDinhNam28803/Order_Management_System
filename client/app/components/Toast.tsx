@@ -197,7 +197,7 @@ export const ToastContainer: React.FC = () => {
                 .toast-item.success { border-left: 6px solid #10b981; }
                 .toast-item.error { border-left: 6px solid #ef4444; }
                 .toast-item.warning { border-left: 6px solid #f59e0b; }
-                .toast-item.info { border-left: 6px solid #3b82f6; }
+                .toast-item.info { border-left: 6px solid #B4533A; }
 
                 .toast-icon {
                     margin-right: 16px;
@@ -209,7 +209,7 @@ export const ToastContainer: React.FC = () => {
                 .success .toast-icon { color: #10b981; }
                 .error .toast-icon { color: #ef4444; }
                 .warning .toast-icon { color: #f59e0b; }
-                .info .toast-icon { color: #3b82f6; }
+                .info .toast-icon { color: #B4533A; }
 
                 .toast-content {
                     flex: 1;
@@ -226,9 +226,9 @@ export const ToastContainer: React.FC = () => {
                 }
 
                 .toast-close {
-                    background: #f1f5f9;
+                    background: #000000;
                     border: none;
-                    color: #64748b;
+                    color: #000000;
                     cursor: pointer;
                     width: 24px;
                     height: 24px;
@@ -241,7 +241,7 @@ export const ToastContainer: React.FC = () => {
                 }
 
                 .toast-close:hover {
-                    background: #e2e8f0;
+                    background: #000000;
                     color: #0f172a;
                     transform: rotate(90deg);
                 }
@@ -266,7 +266,7 @@ export const ToastContainer: React.FC = () => {
                 .success .progress-fill { background: #10b981; }
                 .error .progress-fill { background: #ef4444; }
                 .warning .progress-fill { background: #f59e0b; }
-                .info .progress-fill { background: #3b82f6; }
+                .info .progress-fill { background: #B4533A; }
 
                 @keyframes progress-shrink {
                     from { transform: scaleX(1); }
@@ -312,3 +312,4 @@ export const ToastContainer: React.FC = () => {
 }
 
 export default ToastContainer;
+

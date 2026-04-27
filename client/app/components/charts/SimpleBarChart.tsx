@@ -27,9 +27,9 @@ export default function SimpleBarChart({
   const max = maxValue || Math.max(...data.map((d) => d.value), 1);
 
   return (
-    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
       {title && (
-        <h3 className="text-sm font-bold text-[#F8FAFC] mb-4 uppercase tracking-wider">
+        <h3 className="text-sm font-bold text-[#000000] mb-4 uppercase tracking-wider">
           {title}
         </h3>
       )}
@@ -38,18 +38,18 @@ export default function SimpleBarChart({
           const percentage = (item.value / max) * 100;
           return (
             <div key={idx} className="flex items-center gap-3">
-              <span className="text-xs text-[#94A3B8] w-24 truncate">
+              <span className="text-xs text-[#000000] w-24 truncate">
                 {item.label}
               </span>
-              <div className="flex-1 bg-[#0F1117] rounded-full h-6 overflow-hidden">
+              <div className="flex-1 bg-[#FFFFFF] rounded-full h-6 overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${
-                    item.color || "bg-[#3B82F6]"
+                    item.color || "bg-[#B4533A]"
                   }`}
                   style={{ width: `${percentage}%` }}
                 />
               </div>
-              <span className="text-xs font-medium text-[#F8FAFC] w-28 text-right">
+              <span className="text-xs font-medium text-[#000000] w-28 text-right">
                 {formatValue(item.value)}
               </span>
             </div>
@@ -59,3 +59,4 @@ export default function SimpleBarChart({
     </div>
   );
 }
+

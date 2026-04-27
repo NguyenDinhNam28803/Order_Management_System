@@ -135,13 +135,13 @@ function generatePreviewHtml(eventType: EmailEventType, data: TemplateData): str
     <style>
       .email-preview { font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; }
       .header { background: #1E3A5F; color: white; padding: 20px; text-align: center; }
-      .body { padding: 20px; background: #f8fafc; }
+      .body { padding: 20px; background: #000000; }
       .info-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-      .info-table th, .info-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-      .info-table th { background: #f1f5f9; font-weight: 600; }
-      .button { display: inline-block; padding: 12px 24px; background: #3B82F6; color: white; 
+      .info-table th, .info-table td { padding: 12px; text-align: left; border-bottom: 1px solid #000000; }
+      .info-table th { background: #000000; font-weight: 600; }
+      .button { display: inline-block; padding: 12px 24px; background: #B4533A; color: white; 
                 text-decoration: none; border-radius: 6px; margin: 8px 4px; }
-      .footer { padding: 20px; text-align: center; color: #64748B; font-size: 12px; }
+      .footer { padding: 20px; text-align: center; color: #000000; font-size: 12px; }
     </style>
   `;
 
@@ -266,7 +266,7 @@ export function getTemplateConfig(eventType: EmailEventType): {
       name: 'RFQ Magic Link',
       description: 'Gửi link báo giá cho nhà cung cấp',
       icon: 'MessageSquare',
-      color: '#3B82F6',
+      color: '#B4533A',
     },
     'PR_APPROVAL_LINK': {
       name: 'PR Approval Link',
@@ -302,31 +302,31 @@ export function getTemplateConfig(eventType: EmailEventType): {
       name: 'User Login',
       description: 'Thông báo đăng nhập',
       icon: 'User',
-      color: '#64748B',
+      color: '#000000',
     },
     'USER_REGISTERED': {
       name: 'User Registered',
       description: 'Thông báo đăng ký tài khoản',
       icon: 'UserPlus',
-      color: '#64748B',
+      color: '#000000',
     },
     'NEW_USER_ACCOUNT': {
       name: 'New User Account',
       description: 'Tài khoản mới tạo',
       icon: 'UserPlus',
-      color: '#64748B',
+      color: '#000000',
     },
     'RFQ_INVITATION': {
       name: 'RFQ Invitation',
       description: 'Mời tham gia RFQ',
       icon: 'Mail',
-      color: '#3B82F6',
+      color: '#B4533A',
     },
     'QUOTATION_RECEIVED': {
       name: 'Quotation Received',
       description: 'Nhận báo giá',
       icon: 'Inbox',
-      color: '#3B82F6',
+      color: '#B4533A',
     },
     'PO_APPROVAL_REQUEST': {
       name: 'PO Approval Request',
@@ -378,5 +378,5 @@ export function getTemplateConfig(eventType: EmailEventType): {
     },
   };
   
-  return configs[eventType] || { name: eventType, description: '', icon: 'Mail', color: '#64748B' };
+  return configs[eventType] || { name: eventType, description: '', icon: 'Mail', color: '#000000' };
 }

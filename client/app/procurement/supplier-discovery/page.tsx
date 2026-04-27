@@ -15,10 +15,10 @@ import {
 // ─── Status badge ───────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: DiscoveredSupplier['status'] }) => {
   if (status === 'WORKED_BEFORE')
-    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"><BadgeCheck size={10} />Đã hợp tác</span>;
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-black border border-emerald-500/30"><BadgeCheck size={10} />Đã hợp tác</span>;
   if (status === 'IN_SYSTEM')
-    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30"><CheckCircle2 size={10} />Trong hệ thống</span>;
-  return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/15 text-slate-400 border border-slate-500/30"><Sparkles size={10} />Mới</span>;
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#B4533A]/15 text-[#CB7A62] border border-[#B4533A]/30"><CheckCircle2 size={10} />Trong hệ thống</span>;
+  return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/15 text-black border border-slate-500/30"><Sparkles size={10} />Mới</span>;
 };
 
 // ─── AI Score bar ────────────────────────────────────────────────────────────
@@ -69,27 +69,27 @@ const SupplierDetailModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[#0D1117]/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#161B22] rounded-2xl border border-[rgba(240,246,252,0.1)] shadow-2xl overflow-hidden">
+      <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#FAF8F5] rounded-2xl border border-[rgba(240,246,252,0.1)] shadow-2xl overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-start justify-between p-5 border-b border-[rgba(240,246,252,0.08)] bg-[#0D1117] shrink-0">
+        <div className="flex items-start justify-between p-5 border-b border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] shrink-0">
           <div className="flex-1 min-w-0 pr-4">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h2 className="text-base font-black text-[#E6EDF3] truncate">{s.name}</h2>
+              <h2 className="text-base font-black text-[#000000] truncate">{s.name}</h2>
               <StatusBadge status={s.status} />
             </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[#8B949E]">
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[#000000]">
               {s.province && <span className="flex items-center gap-1"><MapPin size={10} />{s.province}</span>}
               {s.industry && <span className="flex items-center gap-1"><Building2 size={10} />{s.industry}</span>}
               {s.website && (
-                <a href={s.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-400 hover:underline">
+                <a href={s.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#CB7A62] hover:underline">
                   <Globe size={10} />{s.website.replace(/^https?:\/\//, '')}
                 </a>
               )}
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 text-[#484F58] hover:text-[#E6EDF3] hover:bg-[rgba(240,246,252,0.06)] rounded-lg transition-all shrink-0">
+          <button onClick={onClose} className="p-1.5 text-[#000000] hover:text-[#000000] hover:bg-[rgba(240,246,252,0.06)] rounded-lg transition-all shrink-0">
             <X size={16} />
           </button>
         </div>
@@ -98,8 +98,8 @@ const SupplierDetailModal = ({
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
 
           {/* ── AI Score section ── */}
-          <div className="bg-[#0D1117] rounded-xl border border-[rgba(240,246,252,0.08)] p-4">
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#484F58] mb-3 flex items-center gap-1.5">
+          <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(240,246,252,0.08)] p-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-3 flex items-center gap-1.5">
               <Sparkles size={11} className="text-violet-400" /> Đánh giá AI
             </p>
             {/* Score row */}
@@ -110,7 +110,7 @@ const SupplierDetailModal = ({
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-bold" style={{ color: scoreColor }}>{scoreLabel}</span>
-                  <span className="text-[10px] text-[#484F58]">/ 100</span>
+                  <span className="text-[10px] text-[#000000]">/ 100</span>
                 </div>
                 <div className="h-2 bg-[rgba(240,246,252,0.06)] rounded-full overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-700" style={{ width: `${s.aiScore}%`, background: scoreColor }} />
@@ -121,7 +121,7 @@ const SupplierDetailModal = ({
             {/* AI Summary */}
             {s.aiSummary && (
               <div className="mb-4">
-                <p className="text-[10px] font-black uppercase tracking-wider text-[#484F58] mb-1.5">Nhận xét AI</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-[#000000] mb-1.5">Nhận xét AI</p>
                 <p className="text-[12.5px] text-[#C9D1D9] leading-relaxed">{s.aiSummary}</p>
               </div>
             )}
@@ -129,7 +129,7 @@ const SupplierDetailModal = ({
             {/* Match reasons */}
             {s.matchReasons.length > 0 && (
               <div>
-                <p className="text-[10px] font-black uppercase tracking-wider text-[#484F58] mb-2">Lý do chấm điểm</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-[#000000] mb-2">Lý do chấm điểm</p>
                 <div className="space-y-1.5">
                   {s.matchReasons.map((r, i) => (
                     <div key={i} className="flex items-start gap-2">
@@ -142,14 +142,14 @@ const SupplierDetailModal = ({
             )}
 
             {s.matchReasons.length === 0 && !s.aiSummary && (
-              <p className="text-[11px] text-[#484F58] italic">AI chưa cung cấp lý do chi tiết cho lần tìm kiếm này.</p>
+              <p className="text-[11px] text-[#000000] italic">AI chưa cung cấp lý do chi tiết cho lần tìm kiếm này.</p>
             )}
           </div>
 
           {/* ── Company info section ── */}
-          <div className="bg-[#0D1117] rounded-xl border border-[rgba(240,246,252,0.08)] p-4">
+          <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(240,246,252,0.08)] p-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#484F58] flex items-center gap-1.5">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] flex items-center gap-1.5">
                 <Building2 size={11} /> Thông tin liên hệ
               </p>
               <button
@@ -164,62 +164,62 @@ const SupplierDetailModal = ({
             </div>
 
             {enrichError && (
-              <p className="text-[11px] text-rose-400 mb-2 flex items-center gap-1"><AlertCircle size={11} />{enrichError}</p>
+              <p className="text-[11px] text-black mb-2 flex items-center gap-1"><AlertCircle size={11} />{enrichError}</p>
             )}
             {enriched && !enrichError && (
-              <p className="text-[10px] text-emerald-400 mb-2 flex items-center gap-1"><CheckCircle2 size={10} />Đã cập nhật từ website nhà cung cấp</p>
+              <p className="text-[10px] text-black mb-2 flex items-center gap-1"><CheckCircle2 size={10} />Đã cập nhật từ website nhà cung cấp</p>
             )}
 
             <div className="space-y-2.5">
               <div className="flex items-center gap-2 text-[12px]">
-                <Phone size={12} className="text-[#484F58] shrink-0" />
-                <span className="text-[#8B949E] w-24 shrink-0">Điện thoại</span>
+                <Phone size={12} className="text-[#000000] shrink-0" />
+                <span className="text-[#000000] w-24 shrink-0">Điện thoại</span>
                 {s.phone
-                  ? <a href={`tel:${s.phone}`} className="text-[#E6EDF3] font-medium hover:text-blue-400 transition-colors">{s.phone}</a>
-                  : <span className="text-[#484F58] italic text-[11px]">Chưa có thông tin</span>}
+                  ? <a href={`tel:${s.phone}`} className="text-[#000000] font-medium hover:text-[#CB7A62] transition-colors">{s.phone}</a>
+                  : <span className="text-[#000000] italic text-[11px]">Chưa có thông tin</span>}
               </div>
               <div className="flex items-center gap-2 text-[12px]">
-                <Mail size={12} className="text-[#484F58] shrink-0" />
-                <span className="text-[#8B949E] w-24 shrink-0">Email</span>
+                <Mail size={12} className="text-[#000000] shrink-0" />
+                <span className="text-[#000000] w-24 shrink-0">Email</span>
                 {s.email
-                  ? <a href={`mailto:${s.email}`} className="text-emerald-400 hover:underline">{s.email}</a>
-                  : <span className="text-[#484F58] italic text-[11px]">Chưa có thông tin</span>}
+                  ? <a href={`mailto:${s.email}`} className="text-black hover:underline">{s.email}</a>
+                  : <span className="text-[#000000] italic text-[11px]">Chưa có thông tin</span>}
               </div>
               <div className="flex items-start gap-2 text-[12px]">
-                <MapPin size={12} className="text-[#484F58] shrink-0 mt-0.5" />
-                <span className="text-[#8B949E] w-24 shrink-0">Địa chỉ</span>
+                <MapPin size={12} className="text-[#000000] shrink-0 mt-0.5" />
+                <span className="text-[#000000] w-24 shrink-0">Địa chỉ</span>
                 {s.address
-                  ? <span className="text-[#E6EDF3]">{s.address}</span>
-                  : <span className="text-[#484F58] italic text-[11px]">{s.province || 'Chưa có thông tin'}</span>}
+                  ? <span className="text-[#000000]">{s.address}</span>
+                  : <span className="text-[#000000] italic text-[11px]">{s.province || 'Chưa có thông tin'}</span>}
               </div>
               <div className="flex items-center gap-2 text-[12px]">
-                <Star size={12} className="text-[#484F58] shrink-0" />
-                <span className="text-[#8B949E] w-24 shrink-0">Mã số thuế</span>
+                <Star size={12} className="text-[#000000] shrink-0" />
+                <span className="text-[#000000] w-24 shrink-0">Mã số thuế</span>
                 {s.taxCode
-                  ? <span className="text-[#E6EDF3] font-mono">{s.taxCode}</span>
-                  : <span className="text-[#484F58] italic text-[11px]">Chưa có thông tin</span>}
+                  ? <span className="text-[#000000] font-mono">{s.taxCode}</span>
+                  : <span className="text-[#000000] italic text-[11px]">Chưa có thông tin</span>}
               </div>
               <div className="flex items-center gap-2 text-[12px]">
-                <Globe size={12} className="text-[#484F58] shrink-0" />
-                <span className="text-[#8B949E] w-24 shrink-0">Website</span>
+                <Globe size={12} className="text-[#000000] shrink-0" />
+                <span className="text-[#000000] w-24 shrink-0">Website</span>
                 {s.website
-                  ? <a href={s.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
+                  ? <a href={s.website} target="_blank" rel="noopener noreferrer" className="text-[#CB7A62] hover:underline flex items-center gap-1">
                       {s.website.replace(/^https?:\/\//, '')} <ArrowUpRight size={10} />
                     </a>
-                  : <span className="text-[#484F58] italic text-[11px]">Chưa có thông tin</span>}
+                  : <span className="text-[#000000] italic text-[11px]">Chưa có thông tin</span>}
               </div>
             </div>
           </div>
 
           {/* ── Products & Certifications ── */}
           {(s.products.length > 0 || s.certifications.length > 0) && (
-            <div className="bg-[#0D1117] rounded-xl border border-[rgba(240,246,252,0.08)] p-4">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#484F58] mb-3 flex items-center gap-1.5">
+            <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(240,246,252,0.08)] p-4">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-3 flex items-center gap-1.5">
                 <Zap size={11} /> Năng lực & Chứng chỉ
               </p>
               {s.products.length > 0 && (
                 <div className="mb-3">
-                  <p className="text-[10px] font-semibold text-[#484F58] uppercase mb-1.5">Sản phẩm / Dịch vụ</p>
+                  <p className="text-[10px] font-semibold text-[#000000] uppercase mb-1.5">Sản phẩm / Dịch vụ</p>
                   <div className="flex flex-wrap gap-1.5">
                     {s.products.map((p, i) => (
                       <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-[rgba(240,246,252,0.05)] text-[#C9D1D9] border border-[rgba(240,246,252,0.08)]">{p}</span>
@@ -229,10 +229,10 @@ const SupplierDetailModal = ({
               )}
               {s.certifications.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-semibold text-[#484F58] uppercase mb-1.5">Chứng chỉ</p>
+                  <p className="text-[10px] font-semibold text-[#000000] uppercase mb-1.5">Chứng chỉ</p>
                   <div className="flex flex-wrap gap-1.5">
                     {s.certifications.map((c, i) => (
-                      <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                      <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-emerald-500/10 text-black border border-emerald-500/20 flex items-center gap-1">
                         <Shield size={9} />{c}
                       </span>
                     ))}
@@ -245,32 +245,32 @@ const SupplierDetailModal = ({
           {/* ── Source ── */}
           <div className="flex items-center gap-2">
             <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] text-blue-400 hover:underline">
+              className="inline-flex items-center gap-1.5 text-[11px] text-[#CB7A62] hover:underline">
               <ArrowUpRight size={12} />Xem nguồn dữ liệu gốc
             </a>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 border-t border-[rgba(240,246,252,0.08)] bg-[#0D1117] px-5 py-4 flex items-center justify-between gap-3">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg text-[12px] text-[#8B949E] hover:text-[#E6EDF3] border border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.15)] transition-all">
+        <div className="shrink-0 border-t border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-5 py-4 flex items-center justify-between gap-3">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg text-[12px] text-[#000000] hover:text-[#000000] border border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.15)] transition-all">
             Đóng
           </button>
           {s.status === 'NEW' && (
             <button
               onClick={() => { onImport(s as DiscoveredSupplier); onClose(); }}
               disabled={importing}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#A85032] text-[#000000] hover:bg-[#B4533A] disabled:opacity-50 transition-all"
             >
               {importing ? <Loader2 size={13} className="animate-spin" /> : <Import size={13} />}
               Thêm vào hệ thống
             </button>
           )}
           {s.status === 'IN_SYSTEM' && (
-            <span className="text-[11px] text-[#484F58] flex items-center gap-1"><CheckCircle2 size={12} className="text-blue-400" />Đã có trong hệ thống</span>
+            <span className="text-[11px] text-[#000000] flex items-center gap-1"><CheckCircle2 size={12} className="text-[#CB7A62]" />Đã có trong hệ thống</span>
           )}
           {s.status === 'WORKED_BEFORE' && (
-            <span className="text-[11px] text-emerald-400 flex items-center gap-1"><CheckCircle2 size={12} />Đã từng hợp tác</span>
+            <span className="text-[11px] text-black flex items-center gap-1"><CheckCircle2 size={12} />Đã từng hợp tác</span>
           )}
         </div>
       </div>
@@ -290,7 +290,7 @@ const SupplierCard = ({
   onViewDetail: (s: DiscoveredSupplier) => void;
 }) => {
   return (
-    <div className={`rounded-xl border transition-all duration-200 ${selected ? 'border-blue-500/50 bg-blue-500/5' : 'border-[rgba(240,246,252,0.08)] bg-[#161B22]'} hover:border-[rgba(240,246,252,0.15)]`}>
+    <div className={`rounded-xl border transition-all duration-200 ${selected ? 'border-[#B4533A]/50 bg-[#B4533A]/5' : 'border-[rgba(240,246,252,0.08)] bg-[#FAF8F5]'} hover:border-[rgba(240,246,252,0.15)]`}>
       <div className="p-4">
         {/* Header row */}
         <div className="flex items-start gap-3">
@@ -298,18 +298,18 @@ const SupplierCard = ({
             type="checkbox"
             checked={selected}
             onChange={onToggleSelect}
-            className="mt-1 rounded border-[rgba(240,246,252,0.2)] accent-blue-500"
+            className="mt-1 rounded border-[rgba(240,246,252,0.2)] accent-[#B4533A]"
           />
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h3 className="text-sm font-bold text-[#E6EDF3] truncate">{supplier.name}</h3>
+              <h3 className="text-sm font-bold text-[#000000] truncate">{supplier.name}</h3>
               <StatusBadge status={supplier.status} />
             </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[#8B949E]">
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[#000000]">
               {supplier.province && <span className="flex items-center gap-1"><MapPin size={10} />{supplier.province}</span>}
               {supplier.industry && <span className="flex items-center gap-1"><Building2 size={10} />{supplier.industry}</span>}
               {supplier.website && (
-                <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-400 hover:underline" onClick={e => e.stopPropagation()}>
+                <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#CB7A62] hover:underline" onClick={e => e.stopPropagation()}>
                   <Globe size={10} />{supplier.website.replace(/^https?:\/\//, '')}
                 </a>
               )}
@@ -317,14 +317,14 @@ const SupplierCard = ({
           </div>
           {/* AI Score */}
           <div className="shrink-0 w-28">
-            <p className="text-[9px] font-semibold text-[#484F58] uppercase tracking-wider mb-1">AI Score</p>
+            <p className="text-[9px] font-semibold text-[#000000] uppercase tracking-wider mb-1">AI Score</p>
             <ScoreBar score={supplier.aiScore} />
           </div>
         </div>
 
         {/* AI Summary — inline preview */}
         {supplier.aiSummary && (
-          <p className="mt-2.5 text-[11.5px] text-[#8B949E] leading-relaxed line-clamp-2 pl-6">
+          <p className="mt-2.5 text-[11.5px] text-[#000000] leading-relaxed line-clamp-2 pl-6">
             {supplier.aiSummary}
           </p>
         )}
@@ -333,18 +333,18 @@ const SupplierCard = ({
         {supplier.matchReasons.length > 0 && (
           <div className="mt-2 pl-6 flex flex-wrap gap-1.5">
             {supplier.matchReasons.slice(0, 3).map((r, i) => (
-              <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-[rgba(59,130,246,0.1)] text-blue-300 border border-blue-500/20">{r}</span>
+              <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-[rgba(59,130,246,0.1)] text-[#D99B89] border border-[#B4533A]/20">{r}</span>
             ))}
             {supplier.matchReasons.length > 3 && (
-              <span className="text-[10px] text-[#484F58]">+{supplier.matchReasons.length - 3}</span>
+              <span className="text-[10px] text-[#000000]">+{supplier.matchReasons.length - 3}</span>
             )}
           </div>
         )}
 
         {/* Contacts row */}
         <div className="mt-3 pl-6 flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
-          {supplier.phone && <span className="flex items-center gap-1 text-[#8B949E]"><Phone size={10} />{supplier.phone}</span>}
-          {supplier.email && <span className="flex items-center gap-1 text-[#8B949E]"><Mail size={10} />{supplier.email}</span>}
+          {supplier.phone && <span className="flex items-center gap-1 text-[#000000]"><Phone size={10} />{supplier.phone}</span>}
+          {supplier.email && <span className="flex items-center gap-1 text-[#000000]"><Mail size={10} />{supplier.email}</span>}
         </div>
 
         {/* Action bar */}
@@ -360,14 +360,14 @@ const SupplierCard = ({
             <button
               onClick={() => onImport(supplier)}
               disabled={importing}
-              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-blue-500/15 text-blue-400 border border-blue-500/30 hover:bg-blue-500/25 transition-colors disabled:opacity-50"
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#B4533A]/15 text-[#CB7A62] border border-[#B4533A]/30 hover:bg-[#B4533A]/25 transition-colors disabled:opacity-50"
             >
               {importing ? <Loader2 size={11} className="animate-spin" /> : <Import size={11} />}
               Thêm vào hệ thống
             </button>
           )}
           {supplier.status === 'IN_SYSTEM' && (
-            <span className="ml-auto text-[10px] text-[#484F58]">Đã có trong hệ thống</span>
+            <span className="ml-auto text-[10px] text-[#000000]">Đã có trong hệ thống</span>
           )}
           {supplier.status === 'WORKED_BEFORE' && (
             <span className="ml-auto text-[10px] text-emerald-500">Đã từng hợp tác</span>
@@ -380,19 +380,19 @@ const SupplierCard = ({
 
 // ─── Compare Panel ───────────────────────────────────────────────────────────
 const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[]; onClose: () => void }) => (
-  <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div className="bg-[#161B22] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-auto">
+  <div className="fixed inset-0 z-50 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="bg-[#FAF8F5] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-auto">
       <div className="flex items-center justify-between p-4 border-b border-[rgba(240,246,252,0.08)]">
-        <h3 className="font-bold text-[#E6EDF3]">So sánh Nhà cung cấp</h3>
-        <button onClick={onClose} className="text-[#484F58] hover:text-[#E6EDF3] transition-colors"><X size={16} /></button>
+        <h3 className="font-bold text-[#000000]">So sánh Nhà cung cấp</h3>
+        <button onClick={onClose} className="text-[#000000] hover:text-[#000000] transition-colors"><X size={16} /></button>
       </div>
       <div className="p-4 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr>
-              <td className="text-[10px] text-[#484F58] uppercase font-semibold pr-4 pb-3 w-28">Tiêu chí</td>
+              <td className="text-[10px] text-[#000000] uppercase font-semibold pr-4 pb-3 w-28">Tiêu chí</td>
               {suppliers.map((s, i) => (
-                <th key={i} className="text-left pb-3 px-3 font-bold text-[#E6EDF3]">{s.name}</th>
+                <th key={i} className="text-left pb-3 px-3 font-bold text-[#000000]">{s.name}</th>
               ))}
             </tr>
           </thead>
@@ -408,9 +408,9 @@ const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[];
               { label: 'Trạng thái', render: (s: DiscoveredSupplier) => <StatusBadge status={s.status} /> },
             ].map(row => (
               <tr key={row.label}>
-                <td className="text-[10px] text-[#484F58] uppercase font-semibold py-2.5 pr-4">{row.label}</td>
+                <td className="text-[10px] text-[#000000] uppercase font-semibold py-2.5 pr-4">{row.label}</td>
                 {suppliers.map((s, i) => (
-                  <td key={i} className="py-2.5 px-3 text-[12px] text-[#8B949E]">{row.render(s)}</td>
+                  <td key={i} className="py-2.5 px-3 text-[12px] text-[#000000]">{row.render(s)}</td>
                 ))}
               </tr>
             ))}
@@ -572,40 +572,40 @@ export default function SupplierDiscoveryPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0D1117] text-[#E6EDF3]">
+    <div className="min-h-screen bg-[#FFFFFF] text-[#000000]">
       <div className="max-w-5xl mx-auto px-4 py-8">
 
         {/* ── Page header ── */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
-              <Sparkles size={15} className="text-white" />
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-[#A85032] flex items-center justify-center shadow-lg shadow-violet-500/30">
+              <Sparkles size={15} className="text-[#000000]" />
             </div>
-            <h1 className="text-xl font-black text-[#E6EDF3]">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
+            <h1 className="text-xl font-black text-[#000000]">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
             <span className="ml-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/30 uppercase tracking-wider">Beta</span>
           </div>
-          <p className="text-[12px] text-[#8B949E]">Tìm kiếm nhà cung cấp từ nguồn bên ngoài bằng AI · Gemini + Tavily Search</p>
+          <p className="text-[12px] text-[#000000]">Tìm kiếm nhà cung cấp từ nguồn bên ngoài bằng AI · Gemini + Tavily Search</p>
         </div>
 
         {/* ── Search form ── */}
-        <div className="bg-[#161B22] border border-[rgba(240,246,252,0.08)] rounded-2xl p-4 mb-5">
+        <div className="bg-[#FAF8F5] border border-[rgba(240,246,252,0.08)] rounded-2xl p-4 mb-5">
           {/* Main query */}
           <div className="flex gap-2 mb-3">
             <div className="relative flex-1">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#484F58]" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" />
               <input
                 type="text"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
                 placeholder="VD: nhà cung cấp laptop văn phòng Hà Nội..."
-                className="w-full pl-9 pr-4 py-2.5 bg-[#0D1117] border border-[rgba(240,246,252,0.1)] rounded-xl text-sm text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-violet-500/50 transition-colors"
+                className="w-full pl-9 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(240,246,252,0.1)] rounded-xl text-sm text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/50 transition-colors"
               />
             </div>
             <button
               onClick={handleSearch}
               disabled={loading || !query.trim()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-blue-600 text-white hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-violet-500/20"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-[#A85032] text-[#000000] hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-violet-500/20"
             >
               {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
               Tìm kiếm AI
@@ -618,12 +618,12 @@ export default function SupplierDiscoveryPage() {
               value={location}
               onChange={e => setLocation(e.target.value)}
               placeholder="Khu vực..."
-              className="w-32 px-3 py-1.5 text-[12px] bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-violet-500/40"
+              className="w-32 px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
             />
             <select
               value={companySize}
               onChange={e => setCompanySize(e.target.value as '' | 'STARTUP' | 'SME' | 'ENTERPRISE')}
-              className="px-3 py-1.5 text-[12px] bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#8B949E] focus:outline-none focus:border-violet-500/40"
+              className="px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#000000] focus:outline-none focus:border-violet-500/40"
             >
               <option value="">Quy mô</option>
               <option value="STARTUP">Startup</option>
@@ -634,14 +634,14 @@ export default function SupplierDiscoveryPage() {
               <button
                 key={p.key}
                 onClick={() => togglePriority(p.key)}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${priorities.includes(p.key) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#484F58] border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.2)]'}`}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${priorities.includes(p.key) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#000000] border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.2)]'}`}
               >
                 {p.icon}{p.label}
               </button>
             ))}
             <button
               onClick={() => setShowAdvanced(v => !v)}
-              className="flex items-center gap-1 text-[11px] text-[#484F58] hover:text-[#8B949E] ml-auto"
+              className="flex items-center gap-1 text-[11px] text-[#000000] hover:text-[#000000] ml-auto"
             >
               <Filter size={11} />Nâng cao {showAdvanced ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
             </button>
@@ -651,22 +651,22 @@ export default function SupplierDiscoveryPage() {
           {showAdvanced && (
             <div className="mt-3 pt-3 border-t border-[rgba(240,246,252,0.06)] grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <p className="text-[10px] text-[#484F58] uppercase font-semibold mb-2">Sản phẩm cụ thể</p>
+                <p className="text-[10px] text-[#000000] uppercase font-semibold mb-2">Sản phẩm cụ thể</p>
                 <input
                   value={products}
                   onChange={e => setProducts(e.target.value)}
                   placeholder="VD: laptop Dell, máy in HP..."
-                  className="w-full px-3 py-2 text-[12px] bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-violet-500/40"
+                  className="w-full px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
                 />
               </div>
               <div>
-                <p className="text-[10px] text-[#484F58] uppercase font-semibold mb-2">Số kết quả (1-20)</p>
+                <p className="text-[10px] text-[#000000] uppercase font-semibold mb-2">Số kết quả (1-20)</p>
                 <input
                   type="number"
                   min={1} max={20}
                   value={limit}
                   onChange={e => setLimit(Math.min(20, Math.max(1, Number(e.target.value))))}
-                  className="w-24 px-3 py-2 text-[12px] bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#E6EDF3] focus:outline-none focus:border-violet-500/40"
+                  className="w-24 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#000000] focus:outline-none focus:border-violet-500/40"
                 />
               </div>
               {categories.length > 0 && (
@@ -677,7 +677,7 @@ export default function SupplierDiscoveryPage() {
                       <button
                         key={c.id}
                         onClick={() => toggleCategory(c.name)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${selectedCategories.includes(c.name) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#8B949E] border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.2)]'}`}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${selectedCategories.includes(c.name) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#000000] border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.2)]'}`}
                       >
                         {c.name}
                       </button>
@@ -700,7 +700,7 @@ export default function SupplierDiscoveryPage() {
         {loading && (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#161B22] p-4 animate-pulse">
+              <div key={i} className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#FAF8F5] p-4 animate-pulse">
                 <div className="h-4 w-48 bg-[rgba(240,246,252,0.05)] rounded mb-2" />
                 <div className="h-3 w-72 bg-[rgba(240,246,252,0.03)] rounded mb-3" />
                 <div className="h-3 w-full bg-[rgba(240,246,252,0.03)] rounded" />
@@ -718,10 +718,10 @@ export default function SupplierDiscoveryPage() {
             {/* Demo data warning banner */}
             {isDemoData && (
               <div className="mb-3 flex items-start gap-2.5 rounded-xl border border-amber-500/25 bg-amber-500/8 px-4 py-3">
-                <AlertCircle size={15} className="text-amber-400 shrink-0 mt-0.5" />
+                <AlertCircle size={15} className="text-black shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-bold text-amber-400">Kết quả demo — Tavily API key chưa hợp lệ</p>
-                  <p className="text-[11px] text-amber-400/70 mt-0.5">
+                  <p className="text-xs font-bold text-black">Kết quả demo — Tavily API key chưa hợp lệ</p>
+                  <p className="text-[11px] text-black/70 mt-0.5">
                     Các nhà cung cấp bên dưới là dữ liệu mẫu. Để tìm kiếm thật, hãy cập nhật <code className="bg-amber-500/15 px-1 rounded">TAVILY_API_KEY</code> trong file <code className="bg-amber-500/15 px-1 rounded">.env</code> của server.
                   </p>
                 </div>
@@ -731,21 +731,21 @@ export default function SupplierDiscoveryPage() {
             {/* Results header */}
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-sm font-bold text-[#E6EDF3]">{results.length} nhà cung cấp tìm thấy</p>
-                {queryUsed && <p className="text-[10px] text-[#484F58] mt-0.5">Query: &quot;{queryUsed}&quot;</p>}
+                <p className="text-sm font-bold text-[#000000]">{results.length} nhà cung cấp tìm thấy</p>
+                {queryUsed && <p className="text-[10px] text-[#000000] mt-0.5">Query: &quot;{queryUsed}&quot;</p>}
               </div>
               <div className="flex items-center gap-2">
                 {selected.size >= 2 && (
                   <button
                     onClick={() => setComparing(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-amber-500/15 text-black border border-amber-500/30 hover:bg-amber-500/25 transition-colors"
                   >
                     <RefreshCw size={11} />So sánh ({selected.size})
                   </button>
                 )}
                 <button
                   onClick={handleExport}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[rgba(240,246,252,0.05)] text-[#8B949E] border border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.15)] transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[rgba(240,246,252,0.05)] text-[#000000] border border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.15)] transition-colors"
                 >
                   <Download size={11} />Export CSV
                 </button>
@@ -753,7 +753,7 @@ export default function SupplierDiscoveryPage() {
             </div>
 
             {results.length === 0 ? (
-              <div className="text-center py-16 text-[#484F58]">
+              <div className="text-center py-16 text-[#000000]">
                 <Search size={32} className="mx-auto mb-3 opacity-30" />
                 <p className="font-semibold">Không tìm thấy kết quả</p>
                 <p className="text-[12px] mt-1">Thử thay đổi từ khóa hoặc mở rộng tiêu chí tìm kiếm</p>
@@ -779,14 +779,14 @@ export default function SupplierDiscoveryPage() {
             )}
 
             {/* ── AI Chat ── */}
-            <div className="mt-8 bg-[#161B22] border border-[rgba(240,246,252,0.08)] rounded-2xl overflow-hidden">
+            <div className="mt-8 bg-[#FAF8F5] border border-[rgba(240,246,252,0.08)] rounded-2xl overflow-hidden">
               <button
                 onClick={() => setChatOpen(v => !v)}
                 className="w-full flex items-center gap-2 p-4 text-left hover:bg-[rgba(240,246,252,0.03)] transition-colors"
               >
                 <MessageSquare size={14} className="text-violet-400" />
-                <span className="font-bold text-sm text-[#E6EDF3]">Hỏi AI về kết quả tìm kiếm</span>
-                {chatOpen ? <ChevronUp size={14} className="ml-auto text-[#484F58]" /> : <ChevronDown size={14} className="ml-auto text-[#484F58]" />}
+                <span className="font-bold text-sm text-[#000000]">Hỏi AI về kết quả tìm kiếm</span>
+                {chatOpen ? <ChevronUp size={14} className="ml-auto text-[#000000]" /> : <ChevronDown size={14} className="ml-auto text-[#000000]" />}
               </button>
 
               {chatOpen && (
@@ -799,7 +799,7 @@ export default function SupplierDiscoveryPage() {
                           <button
                             key={q}
                             onClick={() => setChatInput(q)}
-                            className="block w-full text-left text-[11px] px-3 py-2 rounded-lg bg-[rgba(240,246,252,0.03)] border border-[rgba(240,246,252,0.06)] text-[#8B949E] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                            className="block w-full text-left text-[11px] px-3 py-2 rounded-lg bg-[rgba(240,246,252,0.03)] border border-[rgba(240,246,252,0.06)] text-[#000000] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
                           >
                             {q}
                           </button>
@@ -808,14 +808,14 @@ export default function SupplierDiscoveryPage() {
                     )}
                     {chatMessages.map((m, i) => (
                       <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[80%] px-3 py-2 rounded-xl text-[12px] leading-relaxed ${m.role === 'user' ? 'bg-violet-500/20 text-violet-200' : 'bg-[rgba(240,246,252,0.05)] text-[#8B949E]'}`}>
+                        <div className={`max-w-[80%] px-3 py-2 rounded-xl text-[12px] leading-relaxed ${m.role === 'user' ? 'bg-violet-500/20 text-violet-200' : 'bg-[rgba(240,246,252,0.05)] text-[#000000]'}`}>
                           {m.text}
                         </div>
                       </div>
                     ))}
                     {chatLoading && (
                       <div className="flex justify-start">
-                        <div className="px-3 py-2 rounded-xl bg-[rgba(240,246,252,0.05)] text-[#484F58] text-[12px] flex items-center gap-2">
+                        <div className="px-3 py-2 rounded-xl bg-[rgba(240,246,252,0.05)] text-[#000000] text-[12px] flex items-center gap-2">
                           <Loader2 size={11} className="animate-spin" />AI đang phân tích...
                         </div>
                       </div>
@@ -829,7 +829,7 @@ export default function SupplierDiscoveryPage() {
                       onChange={e => setChatInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleAiChat()}
                       placeholder="Hỏi AI về nhà cung cấp trong kết quả..."
-                      className="flex-1 px-3 py-2 text-[12px] bg-[#0D1117] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-violet-500/40"
+                      className="flex-1 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
                     />
                     <button
                       onClick={handleAiChat}
@@ -847,16 +847,16 @@ export default function SupplierDiscoveryPage() {
 
         {/* Empty state */}
         {!results && !loading && !error && (
-          <div className="text-center py-20 text-[#484F58]">
+          <div className="text-center py-20 text-[#000000]">
             <Sparkles size={40} className="mx-auto mb-4 opacity-20" />
-            <p className="font-bold text-[#8B949E]">Nhập từ khóa để bắt đầu tìm kiếm</p>
+            <p className="font-bold text-[#000000]">Nhập từ khóa để bắt đầu tìm kiếm</p>
             <p className="text-[12px] mt-1">AI sẽ tìm kiếm và phân tích nhà cung cấp từ nguồn dữ liệu bên ngoài</p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               {['nhà cung cấp laptop văn phòng Hà Nội', 'vật tư y tế TP.HCM', 'dịch vụ in ấn Đà Nẵng'].map(s => (
                 <button
                   key={s}
                   onClick={() => { setQuery(s); }}
-                  className="px-3 py-1.5 rounded-lg text-[11px] bg-[rgba(240,246,252,0.04)] border border-[rgba(240,246,252,0.08)] text-[#8B949E] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-[11px] bg-[rgba(240,246,252,0.04)] border border-[rgba(240,246,252,0.08)] text-[#000000] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
                 >
                   {s}
                 </button>
@@ -886,3 +886,4 @@ export default function SupplierDiscoveryPage() {
     </div>
   );
 }
+

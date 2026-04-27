@@ -10,7 +10,7 @@ export interface ERPTableColumn<T> {
 
 export default function ERPTable<T>({ columns, data }: { columns: ERPTableColumn<T>[], data: T[] }) {
     return (
-        <div className="overflow-x-auto w-full scrollbar-thin scrollbar-thumb-[#64748B]/30 rounded-xl overflow-hidden">
+        <div className="overflow-x-auto w-full scrollbar-thin scrollbar-thumb-[#000000]/30 rounded-xl overflow-hidden">
             <table className="erp-table border-none rounded-none">
                 <thead>
                     <tr>
@@ -22,12 +22,12 @@ export default function ERPTable<T>({ columns, data }: { columns: ERPTableColumn
                 <tbody>
                     {data.length === 0 ? (
                         <tr>
-                            <td colSpan={columns.length} className="text-center py-20 bg-[#161922]">
+                            <td colSpan={columns.length} className="text-center py-20 bg-[#FAF8F5]">
                                 <div className="flex flex-col items-center gap-3 opacity-30">
-                                    <div className="w-12 h-12 rounded-full bg-[#0F1117] flex items-center justify-center">
+                                    <div className="w-12 h-12 rounded-full bg-[#FFFFFF] flex items-center justify-center">
                                         <Plus className="rotate-45" size={24} />
                                     </div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Dữ liệu trống</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-black">Dữ liệu trống</span>
                                 </div>
                             </td>
                         </tr>
@@ -49,3 +49,4 @@ export default function ERPTable<T>({ columns, data }: { columns: ERPTableColumn
         </div>
     );
 }
+

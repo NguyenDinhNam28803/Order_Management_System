@@ -58,9 +58,9 @@ export default function DonutChart({
   const radius = (size - 20) / 2;
 
   return (
-    <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
       {title && (
-        <h3 className="text-sm font-bold text-[#F8FAFC] mb-4 uppercase tracking-wider">
+        <h3 className="text-sm font-bold text-[#000000] mb-4 uppercase tracking-wider">
           {title}
         </h3>
       )}
@@ -75,28 +75,28 @@ export default function DonutChart({
                 className="hover:opacity-80 transition-opacity"
               />
             ))}
-            <circle cx={center} cy={center} r={radius * 0.6} fill="#161922" />
+            <circle cx={center} cy={center} r={radius * 0.6} fill="#FAF8F5" />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {centerValue && (
-              <span className="text-lg font-bold text-[#F8FAFC]">{centerValue}</span>
+              <span className="text-lg font-bold text-[#000000]">{centerValue}</span>
             )}
             {centerLabel && (
-              <span className="text-[10px] text-[#94A3B8] uppercase">{centerLabel}</span>
+              <span className="text-[10px] text-[#000000] uppercase">{centerLabel}</span>
             )}
           </div>
         </div>
         <div className="flex-1 space-y-2 min-w-0">
           {!hasData ? (
-            <div className="text-xs text-[#64748B] italic">Không có dữ liệu</div>
+            <div className="text-xs text-[#000000] italic">Không có dữ liệu</div>
           ) : (
             segments.map((seg, idx) => (
               <div key={idx} className="flex items-center justify-between text-xs gap-4">
                 <div className="flex items-center gap-2 min-w-0">
                   <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: seg.color }} />
-                  <span className="text-[#94A3B8] truncate">{seg.label}</span>
+                  <span className="text-[#000000] truncate">{seg.label}</span>
                 </div>
-                <span className="text-[#F8FAFC] font-medium flex-shrink-0">
+                <span className="text-[#000000] font-medium flex-shrink-0">
                   {total > 0 ? ((seg.value / total) * 100).toFixed(1) : 0}%
                 </span>
               </div>
@@ -107,3 +107,4 @@ export default function DonutChart({
     </div>
   );
 }
+

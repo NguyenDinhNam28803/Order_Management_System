@@ -34,22 +34,22 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
     // ── Auth checking loading screen (skip với external magic-link pages) ──
     if (isAuthChecking && !isExternalPage) {
         return (
-            <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+            <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-5">
                     {/* Branded spinner */}
                     <div className="relative">
-                        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#3B82F6] to-[#6366F1] flex items-center justify-center shadow-2xl shadow-blue-500/30">
-                            <span className="text-white text-[13px] font-black tracking-tight select-none">PS</span>
+                        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#B4533A] to-[#6366F1] flex items-center justify-center shadow-2xl shadow-[#B4533A]/30">
+                            <span className="text-[#000000] text-[13px] font-black tracking-tight select-none">PS</span>
                         </div>
                         {/* Ring spinner */}
-                        <div className="absolute inset-0 rounded-2xl border-2 border-transparent border-t-[#3B82F6] animate-spin" />
+                        <div className="absolute inset-0 rounded-2xl border-2 border-transparent border-t-[#B4533A] animate-spin" />
                     </div>
                     <div className="flex flex-col items-center gap-1">
-                        <span className="text-[#E6EDF3] text-[13px] font-bold">ProcureSmart ERP</span>
-                        <span className="text-[#484F58] text-[9px] font-bold uppercase tracking-[0.18em]">Đang xác thực phiên làm việc…</span>
+                        <span className="text-[#000000] text-[13px] font-bold">ProcureSmart ERP</span>
+                        <span className="text-[#000000] text-[9px] font-bold uppercase tracking-[0.18em]">Đang xác thực phiên làm việc…</span>
                     </div>
                     {/* Shimmer bar */}
-                    <div className="w-48 h-1 rounded-full bg-[#21262D] overflow-hidden">
+                    <div className="w-48 h-1 rounded-full bg-[#FFFFFF] overflow-hidden">
                         <div className="h-full w-1/2 skeleton rounded-full" />
                     </div>
                 </div>
@@ -61,20 +61,20 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
     // ── Auth pages + external magic-link pages (không sidebar, không topbar) ──
     if (isWhiteListed) return (
-        <main className="animate-in fade-in duration-500 min-h-screen bg-[#0D1117] text-[#E6EDF3]">
+        <main className="animate-in fade-in duration-500 min-h-screen bg-[#FFFFFF] text-[#000000]">
             {children}
         </main>
     );
 
     // ── Main app layout ──
     return (
-        <div className="flex h-screen overflow-hidden bg-[#0D1117]">
+        <div className="flex h-screen overflow-hidden bg-[#FFFFFF]">
             <ToastContainer />
             <Sidebar />
 
             <div className="flex-1 flex flex-col h-screen overflow-hidden ml-[180px]">
                 <Topbar />
-                <main className="flex-1 overflow-y-auto bg-[#0D1117] relative">
+                <main className="flex-1 overflow-y-auto bg-[#FFFFFF] relative">
                     <div className="w-full p-6 pb-32 animate-fade-in">
                         {children}
                     </div>
@@ -86,3 +86,4 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
         </div>
     );
 }
+

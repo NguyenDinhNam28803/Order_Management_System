@@ -48,7 +48,7 @@ const Tooltip = ({ children, content, position = 'top' }: { children: React.Reac
           position === 'left' ? 'right-full top-1/2 -translate-y-1/2 mr-2' :
           'left-full top-1/2 -translate-y-1/2 ml-2'
         }`}>
-          <div className="bg-[#1A1D23] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-2xl max-w-xs text-xs text-[#94A3B8] whitespace-normal min-w-[220px]">
+          <div className="bg-[#1A1D23] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-2xl max-w-xs text-xs text-[#000000] whitespace-normal min-w-[220px]">
             {content}
           </div>
         </div>
@@ -61,18 +61,18 @@ const Tooltip = ({ children, content, position = 'top' }: { children: React.Reac
 const getScorePercentage = (score?: number) => Math.min(Math.max(score || 0, 0), 100);
 
 const getScoreColor = (score?: number) => {
-  if (!score) return "text-[#64748B]";
-  if (score >= 90) return "text-emerald-400";
+  if (!score) return "text-[#000000]";
+  if (score >= 90) return "text-black";
   if (score >= 70) return "text-yellow-400";
-  return "text-rose-400";
+  return "text-black";
 };
 
 const getTierColor = (tier?: string) => {
   switch (tier) {
     case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-    case "SILVER": return "bg-slate-400/20 text-slate-400 border-slate-400/30";
-    case "BRONZE": return "bg-orange-500/20 text-orange-400 border-orange-500/30";
-    default: return "bg-[#1A1D23] text-[#64748B] border-[rgba(148,163,184,0.1)]";
+    case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
+    case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
+    default: return "bg-[#1A1D23] text-[#000000] border-[rgba(148,163,184,0.1)]";
   }
 };
 
@@ -101,34 +101,34 @@ interface ActivityItem {
 const StatCard = ({ title, value, subtitle, icon: Icon, color, trend, onClick }: StatCardProps) => (
   <div 
     onClick={onClick}
-    className={`bg-[#161922] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[${color}]/30 transition-all group ${onClick ? 'cursor-pointer' : ''}`}
+    className={`bg-[#FAF8F5] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[${color}]/30 transition-all group ${onClick ? 'cursor-pointer' : ''}`}
   >
     <div className="flex items-start justify-between mb-3">
       <div className={`h-10 w-10 rounded-xl ${color.replace("text", "bg")}/10 flex items-center justify-center border border-${color.replace("[", "").replace("]", "")}/20`}>
         <Icon size={20} className={color} />
       </div>
       {trend !== undefined && (
-        <div className={`flex items-center gap-1 text-xs font-bold ${trend >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+        <div className={`flex items-center gap-1 text-xs font-bold ${trend >= 0 ? 'text-black' : 'text-black'}`}>
           {trend >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
           {Math.abs(trend)}%
         </div>
       )}
     </div>
-    <div className="text-2xl font-black text-[#F8FAFC] mb-1">{value}</div>
-    <div className="text-xs font-bold text-[#64748B] uppercase tracking-wider">{title}</div>
-    {subtitle && <div className="text-[10px] text-[#64748B] mt-1">{subtitle}</div>}
+    <div className="text-2xl font-black text-[#000000] mb-1">{value}</div>
+    <div className="text-xs font-bold text-[#000000] uppercase tracking-wider">{title}</div>
+    {subtitle && <div className="text-[10px] text-[#000000] mt-1">{subtitle}</div>}
   </div>
 );
 
 const QuickAction = ({ icon: Icon, label, href, color }: { icon: React.ElementType, label: string, href: string, color: string }) => (
   <Link 
     href={href}
-    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#0F1117] border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30 hover:bg-[#161922] transition-all group"
+    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 hover:bg-[#FAF8F5] transition-all group"
   >
     <div className={`h-12 w-12 rounded-xl ${color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-      <Icon size={24} className="text-white" />
+      <Icon size={24} className="text-[#000000]" />
     </div>
-    <span className="text-xs font-bold text-[#94A3B8] text-center">{label}</span>
+    <span className="text-xs font-bold text-[#000000] text-center">{label}</span>
   </Link>
 );
 
@@ -332,21 +332,21 @@ export default function SupplierPortalPage() {
 
   const getActivityColor = (type: string) => {
     switch (type) {
-      case "rfq": return "text-[#3B82F6]";
-      case "po": return "text-emerald-400";
-      case "invoice": return "text-amber-400";
+      case "rfq": return "text-[#B4533A]";
+      case "po": return "text-black";
+      case "invoice": return "text-black";
       case "contract": return "text-violet-400";
-      case "message": return "text-rose-400";
-      default: return "text-[#64748B]";
+      case "message": return "text-black";
+      default: return "text-[#000000]";
     }
   };
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#0F1117] p-6">
+      <main className="min-h-screen bg-[#FFFFFF] p-6">
         <div className="flex flex-col items-center justify-center min-h-[400px]">
-          <div className="w-12 h-12 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin mb-4"></div>
-          <div className="text-[#64748B] font-bold uppercase tracking-widest">Đang tải cổng thông tin...</div>
+          <div className="w-12 h-12 border-4 border-[#B4533A] border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div className="text-[#000000] font-bold uppercase tracking-widest">Đang tải cổng thông tin...</div>
         </div>
       </main>
     );
@@ -354,19 +354,19 @@ export default function SupplierPortalPage() {
 
   return (
     <ErrorBoundary>
-    <main className="min-h-screen bg-[#0F1117] p-6 animate-in fade-in duration-500">
+    <main className="min-h-screen bg-[#FFFFFF] p-6 animate-in fade-in duration-500">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center">
-            <LayoutDashboard size={24} className="text-white" />
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#B4533A] to-[#8B5CF6] flex items-center justify-center">
+            <LayoutDashboard size={24} className="text-[#000000]" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-[#F8FAFC] tracking-tight">
+            <h1 className="text-2xl font-black text-[#000000] tracking-tight">
               Cổng thông tin Nhà cung cấp
             </h1>
-            <p className="text-sm text-[#64748B]">
-              Xin chào, <span className="text-[#3B82F6] font-bold">{supplierName}</span>
+            <p className="text-sm text-[#000000]">
+              Xin chào, <span className="text-[#B4533A] font-bold">{supplierName}</span>
             </p>
           </div>
         </div>
@@ -379,7 +379,7 @@ export default function SupplierPortalPage() {
           value={stats.pendingRFQs}
           subtitle="Yêu cầu mới từ khách hàng"
           icon={Inbox}
-          color="text-[#3B82F6]"
+          color="text-[#B4533A]"
           trend={12}
           onClick={() => router.push("/supplier/rfq")}
         />
@@ -388,7 +388,7 @@ export default function SupplierPortalPage() {
           value={stats.activePOs}
           subtitle="PO đang được thực hiện"
           icon={ShoppingCart}
-          color="text-emerald-400"
+          color="text-black"
           trend={5}
           onClick={() => router.push("/supplier/po")}
         />
@@ -397,7 +397,7 @@ export default function SupplierPortalPage() {
           value={formatVND(stats.totalValue)}
           subtitle="Giá trị đơn hàng"
           icon={DollarSign}
-          color="text-amber-400"
+          color="text-black"
           onClick={() => router.push("/supplier/po")}
         />
         <StatCard
@@ -414,7 +414,7 @@ export default function SupplierPortalPage() {
           value={stats.activeContracts}
           subtitle="Hợp đồng đang active"
           icon={Signature}
-          color="text-cyan-400"
+          color="text-black"
           onClick={() => router.push("/supplier/contracts")}
         />
         <StatCard
@@ -422,7 +422,7 @@ export default function SupplierPortalPage() {
           value={`${stats.performanceScore}/100`}
           subtitle="Đánh giá nhà cung cấp"
           icon={Star}
-          color="text-rose-400"
+          color="text-black"
           trend={3}
           onClick={() => router.push(`/supplier/${supplierId}/kpi-evaluation`)}
         />
@@ -432,17 +432,17 @@ export default function SupplierPortalPage() {
         {/* Left Column - Quick Actions & Recent RFQs */}
         <div className="lg:col-span-2 space-y-6">
           {/* Quick Actions */}
-          <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles size={18} className="text-[#3B82F6]" />
-              <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">Thao tác nhanh</h2>
+              <Sparkles size={18} className="text-[#B4533A]" />
+              <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Thao tác nhanh</h2>
             </div>
             <div className="grid grid-cols-5 gap-3">
               <QuickAction
                 icon={Send}
                 label="Gửi báo giá"
                 href="/supplier/rfq"
-                color="bg-[#3B82F6]"
+                color="bg-[#B4533A]"
               />
               <QuickAction
                 icon={Package}
@@ -472,21 +472,21 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent RFQs */}
-          <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Inbox size={18} className="text-[#3B82F6]" />
-                <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">RFQ cần xử lý</h2>
+                <Inbox size={18} className="text-[#B4533A]" />
+                <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">RFQ cần xử lý</h2>
               </div>
-              <Link href="/supplier/rfq" className="text-xs font-bold text-[#3B82F6] hover:text-[#60A5FA] flex items-center gap-1">
+              <Link href="/supplier/rfq" className="text-xs font-bold text-[#B4533A] hover:text-[#CB7A62] flex items-center gap-1">
                 Xem tất cả <ArrowRight size={14} />
               </Link>
             </div>
             
             {recentRFQs.length === 0 ? (
-              <div className="text-center py-8 bg-[#0F1117] rounded-xl">
-                <Inbox size={40} className="text-[#64748B] mx-auto mb-3" />
-                <p className="text-[#64748B] text-sm">Không có RFQ nào đang chờ</p>
+              <div className="text-center py-8 bg-[#FFFFFF] rounded-xl">
+                <Inbox size={40} className="text-[#000000] mx-auto mb-3" />
+                <p className="text-[#000000] text-sm">Không có RFQ nào đang chờ</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -494,25 +494,25 @@ export default function SupplierPortalPage() {
                   <div 
                     key={rfq.id}
                     onClick={() => router.push("/supplier/rfq")}
-                    className="flex items-center gap-4 p-4 bg-[#0F1117] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30 transition-all cursor-pointer group"
+                    className="flex items-center gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all cursor-pointer group"
                   >
-                    <div className="h-10 w-10 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center shrink-0">
-                      <FileText size={18} className="text-[#3B82F6]" />
+                    <div className="h-10 w-10 rounded-lg bg-[#B4533A]/10 flex items-center justify-center shrink-0">
+                      <FileText size={18} className="text-[#B4533A]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#F8FAFC] truncate">********</span>
-                        <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-bold">
+                        <span className="font-bold text-[#000000] truncate">********</span>
+                        <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-black text-[10px] font-bold">
                           Chờ báo giá
                         </span>
                       </div>
-                      <p className="text-xs text-[#64748B] mt-0.5 truncate">{rfq.title || "Yêu cầu báo giá"}</p>
+                      <p className="text-xs text-[#000000] mt-0.5 truncate">{rfq.title || "Yêu cầu báo giá"}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-xs text-[#64748B]">{rfq.items?.length || 0} sản phẩm</div>
-                      <div className="text-[10px] text-[#64748B]">{rfq.createdAt ? new Date(rfq.createdAt).toLocaleDateString() : "N/A"}</div>
+                      <div className="text-xs text-[#000000]">{rfq.items?.length || 0} sản phẩm</div>
+                      <div className="text-[10px] text-[#000000]">{rfq.createdAt ? new Date(rfq.createdAt).toLocaleDateString() : "N/A"}</div>
                     </div>
-                    <ChevronRight size={16} className="text-[#64748B] group-hover:text-[#3B82F6] transition-colors" />
+                    <ChevronRight size={16} className="text-[#000000] group-hover:text-[#B4533A] transition-colors" />
                   </div>
                 ))}
               </div>
@@ -520,21 +520,21 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent Purchase Orders */}
-          <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <ShoppingCart size={18} className="text-emerald-400" />
-                <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">Đơn hàng gần đây</h2>
+                <ShoppingCart size={18} className="text-black" />
+                <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Đơn hàng gần đây</h2>
               </div>
-              <Link href="/supplier/po" className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+              <Link href="/supplier/po" className="text-xs font-bold text-black hover:text-emerald-300 flex items-center gap-1">
                 Xem tất cả <ArrowRight size={14} />
               </Link>
             </div>
             
             {recentPOs.length === 0 ? (
-              <div className="text-center py-8 bg-[#0F1117] rounded-xl">
-                <ShoppingCart size={40} className="text-[#64748B] mx-auto mb-3" />
-                <p className="text-[#64748B] text-sm">Chưa có đơn hàng nào</p>
+              <div className="text-center py-8 bg-[#FFFFFF] rounded-xl">
+                <ShoppingCart size={40} className="text-[#000000] mx-auto mb-3" />
+                <p className="text-[#000000] text-sm">Chưa có đơn hàng nào</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -542,30 +542,30 @@ export default function SupplierPortalPage() {
                   <div 
                     key={po.id}
                     onClick={() => router.push("/supplier/po")}
-                    className="flex items-center gap-4 p-4 bg-[#0F1117] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all cursor-pointer group"
+                    className="flex items-center gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all cursor-pointer group"
                   >
                     <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
-                      <Package size={18} className="text-emerald-400" />
+                      <Package size={18} className="text-black" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#F8FAFC] truncate">Đơn hàng</span>
+                        <span className="font-bold text-[#000000] truncate">Đơn hàng</span>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          po.status === "ACKNOWLEDGED" ? "bg-emerald-500/10 text-emerald-400" :
-                          po.status === "PENDING" ? "bg-amber-500/10 text-amber-400" :
-                          po.status === "SHIPPED" ? "bg-[#3B82F6]/10 text-[#3B82F6]" :
-                          "bg-[#64748B]/10 text-[#64748B]"
+                          po.status === "ACKNOWLEDGED" ? "bg-emerald-500/10 text-black" :
+                          po.status === "PENDING" ? "bg-amber-500/10 text-black" :
+                          po.status === "SHIPPED" ? "bg-[#B4533A]/10 text-[#B4533A]" :
+                          "bg-[#000000]/10 text-[#000000]"
                         }`}>
                           {po.status}
                         </span>
                       </div>
-                      <p className="text-xs text-[#64748B] mt-0.5">{po.vendor || "Khách hàng"}</p>
+                      <p className="text-xs text-[#000000] mt-0.5">{po.vendor || "Khách hàng"}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="font-bold text-emerald-400">{formatVND(po.total || 0)}</div>
-                      <div className="text-[10px] text-[#64748B]">{po.items?.length || 0} sản phẩm</div>
+                      <div className="font-bold text-black">{formatVND(po.total || 0)}</div>
+                      <div className="text-[10px] text-[#000000]">{po.items?.length || 0} sản phẩm</div>
                     </div>
-                    <ChevronRight size={16} className="text-[#64748B] group-hover:text-emerald-400 transition-colors" />
+                    <ChevronRight size={16} className="text-[#000000] group-hover:text-black transition-colors" />
                   </div>
                 ))}
               </div>
@@ -576,46 +576,46 @@ export default function SupplierPortalPage() {
         {/* Right Column - Activity & Performance */}
         <div className="space-y-6">
           {/* Performance Card */}
-          <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
-              <Award size={18} className="text-rose-400" />
-              <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">Hiệu suất</h2>
+              <Award size={18} className="text-black" />
+              <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Hiệu suất</h2>
             </div>
             
             <div className="text-center mb-6">
               <div className="inline-flex items-center justify-center h-24 w-24 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border-4 border-rose-500/30 mb-3">
-                <span className="text-3xl font-black text-rose-400">
+                <span className="text-3xl font-black text-black">
                   {kpiLoading ? "..." : stats.performanceScore}
                 </span>
               </div>
-              <p className="text-sm text-[#64748B]">Điểm đánh giá nhà cung cấp</p>
+              <p className="text-sm text-[#000000]">Điểm đánh giá nhà cung cấp</p>
             </div>
 
             {/* Detailed KPI Metrics Grid */}
             {kpiData ? (
               <div className="grid grid-cols-1 gap-3 mb-4">
                 {/* OTD Score */}
-                <div className="bg-[#0F1117] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-emerald-500/10 rounded-lg">
-                        <TrendingUp size={14} className="text-emerald-400" />
+                        <TrendingUp size={14} className="text-black" />
                       </div>
                       <Tooltip content={
                         <div className="space-y-1">
-                          <p className="font-bold text-emerald-400">OTD - On-Time Delivery</p>
+                          <p className="font-bold text-black">OTD - On-Time Delivery</p>
                           <p>Tỷ lệ giao hàng đúng hẹn</p>
-                          <p className="text-[#64748B]">Trọng số: 30%</p>
+                          <p className="text-[#000000]">Trọng số: 30%</p>
                         </div>
                       }>
-                        <span className="text-[#94A3B8] text-xs font-bold uppercase cursor-help hover:text-emerald-400 transition-colors">OTD Score</span>
+                        <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-black transition-colors">OTD Score</span>
                       </Tooltip>
                     </div>
                     <span className={`text-lg font-black ${getScoreColor(kpiData.otdScore)}`}>
                       {typeof kpiData.otdScore === 'number' ? kpiData.otdScore.toFixed(0) : "--"}%
                     </span>
                   </div>
-                  <div className="h-2 bg-[#161922] rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#FAF8F5] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ${
                         (kpiData.otdScore || 0) >= 90 ? "bg-emerald-400" :
@@ -624,31 +624,31 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.otdScore)}%` }}
                     />
                   </div>
-                  <p className="text-[#64748B] text-[10px] mt-1">Giao hàng đúng hạn (30%)</p>
+                  <p className="text-[#000000] text-[10px] mt-1">Giao hàng đúng hạn (30%)</p>
                 </div>
 
                 {/* Quality Score */}
-                <div className="bg-[#0F1117] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="p-1.5 bg-blue-500/10 rounded-lg">
-                        <CheckCircle size={14} className="text-[#3B82F6]" />
+                      <div className="p-1.5 bg-[#B4533A]/10 rounded-lg">
+                        <CheckCircle size={14} className="text-[#B4533A]" />
                       </div>
                       <Tooltip content={
                         <div className="space-y-1">
-                          <p className="font-bold text-blue-400">Quality Score</p>
+                          <p className="font-bold text-[#CB7A62]">Quality Score</p>
                           <p>Đánh giá chất lượng sản phẩm</p>
-                          <p className="text-[#64748B]">Trọng số: 30%</p>
+                          <p className="text-[#000000]">Trọng số: 30%</p>
                         </div>
                       }>
-                        <span className="text-[#94A3B8] text-xs font-bold uppercase cursor-help hover:text-blue-400 transition-colors">Quality</span>
+                        <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-[#CB7A62] transition-colors">Quality</span>
                       </Tooltip>
                     </div>
                     <span className={`text-lg font-black ${getScoreColor(kpiData.qualityScore)}`}>
                       {typeof kpiData.qualityScore === 'number' ? kpiData.qualityScore.toFixed(0) : "--"}%
                     </span>
                   </div>
-                  <div className="h-2 bg-[#161922] rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#FAF8F5] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ${
                         (kpiData.qualityScore || 0) >= 90 ? "bg-emerald-400" :
@@ -657,11 +657,11 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.qualityScore)}%` }}
                     />
                   </div>
-                  <p className="text-[#64748B] text-[10px] mt-1">Chất lượng sản phẩm (30%)</p>
+                  <p className="text-[#000000] text-[10px] mt-1">Chất lượng sản phẩm (30%)</p>
                 </div>
 
                 {/* Price Score */}
-                <div className="bg-[#0F1117] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-yellow-500/10 rounded-lg">
@@ -671,17 +671,17 @@ export default function SupplierPortalPage() {
                         <div className="space-y-1">
                           <p className="font-bold text-yellow-400">Price Score</p>
                           <p>Đánh giá cạnh tranh giá</p>
-                          <p className="text-[#64748B]">Trọng số: 20%</p>
+                          <p className="text-[#000000]">Trọng số: 20%</p>
                         </div>
                       }>
-                        <span className="text-[#94A3B8] text-xs font-bold uppercase cursor-help hover:text-yellow-400 transition-colors">Price</span>
+                        <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-yellow-400 transition-colors">Price</span>
                       </Tooltip>
                     </div>
                     <span className={`text-lg font-black ${getScoreColor(kpiData.priceScore)}`}>
                       {typeof kpiData.priceScore === 'number' ? kpiData.priceScore.toFixed(0) : "--"}%
                     </span>
                   </div>
-                  <div className="h-2 bg-[#161922] rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#FAF8F5] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ${
                         (kpiData.priceScore || 0) >= 90 ? "bg-emerald-400" :
@@ -690,31 +690,31 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.priceScore)}%` }}
                     />
                   </div>
-                  <p className="text-[#64748B] text-[10px] mt-1">Cạnh tranh giá (20%)</p>
+                  <p className="text-[#000000] text-[10px] mt-1">Cạnh tranh giá (20%)</p>
                 </div>
 
                 {/* Manual Score */}
-                <div className="bg-[#0F1117] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-purple-500/10 rounded-lg">
-                        <Star size={14} className="text-purple-400" />
+                        <Star size={14} className="text-black" />
                       </div>
                       <Tooltip content={
                         <div className="space-y-1">
-                          <p className="font-bold text-purple-400">Manual Score</p>
+                          <p className="font-bold text-black">Manual Score</p>
                           <p>Đánh giá chủ quan từ Procurement</p>
-                          <p className="text-[#64748B]">Trọng số: 20%</p>
+                          <p className="text-[#000000]">Trọng số: 20%</p>
                         </div>
                       }>
-                        <span className="text-[#94A3B8] text-xs font-bold uppercase cursor-help hover:text-purple-400 transition-colors">Manual</span>
+                        <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-black transition-colors">Manual</span>
                       </Tooltip>
                     </div>
                     <span className={`text-lg font-black ${getScoreColor(kpiData.manualScore)}`}>
                       {typeof kpiData.manualScore === 'number' ? kpiData.manualScore.toFixed(0) : "--"}%
                     </span>
                   </div>
-                  <div className="h-2 bg-[#161922] rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#FAF8F5] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ${
                         (kpiData.manualScore || 0) >= 90 ? "bg-emerald-400" :
@@ -723,19 +723,19 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.manualScore)}%` }}
                     />
                   </div>
-                  <p className="text-[#64748B] text-[10px] mt-1">Đánh giá thủ công (20%)</p>
+                  <p className="text-[#000000] text-[10px] mt-1">Đánh giá thủ công (20%)</p>
                 </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-3 mb-4">
                 {['OTD Score', 'Quality Score', 'Price Score', 'Manual Score'].map((label, idx) => (
-                  <div key={idx} className="bg-[#0F1117] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                  <div key={idx} className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[#64748B] text-xs font-bold uppercase">{label}</span>
-                      <span className="text-lg font-black text-[#64748B]">--%</span>
+                      <span className="text-[#000000] text-xs font-bold uppercase">{label}</span>
+                      <span className="text-lg font-black text-[#000000]">--%</span>
                     </div>
-                    <div className="h-2 bg-[#161922] rounded-full overflow-hidden">
-                      <div className="h-full bg-[#64748B]/30 rounded-full" style={{ width: '0%' }} />
+                    <div className="h-2 bg-[#FAF8F5] rounded-full overflow-hidden">
+                      <div className="h-full bg-[#000000]/30 rounded-full" style={{ width: '0%' }} />
                     </div>
                   </div>
                 ))}
@@ -747,7 +747,7 @@ export default function SupplierPortalPage() {
               <button
                 onClick={handleEvaluateKPI}
                 disabled={kpiLoading || !supplierId}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#B4533A] hover:bg-[#A85032] text-[#000000] rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
               >
                 {kpiLoading ? (
                   <>
@@ -764,7 +764,7 @@ export default function SupplierPortalPage() {
 
               <Link
                 href={`/supplier/${supplierId}/kpi-evaluation`}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-[#1A1D23] transition-all"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-[#1A1D23] transition-all"
               >
                 <Target size={16} />
                 Xem chi tiết đánh giá
@@ -773,10 +773,10 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
-              <Clock size={18} className="text-[#64748B]" />
-              <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">Hoạt động gần đây</h2>
+              <Clock size={18} className="text-[#000000]" />
+              <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Hoạt động gần đây</h2>
             </div>
             
             <div className="space-y-4">
@@ -790,13 +790,13 @@ export default function SupplierPortalPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#F8FAFC] text-sm">{activity.title}</span>
+                        <span className="font-bold text-[#000000] text-sm">{activity.title}</span>
                         {activity.priority === "high" && (
                           <span className="w-2 h-2 rounded-full bg-rose-400"></span>
                         )}
                       </div>
-                      <p className="text-xs text-[#64748B] mt-0.5">{activity.description}</p>
-                      <p className="text-[10px] text-[#64748B] mt-1">{activity.date}</p>
+                      <p className="text-xs text-[#000000] mt-0.5">{activity.description}</p>
+                      <p className="text-[10px] text-[#000000] mt-1">{activity.date}</p>
                     </div>
                   </div>
                 );
@@ -805,19 +805,19 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
-              <Target size={18} className="text-[#64748B]" />
-              <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">Liên kết nhanh</h2>
+              <Target size={18} className="text-[#000000]" />
+              <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Liên kết nhanh</h2>
             </div>
             <div className="space-y-2">
-              <Link href="/procurement/contracts" className="flex items-center gap-3 p-3 rounded-xl bg-[#0F1117] hover:bg-[#1A1D23] transition-all group">
-                <ShieldCheck size={16} className="text-[#64748B] group-hover:text-[#3B82F6]" />
-                <span className="text-sm text-[#94A3B8] group-hover:text-[#F8FAFC]">Hợp đồng & Ký kết</span>
+              <Link href="/procurement/contracts" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-[#1A1D23] transition-all group">
+                <ShieldCheck size={16} className="text-[#000000] group-hover:text-[#B4533A]" />
+                <span className="text-sm text-[#000000] group-hover:text-[#000000]">Hợp đồng & Ký kết</span>
               </Link>
-              <Link href="/help" className="flex items-center gap-3 p-3 rounded-xl bg-[#0F1117] hover:bg-[#1A1D23] transition-all group">
-                <AlertCircle size={16} className="text-[#64748B] group-hover:text-[#3B82F6]" />
-                <span className="text-sm text-[#94A3B8] group-hover:text-[#F8FAFC]">Trung tâm trợ giúp</span>
+              <Link href="/help" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-[#1A1D23] transition-all group">
+                <AlertCircle size={16} className="text-[#000000] group-hover:text-[#B4533A]" />
+                <span className="text-sm text-[#000000] group-hover:text-[#000000]">Trung tâm trợ giúp</span>
               </Link>
             </div>
           </div>
@@ -827,3 +827,4 @@ export default function SupplierPortalPage() {
     </ErrorBoundary>
   );
 }
+

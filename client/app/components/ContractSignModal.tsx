@@ -153,21 +153,21 @@ export default function ContractSignModal({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop — locked during signing */}
             <div
-                className="absolute inset-0 bg-[#0F1117]/80 backdrop-blur-sm"
+                className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm"
                 onClick={step !== "signing" ? onClose : undefined}
             />
 
-            <div className="relative w-full max-w-lg bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+            <div className="relative w-full max-w-lg bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
 
                 {/* ── Header ── */}
-                <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.08)] bg-[#0F1117] rounded-t-2xl flex items-center justify-between shrink-0">
+                <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-2xl flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                            <PenTool size={16} className="text-emerald-400" />
+                            <PenTool size={16} className="text-black" />
                         </div>
                         <div>
-                            <p className="font-black text-[#F8FAFC] text-sm">Ký hợp đồng điện tử</p>
-                            <p className="text-[10px] text-[#64748B] font-mono">#{contract.contractNumber}</p>
+                            <p className="font-black text-[#000000] text-sm">Ký hợp đồng điện tử</p>
+                            <p className="text-[10px] text-[#000000] font-mono">#{contract.contractNumber}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -175,7 +175,7 @@ export default function ContractSignModal({
                         {step !== "signing" && (
                             <button
                                 onClick={onClose}
-                                className="p-1.5 text-[#64748B] hover:text-[#F8FAFC] hover:bg-[rgba(148,163,184,0.08)] rounded-lg transition-all"
+                                className="p-1.5 text-[#000000] hover:text-[#000000] hover:bg-[rgba(148,163,184,0.08)] rounded-lg transition-all"
                             >
                                 <X size={16} />
                             </button>
@@ -190,20 +190,20 @@ export default function ContractSignModal({
                     {step === "review" && (
                         <div className="p-6 space-y-5">
                             {/* Contract info grid */}
-                            <div className="bg-[#0F1117] rounded-xl border border-[rgba(148,163,184,0.08)] p-4 space-y-3">
-                                <InfoRow icon={<FileText size={13} className="text-[#64748B]" />} label="Tiêu đề">
-                                    <span className="font-bold text-[#F8FAFC]">{contract.title}</span>
+                            <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.08)] p-4 space-y-3">
+                                <InfoRow icon={<FileText size={13} className="text-[#000000]" />} label="Tiêu đề">
+                                    <span className="font-bold text-[#000000]">{contract.title}</span>
                                 </InfoRow>
-                                <InfoRow icon={<Building2 size={13} className="text-[#64748B]" />} label="Nhà cung cấp">
-                                    <span className="text-[#F8FAFC]">{contract.supplier?.name || "—"}</span>
+                                <InfoRow icon={<Building2 size={13} className="text-[#000000]" />} label="Nhà cung cấp">
+                                    <span className="text-[#000000]">{contract.supplier?.name || "—"}</span>
                                 </InfoRow>
-                                <InfoRow icon={<Banknote size={13} className="text-[#64748B]" />} label="Giá trị">
-                                    <span className="font-bold text-emerald-400">
+                                <InfoRow icon={<Banknote size={13} className="text-[#000000]" />} label="Giá trị">
+                                    <span className="font-bold text-black">
                                         {fmtCurrency(contract.totalValue, contract.currency)}
                                     </span>
                                 </InfoRow>
-                                <InfoRow icon={<Calendar size={13} className="text-[#64748B]" />} label="Thời hạn">
-                                    <span className="text-[#F8FAFC]">
+                                <InfoRow icon={<Calendar size={13} className="text-[#000000]" />} label="Thời hạn">
+                                    <span className="text-[#000000]">
                                         {fmtDate(contract.startDate)} → {fmtDate(contract.endDate)}
                                     </span>
                                 </InfoRow>
@@ -212,16 +212,16 @@ export default function ContractSignModal({
                             {/* Description / terms */}
                             {contract.description && (
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-2">Mô tả</p>
-                                    <div className="bg-[#0F1117] rounded-xl border border-[rgba(148,163,184,0.08)] p-3 max-h-28 overflow-y-auto">
-                                        <p className="text-xs text-[#94A3B8] leading-relaxed">{contract.description}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-2">Mô tả</p>
+                                    <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.08)] p-3 max-h-28 overflow-y-auto">
+                                        <p className="text-xs text-[#000000] leading-relaxed">{contract.description}</p>
                                     </div>
                                 </div>
                             )}
 
                             {/* Legal notice */}
                             <div className="flex gap-3 bg-amber-500/5 border border-amber-500/15 rounded-xl p-3">
-                                <AlertCircle size={15} className="text-amber-400 shrink-0 mt-0.5" />
+                                <AlertCircle size={15} className="text-black shrink-0 mt-0.5" />
                                 <p className="text-xs text-amber-200/70 leading-relaxed">
                                     Bằng cách ký hợp đồng này, bạn đồng ý chịu ràng buộc pháp lý bởi tất cả các điều khoản và điều kiện được nêu trong tài liệu.
                                 </p>
@@ -235,7 +235,7 @@ export default function ContractSignModal({
                                     onChange={e => setAgreed(e.target.checked)}
                                     className="mt-0.5 w-4 h-4 rounded border-[rgba(148,163,184,0.3)] accent-emerald-500 cursor-pointer"
                                 />
-                                <span className="text-sm text-[#94A3B8] group-hover:text-[#F8FAFC] transition-colors leading-relaxed">
+                                <span className="text-sm text-[#000000] group-hover:text-[#000000] transition-colors leading-relaxed">
                                     Tôi đã đọc, hiểu và đồng ý với tất cả các điều khoản hợp đồng
                                 </span>
                             </label>
@@ -246,27 +246,27 @@ export default function ContractSignModal({
                     {step === "verify" && (
                         <div className="p-6 space-y-6">
                             <div className="text-center">
-                                <p className="text-sm text-[#94A3B8] leading-relaxed">
+                                <p className="text-sm text-[#000000] leading-relaxed">
                                     Nhập lại mã xác nhận bên dưới để tiến hành ký số
                                 </p>
                             </div>
 
                             {/* Code display */}
-                            <div className="bg-[#0F1117] border border-emerald-500/30 rounded-2xl p-5 text-center">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-[#64748B] mb-2">
+                            <div className="bg-[#FFFFFF] border border-emerald-500/30 rounded-2xl p-5 text-center">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-[#000000] mb-2">
                                     Mã xác nhận của bạn
                                 </p>
-                                <p className="font-mono font-black text-4xl tracking-[0.35em] text-emerald-400 select-all">
+                                <p className="font-mono font-black text-4xl tracking-[0.35em] text-black select-all">
                                     {code}
                                 </p>
-                                <p className={`text-xs mt-2 font-medium ${countdown <= 10 ? "text-rose-400" : "text-[#64748B]"}`}>
+                                <p className={`text-xs mt-2 font-medium ${countdown <= 10 ? "text-black" : "text-[#000000]"}`}>
                                     Mã hết hạn sau: <span className="font-black">{countdown}s</span>
                                 </p>
                             </div>
 
                             {/* OTP input boxes */}
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-[#64748B] text-center mb-3">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] text-center mb-3">
                                     Nhập mã xác nhận
                                 </p>
                                 <div className="flex justify-center gap-2">
@@ -281,14 +281,14 @@ export default function ContractSignModal({
                                             value={val}
                                             onChange={e => handleOtpChange(idx, e.target.value)}
                                             onKeyDown={e => handleOtpKeyDown(idx, e)}
-                                            className={`w-11 h-14 text-center text-xl font-black rounded-xl border bg-[#0F1117] text-[#F8FAFC] outline-none transition-all
-                                                ${val ? "border-emerald-500/60 text-emerald-400" : "border-[rgba(148,163,184,0.15)]"}
+                                            className={`w-11 h-14 text-center text-xl font-black rounded-xl border bg-[#FFFFFF] text-[#000000] outline-none transition-all
+                                                ${val ? "border-emerald-500/60 text-black" : "border-[rgba(148,163,184,0.15)]"}
                                                 focus:border-emerald-500/80 focus:ring-1 focus:ring-emerald-500/30`}
                                         />
                                     ))}
                                 </div>
                                 {error && (
-                                    <p className="text-rose-400 text-xs text-center mt-3 font-medium">{error}</p>
+                                    <p className="text-black text-xs text-center mt-3 font-medium">{error}</p>
                                 )}
                             </div>
 
@@ -296,7 +296,7 @@ export default function ContractSignModal({
                             <div className="text-center">
                                 <button
                                     onClick={() => { setStep("review"); setError(null); }}
-                                    className="text-xs text-[#64748B] hover:text-[#F8FAFC] underline underline-offset-2 transition-colors"
+                                    className="text-xs text-[#000000] hover:text-[#000000] underline underline-offset-2 transition-colors"
                                 >
                                     ← Quay lại xem hợp đồng
                                 </button>
@@ -308,11 +308,11 @@ export default function ContractSignModal({
                     {step === "signing" && (
                         <div className="p-10 flex flex-col items-center gap-4">
                             <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center animate-pulse">
-                                <PenTool size={32} className="text-emerald-400" />
+                                <PenTool size={32} className="text-black" />
                             </div>
                             <div className="text-center">
-                                <p className="font-black text-[#F8FAFC] text-base">Đang xử lý chữ ký số...</p>
-                                <p className="text-xs text-[#64748B] mt-1">Vui lòng không đóng cửa sổ này</p>
+                                <p className="font-black text-[#000000] text-base">Đang xử lý chữ ký số...</p>
+                                <p className="text-xs text-[#000000] mt-1">Vui lòng không đóng cửa sổ này</p>
                             </div>
                         </div>
                     )}
@@ -323,33 +323,33 @@ export default function ContractSignModal({
                             {/* Animated checkmark */}
                             <div className="flex justify-center">
                                 <div className="w-20 h-20 rounded-full bg-emerald-500/10 border-2 border-emerald-500/40 flex items-center justify-center animate-in zoom-in duration-300">
-                                    <CheckCircle2 size={40} className="text-emerald-400" />
+                                    <CheckCircle2 size={40} className="text-black" />
                                 </div>
                             </div>
-                            <p className="text-center font-black text-[#F8FAFC] text-lg">Ký hợp đồng thành công!</p>
+                            <p className="text-center font-black text-[#000000] text-lg">Ký hợp đồng thành công!</p>
 
                             {/* Signature receipt */}
-                            <div className="bg-[#0F1117] rounded-xl border border-emerald-500/20 p-4 space-y-3">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-[#64748B] flex items-center gap-1.5">
-                                    <ShieldCheck size={11} className="text-emerald-400" /> Phiếu xác nhận chữ ký số
+                            <div className="bg-[#FFFFFF] rounded-xl border border-emerald-500/20 p-4 space-y-3">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-[#000000] flex items-center gap-1.5">
+                                    <ShieldCheck size={11} className="text-black" /> Phiếu xác nhận chữ ký số
                                 </p>
                                 <div className="space-y-2">
                                     <ReceiptRow label="Mã tham chiếu">
-                                        <span className="font-mono font-black text-emerald-400 text-sm">{sigRef}</span>
+                                        <span className="font-mono font-black text-black text-sm">{sigRef}</span>
                                     </ReceiptRow>
                                     <ReceiptRow label="Người ký">
-                                        <span className="text-[#F8FAFC] font-medium text-sm">{signerName}</span>
+                                        <span className="text-[#000000] font-medium text-sm">{signerName}</span>
                                     </ReceiptRow>
                                     <ReceiptRow label="Vai trò">
-                                        <span className="text-[#94A3B8] text-sm">{isBuyer ? "Bên mua (Buyer)" : "Nhà cung cấp (Supplier)"}</span>
+                                        <span className="text-[#000000] text-sm">{isBuyer ? "Bên mua (Buyer)" : "Nhà cung cấp (Supplier)"}</span>
                                     </ReceiptRow>
                                     <ReceiptRow label="Thời gian">
-                                        <span className="text-[#F8FAFC] text-sm">
+                                        <span className="text-[#000000] text-sm">
                                             {signedAt?.toLocaleString("vi-VN")}
                                         </span>
                                     </ReceiptRow>
                                     <ReceiptRow label="Hợp đồng">
-                                        <span className="font-mono text-[#64748B] text-sm">#{contract.contractNumber}</span>
+                                        <span className="font-mono text-[#000000] text-sm">#{contract.contractNumber}</span>
                                     </ReceiptRow>
                                 </div>
                             </div>
@@ -358,19 +358,19 @@ export default function ContractSignModal({
                 </div>
 
                 {/* ── Footer ── */}
-                <div className="px-6 py-4 border-t border-[rgba(148,163,184,0.08)] bg-[#0F1117] rounded-b-2xl shrink-0">
+                <div className="px-6 py-4 border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-b-2xl shrink-0">
                     {step === "review" && (
                         <div className="flex gap-3 justify-end">
                             <button
                                 onClick={onClose}
-                                className="px-5 py-2 rounded-xl bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] font-bold text-sm hover:bg-[#1A1D23] transition-all"
+                                className="px-5 py-2 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#1A1D23] transition-all"
                             >
                                 Hủy
                             </button>
                             <button
                                 onClick={enterVerify}
                                 disabled={!agreed}
-                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-[#000000] font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                                 <PenTool size={14} /> Tiếp tục ký
                             </button>
@@ -381,14 +381,14 @@ export default function ContractSignModal({
                         <div className="flex gap-3 justify-end">
                             <button
                                 onClick={onClose}
-                                className="px-5 py-2 rounded-xl bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] font-bold text-sm hover:bg-[#1A1D23] transition-all"
+                                className="px-5 py-2 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#1A1D23] transition-all"
                             >
                                 Hủy
                             </button>
                             <button
                                 onClick={handleConfirm}
                                 disabled={!codeMatches}
-                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-[#000000] font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                                 <ShieldCheck size={14} /> Xác nhận ký
                             </button>
@@ -397,14 +397,14 @@ export default function ContractSignModal({
 
                     {step === "signing" && (
                         <div className="h-10 flex items-center justify-center">
-                            <span className="text-xs text-[#64748B]">Đang xử lý...</span>
+                            <span className="text-xs text-[#000000]">Đang xử lý...</span>
                         </div>
                     )}
 
                     {step === "success" && (
                         <button
                             onClick={onClose}
-                            className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all"
+                            className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-[#000000] font-black text-sm transition-all"
                         >
                             Hoàn tất
                         </button>
@@ -423,7 +423,7 @@ function StepIndicator({ step }: { step: ModalStep }) {
     const total = 3; // success doesn't count as a "step" to complete
     if (step === "signing" || step === "success") return null;
     return (
-        <span className="text-[10px] font-bold text-[#64748B] bg-[#161922] border border-[rgba(148,163,184,0.1)] px-2 py-0.5 rounded-full">
+        <span className="text-[10px] font-bold text-[#000000] bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] px-2 py-0.5 rounded-full">
             Bước {current} / {total}
         </span>
     );
@@ -434,7 +434,7 @@ function InfoRow({ icon, label, children }: { icon: React.ReactNode; label: stri
         <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 w-32 shrink-0">
                 {icon}
-                <span className="text-[10px] font-black uppercase tracking-wider text-[#64748B]">{label}</span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#000000]">{label}</span>
             </div>
             <div className="text-sm">{children}</div>
         </div>
@@ -444,8 +444,9 @@ function InfoRow({ icon, label, children }: { icon: React.ReactNode; label: stri
 function ReceiptRow({ label, children }: { label: string; children: React.ReactNode }) {
     return (
         <div className="flex items-center justify-between gap-3 py-1 border-b border-[rgba(148,163,184,0.06)] last:border-0">
-            <span className="text-[10px] font-black uppercase tracking-wider text-[#64748B] shrink-0">{label}</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-[#000000] shrink-0">{label}</span>
             {children}
         </div>
     );
 }
+

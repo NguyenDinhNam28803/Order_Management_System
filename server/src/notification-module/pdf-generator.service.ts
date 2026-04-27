@@ -75,13 +75,13 @@ export class PdfGeneratorService {
         doc
           .fontSize(28)
           .font('MainFontBold')
-          .fillColor('#1e293b')
+          .fillColor('#000000')
           .text(title, 0, 45, { align: 'center' });
 
         doc
           .fontSize(14)
           .font('MainFontBold')
-          .fillColor('#1a56db')
+          .fillColor('#A85032')
           .text(data.poNumber, 0, 75, { align: 'center' });
 
         doc.moveDown(2);
@@ -95,38 +95,38 @@ export class PdfGeneratorService {
         doc
           .font('MainFontBold')
           .fontSize(9)
-          .fillColor('#64748b')
+          .fillColor('#000000')
           .text('BÊN MUA (BUYER)', colLeft, infoY);
         
         doc
           .font('MainFontBold')
           .fontSize(11)
-          .fillColor('#1e293b')
+          .fillColor('#000000')
           .text(data.buyerOrg.name || '____________________', colLeft, infoY + 14, { width: 230 });
         
         doc
           .font('MainFont')
           .fontSize(9)
-          .fillColor('#475569')
+          .fillColor('#000000')
           .text(`Email: ${data.buyerOrg.email || '____________________'}`, colLeft, doc.y + 4, { width: 230 });
 
         // NHÀ CUNG CẤP
         doc
           .font('MainFontBold')
           .fontSize(9)
-          .fillColor('#64748b')
+          .fillColor('#000000')
           .text('NHÀ CUNG CẤP (SUPPLIER)', colRight, infoY);
         
         doc
           .font('MainFontBold')
           .fontSize(11)
-          .fillColor('#1e293b')
+          .fillColor('#000000')
           .text(data.supplierOrg.name || '____________________', colRight, infoY + 14, { width: 235 });
         
         doc
           .font('MainFont')
           .fontSize(9)
-          .fillColor('#475569')
+          .fillColor('#000000')
           .text(`Email: ${data.supplierOrg.email || '____________________'}`, colRight, doc.y + 4);
 
         // ── Metadata Row (Horizontal) ───────────────────────────────────────
@@ -155,7 +155,7 @@ export class PdfGeneratorService {
         const rowH = 28;
 
         // Table Header
-        doc.rect(50, tableTop, 495, rowH).fill('#1a56db');
+        doc.rect(50, tableTop, 495, rowH).fill('#A85032');
         doc.font('MainFontBold').fontSize(9).fillColor('#ffffff');
         
         doc.text('#', 50, tableTop + 9, { width: 35, align: 'center' });
@@ -194,7 +194,7 @@ export class PdfGeneratorService {
         doc.text(fmt(data.subtotal), 465, currentY, { width: 80, align: 'right' });
 
         currentY += 22;
-        doc.rect(100, currentY, 445, 34).fill('#1a56db');
+        doc.rect(100, currentY, 445, 34).fill('#A85032');
         doc.font('MainFontBold').fontSize(12).fillColor('#ffffff');
         doc.text('TỔNG CỘNG:', 120, currentY + 11, { width: 100 });
         doc.text(fmt(data.totalAmount), 435, currentY + 11, { width: 100, align: 'right' });
@@ -223,7 +223,7 @@ export class PdfGeneratorService {
         doc
           .font('MainFontBold')
           .fontSize(10)
-          .fillColor('#1e293b')
+          .fillColor('#000000')
           .text('ĐIỀU KHOẢN VÀ CÓ LIÊN QUAN:', 50, doc.y);
         
         doc

@@ -14,11 +14,9 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
-    const [currentPage, setCurrentPage] = useState(0);
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const demoUsers = [
-        // === ProcureSmart Company Only ===
         { name: "IT Requester", email: "itrequesterprocuresmart@gmail.com", role: "REQUESTER" },
         { name: "IT Manager", email: "lyhung.dn81@gmail.com", role: "DEPT_APPROVER" },
         { name: "Procurement", email: "procurementprocuresmart@gmail.com", role: "PROCUREMENT" },
@@ -26,16 +24,6 @@ export default function LoginPage() {
         { name: "Warehouse", email: "hunglctb00380@fpt.edu.vn", role: "WAREHOUSE" },
         { name: "Admin", email: "adminprocuresmart@gmail.com", role: "PLATFORM_ADMIN" },
     ];
-
-    const ITEMS_PER_PAGE = 6;
-    const totalPages = Math.ceil(demoUsers.length / ITEMS_PER_PAGE);
-    const paginatedUsers = demoUsers.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
-
-    const token = Cookies.get('accessToken');
-    if (token) {
-        // We could redirect here, but usually it's handled in a layout or middleware
-        // console.log("User already logged in");
-    }
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,11 +33,8 @@ export default function LoginPage() {
         try {
             const success = await login(email, password);
             if (success) {
-                // Get user from cookie to check role
                 const userCookie = Cookies.get('user');
                 const user = userCookie ? JSON.parse(userCookie) : null;
-                
-                // Redirect based on role
                 if (user?.role === 'SUPPLIER') {
                     router.push("/supplier");
                 } else {
@@ -67,176 +52,122 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center p-6 relative overflow-hidden">
-            {/* Background Decorations */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full"></div>
-
-            {/* Toggle Sidebar Button */}
-            <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="fixed top-6 right-6 z-50 p-3 bg-[#161922] border border-white/10 rounded-2xl text-slate-400 hover:text-white hover:border-blue-500/50 transition-all shadow-lg"
-            >
-                {sidebarOpen ? <PanelRightClose size={20} /> : <PanelRightOpen size={20} />}
-            </button>
-
-            {/* Collapsible Demo Accounts Sidebar */}
-            <div className={`fixed top-0 right-0 h-full w-80 bg-[#0f1525]/95 backdrop-blur-xl border-l border-white/10 z-40 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                <div className="p-6 h-full flex flex-col">
-                    <div className="flex items-center justify-between mb-6">
-                        <div>
-                            <h3 className="text-sm font-black text-white uppercase tracking-widest">Demo Accounts</h3>
-                            <p className="text-[10px] text-slate-500 mt-1">{users?.length || 0} roles available</p>
-                        </div>
-                        <button 
-                            onClick={() => setSidebarOpen(false)}
-                            className="p-2 hover:bg-white/5 rounded-xl transition-colors"
-                        >
-                            <X size={18} className="text-slate-400" />
-                        </button>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
-                        {demoUsers.map((u, idx) => (
-                            <button
-                                key={idx}
-                                type="button"
-                                onClick={() => { setEmail(u.email); setPassword("ProcureSmart@2024"); setSidebarOpen(false); }}
-                                className="w-full bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/40 p-4 rounded-2xl text-left transition-all group relative overflow-hidden active:scale-95"
-                            >
-                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Zap size={12} className="text-blue-400" />
-                                </div>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                                        <span className="text-xs font-black text-blue-400">{u.name.charAt(0)}</span>
-                                    </div>
-                                    <div className="text-[9px] font-black text-blue-400 uppercase tracking-widest">{u.role}</div>
-                                </div>
-                                <div className="text-sm font-black text-white group-hover:text-blue-100 truncate">{u.name}</div>
-                                <div className="text-[10px] text-slate-500 truncate mt-1">{u.email}</div>
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                        <p className="text-[10px] text-slate-500 text-center">Click account to auto-fill credentials</p>
-                    </div>
+        <div className="min-h-screen bg-[#F2EFE9] flex flex-col font-sans selection:bg-[#B4533A] selection:text-white">
+            {/* Top Bar */}
+            <div className="h-12 border-b border-[#D1CDC2] flex items-center justify-between px-6 bg-[#FAF8F5] z-50">
+                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#000000]">Sign In</div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8C887D]">
+                    /Login — <span className="text-[#000000]">Editorial Split Layout</span>
                 </div>
             </div>
 
-            {/* Overlay when sidebar is open */}
-            {sidebarOpen && (
-                <div 
-                    className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
-
-            {/* Main Content - Centered Login Form */}
-            <div className="w-full max-w-md mx-auto relative z-10">
-                {/* Logo Header */}
-                <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center h-16 w-16 bg-blue-600 rounded-2xl shadow-2xl shadow-blue-500/30 mb-6 border border-white/10">
-                        <ShieldCheck size={32} className="text-white" />
-                    </div>
-                    <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">
-                        Procure<span className="text-blue-500">Smart</span>
-                    </h1>
-                    <p className="text-slate-400 text-sm font-medium">
-                        Enterprise Procurement & Supply Chain Management
-                    </p>
-                </div>
-
-                {/* Login Form */}
-                <div className="w-full animate-in fade-in zoom-in-95 duration-500">
-                    <div className="bg-[#0f1525] border border-white/10 rounded-[32px] p-8 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-
-                        <div className="mb-10">
-                            <h2 className="text-xl font-black text-white uppercase tracking-widest mb-2">Đăng nhập</h2>
-                            <p className="text-slate-500 text-xs font-bold">Vui lòng nhập thông tin xác thực doanh nghiệp.</p>
+            <div className="flex-1 flex flex-col md:flex-row">
+                {/* Left Panel - Brand */}
+                <div className="flex-1 bg-[#1A1A17] relative flex flex-col justify-center px-12 md:px-20 py-20 overflow-hidden">
+                    {/* Background Subtle Gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#2A2A25] to-transparent opacity-50"></div>
+                    
+                    <div className="relative z-10 flex flex-col h-full">
+                        <div className="flex items-center gap-3 mb-auto">
+                            <div className="w-10 h-10 bg-[#B4533A] rounded-lg flex items-center justify-center text-white font-serif text-xl font-bold shadow-xl shadow-[#B4533A]/20">P</div>
+                            <span className="text-xl font-serif font-black text-[#F2EFE9] tracking-tight">ProcureSmart</span>
                         </div>
 
-                        <form onSubmit={handleLogin} className="space-y-6">
+                        <div className="my-auto max-w-xl">
+                            <h1 className="text-5xl md:text-7xl font-serif font-bold text-[#F2EFE9] leading-[1.1] tracking-tight mb-8">
+                                Mua sắm doanh nghiệp, <span className="italic text-[#B4533A]">bớt ồn ào.</span>
+                            </h1>
+                            <p className="text-lg md:text-xl text-[#8C887D] leading-relaxed font-medium max-w-lg">
+                                Một hệ thống duy nhất cho toàn bộ chu trình Procure-to-Pay — từ yêu cầu, phê duyệt đa cấp, RFQ, nhập kho đến đối soát và thanh toán. Tự động hoá bằng AI, minh bạch bằng audit trail.
+                            </p>
+                        </div>
+
+                        <div className="mt-auto pt-12 flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-[#55554F]">
+                            <div>Phiên bản 4.2 • Q2 2026</div>
+                            <div>SSO • SOC 2 TYPE II</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Panel - Form */}
+                <div className="flex-1 bg-[#F2EFE9] flex flex-col justify-center px-12 md:px-24 py-20 relative">
+                    <div className="max-w-md w-full mx-auto">
+                        <div className="mb-12">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8C887D] mb-4">Đăng nhập doanh nghiệp</p>
+                            <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#000000]">
+                                Chào mừng <span className="italic font-medium text-[#6B6658]">trở lại.</span>
+                            </h2>
+                        </div>
+
+                        <form onSubmit={handleLogin} className="space-y-8">
                             {error && (
-                                <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black py-4 px-4 rounded-2xl text-center uppercase tracking-widest animate-pulse">
+                                <div className="p-4 bg-[#A52A2A]/5 border border-[#A52A2A]/20 text-[#A52A2A] text-[10px] font-black uppercase tracking-widest rounded-xl">
                                     {error}
                                 </div>
                             )}
 
-                            <div className="space-y-2">
-                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Email Công ty</label>
-                                <div className="relative group">
-                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-slate-500 group-focus-within:text-blue-500 transition-colors">
-                                        <Mail size={20} />
-                                    </div>
-                                    <input
-                                        type="email"
-                                        required
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="name@company.com"
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-5 text-white text-sm outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 transition-all font-bold placeholder:text-slate-700"
-                                    />
-                                </div>
+                            <div className="space-y-3">
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#8C887D] ml-1">Email Công ty</label>
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="lam@procuresmart.vn"
+                                    className="w-full bg-[#FAF8F5] border border-[#D1CDC2] rounded-xl px-6 py-4 text-[#000000] text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#D1CDC2]"
+                                />
                             </div>
 
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-end mb-2">
-                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Mật khẩu</label>
-                                    <button type="button" className="text-[9px] font-black text-blue-500 uppercase tracking-widest hover:text-blue-400 transition-colors">Quên mật khẩu?</button>
-                                </div>
-                                <div className="relative group">
-                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-slate-500 group-focus-within:text-blue-500 transition-colors">
-                                        <Lock size={20} />
-                                    </div>
-                                    <input
-                                        type="password"
-                                        required
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="••••••••"
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-5 text-white text-sm outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 transition-all font-bold placeholder:text-slate-700"
-                                    />
-                                </div>
+                            <div className="space-y-3">
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#8C887D] ml-1">Mật khẩu</label>
+                                <input
+                                    type="password"
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••••••"
+                                    className="w-full bg-[#FAF8F5] border border-[#D1CDC2] rounded-xl px-6 py-4 text-[#000000] text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#D1CDC2]"
+                                />
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 relative group overflow-hidden mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-[#1A1A17] hover:bg-black text-[#F2EFE9] font-black text-sm py-4 rounded-xl transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
                             >
-                                {isLoading ? (
-                                    <div className="h-5 w-5 border-3 border-white/20 border-t-white rounded-full animate-spin"></div>
-                                ) : (
-                                    <>
-                                        Đăng nhập Hệ thống
-                                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                                    </>
-                                )}
+                                {isLoading ? "Đang xử lý..." : "Đăng nhập · ↵"}
                             </button>
+
+                            <div className="flex justify-between items-center pt-4">
+                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#8C887D] hover:text-[#000000] transition-colors border-b border-transparent hover:border-[#000000]">
+                                    Quên mật khẩu?
+                                </button>
+                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#8C887D] hover:text-[#000000] transition-colors border-b border-transparent hover:border-[#000000]">
+                                    Liên hệ quản trị
+                                </button>
+                            </div>
                         </form>
 
-                        <div className="mt-12 pt-8 border-t border-white/5 text-center flex flex-col gap-4">
-                            <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
-                                <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
-                                Secure Enterprise SSO Powered
-                                <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
-                            </p>
-                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">
-                                Chưa có tài khoản? <Link href="/register" className="text-blue-500 hover:text-blue-400 underline underline-offset-4 ml-1">Đăng ký ngay</Link>
-                            </p>
+                        <div className="mt-12 pt-12 border-t border-[#D1CDC2]">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8C887D] mb-6">Truy cập nhanh Demo</p>
+                            <div className="grid grid-cols-2 gap-3">
+                                {demoUsers.map((u, i) => (
+                                    <button
+                                        key={i}
+                                        type="button"
+                                        onClick={() => { setEmail(u.email); setPassword("ProcureSmart@2024"); }}
+                                        className="p-3 bg-[#FFFFFF] border border-[#D1CDC2] rounded-xl text-left hover:border-[#000000] transition-all group flex flex-col gap-1"
+                                    >
+                                        <div className="text-[8px] font-black text-[#B4533A] uppercase tracking-widest">{u.role}</div>
+                                        <div className="text-[11px] font-bold text-[#000000] truncate">{u.name}</div>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-
-                    <div className="mt-8 flex justify-center gap-6">
-                        <Link href="/help" className="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-slate-400 transition-colors">Trợ giúp</Link>
-                        <Link href="/privacy" className="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-slate-400 transition-colors">Bảo mật</Link>
-                        <Link href="/terms" className="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-slate-400 transition-colors">Điều khoản</Link>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
+

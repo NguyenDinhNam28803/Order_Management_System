@@ -199,10 +199,10 @@ function RfqQuotePageContent() {
   // ── Render states ──────────────────────────────────────────────────────────
   if (pageState === "loading") {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center text-gray-900">
+      <div className="min-h-screen bg-linear-to-br from-[#F9EFEC] to-indigo-100 flex items-center justify-center text-gray-900">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 text-blue-600 animate-spin mx-auto mb-3" />
-          <p className="text-gray-600 font-medium">Đang tải thông tin yêu cầu báo giá...</p>
+          <Loader2 className="w-10 h-10 text-[#A85032] animate-spin mx-auto mb-3" />
+          <p className="text-black font-medium">Đang tải thông tin yêu cầu báo giá...</p>
         </div>
       </div>
     );
@@ -214,7 +214,7 @@ function RfqQuotePageContent() {
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-800 mb-2">Link không hợp lệ</h2>
-          <p className="text-gray-500 text-sm leading-relaxed">{errorMsg}</p>
+          <p className="text-black text-sm leading-relaxed">{errorMsg}</p>
           <div className="mt-6 p-3 bg-red-50 rounded-lg text-xs text-red-600">
             Link có thể đã hết hạn, đã được sử dụng, hoặc không đúng.
             Vui lòng liên hệ người mua để nhận link mới.
@@ -230,20 +230,20 @@ function RfqQuotePageContent() {
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-800 mb-2">Gửi báo giá thành công!</h2>
-          <p className="text-gray-500 text-sm leading-relaxed mb-4">
+          <p className="text-black text-sm leading-relaxed mb-4">
             Báo giá của bạn cho <strong>{rfq?.title}</strong> (RFQ-********) đã được ghi nhận.
           </p>
           <div className="bg-green-50 rounded-xl p-4 text-left text-sm space-y-2">
             <div className="flex justify-between">
-              <span className="text-gray-500">Tổng giá trị</span>
+              <span className="text-black">Tổng giá trị</span>
               <span className="font-bold text-green-700">{fmt(totalPrice)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Thời gian giao hàng</span>
+              <span className="text-black">Thời gian giao hàng</span>
               <span className="font-medium">{leadTimeDays} ngày</span>
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-6">
+          <p className="text-xs text-black mt-6">
             Bộ phận mua sắm sẽ xem xét và liên hệ lại trong thời gian sớm nhất.
           </p>
         </div>
@@ -254,32 +254,32 @@ function RfqQuotePageContent() {
   if (!rfq) return null;
 
   const remaining = daysLeft(rfq.deadline);
-  const deadlineColor = remaining <= 1 ? "text-red-600" : remaining <= 3 ? "text-orange-500" : "text-gray-600";
+  const deadlineColor = remaining <= 1 ? "text-red-600" : remaining <= 3 ? "text-orange-500" : "text-black";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10 px-4 text-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-[#F9EFEC] to-indigo-100 py-10 px-4 text-gray-900">
       <div className="max-w-3xl mx-auto space-y-5">
 
         {/* Header card */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-700 to-indigo-700 px-6 py-5">
+          <div className="bg-gradient-to-r from-[#8F442B] to-indigo-700 px-6 py-5">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-blue-200 text-xs font-semibold tracking-widest uppercase">Mời báo giá</span>
-              <ChevronRight className="w-3 h-3 text-blue-300" />
-              <span className="text-blue-200 text-xs font-semibold">RFQ-********</span>
+              <span className="text-[#E6BCB0] text-xs font-semibold tracking-widest uppercase">Mời báo giá</span>
+              <ChevronRight className="w-3 h-3 text-[#D99B89]" />
+              <span className="text-[#E6BCB0] text-xs font-semibold">RFQ-********</span>
             </div>
-            <h1 className="text-white text-xl font-bold leading-snug">{rfq.title}</h1>
+            <h1 className="text-[#000000] text-xl font-bold leading-snug">{rfq.title}</h1>
           </div>
 
           <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm border-b border-gray-100">
             <div>
-              <p className="text-gray-400 text-xs mb-0.5">Mã RFQ</p>
+              <p className="text-black text-xs mb-0.5">Mã RFQ</p>
               <p className="font-semibold text-gray-800">********</p>
             </div>
             <div>
-              <p className="text-gray-400 text-xs mb-0.5">Hạn chót</p>
+              <p className="text-black text-xs mb-0.5">Hạn chót</p>
               <div className="flex items-center gap-1">
-                <CalendarDays className="w-3.5 h-3.5 text-gray-400" />
+                <CalendarDays className="w-3.5 h-3.5 text-black" />
                 <p className={`font-semibold ${deadlineColor}`}>{fmtDate(rfq.deadline)}</p>
               </div>
               {remaining > 0 && (
@@ -287,27 +287,27 @@ function RfqQuotePageContent() {
               )}
             </div>
             <div>
-              <p className="text-gray-400 text-xs mb-0.5">Điều kiện TT</p>
+              <p className="text-black text-xs mb-0.5">Điều kiện TT</p>
               <p className="font-medium text-gray-700">{rfq.paymentTerms ?? "—"}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-xs mb-0.5">Gửi đến</p>
+              <p className="text-black text-xs mb-0.5">Gửi đến</p>
               <div className="flex items-center gap-1">
-                <Mail className="w-3.5 h-3.5 text-gray-400" />
+                <Mail className="w-3.5 h-3.5 text-black" />
                 <p className="text-gray-700 text-xs truncate">{tokenInfo?.targetEmail}</p>
               </div>
             </div>
           </div>
 
           {rfq.description && (
-            <div className="px-6 py-3 bg-blue-50 text-sm text-blue-800 border-b border-blue-100">
+            <div className="px-6 py-3 bg-[#F9EFEC] text-sm text-blue-800 border-b border-[#F3DDD6]">
               {rfq.description}
             </div>
           )}
 
           {(rfq.contactPerson || rfq.contactEmail) && (
-            <div className="px-6 py-3 flex items-center gap-4 text-xs text-gray-500">
-              <span className="font-medium text-gray-600">Liên hệ:</span>
+            <div className="px-6 py-3 flex items-center gap-4 text-xs text-black">
+              <span className="font-medium text-black">Liên hệ:</span>
               {rfq.contactPerson && (
                 <span className="flex items-center gap-1">
                   <Building2 className="w-3.5 h-3.5" />{rfq.contactPerson}
@@ -336,7 +336,7 @@ function RfqQuotePageContent() {
           {/* Items table */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
-              <Package className="w-4 h-4 text-blue-600" />
+              <Package className="w-4 h-4 text-[#A85032]" />
               <h2 className="font-semibold text-gray-800">Danh sách hàng hóa cần báo giá</h2>
             </div>
             <div className="divide-y divide-gray-50">
@@ -344,26 +344,26 @@ function RfqQuotePageContent() {
                 <div key={item.id} className="px-6 py-4">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <span className="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full mr-2">
+                      <span className="inline-block bg-[#F3DDD6] text-[#8F442B] text-xs font-bold px-2 py-0.5 rounded-full mr-2">
                         #{idx + 1}
                       </span>
                       <span className="font-semibold text-gray-800">{item.name}</span>
                       {item.description && item.description !== item.name && (
-                        <p className="text-xs text-gray-500 mt-0.5 ml-7">{item.description}</p>
+                        <p className="text-xs text-black mt-0.5 ml-7">{item.description}</p>
                       )}
                     </div>
                     <div className="text-right shrink-0 ml-4">
-                      <p className="text-xs text-gray-400">Số lượng yêu cầu</p>
-                      <p className="font-bold text-gray-700">{item.qty} <span className="text-gray-400 font-normal">{item.unit}</span></p>
+                      <p className="text-xs text-black">Số lượng yêu cầu</p>
+                      <p className="font-bold text-gray-700">{item.qty} <span className="text-black font-normal">{item.unit}</span></p>
                       {item.targetPrice && (
-                        <p className="text-xs text-blue-600 mt-0.5">Giá tham khảo: {fmt(item.targetPrice)}</p>
+                        <p className="text-xs text-[#A85032] mt-0.5">Giá tham khảo: {fmt(item.targetPrice)}</p>
                       )}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                      <label className="block text-xs font-medium text-black mb-1">
                         Đơn giá (VNĐ) <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -378,11 +378,11 @@ function RfqQuotePageContent() {
                           next[idx] = { ...next[idx], unitPrice: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A] focus:border-transparent"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Số lượng cung cấp</label>
+                      <label className="block text-xs font-medium text-black mb-1">Số lượng cung cấp</label>
                       <input
                         type="number"
                         min="0"
@@ -392,11 +392,11 @@ function RfqQuotePageContent() {
                           next[idx] = { ...next[idx], qtyOffered: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A]"
                       />
                     </div>
                     <div className="md:col-span-1">
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Ghi chú</label>
+                      <label className="block text-xs font-medium text-black mb-1">Ghi chú</label>
                       <input
                         type="text"
                         placeholder="Thông số, nhãn hiệu..."
@@ -406,7 +406,7 @@ function RfqQuotePageContent() {
                           next[idx] = { ...next[idx], notes: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A]"
                       />
                     </div>
                   </div>
@@ -414,8 +414,8 @@ function RfqQuotePageContent() {
                   {/* Line total */}
                   {itemForms[idx]?.unitPrice && (
                     <div className="mt-2 text-right text-sm">
-                      <span className="text-gray-400">Thành tiền: </span>
-                      <span className="font-semibold text-blue-700">
+                      <span className="text-black">Thành tiền: </span>
+                      <span className="font-semibold text-[#8F442B]">
                         {fmt((parseFloat(itemForms[idx].unitPrice) || 0) * (parseFloat(itemForms[idx].qtyOffered) || 0))}
                       </span>
                     </div>
@@ -425,21 +425,21 @@ function RfqQuotePageContent() {
             </div>
 
             {/* Total */}
-            <div className="px-6 py-4 bg-blue-50 border-t border-blue-100 flex justify-between items-center">
+            <div className="px-6 py-4 bg-[#F9EFEC] border-t border-[#F3DDD6] flex justify-between items-center">
               <span className="font-semibold text-blue-800">Tổng giá trị báo giá</span>
-              <span className="text-xl font-bold text-blue-700">{fmt(totalPrice)}</span>
+              <span className="text-xl font-bold text-[#8F442B]">{fmt(totalPrice)}</span>
             </div>
           </div>
 
           {/* Terms */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-blue-600" />
+              <FileText className="w-4 h-4 text-[#A85032]" />
               <h2 className="font-semibold text-gray-800">Điều khoản & Thông tin giao hàng</h2>
             </div>
             <div className="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-xs font-medium text-black mb-1">
                   Thời gian giao hàng (ngày) <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -448,37 +448,37 @@ function RfqQuotePageContent() {
                   required
                   value={leadTimeDays}
                   onChange={(e) => setLeadTimeDays(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A]"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Điều kiện thanh toán</label>
+                <label className="block text-xs font-medium text-black mb-1">Điều kiện thanh toán</label>
                 <input
                   type="text"
                   placeholder="Net 30, COD, 50% trước..."
                   value={paymentTerms}
                   onChange={(e) => setPaymentTerms(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A]"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Điều kiện giao hàng</label>
+                <label className="block text-xs font-medium text-black mb-1">Điều kiện giao hàng</label>
                 <input
                   type="text"
                   placeholder="DDP, FOB, CIF..."
                   value={deliveryTerms}
                   onChange={(e) => setDeliveryTerms(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A]"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Ghi chú chung</label>
+                <label className="block text-xs font-medium text-black mb-1">Ghi chú chung</label>
                 <textarea
                   rows={2}
                   placeholder="Thông tin bổ sung, ưu đãi đặc biệt..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A] resize-none"
                 />
               </div>
             </div>
@@ -488,7 +488,7 @@ function RfqQuotePageContent() {
           <button
             type="submit"
             disabled={submitting || totalPrice === 0}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
+            className="w-full bg-gradient-to-r from-[#A85032] to-indigo-600 hover:from-[#8F442B] hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-[#000000] font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
           >
             {submitting ? (
               <>
@@ -503,7 +503,7 @@ function RfqQuotePageContent() {
             )}
           </button>
 
-          <p className="text-center text-xs text-gray-400 pb-4">
+          <p className="text-center text-xs text-black pb-4">
             Bằng cách gửi báo giá, bạn xác nhận thông tin trên là chính xác.<br />
             Link sẽ vô hiệu sau khi gửi thành công.
           </p>
@@ -512,3 +512,4 @@ function RfqQuotePageContent() {
     </div>
   );
 }
+

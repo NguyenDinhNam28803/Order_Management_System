@@ -53,7 +53,7 @@ export default function SupplierSuggestionWidget({ items }: { items: PRItem[] })
       </h3>
       
       {loading ? (
-        <div className="text-[11px] text-slate-400 italic">Đang phân tích dữ liệu...</div>
+        <div className="text-[11px] text-black italic">Đang phân tích dữ liệu...</div>
       ) : (
         <div className="space-y-3">
           {suggestions.length > 0 ? (
@@ -64,7 +64,7 @@ export default function SupplierSuggestionWidget({ items }: { items: PRItem[] })
                 </div>
                 <div className="flex-1">
                   <div className="text-xs font-black text-erp-navy">{s.name}</div>
-                  <div className="text-[10px] text-slate-500">{s.reason}</div>
+                  <div className="text-[10px] text-black">{s.reason}</div>
                 </div>
                 <div className="flex items-center gap-1 text-amber-500 font-black text-xs">
                   <Star size={12} className="fill-amber-500" /> {s.trustScore}
@@ -72,10 +72,11 @@ export default function SupplierSuggestionWidget({ items }: { items: PRItem[] })
               </div>
             ))
           ) : (
-            <div className="text-[11px] text-slate-400">Chưa có gợi ý khả dụng.</div>
+            <div className="text-[11px] text-black">Chưa có gợi ý khả dụng.</div>
           )}
         </div>
       )}
     </div>
   );
 }
+

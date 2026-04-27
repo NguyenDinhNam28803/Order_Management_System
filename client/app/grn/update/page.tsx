@@ -151,10 +151,10 @@ export default function GrnUpdatePage() {
   // ── Loading ───────────────────────────────────────────────────────────────
   if (pageState === "loading") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 flex items-center justify-center text-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-sky-50 to-[#F3DDD6] flex items-center justify-center text-gray-900">
         <div className="text-center">
           <Loader2 className="w-10 h-10 text-sky-600 animate-spin mx-auto mb-3" />
-          <p className="text-gray-600 font-medium">Đang tải thông tin vận chuyển...</p>
+          <p className="text-black font-medium">Đang tải thông tin vận chuyển...</p>
         </div>
       </div>
     );
@@ -167,7 +167,7 @@ export default function GrnUpdatePage() {
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-800 mb-2">Link không hợp lệ</h2>
-          <p className="text-gray-600 text-sm leading-relaxed">{errorMsg}</p>
+          <p className="text-black text-sm leading-relaxed">{errorMsg}</p>
           <div className="mt-6 p-3 bg-red-50 rounded-lg text-xs text-red-700">
             Link có thể đã hết hạn hoặc không đúng. Vui lòng liên hệ người mua để nhận link mới.
           </div>
@@ -183,27 +183,27 @@ export default function GrnUpdatePage() {
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-800 mb-2">Cập nhật thành công!</h2>
-          <p className="text-gray-600 text-sm leading-relaxed mb-4">
+          <p className="text-black text-sm leading-relaxed mb-4">
             Thông tin vận chuyển cho đơn hàng <strong>{grn?.po.poNumber}</strong> đã được ghi nhận.
             Bộ phận kho sẽ chuẩn bị tiếp nhận hàng.
           </p>
           <div className="bg-sky-50 rounded-xl p-4 text-left text-sm space-y-2">
             <div className="flex justify-between">
-              <span className="text-gray-500">Số vận đơn</span>
+              <span className="text-black">Số vận đơn</span>
               <span className="font-bold text-gray-800">{trackingNumber}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Đơn vị vận chuyển</span>
+              <span className="text-black">Đơn vị vận chuyển</span>
               <span className="font-medium text-gray-700">{carrier}</span>
             </div>
             {estimatedArrival && (
               <div className="flex justify-between">
-                <span className="text-gray-500">Dự kiến đến</span>
+                <span className="text-black">Dự kiến đến</span>
                 <span className="font-medium text-gray-700">{fmtDate(estimatedArrival)}</span>
               </div>
             )}
           </div>
-          <p className="text-xs text-gray-400 mt-6">
+          <p className="text-xs text-black mt-6">
             Bạn có thể cập nhật lại nếu thông tin thay đổi bằng cùng link này.
           </p>
         </div>
@@ -214,48 +214,48 @@ export default function GrnUpdatePage() {
   if (!grn) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 py-10 px-4 text-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-[#F3DDD6] py-10 px-4 text-gray-900">
       <div className="max-w-2xl mx-auto space-y-5">
 
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-sky-700 to-blue-700 px-6 py-5">
+          <div className="bg-gradient-to-r from-sky-700 to-[#8F442B] px-6 py-5">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-sky-200 text-xs font-semibold tracking-widest uppercase">Cập nhật vận chuyển</span>
               <ChevronRight className="w-3 h-3 text-sky-300" />
               <span className="text-sky-200 text-xs font-semibold">{grn.po.poNumber}</span>
             </div>
-            <h1 className="text-white text-xl font-bold">Thông tin giao hàng</h1>
+            <h1 className="text-[#000000] text-xl font-bold">Thông tin giao hàng</h1>
           </div>
 
           <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-3 gap-4 text-sm border-b border-gray-100">
             <div>
-              <p className="text-gray-400 text-xs mb-0.5">Mã đơn hàng</p>
+              <p className="text-black text-xs mb-0.5">Mã đơn hàng</p>
               <p className="font-semibold text-gray-800">{grn.po.poNumber}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-xs mb-0.5">Giao hàng trước</p>
+              <p className="text-black text-xs mb-0.5">Giao hàng trước</p>
               <div className="flex items-center gap-1">
-                <CalendarDays className="w-3.5 h-3.5 text-gray-400" />
+                <CalendarDays className="w-3.5 h-3.5 text-black" />
                 <p className="font-semibold text-gray-800">{fmtDate(grn.po.deliveryDate)}</p>
               </div>
             </div>
             <div>
-              <p className="text-gray-400 text-xs mb-0.5">Nhà cung cấp</p>
+              <p className="text-black text-xs mb-0.5">Nhà cung cấp</p>
               <p className="font-medium text-gray-700">{grn.po.supplierName ?? "—"}</p>
             </div>
           </div>
 
           {grn.po.deliveryAddress && (
-            <div className="px-6 py-3 flex items-start gap-2 text-sm text-gray-600 border-b border-gray-100">
-              <MapPin className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
+            <div className="px-6 py-3 flex items-start gap-2 text-sm text-black border-b border-gray-100">
+              <MapPin className="w-4 h-4 text-black mt-0.5 shrink-0" />
               <span>{grn.po.deliveryAddress}</span>
             </div>
           )}
 
           {(grn.po.contactPerson || grn.po.contactEmail) && (
-            <div className="px-6 py-3 flex items-center gap-4 text-xs text-gray-500">
-              <span className="font-medium text-gray-600">Liên hệ:</span>
+            <div className="px-6 py-3 flex items-center gap-4 text-xs text-black">
+              <span className="font-medium text-black">Liên hệ:</span>
               {grn.po.contactPerson && (
                 <span className="flex items-center gap-1">
                   <Building2 className="w-3.5 h-3.5" />{grn.po.contactPerson}
@@ -282,14 +282,14 @@ export default function GrnUpdatePage() {
               <React.Fragment key={step.label}>
                 <div className="flex flex-col items-center flex-shrink-0">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${
-                    step.done ? "bg-emerald-500 border-emerald-500 text-white"
-                    : step.active ? "bg-sky-600 border-sky-600 text-white"
-                    : "bg-white border-gray-200 text-gray-400"
+                    step.done ? "bg-emerald-500 border-emerald-500 text-[#000000]"
+                    : step.active ? "bg-sky-600 border-sky-600 text-[#000000]"
+                    : "bg-white border-gray-200 text-black"
                   }`}>
                     {step.done ? "✓" : i + 1}
                   </div>
                   <span className={`text-[10px] mt-1 font-semibold text-center w-16 leading-tight ${
-                    step.active ? "text-sky-700" : step.done ? "text-emerald-600" : "text-gray-400"
+                    step.active ? "text-sky-700" : step.done ? "text-emerald-600" : "text-black"
                   }`}>{step.label}</span>
                 </div>
                 {i < arr.length - 1 && (
@@ -308,39 +308,39 @@ export default function GrnUpdatePage() {
           </div>
           <div className="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-black mb-1">
                 Số vận đơn <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
                 <input
                   type="text"
                   required
                   placeholder="VD: 1234567890"
                   value={trackingNumber}
                   onChange={(e) => setTrackingNumber(e.target.value)}
-                  className="w-full pl-9 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full pl-9 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-sky-500"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-black mb-1">
                 Đơn vị vận chuyển <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <Truck className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Truck className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
                 <input
                   type="text"
                   required
                   placeholder="VD: Giao Hàng Nhanh, GHTK, DHL..."
                   value={carrier}
                   onChange={(e) => setCarrier(e.target.value)}
-                  className="w-full pl-9 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full pl-9 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-sky-500"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Ngày xuất hàng</label>
+              <label className="block text-xs font-medium text-black mb-1">Ngày xuất hàng</label>
               <input
                 type="date"
                 value={shippedAt}
@@ -349,7 +349,7 @@ export default function GrnUpdatePage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Ngày giao dự kiến</label>
+              <label className="block text-xs font-medium text-black mb-1">Ngày giao dự kiến</label>
               <input
                 type="date"
                 value={estimatedArrival}
@@ -358,13 +358,13 @@ export default function GrnUpdatePage() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Ghi chú vận chuyển</label>
+              <label className="block text-xs font-medium text-black mb-1">Ghi chú vận chuyển</label>
               <textarea
                 rows={2}
                 placeholder="Thông tin bổ sung về lô hàng, điều kiện đặc biệt..."
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none"
               />
             </div>
           </div>
@@ -372,7 +372,7 @@ export default function GrnUpdatePage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
+              className="w-full bg-gradient-to-r from-sky-600 to-[#A85032] hover:from-sky-700 hover:to-[#8F442B] disabled:opacity-50 disabled:cursor-not-allowed text-[#000000] font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
             >
               {submitting ? (
                 <><Loader2 className="w-4 h-4 animate-spin" />Đang cập nhật...</>
@@ -381,7 +381,7 @@ export default function GrnUpdatePage() {
               )}
             </button>
           </div>
-          <div className="flex items-center gap-2 px-6 pb-5 text-xs text-gray-400">
+          <div className="flex items-center gap-2 px-6 pb-5 text-xs text-black">
             <FileText className="w-3.5 h-3.5 shrink-0" />
             <span>
               Link hết hạn lúc {tokenInfo ? fmtDate(tokenInfo.expiresAt) : "—"}.
@@ -393,3 +393,4 @@ export default function GrnUpdatePage() {
     </div>
   );
 }
+

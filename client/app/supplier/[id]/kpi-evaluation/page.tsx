@@ -49,12 +49,12 @@ interface KPIResponse {
 }
 
 const metricIcons: Record<string, ReactNode> = {
-  'otdScore': <Clock size={18} className="text-[#3B82F6]" />,
-  'qualityScore': <CheckCircle size={18} className="text-emerald-400" />,
-  'priceScore': <DollarSign size={18} className="text-amber-400" />,
+  'otdScore': <Clock size={18} className="text-[#B4533A]" />,
+  'qualityScore': <CheckCircle size={18} className="text-black" />,
+  'priceScore': <DollarSign size={18} className="text-black" />,
   'invoiceAccuracy': <FileCheck size={18} className="text-violet-400" />,
-  'responseTimeScore': <MessageSquare size={18} className="text-cyan-400" />,
-  'fulfillmentRate': <Package size={18} className="text-rose-400" />,
+  'responseTimeScore': <MessageSquare size={18} className="text-black" />,
+  'fulfillmentRate': <Package size={18} className="text-black" />,
 };
 
 const metricLabels: Record<string, string> = {
@@ -79,15 +79,15 @@ const tierLabels: Record<string, string> = {
 };
 
 const tierColors: Record<string, string> = {
-  'STRATEGIC': 'from-purple-500/20 to-purple-600/10 border-purple-500/30 text-purple-400',
-  'PREFERRED': 'from-blue-500/20 to-blue-600/10 border-blue-500/30 text-blue-400',
-  'APPROVED': 'from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 text-emerald-400',
-  'CONDITIONAL': 'from-amber-500/20 to-amber-600/10 border-amber-500/30 text-amber-400',
-  'DISQUALIFIED': 'from-rose-500/20 to-rose-600/10 border-rose-500/30 text-rose-400',
-  'PENDING': 'from-gray-500/20 to-gray-600/10 border-gray-500/30 text-gray-400',
+  'STRATEGIC': 'from-purple-500/20 to-purple-600/10 border-purple-500/30 text-black',
+  'PREFERRED': 'from-[#B4533A]/20 to-[#A85032]/10 border-[#B4533A]/30 text-[#CB7A62]',
+  'APPROVED': 'from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 text-black',
+  'CONDITIONAL': 'from-amber-500/20 to-amber-600/10 border-amber-500/30 text-black',
+  'DISQUALIFIED': 'from-rose-500/20 to-rose-600/10 border-rose-500/30 text-black',
+  'PENDING': 'from-gray-500/20 to-gray-600/10 border-gray-500/30 text-black',
   'GOLD': 'from-yellow-500/20 to-yellow-600/10 border-yellow-500/30 text-yellow-400',
   'SILVER': 'from-gray-400/20 to-gray-500/10 border-gray-400/30 text-gray-300',
-  'BRONZE': 'from-orange-500/20 to-orange-600/10 border-orange-500/30 text-orange-400',
+  'BRONZE': 'from-orange-500/20 to-orange-600/10 border-orange-500/30 text-black',
 };
 
 export default function SupplierKPIPage() {
@@ -172,12 +172,12 @@ export default function SupplierKPIPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#0F1117] text-[#F8FAFC] p-6">
+      <main className="min-h-screen bg-[#FFFFFF] text-[#000000] p-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-[#94A3B8] font-bold uppercase tracking-widest">Đang tải dữ liệu KPI...</p>
+              <div className="w-12 h-12 border-4 border-[#B4533A] border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-[#000000] font-bold uppercase tracking-widest">Đang tải dữ liệu KPI...</p>
             </div>
           </div>
         </div>
@@ -186,42 +186,42 @@ export default function SupplierKPIPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0F1117] text-[#F8FAFC] p-6">
+    <main className="min-h-screen bg-[#FFFFFF] text-[#000000] p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link 
             href={`/supplier`}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1A1D23] transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#000000] hover:bg-[#1A1D23] transition-all"
           >
             <ArrowLeft size={18} />
             <span className="text-sm font-semibold">Quay lại Portal</span>
           </Link>
           <div className="flex-1">
-            <h1 className="text-2xl font-black text-[#F8FAFC] uppercase tracking-tight">Đánh Giá Hiệu Suất Nhà Cung Cấp</h1>
-            <p className="text-sm text-[#64748B] mt-1">Phân tích chi tiết KPI và xếp hạng nhà cung cấp</p>
+            <h1 className="text-2xl font-black text-[#000000] uppercase tracking-tight">Đánh Giá Hiệu Suất Nhà Cung Cấp</h1>
+            <p className="text-sm text-[#000000] mt-1">Phân tích chi tiết KPI và xếp hạng nhà cung cấp</p>
           </div>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 flex items-center gap-3">
+          <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-black flex items-center gap-3">
             <AlertCircle size={20} />
             <span>{error}</span>
           </div>
         )}
 
         {!kpiData ? (
-          <div className="bg-[#161922] rounded-2xl p-12 border border-[rgba(148,163,184,0.1)] text-center">
-            <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-[#3B82F6]/10 mb-6">
-              <BarChart3 size={40} className="text-[#3B82F6]" />
+          <div className="bg-[#FAF8F5] rounded-2xl p-12 border border-[rgba(148,163,184,0.1)] text-center">
+            <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-[#B4533A]/10 mb-6">
+              <BarChart3 size={40} className="text-[#B4533A]" />
             </div>
-            <h2 className="text-xl font-bold text-[#F8FAFC] mb-3">Chưa có dữ liệu đánh giá</h2>
-            <p className="text-[#64748B] mb-6 max-w-md mx-auto">Nhà cung cấp này chưa được đánh giá KPI. Hãy chạy đánh giá để phân tích hiệu suất.</p>
+            <h2 className="text-xl font-bold text-[#000000] mb-3">Chưa có dữ liệu đánh giá</h2>
+            <p className="text-[#000000] mb-6 max-w-md mx-auto">Nhà cung cấp này chưa được đánh giá KPI. Hãy chạy đánh giá để phân tích hiệu suất.</p>
             <button
               onClick={handleEvaluate}
               disabled={evaluating}
-              className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl bg-[#3B82F6] text-white font-bold hover:bg-[#2563EB] disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl bg-[#B4533A] text-[#000000] font-bold hover:bg-[#A85032] disabled:opacity-50 transition-all"
             >
               {evaluating ? (
                 <RefreshCcw size={18} className="animate-spin" />
@@ -234,62 +234,62 @@ export default function SupplierKPIPage() {
         ) : (
           <>
             {/* Supplier Info Card */}
-            <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] mb-6">
+            <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] mb-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center">
-                  <Award size={24} className="text-white" />
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#B4533A] to-[#8B5CF6] flex items-center justify-center">
+                  <Award size={24} className="text-[#000000]" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-[#F8FAFC]">KPI Đánh Giá Nhà Cung Cấp</h2>
-                  <p className="text-sm text-[#64748B]">Đánh giá hiệu suất theo quý</p>
+                  <h2 className="text-xl font-bold text-[#000000]">KPI Đánh Giá Nhà Cung Cấp</h2>
+                  <p className="text-sm text-[#000000]">Đánh giá hiệu suất theo quý</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-[rgba(148,163,184,0.1)]">
                 <div>
-                  <p className="text-xs text-[#64748B] uppercase tracking-wider mb-1">Kỳ đánh giá</p>
-                  <p className="text-lg font-semibold text-[#F8FAFC]">Q{kpiData.kpiScore.periodQuarter}/{kpiData.kpiScore.periodYear}</p>
+                  <p className="text-xs text-[#000000] uppercase tracking-wider mb-1">Kỳ đánh giá</p>
+                  <p className="text-lg font-semibold text-[#000000]">Q{kpiData.kpiScore.periodQuarter}/{kpiData.kpiScore.periodYear}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[#64748B] uppercase tracking-wider mb-1">Ngày tính toán</p>
-                  <p className="text-lg font-semibold text-[#F8FAFC]">{new Date(kpiData.kpiScore.calculatedAt).toLocaleDateString('vi-VN')}</p>
+                  <p className="text-xs text-[#000000] uppercase tracking-wider mb-1">Ngày tính toán</p>
+                  <p className="text-lg font-semibold text-[#000000]">{new Date(kpiData.kpiScore.calculatedAt).toLocaleDateString('vi-VN')}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[#64748B] uppercase tracking-wider mb-1">Số PO</p>
-                  <p className="text-lg font-semibold text-[#F8FAFC]">{kpiData.kpiScore.poCount}</p>
+                  <p className="text-xs text-[#000000] uppercase tracking-wider mb-1">Số PO</p>
+                  <p className="text-lg font-semibold text-[#000000]">{kpiData.kpiScore.poCount}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[#64748B] uppercase tracking-wider mb-1">Số khiếu nại</p>
-                  <p className="text-lg font-semibold text-[#F8FAFC]">{kpiData.kpiScore.disputeCount}</p>
+                  <p className="text-xs text-[#000000] uppercase tracking-wider mb-1">Số khiếu nại</p>
+                  <p className="text-lg font-semibold text-[#000000]">{kpiData.kpiScore.disputeCount}</p>
                 </div>
               </div>
             </div>
 
             {/* Overall Score Card */}
-            <div className="bg-[#161922] rounded-2xl p-8 border border-[rgba(148,163,184,0.1)] mb-6">
+            <div className="bg-[#FAF8F5] rounded-2xl p-8 border border-[rgba(148,163,184,0.1)] mb-6">
               <div className="text-center">
                 <div className="inline-flex items-center gap-2 mb-4">
-                  <Target size={18} className="text-[#64748B]" />
-                  <span className="text-sm font-black text-[#64748B] uppercase tracking-widest">Điểm Hiệu Suất Tổng Thể</span>
+                  <Target size={18} className="text-[#000000]" />
+                  <span className="text-sm font-black text-[#000000] uppercase tracking-widest">Điểm Hiệu Suất Tổng Thể</span>
                 </div>
                 
                 <div className={`inline-flex items-center justify-center h-32 w-32 rounded-full bg-gradient-to-br ${tierColors[kpiData.kpiScore.tier as keyof typeof tierColors] || tierColors.PENDING} border-4 mb-4`}>
                   <span className="text-5xl font-black">{kpiData.aiInsights?.overallScore || kpiData.kpiScore.manualScore}</span>
                 </div>
                 
-                <p className="text-sm text-[#64748B] mb-4">Trên thang điểm 100</p>
+                <p className="text-sm text-[#000000] mb-4">Trên thang điểm 100</p>
                 
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0F1117] border border-[rgba(148,163,184,0.1)]">
-                  <span className="text-sm text-[#64748B]">Xếp hạng:</span>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
+                  <span className="text-sm text-[#000000]">Xếp hạng:</span>
                   <span className={`text-sm font-bold ${
-                    tierColors[kpiData.kpiScore.tier as keyof typeof tierColors]?.split(' ').pop() || 'text-gray-400'
+                    tierColors[kpiData.kpiScore.tier as keyof typeof tierColors]?.split(' ').pop() || 'text-black'
                   }`}>
                     {tierLabels[kpiData.kpiScore.tier as keyof typeof tierLabels] || kpiData.kpiScore.tier}
                   </span>
                 </div>
                 
                 {kpiData.aiInsights?.tierRecommendation && kpiData.kpiScore.tier !== kpiData.aiInsights?.tierRecommendation && (
-                  <p className="text-xs text-[#64748B] mt-3">
-                    Đề xuất: <span className="text-emerald-400 font-semibold">{tierLabels[kpiData.aiInsights.tierRecommendation as keyof typeof tierLabels] || kpiData.aiInsights.tierRecommendation}</span>
+                  <p className="text-xs text-[#000000] mt-3">
+                    Đề xuất: <span className="text-black font-semibold">{tierLabels[kpiData.aiInsights.tierRecommendation as keyof typeof tierLabels] || kpiData.aiInsights.tierRecommendation}</span>
                   </p>
                 )}
               </div>
@@ -298,8 +298,8 @@ export default function SupplierKPIPage() {
             {/* 6 KPI Metrics Grid */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-4">
-                <BarChart3 size={18} className="text-[#64748B]" />
-                <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">6 Chỉ Số Hiệu Suất Chi Tiết</h2>
+                <BarChart3 size={18} className="text-[#000000]" />
+                <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">6 Chỉ Số Hiệu Suất Chi Tiết</h2>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -311,19 +311,19 @@ export default function SupplierKPIPage() {
                   { key: 'responseTimeScore', label: 'Thời gian phản hồi', value: parseFloat(kpiData.kpiScore.responseTimeScore) || 0, isString: true },
                   { key: 'fulfillmentRate', label: 'Tỷ lệ hoàn thành đơn hàng', value: parseFloat(kpiData.kpiScore.fulfillmentRate) || 0, isString: true },
                 ].map((item, idx) => (
-                  <div key={idx} className="bg-[#161922] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] hover:border-[#3B82F6]/30 transition-all">
+                  <div key={idx} className="bg-[#FAF8F5] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
                         {metricIcons[item.key]}
-                        <h3 className="font-semibold text-[#F8FAFC] text-sm">{item.label}</h3>
+                        <h3 className="font-semibold text-[#000000] text-sm">{item.label}</h3>
                       </div>
                     </div>
                     
-                    <div className="w-full bg-[#0F1117] rounded-full h-2 mb-3 overflow-hidden">
+                    <div className="w-full bg-[#FFFFFF] rounded-full h-2 mb-3 overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${
                           (item.value || 0) >= 90 ? 'bg-emerald-400' :
-                          (item.value || 0) >= 70 ? 'bg-[#3B82F6]' :
+                          (item.value || 0) >= 70 ? 'bg-[#B4533A]' :
                           (item.value || 0) >= 50 ? 'bg-amber-400' :
                           'bg-rose-400'
                         }`}
@@ -332,12 +332,12 @@ export default function SupplierKPIPage() {
                     </div>
                     
                     <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-[#F8FAFC]">{item.value}%</span>
+                      <span className="text-2xl font-bold text-[#000000]">{item.value}%</span>
                       <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                        (item.value || 0) >= 90 ? 'bg-emerald-400/10 text-emerald-400' :
-                        (item.value || 0) >= 70 ? 'bg-[#3B82F6]/10 text-[#3B82F6]' :
-                        (item.value || 0) >= 50 ? 'bg-amber-400/10 text-amber-400' :
-                        'bg-rose-400/10 text-rose-400'
+                        (item.value || 0) >= 90 ? 'bg-emerald-400/10 text-black' :
+                        (item.value || 0) >= 70 ? 'bg-[#B4533A]/10 text-[#B4533A]' :
+                        (item.value || 0) >= 50 ? 'bg-amber-400/10 text-black' :
+                        'bg-rose-400/10 text-black'
                       }`}>
                         {(item.value || 0) >= 90 ? 'Xuất sắc' :
                          (item.value || 0) >= 70 ? 'Tốt' :
@@ -354,24 +354,24 @@ export default function SupplierKPIPage() {
             {kpiData.aiInsights && (
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Zap size={18} className="text-purple-400" />
-                  <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">Phân Tích AI</h2>
+                  <Zap size={18} className="text-black" />
+                  <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Phân Tích AI</h2>
                 </div>
                 
-                <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
-                  <p className="text-[#94A3B8] leading-relaxed mb-6">{kpiData.aiInsights.analysis}</p>
+                <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                  <p className="text-[#000000] leading-relaxed mb-6">{kpiData.aiInsights.analysis}</p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Pros */}
                     <div>
                       <div className="flex items-center gap-2 mb-3">
-                        <ThumbsUp size={16} className="text-emerald-400" />
-                        <h3 className="text-sm font-bold text-[#F8FAFC]">Ưu điểm</h3>
+                        <ThumbsUp size={16} className="text-black" />
+                        <h3 className="text-sm font-bold text-[#000000]">Ưu điểm</h3>
                       </div>
                       <ul className="space-y-2">
                         {kpiData.aiInsights.pros?.map((pro, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-sm text-[#94A3B8]">
-                            <CheckCircle size={14} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                          <li key={idx} className="flex items-start gap-2 text-sm text-[#000000]">
+                            <CheckCircle size={14} className="text-black mt-0.5 flex-shrink-0" />
                             <span>{pro}</span>
                           </li>
                         ))}
@@ -381,13 +381,13 @@ export default function SupplierKPIPage() {
                     {/* Cons */}
                     <div>
                       <div className="flex items-center gap-2 mb-3">
-                        <ThumbsDown size={16} className="text-rose-400" />
-                        <h3 className="text-sm font-bold text-[#F8FAFC]">Điểm cần cải thiện</h3>
+                        <ThumbsDown size={16} className="text-black" />
+                        <h3 className="text-sm font-bold text-[#000000]">Điểm cần cải thiện</h3>
                       </div>
                       <ul className="space-y-2">
                         {kpiData.aiInsights.cons?.map((con, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-sm text-[#94A3B8]">
-                            <AlertCircle size={14} className="text-rose-400 mt-0.5 flex-shrink-0" />
+                          <li key={idx} className="flex items-start gap-2 text-sm text-[#000000]">
+                            <AlertCircle size={14} className="text-black mt-0.5 flex-shrink-0" />
                             <span>{con}</span>
                           </li>
                         ))}
@@ -401,12 +401,12 @@ export default function SupplierKPIPage() {
             {/* Improvement Plan */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-4">
-                <Lightbulb size={18} className="text-amber-400" />
-                <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">Kế Hoạch Cải Thiện</h2>
+                <Lightbulb size={18} className="text-black" />
+                <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Kế Hoạch Cải Thiện</h2>
               </div>
               
-              <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
-                <p className="text-[#94A3B8] leading-relaxed">{kpiData.aiInsights?.improvementPlan || kpiData.kpiScore.improvementPlan}</p>
+              <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                <p className="text-[#000000] leading-relaxed">{kpiData.aiInsights?.improvementPlan || kpiData.kpiScore.improvementPlan}</p>
               </div>
             </div>
 
@@ -414,12 +414,12 @@ export default function SupplierKPIPage() {
             {kpiData.kpiScore.notes && (
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <FileText size={18} className="text-cyan-400" />
-                  <h2 className="text-sm font-black text-[#F8FAFC] uppercase tracking-widest">Ghi Chú Đánh Giá</h2>
+                  <FileText size={18} className="text-black" />
+                  <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Ghi Chú Đánh Giá</h2>
                 </div>
                 
-                <div className="bg-[#161922] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
-                  <p className="text-[#94A3B8] leading-relaxed">{kpiData.kpiScore.notes}</p>
+                <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                  <p className="text-[#000000] leading-relaxed">{kpiData.kpiScore.notes}</p>
                 </div>
               </div>
             )}
@@ -429,7 +429,7 @@ export default function SupplierKPIPage() {
               <button
                 onClick={handleEvaluate}
                 disabled={evaluating}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-500/10 text-rose-400 font-bold hover:bg-rose-500/20 disabled:opacity-50 transition-all border border-rose-500/20"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-500/10 text-black font-bold hover:bg-rose-500/20 disabled:opacity-50 transition-all border border-rose-500/20"
               >
                 {evaluating ? (
                   <RefreshCcw size={18} className="animate-spin" />
@@ -441,7 +441,7 @@ export default function SupplierKPIPage() {
               
               <Link
                 href={`/procurement/suppliers/${supplierId}`}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#161922] text-[#94A3B8] font-bold hover:bg-[#1A1D23] hover:text-[#F8FAFC] transition-all border border-[rgba(148,163,184,0.1)]"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#FAF8F5] text-[#000000] font-bold hover:bg-[#1A1D23] hover:text-[#000000] transition-all border border-[rgba(148,163,184,0.1)]"
               >
                 <Award size={18} />
                 Xem hồ sơ NCC

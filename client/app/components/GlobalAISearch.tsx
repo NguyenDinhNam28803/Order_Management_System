@@ -45,7 +45,7 @@ export default function GlobalAISearch() {
                 title="AI Assistant (Ctrl+K)"
                 className="ai-ring-btn fixed bottom-6 right-5 z-50 w-13 h-13 rounded-full
                            bg-gradient-to-br from-[#6366F1] via-[#8B5CF6] to-[#A855F7]
-                           text-white shadow-2xl shadow-violet-500/40
+                           text-[#000000] shadow-2xl shadow-violet-500/40
                            hover:shadow-violet-500/60 hover:scale-110
                            active:scale-95
                            transition-all duration-300
@@ -62,26 +62,26 @@ export default function GlobalAISearch() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     {/* Backdrop */}
                     <div
-                        className="absolute inset-0 bg-black/65 backdrop-blur-sm"
+                        className="absolute inset-0 bg-white/65 backdrop-blur-sm"
                         onClick={handleClose}
                     />
 
                     {/* Modal */}
-                    <div className="relative bg-[#0F1117] rounded-2xl border border-[rgba(148,163,184,0.12)] shadow-2xl shadow-black/80 p-6 w-full max-w-sm animate-slide-up">
+                    <div className="relative bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.12)] shadow-2xl shadow-black/80 p-6 w-full max-w-sm animate-slide-up">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-5">
                             <div className="flex items-center gap-2.5">
                                 <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center shadow-lg shadow-violet-500/30">
-                                    <Brain size={16} className="text-white" />
+                                    <Brain size={16} className="text-[#000000]" />
                                 </div>
                                 <div>
-                                    <h2 className="text-[13px] font-black text-[#F8FAFC] leading-none">AI Assistant</h2>
-                                    <p className="text-[9px] text-[#484F58] font-semibold uppercase tracking-widest mt-0.5">ProcureSmart Intelligence</p>
+                                    <h2 className="text-[13px] font-black text-[#000000] leading-none">AI Assistant</h2>
+                                    <p className="text-[9px] text-[#000000] font-semibold uppercase tracking-widest mt-0.5">ProcureSmart Intelligence</p>
                                 </div>
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="h-7 w-7 flex items-center justify-center rounded-lg bg-[#161922] border border-[rgba(148,163,184,0.1)] text-[#64748B] hover:text-[#F8FAFC] hover:border-[rgba(148,163,184,0.25)] transition-all"
+                                className="h-7 w-7 flex items-center justify-center rounded-lg bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#000000] hover:border-[rgba(148,163,184,0.25)] transition-all"
                             >
                                 <X size={14} />
                             </button>
@@ -93,16 +93,16 @@ export default function GlobalAISearch() {
                             <button
                                 onClick={() => setAiMode("chat")}
                                 className="flex flex-col items-center gap-3 p-5 rounded-xl
-                                           bg-[#161922] border border-[rgba(148,163,184,0.08)]
+                                           bg-[#FAF8F5] border border-[rgba(148,163,184,0.08)]
                                            hover:border-[#6366F1]/50 hover:bg-[rgba(99,102,241,0.08)]
                                            transition-all group text-left"
                             >
-                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#6366F1] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-blue-500/25">
-                                    <MessageSquare size={20} className="text-white" />
+                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#B4533A] to-[#6366F1] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-[#B4533A]/25">
+                                    <MessageSquare size={20} className="text-[#000000]" />
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-[12px] font-bold text-[#F8FAFC] leading-tight">Hỏi đáp AI</div>
-                                    <div className="text-[10px] text-[#64748B] mt-0.5 leading-snug">Tìm kiếm dữ liệu ERP</div>
+                                    <div className="text-[12px] font-bold text-[#000000] leading-tight">Hỏi đáp AI</div>
+                                    <div className="text-[10px] text-[#000000] mt-0.5 leading-snug">Tìm kiếm dữ liệu ERP</div>
                                 </div>
                             </button>
 
@@ -110,16 +110,16 @@ export default function GlobalAISearch() {
                             <button
                                 onClick={() => setAiMode("pr-generator")}
                                 className="flex flex-col items-center gap-3 p-5 rounded-xl
-                                           bg-[#161922] border border-[rgba(148,163,184,0.08)]
+                                           bg-[#FAF8F5] border border-[rgba(148,163,184,0.08)]
                                            hover:border-[#10B981]/50 hover:bg-[rgba(16,185,129,0.08)]
                                            transition-all group text-left"
                             >
-                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#10B981] to-[#3B82F6] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-emerald-500/25">
-                                    <FilePlus size={20} className="text-white" />
+                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#10B981] to-[#B4533A] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-emerald-500/25">
+                                    <FilePlus size={20} className="text-[#000000]" />
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-[12px] font-bold text-[#F8FAFC] leading-tight">Tạo PR</div>
-                                    <div className="text-[10px] text-[#64748B] mt-0.5 leading-snug">AI soạn PR Draft</div>
+                                    <div className="text-[12px] font-bold text-[#000000] leading-tight">Tạo PR</div>
+                                    <div className="text-[10px] text-[#000000] mt-0.5 leading-snug">AI soạn PR Draft</div>
                                 </div>
                             </button>
                         </div>
@@ -127,9 +127,9 @@ export default function GlobalAISearch() {
                         {/* Footer hint */}
                         <div className="flex items-center justify-center gap-1.5">
                             <span className="kbd">Ctrl</span>
-                            <span className="text-[9px] text-[#484F58]">+</span>
+                            <span className="text-[9px] text-[#000000]">+</span>
                             <span className="kbd">K</span>
-                            <span className="text-[10px] text-[#484F58] ml-1">để mở / đóng nhanh</span>
+                            <span className="text-[10px] text-[#000000] ml-1">để mở / đóng nhanh</span>
                         </div>
                     </div>
                 </div>
@@ -154,3 +154,4 @@ export default function GlobalAISearch() {
         </>
     );
 }
+

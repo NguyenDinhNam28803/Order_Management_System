@@ -39,8 +39,8 @@ export default function SpendReportPage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center bg-[#0F1117]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3B82F6]"></div>
+            <div className="flex h-screen items-center justify-center bg-[#FFFFFF]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B4533A]"></div>
             </div>
         );
     }
@@ -48,10 +48,10 @@ export default function SpendReportPage() {
     const supplierChartData = spendBySupplier.slice(0, 5).map(s => ({
         label: s.supplierName,
         value: Number(s.totalAmount),
-        color: "#3B82F6"
+        color: "#B4533A"
     }));
 
-    const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
+    const COLORS = ['#B4533A', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
     const categoryChartData = spendByCategory.slice(0, 6).map((c, idx) => ({
         label: c.categoryName,
         value: Number(c.totalAmount),
@@ -59,17 +59,17 @@ export default function SpendReportPage() {
     }));
 
     return (
-        <main className="animate-in fade-in duration-500 bg-[#0F1117] min-h-screen text-[#F8FAFC]">
+        <main className="animate-in fade-in duration-500 bg-[#FFFFFF] min-h-screen text-[#000000]">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 mt-4 px-6 md:px-8 pt-6">
                 <div>
                     <h1 className="text-3xl font-black tracking-tight uppercase">Báo cáo Phân tích Chi phí (Spend Analytics)</h1>
-                    <p className="text-sm font-bold text-[#64748B] mt-1">DỮ LIỆU ĐƯỢC TỔNG HỢP THEO GIỜ TỪ HỆ THỐNG GIAO DỊCH LÕI</p>
+                    <p className="text-sm font-bold text-[#000000] mt-1">DỮ LIỆU ĐƯỢC TỔNG HỢP THEO GIỜ TỪ HỆ THỐNG GIAO DỊCH LÕI</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-6 py-3 bg-[#161922] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[11px] font-black uppercase tracking-widest text-[#94A3B8] hover:bg-[#1A1D23] transition-all shadow-sm">
+                    <button className="flex items-center gap-2 px-6 py-3 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[11px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#1A1D23] transition-all shadow-sm">
                         <Filter size={14} /> Bộ lọc
                     </button>
-                    <button className="flex items-center gap-2 px-6 py-3 bg-[#3B82F6] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-[#2563EB] transition-all shadow-lg shadow-[#3B82F6]/20">
+                    <button className="flex items-center gap-2 px-6 py-3 bg-[#B4533A] text-[#000000] rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-[#A85032] transition-all shadow-lg shadow-[#B4533A]/20">
                         <Download size={14} /> Xuất PDF
                     </button>
                 </div>
@@ -110,7 +110,7 @@ export default function SpendReportPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 px-6 md:px-8">
                 {/* Spend by Category Donut */}
-                <div className="lg:col-span-1 bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-2xl p-2">
+                <div className="lg:col-span-1 bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-2xl p-2">
                     <DonutChart 
                         title="Tỉ trọng Chi phí theo Danh mục"
                         data={categoryChartData}
@@ -120,7 +120,7 @@ export default function SpendReportPage() {
                 </div>
 
                 {/* Spend by Supplier Bar */}
-                <div className="lg:col-span-2 bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-2xl p-2">
+                <div className="lg:col-span-2 bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-2xl p-2">
                     <SimpleBarChart 
                         title="Top Nhà cung cấp (GMV)"
                         data={supplierChartData}
@@ -129,32 +129,32 @@ export default function SpendReportPage() {
             </div>
 
             {/* Detailed Table */}
-            <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-2xl mx-6 md:mx-8 mb-12">
-                <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#0F1117] flex justify-between items-center">
+            <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-2xl mx-6 md:mx-8 mb-12">
+                <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex justify-between items-center">
                     <h3 className="text-base font-black uppercase tracking-tight flex items-center gap-2">
-                        <Layers className="text-[#3B82F6]" size={18} /> Phân mảnh chi tiết nhà cung cấp
+                        <Layers className="text-[#B4533A]" size={18} /> Phân mảnh chi tiết nhà cung cấp
                     </h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-xs">
-                        <thead className="bg-[#161922]">
+                        <thead className="bg-[#FAF8F5]">
                             <tr className="border-b border-[rgba(148,163,184,0.1)]">
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#64748B] text-left">Tên nhà cung cấp</th>
-                                <th className="text-[10px] font-black uppercase tracking-widest text-[#64748B] text-center">Tần suất Giao dịch (PO)</th>
-                                <th className="text-[10px] font-black uppercase tracking-widest text-[#64748B] text-right pr-12">Tổng Tiền Thanh Toán</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#000000] text-left">Tên nhà cung cấp</th>
+                                <th className="text-[10px] font-black uppercase tracking-widest text-[#000000] text-center">Tần suất Giao dịch (PO)</th>
+                                <th className="text-[10px] font-black uppercase tracking-widest text-[#000000] text-right pr-12">Tổng Tiền Thanh Toán</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                             {spendBySupplier.map((s, idx) => (
-                                <tr key={idx} className="hover:bg-[#0F1117] transition-colors cursor-pointer group">
+                                <tr key={idx} className="hover:bg-[#FFFFFF] transition-colors cursor-pointer group">
                                     <td className="px-8 py-4">
-                                        <div className="font-bold text-[#F8FAFC]">{s.supplierName}</div>
+                                        <div className="font-bold text-[#000000]">{s.supplierName}</div>
                                         {idx < 3 && <div className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-1">Core Partner</div>}
                                     </td>
-                                    <td className="text-center font-bold text-[#94A3B8] group-hover:text-[#F8FAFC] transition-colors">
+                                    <td className="text-center font-bold text-[#000000] group-hover:text-[#000000] transition-colors">
                                         {s.poCount}
                                     </td>
-                                    <td className="text-right pr-12 text-[#3B82F6] font-black text-sm">
+                                    <td className="text-right pr-12 text-[#B4533A] font-black text-sm">
                                         {formatVND(Number(s.totalAmount))}
                                     </td>
                                 </tr>
@@ -166,3 +166,4 @@ export default function SpendReportPage() {
         </main>
     );
 }
+

@@ -19,15 +19,15 @@ interface StatsCardProps {
 }
 
 const colorClasses = {
-  blue: "bg-[#0F1117] border-[#3B82F6]/30 text-[#3B82F6]",
-  green: "bg-[#0F1117] border-emerald-500/30 text-emerald-400",
-  amber: "bg-[#0F1117] border-amber-500/30 text-amber-400",
-  red: "bg-[#0F1117] border-rose-500/30 text-rose-400",
-  purple: "bg-[#0F1117] border-purple-500/30 text-purple-400",
+  blue: "bg-[#FFFFFF] border-[#B4533A]/30 text-[#B4533A]",
+  green: "bg-[#FFFFFF] border-emerald-500/30 text-black",
+  amber: "bg-[#FFFFFF] border-amber-500/30 text-black",
+  red: "bg-[#FFFFFF] border-rose-500/30 text-black",
+  purple: "bg-[#FFFFFF] border-purple-500/30 text-black",
 };
 
 const iconBgClasses = {
-  blue: "bg-[#3B82F6]/10",
+  blue: "bg-[#B4533A]/10",
   green: "bg-emerald-500/10",
   amber: "bg-amber-500/10",
   red: "bg-rose-500/10",
@@ -56,7 +56,7 @@ export default function StatsCard({
           {trend && (
             <div
               className={`flex items-center gap-1 text-xs font-medium ${
-                trend.isPositive ? "text-emerald-400" : "text-rose-400"
+                trend.isPositive ? "text-black" : "text-black"
               }`}
             >
               {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%
@@ -64,12 +64,12 @@ export default function StatsCard({
           )}
         </div>
 
-        <p className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-1">
+        <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-1">
           {title}
         </p>
-        <h3 className="text-3xl font-black text-[#F8FAFC]">{value}</h3>
+        <h3 className="text-3xl font-black text-[#000000]">{value}</h3>
         {subValue && (
-          <p className="text-sm text-[#94A3B8] mt-1">{subValue}</p>
+          <p className="text-sm text-[#000000] mt-1">{subValue}</p>
         )}
 
         {children && <div className="mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">{children}</div>}
@@ -82,3 +82,4 @@ export default function StatsCard({
     </div>
   );
 }
+

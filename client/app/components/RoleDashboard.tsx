@@ -16,9 +16,9 @@ export function CEODashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Strategic Overview */}
-      <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
-          <Activity size={14} className="text-[#3B82F6]" /> Tổng quan chiến lược
+      <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-[#B4533A]" /> Tổng quan chiến lược
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard 
@@ -55,7 +55,7 @@ export function CEODashboard() {
       {/* Spend Heatmap */}
       <div className="glass-card p-6">
         <h3 className="section-title">
-          <BarChart3 size={16} className="text-[#3B82F6]" />
+          <BarChart3 size={16} className="text-[#B4533A]" />
           Spend Heatmap theo Phòng ban
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -101,16 +101,16 @@ export function CEODashboard() {
           </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#94A3B8]">Thời gian phê duyệt TB</span>
-              <span className="font-bold text-emerald-400">1.8 ngày</span>
+              <span className="text-sm text-[#000000]">Thời gian phê duyệt TB</span>
+              <span className="font-bold text-black">1.8 ngày</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#94A3B8]">Tỷ lệ phê duyệt</span>
-              <span className="font-bold text-blue-400">94.2%</span>
+              <span className="text-sm text-[#000000]">Tỷ lệ phê duyệt</span>
+              <span className="font-bold text-[#CB7A62]">94.2%</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#94A3B8]">Tỷ lệ từ chối</span>
-              <span className="font-bold text-rose-400">5.8%</span>
+              <span className="text-sm text-[#000000]">Tỷ lệ từ chối</span>
+              <span className="font-bold text-black">5.8%</span>
             </div>
           </div>
         </div>
@@ -122,17 +122,17 @@ export function CEODashboard() {
           </h3>
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
-              <AlertTriangle size={16} className="text-rose-400" />
+              <AlertTriangle size={16} className="text-black" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-rose-400">IT Department vượt 90% ngân sách</p>
-                <p className="text-xs text-[#64748B]">Cần phê duyệt bổ sung ngân sách Q2</p>
+                <p className="text-sm font-semibold text-black">IT Department vượt 90% ngân sách</p>
+                <p className="text-xs text-[#000000]">Cần phê duyệt bổ sung ngân sách Q2</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-              <Clock size={16} className="text-amber-400" />
+              <Clock size={16} className="text-black" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-amber-400">12 PO chờ phê duyệt &gt; 3 ngày</p>
-                <p className="text-xs text-[#64748B]">Có thể ảnh hưởng tiến độ dự án</p>
+                <p className="text-sm font-semibold text-black">12 PO chờ phê duyệt &gt; 3 ngày</p>
+                <p className="text-xs text-[#000000]">Có thể ảnh hưởng tiến độ dự án</p>
               </div>
             </div>
           </div>
@@ -146,9 +146,9 @@ export function CEODashboard() {
 export function FinanceDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
-          <Activity size={14} className="text-[#3B82F6]" /> Kiểm soát tài chính
+      <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-[#B4533A]" /> Kiểm soát tài chính
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard 
@@ -184,20 +184,20 @@ export function FinanceDashboard() {
           Dòng tiền & Thanh toán
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-4 bg-[#161922] rounded-xl border border-[rgba(148,163,184,0.1)]">
-            <h4 className="text-sm font-semibold text-[#94A3B8] mb-2">Tuần này</h4>
-            <p className="text-2xl font-bold text-emerald-400">2.4B ₫</p>
-            <p className="text-xs text-[#64748B] mt-1">8 thanh toán</p>
+          <div className="p-4 bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)]">
+            <h4 className="text-sm font-semibold text-[#000000] mb-2">Tuần này</h4>
+            <p className="text-2xl font-bold text-black">2.4B ₫</p>
+            <p className="text-xs text-[#000000] mt-1">8 thanh toán</p>
           </div>
-          <div className="p-4 bg-[#161922] rounded-xl border border-[rgba(148,163,184,0.1)]">
-            <h4 className="text-sm font-semibold text-[#94A3B8] mb-2">Tuần tới</h4>
-            <p className="text-2xl font-bold text-blue-400">3.1B ₫</p>
-            <p className="text-xs text-[#64748B] mt-1">12 thanh toán</p>
+          <div className="p-4 bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)]">
+            <h4 className="text-sm font-semibold text-[#000000] mb-2">Tuần tới</h4>
+            <p className="text-2xl font-bold text-[#CB7A62]">3.1B ₫</p>
+            <p className="text-xs text-[#000000] mt-1">12 thanh toán</p>
           </div>
-          <div className="p-4 bg-[#161922] rounded-xl border border-[rgba(148,163,184,0.1)]">
-            <h4 className="text-sm font-semibold text-[#94A3B8] mb-2">Quá hạn</h4>
-            <p className="text-2xl font-bold text-rose-400">890M ₫</p>
-            <p className="text-xs text-[#64748B] mt-1">Cần xử lý ngay</p>
+          <div className="p-4 bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)]">
+            <h4 className="text-sm font-semibold text-[#000000] mb-2">Quá hạn</h4>
+            <p className="text-2xl font-bold text-black">890M ₫</p>
+            <p className="text-xs text-[#000000] mt-1">Cần xử lý ngay</p>
           </div>
         </div>
       </div>
@@ -209,9 +209,9 @@ export function FinanceDashboard() {
 export function ProcurementDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
-          <Activity size={14} className="text-[#3B82F6]" /> Pipeline thu mua
+      <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-[#B4533A]" /> Pipeline thu mua
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard
@@ -246,14 +246,14 @@ export function ProcurementDashboard() {
       {/* PR → PO Pipeline */}
       <div className="glass-card p-6">
         <h3 className="section-title">
-          <Activity size={16} className="text-[#3B82F6]" />
+          <Activity size={16} className="text-[#B4533A]" />
           PR → PO Pipeline
         </h3>
         <div className="flex items-center justify-between">
           {[
-            { label: "Draft PR", count: 12, color: "#64748B" },
+            { label: "Draft PR", count: 12, color: "#000000" },
             { label: "Chờ Duyệt", count: 8, color: "#F59E0B" },
-            { label: "Đã Duyệt", count: 15, color: "#3B82F6" },
+            { label: "Đã Duyệt", count: 15, color: "#B4533A" },
             { label: "Đã Tạo PO", count: 24, color: "#10B981" },
             { label: "Đã Giao", count: 156, color: "#8B5CF6" },
           ].map((stage, idx, arr) => (
@@ -265,7 +265,7 @@ export function ProcurementDashboard() {
                 >
                   {stage.count}
                 </div>
-                <span className="text-xs text-[#64748B] mt-2">{stage.label}</span>
+                <span className="text-xs text-[#000000] mt-2">{stage.label}</span>
               </div>
               {idx < arr.length - 1 && (
                 <div className="flex-1 h-0.5 bg-[rgba(148,163,184,0.2)] mx-4" />
@@ -282,9 +282,9 @@ export function ProcurementDashboard() {
 export function StaffDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
-          <Activity size={14} className="text-[#3B82F6]" /> Tổng quan công việc
+      <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-[#B4533A]" /> Tổng quan công việc
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <StatsCard
@@ -322,10 +322,10 @@ export function StaffDashboard() {
           ].map((item) => (
             <button
               key={item.label}
-              className="p-4 bg-[#161922] hover:bg-[rgba(59,130,246,0.1)] border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] rounded-xl transition-all text-left group"
+              className="p-4 bg-[#FAF8F5] hover:bg-[rgba(59,130,246,0.1)] border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] rounded-xl transition-all text-left group"
             >
               <span className="text-2xl mb-2 block">{item.icon}</span>
-              <span className="text-sm font-semibold text-[#F8FAFC] group-hover:text-[#3B82F6] transition-colors">
+              <span className="text-sm font-semibold text-[#000000] group-hover:text-[#B4533A] transition-colors">
                 {item.label}
               </span>
             </button>
@@ -340,9 +340,9 @@ export function StaffDashboard() {
 export function WarehouseDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#161922] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
-          <Activity size={14} className="text-[#3B82F6]" /> Hoạt động kho
+      <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-[#B4533A]" /> Hoạt động kho
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard
@@ -384,17 +384,17 @@ export function WarehouseDashboard() {
             { time: "14:00", po: "***", supplier: "Cloud Solutions", items: "Thiết bị mạng", status: "delayed" },
             { time: "16:00", po: "***", supplier: "BuildRight Co.", items: "Vật liệu xây dựng", status: "incoming" },
           ].map((delivery, idx) => (
-            <div key={idx} className="flex items-center gap-4 p-3 bg-[#161922] rounded-lg border border-[rgba(148,163,184,0.05)]">
-              <div className="text-sm font-mono text-[#64748B] w-16">{delivery.time}</div>
+            <div key={idx} className="flex items-center gap-4 p-3 bg-[#FAF8F5] rounded-lg border border-[rgba(148,163,184,0.05)]">
+              <div className="text-sm font-mono text-[#000000] w-16">{delivery.time}</div>
               <div className={`w-2 h-2 rounded-full ${delivery.status === "incoming" ? "bg-emerald-400" : "bg-amber-400"}`} />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-[#F8FAFC]">***</p>
-                <p className="text-xs text-[#64748B]">{delivery.supplier} • {delivery.items}</p>
+                <p className="text-sm font-semibold text-[#000000]">***</p>
+                <p className="text-xs text-[#000000]">{delivery.supplier} • {delivery.items}</p>
               </div>
               <span className={`text-xs font-semibold px-2 py-1 rounded ${
                 delivery.status === "incoming" 
-                  ? "bg-emerald-500/20 text-emerald-400" 
-                  : "bg-amber-500/20 text-amber-400"
+                  ? "bg-emerald-500/20 text-black" 
+                  : "bg-amber-500/20 text-black"
               }`}>
                 {delivery.status === "incoming" ? "Sắp đến" : "Delay"}
               </span>
@@ -438,7 +438,7 @@ export default function RoleDashboard() {
                     role === "PROCUREMENT" ? "Procurement Pipeline" :
                     role === "WAREHOUSE" ? "Warehouse Operations" : "My Workspace"}
         </h1>
-        <p className="text-sm text-[#64748B]">
+        <p className="text-sm text-[#000000]">
           Xin chào {currentUser?.name || "User"}, đây là tổng quan dành cho {role}
         </p>
       </div>
@@ -446,3 +446,4 @@ export default function RoleDashboard() {
     </div>
   );
 }
+
