@@ -196,38 +196,51 @@ export class NotificationModuleService {
     try {
       const body = this.emailTemplates.render(eventType, data);
 
-      // Tạo in-app notification record nếu người nhận là user nội bộ
+      // 1. Tạo in-app notification record nếu người nhận là user nội bộ
       const user = await this.prisma.user.findUnique({ where: { email: to } });
       if (user) {
-        const notification = await this.repository.createNotification({
-          recipientId: user.id,
-          orgId: user.orgId,
-          eventType,
-          channel: NotificationChannel.EMAIL,
-          priority: 2,
-          subject,
-          body,
-          referenceType: referenceType ?? null,
-          referenceId: referenceId ?? null,
-          status: NotificationStatus.QUEUED,
-        });
-        this.eventsGateway.broadcastToUser(user.id, 'notification:new', {
-          id: notification.id,
-          eventType,
-          subject,
-          body,
-          referenceType: referenceType ?? null,
-          referenceId: referenceId ?? null,
-          status: NotificationStatus.QUEUED,
-          createdAt: notification.createdAt,
-        });
+        try {
+          const notification = await this.repository.createNotification({
+            recipientId: user.id,
+            orgId: user.orgId,
+            eventType,
+            channel: NotificationChannel.EMAIL,
+            priority: 2,
+            subject,
+            body,
+            referenceType: referenceType ?? null,
+            referenceId: referenceId ?? null,
+            status: NotificationStatus.QUEUED,
+          });
+          this.eventsGateway.broadcastToUser(user.id, 'notification:new', {
+            id: notification.id,
+            eventType,
+            subject,
+            body,
+            referenceType: referenceType ?? null,
+            referenceId: referenceId ?? null,
+            status: NotificationStatus.QUEUED,
+            createdAt: notification.createdAt,
+          });
+        } catch (err) {
+          this.logger.warn(`Could not create in-app notification for ${to}: ${err}`);
+        }
       }
 
-      await this.emailQueue.add('send-email', { to, subject, body });
-      this.logger.log(`Direct email queued → ${to} [${eventType}]`);
+      // 2. Gửi email qua Queue với cơ chế fallback
+      try {
+        await this.emailQueue.add('send-email', { to, subject, body });
+        this.logger.log(`Direct email queued → ${to} [${eventType}]`);
+      } catch (queueError) {
+        this.logger.warn(
+          `Email queue failed, falling back to direct email for ${to}: ${queueError}`,
+        );
+        await this.emailService.sendEmail(to, subject, body);
+        this.logger.log(`Direct email sent successfully to ${to} [${eventType}]`);
+      }
     } catch (error) {
       this.logger.error(
-        `Failed to queue direct email to ${to} [${eventType}]:`,
+        `Failed to send direct email to ${to} [${eventType}]:`,
         error,
       );
     }

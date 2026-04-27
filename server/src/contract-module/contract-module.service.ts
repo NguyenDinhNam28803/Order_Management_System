@@ -181,21 +181,33 @@ export class ContractModuleService {
       };
 
       if (buyerJustSigned) {
+        // Tìm user cụ thể
         const supplierUsers = await this.prisma.user.findMany({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           where: { orgId: contract.supplierId, role: 'SUPPLIER' as any, isActive: true },
           select: { email: true, fullName: true },
         });
-        for (const u of supplierUsers) {
-          if (!u.email) continue;
+
+        let recipients = supplierUsers.filter(u => u.email).map(u => ({ email: u.email!, name: u.fullName }));
+
+        // Fallback: Nếu không tìm thấy user, lấy email tổ chức
+        if (recipients.length === 0) {
+          const supplierOrg = await this.prisma.organization.findUnique({
+            where: { id: contract.supplierId },
+            select: { email: true, name: true }
+          });
+          if (supplierOrg?.email) {
+            recipients.push({ email: supplierOrg.email, name: supplierOrg.name });
+          }
+        }
+
+        for (const u of recipients) {
           void this.notificationService.sendDirectEmail(
             u.email,
             `[OMS] Bên mua đã ký — Hợp đồng ${contract.contractNumber as string} cần chữ ký của bạn`,
             'CONTRACT_SIGN_REQUEST',
             {
               ...baseData,
-              recipientName: u.fullName ?? u.email,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              recipientName: u.name ?? u.email,
               partnerName: contract.buyerOrg?.name ?? 'Bên mua',
               signingLink: `${frontendUrl}/supplier/contracts`,
               role: 'supplier',
