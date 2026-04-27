@@ -238,10 +238,10 @@ export default function NotificationInbox() {
             
             <div className="flex items-center justify-between mb-4 relative z-10">
               <div>
-                <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                <h3 className="text-sm font-bold tracking-tight flex items-center gap-2" style={{ color: '#FFFFFF' }}>
                   <Inbox size={16} className="text-[#B4533A]" /> Inbox Hệ thống
                 </h3>
-                <p className="text-[10px] text-gray-400 font-medium mt-0.5">
+                <p className="text-[10px] font-medium mt-0.5" style={{ color: '#D1D5DB' }}>
                   Bạn có {unreadCount} thông báo chưa xử lý
                 </p>
               </div>
