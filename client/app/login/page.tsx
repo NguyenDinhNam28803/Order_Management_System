@@ -158,7 +158,7 @@ export default function LoginPage() {
                                         onClick={() => { setEmail(u.email); setPassword("ProcureSmart@2024"); }}
                                         className="p-3 bg-[#FFFFFF] border border-[#D1CDC2] rounded-xl text-left hover:border-[#000000] transition-all group flex flex-col gap-1"
                                     >
-                                        <div className="text-[8px] font-black text-[#B4533A] uppercase tracking-widest">{u.role}</div>
+                                        <div className="text-[8px] font-black text-black uppercase tracking-widest">{u.role}</div>
                                         <div className="text-[11px] font-bold text-[#000000] truncate">{u.name}</div>
                                     </button>
                                 ))}

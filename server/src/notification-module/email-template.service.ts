@@ -11,7 +11,7 @@ export type EmailEventType =
   | 'PR_APPROVED' // PR được phê duyệt — notify requester
   | 'PR_REJECTED' // PR bị từ chối — notify requester
   | 'QUOTATION_RECEIVED' // Nhận được báo giá — notify procurement
-  | 'CONTRACT_SIGN_REQUEST'   // Yêu cầu ký hợp đồng — notify buyer/supplier
+  | 'CONTRACT_SIGN_REQUEST' // Yêu cầu ký hợp đồng — notify buyer/supplier
   | 'CONTRACT_EXPIRY_WARNING' // Hợp đồng sắp hết hạn — notify procurement
   | 'GRN_CONFIRMED' // Kho xác nhận nhận hàng — notify supplier/finance
   | 'BUDGET_LIMIT_WARNING' // Ngân sách gần đạt giới hạn — notify finance/manager
@@ -51,7 +51,11 @@ export class EmailTemplatesService implements OnModuleInit {
       this.cache.clear();
       for (const row of rows) {
         this.cache.set(row.eventType, {
-          subject: row.subject,
+          subject:
+            row.subject?.replace(
+              '{{loginAt}}',
+              new Date().toLocaleString('vi-VN'),
+            ) ?? null,
           bodyTemplate: row.bodyTemplate,
         });
       }
@@ -1049,16 +1053,18 @@ export class EmailTemplatesService implements OnModuleInit {
   // ═══════════════════════════════════════════════════════════════════════════
   private templateContractSignRequest(data: Record<string, any>): string {
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-    const recipientName  = data.recipientName  ?? 'Quý đối tác';
-    const contractNumber = data.contractNumber  ?? '';
-    const contractTitle  = data.contractTitle   ?? '';
-    const partnerName    = data.partnerName     ?? '';
-    const value          = Number(data.value ?? 0);
-    const currency       = data.currency        ?? 'VND';
-    const startDate      = data.startDate ? this.fmtDate(data.startDate) : '—';
-    const endDate        = data.endDate   ? this.fmtDate(data.endDate)   : '—';
-    const signingLink    = data.signingLink ?? '#';
-    const role           = data.role === 'buyer' ? 'Bên mua' : 'Nhà cung cấp';
+    const recipientName = data.recipientName ?? 'Quý đối tác';
+    const contractNumber = data.contractNumber ?? '';
+    const contractTitle = data.contractTitle ?? '';
+    const partnerName = data.partnerName ?? '';
+    const value = Number(data.value ?? 0);
+    const currency = data.currency ?? 'VND';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const startDate = data.startDate ? this.fmtDate(data.startDate) : '—';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const endDate = data.endDate ? this.fmtDate(data.endDate) : '—';
+    const signingLink = data.signingLink ?? '#';
+    const role = data.role === 'buyer' ? 'Bên mua' : 'Nhà cung cấp';
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 
     const content = `

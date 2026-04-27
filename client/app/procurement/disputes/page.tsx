@@ -48,30 +48,36 @@ export default function DisputesPage() {
                 </button>
             </div>
 
-            <div className="bg-[#FAF8F5] p-4 rounded-2xl shadow-xl shadow-[#B4533A]/5 border border-[rgba(148,163,184,0.1)] flex flex-wrap gap-4 items-center mb-8">
-                <div className="flex-1 min-w-[300px] relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" size={18} />
-                    <input 
-                        type="text" 
-                        placeholder="Tìm theo mã khiếu nại, nội dung..." 
-                        className="w-full pl-10 pr-4 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/30 text-[#000000] placeholder:text-[#000000] text-sm"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+            <div className="bg-[#FAF8F5] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 flex flex-wrap gap-4 items-center mb-8">
+                <div className="flex-1 min-w-[300px] flex gap-3">
+                    <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
+                        <Search size={20} className="text-[#B4533A]" />
+                    </div>
+                    <div className="relative flex-1">
+                        <input 
+                            type="text" 
+                            placeholder="Tìm theo mã khiếu nại, nội dung..." 
+                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all text-sm font-bold"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Filter size={18} className="text-[#000000]" />
-                    <select 
-                        className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500/30 text-[#000000] text-sm"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <option value="ALL">Tất cả trạng thái</option>
-                        <option value={DisputeStatus.OPEN}>Đang mở</option>
-                        <option value={DisputeStatus.UNDER_INVESTIGATION}>Đang xác minh</option>
-                        <option value={DisputeStatus.RESOLVED}>Đã giải quyết</option>
-                        <option value={DisputeStatus.CLOSED}>Đã đóng</option>
-                    </select>
+                <div className="flex items-center gap-3">
+                    <div className="relative">
+                        <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
+                        <select 
+                            className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] text-sm font-bold focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <option value="ALL">Tất cả trạng thái</option>
+                            <option value={DisputeStatus.OPEN}>Đang mở</option>
+                            <option value={DisputeStatus.UNDER_INVESTIGATION}>Đang xác minh</option>
+                            <option value={DisputeStatus.RESOLVED}>Đã giải quyết</option>
+                            <option value={DisputeStatus.CLOSED}>Đã đóng</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 

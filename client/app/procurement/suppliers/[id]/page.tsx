@@ -27,7 +27,7 @@ const Tooltip = ({ children, content, position = 'top' }: { children: React.Reac
                     position === 'left' ? 'right-full top-1/2 -translate-y-1/2 mr-2' :
                     'left-full top-1/2 -translate-y-1/2 ml-2'
                 }`}>
-                    <div className="bg-[#1A1D23] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-2xl max-w-xs text-xs text-[#000000] whitespace-normal min-w-[220px]">
+                    <div className="bg-[#1A1D23] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-2xl max-w-xs text-xs text-[#F2EFE9] whitespace-normal min-w-[220px]">
                         {content}
                     </div>
                 </div>
@@ -207,7 +207,7 @@ export default function ProcurementSupplierDetailPage() {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
             case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
             case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
-            default: return "bg-[#1A1D23] text-[#000000] border-[rgba(148,163,184,0.1)]";
+            default: return "bg-[#1A1D23] text-[#F2EFE9] border-[rgba(148,163,184,0.1)]";
         }
     };
 
@@ -224,7 +224,7 @@ export default function ProcurementSupplierDetailPage() {
             case "SHIPPED": return "text-[#CB7A62] bg-[#B4533A]/10";
             case "CONFIRMED": return "text-yellow-400 bg-yellow-500/10";
             case "CANCELLED": return "text-black bg-rose-500/10";
-            default: return "text-[#000000] bg-[#1A1D23]";
+            default: return "text-[#F2EFE9] bg-[#1A1D23]";
         }
     };
 

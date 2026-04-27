@@ -91,17 +91,18 @@ export default function SupplierContractsPage() {
 
     // Load supplier contracts
     useEffect(() => {
-        if (supplierId) {
-            loadContracts();
-        }
-    }, [supplierId]);
+        const load = async () => {
+            const data = await fetchContractsBySupplier(supplierId);
+            if (data) {
+                setSupplierContracts(data);
+            }
+        };
 
-    const loadContracts = async () => {
-        const data = await fetchContractsBySupplier(supplierId);
-        if (data) {
-            setSupplierContracts(data);
+        if (supplierId) {
+            load();
         }
-    };
+    }, [supplierId, fetchContractsBySupplier]);
+
 
     // WebSocket for real-time notifications
     const handleNotification = useCallback((data: unknown) => {
@@ -219,31 +220,37 @@ export default function SupplierContractsPage() {
             </div>
 
             {/* Filters */}
-            <div className="bg-[#FAF8F5] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 mb-6">
+            <div className="bg-[#FAF8F5] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 mb-6">
                 <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1 relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000]" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Tìm theo số hợp đồng, tiêu đề, khách hàng..."
-                            className="w-full pl-11 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/50 focus:bg-[#FAF8F5] transition-all"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                    <div className="flex-1 flex gap-3">
+                        <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
+                            <Search size={20} className="text-[#B4533A]" />
+                        </div>
+                        <div className="relative flex-1">
+                            <input
+                                type="text"
+                                placeholder="Tìm theo số hợp đồng, tiêu đề, khách hàng..."
+                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <Filter size={18} className="text-[#000000]" />
-                        <select
-                            className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-sm font-bold text-[#000000] focus:outline-none focus:border-[#B4533A]/50 focus:bg-[#FAF8F5] transition-all min-w-[160px]"
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                        >
-                            <option value="ALL">Tất cả trạng thái</option>
-                            <option value={ContractStatus.PENDING_APPROVAL}>Chờ duyệt</option>
-                            <option value={ContractStatus.ACTIVE}>Đang hiệu lực</option>
-                            <option value={ContractStatus.EXPIRED}>Hết hạn</option>
-                            <option value={ContractStatus.TERMINATED}>Đã chấm dứt</option>
-                        </select>
+                    <div className="flex gap-3">
+                        <div className="relative">
+                            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
+                            <select
+                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                            >
+                                <option value="ALL">Tất cả trạng thái</option>
+                                <option value="ACTIVE">Đang hiệu lực</option>
+                                <option value="DRAFT">Bản nháp</option>
+                                <option value="EXPIRED">Đã hết hạn</option>
+                                <option value="TERMINATED">Đã chấm dứt</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -264,28 +271,28 @@ export default function SupplierContractsPage() {
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                             {filteredContracts.length > 0 ? filteredContracts.map((c) => (
-                                <tr key={c.id} className="hover:bg-[rgba(59,130,246,0.05)] transition-colors group">
+                                <tr key={c.id} className="hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.05)] group">
                                     <td className="px-6 py-4">
-                                        <span className="font-bold text-[#B4533A]">#{c.contractNumber}</span>
+                                        <span className="font-bold text-[#B4533A] group-hover:scale-105 transition-transform inline-block">#{c.contractNumber}</span>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="font-bold text-[#000000]">{c.title}</div>
-                                        <div className="flex items-center gap-1 text-xs text-[#000000] mt-1">
+                                        <div className="font-bold text-[#000000] group-hover:text-[#F2EFE9] transition-colors">{c.title}</div>
+                                        <div className="flex items-center gap-1 text-xs text-[#000000] mt-1 group-hover:text-[#F2EFE9]/60 transition-colors">
                                             <Building2 size={12} />
                                             {c.organization?.name || "N/A"}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-center">
-                                        <div className="font-bold text-[#000000]">
+                                        <div className="font-bold text-[#000000] group-hover:text-[#F2EFE9] transition-colors">
                                             {new Intl.NumberFormat('vi-VN').format(c.totalValue || 0)} {c.currency || 'VND'}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2 text-sm text-[#000000]">
-                                            <Calendar size={14} className="text-[#000000]" />
+                                        <div className="flex items-center gap-2 text-sm text-[#000000] group-hover:text-[#F2EFE9] transition-colors">
+                                            <Calendar size={14} className="text-[#000000] group-hover:text-[#B4533A]" />
                                             <div>
-                                                <div className="text-[#000000]">{new Date(c.startDate).toLocaleDateString('vi-VN')}</div>
-                                                <div className="text-[#000000] text-xs">- {new Date(c.endDate).toLocaleDateString('vi-VN')}</div>
+                                                <div className="text-[#000000] group-hover:text-[#F2EFE9] transition-colors">{new Date(c.startDate).toLocaleDateString('vi-VN')}</div>
+                                                <div className="text-[#000000] text-xs group-hover:text-[#F2EFE9]/40 transition-colors">- {new Date(c.endDate).toLocaleDateString('vi-VN')}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -403,7 +410,7 @@ export default function SupplierContractsPage() {
                                 </div>
                                 <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
                                     <span className="text-[10px] font-black uppercase text-[#000000] block mb-1">Ngày tạo</span>
-                                    <p className="font-bold text-[#000000]">{new Date(selectedContract.createdAt || Date.now()).toLocaleDateString('vi-VN')}</p>
+                                    <p className="font-bold text-[#000000]">{new Date(selectedContract.createdAt || new Date().toISOString()).toLocaleDateString('vi-VN')}</p>
                                 </div>
                             </div>
 

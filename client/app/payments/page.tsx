@@ -90,7 +90,7 @@ export default function PaymentsPage() {
                                                 <tr key={payment.id}>
                                                     <td className=" font-bold">#PAY-{payment.id.split('-')[0].toUpperCase()}</td>
                                                                                                     <td className="font-bold">{payment.supplierName || 'N/A'}</td>
-                                                    <td className="font-black text-erp-navy">{formatCurrency(payment.amount)}</td>
+                                                    <td className="font-black text-brand-primary">{formatCurrency(payment.amount)}</td>
                                                     <td>
                                                         <span className={`status-pill ${statusDisplay.class}`}>
                                                             {statusDisplay.label}

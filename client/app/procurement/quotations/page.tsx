@@ -328,7 +328,7 @@ export default function QuotationManagementPage() {
                 <div className="flex items-center justify-end gap-2">
                     <button
                         onClick={() => handleViewQuotation(row)}
-                        className="inline-flex items-center gap-2 bg-[#1A1D23] text-[#000000] px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#FFFFFF] transition-all border border-[rgba(148,163,184,0.1)]"
+                        className="inline-flex items-center gap-2 bg-[#1A1D23] text-[#F2EFE9] px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#FFFFFF] hover:text-black transition-all border border-[rgba(148,163,184,0.1)]"
                         title="Xem chi tiết"
                     >
                         <Eye size={14} />
@@ -378,19 +378,23 @@ export default function QuotationManagementPage() {
                             <ArrowLeft size={16} /> Quay lại danh sách RFQ
                         </button>
                     ) : (
-                        <div className="relative grow md:w-80">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000]" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Tìm kiếm RFQ..."
-                                className="w-full pl-12 pr-6 py-5 h-14 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#B4533A] transition-all"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
+                        <div className="flex gap-3 grow md:w-80">
+                            <div className="h-14 w-14 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
+                                <Search size={20} className="text-[#B4533A]" />
+                            </div>
+                            <div className="relative flex-1">
+                                <input
+                                    type="text"
+                                    placeholder="Tìm kiếm RFQ..."
+                                    className="w-full h-14 pl-6 pr-4 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
                         </div>
                     )}
                     <button className="h-14 w-14 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-xl shadow-[#B4533A]/5 hover:bg-[#1A1D23] transition-all shrink-0">
-                        <ListFilter size={20} />
+                        <ListFilter size={20} className="text-[#B4533A]" />
                     </button>
                 </div>
             </div>
@@ -467,7 +471,7 @@ export default function QuotationManagementPage() {
                             </div>
 
                             <div className="flex gap-4 pt-4">
-                                <button onClick={() => setAwardModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#1A1D23] text-[#000000] font-black text-xs uppercase tracking-widest hover:bg-[#FFFFFF] transition-all border border-[rgba(148,163,184,0.1)]">Hủy bỏ</button>
+                                <button onClick={() => setAwardModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#1A1D23] text-[#F2EFE9] font-black text-xs uppercase tracking-widest hover:bg-[#FFFFFF] hover:text-black transition-all border border-[rgba(148,163,184,0.1)]">Hủy bỏ</button>
                                 <button
                                     onClick={() => handleAward(awardModal)}
                                     className="flex-1 px-6 py-4 rounded-2xl bg-emerald-600 text-[#000000] font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
@@ -774,7 +778,7 @@ export default function QuotationManagementPage() {
                             // Show quotations for selected RFQ
                             loading ? (
                                 <div className="py-32 text-center">
-                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#000000] mb-6 animate-pulse">
+                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#F2EFE9] mb-6 animate-pulse">
                                         <TrendingUp size={40} />
                                     </div>
                                     <h3 className="text-xl font-black text-[#000000] mb-2 uppercase tracking-tight">Đang tải báo giá...</h3>
@@ -784,7 +788,7 @@ export default function QuotationManagementPage() {
                                     <ERPTable columns={quotationColumns} data={quotations} />
                                     {quotations.length === 0 && (
                                         <div className="py-32 text-center">
-                                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#000000] mb-6">
+                                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#F2EFE9] mb-6">
                                                 <AlertCircle size={40} />
                                             </div>
                                             <h3 className="text-xl font-black text-[#000000] mb-2 uppercase tracking-tight">Chưa có báo giá nào</h3>
@@ -799,7 +803,7 @@ export default function QuotationManagementPage() {
                                 <ERPTable columns={rfqColumns} data={filteredRFQs} />
                                 {filteredRFQs.length === 0 && (
                                     <div className="py-32 text-center">
-                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#000000] mb-6">
+                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#F2EFE9] mb-6">
                                             <Search size={40} />
                                         </div>
                                         <h3 className="text-xl font-black text-[#000000] mb-2 uppercase tracking-tight">Không có RFQ nào</h3>
@@ -843,12 +847,12 @@ function RFQStatusPill({ status }: { status: string }) {
 
 function StatusPill({ status }: { status: string }) {
     const config: Record<string, { bg: string, text: string }> = {
-        'DRAFT': { bg: 'bg-[#1A1D23]', text: 'text-[#000000]' },
+        'DRAFT': { bg: 'bg-[#1A1D23]', text: 'text-[#F2EFE9]' },
         'SUBMITTED': { bg: 'bg-[#B4533A]/10', text: 'text-[#B4533A]' },
         'UNDER_REVIEW': { bg: 'bg-amber-500/10', text: 'text-black' },
         'ACCEPTED': { bg: 'bg-emerald-500/10', text: 'text-black' },
         'REJECTED': { bg: 'bg-rose-500/10', text: 'text-black' },
-        'EXPIRED': { bg: 'bg-[#1A1D23]', text: 'text-[#000000]' },
+        'EXPIRED': { bg: 'bg-[#1A1D23]', text: 'text-[#F2EFE9]' },
     };
 
     const style = config[status] || config['DRAFT'];

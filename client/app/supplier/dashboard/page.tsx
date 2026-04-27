@@ -396,23 +396,23 @@ export default function SupplierDashboard() {
               const isSimulation = rfq.rfqId.includes("SIM");
               const isApiData = !isSimulation && !rfq.rfqId.startsWith("RFQ-2024");
               return (
-                <tr key={rfq.rfqId} className={`group hover:bg-[#FFFFFF]/50 transition-colors ${isSimulation ? 'bg-[#B4533A]/5' : ''}`}>
+                <tr key={rfq.rfqId} className={`group hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.05)] ${isSimulation ? 'bg-[#B4533A]/5' : ''}`}>
                   <td className="py-4 px-4">
-                    <div className="font-black text-[#000000] text-xs truncate">{rfq.rfqId}</div>
+                    <div className="font-black text-[#000000] text-xs truncate group-hover:text-[#B4533A] transition-colors">{rfq.rfqId}</div>
                     <div className="flex items-center gap-1 mt-1">
                        {isSimulation && <span className="bg-[#B4533A] text-[#000000] text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
                        {isApiData && <span className="bg-emerald-500 text-[#000000] text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">API</span>}
                     </div>
                   </td>
                   <td className="py-4 px-4">
-                    <div className="font-bold text-[#000000] text-xs truncate" title={rfq.projectName}>{rfq.projectName}</div>
-                    <div className="text-[10px] text-[#000000] font-medium uppercase mt-1 truncate">
+                    <div className="font-bold text-[#000000] text-xs truncate group-hover:text-[#F2EFE9] transition-colors" title={rfq.projectName}>{rfq.projectName}</div>
+                    <div className="text-[10px] text-[#000000] font-medium uppercase mt-1 truncate group-hover:text-[#F2EFE9]/60 transition-colors">
                       {rfq.items.length} hạng mục • {rfq.items.slice(0, 2).map(i => i.name).join(", ")}{rfq.items.length > 2 ? "..." : ""}
                     </div>
                   </td>
-                  <td className="text-[#000000] text-xs py-4 px-4 text-center">{rfq.createdAt}</td>
+                  <td className="text-[#000000] text-xs py-4 px-4 text-center group-hover:text-[#F2EFE9] transition-colors">{rfq.createdAt}</td>
                   <td className="py-4 px-4 text-center">
-                    <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-black border border-amber-500/20' : rfq.status === 'CatalogConfirmation' ? 'bg-[#B4533A]/10 text-[#CB7A62] border border-[#B4533A]/20' : 'bg-emerald-500/10 text-black border border-emerald-500/20'}`}>
+                    <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-black border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-black' : rfq.status === 'CatalogConfirmation' ? 'bg-[#B4533A]/10 text-[#CB7A62] border border-[#B4533A]/20 group-hover:bg-[#B4533A] group-hover:text-black' : 'bg-emerald-500/10 text-black border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-black'}`}>
                       {rfq.status === 'Pending' ? 'Chờ báo giá' : rfq.status === 'CatalogConfirmation' ? 'Xác nhận giá' : 'Đã báo giá'}
                     </span>
                   </td>
@@ -420,14 +420,14 @@ export default function SupplierDashboard() {
                     {rfq.status === 'Pending' || rfq.status === 'CatalogConfirmation' ? (
                       <button 
                         onClick={() => handleStartQuoting(rfq)}
-                        className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#B4533A] text-[#000000] border-[#B4533A] shadow-lg' : 'bg-[#B4533A]/10 text-[#B4533A] border-[#B4533A]/20 hover:bg-[#B4533A]/20'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#B4533A] text-[#000000] border-[#B4533A] shadow-lg' : 'bg-[#B4533A]/10 text-[#B4533A] border-[#B4533A]/20 group-hover:border-[#B4533A]/50 group-hover:text-[#B4533A]'}`}
                       >
                         Báo giá <ChevronRight size={14} />
                       </button>
                     ) : (
                       <div className="text-right">
-                        <div className="text-xs font-black text-[#000000]">{(rfq.totalAmount || 0).toLocaleString()} ₫</div>
-                        <div className="text-[9px] font-bold text-black uppercase tracking-tighter">Đã gửi</div>
+                        <div className="text-xs font-black text-[#000000] group-hover:text-[#F2EFE9] transition-colors">{(rfq.totalAmount || 0).toLocaleString()} ₫</div>
+                        <div className="text-[9px] font-bold text-black uppercase tracking-tighter group-hover:text-[#F2EFE9]/40 transition-colors">Đã gửi</div>
                       </div>
                     )}
                   </td>
@@ -456,7 +456,7 @@ export default function SupplierDashboard() {
       <div className="animate-in slide-in-from-right-8 duration-500">
         <button 
           onClick={() => setSelectedRfq(null)}
-          className="flex items-center gap-2 text-black hover:text-erp-navy font-black uppercase tracking-widest text-[10px] transition-colors mb-6 group"
+          className="flex items-center gap-2 text-black hover:text-brand-primary font-black uppercase tracking-widest text-[10px] transition-colors mb-6 group"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 
           Trở lại danh sách
@@ -470,7 +470,7 @@ export default function SupplierDashboard() {
                 <Calendar size={12} /> Hạn nộp: 15/04/2024
               </span>
             </div>
-            <h1 className="text-3xl font-black text-erp-navy tracking-tight">{selectedRfq.rfqId}: {selectedRfq.projectName}</h1>
+            <h1 className="text-3xl font-black text-brand-primary tracking-tight">{selectedRfq.rfqId}: {selectedRfq.projectName}</h1>
           </div>
           
           <div className="text-right">
@@ -504,7 +504,7 @@ export default function SupplierDashboard() {
                           <div className="font-black text-slate-700">{item.name}</div>
                           <div className="text-[10px] font-bold text-black uppercase tracking-tighter">Mã: {item.id}</div>
                         </td>
-                        <td className="text-center font-black text-erp-navy text-base border-x border-slate-50">
+                        <td className="text-center font-black text-brand-primary text-base border-x border-slate-50">
                           {item.quantity}
                         </td>
                         <td className="p-4 bg-[#F9EFEC]/20">

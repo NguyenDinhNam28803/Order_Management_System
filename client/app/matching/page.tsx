@@ -64,7 +64,7 @@ export default function MatchingPage() {
                     <div className="erp-card p-0! overflow-hidden">
                         <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
                             <div>
-                                <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy">Kết quả đối soát: {activePO.id}</h3>
+                                <h3 className="text-sm font-black uppercase tracking-widest text-brand-primary">Kết quả đối soát: {activePO.id}</h3>
                                 <p className="text-[10px] font-bold text-black mt-1 uppercase">Vendor: {activePO.vendor}</p>
                             </div>
                             <div className="flex items-center gap-2">
@@ -84,14 +84,14 @@ export default function MatchingPage() {
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td className="p-6 font-bold text-erp-navy">Vải Cotton 100% (Trắng)</td>
+                                    <td className="p-6 font-bold text-brand-primary">Vải Cotton 100% (Trắng)</td>
                                     <td className="p-6 text-center ">500</td>
                                     <td className="p-6 text-center  font-black text-emerald-600">500</td>
                                     <td className="p-6 text-center  font-black text-emerald-600">500</td>
                                     <td className="p-6 text-right"><span className="status-pill status-approved">Khớp 100%</span></td>
                                 </tr>
                                 <tr>
-                                    <td className="p-6 font-bold text-erp-navy">Mực in lụa (Thùng 20L)</td>
+                                    <td className="p-6 font-bold text-brand-primary">Mực in lụa (Thùng 20L)</td>
                                     <td className="p-6 text-center ">50</td>
                                     <td className="p-6 text-center  font-black text-red-600 bg-red-50/30">42</td>
                                     <td className="p-6 text-center  font-black text-red-600 bg-red-50/30 animate-pulse">50</td>
@@ -105,7 +105,7 @@ export default function MatchingPage() {
                         <div className="flex gap-4">
                             <div className="erp-card !p-4 border-dashed bg-slate-50/50 flex items-center gap-3">
                                 <Lock size={16} className="text-black" />
-                                <span className="text-[10px] font-black uppercase text-black tracking-widest">Ngân sách đang khóa: <span className="text-erp-navy">{(activePO.total ?? activePO.totalAmount ?? 0).toLocaleString()} ₫</span></span>
+                                <span className="text-[10px] font-black uppercase text-black tracking-widest">Ngân sách đang khóa: <span className="text-brand-primary">{(activePO.total ?? activePO.totalAmount ?? 0).toLocaleString()} ₫</span></span>
                             </div>
                         </div>
                         <div className="flex gap-3">

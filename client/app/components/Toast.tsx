@@ -222,7 +222,7 @@ export const ToastContainer: React.FC = () => {
                     font-weight: 700;
                     color: #0f172a;
                     line-height: 1.5;
-                    font-family: 'Outfit', sans-serif;
+                    font-family: var(--font-sans);
                 }
 
                 .toast-close {
