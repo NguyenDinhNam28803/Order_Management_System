@@ -89,19 +89,20 @@ export default function SupplierContractsPage() {
 
     const supplierId = currentUser?.orgId || currentUser?.id || "";
 
-    // Load supplier contracts
-    useEffect(() => {
-        const load = async () => {
+    const loadContracts = useCallback(async () => {
+        if (supplierId) {
             const data = await fetchContractsBySupplier(supplierId);
             if (data) {
                 setSupplierContracts(data);
             }
-        };
-
-        if (supplierId) {
-            load();
         }
     }, [supplierId, fetchContractsBySupplier]);
+
+    // Load supplier contracts
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadContracts();
+    }, [loadContracts]);
 
 
     // WebSocket for real-time notifications
