@@ -190,11 +190,11 @@ export default function ContractDetailPage() {
                             <Building2 size={13} /> Thông tin chung
                         </h2>
                         <InfoRow label="Nhà cung cấp"    value={contract.supplier?.name || "—"} />
-                        <InfoRow label="Loại hợp đồng"   value={String((contract as unknown as Record<string, unknown>).contractType ?? "PURCHASE")} />
+                        <InfoRow label="Loại hợp đồng"   value={contract.contractType ?? "PURCHASE"} />
                         <InfoRow label="Tiền tệ"         value={contract.currency} />
                         <InfoRow label="Ngày bắt đầu"    value={contract.startDate ? new Date(contract.startDate).toLocaleDateString("vi-VN") : "—"} />
                         <InfoRow label="Ngày kết thúc"   value={contract.endDate ? new Date(contract.endDate).toLocaleDateString("vi-VN") : "—"} />
-                        <InfoRow label="Tự động gia hạn" value={(contract as unknown as Record<string, unknown>).autoRenew ? "Có" : "Không" as string} />
+                        <InfoRow label="Tự động gia hạn" value={contract.autoRenew ? "Có" : "Không"} />
                     </div>
 
                     {/* Milestones */}
@@ -246,12 +246,12 @@ export default function ContractDetailPage() {
                     </div>
 
                     {/* Terms & Notes */}
-                    {((contract as unknown as Record<string, unknown>).terms || contract.notes) && (
+                    {(contract.terms || contract.notes) && (
                         <div className="bg-[#161922] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6 space-y-4">
-                            {(contract as unknown as Record<string, unknown>).terms && (
+                            {contract.terms && (
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-2">Điều khoản hợp đồng</p>
-                                    <p className="text-sm text-[#94A3B8] leading-relaxed whitespace-pre-wrap">{(contract as unknown as Record<string, unknown>).terms as string}</p>
+                                    <p className="text-sm text-[#94A3B8] leading-relaxed whitespace-pre-wrap">{contract.terms}</p>
                                 </div>
                             )}
                             {contract.notes && (
