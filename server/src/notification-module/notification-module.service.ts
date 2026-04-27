@@ -192,6 +192,7 @@ export class NotificationModuleService {
     data: Record<string, any>,
     referenceType?: string,
     referenceId?: string,
+    attachments?: { filename: string; content: Buffer; contentType: string }[],
   ): Promise<void> {
     try {
       const body = this.emailTemplates.render(eventType, data);
@@ -229,13 +230,18 @@ export class NotificationModuleService {
 
       // 2. Gửi email qua Queue với cơ chế fallback
       try {
-        await this.emailQueue.add('send-email', { to, subject, body });
+        await this.emailQueue.add('send-email', { 
+          to, 
+          subject, 
+          body, 
+          attachments 
+        });
         this.logger.log(`Direct email queued → ${to} [${eventType}]`);
       } catch (queueError) {
         this.logger.warn(
           `Email queue failed, falling back to direct email for ${to}: ${queueError}`,
         );
-        await this.emailService.sendEmail(to, subject, body);
+        await this.emailService.sendEmail(to, subject, body, attachments);
         this.logger.log(`Direct email sent successfully to ${to} [${eventType}]`);
       }
     } catch (error) {

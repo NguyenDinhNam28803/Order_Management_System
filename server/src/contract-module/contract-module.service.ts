@@ -11,6 +11,8 @@ import { UpdateContractDto } from './dto/update-contract.dto';
 import { ContractStatus, DocumentType } from '@prisma/client';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
+import { PdfGeneratorService } from '../notification-module/pdf-generator.service';
+import { ExternalTokenService } from '../external-token-module/external-token.service';
 
 @Injectable()
 export class ContractModuleService {
@@ -20,6 +22,8 @@ export class ContractModuleService {
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationModuleService,
     private readonly approvalService: ApprovalModuleService,
+    private readonly pdfGenerator: PdfGeneratorService,
+    private readonly externalTokenService: ExternalTokenService,
   ) {}
 
   async create(
@@ -49,7 +53,7 @@ export class ContractModuleService {
 
     const contractNumber = `CON-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    return this.prisma.contract.create({
+    const contract = await this.prisma.contract.create({
       data: {
         ...contractData,
         contractNumber,
@@ -66,6 +70,22 @@ export class ContractModuleService {
       },
       include: { milestones: true },
     });
+
+    // Tự động khởi tạo quy trình duyệt
+    try {
+      await this.approvalService.initiateWorkflow({
+        docType: DocumentType.CONTRACT,
+        docId: contract.id,
+        totalAmount: Number(contract.value ?? 0),
+        orgId,
+        requesterId: userId,
+      });
+      this.logger.log(`Workflow initiated for contract: ${contract.id}`);
+    } catch (err) {
+      this.logger.error(`Failed to initiate workflow for contract ${contract.id}: ${err}`);
+    }
+
+    return contract;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -133,7 +153,17 @@ export class ContractModuleService {
     });
   }
 
-  async signContract(id: string, userId: string, isBuyer: boolean) {
+  async signContract(id: string, userId: string, isBuyer: boolean, token?: string) {
+    // Nếu có token, xác thực
+    if (token) {
+        const tokenInfo = await this.externalTokenService.validateToken(token);
+        if (!tokenInfo || tokenInfo.referenceId !== id) {
+            throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
+        }
+        // Có thể mark token đã dùng sau khi ký
+        await this.externalTokenService.markTokenAsUsed(token);
+    }
+
     const contract = await this.prisma.contract.findUnique({
       where: { id },
       include: { buyerOrg: true, supplierOrg: true },
@@ -170,6 +200,26 @@ export class ContractModuleService {
   private async notifyOtherPartyToSign(contract: any, buyerJustSigned: boolean): Promise<void> {
     try {
       const frontendUrl = process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn';
+      
+      // Tạo PDF
+      const pdfBuffer = await this.pdfGenerator.generatePoPdf({
+        poNumber: contract.contractNumber,
+        issuedDate: new Date(),
+        buyerOrg: contract.buyerOrg,
+        supplierOrg: contract.supplierOrg,
+        items: [], // Hợp đồng có thể không có items cụ thể như PO
+        subtotal: Number(contract.value ?? 0),
+        totalAmount: Number(contract.value ?? 0),
+        currency: contract.currency,
+        notes: contract.title
+      });
+
+      const attachments = [{
+        filename: `HopDong_${contract.contractNumber}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf'
+      }];
+
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const baseData = {
         contractNumber: contract.contractNumber,
@@ -181,7 +231,6 @@ export class ContractModuleService {
       };
 
       if (buyerJustSigned) {
-        // Tìm user cụ thể
         const supplierUsers = await this.prisma.user.findMany({
           where: { orgId: contract.supplierId, role: 'SUPPLIER' as any, isActive: true },
           select: { email: true, fullName: true },
@@ -189,7 +238,6 @@ export class ContractModuleService {
 
         let recipients = supplierUsers.filter(u => u.email).map(u => ({ email: u.email!, name: u.fullName }));
 
-        // Fallback: Nếu không tìm thấy user, lấy email tổ chức
         if (recipients.length === 0) {
           const supplierOrg = await this.prisma.organization.findUnique({
             where: { id: contract.supplierId },
@@ -212,11 +260,13 @@ export class ContractModuleService {
               signingLink: `${frontendUrl}/supplier/contracts`,
               role: 'supplier',
             },
+            'CONTRACT',
+            contract.id,
+            attachments
           ).catch(() => {});
         }
       } else {
         const buyerUsers = await this.prisma.user.findMany({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           where: { orgId: contract.orgId, role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as any }, isActive: true },
           select: { email: true, fullName: true },
         });
@@ -229,11 +279,13 @@ export class ContractModuleService {
             {
               ...baseData,
               recipientName: u.fullName ?? u.email,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               partnerName: contract.supplierOrg?.name ?? 'Nhà cung cấp',
               signingLink: `${frontendUrl}/procurement/contracts/${contract.id as string}`,
               role: 'buyer',
             },
+            'CONTRACT',
+            contract.id,
+            attachments
           ).catch(() => {});
         }
       }
