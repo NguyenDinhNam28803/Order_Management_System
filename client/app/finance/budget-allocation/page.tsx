@@ -46,13 +46,44 @@ export default function BudgetAllocationPage() {
              period?.periodType === "QUARTERLY";
     }).map(alloc => {
       const cc = costCenters.find(c => c.id === alloc.costCenterId);
+      
+      const safeNumber = (val: any) => {
+        if (val === null || val === undefined) return 0;
+        if (typeof val === 'object') {
+          // Xử lý trường hợp đối tượng Decimal Prisma bị parse thành JSON object
+          if (val.d && Array.isArray(val.d)) {
+            try {
+              // Decimal.js toString() đôi khi bị miss trong JSON, ghép chuỗi thô từ mảng `d` không an toàn.
+              // Nếu API trả về chuỗi JSON thô, thì `val` đã là object.
+              // Phục hồi lại số:
+              const numStr = val.d.join('');
+              const e = val.e || 0;
+              // Cách dễ nhất là dùng Number(val) hoặc fallback:
+            } catch (e) {}
+          }
+          if (typeof val.toString === 'function') {
+            const str = val.toString();
+            if (str !== '[object Object]') {
+              const n = Number(str.replace(/,/g, ''));
+              if (!isNaN(n)) return n;
+            }
+          }
+          return 0; // Fallback
+        }
+        if (typeof val === 'string') {
+          val = val.replace(/,/g, '');
+        }
+        const num = Number(val);
+        return isNaN(num) ? 0 : num;
+      };
+
       return {
         ...alloc,
         deptName: cc?.name || "N/A",
         costCenterCode: cc?.code || "N/A",
-        quota: Number(alloc.allocatedAmount),
-        spent: Number(alloc.spentAmount),
-        committed: Number(alloc.committedAmount),
+        quota: safeNumber(alloc.allocatedAmount || (alloc as any).allocated_amount),
+        spent: safeNumber(alloc.spentAmount || (alloc as any).spent_amount),
+        committed: safeNumber(alloc.committedAmount || (alloc as any).committed_amount),
       };
     }).filter(item => 
       item.deptName.toLowerCase().includes(searchTerm.toLowerCase()) ||
