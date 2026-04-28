@@ -24,7 +24,7 @@ export interface NotificationPayload {
     createdAt: string;
 }
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001';
+const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
 
 export function useSocketIO({
     token,
