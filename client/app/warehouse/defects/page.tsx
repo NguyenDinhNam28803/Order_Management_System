@@ -5,6 +5,7 @@ import { TrendingUp, ArrowLeft, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DefectRateChart from "../../components/DefectRateChart";
 import SupplierSelector from "../../components/SupplierSelector";
+import { QualityRiskPanel } from "../../components/QualityRiskPanel";
 
 /**
  * Warehouse QC Analysis Page
@@ -66,9 +67,15 @@ export default function WarehouseQCAnalysis() {
         </div>
       </div>
 
+      {/* --- PHẦN TÍCH HỢP MỚI --- */}
+      {selectedSupplierId && (
+        <QualityRiskPanel supplierId={selectedSupplierId} />
+      )}
+      {/* ------------------------ */}
+
       {/* Chart Section */}
       <section id="defect-chart" className="w-full">
-        <DefectRateChart />
+        <DefectRateChart supplierId={selectedSupplierId} />
       </section>
 
       {/* Additional Info Cards */}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   Search, Sparkles, X, ChevronDown, ChevronUp, Globe, Phone, Mail,
   MapPin, Star, CheckCircle2, Clock, Download, ArrowUpRight,
@@ -36,12 +37,13 @@ const ScoreBar = ({ score }: { score: number }) => {
 
 // ─── Supplier Detail Modal ───────────────────────────────────────────────────
 const SupplierDetailModal = ({
-  supplier, onClose, onImport, importing,
+  supplier, onClose, onImport, importing, onVetting,
 }: {
   supplier: DiscoveredSupplier;
   onClose: () => void;
   onImport: (s: DiscoveredSupplier) => void;
   importing: boolean;
+  onVetting: (name: string) => void;
 }) => {
   const [enriched, setEnriched] = useState<Partial<DiscoveredSupplier> | null>(null);
   const [enriching, setEnriching] = useState(false);
@@ -258,12 +260,10 @@ const SupplierDetailModal = ({
           </button>
           {s.status === 'NEW' && (
             <button
-              onClick={() => { onImport(s as DiscoveredSupplier); onClose(); }}
-              disabled={importing}
+              onClick={() => onVetting(s.name)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#A85032] text-[#000000] hover:bg-[#B4533A] disabled:opacity-50 transition-all"
             >
-              {importing ? <Loader2 size={13} className="animate-spin" /> : <Import size={13} />}
-              Thêm vào hệ thống
+              <Import size={13} /> Xét duyệt nhà cung cấp
             </button>
           )}
           {s.status === 'IN_SYSTEM' && (
@@ -280,7 +280,7 @@ const SupplierDetailModal = ({
 
 // ─── Supplier Card ───────────────────────────────────────────────────────────
 const SupplierCard = ({
-  supplier, selected, onToggleSelect, onImport, importing, onViewDetail,
+  supplier, selected, onToggleSelect, onImport, importing, onViewDetail, onVetting,
 }: {
   supplier: DiscoveredSupplier;
   selected: boolean;
@@ -288,6 +288,7 @@ const SupplierCard = ({
   onImport: (s: DiscoveredSupplier) => void;
   importing: boolean;
   onViewDetail: (s: DiscoveredSupplier) => void;
+  onVetting: (name: string) => void;
 }) => {
   return (
     <div className={`rounded-xl border transition-all duration-200 ${selected ? 'border-[#B4533A]/50 bg-[#B4533A]/5' : 'border-[rgba(240,246,252,0.08)] bg-[#FAF8F5]'} hover:border-[rgba(240,246,252,0.15)]`}>
@@ -358,12 +359,10 @@ const SupplierCard = ({
 
           {supplier.status === 'NEW' && (
             <button
-              onClick={() => onImport(supplier)}
-              disabled={importing}
+              onClick={() => onVetting(supplier.name)}
               className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#B4533A]/15 text-[#CB7A62] border border-[#B4533A]/30 hover:bg-[#B4533A]/25 transition-colors disabled:opacity-50"
             >
-              {importing ? <Loader2 size={11} className="animate-spin" /> : <Import size={11} />}
-              Thêm vào hệ thống
+              <Import size={11} /> Xét duyệt nhà cung cấp
             </button>
           )}
           {supplier.status === 'IN_SYSTEM' && (
@@ -423,6 +422,7 @@ const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[];
 
 // ─── Main Page ───────────────────────────────────────────────────────────────
 export default function SupplierDiscoveryPage() {
+  const router = useRouter();
   const [query, setQuery] = useState('');
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -571,6 +571,10 @@ export default function SupplierDiscoveryPage() {
     { key: 'ISO_CERTIFIED', label: 'Chứng chỉ ISO', icon: <Shield size={11} /> },
     { key: 'EXPERIENCE', label: 'Kinh nghiệm', icon: <Star size={11} /> },
   ];
+
+  const handleVetting = (name: string) => {
+    router.push(`/procurement/supplier-vetting?name=${encodeURIComponent(name)}`);
+  };
 
   return (
     <div className="min-h-screen bg-[#FFFFFF] text-[#000000]">
@@ -774,6 +778,7 @@ export default function SupplierDiscoveryPage() {
                     onImport={(sup) => handleImport(sup, i)}
                     importing={importingIdx === i}
                     onViewDetail={setDetailSupplier}
+                    onVetting={handleVetting}
                   />
                 ))}
               </div>
@@ -876,6 +881,7 @@ export default function SupplierDiscoveryPage() {
             const idx = results?.indexOf(s) ?? -1;
             if (idx >= 0) handleImport(s, idx);
           }}
+          onVetting={(name) => handleVetting(name)}
           importing={importingIdx !== null}
         />
       )}

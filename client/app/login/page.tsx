@@ -65,12 +65,12 @@ export default function LoginPage() {
                 {/* Left Panel - Brand */}
                 <div className="flex-1 bg-[#1A1A17] relative flex flex-col justify-center px-12 md:px-20 py-20 overflow-hidden">
                     {/* Background Subtle Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#2A2A25] to-transparent opacity-50"></div>
+                    <div className="absolute inset-0 bg-linear-to-br from-[#2A2A25] to-transparent opacity-50"></div>
 
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-auto">
                             <div className="w-10 h-10 bg-[#B4533A] rounded-lg flex items-center justify-center text-white font-serif text-xl font-bold shadow-xl shadow-[#B4533A]/20">P</div>
-                            <span className="text-xl font-serif font-black text-[#F2EFE9] tracking-tight">ProcureSmart</span>
+                            <span className="text-xl font-serif font-black text-bg-primary tracking-tight">ProcureSmart</span>
                         </div>
 
                         <div className="my-auto max-w-xl">

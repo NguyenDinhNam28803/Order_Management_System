@@ -67,7 +67,7 @@ import { GatewayModule } from './gateway/gateway.module';
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 100,
+        limit: 1000,
       },
     ]),
     JwtModule.registerAsync({

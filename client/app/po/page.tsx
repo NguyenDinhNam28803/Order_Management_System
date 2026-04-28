@@ -10,13 +10,13 @@ import { ErrorBoundary } from "../components/shared/ErrorBoundary";
 
 export default function POPage() {
     const { prs, loadingMyPrs } = useProcurement();
-    const [page, setPage] = useState(1);
-    const { data: result, isLoading } = usePurchaseOrders(page);
-    const pos = Array.isArray(result?.data) ? result.data : [];
-    
     const router = useRouter();
     const searchParams = useSearchParams();
     
+    const [page, setPage] = useState(1);
+    const { data: result, isLoading } = usePurchaseOrders(page);
+    const pos = Array.isArray(result?.data) ? result.data : [];
+
     const action = searchParams.get("action");
     const prId = searchParams.get("prId");
     const passedVendor = searchParams.get("vendor");
@@ -411,7 +411,7 @@ export default function POPage() {
                 </div>
             </div>
             
-            <div className="bg-[#FAF8F5] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 mb-8 flex justify-between items-center">
+            <div className="bg-bg-secondary p-4 rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 mb-8 flex justify-between items-center">
                 <div className="flex-1 flex gap-3 max-w-xl">
                     <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
                         <Search size={20} className="text-[#B4533A]" />

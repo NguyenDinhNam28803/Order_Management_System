@@ -124,11 +124,13 @@ export default function POConsolidatePage() {
     if (matched) {
       setSupplierId(matched.id);
       setSelectedSupplier(matched);
+      setShowAiPanel(false);
+      setError(null);
     } else {
-      setSupplierId(s.id);
-      setSelectedSupplier(s);
+      setError(`Nhà cung cấp "${s.name}" chưa có trong hệ thống. Vui lòng thực hiện xét duyệt (Vetting) trước khi có thể đặt hàng.`);
+      setShowAiPanel(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    setShowAiPanel(false);
   };
 
   // AI RAG suggestion — dùng items từ các PR đã chọn
