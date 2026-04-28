@@ -147,6 +147,7 @@ const navigation: NavGroup[] = [
         items: [
             { name: "Bàn làm việc Kho", icon: LayoutDashboard, path: "/warehouse/dashboard", roles: ["WAREHOUSE"] },
             { name: "Kiểm định & Tạo GRN", icon: FileCheck, path: "/warehouse/grn/new", roles: ["WAREHOUSE"] },
+            { name: "Biểu đồ hàng lỗi", icon: ShieldAlert, path: "/warehouse/defects", roles: ["WAREHOUSE"] },
         ]
     },
 ];
