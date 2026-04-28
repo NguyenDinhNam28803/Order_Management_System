@@ -10,7 +10,7 @@ import {
     Wallet, FileCheck, PieChart, Truck, MessageSquare
 } from "lucide-react";
 import { useProcurement, PR, Organization, QuoteRequest, BudgetAllocation, DocumentType } from "./context/ProcurementContext";
-import { formatVND, getStatusLabel } from "./utils/formatUtils";
+import { formatVND, getStatusLabel, convertPrismaDecimal } from "./utils/formatUtils";
 import BudgetHeatmap from "./components/BudgetHeatmap";
 import { SimpleBarChart, DonutChart, StatsCard } from "./components/charts";
 
@@ -169,7 +169,7 @@ export default function Dashboard() {
                         <StatsCard
                             title="PR Chờ Duyệt"
                             value={pendingPRsCount}
-                            subValue={`${formatVND(personalPRs.filter(pr => pr.status === 'PENDING_APPROVAL').reduce((sum, pr) => sum + (Number(pr.totalEstimate) || 0), 0))} đ`}
+                            subValue={`${formatVND(personalPRs.filter(pr => pr.status === 'PENDING_APPROVAL').reduce((sum, pr) => sum + convertPrismaDecimal(pr.totalEstimate), 0))} đ`}
                             icon={Clock}
                             color="amber"
                             trend={{ value: 12, isPositive: false }}
@@ -177,7 +177,7 @@ export default function Dashboard() {
                         <StatsCard
                             title="PR Đã Duyệt"
                             value={approvedPRsCount}
-                            subValue={`${formatVND(personalPRs.filter(pr => pr.status === 'APPROVED' || pr.status === 'PO_CREATED').reduce((sum, pr) => sum + (Number(pr.totalEstimate) || 0), 0))} đ`}
+                            subValue={`${formatVND(personalPRs.filter(pr => pr.status === 'APPROVED' || pr.status === 'PO_CREATED').reduce((sum, pr) => sum + convertPrismaDecimal(pr.totalEstimate), 0))} đ`}
                             icon={CheckCircle}
                             color="green"
                             trend={{ value: 8, isPositive: true }}
@@ -204,7 +204,7 @@ export default function Dashboard() {
                         </StatsCard>
                         <StatsCard
                             title="Giá Trị PR Hoàn Thành"
-                            value={`${formatVND(personalPRs.filter(pr => pr.status === 'COMPLETED').reduce((sum, pr) => sum + (Number(pr.totalEstimate) || 0), 0))} đ`}
+                            value={`${formatVND(personalPRs.filter(pr => pr.status === 'COMPLETED').reduce((sum, pr) => sum + convertPrismaDecimal(pr.totalEstimate), 0))} đ`}
                             subValue="Tổng dự toán đã hoàn thành"
                             icon={ArrowUpRight}
                             color="purple"
@@ -464,7 +464,7 @@ export default function Dashboard() {
             const pr = prs.find((p) => p.id === app.documentId);
             if (!pr) return null;
             return { ...pr, workflowId: app.id };
-        }).filter((p): p is (PR & { workflowId: string }) => p !== null && (Number(p.totalEstimate) >= 10000000));
+        }).filter((p): p is (PR & { workflowId: string }) => p !== null && (convertPrismaDecimal(p.totalEstimate) >= 10000000));
 
         const pendingBudgets = (approvals || []).filter(app => app.documentType === DocumentType.BUDGET_ALLOCATION).map((app) => {
             const alloc = budgetAllocations.find(a => a.id === app.documentId);
@@ -473,14 +473,14 @@ export default function Dashboard() {
         }).filter((a): a is (BudgetAllocation & { workflowId: string }) => a !== null);
 
         const pendingPRCount = cfoPendingPRs.length;
-        const pendingPRValue = cfoPendingPRs.reduce((sum: number, pr) => sum + (Number(pr.totalEstimate) || 0), 0);
+        const pendingPRValue = cfoPendingPRs.reduce((sum: number, pr) => sum + convertPrismaDecimal(pr.totalEstimate), 0);
         const pendingBudgetCount = pendingBudgets.length;
-        const pendingBudgetValue = pendingBudgets.reduce((sum: number, b) => sum + (Number(b.allocatedAmount) || 0), 0);
+        const pendingBudgetValue = pendingBudgets.reduce((sum: number, b) => sum + convertPrismaDecimal(b.allocatedAmount), 0);
 
         // Calculate real financial data
-        const totalAllocated = (budgetAllocations || []).reduce((sum, b) => sum + (Number(b.allocatedAmount) || 0), 0);
-        const totalCommitted = (budgetAllocations || []).reduce((sum, b) => sum + (Number(b.committedAmount) || 0), 0);
-        const totalSpent = (budgetAllocations || []).reduce((sum, b) => sum + (Number(b.spentAmount) || 0), 0);
+        const totalAllocated = (budgetAllocations || []).reduce((sum, b) => sum + convertPrismaDecimal(b.allocatedAmount), 0);
+        const totalCommitted = (budgetAllocations || []).reduce((sum, b) => sum + convertPrismaDecimal(b.committedAmount), 0);
+        const totalSpent = (budgetAllocations || []).reduce((sum, b) => sum + convertPrismaDecimal(b.spentAmount), 0);
         const totalUsed = totalCommitted + totalSpent;
         const usagePercent = totalAllocated > 0 ? Math.round((totalUsed / totalAllocated) * 100) : 0;
 
@@ -488,13 +488,13 @@ export default function Dashboard() {
         const deptColors = ['#10b981', '#B4533A', '#f59e0b', '#8b5cf6', '#ef4444'];
         const deptSpending = (departments || []).map((dept, idx) => {
             const deptAllocs = (budgetAllocations || []).filter(b => b.deptId === dept.id);
-            const spent = deptAllocs.reduce((sum, b) => sum + (Number(b.spentAmount) || 0) + (Number(b.committedAmount) || 0), 0);
+            const spent = deptAllocs.reduce((sum, b) => sum + convertPrismaDecimal(b.spentAmount) + convertPrismaDecimal(b.committedAmount), 0);
             return { name: dept.name, spent, color: deptColors[idx % deptColors.length] };
         }).filter(d => d.spent > 0).sort((a, b) => b.spent - a.spent).slice(0, 3);
 
         // Weekly payment forecast - POs issued but not yet invoiced/paid
         const pendingPayments = (pos || []).filter(po => po.status === 'ISSUED' || po.status === 'PARTIALLY_RECEIVED');
-        const weeklyForecast = pendingPayments.reduce((sum, po) => sum + (Number(po.total) || 0), 0);
+        const weeklyForecast = pendingPayments.reduce((sum, po) => sum + convertPrismaDecimal(po.total), 0);
 
         return (
             <div className="animate-in fade-in duration-700 px-6">
@@ -719,10 +719,10 @@ export default function Dashboard() {
                                     <tr key={pr.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
                                         <td className="px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#B4533A] bg-[#FAF8F5]"/></td>
                                         <td className="font-bold text-[#000000] tracking-tight">{pr.prNumber || "PR-***"}</td>
-                                        <td><span className={`px-2.5 py-1 rounded-lg font-black text-[9px] uppercase ${Number(pr.totalEstimate) > 50000000 ? 'bg-[#B4533A]/10 text-black' : 'bg-[#1A1D23] text-[#F2EFE9]'}`}>{Number(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
+                                        <td><span className={`px-2.5 py-1 rounded-lg font-black text-[9px] uppercase ${convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'bg-[#B4533A]/10 text-black' : 'bg-[#1A1D23] text-[#F2EFE9]'}`}>{convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
                                         <td className="font-medium text-[#000000]">{pr.title}</td>
                                         <td className="text-center">
-                                            {Number(pr.totalEstimate) > 50000000 ? (
+                                            {convertPrismaDecimal(pr.totalEstimate) > 50000000 ? (
                                                 <span className="text-[10px] font-black text-black uppercase flex items-center justify-center gap-1.5"><AlertTriangle size={11}/> Cảnh báo: 15% quỹ IT</span>
                                             ) : (
                                                 <span className="text-[10px] font-black text-black uppercase flex items-center justify-center gap-1.5"><CheckCircle size={11}/> An toàn: 2% quỹ IT</span>
@@ -1049,7 +1049,7 @@ export default function Dashboard() {
         }).filter((p): p is (PR & { workflowId: string }) => p !== null);
 
         const pendingPRCount = myPendingPRs.length;
-        const pendingPRValue = myPendingPRs.reduce((sum: number, pr) => sum + (Number(pr.totalEstimate) || 0), 0);
+        const pendingPRValue = myPendingPRs.reduce((sum: number, pr) => sum + convertPrismaDecimal(pr.totalEstimate), 0);
 
         return (
             <div className="animate-in fade-in duration-500 px-6">

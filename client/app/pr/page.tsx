@@ -6,7 +6,7 @@ import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
 import { Plus, FileText, Send, Check, X } from "lucide-react";
 import Link from "next/link";
 import { ApprovalWorkflow } from "../context/ProcurementContext";
-import { getStatusLabel } from "../utils/formatUtils";
+import { getStatusLabel, convertPrismaDecimal, formatVND } from "../utils/formatUtils";
 
 export default function PRPage() {
     const { prs, myPrs, currentUser, actionApproval, costCenters, approvals, submitPR } = useProcurement();
@@ -132,7 +132,7 @@ export default function PRPage() {
             key: "totalEstimate",
             render: (row: PR) => (
                 <span className="font-bold text-[#000000]">
-                    {Number(row.totalEstimate || 0).toLocaleString()} ₫
+                    {formatVND(row.totalEstimate, true)}
                 </span>
             )
         },

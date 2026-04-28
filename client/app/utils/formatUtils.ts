@@ -1,12 +1,30 @@
 /**
+ * Converts Prisma Decimal object { s, e, d: [...] } to number
+ * Use this for arithmetic operations before formatting
+ */
+export const convertPrismaDecimal = (val: unknown): number => {
+    if (val === null || val === undefined) return 0;
+    if (typeof val === 'number') return val;
+    if (typeof val === 'string') return parseFloat(val) || 0;
+    // Prisma Decimal format: { s: 1, e: 6, d: [8110452, 7800000] }
+    if (typeof val === 'object' && val !== null && 'd' in val) {
+        const digits = (val as { d?: number[] }).d || [];
+        return digits.length > 0 ? digits[digits.length - 1] : 0;
+    }
+    return Number(val) || 0;
+};
+
+/**
  * Formats a number or string into a currency-style format with commas as thousands separators.
- * @param val The value to format
+ * Auto-converts Prisma Decimal objects.
+ * @param val The value to format (number, string, or Prisma Decimal object)
  * @param includeSymbol Whether to include the currency symbol (₫)
  */
-export const formatVND = (val: number | string | undefined | null, includeSymbol: boolean = false) => {
+export const formatVND = (val: number | string | object | undefined | null, includeSymbol: boolean = false) => {
     if (val === undefined || val === null || val === '') return '0';
     
-    const num = typeof val === 'string' ? parseFloat(val) : val;
+    // Convert Prisma Decimal if needed
+    const num = convertPrismaDecimal(val);
     if (isNaN(num)) return '0';
 
     // Using 'en-US' locale to get commas as thousands separators as requested by the user
