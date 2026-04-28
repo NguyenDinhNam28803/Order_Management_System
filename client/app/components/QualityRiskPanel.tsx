@@ -28,6 +28,13 @@ export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {
     }
   };
 
+  useEffect(() => {
+    if (trend) {
+      // Tự động phân tích ngay khi load trend
+      generateWarning();
+    }
+  }, [trend]);
+
   const generateWarning = async () => {
     setLoading(true);
     try {
@@ -35,7 +42,7 @@ export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
         },
         body: JSON.stringify({
           startRate: trend.startRate,
@@ -45,6 +52,8 @@ export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {
       });
       const data = await res.json();
       setWarningLetter(data.letter);
+    } catch (e) {
+      console.error("AI Analysis failed:", e);
     } finally {
       setLoading(false);
     }

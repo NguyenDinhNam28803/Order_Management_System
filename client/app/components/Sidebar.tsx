@@ -61,6 +61,7 @@ const navigation: NavGroup[] = [
             { name: "Đơn đặt hàng (PO)", icon: ShoppingBag, path: "/procurement/pos", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
             { name: "Gộp PO từ nhiều PR", icon: GitMerge, path: "/po/consolidate", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
             { name: "Quản lý Báo giá", icon: FileText, path: "/procurement/quotations", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Quản trị chất lượng", icon: ShieldCheck, path: "/procurement/quality-management", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
             { name: "Quản lý Hợp đồng", icon: ShieldCheck, path: "/procurement/contracts", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
             { name: "Đánh giá Nhà cung cấp", icon: Star, path: "/procurement/suppliers", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
             { name: "Khiếu nại & Tranh chấp", icon: MessageSquare, path: "/procurement/disputes", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },

@@ -104,13 +104,24 @@ const DefectRateChart: React.FC<{ supplierId: string | null }> = ({ supplierId }
 
   useEffect(() => {
     if (supplierId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(true);
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/quality/suppliers/${supplierId}/history`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
       })
       .then(res => res.json())
       .then(data => {
-        setData(data);
+        // Map dữ liệu từ API đảm bảo có đầy đủ fields cho component
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const rawData = Array.isArray(data) ? data : (data.data || []);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const formattedData = rawData.map((item: any, index: number) => ({
+          day: index + 1,
+          dayLabel: item.dayLabel || `Ngày ${index + 1}`,
+          defectRate: Number(item.defectRate) || 0,
+          isHiddenIssue: false
+        }));
+        setData(formattedData);
         setLoading(false);
       })
       .catch(err => {
@@ -161,7 +172,7 @@ const DefectRateChart: React.FC<{ supplierId: string | null }> = ({ supplierId }
         </button>
       </div>
 
-      <div className="w-full h-[400px] sm:h-[500px]">
+      <div className="w-full h-[400px] min-h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />

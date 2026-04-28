@@ -20,7 +20,6 @@ export class QualityController {
   ) {}
 
   @Get('suppliers/:id/history')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getSupplierHistory(
     @Param('id') supplierId: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -56,15 +55,16 @@ export class QualityController {
 
   @Get('suppliers/:id/trend')
   getTrend(@Param('id') supplierId: string, @Req() req: any) {
-    // Sử dụng kiểu UserRole để định nghĩa mảng hợp lệ
+    // Thêm UserRole.WAREHOUSE vào danh sách cho phép
     const allowedRoles: UserRole[] = [
       UserRole.PROCUREMENT,
       UserRole.QA,
       UserRole.DIRECTOR,
       UserRole.CEO,
+      UserRole.WAREHOUSE,
     ];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    if (!allowedRoles.includes(req.user.role)) {
+    // Kiểm tra req.user trước khi truy cập req.user.role
+    if (!req.user || !allowedRoles.includes(req.user.role)) {
       throw new ForbiddenException(
         'Không có quyền truy cập dữ liệu chất lượng',
       );

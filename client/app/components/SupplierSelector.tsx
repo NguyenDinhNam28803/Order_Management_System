@@ -272,10 +272,13 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
   const handleChange = (option: SelectOption | null) => {
     if (!option) return;
 
-    // Simulate loading for better UX
     setIsLoading(true);
     setTimeout(() => {
       setSelectedSupplier(option.supplier);
+      // Gọi onViewHistory để trang cha nhận được sự kiện chọn NCC
+      if (onViewHistory) {
+        onViewHistory(option.supplier);
+      }
       setIsLoading(false);
     }, 300);
   };
