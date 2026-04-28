@@ -3,10 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
-import { formatVND } from "../../utils/formatUtils";
+import { formatVND, convertPrismaDecimal } from "../../utils/formatUtils";
 import { useProcurement, Product, BudgetAllocation, PR } from "../../context/ProcurementContext";
 import { CostCenter, CreatePrDto, CreatePrItemDto, CurrencyCode, BudgetAllocationStatus } from "@/app/types/api-types";
 import { Trash2, FileText, Wallet, BarChart3, TrendingUp, PieChart, CheckCircle2, Loader2, XCircle, ArrowLeft, Activity, ChevronDown, ShoppingCart, AlertTriangle, Zap, Bot, Sparkles, MessageSquare, PenTool, ArrowRight, Send, Wand2 } from "lucide-react";
+
+// --- Helper Functions ---
 
 // --- Components ---
 
@@ -34,12 +36,21 @@ const BudgetAllocationCard = ({
     isSelected: boolean;
     onClick: () => void;
 }) => {
-    const spent    = Number(allocation.spentAmount    || 0);
-    const committed = Number(allocation.committedAmount || 0);
-    const total    = Number(allocation.allocatedAmount || 1);
-    const usedPct  = Math.min(100, ((spent + committed) / total) * 100);
+    // Helper để convert Prisma Decimal object
+    const convertDecimal = (val: unknown): number => {
+        if (val && typeof val === 'object' && 'd' in (val as object)) {
+            const digits = (val as { d?: number[] }).d || [];
+            return digits.length > 0 ? digits[digits.length - 1] : 0;
+        }
+        return Number(val) || 0;
+    };
+    
+    const spent     = convertDecimal(allocation.spentAmount);
+    const committed = convertDecimal(allocation.committedAmount);
+    const total     = convertDecimal(allocation.allocatedAmount) || 1;
+    const usedPct   = Math.min(100, ((spent + committed) / total) * 100);
     const remaining = total - spent - committed;
-    const isOver   = remaining < 0;
+    const isOver    = remaining < 0;
 
     return (
         <div
@@ -290,15 +301,21 @@ export default function CreatePRPage() {
     }, [filteredCostCenters, form.costCenterId]);
 
     const activeCC = filteredCostCenters.find((cc: CostCenter) => cc.id === form.costCenterId);
-    const totalEstimate = form.items.reduce((sum: number, item: PRItem) => sum + (item.qty * item.estimatedPrice), 0);
+    const totalEstimate = form.items.reduce((sum: number, item: PRItem) => {
+        const price = convertPrismaDecimal(item.estimatedPrice);
+        return sum + (item.qty * price);
+    }, 0);
     
     const remainingBudget = quarterlyAllocation
-        ? (Number(quarterlyAllocation.allocatedAmount) - Number(quarterlyAllocation.spentAmount || 0) - Number(quarterlyAllocation.committedAmount || 0))
+        ? (convertPrismaDecimal(quarterlyAllocation.allocatedAmount) - convertPrismaDecimal(quarterlyAllocation.spentAmount) - convertPrismaDecimal(quarterlyAllocation.committedAmount))
         : 0;
 
     const addItem = (option: { value: string; label: string }) => {
         const product = products.find((p: Product) => p.id === option.value);
         if (!product) return;
+        
+        // Convert Prisma Decimal object to number
+        const priceRef = convertPrismaDecimal(product.unitPriceRef);
         
         setForm(prev => ({
             ...prev,
@@ -309,8 +326,8 @@ export default function CreatePRPage() {
                 categoryId: product.categoryId,
                 qty: 1,
                 unit: product.unit || "PCS",
-                estimatedPrice: product.unitPriceRef || 0,
-                basePrice: product.unitPriceRef || 0,
+                estimatedPrice: priceRef,
+                basePrice: priceRef,
                 supplierName: "Thị trường",
                 aiStatus: true,
                 aiLabel: "GIÁ TỐT NHẤT",
@@ -349,10 +366,13 @@ export default function CreatePRPage() {
             const data: PrDraftResponse = await response.json();
             
             if (data.success && data.items?.length > 0) {
+                // Convert totalEstimate nếu là Prisma Decimal object
+                const totalEst = convertPrismaDecimal(data.totalEstimate);
+                
                 setAiDraft(data);
                 setAiMessages(prev => [...prev, { 
                     role: 'assistant', 
-                    content: `Tôi đã tạo bản nháp PR với tiêu đề "${data.title}" gồm ${data.items.length} sản phẩm, tổng giá trị ${formatVND(data.totalEstimate)}. Bạn có thể xem trước và chuyển sang tab "Tạo thủ công" để chỉnh sửa.` 
+                    content: `Tôi đã tạo bản nháp PR với tiêu đề "${data.title}" gồm ${data.items.length} sản phẩm, tổng giá trị ${formatVND(totalEst)}. Bạn có thể xem trước và chuyển sang tab "Tạo thủ công" để chỉnh sửa.` 
                 }]);
             } else if (data.error || (data.validationErrors && data.validationErrors.length > 0)) {
                 setAiError(data.error || data.validationErrors?.join(', ') || 'Không thể tạo bản nháp');
@@ -397,8 +417,9 @@ export default function CreatePRPage() {
                 categoryId: matchedProduct?.categoryId || item.categoryId,
                 qty: item.qty || 1,
                 unit: item.unit || matchedProduct?.unit || 'PCS',
-                estimatedPrice: item.estimatedPrice || 0,
-                basePrice: item.estimatedPrice || 0,
+                // Convert Prisma Decimal nếu là object
+                estimatedPrice: convertPrismaDecimal(item.estimatedPrice),
+                basePrice: convertPrismaDecimal(item.estimatedPrice),
                 supplierName: item.preferredSupplierId ? `Supplier: ${item.preferredSupplierId}` : 'Thị trường',
                 aiStatus: true,
                 aiLabel: 'AI SUGGESTED',
@@ -453,7 +474,8 @@ export default function CreatePRPage() {
                 productDesc: i.productDesc,
                 productId: i.productId,
                 qty: Number(i.qty),
-                estimatedPrice: Number(i.estimatedPrice),
+                // Convert Prisma Decimal object nếu cần
+                estimatedPrice: convertPrismaDecimal(i.estimatedPrice),
                 unit: i.unit,
                 currency: i.currency || form.currency
             }))
@@ -852,7 +874,7 @@ export default function CreatePRPage() {
                                                         />
                                                     </td>
                                                     <td className="px-8 py-6 text-right font-bold text-[#000000] text-[11px]">{formatVND(item.estimatedPrice)}</td>
-                                                    <td className="px-8 py-6 text-right font-black text-[#B4533A] text-sm tracking-tight">{formatVND(item.qty * item.estimatedPrice)}</td>
+                                                    <td className="px-8 py-6 text-right font-black text-[#B4533A] text-sm tracking-tight">{formatVND(item.qty * convertPrismaDecimal(item.estimatedPrice))}</td>
                                                     <td className="px-8 py-6 text-center">
                                                         <button 
                                                             className="p-3 text-[#000000] hover:text-black hover:bg-rose-500/10 rounded-2xl transition-all"
