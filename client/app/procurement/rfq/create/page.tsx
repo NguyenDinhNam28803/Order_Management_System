@@ -449,8 +449,8 @@ export default function CreateRFQPage() {
                                                     className="w-full text-left p-4 hover:bg-[#1A1D23] flex items-center justify-between group"
                                                 >
                                                     <div>
-                                                        <div className="text-sm font-black text-[#000000]">{v.name}</div>
-                                                        <div className="text-[10px] text-[#000000] font-bold">{v.email}</div>
+                                                        <div className="text-sm font-black text-[#000000] group-hover:text-white transition-colors">{v.name}</div>
+                                                        <div className="text-[10px] text-[#000000] font-bold group-hover:text-gray-300 transition-colors">{v.email}</div>
                                                     </div>
                                                     <Plus size={16} className="text-[#000000] group-hover:text-[#B4533A] transition-all" />
                                                 </button>
@@ -475,7 +475,7 @@ export default function CreateRFQPage() {
                                                 className="w-full text-left p-4 hover:bg-[#1A1D23] flex items-center gap-3"
                                             >
                                                 <Plus size={16} className="text-[#B4533A]" />
-                                                <span className="text-sm font-bold text-[#000000]">Thêm &quot;<strong>{vendorSearch}</strong>&quot; như nhà cung cấp mới</span>
+                                                <span className="text-sm font-bold text-[#000000] group-hover:text-white transition-colors">Thêm &quot;<strong className="group-hover:text-white transition-colors">{vendorSearch}</strong>&quot; như nhà cung cấp mới</span>
                                             </button>
                                         )}
                                     </div>

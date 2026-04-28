@@ -7,6 +7,7 @@ import {
   Bell
 } from "lucide-react";
 import { ToastProvider, ToastContainer, useToast } from "../../components/Toast";
+import { convertPrismaDecimal } from "../../utils/formatUtils";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
@@ -116,10 +117,16 @@ function RfqQuotePageContent() {
       if (!rfqData) throw new Error("Không tìm thấy thông tin RFQ");
       if (!Array.isArray(rfqData.items)) rfqData.items = [];
 
-      setRfq(rfqData);
+      // Normalize RFQ data để xử lý Prisma Decimal
+      const normalizedItems = rfqData.items.map((item: RfqItem) => ({
+        ...item,
+        qty: convertPrismaDecimal(item.qty),
+        targetPrice: convertPrismaDecimal(item.targetPrice),
+      }));
+      setRfq({ ...rfqData, items: normalizedItems });
       setTokenInfo(tokenData);
       setItemForms(
-        rfqData.items.map((item: RfqItem) => ({
+        normalizedItems.map((item: RfqItem) => ({
           rfqItemId: item.id,
           unitPrice: "",
           qtyOffered: String(item.qty),
@@ -354,9 +361,9 @@ function RfqQuotePageContent() {
                     </div>
                     <div className="text-right shrink-0 ml-4">
                       <p className="text-xs text-black">Số lượng yêu cầu</p>
-                      <p className="font-bold text-gray-700">{item.qty} <span className="text-black font-normal">{item.unit}</span></p>
+                      <p className="font-bold text-gray-700">{convertPrismaDecimal(item.qty)} <span className="text-black font-normal">{item.unit}</span></p>
                       {item.targetPrice && (
-                        <p className="text-xs text-[#A85032] mt-0.5">Giá tham khảo: {fmt(item.targetPrice)}</p>
+                        <p className="text-xs text-[#A85032] mt-0.5">Giá tham khảo: {fmt(convertPrismaDecimal(item.targetPrice))}</p>
                       )}
                     </div>
                   </div>

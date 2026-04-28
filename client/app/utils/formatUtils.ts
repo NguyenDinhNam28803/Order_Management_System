@@ -7,9 +7,43 @@ export const convertPrismaDecimal = (val: unknown): number => {
     if (typeof val === 'number') return val;
     if (typeof val === 'string') return parseFloat(val) || 0;
     // Prisma Decimal format: { s: 1, e: 6, d: [8110452, 7800000] }
-    if (typeof val === 'object' && val !== null && 'd' in val) {
-        const digits = (val as { d?: number[] }).d || [];
-        return digits.length > 0 ? digits[digits.length - 1] : 0;
+    // Hoặc có thể là string representation
+    if (typeof val === 'object' && val !== null) {
+        // Thử lấy giá trị từ các thuộc tính quen thuộc
+        const v = val as any;
+        
+        // Nếu có toString method (Prisma Decimal có)
+        if (typeof v.toString === 'function') {
+            const str = v.toString();
+            if (str && str !== '[object Object]') {
+                const num = parseFloat(str);
+                if (!isNaN(num)) return num;
+            }
+        }
+        
+        // Nếu có valueOf method
+        if (typeof v.valueOf === 'function') {
+            const num = Number(v.valueOf());
+            if (!isNaN(num)) return num;
+        }
+        
+        // Xử lý format { d: [...], e: ..., s: ... }
+        if ('d' in v && Array.isArray(v.d)) {
+            // Prisma Decimal stores numbers as array of digits
+            // Format: { s: sign, e: exponent, d: [digit1, digit2, ...] }
+            // Giá trị = sign * (digits[0] * 10^e + digits[1] * 10^(e-1) + ...)
+            const digits = v.d as number[];
+            if (digits.length === 0) return 0;
+            
+            // Nối các digits lại thành chuỗi
+            const digitStr = digits.join('');
+            const exponent = v.e || 0;
+            const sign = v.s === -1 ? -1 : 1;
+            
+            // Tính giá trị: digits * 10^(exponent - digits.length + 1)
+            const value = sign * parseFloat(digitStr) * Math.pow(10, exponent - digitStr.length + 1);
+            return isNaN(value) ? 0 : value;
+        }
     }
     return Number(val) || 0;
 };
