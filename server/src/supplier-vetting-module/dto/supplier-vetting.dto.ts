@@ -60,6 +60,20 @@ export class CreateVettingRequestDto {
   notes?: string;
 }
 
+export class CreateVettingFromAiDto {
+  @ApiProperty({ example: '325f187a-c1f6-4a4e-8692-234b6e50334a' })
+  @IsUUID('4')
+  @IsNotEmpty()
+  supplierId!: string;
+
+  @ApiPropertyOptional({
+    example: 'AI suggested supplier based on market volatility',
+  })
+  @IsString()
+  @IsOptional()
+  notes?: string;
+}
+
 // ─── Update Checklist Item ─────────────────────────────────────────────────────
 
 export class UpdateVettingCheckDto {

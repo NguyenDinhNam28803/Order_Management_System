@@ -11,6 +11,7 @@ import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import {
   CHECK_TYPES,
   CreateVettingRequestDto,
+  CreateVettingFromAiDto,
   UpdateVettingCheckDto,
   SubmitVettingDto,
   ApproveVettingDto,
@@ -57,6 +58,36 @@ export class SupplierVettingService {
         where: { id: dto.supplierId },
         data: { kycStatus: 'UNDER_REVIEW' },
       });
+
+      return req;
+    });
+
+    return this.findOne(vetting.id);
+  }
+
+  async createFromAi(dto: CreateVettingFromAiDto, user: JwtPayload) {
+    const supplier = await this.prisma.organization.findUnique({
+      where: { id: dto.supplierId },
+    });
+    if (!supplier) throw new NotFoundException('Nhà cung cấp không tồn tại');
+
+    const vetting = await this.prisma.$transaction(async (tx) => {
+      const req = await tx.supplierVettingRequest.create({
+        data: {
+          orgId: user.orgId,
+          supplierId: dto.supplierId,
+          requestedById: user.sub,
+          notes: dto.notes,
+          status: VettingStatus.DRAFT,
+        },
+      });
+
+      const checks = CHECK_TYPES.map((checkType) => ({
+        vettingId: req.id,
+        checkType,
+        checkStatus: 'PENDING',
+      }));
+      await tx.supplierVettingCheck.createMany({ data: checks });
 
       return req;
     });
