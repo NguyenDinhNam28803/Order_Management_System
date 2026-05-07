@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useProcurement, Organization } from "../../context/ProcurementContext";
@@ -78,22 +78,22 @@ export default function SupplierManagementPage() {
                 <div>
                     <h1 className="text-4xl font-black text-[#000000] tracking-tighter uppercase mb-2">Quản lý Nhà cung cấp</h1>
                     <p className="text-[#000000] font-bold text-sm tracking-tight flex items-center gap-2">
-                        <Truck size={14} className="text-[#B4533A]" /> 
+                        <Truck size={14} className="text-[#2563EB]" /> 
                         Danh mục đối tác và nhà cung ứng chiến lược của hệ thống
                     </p>
                 </div>
                 <button 
                     onClick={() => setIsAddModalOpen(true)}
-                    className="flex items-center gap-2 bg-[#B4533A] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#B4533A]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm nhà cung cấp
                 </button>
             </div>
 
-            <div className="erp-card p-0! overflow-hidden bg-[#FAF8F5] shadow-sm border border-[rgba(148,163,184,0.1)]">
+            <div className="erp-card p-0! overflow-hidden bg-[#F1F5F9] shadow-sm border border-[rgba(148,163,184,0.1)]">
                 <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between gap-6 bg-[#FFFFFF]">
                     <div className="relative flex-1 max-w-md group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#B4533A] transition-colors" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#2563EB] transition-colors" size={18} />
                         <input 
                             className="erp-input pl-12" 
                             placeholder="Tìm theo tên, mã hoặc lĩnh vực..." 
@@ -120,11 +120,11 @@ export default function SupplierManagementPage() {
                                 <tr key={s.id} className="hover:bg-[#FFFFFF]/50 transition-all group">
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-[#000000] shadow-lg shadow-black/20 transition-transform group-hover:scale-110 ${s.isActive !== false ? 'bg-[#B4533A]' : 'bg-[#000000]'}`}>
+                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-[#000000] shadow-lg shadow-black/20 transition-transform group-hover:scale-110 ${s.isActive !== false ? 'bg-[#2563EB]' : 'bg-[#000000]'}`}>
                                                 {s.name.substring(0,2).toUpperCase()}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="font-black text-[#000000] leading-none mb-1 group-hover:text-[#B4533A] transition-colors">{s.name}</span>
+                                                <span className="font-black text-[#000000] leading-none mb-1 group-hover:text-[#2563EB] transition-colors">{s.name}</span>
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-[10px] font-black text-[#000000] uppercase tracking-tighter bg-[#FFFFFF] px-1.5 py-0.5 rounded border border-[rgba(148,163,184,0.1)]">{s.code}</span>
                                                     {s.website && <Globe size={10} className="text-[#000000]" />}
@@ -148,7 +148,7 @@ export default function SupplierManagementPage() {
                                     <td className="px-6 py-6">
                                         <div className="flex gap-0.5">
                                             {[1,2,3,4,5].map(i => (
-                                                <Star key={i} size={12} className={i <= (s.trustScore ? Math.ceil(s.trustScore / 20) : 4) ? "fill-amber-400 text-black" : "text-[#1A1D23]"} />
+                                                <Star key={i} size={12} className={i <= (s.trustScore ? Math.ceil(s.trustScore / 20) : 4) ? "fill-amber-400 text-black" : "text-[#0F172A]"} />
                                             ))}
                                         </div>
                                     </td>
@@ -183,7 +183,7 @@ export default function SupplierManagementPage() {
             {isAddModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsAddModalOpen(false)} />
-                    <div className="relative bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                    <div className="relative bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         <div className="p-10">
                             <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
                                 Thêm nhà cung cấp mới

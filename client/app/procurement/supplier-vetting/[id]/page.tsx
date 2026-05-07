@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -75,7 +75,7 @@ const CHECK_LABELS: Record<string, string> = {
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   DRAFT:            { label: "Nháp",          cls: "text-black bg-slate-500/10 border-slate-500/20" },
-  IN_REVIEW:        { label: "Đang kiểm tra", cls: "text-[#CB7A62] bg-[#B4533A]/10 border-[#B4533A]/20" },
+  IN_REVIEW:        { label: "Đang kiểm tra", cls: "text-[#3B82F6] bg-[#2563EB]/10 border-[#2563EB]/20" },
   PENDING_APPROVAL: { label: "Chờ phê duyệt", cls: "text-black bg-amber-500/10 border-amber-500/20" },
   APPROVED:         { label: "Đã duyệt",      cls: "text-black bg-emerald-500/10 border-emerald-500/20" },
   REJECTED:         { label: "Từ chối",       cls: "text-red-400 bg-red-500/10 border-red-500/20" },
@@ -111,7 +111,7 @@ function CheckRow({
   }[check.checkStatus] ?? <Clock size={16} className="text-black" />;
 
   return (
-    <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#FAF8F5] overflow-hidden">
+    <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] overflow-hidden">
       <div
         className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#1C2128] transition-colors"
         onClick={() => editable && setOpen((o) => !o)}
@@ -124,7 +124,7 @@ function CheckRow({
           <span className="text-xs text-[#000000]">{check.verifiedBy.fullName ?? check.verifiedBy.email}</span>
         )}
         {editable && (
-          <span className="text-xs text-[#CB7A62]">{open ? "Thu gọn" : "Cập nhật"}</span>
+          <span className="text-xs text-[#3B82F6]">{open ? "Thu gọn" : "Cập nhật"}</span>
         )}
       </div>
 
@@ -133,7 +133,7 @@ function CheckRow({
           {check.fileUrl && (
             <div className="text-xs text-[#000000]">
               File hiện tại:{" "}
-              <a href={check.fileUrl} target="_blank" rel="noopener noreferrer" className="text-[#CB7A62] hover:underline flex items-center gap-1 inline-flex">
+              <a href={check.fileUrl} target="_blank" rel="noopener noreferrer" className="text-[#3B82F6] hover:underline flex items-center gap-1 inline-flex">
                 Xem <ExternalLink size={10} />
               </a>
             </div>
@@ -144,7 +144,7 @@ function CheckRow({
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
               placeholder="https://..."
-              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/50"
+              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/50"
             />
           </div>
           <div>
@@ -153,7 +153,7 @@ function CheckRow({
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/50 resize-none"
+              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/50 resize-none"
             />
           </div>
           <div className="flex gap-2">
@@ -180,7 +180,7 @@ function ApproveModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: 
   const [loading, setLoading] = useState(false);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#FAF8F5] p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
         <h2 className="mb-4 text-lg font-bold text-[#000000]">Phê duyệt nhà cung cấp</h2>
         <div className="mb-4">
           <label className="mb-1 block text-xs text-[#000000]">Xếp hạng (Tier)</label>
@@ -215,7 +215,7 @@ function RejectModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: (
   const [loading, setLoading] = useState(false);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#FAF8F5] p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
         <h2 className="mb-4 text-lg font-bold text-[#000000]">Từ chối nhà cung cấp</h2>
         <div className="mb-4">
           <label className="mb-1 block text-xs text-[#000000]">Lý do từ chối *</label>
@@ -322,7 +322,7 @@ export default function SupplierVettingDetailPage() {
   const canApprove = vetting?.status === "PENDING_APPROVAL" || vetting?.status === "IN_REVIEW";
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-[#FFFFFF]"><Loader2 size={28} className="animate-spin text-[#CB7A62]" /></div>;
+    return <div className="flex min-h-screen items-center justify-center bg-[#FFFFFF]"><Loader2 size={28} className="animate-spin text-[#3B82F6]" /></div>;
   }
 
   if (error || !vetting) {
@@ -330,7 +330,7 @@ export default function SupplierVettingDetailPage() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#FFFFFF]">
         <AlertCircle size={36} className="text-red-400" />
         <p className="text-sm text-red-400">{error || "Không tìm thấy dữ liệu"}</p>
-        <Link href="/procurement/supplier-vetting" className="text-sm text-[#CB7A62] hover:underline">← Quay lại</Link>
+        <Link href="/procurement/supplier-vetting" className="text-sm text-[#3B82F6] hover:underline">← Quay lại</Link>
       </div>
     );
   }
@@ -348,7 +348,7 @@ export default function SupplierVettingDetailPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <UserCheck size={22} className="text-[#CB7A62]" />
+              <UserCheck size={22} className="text-[#3B82F6]" />
               <h1 className="text-xl font-bold text-[#000000]">{vetting.supplier.name}</h1>
               <StatusBadge status={vetting.status} />
             </div>
@@ -363,7 +363,7 @@ export default function SupplierVettingDetailPage() {
               <button
                 disabled={submitting}
                 onClick={submit}
-                className="flex items-center gap-2 rounded-lg bg-[#A85032] px-4 py-2 text-sm font-semibold text-[#000000] hover:bg-[#B4533A] disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2 text-sm font-semibold text-[#000000] hover:bg-[#2563EB] disabled:opacity-50"
               >
                 {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 Nộp phê duyệt
@@ -391,7 +391,7 @@ export default function SupplierVettingDetailPage() {
         {/* Left — supplier info + stats */}
         <div className="space-y-4">
           {/* Supplier info */}
-          <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#FAF8F5] p-4">
+          <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] p-4">
             <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#000000]"><Building2 size={14} />Thông tin NCC</h3>
             <dl className="space-y-2 text-xs">
               {[
@@ -418,7 +418,7 @@ export default function SupplierVettingDetailPage() {
           </div>
 
           {/* Stats */}
-          <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#FAF8F5] p-4">
+          <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] p-4">
             <h3 className="mb-3 text-sm font-semibold text-[#000000]">Tiến độ kiểm tra</h3>
             <div className="flex items-end gap-4">
               <div className="text-center">
@@ -437,9 +437,9 @@ export default function SupplierVettingDetailPage() {
             {vetting.overallScore != null && (
               <div className="mt-3 flex items-center gap-2">
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-[rgba(240,246,252,0.06)]">
-                  <div className="h-full rounded-full bg-[#B4533A] transition-all" style={{ width: `${vetting.overallScore}%` }} />
+                  <div className="h-full rounded-full bg-[#2563EB] transition-all" style={{ width: `${vetting.overallScore}%` }} />
                 </div>
-                <span className="text-xs font-bold text-[#CB7A62]">{vetting.overallScore}/100</span>
+                <span className="text-xs font-bold text-[#3B82F6]">{vetting.overallScore}/100</span>
               </div>
             )}
           </div>
@@ -454,7 +454,7 @@ export default function SupplierVettingDetailPage() {
 
           {/* Notes */}
           {vetting.notes && (
-            <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#FAF8F5] p-4">
+            <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] p-4">
               <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#000000]"><FileText size={14} />Ghi chú</h3>
               <p className="text-xs text-[#000000] whitespace-pre-wrap">{vetting.notes}</p>
             </div>

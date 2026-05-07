@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -318,7 +318,7 @@ export default function CreateRFQPage() {
     if (isSuccess) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#FFFFFF]">
-                <div className="bg-[#FAF8F5] p-12 rounded-[40px] shadow-2xl text-center max-w-md animate-in zoom-in duration-500 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#F1F5F9] p-12 rounded-[40px] shadow-2xl text-center max-w-md animate-in zoom-in duration-500 border border-[rgba(148,163,184,0.1)]">
                     <div className="w-24 h-24 bg-emerald-500/10 text-black rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
                         <CheckCircle2 size={48} />
                     </div>
@@ -334,7 +334,7 @@ export default function CreateRFQPage() {
             <div className="p-8">
                 <header className="flex items-center justify-between mb-10 max-w-[1600px] mx-auto">
                     <div className="flex items-center gap-6">
-                        <button onClick={() => router.back()} className="h-14 w-14 bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#000000] hover:text-[#000000] hover:border-[#B4533A]/30 transition-all shadow-xl shadow-black/20 active:scale-95">
+                        <button onClick={() => router.back()} className="h-14 w-14 bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#000000] hover:text-[#000000] hover:border-[#2563EB]/30 transition-all shadow-xl shadow-black/20 active:scale-95">
                             <ChevronLeft size={24} />
                         </button>
                         <div>
@@ -342,7 +342,7 @@ export default function CreateRFQPage() {
                             <nav className="flex items-center gap-2 mt-1">
                                 <span className="text-[10px] font-black text-[#000000] uppercase tracking-widest">Nghiệp vụ Thu mua</span>
                                 <span className="h-1 w-1 bg-[#000000] rounded-full"></span>
-                                <span className="text-[10px] font-black text-[#B4533A] uppercase tracking-widest">Tạo mới RFQ</span>
+                                <span className="text-[10px] font-black text-[#2563EB] uppercase tracking-widest">Tạo mới RFQ</span>
                             </nav>
                         </div>
                     </div>
@@ -351,7 +351,7 @@ export default function CreateRFQPage() {
                             <div className="text-[10px] font-black text-[#000000] uppercase tracking-widest">Phiên làm việc</div>
                             <div className="text-sm font-black text-[#000000] uppercase">{currentUser?.name}</div>
                         </div>
-                        <div className="h-12 w-12 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#000000] font-black">
+                        <div className="h-12 w-12 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#000000] font-black">
                             {currentUser?.name?.substring(0,2).toUpperCase()}
                         </div>
                     </div>
@@ -361,11 +361,11 @@ export default function CreateRFQPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Left side: PR Info Summary */}
                 <div className="lg:col-span-1 space-y-8">
-                    <div className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-black/20 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-black/20 overflow-hidden">
                         <div className="bg-[#FFFFFF] p-8 text-[#000000] border-b border-[rgba(148,163,184,0.1)]">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="h-10 w-10 bg-[#B4533A]/10 rounded-xl flex items-center justify-center border border-[#B4533A]/20">
-                                    <FileText size={20} className="text-[#B4533A]" />
+                                <div className="h-10 w-10 bg-[#2563EB]/10 rounded-xl flex items-center justify-center border border-[#2563EB]/20">
+                                    <FileText size={20} className="text-[#2563EB]" />
                                 </div>
                                 <span className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Thông tin PR gốc</span>
                             </div>
@@ -416,12 +416,12 @@ export default function CreateRFQPage() {
 
                 {/* Right side: RFQ Formulation Form */}
                 <div className="lg:col-span-2">
-                    <form onSubmit={handleSubmit} className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-10 space-y-10">
+                    <form onSubmit={handleSubmit} className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-10 space-y-10">
                         {/* Vendor Section */}
                         <div className="space-y-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 bg-[#B4533A]/10 text-[#B4533A] rounded-lg flex items-center justify-center border border-[#B4533A]/20">
+                                    <div className="h-8 w-8 bg-[#2563EB]/10 text-[#2563EB] rounded-lg flex items-center justify-center border border-[#2563EB]/20">
                                         <Building2 size={16} />
                                     </div>
                                     <h3 className="text-lg font-black text-[#000000] uppercase tracking-tight">Nhà cung cấp nhận báo giá</h3>
@@ -434,25 +434,25 @@ export default function CreateRFQPage() {
                                 <input 
                                     type="text" 
                                     placeholder="Tìm kiếm nhà cung cấp từ kho dữ liệu hoặc nhập tên mới..."
-                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-14 pr-6 py-5 h-16 text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#B4533A] transition-all"
+                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-14 pr-6 py-5 h-16 text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#2563EB] transition-all"
                                     value={vendorSearch}
                                     onChange={(e) => setVendorSearch(e.target.value)}
                                 />
                                 {vendorSearch && (
-                                    <div className="absolute top-18 left-0 w-full bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] shadow-2xl rounded-2xl z-20 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                                    <div className="absolute top-18 left-0 w-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-2xl rounded-2xl z-20 overflow-hidden animate-in fade-in slide-in-from-top-2">
                                         {filteredVendors.length > 0 ? (
                                             filteredVendors.map((v, i) => (
                                                 <button 
                                                     key={i} 
                                                     type="button"
                                                     onClick={() => addVendor(v)}
-                                                    className="w-full text-left p-4 hover:bg-[#1A1D23] flex items-center justify-between group"
+                                                    className="w-full text-left p-4 hover:bg-[#0F172A] flex items-center justify-between group"
                                                 >
                                                     <div>
                                                         <div className="text-sm font-black text-[#000000] group-hover:text-white transition-colors">{v.name}</div>
                                                         <div className="text-[10px] text-[#000000] font-bold group-hover:text-gray-300 transition-colors">{v.email}</div>
                                                     </div>
-                                                    <Plus size={16} className="text-[#000000] group-hover:text-[#B4533A] transition-all" />
+                                                    <Plus size={16} className="text-[#000000] group-hover:text-[#2563EB] transition-all" />
                                                 </button>
                                             ))
                                         ) : (
@@ -472,9 +472,9 @@ export default function CreateRFQPage() {
                                                     createdAt: new Date().toISOString(),
                                                     updatedAt: new Date().toISOString()
                                                 })}
-                                                className="w-full text-left p-4 hover:bg-[#1A1D23] flex items-center gap-3"
+                                                className="w-full text-left p-4 hover:bg-[#0F172A] flex items-center gap-3"
                                             >
-                                                <Plus size={16} className="text-[#B4533A]" />
+                                                <Plus size={16} className="text-[#2563EB]" />
                                                 <span className="text-sm font-bold text-[#000000] group-hover:text-white transition-colors">Thêm &quot;<strong className="group-hover:text-white transition-colors">{vendorSearch}</strong>&quot; như nhà cung cấp mới</span>
                                             </button>
                                         )}
@@ -569,7 +569,7 @@ export default function CreateRFQPage() {
                                                                 {suggestion.reasons.map((reason, rIdx) => (
                                                                     <span
                                                                         key={rIdx}
-                                                                        className="text-[9px] px-2 py-1 bg-[#FAF8F5] text-[#000000] rounded-lg border border-[rgba(148,163,184,0.1)]"
+                                                                        className="text-[9px] px-2 py-1 bg-[#F1F5F9] text-[#000000] rounded-lg border border-[rgba(148,163,184,0.1)]"
                                                                     >
                                                                         {reason}
                                                                     </span>
@@ -626,7 +626,7 @@ export default function CreateRFQPage() {
                                 {selectedVendors.map((v, i) => (
                                     <div key={i} className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] p-4 rounded-2xl flex items-center justify-between group">
                                         <div className="flex items-center gap-4">
-                                            <div className="h-10 w-10 bg-[#FAF8F5] rounded-xl shadow-sm flex items-center justify-center text-[#B4533A] font-black text-[10px] border border-[rgba(148,163,184,0.1)]">
+                                            <div className="h-10 w-10 bg-[#F1F5F9] rounded-xl shadow-sm flex items-center justify-center text-[#2563EB] font-black text-[10px] border border-[rgba(148,163,184,0.1)]">
                                                 {v.name.substring(0,2).toUpperCase()}
                                             </div>
                                             <div>
@@ -662,7 +662,7 @@ export default function CreateRFQPage() {
                                             type="text" 
                                             readOnly
                                             placeholder="Chọn ngày..."
-                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl h-14 px-4 text-[#000000] font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-[#B4533A] transition-all placeholder:text-[#000000]"
+                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl h-14 px-4 text-[#000000] font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-[#2563EB] transition-all placeholder:text-[#000000]"
                                             value={deadline ? (() => {
                                                 const [y, m, d] = deadline.split('-');
                                                 return d + "-" + m + "-" + y;
@@ -683,7 +683,7 @@ export default function CreateRFQPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-[#000000] tracking-widest ml-1">Độ ưu tiên</label>
-                                    <select className="w-full h-14 rounded-xl appearance-none bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold px-4 focus:ring-2 focus:ring-[#B4533A]">
+                                    <select className="w-full h-14 rounded-xl appearance-none bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold px-4 focus:ring-2 focus:ring-[#2563EB]">
                                         <option>BÌNH THƯỜNG</option>
                                         <option>CAO - CẦN GẤP</option>
                                         <option>KHẨN CẤP - CHIẾN LƯỢC</option>
@@ -702,7 +702,7 @@ export default function CreateRFQPage() {
                             </div>
                             <textarea 
                                 placeholder="Ghi chú thêm cho nhà cung cấp về chất lượng, hình thức thanh toán, thời gian giao hàng mong muốn..."
-                                className="w-full min-h-[150px] rounded-3xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] p-6 text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#B4533A] resize-none"
+                                className="w-full min-h-[150px] rounded-3xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] p-6 text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#2563EB] resize-none"
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
                             ></textarea>
@@ -713,10 +713,10 @@ export default function CreateRFQPage() {
                             <div className="flex items-center gap-3">
                                 <div className="flex -space-x-3">
                                     {selectedVendors.slice(0,3).map((v, i) => (
-                                        <div key={i} className="h-10 w-10 rounded-full border-4 border-[#FAF8F5] bg-[#FFFFFF] flex items-center justify-center text-[10px] font-black text-[#000000]">{v.name.substring(0,1)}</div>
+                                        <div key={i} className="h-10 w-10 rounded-full border-4 border-[#F1F5F9] bg-[#FFFFFF] flex items-center justify-center text-[10px] font-black text-[#000000]">{v.name.substring(0,1)}</div>
                                     ))}
                                     {selectedVendors.length > 3 && (
-                                        <div className="h-10 w-10 rounded-full border-4 border-[#FAF8F5] bg-[#B4533A] text-[#000000] flex items-center justify-center text-[10px] font-black">+{selectedVendors.length - 3}</div>
+                                        <div className="h-10 w-10 rounded-full border-4 border-[#F1F5F9] bg-[#2563EB] text-[#000000] flex items-center justify-center text-[10px] font-black">+{selectedVendors.length - 3}</div>
                                     )}
                                 </div>
                                 <div className="text-xs text-[#000000] font-medium">Báo giá sẽ được gửi qua Email & Hệ thống Portal.</div>
@@ -724,7 +724,7 @@ export default function CreateRFQPage() {
                             <button 
                                 type="submit" 
                                 disabled={isSubmitting || selectedVendors.length === 0}
-                                className="bg-[#B4533A] hover:bg-[#A85032] text-[#000000] px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-[#B4533A]/20 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isSubmitting ? "Đang xử lý..." : "PHÁT HÀNH RFQ"}
                                 <Send size={16} />

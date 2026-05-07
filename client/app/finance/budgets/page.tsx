@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo } from "react";
 import { 
@@ -368,7 +368,7 @@ export default function FinanceBudgetsPage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[
-                                    { key: 'q1', label: 'Quý 1', color: 'bg-[#B4533A]' },
+                                    { key: 'q1', label: 'Quý 1', color: 'bg-[#2563EB]' },
                                     { key: 'q2', label: 'Quý 2', color: 'bg-indigo-500' },
                                     { key: 'q3', label: 'Quý 3', color: 'bg-purple-500' },
                                     { key: 'q4', label: 'Quý 4', color: 'bg-pink-500' },

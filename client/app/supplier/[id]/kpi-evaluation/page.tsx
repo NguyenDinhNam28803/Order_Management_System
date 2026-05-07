@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, ReactNode } from 'react';
 import { useParams } from 'next/navigation';
@@ -49,7 +49,7 @@ interface KPIResponse {
 }
 
 const metricIcons: Record<string, ReactNode> = {
-  'otdScore': <Clock size={18} className="text-[#B4533A]" />,
+  'otdScore': <Clock size={18} className="text-[#2563EB]" />,
   'qualityScore': <CheckCircle size={18} className="text-black" />,
   'priceScore': <DollarSign size={18} className="text-black" />,
   'invoiceAccuracy': <FileCheck size={18} className="text-violet-400" />,
@@ -80,7 +80,7 @@ const tierLabels: Record<string, string> = {
 
 const tierColors: Record<string, string> = {
   'STRATEGIC': 'from-purple-500/20 to-purple-600/10 border-purple-500/30 text-black',
-  'PREFERRED': 'from-[#B4533A]/20 to-[#A85032]/10 border-[#B4533A]/30 text-[#CB7A62]',
+  'PREFERRED': 'from-[#2563EB]/20 to-[#1D4ED8]/10 border-[#2563EB]/30 text-[#3B82F6]',
   'APPROVED': 'from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 text-black',
   'CONDITIONAL': 'from-amber-500/20 to-amber-600/10 border-amber-500/30 text-black',
   'DISQUALIFIED': 'from-rose-500/20 to-rose-600/10 border-rose-500/30 text-black',
@@ -176,7 +176,7 @@ export default function SupplierKPIPage() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-4 border-[#B4533A] border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin"></div>
               <p className="text-[#000000] font-bold uppercase tracking-widest">Đang tải dữ liệu KPI...</p>
             </div>
           </div>
@@ -192,7 +192,7 @@ export default function SupplierKPIPage() {
         <div className="flex items-center gap-4 mb-8">
           <Link 
             href={`/supplier`}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#000000] hover:bg-[#1A1D23] transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#000000] hover:bg-[#0F172A] transition-all"
           >
             <ArrowLeft size={18} />
             <span className="text-sm font-semibold">Quay lại Portal</span>
@@ -212,16 +212,16 @@ export default function SupplierKPIPage() {
         )}
 
         {!kpiData ? (
-          <div className="bg-[#FAF8F5] rounded-2xl p-12 border border-[rgba(148,163,184,0.1)] text-center">
-            <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-[#B4533A]/10 mb-6">
-              <BarChart3 size={40} className="text-[#B4533A]" />
+          <div className="bg-[#F1F5F9] rounded-2xl p-12 border border-[rgba(148,163,184,0.1)] text-center">
+            <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-[#2563EB]/10 mb-6">
+              <BarChart3 size={40} className="text-[#2563EB]" />
             </div>
             <h2 className="text-xl font-bold text-[#000000] mb-3">Chưa có dữ liệu đánh giá</h2>
             <p className="text-[#000000] mb-6 max-w-md mx-auto">Nhà cung cấp này chưa được đánh giá KPI. Hãy chạy đánh giá để phân tích hiệu suất.</p>
             <button
               onClick={handleEvaluate}
               disabled={evaluating}
-              className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl bg-[#B4533A] text-[#000000] font-bold hover:bg-[#A85032] disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl bg-[#2563EB] text-[#000000] font-bold hover:bg-[#1D4ED8] disabled:opacity-50 transition-all"
             >
               {evaluating ? (
                 <RefreshCcw size={18} className="animate-spin" />
@@ -234,9 +234,9 @@ export default function SupplierKPIPage() {
         ) : (
           <>
             {/* Supplier Info Card */}
-            <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] mb-6">
+            <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] mb-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#B4533A] to-[#8B5CF6] flex items-center justify-center">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
                   <Award size={24} className="text-[#000000]" />
                 </div>
                 <div>
@@ -265,7 +265,7 @@ export default function SupplierKPIPage() {
             </div>
 
             {/* Overall Score Card */}
-            <div className="bg-[#FAF8F5] rounded-2xl p-8 border border-[rgba(148,163,184,0.1)] mb-6">
+            <div className="bg-[#F1F5F9] rounded-2xl p-8 border border-[rgba(148,163,184,0.1)] mb-6">
               <div className="text-center">
                 <div className="inline-flex items-center gap-2 mb-4">
                   <Target size={18} className="text-[#000000]" />
@@ -311,7 +311,7 @@ export default function SupplierKPIPage() {
                   { key: 'responseTimeScore', label: 'Thời gian phản hồi', value: parseFloat(kpiData.kpiScore.responseTimeScore) || 0, isString: true },
                   { key: 'fulfillmentRate', label: 'Tỷ lệ hoàn thành đơn hàng', value: parseFloat(kpiData.kpiScore.fulfillmentRate) || 0, isString: true },
                 ].map((item, idx) => (
-                  <div key={idx} className="bg-[#FAF8F5] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all">
+                  <div key={idx} className="bg-[#F1F5F9] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
                         {metricIcons[item.key]}
@@ -323,7 +323,7 @@ export default function SupplierKPIPage() {
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${
                           (item.value || 0) >= 90 ? 'bg-emerald-400' :
-                          (item.value || 0) >= 70 ? 'bg-[#B4533A]' :
+                          (item.value || 0) >= 70 ? 'bg-[#2563EB]' :
                           (item.value || 0) >= 50 ? 'bg-amber-400' :
                           'bg-rose-400'
                         }`}
@@ -335,7 +335,7 @@ export default function SupplierKPIPage() {
                       <span className="text-2xl font-bold text-[#000000]">{item.value}%</span>
                       <span className={`text-xs font-semibold px-2 py-1 rounded ${
                         (item.value || 0) >= 90 ? 'bg-emerald-400/10 text-black' :
-                        (item.value || 0) >= 70 ? 'bg-[#B4533A]/10 text-[#B4533A]' :
+                        (item.value || 0) >= 70 ? 'bg-[#2563EB]/10 text-[#2563EB]' :
                         (item.value || 0) >= 50 ? 'bg-amber-400/10 text-black' :
                         'bg-rose-400/10 text-black'
                       }`}>
@@ -358,7 +358,7 @@ export default function SupplierKPIPage() {
                   <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Phân Tích AI</h2>
                 </div>
                 
-                <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                   <p className="text-[#000000] leading-relaxed mb-6">{kpiData.aiInsights.analysis}</p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -405,7 +405,7 @@ export default function SupplierKPIPage() {
                 <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Kế Hoạch Cải Thiện</h2>
               </div>
               
-              <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+              <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                 <p className="text-[#000000] leading-relaxed">{kpiData.aiInsights?.improvementPlan || kpiData.kpiScore.improvementPlan}</p>
               </div>
             </div>
@@ -418,7 +418,7 @@ export default function SupplierKPIPage() {
                   <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Ghi Chú Đánh Giá</h2>
                 </div>
                 
-                <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                   <p className="text-[#000000] leading-relaxed">{kpiData.kpiScore.notes}</p>
                 </div>
               </div>
@@ -441,7 +441,7 @@ export default function SupplierKPIPage() {
               
               <Link
                 href={`/procurement/suppliers/${supplierId}`}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#FAF8F5] text-[#000000] font-bold hover:bg-[#1A1D23] hover:text-[#000000] transition-all border border-[rgba(148,163,184,0.1)]"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#F1F5F9] text-[#000000] font-bold hover:bg-[#0F172A] hover:text-[#000000] transition-all border border-[rgba(148,163,184,0.1)]"
               >
                 <Award size={18} />
                 Xem hồ sơ NCC

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useProcurement, Contract } from "../../context/ProcurementContext";
@@ -36,9 +36,9 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
     },
     PENDING_APPROVAL: {
         label: "Chờ duyệt",
-        bg: "bg-[#B4533A]/10",
-        text: "text-[#CB7A62]",
-        border: "border-[#B4533A]/30",
+        bg: "bg-[#2563EB]/10",
+        text: "text-[#3B82F6]",
+        border: "border-[#2563EB]/30",
         icon: <Signature size={12}/>
     },
     DRAFT: {
@@ -153,7 +153,7 @@ export default function SupplierContractsPage() {
             case "success": return <CheckCircle2 size={16} className="text-black" />;
             case "warning": return <AlertCircle size={16} className="text-black" />;
             case "error": return <XCircle size={16} className="text-black" />;
-            default: return <Bell size={16} className="text-[#CB7A62]" />;
+            default: return <Bell size={16} className="text-[#3B82F6]" />;
         }
     };
 
@@ -179,7 +179,7 @@ export default function SupplierContractsPage() {
                     {/* Notification Bell */}
                     <button
                         onClick={() => setIsNotificationModalOpen(true)}
-                        className="relative inline-flex items-center justify-center h-10 w-10 rounded-xl bg-[#FAF8F5] text-[#000000] hover:text-[#B4533A] hover:bg-[#B4533A]/10 border border-[rgba(148,163,184,0.1)] transition-all"
+                        className="relative inline-flex items-center justify-center h-10 w-10 rounded-xl bg-[#F1F5F9] text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 border border-[rgba(148,163,184,0.1)] transition-all"
                     >
                         <Bell size={20} />
                         {unreadCount > 0 && (
@@ -191,7 +191,7 @@ export default function SupplierContractsPage() {
 
                     <button
                         onClick={loadContracts}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FAF8F5] text-[#000000] hover:text-[#000000] border border-[rgba(148,163,184,0.1)] font-bold transition-all"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F1F5F9] text-[#000000] hover:text-[#000000] border border-[rgba(148,163,184,0.1)] font-bold transition-all"
                     >
                         <RefreshCw size={18} />
                     </button>
@@ -201,12 +201,12 @@ export default function SupplierContractsPage() {
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 {[
-                    { label: "Tổng hợp đồng", value: supplierContracts.length, icon: FileText, color: "text-[#CB7A62]", bg: "bg-[#B4533A]/10" },
+                    { label: "Tổng hợp đồng", value: supplierContracts.length, icon: FileText, color: "text-[#3B82F6]", bg: "bg-[#2563EB]/10" },
                     { label: "Đang hiệu lực", value: supplierContracts.filter(c => c.status === "ACTIVE").length, icon: CheckCircle2, color: "text-black", bg: "bg-emerald-500/10" },
-                    { label: "Chờ duyệt", value: supplierContracts.filter(c => c.status === "PENDING_APPROVAL").length, icon: Signature, color: "text-[#CB7A62]", bg: "bg-[#B4533A]/10" },
+                    { label: "Chờ duyệt", value: supplierContracts.filter(c => c.status === "PENDING_APPROVAL").length, icon: Signature, color: "text-[#3B82F6]", bg: "bg-[#2563EB]/10" },
                     { label: "Sắp hết hạn", value: supplierContracts.filter(c => c.status === "EXPIRED").length, icon: AlertCircle, color: "text-black", bg: "bg-orange-500/10" }
                 ].map((stat, idx) => (
-                    <div key={idx} className="bg-[#FAF8F5] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                    <div key={idx} className="bg-[#F1F5F9] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
                         <div className="flex items-center gap-3">
                             <div className={`h-10 w-10 rounded-lg ${stat.bg} flex items-center justify-center`}>
                                 <stat.icon className={stat.color} size={20} />
@@ -221,17 +221,17 @@ export default function SupplierContractsPage() {
             </div>
 
             {/* Filters */}
-            <div className="bg-[#FAF8F5] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 mb-6">
+            <div className="bg-[#F1F5F9] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-6">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1 flex gap-3">
                         <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
-                            <Search size={20} className="text-[#B4533A]" />
+                            <Search size={20} className="text-[#2563EB]" />
                         </div>
                         <div className="relative flex-1">
                             <input
                                 type="text"
                                 placeholder="Tìm theo số hợp đồng, tiêu đề, khách hàng..."
-                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all"
+                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -239,9 +239,9 @@ export default function SupplierContractsPage() {
                     </div>
                     <div className="flex gap-3">
                         <div className="relative">
-                            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
+                            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
                             <select
-                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                             >
@@ -257,7 +257,7 @@ export default function SupplierContractsPage() {
             </div>
 
             {/* Table */}
-            <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
                         <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
@@ -272,28 +272,28 @@ export default function SupplierContractsPage() {
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                             {filteredContracts.length > 0 ? filteredContracts.map((c) => (
-                                <tr key={c.id} className="hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.05)] group">
+                                <tr key={c.id} className="hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.05)] group">
                                     <td className="px-6 py-4">
-                                        <span className="font-bold text-[#B4533A] group-hover:scale-105 transition-transform inline-block">#{c.contractNumber}</span>
+                                        <span className="font-bold text-[#2563EB] group-hover:scale-105 transition-transform inline-block">#{c.contractNumber}</span>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="font-bold text-[#000000] group-hover:text-[#F2EFE9] transition-colors">{c.title}</div>
-                                        <div className="flex items-center gap-1 text-xs text-[#000000] mt-1 group-hover:text-[#F2EFE9]/60 transition-colors">
+                                        <div className="font-bold text-[#000000] group-hover:text-[#F8FAFC] transition-colors">{c.title}</div>
+                                        <div className="flex items-center gap-1 text-xs text-[#000000] mt-1 group-hover:text-[#F8FAFC]/60 transition-colors">
                                             <Building2 size={12} />
                                             {c.organization?.name || "N/A"}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-center">
-                                        <div className="font-bold text-[#000000] group-hover:text-[#F2EFE9] transition-colors">
+                                        <div className="font-bold text-[#000000] group-hover:text-[#F8FAFC] transition-colors">
                                             {new Intl.NumberFormat('vi-VN').format(c.totalValue || 0)} {c.currency || 'VND'}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2 text-sm text-[#000000] group-hover:text-[#F2EFE9] transition-colors">
-                                            <Calendar size={14} className="text-[#000000] group-hover:text-[#B4533A]" />
+                                        <div className="flex items-center gap-2 text-sm text-[#000000] group-hover:text-[#F8FAFC] transition-colors">
+                                            <Calendar size={14} className="text-[#000000] group-hover:text-[#2563EB]" />
                                             <div>
-                                                <div className="text-[#000000] group-hover:text-[#F2EFE9] transition-colors">{new Date(c.startDate).toLocaleDateString('vi-VN')}</div>
-                                                <div className="text-[#000000] text-xs group-hover:text-[#F2EFE9]/40 transition-colors">- {new Date(c.endDate).toLocaleDateString('vi-VN')}</div>
+                                                <div className="text-[#000000] group-hover:text-[#F8FAFC] transition-colors">{new Date(c.startDate).toLocaleDateString('vi-VN')}</div>
+                                                <div className="text-[#000000] text-xs group-hover:text-[#F8FAFC]/40 transition-colors">- {new Date(c.endDate).toLocaleDateString('vi-VN')}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -302,7 +302,7 @@ export default function SupplierContractsPage() {
                                         <div className="flex items-center justify-end gap-2">
                                             <button
                                                 onClick={() => openDetailModal(c)}
-                                                className="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-[#FFFFFF] text-[#000000] hover:text-[#B4533A] hover:bg-[#B4533A]/10 border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all"
+                                                className="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-[#FFFFFF] text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all"
                                                 title="Xem chi tiết"
                                             >
                                                 <Eye size={18} />
@@ -311,7 +311,7 @@ export default function SupplierContractsPage() {
                                             {c.status === ContractStatus.PENDING_APPROVAL && (
                                                 <button
                                                     onClick={() => openSignModal(c)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#B4533A] hover:bg-[#A85032] text-[#000000] font-bold text-xs border border-[#B4533A]/30 transition-all shadow-lg shadow-[#B4533A]/20"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] font-bold text-xs border border-[#2563EB]/30 transition-all shadow-lg shadow-[#2563EB]/20"
                                                     title="Phê duyệt hợp đồng"
                                                 >
                                                     <PenTool size={14} />
@@ -372,16 +372,16 @@ export default function SupplierContractsPage() {
             {/* Contract Detail Modal */}
             {isDetailModalOpen && selectedContract && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/90 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#FAF8F5] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         {/* Header */}
-                        <div className="sticky top-0 flex justify-between items-center p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FAF8F5] z-10">
+                        <div className="sticky top-0 flex justify-between items-center p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#F1F5F9] z-10">
                             <div>
                                 <h2 className="text-xl font-black text-[#000000]">Chi tiết hợp đồng</h2>
                                 <p className="text-sm text-[#000000] mt-1">#{selectedContract.contractNumber}</p>
                             </div>
                             <button
                                 onClick={() => setIsDetailModalOpen(false)}
-                                className="p-2 hover:bg-[#1A1D23] rounded-lg transition-colors"
+                                className="p-2 hover:bg-[#0F172A] rounded-lg transition-colors"
                             >
                                 <X size={20} className="text-[#000000]" />
                             </button>
@@ -419,12 +419,12 @@ export default function SupplierContractsPage() {
                             <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
                                 <span className="text-[10px] font-black uppercase text-[#000000] block mb-3">Thời hạn hợp đồng</span>
                                 <div className="flex items-center gap-4">
-                                    <div className="flex-1 p-3 rounded-lg bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)]">
+                                    <div className="flex-1 p-3 rounded-lg bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
                                         <span className="text-xs text-[#000000] block">Ngày bắt đầu</span>
                                         <span className="font-bold text-[#000000]">{new Date(selectedContract.startDate).toLocaleDateString('vi-VN')}</span>
                                     </div>
                                     <div className="text-[#000000]">→</div>
-                                    <div className="flex-1 p-3 rounded-lg bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)]">
+                                    <div className="flex-1 p-3 rounded-lg bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
                                         <span className="text-xs text-[#000000] block">Ngày kết thúc</span>
                                         <span className="font-bold text-[#000000]">{new Date(selectedContract.endDate).toLocaleDateString('vi-VN')}</span>
                                     </div>
@@ -453,7 +453,7 @@ export default function SupplierContractsPage() {
                                             setIsDetailModalOpen(false);
                                             setSignTarget(selectedContract);
                                         }}
-                                        className="flex-1 px-4 py-3 rounded-xl bg-[#B4533A] hover:bg-[#A85032] text-[#000000] font-bold text-sm transition-all shadow-lg shadow-[#B4533A]/20 flex items-center justify-center gap-2"
+                                        className="flex-1 px-4 py-3 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] font-bold text-sm transition-all shadow-lg shadow-[#2563EB]/20 flex items-center justify-center gap-2"
                                     >
                                         <PenTool size={16} />
                                         Ký hợp đồng
@@ -468,11 +468,11 @@ export default function SupplierContractsPage() {
             {/* Notifications Modal */}
             {isNotificationModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/90 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#FAF8F5] rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         {/* Header */}
                         <div className="flex justify-between items-center p-4 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                             <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 rounded-lg bg-[#B4533A]/10 flex items-center justify-center text-[#CB7A62]">
+                                <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-[#3B82F6]">
                                     <Bell size={16} />
                                 </div>
                                 <div>
@@ -489,7 +489,7 @@ export default function SupplierContractsPage() {
                                 </button>
                                 <button
                                     onClick={() => setIsNotificationModalOpen(false)}
-                                    className="p-2 hover:bg-[#1A1D23] rounded-lg transition-colors"
+                                    className="p-2 hover:bg-[#0F172A] rounded-lg transition-colors"
                                 >
                                     <X size={18} className="text-[#000000]" />
                                 </button>
@@ -502,7 +502,7 @@ export default function SupplierContractsPage() {
                                 notifications.map((notification) => (
                                     <div
                                         key={notification.id}
-                                        className={`p-4 border-b border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF]/50 transition-colors ${!notification.read ? 'bg-[#B4533A]/5' : ''}`}
+                                        className={`p-4 border-b border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF]/50 transition-colors ${!notification.read ? 'bg-[#2563EB]/5' : ''}`}
                                     >
                                         <div className="flex items-start gap-3">
                                             {getNotificationIcon(notification.type)}
@@ -516,7 +516,7 @@ export default function SupplierContractsPage() {
                                                 </p>
                                             </div>
                                             {!notification.read && (
-                                                <div className="h-2 w-2 rounded-full bg-[#CB7A62] shrink-0 mt-1.5" />
+                                                <div className="h-2 w-2 rounded-full bg-[#3B82F6] shrink-0 mt-1.5" />
                                             )}
                                         </div>
                                     </div>

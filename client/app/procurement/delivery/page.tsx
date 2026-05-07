@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo, useRef } from "react";
 import {
@@ -88,7 +88,7 @@ export default function DeliveryTrackingPage() {
     const stages = [
         { label: "Đã đặt hàng", key: "ORDERED", color: "#000000" },
         { label: "Đang vận chuyển", key: "SHIPPED", color: "#F59E0B" },
-        { label: "Đến kho", key: "IN_TRANSIT", color: "#B4533A" },
+        { label: "Đến kho", key: "IN_TRANSIT", color: "#2563EB" },
         { label: "Hoàn thành", key: "DELIVERED", color: "#10B981" }
     ];
 
@@ -101,7 +101,7 @@ export default function DeliveryTrackingPage() {
         switch (status) {
             case "DELIVERED": return "text-black";
             case "PARTIAL": return "text-black";
-            case "IN_TRANSIT": return "text-[#CB7A62]";
+            case "IN_TRANSIT": return "text-[#3B82F6]";
             case "SHIPPED": return "text-violet-400";
             default: return "text-[#000000]";
         }
@@ -134,10 +134,10 @@ export default function DeliveryTrackingPage() {
                             placeholder="Tìm PO, nhà cung cấp..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 pr-4 py-3 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-xs text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A] w-72"
+                            className="pl-10 pr-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-xs text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB] w-72"
                         />
                     </div>
-                    <button className="flex items-center gap-2 px-6 py-3 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[11px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#1A1D23] transition-all shadow-sm">
+                    <button className="flex items-center gap-2 px-6 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[11px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#0F172A] transition-all shadow-sm">
                         <Filter size={14} /> Bộ lọc
                     </button>
                     <div className="flex items-center gap-2 px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-[11px] font-black uppercase tracking-widest text-black">
@@ -150,7 +150,7 @@ export default function DeliveryTrackingPage() {
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 px-6 md:px-8 pb-12">
                 {/* Left List */}
                 <div className="xl:col-span-8 space-y-6">
-                    <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl overflow-hidden">
                         <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                             <h3 className="text-sm font-black text-[#000000] uppercase tracking-tight">Danh sách PO - Theo dõi giao hàng</h3>
                             <span className="text-xs text-[#000000]">{filteredDeliveries.length} đơn hàng</span>
@@ -170,13 +170,13 @@ export default function DeliveryTrackingPage() {
                                 <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
                                     {filteredDeliveries.map((del) => (
                                         <tr key={del.poId}
-                                            className={`hover:bg-[#FFFFFF]/50 transition-all group cursor-pointer ${selectedPO?.poId === del.poId ? 'bg-[#B4533A]/5' : ''}`}
+                                            className={`hover:bg-[#FFFFFF]/50 transition-all group cursor-pointer ${selectedPO?.poId === del.poId ? 'bg-[#2563EB]/5' : ''}`}
                                             onClick={() => setSelectedPO(del)}
                                         >
                                             <td className="px-6 py-5">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
-                                                        <ShoppingCart size={18} className="text-[#B4533A]" />
+                                                        <ShoppingCart size={18} className="text-[#2563EB]" />
                                                     </div>
                                                     <div>
                                                         <p className="font-black text-[#000000] text-sm">{del.poNumber}</p>
@@ -192,17 +192,17 @@ export default function DeliveryTrackingPage() {
                                             </td>
                                             <td className="px-6 py-5">
                                                 <p className="text-xs font-black text-[#000000]">{del.carrier}</p>
-                                                <p className="text-[10px] text-[#B4533A] font-bold">#{del.trackingNumber}</p>
+                                                <p className="text-[10px] text-[#2563EB] font-bold">#{del.trackingNumber}</p>
                                             </td>
                                             <td className="px-6 py-5">
                                                 <div className="w-32">
                                                     <div className="flex justify-between items-end mb-1">
                                                         <span className="text-[10px] font-black text-[#000000] uppercase">{del.itemsDelivered}/{del.itemsTotal}</span>
-                                                        <span className="text-[10px] font-black text-[#B4533A]">{del.progress}%</span>
+                                                        <span className="text-[10px] font-black text-[#2563EB]">{del.progress}%</span>
                                                     </div>
                                                     <div className="h-1.5 bg-[#FFFFFF] rounded-full overflow-hidden">
                                                         <div 
-                                                            className={`h-full rounded-full transition-all duration-1000 ${del.progress === 100 ? 'bg-emerald-500' : 'bg-[#B4533A]'}`} 
+                                                            className={`h-full rounded-full transition-all duration-1000 ${del.progress === 100 ? 'bg-emerald-500' : 'bg-[#2563EB]'}`} 
                                                             style={{ width: `${del.progress}%` }} 
                                                         />
                                                     </div>
@@ -212,9 +212,9 @@ export default function DeliveryTrackingPage() {
                                                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider border ${
                                                     del.status === "DELIVERED" ? "bg-emerald-500/10 border-emerald-500/20 text-black" :
                                                     del.status === "PARTIAL" ? "bg-amber-500/10 border-amber-500/20 text-black" :
-                                                    del.status === "IN_TRANSIT" ? "bg-[#B4533A]/10 border-[#B4533A]/20 text-[#CB7A62]" :
+                                                    del.status === "IN_TRANSIT" ? "bg-[#2563EB]/10 border-[#2563EB]/20 text-[#3B82F6]" :
                                                     del.status === "SHIPPED" ? "bg-violet-500/10 border-violet-500/20 text-violet-400" :
-                                                    "bg-[#1A1D23] border-[rgba(148,163,184,0.1)] text-[#000000]"
+                                                    "bg-[#0F172A] border-[rgba(148,163,184,0.1)] text-[#000000]"
                                                 }`}>
                                                     {del.status === "DELIVERED" && <CheckCircle size={12} />}
                                                     {del.status === "ORDERED" && <Clock size={12} />}
@@ -226,7 +226,7 @@ export default function DeliveryTrackingPage() {
                                             <td className="px-6 py-5 text-right">
                                                 <button 
                                                     onClick={(e) => { e.stopPropagation(); setSelectedPO(del); }}
-                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#B4533A]/10 border border-[#B4533A]/20 rounded-lg text-[10px] font-black uppercase text-[#B4533A] hover:bg-[#B4533A]/20 transition-all"
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#2563EB]/10 border border-[#2563EB]/20 rounded-lg text-[10px] font-black uppercase text-[#2563EB] hover:bg-[#2563EB]/20 transition-all"
                                                 >
                                                     <Eye size={12} />
                                                 </button>
@@ -248,13 +248,13 @@ export default function DeliveryTrackingPage() {
                 {/* Right Timeline */}
                 <div className="xl:col-span-4">
                     {selectedPO ? (
-                        <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-8 sticky top-6">
+                        <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-8 sticky top-6">
                             <div className="mb-8 flex flex-col items-center text-center">
-                                <div className="w-20 h-20 rounded-2xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#B4533A] mb-4">
+                                <div className="w-20 h-20 rounded-2xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#2563EB] mb-4">
                                     <Package size={32} />
                                 </div>
                                 <h3 className="text-xl font-black text-[#000000] uppercase leading-tight mb-2">Chi tiết giao hàng</h3>
-                                <p className="text-[10px] font-black text-[#B4533A] uppercase tracking-widest border border-[#B4533A]/20 px-3 py-1 rounded-full">#{selectedPO.poNumber}</p>
+                                <p className="text-[10px] font-black text-[#2563EB] uppercase tracking-widest border border-[#2563EB]/20 px-3 py-1 rounded-full">#{selectedPO.poNumber}</p>
                             </div>
 
                             {/* PO Summary */}
@@ -291,14 +291,14 @@ export default function DeliveryTrackingPage() {
                                 </div>
                                 <button 
                                     onClick={() => setEditingDelivery(selectedPO)}
-                                    className="w-full bg-[#B4533A] text-[#000000] py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-[#A85032] transition-all"
+                                    className="w-full bg-[#2563EB] text-[#000000] py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-[#1D4ED8] transition-all"
                                 >
                                     Cập nhật tracking
                                 </button>
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-[#FAF8F5] rounded-[32px] border border-dashed border-[rgba(148,163,184,0.2)] p-12 text-center">
+                        <div className="bg-[#F1F5F9] rounded-[32px] border border-dashed border-[rgba(148,163,184,0.2)] p-12 text-center">
                             <Box size={40} className="text-[#000000] mx-auto mb-4" />
                             <p className="text-xs font-black text-[#000000] uppercase tracking-widest">Chọn PO để xem chi tiết giao hàng</p>
                         </div>
@@ -317,13 +317,13 @@ export default function DeliveryTrackingPage() {
 function TimelineStep({ label, time, active, done, icon, details }: { label: string, time: string, active: boolean, done: boolean, icon: React.ReactNode, details?: string }) {
     return (
         <div className="relative flex items-start gap-4 z-10">
-            <div className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center shrink-0 ${done ? 'bg-emerald-500 border-emerald-500 text-[#000000]' : active ? 'bg-[#B4533A] border-[#B4533A] text-[#000000]' : 'bg-[#FFFFFF] border-[rgba(148,163,184,0.2)] text-[#000000]'}`}>
+            <div className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center shrink-0 ${done ? 'bg-emerald-500 border-emerald-500 text-[#000000]' : active ? 'bg-[#2563EB] border-[#2563EB] text-[#000000]' : 'bg-[#FFFFFF] border-[rgba(148,163,184,0.2)] text-[#000000]'}`}>
                 {icon}
             </div>
             <div className="flex flex-col pt-1">
                 <h4 className={`text-xs font-black uppercase tracking-tight ${done || active ? 'text-[#000000]' : 'text-[#000000]'}`}>{label}</h4>
                 <span className="text-[10px] font-bold text-[#000000]">{time}</span>
-                {details && <span className="text-[9px] font-black text-[#B4533A] uppercase mt-1">{details}</span>}
+                {details && <span className="text-[9px] font-black text-[#2563EB] uppercase mt-1">{details}</span>}
             </div>
         </div>
     );
@@ -349,7 +349,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: { delivery: Delivery
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={onClose}></div>
-            <div className="bg-[#FAF8F5] rounded-[32px] w-full max-w-lg relative z-10 shadow-2xl overflow-hidden border border-[rgba(148,163,184,0.1)]">
+            <div className="bg-[#F1F5F9] rounded-[32px] w-full max-w-lg relative z-10 shadow-2xl overflow-hidden border border-[rgba(148,163,184,0.1)]">
                 <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                     <div>
                         <h3 className="text-lg font-black text-[#000000] uppercase">Cập nhật Tracking</h3>
@@ -364,7 +364,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: { delivery: Delivery
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Đơn vị vận chuyển</label>
                         <select
-                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-xs font-bold text-[#000000] outline-none focus:border-[#B4533A]"
+                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-xs font-bold text-[#000000] outline-none focus:border-[#2563EB]"
                             value={formData.carrier}
                             onChange={(e) => setFormData({ ...formData, carrier: e.target.value })}
                         >
@@ -380,7 +380,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: { delivery: Delivery
                         <label className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Mã vận đơn</label>
                         <input
                             type="text"
-                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-xs font-bold text-[#000000] outline-none focus:border-[#B4533A]"
+                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-xs font-bold text-[#000000] outline-none focus:border-[#2563EB]"
                             value={formData.trackingNumber}
                             onChange={(e) => setFormData({ ...formData, trackingNumber: e.target.value })}
                         />
@@ -391,7 +391,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: { delivery: Delivery
                             <label className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Ngày gửi</label>
                             <input
                                 type="date"
-                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-xs font-bold text-[#000000] outline-none focus:border-[#B4533A]"
+                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-xs font-bold text-[#000000] outline-none focus:border-[#2563EB]"
                                 value={formData.shippedAt}
                                 onChange={(e) => setFormData({ ...formData, shippedAt: e.target.value })}
                             />
@@ -400,7 +400,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: { delivery: Delivery
                             <label className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Dự kiến về</label>
                             <input
                                 type="date"
-                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-xs font-bold text-[#000000] outline-none focus:border-[#B4533A]"
+                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-xs font-bold text-[#000000] outline-none focus:border-[#2563EB]"
                                 value={formData.estimatedArrival}
                                 onChange={(e) => setFormData({ ...formData, estimatedArrival: e.target.value })}
                             />
@@ -410,7 +410,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: { delivery: Delivery
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Ghi chú</label>
                         <textarea
-                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-xs font-bold text-[#000000] outline-none focus:border-[#B4533A] min-h-[80px]"
+                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-4 py-3 text-xs font-bold text-[#000000] outline-none focus:border-[#2563EB] min-h-[80px]"
                             placeholder="Tình trạng vận chuyển..."
                             value={formData.note}
                             onChange={(e) => setFormData({ ...formData, note: e.target.value })}
@@ -420,7 +420,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: { delivery: Delivery
 
                 <div className="p-6 border-t border-[rgba(148,163,184,0.1)] flex justify-end gap-3">
                     <button onClick={onClose} className="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-[#000000] hover:text-[#000000] transition-all">Hủy</button>
-                    <button onClick={() => onSave(formData)} className="bg-[#B4533A] text-[#000000] px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#A85032] transition-all">Lưu</button>
+                    <button onClick={() => onSave(formData)} className="bg-[#2563EB] text-[#000000] px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1D4ED8] transition-all">Lưu</button>
                 </div>
             </div>
         </div>

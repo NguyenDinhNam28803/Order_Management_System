@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ const StatusBadge = ({ status }: { status: DiscoveredSupplier['status'] }) => {
   if (status === 'WORKED_BEFORE')
     return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-black border border-emerald-500/30"><BadgeCheck size={10} />Đã hợp tác</span>;
   if (status === 'IN_SYSTEM')
-    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#B4533A]/15 text-[#CB7A62] border border-[#B4533A]/30"><CheckCircle2 size={10} />Trong hệ thống</span>;
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30"><CheckCircle2 size={10} />Trong hệ thống</span>;
   return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/15 text-black border border-slate-500/30"><Sparkles size={10} />Mới</span>;
 };
 
@@ -72,10 +72,10 @@ const SupplierDetailModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#FAF8F5] rounded-2xl border border-[rgba(240,246,252,0.1)] shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#F1F5F9] rounded-2xl border border-[rgba(240,246,252,0.1)] shadow-2xl overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-start justify-between p-5 border-b border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] shrink-0">
+        <div className="flex items-start justify-between p-5 border-b border-[#E2E8F0] bg-[#FFFFFF] shrink-0">
           <div className="flex-1 min-w-0 pr-4">
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <h2 className="text-base font-black text-[#000000] truncate">{s.name}</h2>
@@ -85,7 +85,7 @@ const SupplierDetailModal = ({
               {s.province && <span className="flex items-center gap-1"><MapPin size={10} />{s.province}</span>}
               {s.industry && <span className="flex items-center gap-1"><Building2 size={10} />{s.industry}</span>}
               {s.website && (
-                <a href={s.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#CB7A62] hover:underline">
+                <a href={s.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#3B82F6] hover:underline">
                   <Globe size={10} />{s.website.replace(/^https?:\/\//, '')}
                 </a>
               )}
@@ -100,7 +100,7 @@ const SupplierDetailModal = ({
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
 
           {/* ── AI Score section ── */}
-          <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(240,246,252,0.08)] p-4">
+          <div className="bg-[#FFFFFF] rounded-xl border border-[#E2E8F0] p-4">
             <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-3 flex items-center gap-1.5">
               <Sparkles size={11} className="text-violet-400" /> Đánh giá AI
             </p>
@@ -149,7 +149,7 @@ const SupplierDetailModal = ({
           </div>
 
           {/* ── Company info section ── */}
-          <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(240,246,252,0.08)] p-4">
+          <div className="bg-[#FFFFFF] rounded-xl border border-[#E2E8F0] p-4">
             <div className="flex items-center justify-between mb-3">
               <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] flex items-center gap-1.5">
                 <Building2 size={11} /> Thông tin liên hệ
@@ -177,7 +177,7 @@ const SupplierDetailModal = ({
                 <Phone size={12} className="text-[#000000] shrink-0" />
                 <span className="text-[#000000] w-24 shrink-0">Điện thoại</span>
                 {s.phone
-                  ? <a href={`tel:${s.phone}`} className="text-[#000000] font-medium hover:text-[#CB7A62] transition-colors">{s.phone}</a>
+                  ? <a href={`tel:${s.phone}`} className="text-[#000000] font-medium hover:text-[#3B82F6] transition-colors">{s.phone}</a>
                   : <span className="text-[#000000] italic text-[11px]">Chưa có thông tin</span>}
               </div>
               <div className="flex items-center gap-2 text-[12px]">
@@ -205,7 +205,7 @@ const SupplierDetailModal = ({
                 <Globe size={12} className="text-[#000000] shrink-0" />
                 <span className="text-[#000000] w-24 shrink-0">Website</span>
                 {s.website
-                  ? <a href={s.website} target="_blank" rel="noopener noreferrer" className="text-[#CB7A62] hover:underline flex items-center gap-1">
+                  ? <a href={s.website} target="_blank" rel="noopener noreferrer" className="text-[#3B82F6] hover:underline flex items-center gap-1">
                       {s.website.replace(/^https?:\/\//, '')} <ArrowUpRight size={10} />
                     </a>
                   : <span className="text-[#000000] italic text-[11px]">Chưa có thông tin</span>}
@@ -215,7 +215,7 @@ const SupplierDetailModal = ({
 
           {/* ── Products & Certifications ── */}
           {(s.products.length > 0 || s.certifications.length > 0) && (
-            <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(240,246,252,0.08)] p-4">
+            <div className="bg-[#FFFFFF] rounded-xl border border-[#E2E8F0] p-4">
               <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-3 flex items-center gap-1.5">
                 <Zap size={11} /> Năng lực & Chứng chỉ
               </p>
@@ -224,7 +224,7 @@ const SupplierDetailModal = ({
                   <p className="text-[10px] font-semibold text-[#000000] uppercase mb-1.5">Sản phẩm / Dịch vụ</p>
                   <div className="flex flex-wrap gap-1.5">
                     {s.products.map((p, i) => (
-                      <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-[rgba(240,246,252,0.05)] text-[#C9D1D9] border border-[rgba(240,246,252,0.08)]">{p}</span>
+                      <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-[rgba(240,246,252,0.05)] text-[#C9D1D9] border border-[#E2E8F0]">{p}</span>
                     ))}
                   </div>
                 </div>
@@ -247,27 +247,27 @@ const SupplierDetailModal = ({
           {/* ── Source ── */}
           <div className="flex items-center gap-2">
             <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] text-[#CB7A62] hover:underline">
+              className="inline-flex items-center gap-1.5 text-[11px] text-[#3B82F6] hover:underline">
               <ArrowUpRight size={12} />Xem nguồn dữ liệu gốc
             </a>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 border-t border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-5 py-4 flex items-center justify-between gap-3">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg text-[12px] text-[#000000] hover:text-[#000000] border border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.15)] transition-all">
+        <div className="shrink-0 border-t border-[#E2E8F0] bg-[#FFFFFF] px-5 py-4 flex items-center justify-between gap-3">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg text-[12px] text-[#000000] hover:text-[#000000] border border-[#E2E8F0] hover:border-[rgba(240,246,252,0.15)] transition-all">
             Đóng
           </button>
           {s.status === 'NEW' && (
             <button
               onClick={() => onVetting(s.name)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#A85032] text-[#000000] hover:bg-[#B4533A] disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#1D4ED8] text-[#000000] hover:bg-[#2563EB] disabled:opacity-50 transition-all"
             >
               <Import size={13} /> Xét duyệt nhà cung cấp
             </button>
           )}
           {s.status === 'IN_SYSTEM' && (
-            <span className="text-[11px] text-[#000000] flex items-center gap-1"><CheckCircle2 size={12} className="text-[#CB7A62]" />Đã có trong hệ thống</span>
+            <span className="text-[11px] text-[#000000] flex items-center gap-1"><CheckCircle2 size={12} className="text-[#3B82F6]" />Đã có trong hệ thống</span>
           )}
           {s.status === 'WORKED_BEFORE' && (
             <span className="text-[11px] text-black flex items-center gap-1"><CheckCircle2 size={12} />Đã từng hợp tác</span>
@@ -291,7 +291,7 @@ const SupplierCard = ({
   onVetting: (name: string) => void;
 }) => {
   return (
-    <div className={`rounded-xl border transition-all duration-200 ${selected ? 'border-[#B4533A]/50 bg-[#B4533A]/5' : 'border-[rgba(240,246,252,0.08)] bg-[#FAF8F5]'} hover:border-[rgba(240,246,252,0.15)]`}>
+    <div className={`rounded-xl border transition-all duration-200 ${selected ? 'border-[#2563EB]/50 bg-[#2563EB]/5' : 'border-[#E2E8F0] bg-[#F1F5F9]'} hover:border-[rgba(240,246,252,0.15)]`}>
       <div className="p-4">
         {/* Header row */}
         <div className="flex items-start gap-3">
@@ -299,7 +299,7 @@ const SupplierCard = ({
             type="checkbox"
             checked={selected}
             onChange={onToggleSelect}
-            className="mt-1 rounded border-[rgba(240,246,252,0.2)] accent-[#B4533A]"
+            className="mt-1 rounded border-[rgba(240,246,252,0.2)] accent-[#2563EB]"
           />
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -310,7 +310,7 @@ const SupplierCard = ({
               {supplier.province && <span className="flex items-center gap-1"><MapPin size={10} />{supplier.province}</span>}
               {supplier.industry && <span className="flex items-center gap-1"><Building2 size={10} />{supplier.industry}</span>}
               {supplier.website && (
-                <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#CB7A62] hover:underline" onClick={e => e.stopPropagation()}>
+                <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#3B82F6] hover:underline" onClick={e => e.stopPropagation()}>
                   <Globe size={10} />{supplier.website.replace(/^https?:\/\//, '')}
                 </a>
               )}
@@ -334,7 +334,7 @@ const SupplierCard = ({
         {supplier.matchReasons.length > 0 && (
           <div className="mt-2 pl-6 flex flex-wrap gap-1.5">
             {supplier.matchReasons.slice(0, 3).map((r, i) => (
-              <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-[rgba(59,130,246,0.1)] text-[#D99B89] border border-[#B4533A]/20">{r}</span>
+              <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-[rgba(59,130,246,0.1)] text-[#D99B89] border border-[#2563EB]/20">{r}</span>
             ))}
             {supplier.matchReasons.length > 3 && (
               <span className="text-[10px] text-[#000000]">+{supplier.matchReasons.length - 3}</span>
@@ -360,7 +360,7 @@ const SupplierCard = ({
           {supplier.status === 'NEW' && (
             <button
               onClick={() => onVetting(supplier.name)}
-              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#B4533A]/15 text-[#CB7A62] border border-[#B4533A]/30 hover:bg-[#B4533A]/25 transition-colors disabled:opacity-50"
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30 hover:bg-[#2563EB]/25 transition-colors disabled:opacity-50"
             >
               <Import size={11} /> Xét duyệt nhà cung cấp
             </button>
@@ -380,8 +380,8 @@ const SupplierCard = ({
 // ─── Compare Panel ───────────────────────────────────────────────────────────
 const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[]; onClose: () => void }) => (
   <div className="fixed inset-0 z-50 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div className="bg-[#FAF8F5] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-auto">
-      <div className="flex items-center justify-between p-4 border-b border-[rgba(240,246,252,0.08)]">
+    <div className="bg-[#F1F5F9] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-auto">
+      <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0]">
         <h3 className="font-bold text-[#000000]">So sánh Nhà cung cấp</h3>
         <button onClick={onClose} className="text-[#000000] hover:text-[#000000] transition-colors"><X size={16} /></button>
       </div>
@@ -583,7 +583,7 @@ export default function SupplierDiscoveryPage() {
         {/* ── Page header ── */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-[#A85032] flex items-center justify-center shadow-lg shadow-violet-500/30">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-[#1D4ED8] flex items-center justify-center shadow-lg shadow-violet-500/30">
               <Sparkles size={15} className="text-[#000000]" />
             </div>
             <h1 className="text-xl font-black text-[#000000]">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
@@ -593,7 +593,7 @@ export default function SupplierDiscoveryPage() {
         </div>
 
         {/* ── Search form ── */}
-        <div className="bg-[#FAF8F5] border border-[rgba(240,246,252,0.08)] rounded-2xl p-4 mb-5">
+        <div className="bg-[#F1F5F9] border border-[#E2E8F0] rounded-2xl p-4 mb-5">
           {/* Main query */}
           <div className="flex gap-2 mb-3">
             <div className="relative flex-1">
@@ -610,7 +610,7 @@ export default function SupplierDiscoveryPage() {
             <button
               onClick={handleSearch}
               disabled={loading || !query.trim()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-[#A85032] text-[#000000] hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-violet-500/20"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-[#1D4ED8] text-[#000000] hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-violet-500/20"
             >
               {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
               Tìm kiếm AI
@@ -623,12 +623,12 @@ export default function SupplierDiscoveryPage() {
               value={location}
               onChange={e => setLocation(e.target.value)}
               placeholder="Khu vực..."
-              className="w-32 px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
+              className="w-32 px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
             />
             <select
               value={companySize}
               onChange={e => setCompanySize(e.target.value as '' | 'STARTUP' | 'SME' | 'ENTERPRISE')}
-              className="px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#000000] focus:outline-none focus:border-violet-500/40"
+              className="px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-[#000000] focus:outline-none focus:border-violet-500/40"
             >
               <option value="">Quy mô</option>
               <option value="STARTUP">Startup</option>
@@ -639,7 +639,7 @@ export default function SupplierDiscoveryPage() {
               <button
                 key={p.key}
                 onClick={() => togglePriority(p.key)}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${priorities.includes(p.key) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#000000] border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.2)]'}`}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${priorities.includes(p.key) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#000000] border-[#E2E8F0] hover:border-[rgba(240,246,252,0.2)]'}`}
               >
                 {p.icon}{p.label}
               </button>
@@ -661,7 +661,7 @@ export default function SupplierDiscoveryPage() {
                   value={products}
                   onChange={e => setProducts(e.target.value)}
                   placeholder="VD: laptop Dell, máy in HP..."
-                  className="w-full px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
+                  className="w-full px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
                 />
               </div>
               <div>
@@ -671,7 +671,7 @@ export default function SupplierDiscoveryPage() {
                   min={1} max={20}
                   value={limit}
                   onChange={e => setLimit(Math.min(20, Math.max(1, Number(e.target.value))))}
-                  className="w-24 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#000000] focus:outline-none focus:border-violet-500/40"
+                  className="w-24 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-[#000000] focus:outline-none focus:border-violet-500/40"
                 />
               </div>
               {categories.length > 0 && (
@@ -682,7 +682,7 @@ export default function SupplierDiscoveryPage() {
                       <button
                         key={c.id}
                         onClick={() => toggleCategory(c.name)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${selectedCategories.includes(c.name) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#000000] border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.2)]'}`}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${selectedCategories.includes(c.name) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#000000] border-[#E2E8F0] hover:border-[rgba(240,246,252,0.2)]'}`}
                       >
                         {c.name}
                       </button>
@@ -705,7 +705,7 @@ export default function SupplierDiscoveryPage() {
         {loading && (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#FAF8F5] p-4 animate-pulse">
+              <div key={i} className="rounded-xl border border-[#E2E8F0] bg-[#F1F5F9] p-4 animate-pulse">
                 <div className="h-4 w-48 bg-[rgba(240,246,252,0.05)] rounded mb-2" />
                 <div className="h-3 w-72 bg-[rgba(240,246,252,0.03)] rounded mb-3" />
                 <div className="h-3 w-full bg-[rgba(240,246,252,0.03)] rounded" />
@@ -750,7 +750,7 @@ export default function SupplierDiscoveryPage() {
                 )}
                 <button
                   onClick={handleExport}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[rgba(240,246,252,0.05)] text-[#000000] border border-[rgba(240,246,252,0.08)] hover:border-[rgba(240,246,252,0.15)] transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[rgba(240,246,252,0.05)] text-[#000000] border border-[#E2E8F0] hover:border-[rgba(240,246,252,0.15)] transition-colors"
                 >
                   <Download size={11} />Export CSV
                 </button>
@@ -785,7 +785,7 @@ export default function SupplierDiscoveryPage() {
             )}
 
             {/* ── AI Chat ── */}
-            <div className="mt-8 bg-[#FAF8F5] border border-[rgba(240,246,252,0.08)] rounded-2xl overflow-hidden">
+            <div className="mt-8 bg-[#F1F5F9] border border-[#E2E8F0] rounded-2xl overflow-hidden">
               <button
                 onClick={() => setChatOpen(v => !v)}
                 className="w-full flex items-center gap-2 p-4 text-left hover:bg-[rgba(240,246,252,0.03)] transition-colors"
@@ -835,7 +835,7 @@ export default function SupplierDiscoveryPage() {
                       onChange={e => setChatInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleAiChat()}
                       placeholder="Hỏi AI về nhà cung cấp trong kết quả..."
-                      className="flex-1 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
+                      className="flex-1 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
                     />
                     <button
                       onClick={handleAiChat}
@@ -862,7 +862,7 @@ export default function SupplierDiscoveryPage() {
                 <button
                   key={s}
                   onClick={() => { setQuery(s); }}
-                  className="px-3 py-1.5 rounded-lg text-[11px] bg-[rgba(240,246,252,0.04)] border border-[rgba(240,246,252,0.08)] text-[#000000] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-[11px] bg-[#F1F5F9] border border-[#E2E8F0] text-[#000000] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
                 >
                   {s}
                 </button>

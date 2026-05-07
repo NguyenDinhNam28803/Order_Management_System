@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -27,7 +27,7 @@ const Tooltip = ({ children, content, position = 'top' }: { children: React.Reac
                     position === 'left' ? 'right-full top-1/2 -translate-y-1/2 mr-2' :
                     'left-full top-1/2 -translate-y-1/2 ml-2'
                 }`}>
-                    <div className="bg-[#1A1D23] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-2xl max-w-xs text-xs text-[#F2EFE9] whitespace-normal min-w-[220px]">
+                    <div className="bg-[#0F172A] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-2xl max-w-xs text-xs text-[#F8FAFC] whitespace-normal min-w-[220px]">
                         {content}
                     </div>
                 </div>
@@ -207,7 +207,7 @@ export default function ProcurementSupplierDetailPage() {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
             case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
             case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
-            default: return "bg-[#1A1D23] text-[#F2EFE9] border-[rgba(148,163,184,0.1)]";
+            default: return "bg-[#0F172A] text-[#F8FAFC] border-[rgba(148,163,184,0.1)]";
         }
     };
 
@@ -221,10 +221,10 @@ export default function ProcurementSupplierDetailPage() {
     const getStatusColor = (status?: string) => {
         switch (status) {
             case "COMPLETED": return "text-black bg-emerald-500/10";
-            case "SHIPPED": return "text-[#CB7A62] bg-[#B4533A]/10";
+            case "SHIPPED": return "text-[#3B82F6] bg-[#2563EB]/10";
             case "CONFIRMED": return "text-yellow-400 bg-yellow-500/10";
             case "CANCELLED": return "text-black bg-rose-500/10";
-            default: return "text-[#F2EFE9] bg-[#1A1D23]";
+            default: return "text-[#F8FAFC] bg-[#0F172A]";
         }
     };
 
@@ -233,7 +233,7 @@ export default function ProcurementSupplierDetailPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center">
-                <Loader2 size={32} className="animate-spin text-[#B4533A]" />
+                <Loader2 size={32} className="animate-spin text-[#2563EB]" />
             </div>
         );
     }
@@ -252,7 +252,7 @@ export default function ProcurementSupplierDetailPage() {
     return (
         <main className="min-h-screen bg-[#FFFFFF] text-[#000000]">
             {/* Header */}
-            <div className="bg-[#FAF8F5] border-b border-[rgba(148,163,184,0.1)]">
+            <div className="bg-[#F1F5F9] border-b border-[rgba(148,163,184,0.1)]">
                 <div className="max-w-[1400px] mx-auto px-8 py-6">
                     <button 
                         onClick={() => router.back()}
@@ -264,8 +264,8 @@ export default function ProcurementSupplierDetailPage() {
                     
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="h-16 w-16 bg-[#B4533A]/10 rounded-2xl flex items-center justify-center border border-[#B4533A]/20">
-                                <Building2 size={32} className="text-[#B4533A]" />
+                            <div className="h-16 w-16 bg-[#2563EB]/10 rounded-2xl flex items-center justify-center border border-[#2563EB]/20">
+                                <Building2 size={32} className="text-[#2563EB]" />
                             </div>
                             <div>
                                 <div className="flex items-center gap-3 mb-1">
@@ -297,7 +297,7 @@ export default function ProcurementSupplierDetailPage() {
                             <button
                                 onClick={handleEvaluate}
                                 disabled={evaluating}
-                                className="flex items-center gap-2 bg-[#B4533A] hover:bg-[#A85032] text-[#000000] px-6 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50"
+                                className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-6 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50"
                             >
                                 {evaluating ? (
                                     <Loader2 size={18} className="animate-spin" />
@@ -312,7 +312,7 @@ export default function ProcurementSupplierDetailPage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="bg-[#FAF8F5] border-b border-[rgba(148,163,184,0.1)]">
+            <div className="bg-[#F1F5F9] border-b border-[rgba(148,163,184,0.1)]">
                 <div className="max-w-[1400px] mx-auto px-8">
                     <div className="flex gap-8">
                         {([
@@ -325,7 +325,7 @@ export default function ProcurementSupplierDetailPage() {
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 py-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-all ${
                                     activeTab === tab.id
-                                        ? "text-[#B4533A] border-[#B4533A]"
+                                        ? "text-[#2563EB] border-[#2563EB]"
                                         : "text-[#000000] border-transparent hover:text-[#000000]"
                                 }`}
                             >
@@ -344,7 +344,7 @@ export default function ProcurementSupplierDetailPage() {
                         {/* KPI Overview Cards with Progress Bars */}
                         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* OTD Score */}
-                            <div className="bg-[#FAF8F5] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-emerald-500/10 rounded-lg">
@@ -378,15 +378,15 @@ export default function ProcurementSupplierDetailPage() {
                             </div>
                             
                             {/* Quality Score */}
-                            <div className="bg-[#FAF8F5] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
-                                        <div className="p-2 bg-[#B4533A]/10 rounded-lg">
-                                            <Package size={16} className="text-[#B4533A]" />
+                                        <div className="p-2 bg-[#2563EB]/10 rounded-lg">
+                                            <Package size={16} className="text-[#2563EB]" />
                                         </div>
                                         <Tooltip content={
                                             <div className="space-y-2">
-                                                <p className="font-bold text-[#CB7A62]">Quality Score</p>
+                                                <p className="font-bold text-[#3B82F6]">Quality Score</p>
                                                 <p>Đánh giá chất lượng sản phẩm và dịch vụ</p>
                                                 <ul className="list-disc pl-4 space-y-0.5 text-[#000000]">
                                                     <li>Tỷ lệ đồng ý hàng (GRN)</li>
@@ -397,7 +397,7 @@ export default function ProcurementSupplierDetailPage() {
                                                 <p className="text-[#000000]">Trọng số: 30% trong điểm tổng</p>
                                             </div>
                                         }>
-                                            <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-[#CB7A62] transition-colors">Quality Score</span>
+                                            <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-[#3B82F6] transition-colors">Quality Score</span>
                                         </Tooltip>
                                     </div>
                                     <span className={`text-2xl font-black ${getScoreColor(latestKPI?.qualityScore)}`}>
@@ -417,7 +417,7 @@ export default function ProcurementSupplierDetailPage() {
                             </div>
                             
                             {/* Price Score */}
-                            <div className="bg-[#FAF8F5] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-yellow-500/10 rounded-lg">
@@ -456,7 +456,7 @@ export default function ProcurementSupplierDetailPage() {
                             </div>
                             
                             {/* Manual Score */}
-                            <div className="bg-[#FAF8F5] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-purple-500/10 rounded-lg">
@@ -498,24 +498,24 @@ export default function ProcurementSupplierDetailPage() {
                         </div>
 
                         {/* Overall Score Card */}
-                        <div className="bg-gradient-to-br from-[#B4533A]/10 via-[#8B5CF6]/10 to-[#EC4899]/10 rounded-2xl p-8 border border-[#B4533A]/20 relative">
+                        <div className="bg-gradient-to-br from-[#2563EB]/10 via-[#8B5CF6]/10 to-[#EC4899]/10 rounded-2xl p-8 border border-[#2563EB]/20 relative">
                             <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <Sparkles size={80} className="text-[#B4533A]" />
+                                <Sparkles size={80} className="text-[#2563EB]" />
                             </div>
                             
                             <div className="relative z-10">
                                 <div className="flex items-center gap-2 mb-4">
-                                    <Target size={16} className="text-[#B4533A]" />
+                                    <Target size={16} className="text-[#2563EB]" />
                                     <Tooltip content={
                                         <div className="space-y-2">
-                                            <p className="font-bold text-[#B4533A]">Công thức tính Overall Score</p>
+                                            <p className="font-bold text-[#2563EB]">Công thức tính Overall Score</p>
                                             <div className="space-y-1">
                                                 <div className="flex justify-between gap-4">
                                                     <span className="text-black">OTD × 30%</span>
                                                     <span className="text-[#000000]">{(latestKPI?.otdScore || 0).toFixed(1)} × 0.3 = {((latestKPI?.otdScore || 0) * 0.3).toFixed(1)}</span>
                                                 </div>
                                                 <div className="flex justify-between gap-4">
-                                                    <span className="text-[#CB7A62]">Quality × 30%</span>
+                                                    <span className="text-[#3B82F6]">Quality × 30%</span>
                                                     <span className="text-[#000000]">{(latestKPI?.qualityScore || 0).toFixed(1)} × 0.3 = {((latestKPI?.qualityScore || 0) * 0.3).toFixed(1)}</span>
                                                 </div>
                                                 <div className="flex justify-between gap-4">
@@ -530,7 +530,7 @@ export default function ProcurementSupplierDetailPage() {
                                             <div className="border-t border-[rgba(148,163,184,0.2)] pt-2 mt-2">
                                                 <div className="flex justify-between">
                                                     <span className="font-bold text-[#000000]">TỔNG</span>
-                                                    <span className="font-bold text-[#B4533A]">
+                                                    <span className="font-bold text-[#2563EB]">
                                                         {((latestKPI?.otdScore || 0) * 0.3 + 
                                                           (latestKPI?.qualityScore || 0) * 0.3 + 
                                                           (latestKPI?.priceScore || 0) * 0.2 + 
@@ -544,8 +544,8 @@ export default function ProcurementSupplierDetailPage() {
                                         </div>
                                     } position="bottom">
                                         <div className="flex items-center gap-1 cursor-help">
-                                            <p className="text-[#000000] text-xs font-bold uppercase tracking-wider hover:text-[#B4533A] transition-colors">Overall Score</p>
-                                            <HelpCircle size={14} className="text-[#000000] hover:text-[#B4533A]" />
+                                            <p className="text-[#000000] text-xs font-bold uppercase tracking-wider hover:text-[#2563EB] transition-colors">Overall Score</p>
+                                            <HelpCircle size={14} className="text-[#000000] hover:text-[#2563EB]" />
                                         </div>
                                     </Tooltip>
                                 </div>
@@ -587,7 +587,7 @@ export default function ProcurementSupplierDetailPage() {
                                 {/* Overall Progress Bar */}
                                 <div className="h-3 bg-[#FFFFFF] rounded-full overflow-hidden mb-4">
                                     <div 
-                                        className={`h-full rounded-full transition-all duration-1000 bg-gradient-to-r from-[#B4533A] to-[#8B5CF6]`}
+                                        className={`h-full rounded-full transition-all duration-1000 bg-gradient-to-r from-[#2563EB] to-[#8B5CF6]`}
                                         style={{ width: `${getScorePercentage(latestKPI?.overallScore)}%` }}
                                     />
                                 </div>
@@ -627,7 +627,7 @@ export default function ProcurementSupplierDetailPage() {
 
                         {/* Quick Stats Row */}
                         <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-[#FAF8F5] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] flex items-center gap-3">
+                            <div className="bg-[#F1F5F9] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] flex items-center gap-3">
                                 <div className="p-2 bg-emerald-500/10 rounded-lg">
                                     <ShoppingBag size={16} className="text-black" />
                                 </div>
@@ -636,7 +636,7 @@ export default function ProcurementSupplierDetailPage() {
                                     <p className="text-xs text-[#000000]">Tổng PO</p>
                                 </div>
                             </div>
-                            <div className="bg-[#FAF8F5] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] flex items-center gap-3">
+                            <div className="bg-[#F1F5F9] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] flex items-center gap-3">
                                 <div className="p-2 bg-rose-500/10 rounded-lg">
                                     <AlertTriangle size={16} className="text-black" />
                                 </div>
@@ -647,16 +647,16 @@ export default function ProcurementSupplierDetailPage() {
                                     <p className="text-xs text-[#000000]">Tranh chấp</p>
                                 </div>
                             </div>
-                            <div className="bg-[#FAF8F5] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] flex items-center gap-3">
-                                <div className="p-2 bg-[#B4533A]/10 rounded-lg">
-                                    <CheckCircle size={16} className="text-[#CB7A62]" />
+                            <div className="bg-[#F1F5F9] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] flex items-center gap-3">
+                                <div className="p-2 bg-[#2563EB]/10 rounded-lg">
+                                    <CheckCircle size={16} className="text-[#3B82F6]" />
                                 </div>
                                 <div>
                                     <p className="text-xl font-black text-[#000000]">{latestKPI?.poCount || "0"}</p>
                                     <p className="text-xs text-[#000000]">PO đã đánh giá</p>
                                 </div>
                             </div>
-                            <div className="bg-[#FAF8F5] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] flex items-center gap-3">
+                            <div className="bg-[#F1F5F9] rounded-xl p-4 border border-[rgba(148,163,184,0.1)] flex items-center gap-3">
                                 <div className="p-2 bg-purple-500/10 rounded-lg">
                                     <Shield size={16} className="text-black" />
                                 </div>
@@ -673,7 +673,7 @@ export default function ProcurementSupplierDetailPage() {
                     <div className="space-y-6">
                         <h2 className="text-xl font-black text-[#000000] uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
                         
-                        <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                             <table className="erp-table text-xs">
                                 <thead className="bg-[#FFFFFF]">
                                     <tr>
@@ -713,7 +713,7 @@ export default function ProcurementSupplierDetailPage() {
                         </div>
 
                         {!kpiHistory.length && (
-                            <div className="text-center py-12 bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                            <div className="text-center py-12 bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)]">
                                 <BarChart3 size={48} className="text-[#000000] mx-auto mb-4" />
                                 <p className="text-[#000000] font-bold">Chưa có dữ liệu đánh giá</p>
                                 <p className="text-[#000000] text-sm mt-2">Chạy đánh giá AI để tạo báo cáo KPI</p>
@@ -730,11 +730,11 @@ export default function ProcurementSupplierDetailPage() {
                             </h2>
                             <Tooltip content={
                                 <div className="space-y-2 max-w-xs">
-                                    <p className="font-bold text-[#B4533A]">3-Way Matching (So khớp 3 chiều)</p>
+                                    <p className="font-bold text-[#2563EB]">3-Way Matching (So khớp 3 chiều)</p>
                                     <p>Quy trình kiểm tra thanh toán chuẩn:</p>
                                     <div className="space-y-1 text-[#000000]">
                                         <div className="flex items-start gap-2">
-                                            <span className="bg-[#B4533A]/20 text-[#CB7A62] px-1.5 rounded text-[10px] font-bold">1</span>
+                                            <span className="bg-[#2563EB]/20 text-[#3B82F6] px-1.5 rounded text-[10px] font-bold">1</span>
                                             <span><strong>PO</strong> - Purchase Order (Đơn đặt hàng)</span>
                                         </div>
                                         <div className="flex items-start gap-2">
@@ -751,15 +751,15 @@ export default function ProcurementSupplierDetailPage() {
                                     </p>
                                 </div>
                             }>
-                                <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1A1D23] rounded-lg border border-[rgba(148,163,184,0.1)] cursor-help hover:border-[#B4533A]/50 transition-colors">
-                                    <Scale size={14} className="text-[#B4533A]" />
+                                <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0F172A] rounded-lg border border-[rgba(148,163,184,0.1)] cursor-help hover:border-[#2563EB]/50 transition-colors">
+                                    <Scale size={14} className="text-[#2563EB]" />
                                     <span className="text-xs text-[#000000]">3-Way Matching</span>
                                     <HelpCircle size={12} className="text-[#000000]" />
                                 </div>
                             </Tooltip>
                         </div>
                         
-                        <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                             <table className="erp-table text-xs">
                                 <thead className="bg-[#FFFFFF]">
                                     <tr>
@@ -773,7 +773,7 @@ export default function ProcurementSupplierDetailPage() {
                                 <tbody>
                                     {supplierPOs.map((po) => (
                                         <tr key={po.id} className="border-t border-[rgba(148,163,184,0.05)]">
-                                            <td className="px-6 py-4 text-sm font-bold text-[#B4533A]">
+                                            <td className="px-6 py-4 text-sm font-bold text-[#2563EB]">
                                                 {po.poNumber}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-[#000000]">
@@ -797,7 +797,7 @@ export default function ProcurementSupplierDetailPage() {
                         </div>
 
                         {supplierPOs.length === 0 && (
-                            <div className="text-center py-12 bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                            <div className="text-center py-12 bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)]">
                                 <ShoppingBag size={48} className="text-[#000000] mx-auto mb-4" />
                                 <p className="text-[#000000] font-bold">Chưa có PO nào</p>
                                 <p className="text-[#000000] text-sm mt-2">Bạn chưa tạo PO nào với nhà cung cấp này</p>
@@ -810,7 +810,7 @@ export default function ProcurementSupplierDetailPage() {
             {/* Manual Review Modal */}
             {showReviewModal && (
                 <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] max-w-lg w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-[rgba(148,163,184,0.1)]">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 import { TrendingUp, PieChart, Wallet, ArrowRight, Calendar, Building, Filter, Download, ChevronDown } from "lucide-react";
@@ -64,16 +64,16 @@ export default function SpendTrackingPage() {
                                 setSelectedCC(e.target.value);
                                 setCurrentPage(1); // Reset pagination when filter changes
                             }}
-                            className="bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/50 rounded-xl text-[10px] font-black uppercase tracking-widest text-[#000000] px-4 py-3 pr-10 outline-none appearance-none cursor-pointer transition-all min-w-[200px] focus:border-[#B4533A] focus:ring-1 focus:ring-[#B4533A]/20"
+                            className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/50 rounded-xl text-[10px] font-black uppercase tracking-widest text-[#000000] px-4 py-3 pr-10 outline-none appearance-none cursor-pointer transition-all min-w-[200px] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20"
                         >
-                            <option value="ALL" className="bg-[#FAF8F5] text-[#000000]">Tất cả Trung tâm chi phí</option>
+                            <option value="ALL" className="bg-[#F1F5F9] text-[#000000]">Tất cả Trung tâm chi phí</option>
                             {myCostCenters.map(cc => (
-                                <option key={cc.id} value={cc.id} className="bg-[#FAF8F5] text-[#000000]">
+                                <option key={cc.id} value={cc.id} className="bg-[#F1F5F9] text-[#000000]">
                                     {cc.name} ({cc.code})
                                 </option>
                             ))}
                         </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#000000] group-hover:text-[#B4533A] transition-colors">
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#000000] group-hover:text-[#2563EB] transition-colors">
                             <ChevronDown size={14} />
                         </div>
                     </div>
@@ -137,7 +137,7 @@ export default function SpendTrackingPage() {
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 {/* Donut Chart Card */}
-                <div className="bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                     <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                         <h4 className="text-xs font-black uppercase tracking-widest text-[#000000] leading-none">Phân Bổ Ngân Sách</h4>
                     </div>
@@ -146,7 +146,7 @@ export default function SpendTrackingPage() {
                             title=""
                             data={[
                                 { label: 'Đã chi', value: stats.spent, color: '#10B981' },
-                                { label: 'Cam kết', value: stats.committed - stats.spent, color: '#B4533A' },
+                                { label: 'Cam kết', value: stats.committed - stats.spent, color: '#2563EB' },
                                 { label: 'Còn lại', value: remaining, color: remaining < 0 ? '#EF4444' : '#8B5CF6' },
                             ]}
                             centerLabel="Tổng"
@@ -156,7 +156,7 @@ export default function SpendTrackingPage() {
                 </div>
 
                 {/* Bar Chart Card with Pagination */}
-                <div className="bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                     <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex items-center justify-between">
                         <h4 className="text-xs font-black uppercase tracking-widest text-[#000000] leading-none">Chi Tiêu Theo Cost Center</h4>
                         {filteredAllocations.length > 5 && (
@@ -169,7 +169,7 @@ export default function SpendTrackingPage() {
                             data={filteredAllocations.slice(0, 5).map(a => ({
                                 label: costCenters.find(cc => cc.id === a.costCenterId)?.code || 'Unknown',
                                 value: (Number(a.spentAmount) + Number(a.committedAmount)),
-                                color: ((Number(a.spentAmount) + Number(a.committedAmount)) / (Number(a.allocatedAmount) || 1)) > 0.8 ? '#EF4444' : '#B4533A'
+                                color: ((Number(a.spentAmount) + Number(a.committedAmount)) / (Number(a.allocatedAmount) || 1)) > 0.8 ? '#EF4444' : '#2563EB'
                             }))}
                         />
                     </div>
@@ -177,7 +177,7 @@ export default function SpendTrackingPage() {
                         <div className="px-6 py-3 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)]">
                             <p className="text-[10px] text-[#000000] text-center">
                                 Hiển thị top 5 cost center chi tiêu nhiều nhất • 
-                                <span className="text-[#B4533A] font-bold">{filteredAllocations.length - 5} cost center khác</span>
+                                <span className="text-[#2563EB] font-bold">{filteredAllocations.length - 5} cost center khác</span>
                             </p>
                         </div>
                     )}
@@ -185,10 +185,10 @@ export default function SpendTrackingPage() {
             </div>
 
             {/* Allocation Table Detail */}
-            <div className="bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#FFFFFF]">
                     <h4 className="text-xs font-black uppercase tracking-widest text-[#000000] leading-none">Chi tiết phân bổ ngân sách</h4>
-                    <button className="flex items-center gap-2 text-[#000000] hover:text-[#B4533A] transition-colors">
+                    <button className="flex items-center gap-2 text-[#000000] hover:text-[#2563EB] transition-colors">
                         <Download size={16} />
                         <span className="text-[10px] font-black uppercase tracking-widest">Xuất báo cáo</span>
                     </button>
@@ -216,7 +216,7 @@ export default function SpendTrackingPage() {
                                     <tr key={alloc.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
                                         <td className="py-5 px-6">
                                             <div className="flex items-center gap-3">
-                                                <div className="h-8 w-8 rounded-lg bg-[#1A1D23] flex items-center justify-center text-[#000000] group-hover:scale-110 transition-transform">
+                                                <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-[#000000] group-hover:scale-110 transition-transform">
                                                     <Building size={14} />
                                                 </div>
                                                 <div className="flex flex-col">
@@ -226,12 +226,12 @@ export default function SpendTrackingPage() {
                                             </div>
                                         </td>
                                         <td className="py-5 px-6 font-bold text-[#000000]">{formatVND(Number(alloc.allocatedAmount))}</td>
-                                        <td className="py-5 px-6 text-right text-[#B4533A] font-bold">{formatVND(Number(alloc.committedAmount))}</td>
+                                        <td className="py-5 px-6 text-right text-[#2563EB] font-bold">{formatVND(Number(alloc.committedAmount))}</td>
                                         <td className="py-5 px-6 text-right font-bold text-[#000000]">{formatVND(Number(alloc.spentAmount))}</td>
                                         <td className="py-5 px-6 text-center min-w-[120px]">
                                             <div className="flex items-center gap-2">
                                                 <div className="h-1.5 flex-1 bg-[#FFFFFF] rounded-full overflow-hidden">
-                                                    <div className={`h-full rounded-full ${pct > 90 ? 'bg-rose-400' : 'bg-[#B4533A]'}`} style={{width: `${Math.min(pct, 100)}%`}} />
+                                                    <div className={`h-full rounded-full ${pct > 90 ? 'bg-rose-400' : 'bg-[#2563EB]'}`} style={{width: `${Math.min(pct, 100)}%`}} />
                                                 </div>
                                                 <span className="text-[10px] font-black text-[#000000]">{pct.toFixed(0)}%</span>
                                             </div>
@@ -259,7 +259,7 @@ export default function SpendTrackingPage() {
                             <button
                                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                 disabled={currentPage === 1}
-                                className="px-3 py-1.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-[#000000] hover:bg-[#1A1D23] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-[#000000] hover:bg-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                             >
                                 <ChevronDown size={12} className="rotate-90" /> Trước
                             </button>
@@ -270,8 +270,8 @@ export default function SpendTrackingPage() {
                                         onClick={() => setCurrentPage(page)}
                                         className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
                                             currentPage === page
-                                                ? 'bg-[#B4533A] text-[#000000]'
-                                                : 'bg-[#FAF8F5] text-[#000000] hover:text-[#000000] hover:bg-[#1A1D23]'
+                                                ? 'bg-[#2563EB] text-[#000000]'
+                                                : 'bg-[#F1F5F9] text-[#000000] hover:text-[#000000] hover:bg-[#0F172A]'
                                         }`}
                                     >
                                         {page}
@@ -281,7 +281,7 @@ export default function SpendTrackingPage() {
                             <button
                                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-1.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-[#000000] hover:bg-[#1A1D23] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-[#000000] hover:bg-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                             >
                                 Sau <ChevronDown size={12} className="-rotate-90" />
                             </button>

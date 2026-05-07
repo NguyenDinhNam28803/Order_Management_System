@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 
@@ -98,7 +98,7 @@ export default function RFQClosedLoopSimulation() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', backgroundColor: '#000000', padding: '20px', borderRadius: '16px', border: '1px solid #000000' }}>
                 <div>
                     <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#1e293b' }}>Chu trình RFQ Khép kín (Simulation)</h1>
-                    <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#000000' }}>Đang quản trị với vai trò: <strong style={{ color: currentRole === 'PO' ? '#A85032' : '#059669' }}>{currentRole}</strong></p>
+                    <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#000000' }}>Đang quản trị với vai trò: <strong style={{ color: currentRole === 'PO' ? '#1D4ED8' : '#059669' }}>{currentRole}</strong></p>
                 </div>
                 <button 
                     onClick={toggleRole}
@@ -131,7 +131,7 @@ export default function RFQClosedLoopSimulation() {
                                         <td style={{ padding: '15px', textAlign: 'right' }}>
                                             <button 
                                                 onClick={() => handleCreateRFQ(p)}
-                                                style={{ backgroundColor: '#A85032', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}
+                                                style={{ backgroundColor: '#1D4ED8', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}
                                             >
                                                 Tạo RFQ
                                             </button>
@@ -229,7 +229,7 @@ export default function RFQClosedLoopSimulation() {
                         <div style={{ display: 'flex', gap: '10px' }}>
                             <button 
                                 onClick={confirmSendRFQ}
-                                style={{ flex: 2, backgroundColor: '#A85032', color: 'white', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                                style={{ flex: 2, backgroundColor: '#1D4ED8', color: 'white', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
                             >
                                 Gửi RFQ đồng loạt
                             </button>

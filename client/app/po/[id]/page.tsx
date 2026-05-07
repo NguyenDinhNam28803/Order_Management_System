@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -85,7 +85,7 @@ export default function PODetailPage() {
         <div>
           <button 
             onClick={() => router.back()} 
-            className="flex items-center gap-2 text-xs font-bold text-[#000000] hover:text-[#B4533A] transition-colors mb-4 uppercase tracking-widest"
+            className="flex items-center gap-2 text-xs font-bold text-[#000000] hover:text-[#2563EB] transition-colors mb-4 uppercase tracking-widest"
           >
             <ArrowLeft size={14} /> Quay lại danh sách
           </button>
@@ -110,7 +110,7 @@ export default function PODetailPage() {
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="btn-primary w-full md:w-auto text-xs uppercase tracking-widest shadow-xl shadow-[#B4533A]/20"
+                className="btn-primary w-full md:w-auto text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/20"
               >
                 {submitting ? <Clock size={16} className="animate-spin" /> : <Send size={16} />}
                 Gửi phê duyệt
@@ -142,7 +142,7 @@ export default function PODetailPage() {
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#000000]">PR Tham Chiếu</div>
-              <p className="text-sm font-bold text-[#B4533A] cursor-pointer hover:underline" onClick={() => router.push(`/pr/${po.prId}`)}>
+              <p className="text-sm font-bold text-[#2563EB] cursor-pointer hover:underline" onClick={() => router.push(`/pr/${po.prId}`)}>
                 {po.pr?.prNumber || (po.prId ? `PR-${po.prId.substring(0, 8)}...` : 'N/A')}
               </p>
             </div>
@@ -154,11 +154,11 @@ export default function PODetailPage() {
         </div>
 
         <div className="erp-card flex flex-col justify-between relative overflow-hidden">
-           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#B4533A]/5 rounded-full blur-2xl"></div>
+           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#2563EB]/5 rounded-full blur-2xl"></div>
            <div>
               <h3 className="section-title">Tổng Mua Tiêu Chuẩn</h3>
               <div className="text-4xl font-black text-[#000000] mt-2 tracking-tight">
-                  {po.totalAmount?.toLocaleString('vi-VN')} <span className="text-xl text-[#B4533A]">VND</span>
+                  {po.totalAmount?.toLocaleString('vi-VN')} <span className="text-xl text-[#2563EB]">VND</span>
               </div>
            </div>
         </div>
@@ -184,7 +184,7 @@ export default function PODetailPage() {
                 <tr key={item.id}>
                   <td className="text-center font-bold text-[#000000]">{idx + 1}</td>
                   <td className="font-bold text-[#000000]">{item.description || "N/A"}</td>
-                  <td className="text-right font-bold text-[#B4533A]">{item.qty}</td>
+                  <td className="text-right font-bold text-[#2563EB]">{item.qty}</td>
                   <td className="text-right font-semibold text-[#000000]">
                     {item.unitPrice?.toLocaleString('vi-VN')} ₫
                   </td>

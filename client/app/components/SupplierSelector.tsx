@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 import Select, { components, StylesConfig, OptionProps, SingleValueProps } from "react-select";
@@ -329,7 +329,7 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
           {/* Label */}
           <div className="flex-shrink-0">
             <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-              <Building2 size={18} className="text-[#B4533A]" />
+              <Building2 size={18} className="text-[#2563EB]" />
               Chọn Nhà Cung Cấp
             </label>
             <p className="text-xs text-gray-500 mt-1">
@@ -402,7 +402,7 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
           <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#B4533A] to-[#CB7A62] flex items-center justify-center text-white font-bold text-lg">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#3B82F6] flex items-center justify-center text-white font-bold text-lg">
                   {selectedSupplier.name.charAt(0)}
                 </div>
                 <div>
@@ -495,7 +495,7 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
               {onViewHistory && (
                 <button
                   onClick={() => onViewHistory(selectedSupplier)}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-[#B4533A] text-white font-medium rounded-lg hover:bg-[#9a4630] transition-colors shadow-md hover:shadow-lg"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-[#9a4630] transition-colors shadow-md hover:shadow-lg"
                 >
                   <TrendingUp size={18} />
                   <span>Xem Lịch Sử Tỷ Lệ Lỗi</span>

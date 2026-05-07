@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Sparkles, Loader2, Wand2, X, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
@@ -173,7 +173,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-linear-to-r from-[#B4533A] to-accent-violet flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-r from-[#2563EB] to-accent-violet flex items-center justify-center">
               <Wand2 size={20} className="text-[#000000]" />
             </div>
             <div>
@@ -212,7 +212,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Ví dụ: Tôi cần mua 5 laptop Dell XPS 15 cho team dev mới, ngân sách khoảng 75 triệu, cần gấp trong tuần sau..."
-                    className="w-full h-32 p-4 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] placeholder-[#000000] focus:outline-none focus:border-[#B4533A] resize-none"
+                    className="w-full h-32 p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] placeholder-[#000000] focus:outline-none focus:border-[#2563EB] resize-none"
                     disabled={isGenerating}
                   />
                   <div className="flex items-center justify-between">
@@ -222,7 +222,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                     <button
                       onClick={handleGenerate}
                       disabled={!prompt.trim() || isGenerating}
-                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#B4533A] to-[#8B5CF6] text-[#000000] rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#8B5CF6] text-[#000000] rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isGenerating ? (
                         <>
@@ -252,7 +252,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
               {draft && (
                 <div className="space-y-6 mt-4">
                   {/* PR Summary */}
-                  <div className="p-4 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl">
+                  <div className="p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h3 className="font-semibold text-[#000000]">{draft.title}</h3>
@@ -288,7 +288,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                     <h4 className="text-sm font-medium text-[#000000] mb-3">Danh sách items ({draft.items?.length})</h4>
                     <div className="overflow-x-auto rounded-xl border border-[rgba(148,163,184,0.1)]">
                       <table className="erp-table text-xs m-0">
-                        <thead className="bg-[#FAF8F5]">
+                        <thead className="bg-[#F1F5F9]">
                           <tr>
                             <th className="px-4 py-3 text-left text-[#000000] font-medium">#</th>
                             <th className="px-4 py-3 text-left text-[#000000] font-medium">Mô tả</th>
@@ -314,7 +314,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                                   <div className="text-xs text-[#000000]">SKU: {item.sku}</div>
                                 )}
                                 {item.specNote && (
-                                  <div className="text-xs text-[#B4533A]">{item.specNote}</div>
+                                  <div className="text-xs text-[#2563EB]">{item.specNote}</div>
                                 )}
                               </td>
                               <td className="px-4 py-3 text-[#000000]">{item.qty} {item.unit}</td>
@@ -325,10 +325,10 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                             </tr>
                           ))}
                         </tbody>
-                        <tfoot className="bg-[#FAF8F5]">
+                        <tfoot className="bg-[#F1F5F9]">
                           <tr>
                             <td colSpan={4} className="px-4 py-3 text-right text-[#000000] font-medium">Tổng ước tính:</td>
-                            <td className="px-4 py-3 text-[#B4533A] font-bold">
+                            <td className="px-4 py-3 text-[#2563EB] font-bold">
                               {formatCurrency(draft.totalEstimate, draft.currency)}
                             </td>
                           </tr>
@@ -338,7 +338,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                   </div>
 
                   {/* Reasoning */}
-                  <div className="p-3 bg-[#B4533A]/5 border border-[#B4533A]/10 rounded-lg">
+                  <div className="p-3 bg-[#2563EB]/5 border border-[#2563EB]/10 rounded-lg">
                     <p className="text-xs text-[#000000]">
                       <span className="font-medium">Giải thích:</span> {draft.reasoning}
                     </p>
@@ -350,7 +350,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                       <h4 className="text-xs font-medium text-[#000000] mb-2">Dữ liệu tham khảo từ hệ thống:</h4>
                       <div className="flex flex-wrap gap-2">
                         {draft.sources.slice(0, 5).map((s, i) => (
-                          <span key={i} className="px-2 py-1 bg-[#FAF8F5] rounded text-xs text-[#000000]">
+                          <span key={i} className="px-2 py-1 bg-[#F1F5F9] rounded text-xs text-[#000000]">
                             {s.table}: {s.name} ({Math.round(s.similarity * 100)}%)
                           </span>
                         ))}
@@ -365,7 +365,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
 
         {/* Footer */}
         {draft && !showSuccess && (
-          <div className="flex items-center justify-between p-6 border-t border-[rgba(148,163,184,0.1)] bg-[#FAF8F5]/50">
+          <div className="flex items-center justify-between p-6 border-t border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]/50">
             <button
               onClick={() => setDraft(null)}
               disabled={isSubmitting}
@@ -384,7 +384,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
               <button
                 onClick={handleSubmitPr}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#B4533A] to-[#8B5CF6] text-[#000000] rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#2563EB] to-[#8B5CF6] text-[#000000] rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

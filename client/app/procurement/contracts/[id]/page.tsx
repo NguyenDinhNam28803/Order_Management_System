@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -111,15 +111,15 @@ export default function ContractDetailPage() {
             </button>
 
             {/* ── Header card ── */}
-            <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6 mb-6">
+            <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6 mb-6">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-[#B4533A]/10 border border-[#B4533A]/20 flex items-center justify-center flex-shrink-0">
-                            <FileText size={22} className="text-[#B4533A]" />
+                        <div className="w-12 h-12 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center flex-shrink-0">
+                            <FileText size={22} className="text-[#2563EB]" />
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-1">
-                                MÃ HỢP ĐỒNG — <span className="font-mono text-[#B4533A]">#{contract.contractNumber}</span>
+                                MÃ HỢP ĐỒNG — <span className="font-mono text-[#2563EB]">#{contract.contractNumber}</span>
                             </p>
                             <h1 className="text-xl font-black text-[#000000] leading-snug">{contract.title}</h1>
                             {contract.description && (
@@ -185,7 +185,7 @@ export default function ContractDetailPage() {
                 <div className="lg:col-span-2 space-y-6">
 
                     {/* General info */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
                         <h2 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
                             <Building2 size={13} /> Thông tin chung
                         </h2>
@@ -198,7 +198,7 @@ export default function ContractDetailPage() {
                     </div>
 
                     {/* Milestones */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.08)] flex items-center gap-2">
                             <Banknote size={14} className="text-[#000000]" />
                             <h2 className="text-xs font-black uppercase tracking-widest text-[#000000]">Lộ trình thanh toán</h2>
@@ -226,7 +226,7 @@ export default function ContractDetailPage() {
                                             <td className="px-6 py-3">
                                                 <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider
                                                     ${m.status === "COMPLETED" ? "bg-emerald-500/10 text-black" :
-                                                      m.status === "IN_PROGRESS" ? "bg-[#B4533A]/10 text-[#CB7A62]" :
+                                                      m.status === "IN_PROGRESS" ? "bg-[#2563EB]/10 text-[#3B82F6]" :
                                                       "bg-slate-500/10 text-black"}`}>
                                                     {m.status === "COMPLETED" ? "Hoàn thành" : m.status === "IN_PROGRESS" ? "Đang thực hiện" : "Chờ"}
                                                 </span>
@@ -247,7 +247,7 @@ export default function ContractDetailPage() {
 
                     {/* Terms & Notes */}
                     {(contract.terms || contract.notes) && (
-                        <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6 space-y-4">
+                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6 space-y-4">
                             {contract.terms && (
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-2">Điều khoản hợp đồng</p>
@@ -268,9 +268,9 @@ export default function ContractDetailPage() {
                 <div className="space-y-6">
 
                     {/* Contract value */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
                         <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-3">Tổng giá trị hợp đồng</p>
-                        <p className="text-3xl font-black text-[#B4533A] tabular-nums">
+                        <p className="text-3xl font-black text-[#2563EB] tabular-nums">
                             {Number(contract.totalValue || 0).toLocaleString("vi-VN")}
                         </p>
                         <p className="text-sm text-[#000000] mt-1">{contract.currency}</p>
@@ -286,7 +286,7 @@ export default function ContractDetailPage() {
                     </div>
 
                     {/* Signature status */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
                         <div className="flex items-center gap-2 mb-4">
                             <ShieldCheck size={14} className="text-[#000000]" />
                             <p className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Trạng thái ký số</p>
@@ -372,7 +372,7 @@ export default function ContractDetailPage() {
                     </div>
 
                     {/* User info */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
                         <div className="flex items-center gap-2 mb-3">
                             <User size={13} className="text-[#000000]" />
                             <p className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Người tạo</p>
@@ -391,7 +391,7 @@ export default function ContractDetailPage() {
             {showTerminate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={() => setShowTerminate(false)} />
-                    <div className="relative w-full max-w-md bg-[#FAF8F5] rounded-2xl border border-rose-500/20 shadow-2xl p-6">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-2xl border border-rose-500/20 shadow-2xl p-6">
                         <div className="flex items-start gap-4 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <Ban size={18} />
@@ -406,13 +406,13 @@ export default function ContractDetailPage() {
                             <textarea
                                 rows={3}
                                 placeholder="Nhập lý do chấm dứt hợp đồng..."
-                                className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.12)] rounded-xl text-sm text-[#000000] placeholder:text-[#000000] outline-none focus:border-[#B4533A]/50 resize-none transition-all"
+                                className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.12)] rounded-xl text-sm text-[#000000] placeholder:text-[#000000] outline-none focus:border-[#2563EB]/50 resize-none transition-all"
                                 value={terminateReason}
                                 onChange={e => setTerminateReason(e.target.value)}
                             />
                         </div>
                         <div className="flex gap-3 justify-end">
-                            <button onClick={() => setShowTerminate(false)} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#1A1D23] transition-all">Hủy</button>
+                            <button onClick={() => setShowTerminate(false)} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all">Hủy</button>
                             <button
                                 onClick={handleTerminate}
                                 disabled={saving || !terminateReason.trim()}

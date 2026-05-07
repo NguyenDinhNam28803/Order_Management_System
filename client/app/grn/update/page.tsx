@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import {
@@ -372,7 +372,7 @@ export default function GrnUpdatePage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-sky-600 to-[#A85032] hover:from-sky-700 hover:to-[#8F442B] disabled:opacity-50 disabled:cursor-not-allowed text-[#000000] font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
+              className="w-full bg-gradient-to-r from-sky-600 to-[#1D4ED8] hover:from-sky-700 hover:to-[#8F442B] disabled:opacity-50 disabled:cursor-not-allowed text-[#000000] font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
             >
               {submitting ? (
                 <><Loader2 className="w-4 h-4 animate-spin" />Đang cập nhật...</>

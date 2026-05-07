@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { formatVND } from "../../utils/formatUtils";
@@ -58,7 +58,7 @@ export default function DonutChart({
   const radius = (size - 20) / 2;
 
   return (
-    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
       {title && (
         <h3 className="text-sm font-bold text-[#000000] mb-4 uppercase tracking-wider">
           {title}
@@ -75,7 +75,7 @@ export default function DonutChart({
                 className="hover:opacity-80 transition-opacity"
               />
             ))}
-            <circle cx={center} cy={center} r={radius * 0.6} fill="#FAF8F5" />
+            <circle cx={center} cy={center} r={radius * 0.6} fill="#F1F5F9" />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {centerValue && (

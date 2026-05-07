@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 import { useProcurement } from "../../context/ProcurementContext";
@@ -143,8 +143,8 @@ export default function ContractsPage() {
             <div className="mt-4 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <div className="flex items-center gap-3 mb-1">
-                        <div className="w-8 h-8 rounded-lg bg-[#B4533A]/10 border border-[#B4533A]/20 flex items-center justify-center">
-                            <FileText size={16} className="text-[#B4533A]" />
+                        <div className="w-8 h-8 rounded-lg bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center">
+                            <FileText size={16} className="text-[#2563EB]" />
                         </div>
                         <h1 className="text-2xl font-black tracking-tight">Quản lý Hợp đồng</h1>
                     </div>
@@ -154,7 +154,7 @@ export default function ContractsPage() {
                 </div>
                 <button
                     onClick={openCreate}
-                    className="flex items-center gap-2 bg-[#B4533A] hover:bg-[#A85032] text-[#000000] px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-[#B4533A]/20 transition-all"
+                    className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-[#2563EB]/20 transition-all"
                 >
                     <Plus size={16} /> Tạo hợp đồng mới
                 </button>
@@ -163,13 +163,13 @@ export default function ContractsPage() {
             {/* ── Stats ── */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                 {[
-                    { label: "Tổng hợp đồng", value: stats.total, icon: FileText, color: "bg-[#B4533A]/10 text-[#B4533A]" },
+                    { label: "Tổng hợp đồng", value: stats.total, icon: FileText, color: "bg-[#2563EB]/10 text-[#2563EB]" },
                     { label: "Đang hiệu lực", value: stats.active, icon: CheckCircle2, color: "bg-emerald-500/10 text-black" },
                     { label: "Chờ duyệt", value: stats.pending, icon: Clock, color: "bg-amber-500/10 text-black" },
                     { label: "Hết hạn", value: stats.expired, icon: AlertCircle, color: "bg-orange-500/10 text-black" },
                     { label: "Tổng giá trị HĐ", value: `${(stats.totalValue / 1e6).toFixed(1)}M ₫`, icon: TrendingUp, color: "bg-purple-500/10 text-black" },
                 ].map(({ label, value, icon: Icon, color }) => (
-                    <div key={label} className="bg-[#FAF8F5] rounded-xl p-4 border border-[rgba(148,163,184,0.08)] flex items-center gap-3">
+                    <div key={label} className="bg-[#F1F5F9] rounded-xl p-4 border border-[rgba(148,163,184,0.08)] flex items-center gap-3">
                         <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
                             <Icon size={18} />
                         </div>
@@ -182,13 +182,13 @@ export default function ContractsPage() {
             </div>
 
             {/* ── Toolbar ── */}
-            <div className="bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.08)] p-4 mb-6 flex flex-col md:flex-row gap-3">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] p-4 mb-6 flex flex-col md:flex-row gap-3">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" size={16} />
                     <input
                         type="text"
                         placeholder="Tìm số hợp đồng, tiêu đề, nhà cung cấp..."
-                        className="w-full pl-10 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-medium text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/50 transition-all"
+                        className="w-full pl-10 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-medium text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/50 transition-all"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
@@ -205,7 +205,7 @@ export default function ContractsPage() {
                             key={k}
                             onClick={() => setStatus(k)}
                             className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${statusFilter === k
-                                ? "bg-[#B4533A] text-[#000000] shadow"
+                                ? "bg-[#2563EB] text-[#000000] shadow"
                                 : "text-[#000000] hover:text-[#000000]"
                                 }`}
                         >
@@ -216,7 +216,7 @@ export default function ContractsPage() {
             </div>
 
             {/* ── Table ── */}
-            <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
                 {filtered.length === 0 ? (
                     <div className="py-24 flex flex-col items-center gap-4 text-[#000000]">
                         <FileText size={40} className="opacity-20" />
@@ -257,10 +257,10 @@ export default function ContractsPage() {
                                             {/* Số HĐ */}
                                             <td className="px-5 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-lg bg-[#B4533A]/10 border border-[#B4533A]/20 flex items-center justify-center flex-shrink-0">
-                                                        <FileText size={14} className="text-[#B4533A]" />
+                                                    <div className="w-8 h-8 rounded-lg bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center flex-shrink-0">
+                                                        <FileText size={14} className="text-[#2563EB]" />
                                                     </div>
-                                                    <span className="font-black text-[#B4533A] font-mono text-xs">
+                                                    <span className="font-black text-[#2563EB] font-mono text-xs">
                                                         #{c.contractNumber}
                                                     </span>
                                                 </div>
@@ -318,7 +318,7 @@ export default function ContractsPage() {
                                                     {/* View */}
                                                     <Link
                                                         href={`/procurement/contracts/${c.id}`}
-                                                        className="p-2 rounded-lg text-[#000000] hover:text-[#B4533A] hover:bg-[#B4533A]/10 transition-all"
+                                                        className="p-2 rounded-lg text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 transition-all"
                                                         title="Xem chi tiết"
                                                     >
                                                         <Eye size={15} />
@@ -413,11 +413,11 @@ export default function ContractsPage() {
             {(modal === "create" || modal === "edit") && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-2xl bg-[#FAF8F5] rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] max-h-[90vh] flex flex-col pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-2xl bg-[#F1F5F9] rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] max-h-[90vh] flex flex-col pointer-events-auto animate-in zoom-in-95 duration-200">
                         {/* Header */}
                         <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-[2rem] flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-11 h-11 rounded-2xl bg-[#B4533A]/10 border border-[#B4533A]/20 flex items-center justify-center text-[#B4533A]">
+                                <div className="w-11 h-11 rounded-2xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB]">
                                     <FileText size={20} />
                                 </div>
                                 <div>
@@ -523,13 +523,13 @@ export default function ContractsPage() {
 
                         {/* Footer */}
                         <div className="px-8 py-6 border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-b-[2rem] flex justify-end gap-3">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#1A1D23] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all">
                                 Hủy
                             </button>
                             <button
                                 onClick={handleSave}
                                 disabled={saving || !formValid}
-                                className="px-5 py-2 rounded-xl bg-[#B4533A] hover:bg-[#A85032] text-[#000000] font-black text-sm shadow-lg shadow-[#B4533A]/20 transition-all disabled:opacity-50"
+                                className="px-5 py-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] font-black text-sm shadow-lg shadow-[#2563EB]/20 transition-all disabled:opacity-50"
                             >
                                 {saving ? "Đang lưu..." : modal === "create" ? "Tạo hợp đồng" : "Lưu thay đổi"}
                             </button>
@@ -542,7 +542,7 @@ export default function ContractsPage() {
             {modal === "delete" && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#FAF8F5] rounded-[2rem] border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-[2rem] border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-6">
                             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <Trash2 size={18} />
@@ -555,7 +555,7 @@ export default function ContractsPage() {
                             </div>
                         </div>
                         <div className="flex gap-3 justify-end">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#1A1D23] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all">
                                 Hủy
                             </button>
                             <button
@@ -574,7 +574,7 @@ export default function ContractsPage() {
             {modal === "approve" && approveTarget && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#FAF8F5] rounded-[2rem] border border-amber-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-[2rem] border border-amber-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <ShieldCheck size={18} />
@@ -598,7 +598,7 @@ export default function ContractsPage() {
                         </p>
 
                         <div className="flex gap-3 justify-end">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#1A1D23] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all">
                                 Hủy
                             </button>
                             <button
@@ -618,7 +618,7 @@ export default function ContractsPage() {
             {modal === "terminate" && terminateTarget && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#FAF8F5] rounded-[2rem] border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-[2rem] border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <Ban size={18} />
@@ -647,7 +647,7 @@ export default function ContractsPage() {
                         </p>
 
                         <div className="flex gap-3 justify-end">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#1A1D23] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all">
                                 Hủy
                             </button>
                             <button

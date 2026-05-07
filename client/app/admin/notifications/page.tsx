@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { 
@@ -162,15 +162,15 @@ export default function NotificationAdminPage() {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="group relative px-6 py-3 bg-[#FAF8F5] text-[#000000] font-bold rounded-[20px] 
-              border border-[rgba(148,163,184,0.1)] hover:text-[#000000] hover:border-[#B4533A]/50 
+            className="group relative px-6 py-3 bg-[#F1F5F9] text-[#000000] font-bold rounded-[20px] 
+              border border-[rgba(148,163,184,0.1)] hover:text-[#000000] hover:border-[#2563EB]/50 
               transition-all duration-300 flex items-center gap-2 disabled:opacity-50"
           >
             <RefreshCw size={18} className={isRefreshing ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-500"} />
             <span>LÀM MỚI</span>
           </button>
-          <button className="group relative px-6 py-3 bg-gradient-to-r from-[#B4533A] to-[#CB7A62] text-[#000000] font-bold rounded-[20px] 
-            shadow-lg shadow-[#B4533A]/20 hover:shadow-[#B4533A]/40 hover:scale-105 transition-all duration-300 
+          <button className="group relative px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-[#000000] font-bold rounded-[20px] 
+            shadow-lg shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 hover:scale-105 transition-all duration-300 
             flex items-center gap-2">
             <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
             <span>THÊM TEMPLATE</span>
@@ -181,17 +181,17 @@ export default function NotificationAdminPage() {
       {/* Template Categories */}
       <div className="space-y-6">
         {templateCategories.map((category, idx) => (
-          <div key={category.title} className="bg-[#FAF8F5] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden animate-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${idx * 100}ms` }}>
+          <div key={category.title} className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden animate-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${idx * 100}ms` }}>
             <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-[#000000] flex items-center gap-3">
-                    <span className="w-2 h-8 bg-gradient-to-b from-[#B4533A] to-[#CB7A62] rounded-full"></span>
+                    <span className="w-2 h-8 bg-gradient-to-b from-[#2563EB] to-[#3B82F6] rounded-full"></span>
                     {category.title}
                   </h2>
                   <p className="text-sm text-[#000000] mt-2 ml-5">{category.description}</p>
                 </div>
-                <span className="px-4 py-2 bg-[#B4533A]/10 text-[#CB7A62] text-sm font-bold rounded-xl border border-[#B4533A]/20">
+                <span className="px-4 py-2 bg-[#2563EB]/10 text-[#3B82F6] text-sm font-bold rounded-xl border border-[#2563EB]/20">
                   {category.templates.length} templates
                 </span>
               </div>
@@ -214,24 +214,24 @@ export default function NotificationAdminPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-gradient-to-br from-[#B4533A]/10 to-[#CB7A62]/5 rounded-4xl p-8 border border-[#B4533A]/20">
+      <div className="bg-gradient-to-br from-[#2563EB]/10 to-[#3B82F6]/5 rounded-4xl p-8 border border-[#2563EB]/20">
         <h3 className="text-lg font-bold text-[#000000] mb-6 flex items-center gap-2">
-          <Mail className="w-5 h-5 text-[#B4533A]" />
+          <Mail className="w-5 h-5 text-[#2563EB]" />
           Hướng dẫn sử dụng
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[#000000]">
           <div className="flex items-start gap-4 p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)]">
-            <div className="w-10 h-10 bg-[#B4533A]/20 rounded-xl flex items-center justify-center shrink-0">
-              <Mail className="w-5 h-5 text-[#CB7A62]" />
+            <div className="w-10 h-10 bg-[#2563EB]/20 rounded-xl flex items-center justify-center shrink-0">
+              <Mail className="w-5 h-5 text-[#3B82F6]" />
             </div>
             <div>
               <p className="font-bold text-[#000000] mb-1">Gửi email từ hệ thống</p>
-              <p className="text-[#000000]">Sử dụng API <code className="text-[#CB7A62] bg-[#B4533A]/10 px-2 py-0.5 rounded">/notifications/send</code> để gửi email với template tương ứng</p>
+              <p className="text-[#000000]">Sử dụng API <code className="text-[#3B82F6] bg-[#2563EB]/10 px-2 py-0.5 rounded">/notifications/send</code> để gửi email với template tương ứng</p>
             </div>
           </div>
           <div className="flex items-start gap-4 p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)]">
-            <div className="w-10 h-10 bg-[#B4533A]/20 rounded-xl flex items-center justify-center shrink-0">
-              <RefreshCw className="w-5 h-5 text-[#CB7A62]" />
+            <div className="w-10 h-10 bg-[#2563EB]/20 rounded-xl flex items-center justify-center shrink-0">
+              <RefreshCw className="w-5 h-5 text-[#3B82F6]" />
             </div>
             <div>
               <p className="font-bold text-[#000000] mb-1">Xem trước template</p>

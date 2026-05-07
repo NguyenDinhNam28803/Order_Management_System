@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
@@ -197,7 +197,7 @@ export default function SmartSearch() {
 
   const getIcon = (type: string) => {
     switch (type) {
-      case "PR":      return <FileText     size={16} className="text-[#CB7A62]"    />;
+      case "PR":      return <FileText     size={16} className="text-[#3B82F6]"    />;
       case "PO":      return <ShoppingCart size={16} className="text-black" />;
       case "INVOICE": return <DollarSign   size={16} className="text-black"   />;
       case "VENDOR":  return <Building     size={16} className="text-violet-400"  />;
@@ -211,7 +211,7 @@ export default function SmartSearch() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] hover:text-[#000000] hover:border-[rgba(59,130,246,0.3)] transition-all text-sm"
+        className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] hover:text-[#000000] hover:border-[rgba(59,130,246,0.3)] transition-all text-sm"
       >
         <Search size={16} />
         <span className="hidden md:inline">Tìm kiếm...</span>
@@ -232,14 +232,14 @@ export default function SmartSearch() {
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-2xl overflow-hidden animate-fade-in">
+      <div className="relative w-full max-w-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-2xl overflow-hidden animate-fade-in">
 
         {/* Input row */}
         <div className="flex items-center gap-3 p-4 border-b border-[rgba(148,163,184,0.1)]">
           {isLoading ? (
             <Loader2 size={20} className="text-violet-400 animate-spin shrink-0" />
           ) : isAiMode ? (
-            <div className="p-1.5 bg-gradient-to-br from-[#8B5CF6] to-[#B4533A] rounded-lg shrink-0">
+            <div className="p-1.5 bg-gradient-to-br from-[#8B5CF6] to-[#2563EB] rounded-lg shrink-0">
               <Sparkles size={16} className="text-[#000000]" />
             </div>
           ) : (
@@ -328,7 +328,7 @@ export default function SmartSearch() {
                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full shrink-0 ${
                           result.status === "PENDING_APPROVAL" ? "bg-amber-500/20 text-black" :
                           result.status === "APPROVED"         ? "bg-emerald-500/20 text-black" :
-                          "bg-[#B4533A]/20 text-[#CB7A62]"
+                          "bg-[#2563EB]/20 text-[#3B82F6]"
                         }`}>
                           {getStatusLabel(result.status)}
                         </span>
@@ -353,7 +353,7 @@ export default function SmartSearch() {
                   onClick={() => setQuery(s.text)}
                   className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[rgba(148,163,184,0.04)] transition-all text-left"
                 >
-                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#B4533A] text-[#000000] shrink-0">
+                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#2563EB] text-[#000000] shrink-0">
                     {s.icon}
                   </div>
                   <span className="text-[13px] text-[#000000]">{s.text}</span>
@@ -377,10 +377,10 @@ export default function SmartSearch() {
         <div className="flex items-center justify-between px-4 py-2.5 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.08)] text-[11px] text-[#000000]">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-[#FAF8F5] rounded border border-[rgba(148,163,184,0.1)]">↑↓</kbd> Chọn
+              <kbd className="px-1.5 py-0.5 bg-[#F1F5F9] rounded border border-[rgba(148,163,184,0.1)]">↑↓</kbd> Chọn
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-[#FAF8F5] rounded border border-[rgba(148,163,184,0.1)]">↵</kbd> Mở
+              <kbd className="px-1.5 py-0.5 bg-[#F1F5F9] rounded border border-[rgba(148,163,184,0.1)]">↵</kbd> Mở
             </span>
           </div>
           <div className="flex items-center gap-1.5">

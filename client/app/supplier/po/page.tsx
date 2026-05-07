@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Package, DownloadCloud, FileText, CheckCircle, AlertTriangle, Truck, Clock, RefreshCcw, Send, XCircle, Search, Eye, X } from "lucide-react";
@@ -137,7 +137,7 @@ export default function SupplierPO() {
                         <p className="text-sm font-bold text-[#000000] mt-1">Hợp đồng mua bán từ ProcurePro</p>
                     </div>
                     {/* Action Banner (6.3 Spec) */}
-                    <div className="flex gap-4 p-4 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-sm items-center">
+                    <div className="flex gap-4 p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-sm items-center">
                         {isRejected ? (
                             <div className="flex items-center gap-2 text-xs font-black uppercase text-black tracking-widest bg-rose-500/10 px-6 py-3 rounded-xl border border-rose-500/20">
                                 <XCircle size={16} /> Đã Từ chối PO
@@ -162,19 +162,19 @@ export default function SupplierPO() {
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                     {/* Cột trái: PO Document Info */}
                     <div className="xl:col-span-2 space-y-6">
-                        <div className="bg-[#FAF8F5] rounded-3xl shadow-xl shadow-[#B4533A]/5 border border-[rgba(148,163,184,0.1)] min-h-[500px] flex flex-col p-0 overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-3xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] min-h-[500px] flex flex-col p-0 overflow-hidden">
                             <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] flex items-center gap-2">
                                     <FileText size={16}/> Purchase Order PDF
                                 </h3>
-                                <button className="text-[10px] font-black uppercase tracking-widest text-[#B4533A] flex items-center gap-1 p-2 hover:bg-[#B4533A]/10 rounded-lg transition-colors">
+                                <button className="text-[10px] font-black uppercase tracking-widest text-[#2563EB] flex items-center gap-1 p-2 hover:bg-[#2563EB]/10 rounded-lg transition-colors">
                                     <DownloadCloud size={14} /> Tải bản mốc
                                 </button>
                             </div>
                             
                             <div className="p-8 font-serif bg-[#FFFFFF] flex-1 flex flex-col">
                                 {/* Mock PDF View */}
-                                <div className="bg-[#FAF8F5] mx-auto w-full max-w-2xl border border-[rgba(148,163,184,0.1)] shadow-sm p-10 mt-4 flex-1 relative">
+                                <div className="bg-[#F1F5F9] mx-auto w-full max-w-2xl border border-[rgba(148,163,184,0.1)] shadow-sm p-10 mt-4 flex-1 relative">
                                     <div className="absolute top-10 right-10 p-2 border-2 border-rose-500 text-rose-500 font-bold uppercase tracking-widest -rotate-12 opacity-50">Confidential</div>
                                     <h1 className="text-3xl font-black text-[#000000] mb-6 border-b-2 border-[rgba(148,163,184,0.1)] pb-4">PURCHASE ORDER</h1>
                                     <div className="flex justify-between text-sm mb-8 text-[#000000] font-sans">
@@ -198,12 +198,12 @@ export default function SupplierPO() {
 
                     {/* Cột phải: Timeline Cập nhật giao hàng (6.3) */}
                     <div className="space-y-6 flex flex-col">
-                        <div className="bg-[#FAF8F5] rounded-3xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5">
+                        <div className="bg-[#F1F5F9] rounded-3xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
                             <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 border-b border-[rgba(148,163,184,0.1)] pb-2 flex items-center gap-2">
                                 <Clock size={16}/> Timeline Tiến độ Sản xuất/Nhập hàng
                             </h3>
 
-                            <div className="space-y-6 relative ml-2 before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#B4533A]/20 before:to-transparent mb-6">
+                            <div className="space-y-6 relative ml-2 before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#2563EB]/20 before:to-transparent mb-6">
                                 <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                                     <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-emerald-500 text-[#000000] shadow relative z-10 font-bold"><CheckCircle size={10} /></div>
                                     <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-[#FFFFFF] p-3 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] ml-4 font-medium text-xs text-[#000000]">
@@ -212,9 +212,9 @@ export default function SupplierPO() {
                                     </div>
                                 </div>
                                 <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                                    <div className="flex items-center justify-center w-6 h-6 rounded-full border-2 border-[#B4533A] bg-[#FAF8F5] text-[#B4533A] shadow relative z-10"><RefreshCcw size={10} /></div>
+                                    <div className="flex items-center justify-center w-6 h-6 rounded-full border-2 border-[#2563EB] bg-[#F1F5F9] text-[#2563EB] shadow relative z-10"><RefreshCcw size={10} /></div>
                                     <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-[#FFFFFF] p-3 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] ml-4 font-medium text-xs text-[#000000]">
-                                        <div className="font-bold text-[#B4533A] text-[10px] uppercase tracking-widest mb-1">Cập nhật tiếp theo</div>
+                                        <div className="font-bold text-[#2563EB] text-[10px] uppercase tracking-widest mb-1">Cập nhật tiếp theo</div>
                                         Chờ Cập nhật tiến độ thêm...
                                     </div>
                                 </div>
@@ -223,34 +223,34 @@ export default function SupplierPO() {
                             <div className="mt-4 pt-4 border-t border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] p-4 rounded-xl relative">
                                 <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2">Thêm Log Progress:</label>
                                 <div className="flex gap-2">
-                                    <input type="text" className="w-full pl-4 pr-4 py-2 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#1A1D23] transition-all" placeholder="Ví dụ: Lên chuyền sản xuất..." value={progressStatus} onChange={e => setProgressStatus(e.target.value)}/>
-                                    <button className="bg-[#B4533A] text-[#000000] p-2 rounded-xl hover:bg-[#A85032] transition-colors"><Send size={16}/></button>
+                                    <input type="text" className="w-full pl-4 pr-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#0F172A] transition-all" placeholder="Ví dụ: Lên chuyền sản xuất..." value={progressStatus} onChange={e => setProgressStatus(e.target.value)}/>
+                                    <button className="bg-[#2563EB] text-[#000000] p-2 rounded-xl hover:bg-[#1D4ED8] transition-colors"><Send size={16}/></button>
                                 </div>
                                 <p className="text-[9px] text-[#000000] mt-2 font-medium">Buyer sẽ nhận Notification khi bạn cập nhật Status này.</p>
                             </div>
                         </div>
 
                         {/* Chuẩn bị Giao - Tạo Vận Đơn (6.3) */}
-                        <div className={`bg-[#FAF8F5] rounded-3xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 flex-1 ${!isConfirmed ? 'opacity-50 pointer-events-none filter grayscale' : 'border-[#B4533A]/30'}`}>
+                        <div className={`bg-[#F1F5F9] rounded-3xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex-1 ${!isConfirmed ? 'opacity-50 pointer-events-none filter grayscale' : 'border-[#2563EB]/30'}`}>
                             <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 border-b border-[rgba(148,163,184,0.1)] pb-2 flex items-center gap-2">
                                 <Truck size={16}/> Lệnh Giao Hàng (ASN / DO)
                             </h3>
                             <div className="space-y-4 text-xs font-medium text-[#000000]">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-1">Số Vận Đơn (Mã DO NCC)</label>
-                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#B4533A] font-bold placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#FAF8F5] transition-all" placeholder="DO-2026-###"/>
+                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#2563EB] font-bold placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" placeholder="DO-2026-###"/>
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-1">Bên Vận Chuyển / Biển số Xe</label>
-                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#FAF8F5] transition-all" placeholder="Biển số 51C-12345"/>
+                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" placeholder="Biển số 51C-12345"/>
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-1">Upload Packing List + Giấy kiểm xưởng (COA)</label>
-                                    <div className="p-3 border border-dashed border-[rgba(148,163,184,0.1)] rounded-xl cursor-pointer text-center text-[10px] font-black uppercase text-[#000000] hover:text-[#B4533A] hover:border-[#B4533A]/30 transition-all">
+                                    <div className="p-3 border border-dashed border-[rgba(148,163,184,0.1)] rounded-xl cursor-pointer text-center text-[10px] font-black uppercase text-[#000000] hover:text-[#2563EB] hover:border-[#2563EB]/30 transition-all">
                                         Tải file lên
                                     </div>
                                 </div>
-                                <button onClick={handleShip} className="w-full mt-4 py-3 bg-[#B4533A] hover:bg-[#A85032] text-[#000000] shadow-xl shadow-[#B4533A]/20 uppercase tracking-widest text-[10px] font-black rounded-xl transition-colors flex items-center gap-2 justify-center">
+                                <button onClick={handleShip} className="w-full mt-4 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] shadow-xl shadow-[#2563EB]/20 uppercase tracking-widest text-[10px] font-black rounded-xl transition-colors flex items-center gap-2 justify-center">
                                     <Truck size={14}/> Notify Shipped (Báo Giao)
                                 </button>
                             </div>
@@ -269,7 +269,7 @@ export default function SupplierPO() {
                     <span className="text-xs text-[#000000]">Tổng PO: {pos.length} | PO của bạn: {supplierPOs.length}</span>
                     <button 
                         onClick={() => setShowAll(!showAll)} 
-                        className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl ${showAll ? 'bg-[#B4533A] text-[#000000]' : 'bg-[#FAF8F5] text-[#000000] border border-[rgba(148,163,184,0.1)]'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl ${showAll ? 'bg-[#2563EB] text-[#000000]' : 'bg-[#F1F5F9] text-[#000000] border border-[rgba(148,163,184,0.1)]'}`}
                     >
                         {showAll ? 'Chỉ hiện PO của tôi' : 'Hiện tất cả PO'}
                     </button>
@@ -277,7 +277,7 @@ export default function SupplierPO() {
             </div>
 
             {/* Debug: Kiểm tra PO theo ID */}
-            <div className="mb-4 p-4 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl">
+            <div className="mb-4 p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl">
                 <div className="flex gap-2 items-center mb-2">
                     <Search size={16} className="text-[#000000]" />
                     <span className="text-xs font-bold text-[#000000]">Kiểm tra PO theo ID:</span>
@@ -288,28 +288,28 @@ export default function SupplierPO() {
                         value={poIdInput}
                         onChange={(e) => setPoIdInput(e.target.value)}
                         placeholder="Nhập PO ID..."
-                        className="flex-1 px-3 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30"
+                        className="flex-1 px-3 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30"
                     />
                     <button 
                         onClick={handleCheckPO}
-                        className="px-4 py-2 bg-[#B4533A] text-[#000000] text-xs font-bold uppercase rounded-lg hover:bg-[#A85032] transition-colors"
+                        className="px-4 py-2 bg-[#2563EB] text-[#000000] text-xs font-bold uppercase rounded-lg hover:bg-[#1D4ED8] transition-colors"
                     >
                         Kiểm tra
                     </button>
                 </div>
                 {searchedPO && (
                     <div className="mt-3 p-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg text-xs text-[#000000]">
-                        <p><strong className="text-[#B4533A]">PO ID:</strong> {searchedPO.id}</p>
-                        <p><strong className="text-[#B4533A]">Mã đơn:</strong> ***</p>
-                        <p><strong className="text-[#B4533A]">Status:</strong> {searchedPO.status}</p>
-                        <p><strong className="text-[#B4533A]">Supplier ID:</strong> {searchedPO.supplierId || 'N/A'}</p>
-                        <p><strong className="text-[#B4533A]">Your ID:</strong> {supplierId}</p>
-                        <p><strong className="text-[#B4533A]">Match:</strong> {(searchedPO.supplierId === supplierId) ? '✅ Có' : '❌ Không'}</p>
+                        <p><strong className="text-[#2563EB]">PO ID:</strong> {searchedPO.id}</p>
+                        <p><strong className="text-[#2563EB]">Mã đơn:</strong> ***</p>
+                        <p><strong className="text-[#2563EB]">Status:</strong> {searchedPO.status}</p>
+                        <p><strong className="text-[#2563EB]">Supplier ID:</strong> {searchedPO.supplierId || 'N/A'}</p>
+                        <p><strong className="text-[#2563EB]">Your ID:</strong> {supplierId}</p>
+                        <p><strong className="text-[#2563EB]">Match:</strong> {(searchedPO.supplierId === supplierId) ? '✅ Có' : '❌ Không'}</p>
                     </div>
                 )}
             </div>
 
-            <div className="bg-[#FAF8F5] rounded-3xl overflow-hidden shadow-xl shadow-[#B4533A]/5 border border-[rgba(148,163,184,0.1)]">
+            <div className="bg-[#F1F5F9] rounded-3xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
                 <table className="erp-table text-xs w-full" style={{ tableLayout: 'fixed' }}>
                     <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
                         <tr className="text-[10px] font-black uppercase tracking-widest text-[#000000]">
@@ -332,29 +332,29 @@ export default function SupplierPO() {
                             const moreItems = items.length > 1 ? `+${items.length - 1} sản phẩm khác` : '';
 
                             return (
-                                <tr key={p.id} className={`group hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.05)] ${p.supplierId === supplierId ? 'bg-[#B4533A]/5' : ''}`}>
+                                <tr key={p.id} className={`group hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.05)] ${p.supplierId === supplierId ? 'bg-[#2563EB]/5' : ''}`}>
                                     {/* PO Number */}
                                     <td className="py-4 px-4">
-                                        <div className="font-bold text-[#000000] text-xs mb-1 truncate group-hover:text-[#F2EFE9] transition-colors">
+                                        <div className="font-bold text-[#000000] text-xs mb-1 truncate group-hover:text-[#F8FAFC] transition-colors">
                                             Đơn hàng
                                         </div>
-                                        <div className="text-[9px] font-bold text-[#000000] uppercase tracking-wider truncate group-hover:text-[#B4533A] transition-colors">
+                                        <div className="text-[9px] font-bold text-[#000000] uppercase tracking-wider truncate group-hover:text-[#2563EB] transition-colors">
                                             {"ProcurePro"}
                                         </div>
                                     </td>
 
                                     {/* Product Info */}
                                     <td className="py-4 px-4">
-                                        <div className="font-black text-[#000000] text-xs mb-1 uppercase tracking-tight truncate group-hover:text-[#F2EFE9] transition-colors" title={itemName}>
+                                        <div className="font-black text-[#000000] text-xs mb-1 uppercase tracking-tight truncate group-hover:text-[#F8FAFC] transition-colors" title={itemName}>
                                             {itemName}
                                         </div>
                                         {itemCode && (
-                                            <div className="text-[9px] font-bold text-[#000000] uppercase tracking-widest group-hover:text-[#F2EFE9]/40 transition-colors">
-                                                SKU: <span className="text-[#000000] group-hover:text-[#F2EFE9]/60 transition-colors">{itemCode}</span>
+                                            <div className="text-[9px] font-bold text-[#000000] uppercase tracking-widest group-hover:text-[#F8FAFC]/40 transition-colors">
+                                                SKU: <span className="text-[#000000] group-hover:text-[#F8FAFC]/60 transition-colors">{itemCode}</span>
                                             </div>
                                         )}
                                         {moreItems && (
-                                            <div className="text-[9px] text-[#B4533A] mt-1 font-bold group-hover:text-[#B4533A] transition-colors">
+                                            <div className="text-[9px] text-[#2563EB] mt-1 font-bold group-hover:text-[#2563EB] transition-colors">
                                                 {moreItems}
                                             </div>
                                         )}
@@ -362,24 +362,24 @@ export default function SupplierPO() {
 
                                     {/* Qty / Total */}
                                     <td className="py-4 px-4 text-center">
-                                        <div className="text-xs font-bold text-[#000000] group-hover:text-[#F2EFE9] transition-colors">
-                                            {totalQty} <span className="text-[#000000] font-normal group-hover:text-[#F2EFE9]/60">SP</span>
+                                        <div className="text-xs font-bold text-[#000000] group-hover:text-[#F8FAFC] transition-colors">
+                                            {totalQty} <span className="text-[#000000] font-normal group-hover:text-[#F8FAFC]/60">SP</span>
                                         </div>
-                                        <div className="text-[10px] font-black text-black mt-1 group-hover:text-[#B4533A] transition-colors">
+                                        <div className="text-[10px] font-black text-black mt-1 group-hover:text-[#2563EB] transition-colors">
                                             {new Intl.NumberFormat('vi-VN').format(totalAmount)} ₫
                                         </div>
                                     </td>
 
                                     {/* Date */}
                                     <td className="py-4 px-4 text-center">
-                                        <div className="text-xs text-[#000000] group-hover:text-[#F2EFE9] transition-colors">
+                                        <div className="text-xs text-[#000000] group-hover:text-[#F8FAFC] transition-colors">
                                             {p.createdAt ? new Date(p.createdAt).toLocaleDateString("vi-VN") : "N/A"}
                                         </div>
                                     </td>
 
                                     {/* Status */}
                                     <td className="py-4 px-4 text-center">
-                                        <span className={`${p.status === "ISSUED" || p.status === "PENDING" ? "bg-rose-500/10 text-black border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-black" : p.status === "REJECTED" ? "bg-rose-500/20 text-black border border-rose-500/30 group-hover:bg-rose-700 group-hover:text-white" : p.status === "ACKNOWLEDGED" || p.status === "CONFIRMED" ? "bg-[#B4533A]/10 text-[#CB7A62] border border-[#B4533A]/20 group-hover:bg-[#B4533A] group-hover:text-black" : "bg-emerald-500/10 text-black border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-black"} font-black uppercase px-2 py-1 rounded text-[9px] tracking-widest whitespace-nowrap transition-all`}>
+                                        <span className={`${p.status === "ISSUED" || p.status === "PENDING" ? "bg-rose-500/10 text-black border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-black" : p.status === "REJECTED" ? "bg-rose-500/20 text-black border border-rose-500/30 group-hover:bg-rose-700 group-hover:text-white" : p.status === "ACKNOWLEDGED" || p.status === "CONFIRMED" ? "bg-[#2563EB]/10 text-[#3B82F6] border border-[#2563EB]/20 group-hover:bg-[#2563EB] group-hover:text-black" : "bg-emerald-500/10 text-black border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-black"} font-black uppercase px-2 py-1 rounded text-[9px] tracking-widest whitespace-nowrap transition-all`}>
                                             {getStatusLabel(p.status)}
                                         </span>
                                     </td>
@@ -407,7 +407,7 @@ export default function SupplierPO() {
                                                         await shipPO(p.id);
                                                         notify("Đã cập nhật vận đơn (ASN/DO)", "success");
                                                     }}
-                                                    className="p-2 rounded-lg hover:bg-[#B4533A]/10 text-[#B4533A] transition-colors group-hover:bg-[#B4533A] group-hover:text-black"
+                                                    className="p-2 rounded-lg hover:bg-[#2563EB]/10 text-[#2563EB] transition-colors group-hover:bg-[#2563EB] group-hover:text-black"
                                                     title="Báo giao hàng"
                                                 >
                                                     <Truck size={16}/>
@@ -415,7 +415,7 @@ export default function SupplierPO() {
                                             )}
                                             <button 
                                                 onClick={() => openModal(p)}
-                                                className="p-2 rounded-lg hover:bg-[#FFFFFF] text-[#000000] transition-colors group-hover:bg-[#FFFFFF]/10 group-hover:text-[#F2EFE9]"
+                                                className="p-2 rounded-lg hover:bg-[#FFFFFF] text-[#000000] transition-colors group-hover:bg-[#FFFFFF]/10 group-hover:text-[#F8FAFC]"
                                                 title="Xem chi tiết"
                                             >
                                                 <Eye size={16}/>
@@ -439,7 +439,7 @@ export default function SupplierPO() {
             {/* Modal Chi tiết PO */}
             {isModalOpen && selectedPO && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4">
-                    <div className="bg-[#FAF8F5] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-[rgba(148,163,184,0.1)]">
                         {/* Header */}
                         <div className="flex justify-between items-center p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] rounded-t-2xl">
                             <div>
@@ -448,7 +448,7 @@ export default function SupplierPO() {
                             </div>
                             <button 
                                 onClick={closeModal}
-                                className="p-2 hover:bg-[#1A1D23] rounded-lg transition-colors"
+                                className="p-2 hover:bg-[#0F172A] rounded-lg transition-colors"
                             >
                                 <X size={20} className="text-[#000000]"/>
                             </button>
@@ -483,7 +483,7 @@ export default function SupplierPO() {
                                     </span>
                                 </div>
                                 <table className="erp-table text-sm">
-                                    <thead className="bg-[#FAF8F5]">
+                                    <thead className="bg-[#F1F5F9]">
                                         <tr className="text-[#000000]">
                                             <th className="p-3 text-left font-bold">Sản phẩm</th>
                                             <th className="p-3 text-center font-bold">Số lượng</th>
@@ -535,7 +535,7 @@ export default function SupplierPO() {
                         <div className="flex justify-between items-center p-6 border-t border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] rounded-b-2xl">
                             <button 
                                 onClick={closeModal}
-                                className="px-4 py-2 text-[#000000] font-bold text-sm hover:bg-[#1A1D23] rounded-lg transition-colors"
+                                className="px-4 py-2 text-[#000000] font-bold text-sm hover:bg-[#0F172A] rounded-lg transition-colors"
                             >
                                 Đóng
                             </button>
@@ -549,7 +549,7 @@ export default function SupplierPO() {
                                     <>
                                         <button 
                                             onClick={handleShipModal}
-                                            className="px-6 py-3 bg-[#B4533A] hover:bg-[#A85032] text-[#000000] font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-[#B4533A]/20"
+                                            className="px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-[#2563EB]/20"
                                         >
                                             <Truck size={14}/> Báo Giao Hàng
                                         </button>

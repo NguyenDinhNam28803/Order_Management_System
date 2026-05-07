@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Truck, Package, Camera, CheckCircle2, AlertTriangle, Search, ArrowRight, TrendingUp, Clock, Star } from "lucide-react";
@@ -64,7 +64,7 @@ export default function GRNPage() {
 
                             <div className="p-5 bg-[#F9EFEC]/50 border border-[#F3DDD6] rounded-2xl flex justify-between items-center">
                                 <div className="space-y-1">
-                                    <span className="block text-[9px] font-black uppercase text-[#CB7A62]">Trạng thái định vị (GPS)</span>
+                                    <span className="block text-[9px] font-black uppercase text-[#3B82F6]">Trạng thái định vị (GPS)</span>
                                     <span className="text-xs text-blue-800 font-black">Xưởng sản xuất - Cổng số 4</span>
                                 </div>
                                 <div className="status-pill status-approved">Đã tới cổng</div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import Link from "next/link";
@@ -102,8 +102,8 @@ export default function Dashboard() {
                 {/* HEADER - Minimal Clean Design */}
                 <header className="flex items-center justify-between mb-6 pb-4 border-b border-[rgba(148,163,184,0.1)]">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
-                            <span className="text-lg font-black text-[#B4533A]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
+                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                            <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
                             <h1 className="text-lg font-black text-[#000000] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
@@ -111,22 +111,22 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#1A1D23] hover:text-[#000000] transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-[#000000] transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-4 py-2.5 bg-[#B4533A] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#A85032] transition-all flex items-center gap-2"
+                                className="px-4 py-2.5 bg-[#2563EB] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
                             >
                                 + Tạo PR
                                 <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
-                                        <div className="p-3 bg-[#B4533A]/10 text-[#B4533A] rounded-xl"><Plus size={18} /></div>
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                        <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
                                             <div className="text-[10px] font-black uppercase text-[#000000] mb-1 tracking-widest">Tạo quy trình thủ công</div>
                                             <div className="text-[9px] text-[#000000] font-bold uppercase leading-tight">Vào PR trực tiếp</div>
@@ -135,7 +135,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
                                     >
                                         <div className="p-3 bg-emerald-500/10 text-black rounded-xl"><Zap size={18} /></div>
                                         <div>
@@ -146,7 +146,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors w-full text-left"
                                     >
                                         <div className="p-3 bg-purple-500/10 text-black rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
@@ -161,9 +161,9 @@ export default function Dashboard() {
                 </header>
 
                 {/* HÀNG 1 — Stats Cards with Reports/Spend Style */}
-                <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6 mb-6">
+                <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6 mb-6">
                     <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
-                        <Activity size={14} className="text-[#B4533A]" /> Tổng quan hoạt động
+                        <Activity size={14} className="text-[#2563EB]" /> Tổng quan hoạt động
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <StatsCard
@@ -196,7 +196,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="h-1.5 bg-bg-primary rounded-full overflow-hidden">
                                     <div
-                                        className="h-full bg-[#B4533A] rounded-full"
+                                        className="h-full bg-[#2563EB] rounded-full"
                                         style={{ width: `${Math.min(budgets?.allocated ? ((budgets.committed + budgets.spent) / budgets.allocated) * 100 : 0, 100)}%` }}
                                     />
                                 </div>
@@ -228,9 +228,9 @@ export default function Dashboard() {
                     <SimpleBarChart 
                         title="Chi Tiêu Theo Tháng"
                         data={[
-                            { label: 'Tháng 1', value: personalPRs.filter(pr => new Date(pr.createdAt).getMonth() === 0).reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0), color: '#B4533A' },
-                            { label: 'Tháng 2', value: personalPRs.filter(pr => new Date(pr.createdAt).getMonth() === 1).reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0), color: '#B4533A' },
-                            { label: 'Tháng 3', value: personalPRs.filter(pr => new Date(pr.createdAt).getMonth() === 2).reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0), color: '#B4533A' },
+                            { label: 'Tháng 1', value: personalPRs.filter(pr => new Date(pr.createdAt).getMonth() === 0).reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0), color: '#2563EB' },
+                            { label: 'Tháng 2', value: personalPRs.filter(pr => new Date(pr.createdAt).getMonth() === 1).reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0), color: '#2563EB' },
+                            { label: 'Tháng 3', value: personalPRs.filter(pr => new Date(pr.createdAt).getMonth() === 2).reduce((sum, pr) => sum + (pr.totalEstimate || 0), 0), color: '#2563EB' },
                         ]}
                     />
                 </div>
@@ -248,12 +248,12 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 xl:grid-cols-10 gap-10">
                     {/* GIỮ 60% — Danh sách PR */}
                     <div className="xl:col-span-6 space-y-6">
-                        <div className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                              <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
                                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000] flex items-center gap-3 leading-none">
-                                     <FileText size={16} className="text-[#B4533A]" /> Danh sách PR của tôi (gần nhất)
+                                     <FileText size={16} className="text-[#2563EB]" /> Danh sách PR của tôi (gần nhất)
                                  </h3>
-                                 <Link href="/pr" className="text-[9px] font-black uppercase text-[#B4533A] hover:underline bg-[#FFFFFF] px-3 py-1.5 rounded-lg border border-[rgba(148,163,184,0.1)] shadow-sm transition-all hover:scale-105 active:scale-95">Xem tất cả ›</Link>
+                                 <Link href="/pr" className="text-[9px] font-black uppercase text-[#2563EB] hover:underline bg-[#FFFFFF] px-3 py-1.5 rounded-lg border border-[rgba(148,163,184,0.1)] shadow-sm transition-all hover:scale-105 active:scale-95">Xem tất cả ›</Link>
                              </div>
                              <div className="overflow-x-auto">
                                  <table className="erp-table text-xs text-left">
@@ -271,9 +271,9 @@ export default function Dashboard() {
                                          {loadingMyPrs ? (
                                              [1, 2, 3].map(i => (
                                                  <tr key={i} className="animate-pulse px-8">
-                                                     <td className="px-8 py-6"><div className="h-4 w-16 bg-[#1A1D23] rounded"></div></td>
-                                                     <td className="px-8 py-6"><div className="h-4 w-32 bg-[#1A1D23] rounded"></div></td>
-                                                     <td className="px-8 py-6"><div className="h-4 w-20 bg-[#1A1D23] rounded ml-auto"></div></td>
+                                                     <td className="px-8 py-6"><div className="h-4 w-16 bg-[#0F172A] rounded"></div></td>
+                                                     <td className="px-8 py-6"><div className="h-4 w-32 bg-[#0F172A] rounded"></div></td>
+                                                     <td className="px-8 py-6"><div className="h-4 w-20 bg-[#0F172A] rounded ml-auto"></div></td>
                                                      <td colSpan={2}></td>
                                                  </tr>
                                              ))
@@ -288,9 +288,9 @@ export default function Dashboard() {
                                                          <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase border transition-all ${
                                                              pr.status === "APPROVED" ? "bg-emerald-500/10 text-black border-emerald-500/20" : 
                                                              pr.status === "REJECTED" ? "bg-rose-500/10 text-black border-rose-500/20" :
-                                                             pr.status === "DRAFT" ? "bg-[#1A1D23] text-[#F2EFE9] border-[rgba(148,163,184,0.1)]" :
+                                                             pr.status === "DRAFT" ? "bg-[#0F172A] text-[#F8FAFC] border-[rgba(148,163,184,0.1)]" :
                                                              pr.status.includes("PENDING") || pr.status === "SUBMITTED" ? "bg-amber-500/10 text-black border-amber-500/20" :
-                                                             "bg-[#B4533A]/10 text-black border-[#B4533A]/20"
+                                                             "bg-[#2563EB]/10 text-black border-[#2563EB]/20"
                                                          }`}>
                                                              {getStatusLabel(pr.status)}
                                                          </span>
@@ -298,9 +298,9 @@ export default function Dashboard() {
                                                      <td className="px-8 py-6 text-right">
                                                          <div className="flex justify-end gap-1">
                                                              {pr.status === "DRAFT" && (
-                                                                 <Link href={`/pr/edit/${pr.id}`} className="p-1.5 text-[#000000] hover:text-[#B4533A] hover:bg-[#B4533A]/10 rounded-lg border border-transparent hover:border-[#B4533A]/20 transition-all"><Edit3 size={14} /></Link>
+                                                                 <Link href={`/pr/edit/${pr.id}`} className="p-1.5 text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg border border-transparent hover:border-[#2563EB]/20 transition-all"><Edit3 size={14} /></Link>
                                                              )}
-                                                             <button disabled={loadingMyPrs} onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="p-1.5 text-[#000000] hover:text-[#000000] hover:bg-[#1A1D23] rounded-lg border border-transparent hover:border-[rgba(148,163,184,0.2)] transition-all">
+                                                             <button disabled={loadingMyPrs} onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="p-1.5 text-[#000000] hover:text-[#000000] hover:bg-[#0F172A] rounded-lg border border-transparent hover:border-[rgba(148,163,184,0.2)] transition-all">
                                                                  <Eye size={14} />
                                                              </button>
                                                          </div>
@@ -317,23 +317,23 @@ export default function Dashboard() {
                     {/* GIỮ 40% — QR & NOTI */}
                     <div className="xl:col-span-4 space-y-10">
                         {/* QR Section */}
-                        <div className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                              <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000] flex items-center gap-3">
-                                     <ClipboardList size={16} className="text-[#B4533A]" /> Yêu cầu báo giá (QR)
+                                     <ClipboardList size={16} className="text-[#2563EB]" /> Yêu cầu báo giá (QR)
                                  </h3>
-                                 <Link href="/quote-requests" className="text-[9px] font-black uppercase text-[#B4533A] hover:underline">Xem tất cả ›</Link>
+                                 <Link href="/quote-requests" className="text-[9px] font-black uppercase text-[#2563EB] hover:underline">Xem tất cả ›</Link>
                              </div>
                              <div className="p-8 space-y-4">
                                  {quoteRequests.length > 0 ? (
                                      [...quoteRequests].sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 3).map(qr => (
-                                         <div key={qr.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/20 transition-all group">
+                                         <div key={qr.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/20 transition-all group">
                                              <div className="flex flex-col gap-1">
                                                  <div className="flex items-center gap-2">
                                                      <span className="text-[10px] font-black text-[#000000]">{qr.qrNumber}</span>
                                                      <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase w-fit ${
                                                          qr.status === 'QUOTED' ? 'bg-emerald-500/10 text-black' : 
-                                                         qr.status === 'SUBMITTED' ? 'bg-[#B4533A]/10 text-black' :
+                                                         qr.status === 'SUBMITTED' ? 'bg-[#2563EB]/10 text-black' :
                                                          'bg-amber-500/10 text-black'
                                                      }`}>{qr.status}</span>
                                                  </div>
@@ -345,7 +345,7 @@ export default function Dashboard() {
                                                         const success = await createPRFromQuoteRequest(qr.id);
                                                         if (success) await refreshData();
                                                     }} 
-                                                    className="px-3 py-1.5 bg-[#B4533A] text-[#000000] rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-95 shadow-md shadow-[#B4533A]/10"
+                                                    className="px-3 py-1.5 bg-[#2563EB] text-[#000000] rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-95 shadow-md shadow-[#2563EB]/10"
                                                   >
                                                     CHUYỂN SANG PR
                                                   </button>
@@ -363,16 +363,16 @@ export default function Dashboard() {
                         </div>
 
                         {/* Notifications */}
-                        <div className="bg-[#FAF8F5] rounded-[40px] shadow-2xl shadow-[#B4533A]/5 p-10 text-[#000000] relative overflow-hidden group border border-[rgba(148,163,184,0.1)]">
+                        <div className="bg-[#F1F5F9] rounded-[40px] shadow-2xl shadow-[#2563EB]/5 p-10 text-[#000000] relative overflow-hidden group border border-[rgba(148,163,184,0.1)]">
                              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
                                  <Bell size={100} />
                              </div>
-                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B4533A] mb-8 leading-none">THÔNG BÁO MỚI NHẤT</h3>
+                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] mb-8 leading-none">THÔNG BÁO MỚI NHẤT</h3>
                              <div className="space-y-8 relative">
                                  <div className="absolute left-1.5 top-2 bottom-2 w-0.5 bg-[rgba(148,163,184,0.2)]" />
                                  {notifications.map(n => (
                                      <div key={n.id} className="relative flex items-center gap-6 pl-8 group/item">
-                                         <div className="absolute left-0 w-3 h-3 rounded-full bg-[#B4533A] border-2 border-[#FAF8F5] z-10 group-hover/item:scale-150 transition-transform"></div>
+                                         <div className="absolute left-0 w-3 h-3 rounded-full bg-[#2563EB] border-2 border-[#F1F5F9] z-10 group-hover/item:scale-150 transition-transform"></div>
                                          <div className="flex-1">
                                              <div className="flex justify-between items-start mb-1 leading-none">
                                                  <p className="text-[11px] font-black text-[#000000] leading-relaxed pr-6">{n.message}</p>
@@ -391,7 +391,7 @@ export default function Dashboard() {
 
     function MetricCard({ title, value, icon, color }: { title: string; value: string | number; icon: React.ReactNode; color: string }) {
         return (
-            <div className={`erp-card p-8! border-none shadow-xl shadow-[#B4533A]/5 relative overflow-hidden group hover:translate-y-[-4px] transition-all duration-300 bg-[#FAF8F5]`}>
+            <div className={`erp-card p-8! border-none shadow-xl shadow-[#2563EB]/5 relative overflow-hidden group hover:translate-y-[-4px] transition-all duration-300 bg-[#F1F5F9]`}>
                 <div className={`absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 rounded-full opacity-5 group-hover:opacity-10 transition-opacity ${color}`}></div>
                 <div className="flex justify-between items-center mb-6">
                     <div className={`p-4 rounded-2xl ${color} bg-opacity-10 ${color.replace('bg-', 'text-')}`}>
@@ -407,9 +407,9 @@ export default function Dashboard() {
     function ActionRequired({ items, onConvert }: { items: QuoteRequest[]; onConvert: (id: string) => Promise<void> }) {
         if (items.length === 0) return null;
         return (
-            <div className="bg-[#FAF8F5] rounded-[40px] p-10 border border-[rgba(148,163,184,0.1)] mb-12 shadow-2xl shadow-[#B4533A]/5">
+            <div className="bg-[#F1F5F9] rounded-[40px] p-10 border border-[rgba(148,163,184,0.1)] mb-12 shadow-2xl shadow-[#2563EB]/5">
                 <div className="flex items-center gap-3 mb-8">
-                    <div className="h-2 w-2 rounded-full bg-[#B4533A] animate-pulse"></div>
+                    <div className="h-2 w-2 rounded-full bg-[#2563EB] animate-pulse"></div>
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000] leading-none">CẦN HÀNH ĐỘNG NGAY ({items.length})</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -434,9 +434,9 @@ export default function Dashboard() {
         };
 
         return (
-            <div className="bg-[#FFFFFF] p-6 rounded-[32px] border border-[rgba(148,163,184,0.1)] flex items-center justify-between shadow-xl shadow-[#B4533A]/5 hover:-translate-y-1 transition-all duration-300 group">
+            <div className="bg-[#FFFFFF] p-6 rounded-[32px] border border-[rgba(148,163,184,0.1)] flex items-center justify-between shadow-xl shadow-[#2563EB]/5 hover:-translate-y-1 transition-all duration-300 group">
                 <div className="flex items-center gap-4">
-                    <div className="p-4 bg-[#B4533A]/10 text-[#B4533A] rounded-[20px] group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
+                    <div className="p-4 bg-[#2563EB]/10 text-[#2563EB] rounded-[20px] group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
                     <div>
                         <h4 className="text-xs font-black text-[#000000] uppercase mb-1">{qr.qrNumber} ĐÃ CÓ BÁO GIÁ</h4>
                         <p className="text-[10px] text-[#000000] font-bold uppercase tracking-tight opacity-70">Nhà cung cấp đã nộp giá. Chuyển sang PR để duyệt mua hàng.</p>
@@ -445,7 +445,7 @@ export default function Dashboard() {
                 <button 
                     onClick={handleConvert} 
                     disabled={isConverting}
-                    className="px-8 py-4 bg-[#B4533A] hover:bg-emerald-500 text-[#000000] text-[10px] font-black uppercase tracking-[0.1em] rounded-2xl shadow-xl shadow-[#B4533A]/20 transition-all flex items-center gap-2 disabled:opacity-50"
+                    className="px-8 py-4 bg-[#2563EB] hover:bg-emerald-500 text-[#000000] text-[10px] font-black uppercase tracking-[0.1em] rounded-2xl shadow-xl shadow-[#2563EB]/20 transition-all flex items-center gap-2 disabled:opacity-50"
                 >
                     {isConverting ? (
                         <Loader2 className="animate-spin" size={14} />
@@ -485,7 +485,7 @@ export default function Dashboard() {
         const usagePercent = totalAllocated > 0 ? Math.round((totalUsed / totalAllocated) * 100) : 0;
 
         // Calculate department breakdown for pie chart
-        const deptColors = ['#10b981', '#B4533A', '#f59e0b', '#8b5cf6', '#ef4444'];
+        const deptColors = ['#10b981', '#2563EB', '#f59e0b', '#8b5cf6', '#ef4444'];
         const deptSpending = (departments || []).map((dept, idx) => {
             const deptAllocs = (budgetAllocations || []).filter(b => b.deptId === dept.id);
             const spent = deptAllocs.reduce((sum, b) => sum + convertPrismaDecimal(b.spentAmount) + convertPrismaDecimal(b.committedAmount), 0);
@@ -501,8 +501,8 @@ export default function Dashboard() {
                 {/* HEADER - With PR Creation for CFO/Director */}
                 <header className="flex items-center justify-between mb-6 pb-4 border-b border-[rgba(148,163,184,0.1)]">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
-                            <span className="text-lg font-black text-[#B4533A]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
+                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                            <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
                             <h1 className="text-lg font-black text-[#000000] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
@@ -510,22 +510,22 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#1A1D23] hover:text-[#000000] transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-[#000000] transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-4 py-2.5 bg-[#B4533A] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#A85032] transition-all flex items-center gap-2"
+                                className="px-4 py-2.5 bg-[#2563EB] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
                             >
                                 + Tạo PR
                                 <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
-                                        <div className="p-3 bg-[#B4533A]/10 text-[#B4533A] rounded-xl"><Plus size={18} /></div>
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                        <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
                                             <div className="text-[10px] font-black uppercase text-[#000000] mb-1 tracking-widest">Tạo quy trình thủ công</div>
                                             <div className="text-[9px] text-[#000000] font-bold uppercase leading-tight">Vào PR trực tiếp</div>
@@ -534,7 +534,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
                                     >
                                         <div className="p-3 bg-emerald-500/10 text-black rounded-xl"><Zap size={18} /></div>
                                         <div>
@@ -545,7 +545,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors w-full text-left"
                                     >
                                         <div className="p-3 bg-purple-500/10 text-black rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
@@ -562,7 +562,7 @@ export default function Dashboard() {
                 {/* CFO Stat Cards - Clean Consistent Style */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     {/* Total Budget Card */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">Tổng Ngân Sách</span>
                             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -580,20 +580,20 @@ export default function Dashboard() {
                     </div>
 
                     {/* Weekly Payment Forecast Card */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">Dự Kiến Chi Tuần Này</span>
-                            <div className="h-10 w-10 rounded-xl bg-[#B4533A]/10 flex items-center justify-center">
-                                <Calendar size={20} className="text-[#B4533A]" />
+                            <div className="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
+                                <Calendar size={20} className="text-[#2563EB]" />
                             </div>
                         </div>
                         <div className="text-2xl font-black text-[#000000] mb-1">{formatVND(weeklyForecast)}</div>
-                        <div className="text-sm font-bold text-[#B4533A]">{pendingPayments.length} PO đang chờ thanh toán</div>
+                        <div className="text-sm font-bold text-[#2563EB]">{pendingPayments.length} PO đang chờ thanh toán</div>
                         <div className="text-[10px] text-[#000000] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Dự kiến thanh toán trong 7 ngày tới</div>
                     </div>
 
                     {/* Pending Approvals Card */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">Chờ CFO Duyệt</span>
                             <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
@@ -606,7 +606,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Department Spending Breakdown */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-purple-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-purple-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">Top Chi Tiêu</span>
                             <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
@@ -638,11 +638,11 @@ export default function Dashboard() {
                 {pendingBudgets.length > 0 && (
                     <div className="mb-12">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#B4533A] flex items-center gap-2">
+                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#2563EB] flex items-center gap-2">
                                 <Activity size={14} /> Duyệt Định Biên Ngân Sách ({pendingBudgetCount})
                             </h3>
                         </div>
-                        <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#B4533A]/5 border-none bg-[#FAF8F5]">
+                        <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr className="bg-[#FFFFFF]">
@@ -666,7 +666,7 @@ export default function Dashboard() {
                                                 <td className="font-bold text-[#000000]">
                                                     Q{b.budgetPeriod?.periodNumber} / {b.budgetPeriod?.fiscalYear}
                                                 </td>
-                                                <td className="text-right font-black text-[#B4533A] text-sm">{formatVND(b.allocatedAmount)} Đ</td>
+                                                <td className="text-right font-black text-[#2563EB] text-sm">{formatVND(b.allocatedAmount)} Đ</td>
                                                 <td className="text-[#000000] italic text-[11px] font-medium">{b.notes || "Ngân sách định kỳ"}</td>
                                                 <td className="text-right px-8">
                                                     <div className="flex justify-end gap-1">
@@ -689,23 +689,23 @@ export default function Dashboard() {
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000]" size={14} />
-                            <input type="text" placeholder="Tìm kiếm chứng từ..." className="pl-10 pr-6 py-2 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-medium w-64 focus:outline-none focus:ring-2 focus:ring-[#B4533A]/10 transition-all text-[#000000] placeholder:text-[#000000]"/>
+                            <input type="text" placeholder="Tìm kiếm chứng từ..." className="pl-10 pr-6 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-medium w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 transition-all text-[#000000] placeholder:text-[#000000]"/>
                         </div>
-                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-lg text-[9px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#1A1D23] transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[9px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#0F172A] transition-all shadow-sm">
                             Lọc <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#B4533A] text-[#000000] rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#A85032] transition-all shadow-md shadow-[#B4533A]/20">
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#2563EB] text-[#000000] rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-md shadow-[#2563EB]/20">
                             <Zap size={14} /> Xuất
                         </button>
                     </div>
                 </div>
 
-                <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#B4533A]/5 border-none bg-[#FAF8F5]">
+                <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                     <div className="overflow-x-auto">
                         <table className="erp-table text-xs whitespace-nowrap">
                             <thead>
                                 <tr className="bg-[#FFFFFF]">
-                                    <th className="w-10 px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#B4533A] bg-[#FAF8F5]"/></th>
+                                    <th className="w-10 px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#2563EB] bg-[#F1F5F9]"/></th>
                                     <th>Mã Chứng Từ</th>
                                     <th>Phân loại</th>
                                     <th>Lý do / Hạng mục</th>
@@ -717,9 +717,9 @@ export default function Dashboard() {
                             <tbody className="divide-y divide-border">
                                 {cfoPendingPRs.length > 0 ? cfoPendingPRs.map((pr) => (
                                     <tr key={pr.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
-                                        <td className="px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#B4533A] bg-[#FAF8F5]"/></td>
+                                        <td className="px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#2563EB] bg-[#F1F5F9]"/></td>
                                         <td className="font-bold text-[#000000] tracking-tight">{pr.prNumber || "PR-***"}</td>
-                                        <td><span className={`px-2.5 py-1 rounded-lg font-black text-[9px] uppercase ${convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'bg-[#B4533A]/10 text-black' : 'bg-[#1A1D23] text-[#F2EFE9]'}`}>{convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
+                                        <td><span className={`px-2.5 py-1 rounded-lg font-black text-[9px] uppercase ${convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'bg-[#2563EB]/10 text-black' : 'bg-[#0F172A] text-[#F8FAFC]'}`}>{convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
                                         <td className="font-medium text-[#000000]">{pr.title}</td>
                                         <td className="text-center">
                                             {convertPrismaDecimal(pr.totalEstimate) > 50000000 ? (
@@ -731,7 +731,7 @@ export default function Dashboard() {
                                         <td className="text-right font-black text-[#000000] text-sm">{formatVND(pr.totalEstimate)} ₫</td>
                                         <td className="text-right px-8">
                                             <div className="flex justify-end gap-1">
-                                                <button onClick={() => setSelectedPRDetails(pr)} className="p-1.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#B4533A] hover:border-[#B4533A]/20 rounded-lg transition-all"><Eye size={12}/></button>
+                                                <button onClick={() => setSelectedPRDetails(pr)} className="p-1.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-lg transition-all"><Eye size={12}/></button>
                                                 <button onClick={() => handleQuickApprove(pr.workflowId)} className="p-1.5 bg-emerald-500/10 border border-emerald-500/20 text-black hover:bg-emerald-500 hover:text-[#000000] rounded-lg transition-all"><CheckCircle size={12}/></button>
                                                 <button className="p-1.5 bg-rose-500/10 border border-rose-500/20 text-black hover:bg-rose-500 hover:text-[#000000] rounded-lg transition-all"><XCircle size={12}/></button>
                                             </div>
@@ -741,7 +741,7 @@ export default function Dashboard() {
                                     <tr>
                                         <td colSpan={7} className="py-20 text-center text-[#000000] font-black uppercase text-[10px]">
                                             <div className="flex flex-col items-center gap-3">
-                                                <div className="p-4 bg-[#1A1D23] rounded-full"><Bell size={24} className="text-[#000000]" /></div>
+                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-[#000000]" /></div>
                                                 Không có phiếu nào chờ duyệt
                                             </div>
                                         </td>
@@ -774,7 +774,7 @@ export default function Dashboard() {
                 <div className="flex justify-between items-end mb-8">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <div className="h-2 w-2 rounded-full bg-[#B4533A] animate-pulse"></div>
+                            <div className="h-2 w-2 rounded-full bg-[#2563EB] animate-pulse"></div>
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000]">Hệ thống Quản trị Chuỗi cung ứng</span>
                         </div>
                         <h1 className="text-4xl font-black text-[#000000] tracking-tight">Trung tâm Quản lý Thu mua</h1>
@@ -829,9 +829,9 @@ export default function Dashboard() {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
                             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#000000]">YÊU CẦU CẦN XỬ LÝ (PR -{">"} RFQ)</h3>
-                            <Link href="/sourcing" className="text-[10px] font-black text-[#B4533A] hover:underline uppercase tracking-widest">Xem tất cả {">"}</Link>
+                            <Link href="/sourcing" className="text-[10px] font-black text-[#2563EB] hover:underline uppercase tracking-widest">Xem tất cả {">"}</Link>
                         </div>
-                        <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#B4533A]/5 border-none bg-[#FAF8F5]">
+                        <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <div className="overflow-x-auto">
                                 <table className="erp-table text-xs whitespace-nowrap">
                                     <thead>
@@ -848,19 +848,19 @@ export default function Dashboard() {
                                         {paginatedPrs.length > 0 ? paginatedPrs.map((pr) => {
                                             const isSimulation = pr.id?.includes("SIM");
                                             return (
-                                                <tr key={pr.id} className={`group hover:bg-[#FFFFFF]/50 transition-colors border-b border-[rgba(148,163,184,0.1)] ${isSimulation ? 'bg-[#B4533A]/5 border-[#B4533A]/20' : ''}`}>
+                                                <tr key={pr.id} className={`group hover:bg-[#FFFFFF]/50 transition-colors border-b border-[rgba(148,163,184,0.1)] ${isSimulation ? 'bg-[#2563EB]/5 border-[#2563EB]/20' : ''}`}>
                                                     <td className="py-5 px-4 first:pl-6">
                                                         <div className="flex flex-col">
                                                             <div className="flex items-center gap-2">
                                                                 <span className="text-[11px] font-black text-[#000000] tracking-tight">{pr.prNumber}</span>
-                                                                {isSimulation && <span className="bg-[#B4533A] text-[#000000] text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse shadow-sm ring-2 ring-[#B4533A]/20">GIẢ LẬP</span>}
+                                                                {isSimulation && <span className="bg-[#2563EB] text-[#000000] text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse shadow-sm ring-2 ring-[#2563EB]/20">GIẢ LẬP</span>}
                                                             </div>
                                                             <span className="text-[9px] font-bold text-[#000000] uppercase mt-1">{formatDate(pr.createdAt)}</span>
                                                         </div>
                                                     </td>
                                                     <td className="py-5 px-4">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="h-8 w-8 rounded-lg bg-[#1A1D23] flex items-center justify-center text-[#000000] group-hover:scale-110 transition-transform">
+                                                            <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-[#000000] group-hover:scale-110 transition-transform">
                                                                 <FileText size={14} />
                                                             </div>
                                                             <div className="flex flex-col">
@@ -886,14 +886,14 @@ export default function Dashboard() {
                                                         {pr.type === "CATALOG" ? (
                                                             <button 
                                                                 onClick={() => setConfirmModal(pr)}
-                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#A85032] text-[#000000] text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#8F442B] transition-all shadow-sm"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#1D4ED8] text-[#000000] text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#8F442B] transition-all shadow-sm"
                                                             >
                                                                 Xác nhận giá
                                                             </button>
                                                         ) : (
                                                             <Link 
                                                                 href={`/procurement/rfq/create?prId=${pr.id}`} 
-                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#B4533A] text-[#000000] text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#A85032] transition-all shadow-sm"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-[#000000] text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all shadow-sm"
                                                             >
                                                                 Lấy Báo Giá
                                                             </Link>
@@ -916,7 +916,7 @@ export default function Dashboard() {
                                             <button
                                                 onClick={() => setCurrentPrPage(p => Math.max(1, p - 1))}
                                                 disabled={currentPrPage === 1}
-                                                className="px-3 py-1.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-[#000000] hover:bg-[#1A1D23] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-[#000000] hover:bg-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                                             >
                                                 <ChevronDown size={12} className="rotate-90" /> Trước
                                             </button>
@@ -927,8 +927,8 @@ export default function Dashboard() {
                                                         onClick={() => setCurrentPrPage(page)}
                                                         className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
                                                             currentPrPage === page
-                                                                ? 'bg-[#B4533A] text-[#000000]'
-                                                                : 'bg-[#FAF8F5] text-[#000000] hover:text-[#000000] hover:bg-[#1A1D23]'
+                                                                ? 'bg-[#2563EB] text-[#000000]'
+                                                                : 'bg-[#F1F5F9] text-[#000000] hover:text-[#000000] hover:bg-[#0F172A]'
                                                         }`}
                                                     >
                                                         {page}
@@ -938,7 +938,7 @@ export default function Dashboard() {
                                             <button
                                                 onClick={() => setCurrentPrPage(p => Math.min(totalPrPages, p + 1))}
                                                 disabled={currentPrPage === totalPrPages}
-                                                className="px-3 py-1.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-[#000000] hover:bg-[#1A1D23] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-[#000000] hover:bg-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                                             >
                                                 Sau <ChevronDown size={12} className="-rotate-90" />
                                             </button>
@@ -953,9 +953,9 @@ export default function Dashboard() {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
                             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#000000]">TÌNH TRẠNG GIAO HÀNG (ĐANG GIAO)</h3>
-                            <Link href="/po" className="text-[10px] font-black text-[#B4533A] hover:underline uppercase tracking-widest">PO Manager {">"}</Link>
+                            <Link href="/po" className="text-[10px] font-black text-[#2563EB] hover:underline uppercase tracking-widest">PO Manager {">"}</Link>
                         </div>
-                        <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#B4533A]/5 border-none bg-[#FAF8F5]">
+                        <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <div className="overflow-x-auto">
                                 <table className="erp-table text-xs whitespace-nowrap">
                                     <thead>
@@ -983,7 +983,7 @@ export default function Dashboard() {
                                             const getStatusDisplay = (status: string) => {
                                                 switch(status) {
                                                     case 'SHIPPED': return { label: 'Đã giao hàng', color: 'text-black', bg: 'bg-emerald-500/20' };
-                                                    case 'SHIPPING': return { label: 'Đang vận chuyển', color: 'text-black', bg: 'bg-[#B4533A]/20' };
+                                                    case 'SHIPPING': return { label: 'Đang vận chuyển', color: 'text-black', bg: 'bg-[#2563EB]/20' };
                                                     case 'PARTIALLY_RECEIVED': return { label: 'Nhận một phần', color: 'text-black', bg: 'bg-amber-500/20' };
                                                     case 'ISSUED': return { label: 'Đã gửi NCC', color: 'text-black', bg: 'bg-[#000000]/20' };
                                                     default: return { label: status, color: 'text-black', bg: 'bg-[#000000]/20' };
@@ -1004,24 +1004,24 @@ export default function Dashboard() {
                                                     </td>
                                                     <td>
                                                         <div className="flex items-center gap-3">
-                                                            <div className="flex-1 h-1.5 bg-[#1A1D23] rounded-full overflow-hidden">
+                                                            <div className="flex-1 h-1.5 bg-[#0F172A] rounded-full overflow-hidden">
                                                                 <div 
                                                                     className={`h-full transition-all duration-1000 ${
                                                                         po.status === 'SHIPPED' ? 'bg-emerald-500' :
                                                                         po.status === 'PARTIALLY_RECEIVED' ? 'bg-amber-500' :
-                                                                        'bg-[#B4533A]'
+                                                                        'bg-[#2563EB]'
                                                                     }`} 
                                                                     style={{ width: `${progress}%` }}
                                                                 ></div>
                                                             </div>
-                                                            <span className="text-[9px] font-black text-[#B4533A] whitespace-nowrap">{progress}%</span>
+                                                            <span className="text-[9px] font-black text-[#2563EB] whitespace-nowrap">{progress}%</span>
                                                         </div>
                                                     </td>
                                                     <td className="text-right font-black text-[#000000] text-sm">{formatVND(poTotal)} ₫</td>
                                                     <td className="text-right pl-2 pr-6">
                                                         <Link 
                                                             href={`/po/${po.id}`}
-                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#B4533A] text-[#000000] text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#A85032] transition-all"
+                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-[#000000] text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all"
                                                         >
                                                             Chi tiết
                                                         </Link>
@@ -1056,8 +1056,8 @@ export default function Dashboard() {
                 {/* HEADER - With PR Creation for Director/CEO */}
                 <header className="flex items-center justify-between mb-6 pb-4 border-b border-[rgba(148,163,184,0.1)]">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
-                            <span className="text-lg font-black text-[#B4533A]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
+                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                            <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
                             <h1 className="text-lg font-black text-[#000000] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
@@ -1065,22 +1065,22 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#1A1D23] hover:text-[#000000] transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-[#000000] transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-4 py-2.5 bg-[#B4533A] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#A85032] transition-all flex items-center gap-2"
+                                className="px-4 py-2.5 bg-[#2563EB] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
                             >
                                 + Tạo PR
                                 <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
-                                        <div className="p-3 bg-[#B4533A]/10 text-[#B4533A] rounded-xl"><Plus size={18} /></div>
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                        <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
                                             <div className="text-[10px] font-black uppercase text-[#000000] mb-1 tracking-widest">Tạo quy trình thủ công</div>
                                             <div className="text-[9px] text-[#000000] font-bold uppercase leading-tight">Vào PR trực tiếp</div>
@@ -1089,7 +1089,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
                                     >
                                         <div className="p-3 bg-emerald-500/10 text-black rounded-xl"><Zap size={18} /></div>
                                         <div>
@@ -1100,7 +1100,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#1A1D23] transition-colors w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors w-full text-left"
                                     >
                                         <div className="p-3 bg-purple-500/10 text-black rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
@@ -1117,20 +1117,20 @@ export default function Dashboard() {
                 {/* Summary Cards - Clean Style */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     {/* Pending PRs Card */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">PR Chờ Duyệt</span>
-                            <div className="h-10 w-10 rounded-xl bg-[#B4533A]/10 flex items-center justify-center">
-                                <FileText size={20} className="text-[#B4533A]" />
+                            <div className="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
+                                <FileText size={20} className="text-[#2563EB]" />
                             </div>
                         </div>
                         <div className="text-3xl font-black text-[#000000] mb-1">{pendingPRCount}</div>
-                        <div className="text-sm font-bold text-[#B4533A]">{formatVND(pendingPRValue)}</div>
+                        <div className="text-sm font-bold text-[#2563EB]">{formatVND(pendingPRValue)}</div>
                         <div className="text-[10px] text-[#000000] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Tổng giá trị chờ phê duyệt</div>
                     </div>
 
                     {/* Pending POs Card */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">Cảnh Báo Tồn Đọng</span>
                             <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
@@ -1143,7 +1143,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Quick Action Card */}
-                    <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">Tạo PR Mới</span>
                             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -1174,7 +1174,7 @@ export default function Dashboard() {
                                 <span className="text-xs text-[#000000]">
                                     Kỳ ngân sách: <span className="text-[#000000] font-bold">{activeQuarterPeriod ? `Q${activeQuarterPeriod.periodNumber} ${activeQuarterPeriod.fiscalYear}` : 'Chưa thiết lập'}</span>
                                 </span>
-                                <Link href="/manager/spend-tracking" className="text-xs font-bold text-[#B4533A] hover:text-[#CB7A62] flex items-center gap-1 bg-[#B4533A]/10 px-3 py-1.5 rounded-lg border border-[#B4533A]/20 transition-all">
+                                <Link href="/manager/spend-tracking" className="text-xs font-bold text-[#2563EB] hover:text-[#3B82F6] flex items-center gap-1 bg-[#2563EB]/10 px-3 py-1.5 rounded-lg border border-[#2563EB]/20 transition-all">
                                     Chi tiết chi tiêu <ArrowUpRight size={14} />
                                 </Link>
                             </div>
@@ -1183,11 +1183,11 @@ export default function Dashboard() {
                         {/* Budget Stats Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Total Allocated */}
-                            <div className="bg-[#FAF8F5] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all">
+                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">Tổng ngân sách</span>
-                                    <div className="h-8 w-8 rounded-lg bg-[#B4533A]/10 flex items-center justify-center">
-                                        <DollarSign size={16} className="text-[#B4533A]" />
+                                    <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center">
+                                        <DollarSign size={16} className="text-[#2563EB]" />
                                     </div>
                                 </div>
                                 <div className="text-xl font-black text-[#000000]">
@@ -1225,7 +1225,7 @@ export default function Dashboard() {
                             </div>
 
                             {/* Remaining Budget */}
-                            <div className="bg-[#FAF8F5] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-[10px] font-black uppercase text-[#000000] tracking-wider">Còn lại</span>
                                     <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
@@ -1243,7 +1243,7 @@ export default function Dashboard() {
                         {deptAllocation && (
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 {/* Main Progress Bar */}
-                                <div className="lg:col-span-2 bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                <div className="lg:col-span-2 bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex items-center justify-between mb-4">
                                         <h4 className="text-xs font-black text-[#000000] uppercase tracking-wider">Tỷ lệ sử dụng ngân sách</h4>
                                         <span className={`text-sm font-black ${
@@ -1289,7 +1289,7 @@ export default function Dashboard() {
                                 </div>
 
                                 {/* Budget Alerts */}
-                                <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                     <h4 className="text-xs font-black text-[#000000] uppercase tracking-wider mb-4 flex items-center gap-2">
                                         <AlertTriangle size={14} className="text-black" />
                                         Cảnh báo ngân sách
@@ -1329,12 +1329,12 @@ export default function Dashboard() {
                                         
                                         {/* Pending PRs Impact */}
                                         {pendingPRValue > 0 && (
-                                            <div className="p-3 bg-[#B4533A]/10 border border-[#B4533A]/20 rounded-xl">
+                                            <div className="p-3 bg-[#2563EB]/10 border border-[#2563EB]/20 rounded-xl">
                                                 <div className="flex items-start gap-2">
-                                                    <FileText size={16} className="text-[#B4533A] shrink-0 mt-0.5" />
+                                                    <FileText size={16} className="text-[#2563EB] shrink-0 mt-0.5" />
                                                     <div>
-                                                        <p className="text-xs font-bold text-[#B4533A]">PR đang chờ duyệt</p>
-                                                        <p className="text-[10px] text-[#B4533A]/70 mt-1">
+                                                        <p className="text-xs font-bold text-[#2563EB]">PR đang chờ duyệt</p>
+                                                        <p className="text-[10px] text-[#2563EB]/70 mt-1">
                                                             {myPendingPRs.length} PR ({formatVND(pendingPRValue)}) đang chờ phê duyệt sẽ ảnh hưởng đến ngân sách còn lại.
                                                         </p>
                                                     </div>
@@ -1348,7 +1348,7 @@ export default function Dashboard() {
 
                         {/* Cost Center Budget Breakdown */}
                         {deptAllocation && costCenters && costCenters.length > 0 && (
-                            <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <h4 className="text-xs font-black text-[#000000] uppercase tracking-wider mb-4">Phân bổ theo Cost Center</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {costCenters
@@ -1364,8 +1364,8 @@ export default function Dashboard() {
                                                         <span className="text-xs font-bold text-[#000000]">{cc.code}</span>
                                                         <span className="text-[10px] text-[#000000]">{cc.name}</span>
                                                     </div>
-                                                    <div className="text-sm font-black text-[#B4533A] mb-2">{formatVND(ccTotal)}</div>
-                                                    <div className="h-1.5 bg-[#FAF8F5] rounded-full overflow-hidden">
+                                                    <div className="text-sm font-black text-[#2563EB] mb-2">{formatVND(ccTotal)}</div>
+                                                    <div className="h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
                                                         <div 
                                                             className={`h-full rounded-full ${ccUsed / ccTotal > 0.9 ? 'bg-red-500' : ccUsed / ccTotal > 0.7 ? 'bg-amber-500' : 'bg-emerald-500'}`}
                                                             style={{ width: `${Math.min(100, (ccUsed / ccTotal) * 100) || 0}%` }}
@@ -1385,10 +1385,10 @@ export default function Dashboard() {
                 )}
 
                 {/* Search & Filter Toolbar */}
-                <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#FAF8F5] p-4 rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#F1F5F9] p-4 rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-sm">
                     <div className="flex items-center gap-4">
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-[#000000] flex items-center gap-2 px-4 border-r border-[rgba(148,163,184,0.1)]">
-                            <FileText size={16} className="text-[#B4533A]" /> Queue Cần Duyệt Mới Nhất
+                            <FileText size={16} className="text-[#2563EB]" /> Queue Cần Duyệt Mới Nhất
                         </h3>
                         <button 
                             disabled={pendingPRCount === 0} 
@@ -1400,35 +1400,35 @@ export default function Dashboard() {
 
                     <div className="flex items-center gap-3">
                         <div className="relative group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#B4533A] transition-colors" size={16} />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#2563EB] transition-colors" size={16} />
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm mã PR, người tạo..."
-                                className="pl-11 pr-6 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-xs font-bold w-64 focus:outline-none focus:ring-2 focus:ring-[#B4533A]/20 focus:bg-[#FFFFFF] transition-all text-[#000000] placeholder:text-[#000000]"
+                                className="pl-11 pr-6 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-xs font-bold w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-[#FFFFFF] transition-all text-[#000000] placeholder:text-[#000000]"
                             />
                         </div>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#1A1D23] transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#0F172A] transition-all shadow-sm">
                             Lọc theo Cấp độ <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#1A1D23] transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#0F172A] transition-all shadow-sm">
                             Lọc theo Phân loại <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#1A1D23] transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#0F172A] transition-all shadow-sm">
                             Khoảng giá <ChevronDown size={14} />
                         </button>
-                        <Link href="/approvals" className="ml-2 text-[9px] font-black uppercase text-[#B4533A] hover:underline bg-[#B4533A]/10 px-4 py-2.5 rounded-2xl border border-[#B4533A]/20 transition-all">
+                        <Link href="/approvals" className="ml-2 text-[9px] font-black uppercase text-[#2563EB] hover:underline bg-[#2563EB]/10 px-4 py-2.5 rounded-2xl border border-[#2563EB]/20 transition-all">
                             Tới màn hình duyệt &gt;
                         </Link>
                     </div>
                 </div>
 
-                <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#B4533A]/5 bg-[#FAF8F5]">
+                <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#2563EB]/5 bg-[#F1F5F9]">
                     <div className="overflow-x-auto">
                         <table className="erp-table text-xs whitespace-nowrap">
                             <thead>
                                 <tr>
                                     <th className="w-10 px-8 text-center bg-[#FFFFFF]">
-                                        <input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#B4533A] bg-[#FAF8F5]" />
+                                        <input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#2563EB] bg-[#F1F5F9]" />
                                     </th>
                                     <th className="bg-[#FFFFFF]">Số phiếu</th>
                                     <th className="bg-[#FFFFFF]">Ngày tạo</th>
@@ -1451,7 +1451,7 @@ export default function Dashboard() {
                                     return (
                                         <tr key={pr.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
                                             <td className="px-8 text-center">
-                                                <input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#B4533A] bg-[#FAF8F5]" />
+                                                <input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#2563EB] bg-[#F1F5F9]" />
                                             </td>
                                             <td className="font-bold text-[#000000]">{pr.prNumber || "PR-***"}</td>
                                             <td className="text-[#000000] font-medium">{formatDate(pr.createdAt)}</td>
@@ -1462,7 +1462,7 @@ export default function Dashboard() {
                                             </td>
                                             <td>
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-7 h-7 rounded-full bg-[#1A1D23] flex items-center justify-center overflow-hidden border border-[rgba(148,163,184,0.1)]">
+                                                    <div className="w-7 h-7 rounded-full bg-[#0F172A] flex items-center justify-center overflow-hidden border border-[rgba(148,163,184,0.1)]">
                                                         <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(requesterName)}&background=random`} alt="avatar" />
                                                     </div>
                                                     <span className="font-bold text-[#000000] truncate max-w-[120px]">{requesterName}</span>
@@ -1477,7 +1477,7 @@ export default function Dashboard() {
                                             <td className="text-right font-black text-black text-sm">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                             <td className="text-right px-8">
                                                 <div className="flex justify-end gap-1.5">
-                                                    <button onClick={() => setSelectedPRDetails(pr)} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#B4533A] hover:border-[#B4533A]/20 rounded-xl transition-all shadow-sm" title="Xem chi tiết">
+                                                    <button onClick={() => setSelectedPRDetails(pr)} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-xl transition-all shadow-sm" title="Xem chi tiết">
                                                         <Eye size={14} />
                                                     </button>
                                                     <button onClick={() => handleQuickApprove(pr.workflowId)} disabled={isSubmitting} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-emerald-500 hover:text-[#000000] rounded-xl transition-all shadow-sm disabled:opacity-50" title="Duyệt nhanh">
@@ -1497,7 +1497,7 @@ export default function Dashboard() {
                                     <tr>
                                         <td colSpan={9} className="py-20 text-center text-[#000000] font-black uppercase tracking-widest text-[10px]">
                                             <div className="flex flex-col items-center gap-3">
-                                                <div className="p-4 bg-[#1A1D23] rounded-full"><Bell size={24} className="text-[#000000]" /></div>
+                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-[#000000]" /></div>
                                                 Hiện tại không có phiếu nào cần bạn phê duyệt
                                             </div>
                                         </td>
@@ -1531,15 +1531,15 @@ export default function Dashboard() {
                             <p className="text-[10px] font-black text-[#000000] mb-0.5">{myOrg?.name || "Đối tác ProcurePro"}</p>
                             <p className="text-[8px] font-bold text-black uppercase tracking-tighter">Xác thực: Gold Partner</p>
                         </div>
-                        <div className="w-10 h-10 rounded-2xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] flex items-center justify-center shadow-sm">
-                            <Building2 size={20} className="text-[#B4533A]" />
+                        <div className="w-10 h-10 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center shadow-sm">
+                            <Building2 size={20} className="text-[#2563EB]" />
                         </div>
                     </div>
                 </div>
 
                 {/* Supplier Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                    <MetricCard title="Hồ sơ Báo giá mới" value={myPendingRFQs.length} icon={<ClipboardList size={20} />} color="bg-[#B4533A]" />
+                    <MetricCard title="Hồ sơ Báo giá mới" value={myPendingRFQs.length} icon={<ClipboardList size={20} />} color="bg-[#2563EB]" />
                     <MetricCard title="Đơn hàng đang chờ" value={myActivePOs.length} icon={<ShoppingCart size={20} />} color="bg-amber-500" />
                     <MetricCard title="Doanh thu dự tính" value={formatVND(125000000).replace('₫', '')} icon={<DollarSign size={20} />} color="bg-emerald-500" />
                     <MetricCard title="Điểm đánh giá" value="4.9/5" icon={<Zap size={20} />} color="bg-purple-600" />
@@ -1550,9 +1550,9 @@ export default function Dashboard() {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
                             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#000000]">YÊU CẦU BÁO GIÁ ĐẾN (RFQ)</h3>
-                            <Link href="/supplier/rfq" className="text-[10px] font-black text-[#B4533A] hover:underline uppercase tracking-widest">Xem tất cả ›</Link>
+                            <Link href="/supplier/rfq" className="text-[10px] font-black text-[#2563EB] hover:underline uppercase tracking-widest">Xem tất cả ›</Link>
                         </div>
-                        <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#B4533A]/5 border-none bg-[#FAF8F5]">
+                        <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr className="bg-[#FFFFFF]">
@@ -1569,7 +1569,7 @@ export default function Dashboard() {
                                             <td className="font-semibold text-[#000000]">ProcurePro Corp</td>
                                             <td className="text-right text-[#000000] font-bold">{formatDate(rfq.createdAt)}</td>
                                             <td className="text-right px-8 whitespace-nowrap">
-                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-[#B4533A] text-[#000000] text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-[#A85032] transition-all">Báo giá</Link>
+                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-[#2563EB] text-[#000000] text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-[#1D4ED8] transition-all">Báo giá</Link>
                                             </td>
                                         </tr>
                                     )) : (
@@ -1583,18 +1583,18 @@ export default function Dashboard() {
                     {/* Quick Tips or Announcements */}
                     <div className="space-y-6">
                         <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#000000] flex items-center gap-2">
-                             <Bell size={14} className="text-[#B4533A]" /> THÔNG BÁO TỪ HỆ THỐNG
+                             <Bell size={14} className="text-[#2563EB]" /> THÔNG BÁO TỪ HỆ THỐNG
                         </h3>
-                        <div className="bg-[#FAF8F5] rounded-[40px] p-10 text-[#000000] relative overflow-hidden group shadow-2xl shadow-[#B4533A]/5 border border-[rgba(148,163,184,0.1)]">
+                        <div className="bg-[#F1F5F9] rounded-[40px] p-10 text-[#000000] relative overflow-hidden group shadow-2xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
                              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
                                  <Zap size={100} />
                              </div>
                              <div className="relative z-10 space-y-6">
-                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-[#1A1D23] transition-colors cursor-pointer">
+                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-colors cursor-pointer">
                                      <h4 className="text-xs font-black uppercase tracking-widest text-black mb-2">Cập nhật Chính sách Thanh toán</h4>
                                      <p className="text-[11px] text-[#000000] leading-relaxed font-medium">Hệ thống ProcurePro sẽ rút ngắn thời hạn thanh toán từ 45 ngày xuống còn 30 ngày cho các đối tác Gold.</p>
                                  </div>
-                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-[#1A1D23] transition-colors cursor-pointer">
+                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-colors cursor-pointer">
                                      <h4 className="text-xs font-black uppercase tracking-widest text-black mb-2">Bảo trì Hệ thống B2B</h4>
                                      <p className="text-[11px] text-[#000000] leading-relaxed font-medium">Hệ thống sẽ bảo trì từ 2h00 đến 4h00 sáng Chủ Nhật tới. Vui lòng hoàn tất báo giá trước thời gian này.</p>
                                  </div>
@@ -1610,12 +1610,12 @@ export default function Dashboard() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
             <h1 className="text-3xl font-black text-[#000000] tracking-tight mb-8">Hệ thống Quản trị Tổng thể</h1>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                <div className="erp-card p-6! border-l-4 border-[rgba(148,163,184,0.1)] bg-[#FAF8F5]">
+                <div className="erp-card p-6! border-l-4 border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
                     <div className="text-2xl font-black text-[#000000]">{formatVND(budgets?.allocated || 0)} ₫</div>
                     <div className="mt-2 text-[10px] text-[#000000] font-bold">Ngân sách đã phân bổ</div>
                 </div>
             </div>
-            <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#B4533A]/5 border border-[rgba(148,163,184,0.1)] bg-[#FAF8F5]">
+            <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr className="bg-[#FFFFFF]"><th>Mã PR</th><th>Phòng ban</th><th className="text-right">Giá trị</th><th className="text-right">Thao tác</th></tr>
@@ -1646,12 +1646,12 @@ export default function Dashboard() {
 
             {selectedPRDetails && (
                 <div className="fixed inset-0 z-[100] bg-[#FFFFFF]/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="bg-[#FAF8F5] rounded-[2rem] shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-[2rem] shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
                         <div className="flex justify-between items-center p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                             <div>
                                 <h2 className="text-2xl font-black text-[#000000] flex items-center gap-3 tracking-tighter">
-                                    <FileText size={24} className="text-[#B4533A]" />
-                                    CHI TIẾT PHIẾU: <span className="text-[#B4533A]">{selectedPRDetails.prNumber || selectedPRDetails.id}</span>
+                                    <FileText size={24} className="text-[#2563EB]" />
+                                    CHI TIẾT PHIẾU: <span className="text-[#2563EB]">{selectedPRDetails.prNumber || selectedPRDetails.id}</span>
                                 </h2>
                                 <p className="text-[10px] font-black text-[#000000] uppercase tracking-widest mt-1">Cập nhật: {new Date(selectedPRDetails.createdAt || "").toLocaleString('vi-VN')}</p>
                             </div>
@@ -1724,7 +1724,7 @@ export default function Dashboard() {
                                             {isSubmitting ? <Loader2 className="animate-spin" /> : <><span>Phê duyệt nhanh</span><span className="text-[8px] opacity-60">Duyệt ngay trên Dashboard</span></>}
                                         </button>
                                     )}
-                                    <button onClick={() => setSelectedPRDetails(null)} className="w-full h-12 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[10px] font-black uppercase text-[#000000] hover:bg-[#1A1D23] transition-all">Đóng</button>
+                                    <button onClick={() => setSelectedPRDetails(null)} className="w-full h-12 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[10px] font-black uppercase text-[#000000] hover:bg-[#0F172A] transition-all">Đóng</button>
                                 </div>
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
@@ -35,7 +35,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
           </div>
           <button
             onClick={() => this.setState({ hasError: false, message: "" })}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#A85032] text-[#000000] text-sm hover:bg-[#8F442B] transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1D4ED8] text-[#000000] text-sm hover:bg-[#8F442B] transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Thử lại

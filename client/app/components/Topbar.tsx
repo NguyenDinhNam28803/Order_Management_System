@@ -88,24 +88,24 @@ export default function Topbar() {
         .split(" ").slice(-2).map((w: string) => w[0]?.toUpperCase() ?? "").join("").slice(0, 2) || "GU";
 
     return (
-        <header className="sticky top-0 z-40 w-full bg-[#FAF8F5]/96 backdrop-blur-xl border-b border-[rgba(240,246,252,0.08)] h-14 flex items-center justify-between px-5 gap-3">
+        <header className="sticky top-0 z-40 w-full bg-white border-b border-[#E2E8F0] shadow-[0_1px_3px_rgba(0,0,0,0.06)] h-14 flex items-center justify-between px-5 gap-3">
 
             {/* ── Left: Breadcrumb ── */}
             <div className="flex items-center gap-1.5 min-w-0">
                 <div className="flex flex-col min-w-0">
                     {/* mini breadcrumb path */}
                     <div className="hidden sm:flex items-center gap-1 leading-none mb-0.5">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-[#000000]">ProcureSmart</span>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">ProcureSmart</span>
                         {breadcrumbParts.length > 1 && breadcrumbParts.slice(0, -1).map((p, i) => (
                             <React.Fragment key={i}>
-                                <ChevronRight size={9} className="text-[#000000]" />
-                                <span className="text-[9px] font-semibold text-[#000000] truncate max-w-[60px]">{p.label}</span>
+                                <ChevronRight size={9} className="text-slate-300" />
+                                <span className="text-[9px] font-semibold text-slate-500 truncate max-w-[60px]">{p.label}</span>
                             </React.Fragment>
                         ))}
                     </div>
                     {/* page title */}
-                    <h2 className="text-[13px] font-bold text-[#000000] tracking-tight leading-tight truncate flex items-center gap-1.5">
-                        {isAIPage && <Sparkles size={12} className="text-violet-400 shrink-0" />}
+                    <h2 className="text-[13px] font-bold text-slate-900 tracking-tight leading-tight truncate flex items-center gap-1.5">
+                        {isAIPage && <Sparkles size={12} className="text-violet-500 shrink-0" />}
                         {pageTitle}
                     </h2>
                 </div>
@@ -118,7 +118,7 @@ export default function Topbar() {
                 {SUPPLIER_DISCOVERY_ROLES.includes(currentUser?.role ?? '') && pathname !== '/procurement/supplier-discovery' && (
                     <Link
                         href="/procurement/supplier-discovery"
-                        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-all duration-150 shrink-0"
+                        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold border border-violet-200 bg-violet-50 text-violet-600 hover:bg-violet-100 hover:border-violet-300 transition-all duration-150 shrink-0"
                     >
                         <Sparkles size={11} className="shrink-0" />
                         Khám phá NCC
@@ -128,14 +128,14 @@ export default function Topbar() {
                 {/* Search with ⌘K hint */}
                 <div className="hidden md:flex relative group">
                     <Search
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#B4533A] transition-colors"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#2563EB] transition-colors"
                         size={13}
                     />
                     <input
                         type="text"
                         placeholder="Tìm kiếm..."
                         readOnly
-                        className="pl-8 pr-16 py-1.5 bg-[#FFFFFF] border border-[rgba(240,246,252,0.08)] rounded-lg text-[11.5px] font-medium text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/40 focus:ring-1 focus:ring-[#B4533A]/20 w-48 transition-all cursor-pointer hover:border-[rgba(240,246,252,0.15)]"
+                        className="pl-8 pr-16 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11.5px] font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 w-48 transition-all cursor-pointer hover:border-slate-300"
                     />
                     <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
                         <span className="kbd">⌘</span>
@@ -147,17 +147,17 @@ export default function Topbar() {
                 <NotificationInbox />
 
                 {/* User Profile */}
-                <div className="flex items-center gap-2 pl-2.5 border-l border-[rgba(240,246,252,0.08)] cursor-pointer hover:bg-[rgba(240,246,252,0.04)] px-2 py-1.5 rounded-lg transition-all group">
-                    <div className="h-7 w-7 rounded-md bg-gradient-to-br from-[#B4533A]/30 to-[#6366F1]/40 border border-[#B4533A]/30 flex items-center justify-center text-[#CB7A62] font-black text-[10px] shrink-0 select-none">
+                <div className="flex items-center gap-2 pl-2.5 border-l border-slate-200 cursor-pointer hover:bg-slate-50 px-2 py-1.5 rounded-lg transition-all group">
+                    <div className="h-7 w-7 rounded-md bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-black text-[10px] shrink-0 select-none">
                         {currentUser?.fullName?.charAt(0)?.toUpperCase() || <User size={13} />}
                     </div>
                     <div className="hidden md:flex flex-col leading-none">
-                        <span className="text-[11px] font-bold text-[#000000] leading-tight">{currentUser?.fullName || "Guest"}</span>
-                        <span className="text-[8.5px] font-semibold uppercase tracking-widest text-[#000000] mt-0.5">
+                        <span className="text-[11px] font-semibold text-slate-800 leading-tight">{currentUser?.fullName || "Guest"}</span>
+                        <span className="text-[8.5px] font-semibold uppercase tracking-widest text-slate-400 mt-0.5">
                             {currentUser?.role?.replace(/_/g, " ") || "No Role"}
                         </span>
                     </div>
-                    <ChevronDown size={11} className="text-[#000000] group-hover:text-[#000000] transition-colors" />
+                    <ChevronDown size={11} className="text-slate-400 group-hover:text-slate-600 transition-colors" />
                 </div>
             </div>
         </header>

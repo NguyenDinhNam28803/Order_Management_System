@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 
@@ -19,7 +19,7 @@ export const AuditLogDetailModal: React.FC<AuditLogDetailModalProps> = ({ data, 
                     </div>
                     <table className="w-full text-xs border-collapse">
                         <thead>
-                            <tr className="bg-[#FAF8F5]">
+                            <tr className="bg-[#F1F5F9]">
                                 <th className="p-2 border">Ghi chú</th>
                                 <th className="p-2 border">Ngân sách</th>
                             </tr>
@@ -56,7 +56,7 @@ export const AuditLogDetailModal: React.FC<AuditLogDetailModalProps> = ({ data, 
             <div className="bg-[#FFFFFF] w-full max-w-2xl rounded-2xl shadow-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                 <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                     <h2 className="text-xl font-black text-[#000000]">Chi tiết thay đổi</h2>
-                    <button onClick={onClose} className="text-[#000000] hover:text-[#B4533A]">Đóng</button>
+                    <button onClick={onClose} className="text-[#000000] hover:text-[#2563EB]">Đóng</button>
                 </div>
                 <div className="p-6 max-h-[60vh] overflow-y-auto">
                     {renderContent()}
@@ -64,7 +64,7 @@ export const AuditLogDetailModal: React.FC<AuditLogDetailModalProps> = ({ data, 
                 <div className="p-6 border-t border-[rgba(148,163,184,0.1)] text-right">
                     <button 
                         onClick={onClose}
-                        className="px-6 py-2 bg-[#B4533A] text-white rounded-xl font-bold hover:bg-[#A0452F] transition-all"
+                        className="px-6 py-2 bg-[#2563EB] text-white rounded-xl font-bold hover:bg-[#A0452F] transition-all"
                     >
                         Đã hiểu
                     </button>

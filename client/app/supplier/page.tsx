@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useProcurement, RFQ, PO, Contract } from "../context/ProcurementContext";
@@ -48,7 +48,7 @@ const Tooltip = ({ children, content, position = 'top' }: { children: React.Reac
           position === 'left' ? 'right-full top-1/2 -translate-y-1/2 mr-2' :
           'left-full top-1/2 -translate-y-1/2 ml-2'
         }`}>
-          <div className="bg-[#1A1D23] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-2xl max-w-xs text-xs text-[#F2EFE9] whitespace-normal min-w-[220px]">
+          <div className="bg-[#0F172A] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-2xl max-w-xs text-xs text-[#F8FAFC] whitespace-normal min-w-[220px]">
             {content}
           </div>
         </div>
@@ -72,7 +72,7 @@ const getTierColor = (tier?: string) => {
     case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
     case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
     case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
-    default: return "bg-[#1A1D23] text-[#F2EFE9] border-[rgba(148,163,184,0.1)]";
+    default: return "bg-[#0F172A] text-[#F8FAFC] border-[rgba(148,163,184,0.1)]";
   }
 };
 
@@ -101,7 +101,7 @@ interface ActivityItem {
 const StatCard = ({ title, value, subtitle, icon: Icon, color, trend, onClick }: StatCardProps) => (
   <div 
     onClick={onClick}
-    className={`bg-[#FAF8F5] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[${color}]/30 transition-all group ${onClick ? 'cursor-pointer' : ''}`}
+    className={`bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[${color}]/30 transition-all group ${onClick ? 'cursor-pointer' : ''}`}
   >
     <div className="flex items-start justify-between mb-3">
       <div className={`h-10 w-10 rounded-xl ${color.replace("text", "bg")}/10 flex items-center justify-center border border-${color.replace("[", "").replace("]", "")}/20`}>
@@ -123,7 +123,7 @@ const StatCard = ({ title, value, subtitle, icon: Icon, color, trend, onClick }:
 const QuickAction = ({ icon: Icon, label, href, color }: { icon: React.ElementType, label: string, href: string, color: string }) => (
   <Link 
     href={href}
-    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 hover:bg-[#FAF8F5] transition-all group"
+    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 hover:bg-[#F1F5F9] transition-all group"
   >
     <div className={`h-12 w-12 rounded-xl ${color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
       <Icon size={24} className="text-[#000000]" />
@@ -332,7 +332,7 @@ export default function SupplierPortalPage() {
 
   const getActivityColor = (type: string) => {
     switch (type) {
-      case "rfq": return "text-[#B4533A]";
+      case "rfq": return "text-[#2563EB]";
       case "po": return "text-black";
       case "invoice": return "text-black";
       case "contract": return "text-violet-400";
@@ -345,7 +345,7 @@ export default function SupplierPortalPage() {
     return (
       <main className="min-h-screen bg-[#FFFFFF] p-6">
         <div className="flex flex-col items-center justify-center min-h-[400px]">
-          <div className="w-12 h-12 border-4 border-[#B4533A] border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4"></div>
           <div className="text-[#000000] font-bold uppercase tracking-widest">Đang tải cổng thông tin...</div>
         </div>
       </main>
@@ -358,7 +358,7 @@ export default function SupplierPortalPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#B4533A] to-[#8B5CF6] flex items-center justify-center">
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
             <LayoutDashboard size={24} className="text-[#000000]" />
           </div>
           <div>
@@ -366,7 +366,7 @@ export default function SupplierPortalPage() {
               Cổng thông tin Nhà cung cấp
             </h1>
             <p className="text-sm text-[#000000]">
-              Xin chào, <span className="text-[#B4533A] font-bold">{supplierName}</span>
+              Xin chào, <span className="text-[#2563EB] font-bold">{supplierName}</span>
             </p>
           </div>
         </div>
@@ -379,7 +379,7 @@ export default function SupplierPortalPage() {
           value={stats.pendingRFQs}
           subtitle="Yêu cầu mới từ khách hàng"
           icon={Inbox}
-          color="text-[#B4533A]"
+          color="text-[#2563EB]"
           trend={12}
           onClick={() => router.push("/supplier/rfq")}
         />
@@ -432,9 +432,9 @@ export default function SupplierPortalPage() {
         {/* Left Column - Quick Actions & Recent RFQs */}
         <div className="lg:col-span-2 space-y-6">
           {/* Quick Actions */}
-          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles size={18} className="text-[#B4533A]" />
+              <Sparkles size={18} className="text-[#2563EB]" />
               <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Thao tác nhanh</h2>
             </div>
             <div className="grid grid-cols-5 gap-3">
@@ -442,7 +442,7 @@ export default function SupplierPortalPage() {
                 icon={Send}
                 label="Gửi báo giá"
                 href="/supplier/rfq"
-                color="bg-[#B4533A]"
+                color="bg-[#2563EB]"
               />
               <QuickAction
                 icon={Package}
@@ -472,13 +472,13 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent RFQs */}
-          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Inbox size={18} className="text-[#B4533A]" />
+                <Inbox size={18} className="text-[#2563EB]" />
                 <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">RFQ cần xử lý</h2>
               </div>
-              <Link href="/supplier/rfq" className="text-xs font-bold text-[#B4533A] hover:text-[#CB7A62] flex items-center gap-1">
+              <Link href="/supplier/rfq" className="text-xs font-bold text-[#2563EB] hover:text-[#3B82F6] flex items-center gap-1">
                 Xem tất cả <ArrowRight size={14} />
               </Link>
             </div>
@@ -494,10 +494,10 @@ export default function SupplierPortalPage() {
                   <div 
                     key={rfq.id}
                     onClick={() => router.push("/supplier/rfq")}
-                    className="flex items-center gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all cursor-pointer group"
+                    className="flex items-center gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all cursor-pointer group"
                   >
-                    <div className="h-10 w-10 rounded-lg bg-[#B4533A]/10 flex items-center justify-center shrink-0">
-                      <FileText size={18} className="text-[#B4533A]" />
+                    <div className="h-10 w-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center shrink-0">
+                      <FileText size={18} className="text-[#2563EB]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -512,7 +512,7 @@ export default function SupplierPortalPage() {
                       <div className="text-xs text-[#000000]">{rfq.items?.length || 0} sản phẩm</div>
                       <div className="text-[10px] text-[#000000]">{rfq.createdAt ? new Date(rfq.createdAt).toLocaleDateString() : "N/A"}</div>
                     </div>
-                    <ChevronRight size={16} className="text-[#000000] group-hover:text-[#B4533A] transition-colors" />
+                    <ChevronRight size={16} className="text-[#000000] group-hover:text-[#2563EB] transition-colors" />
                   </div>
                 ))}
               </div>
@@ -520,7 +520,7 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent Purchase Orders */}
-          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <ShoppingCart size={18} className="text-black" />
@@ -553,7 +553,7 @@ export default function SupplierPortalPage() {
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           po.status === "ACKNOWLEDGED" ? "bg-emerald-500/10 text-black" :
                           po.status === "PENDING" ? "bg-amber-500/10 text-black" :
-                          po.status === "SHIPPED" ? "bg-[#B4533A]/10 text-[#B4533A]" :
+                          po.status === "SHIPPED" ? "bg-[#2563EB]/10 text-[#2563EB]" :
                           "bg-[#000000]/10 text-[#000000]"
                         }`}>
                           {po.status}
@@ -576,7 +576,7 @@ export default function SupplierPortalPage() {
         {/* Right Column - Activity & Performance */}
         <div className="space-y-6">
           {/* Performance Card */}
-          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
               <Award size={18} className="text-black" />
               <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Hiệu suất</h2>
@@ -615,7 +615,7 @@ export default function SupplierPortalPage() {
                       {typeof kpiData.otdScore === 'number' ? kpiData.otdScore.toFixed(0) : "--"}%
                     </span>
                   </div>
-                  <div className="h-2 bg-[#FAF8F5] rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ${
                         (kpiData.otdScore || 0) >= 90 ? "bg-emerald-400" :
@@ -631,24 +631,24 @@ export default function SupplierPortalPage() {
                 <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="p-1.5 bg-[#B4533A]/10 rounded-lg">
-                        <CheckCircle size={14} className="text-[#B4533A]" />
+                      <div className="p-1.5 bg-[#2563EB]/10 rounded-lg">
+                        <CheckCircle size={14} className="text-[#2563EB]" />
                       </div>
                       <Tooltip content={
                         <div className="space-y-1">
-                          <p className="font-bold text-[#CB7A62]">Quality Score</p>
+                          <p className="font-bold text-[#3B82F6]">Quality Score</p>
                           <p>Đánh giá chất lượng sản phẩm</p>
                           <p className="text-[#000000]">Trọng số: 30%</p>
                         </div>
                       }>
-                        <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-[#CB7A62] transition-colors">Quality</span>
+                        <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-[#3B82F6] transition-colors">Quality</span>
                       </Tooltip>
                     </div>
                     <span className={`text-lg font-black ${getScoreColor(kpiData.qualityScore)}`}>
                       {typeof kpiData.qualityScore === 'number' ? kpiData.qualityScore.toFixed(0) : "--"}%
                     </span>
                   </div>
-                  <div className="h-2 bg-[#FAF8F5] rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ${
                         (kpiData.qualityScore || 0) >= 90 ? "bg-emerald-400" :
@@ -681,7 +681,7 @@ export default function SupplierPortalPage() {
                       {typeof kpiData.priceScore === 'number' ? kpiData.priceScore.toFixed(0) : "--"}%
                     </span>
                   </div>
-                  <div className="h-2 bg-[#FAF8F5] rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ${
                         (kpiData.priceScore || 0) >= 90 ? "bg-emerald-400" :
@@ -714,7 +714,7 @@ export default function SupplierPortalPage() {
                       {typeof kpiData.manualScore === 'number' ? kpiData.manualScore.toFixed(0) : "--"}%
                     </span>
                   </div>
-                  <div className="h-2 bg-[#FAF8F5] rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ${
                         (kpiData.manualScore || 0) >= 90 ? "bg-emerald-400" :
@@ -734,7 +734,7 @@ export default function SupplierPortalPage() {
                       <span className="text-[#000000] text-xs font-bold uppercase">{label}</span>
                       <span className="text-lg font-black text-[#000000]">--%</span>
                     </div>
-                    <div className="h-2 bg-[#FAF8F5] rounded-full overflow-hidden">
+                    <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
                       <div className="h-full bg-[#000000]/30 rounded-full" style={{ width: '0%' }} />
                     </div>
                   </div>
@@ -747,7 +747,7 @@ export default function SupplierPortalPage() {
               <button
                 onClick={handleEvaluateKPI}
                 disabled={kpiLoading || !supplierId}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#B4533A] hover:bg-[#A85032] text-[#000000] rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
               >
                 {kpiLoading ? (
                   <>
@@ -764,7 +764,7 @@ export default function SupplierPortalPage() {
 
               <Link
                 href={`/supplier/${supplierId}/kpi-evaluation`}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-[#1A1D23] transition-all"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-[#0F172A] transition-all"
               >
                 <Target size={16} />
                 Xem chi tiết đánh giá
@@ -773,7 +773,7 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
               <Clock size={18} className="text-[#000000]" />
               <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Hoạt động gần đây</h2>
@@ -805,18 +805,18 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="bg-[#FAF8F5] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
               <Target size={18} className="text-[#000000]" />
               <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Liên kết nhanh</h2>
             </div>
             <div className="space-y-2">
-              <Link href="/procurement/contracts" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-[#1A1D23] transition-all group">
-                <ShieldCheck size={16} className="text-[#000000] group-hover:text-[#B4533A]" />
+              <Link href="/procurement/contracts" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-[#0F172A] transition-all group">
+                <ShieldCheck size={16} className="text-[#000000] group-hover:text-[#2563EB]" />
                 <span className="text-sm text-[#000000] group-hover:text-[#000000]">Hợp đồng & Ký kết</span>
               </Link>
-              <Link href="/help" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-[#1A1D23] transition-all group">
-                <AlertCircle size={16} className="text-[#000000] group-hover:text-[#B4533A]" />
+              <Link href="/help" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-[#0F172A] transition-all group">
+                <AlertCircle size={16} className="text-[#000000] group-hover:text-[#2563EB]" />
                 <span className="text-sm text-[#000000] group-hover:text-[#000000]">Trung tâm trợ giúp</span>
               </Link>
             </div>

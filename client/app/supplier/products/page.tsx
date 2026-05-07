@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { useProcurement, Product, ProductCategory } from "../../context/ProcurementContext";
@@ -171,7 +171,7 @@ export default function SupplierProductsPage() {
             render: (row: Product) => (
                 <div className="flex gap-1">
                     <button 
-                        className="p-1.5 text-[#000000] hover:text-[#B4533A] hover:bg-[#B4533A]/10 rounded-lg border border-transparent hover:border-[#B4533A]/20 transition-all"
+                        className="p-1.5 text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg border border-transparent hover:border-[#2563EB]/20 transition-all"
                         onClick={() => {
                             setEditingProduct(row);
                             setIsModalOpen(true);
@@ -200,7 +200,7 @@ export default function SupplierProductsPage() {
                     <p className="text-sm text-[#000000] mt-1 font-medium italic">Quản lý danh sách hàng hóa và dịch vụ bạn cung cấp cho hệ thống.</p>
                 </div>
                 <button 
-                    className="flex items-center gap-2 py-4 px-8 bg-[#B4533A] text-[#000000] rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#A85032] transition-all shadow-xl shadow-[#B4533A]/20"
+                    className="flex items-center gap-2 py-4 px-8 bg-[#2563EB] text-[#000000] rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-xl shadow-[#2563EB]/20"
                     onClick={() => {
                         setEditingProduct(null);
                         setIsModalOpen(true);
@@ -214,8 +214,8 @@ export default function SupplierProductsPage() {
             <div className="grid grid-cols-1 gap-8">
                 {/* Stats cards for supplier */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="bg-[#FAF8F5] p-6 rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-[#B4533A]/10 text-[#B4533A] flex items-center justify-center border border-[#B4533A]/20">
+                    <div className="bg-[#F1F5F9] p-6 rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center border border-[#2563EB]/20">
                             <Box size={24} />
                         </div>
                         <div>
@@ -223,7 +223,7 @@ export default function SupplierProductsPage() {
                             <p className="text-2xl font-black text-[#000000] leading-none">{myProducts.length}</p>
                         </div>
                     </div>
-                    <div className="bg-[#FAF8F5] p-6 rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 flex items-center gap-4">
+                    <div className="bg-[#F1F5F9] p-6 rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4">
                         <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 text-black flex items-center justify-center border border-emerald-500/20">
                             <Box size={24} />
                         </div>
@@ -234,13 +234,13 @@ export default function SupplierProductsPage() {
                     </div>
                 </div>
 
-                <div className="bg-[#FAF8F5] rounded-[2.5rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-[2.5rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                     {/* Toolbar */}
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="relative flex-1 max-w-md group">
-                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#B4533A] transition-colors" />
+                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#2563EB] transition-colors" />
                             <input 
-                                className="w-full pl-12 pr-4 py-3 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#1A1D23] transition-all" 
+                                className="w-full pl-12 pr-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#0F172A] transition-all" 
                                 placeholder="Tìm theo tên hoặc mã SKU..."
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
@@ -257,7 +257,7 @@ export default function SupplierProductsPage() {
                         <ERPTable columns={columns} data={filteredData} />
                         {filteredData.length === 0 && !loading && (
                             <div className="py-20 text-center">
-                                <div className="h-20 w-20 bg-[#FAF8F5] rounded-full flex items-center justify-center mx-auto mb-4 text-[#000000] border border-[rgba(148,163,184,0.1)]">
+                                <div className="h-20 w-20 bg-[#F1F5F9] rounded-full flex items-center justify-center mx-auto mb-4 text-[#000000] border border-[rgba(148,163,184,0.1)]">
                                     <Package size={40} />
                                 </div>
                                 <h3 className="text-lg font-bold text-[#000000]">Chưa có sản phẩm nào</h3>
@@ -266,7 +266,7 @@ export default function SupplierProductsPage() {
                         )}
                         {loading && (
                             <div className="py-20 text-center flex flex-col items-center justify-center gap-4">
-                                <Loader2 size={40} className="animate-spin text-[#B4533A]" />
+                                <Loader2 size={40} className="animate-spin text-[#2563EB]" />
                                 <p className="text-[#000000] font-bold uppercase text-[10px] tracking-[0.2em]">Đang tải dữ liệu...</p>
                             </div>
                         )}
@@ -277,7 +277,7 @@ export default function SupplierProductsPage() {
             {/* Product Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                    <div className="bg-[#FAF8F5] rounded-[3rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-500 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-[3rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-500 border border-[rgba(148,163,184,0.1)]">
                         {/* Header */}
                         <div className="p-10 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex items-center justify-between">
                             <div>
@@ -288,7 +288,7 @@ export default function SupplierProductsPage() {
                             </div>
                             <button 
                                 onClick={() => setIsModalOpen(false)}
-                                className="h-12 w-12 rounded-2xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] hover:bg-[#1A1D23] flex items-center justify-center transition-all shadow-sm group"
+                                className="h-12 w-12 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] flex items-center justify-center transition-all shadow-sm group"
                             >
                                 <Plus size={24} className="rotate-45 text-[#000000] group-hover:text-black transition-colors" />
                             </button>
@@ -300,7 +300,7 @@ export default function SupplierProductsPage() {
                                 <div className="col-span-2">
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Tên sản phẩm / Dịch vụ <span className="text-black">*</span></label>
                                     <input 
-                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-lg text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#FAF8F5] transition-all" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-lg text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
                                         value={form.name || ""} 
                                         onChange={e => setForm({ ...form, name: e.target.value })}
                                         placeholder="VD: Gói bảo trì máy chủ hàng tháng..." 
@@ -310,7 +310,7 @@ export default function SupplierProductsPage() {
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Mã SKU / Model <span className="text-black">*</span></label>
                                     <input 
-                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#FAF8F5] transition-all" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
                                         value={form.sku || ""} 
                                         onChange={e => setForm({ ...form, sku: e.target.value })}
                                         placeholder="VD: SVC-MAINT-2024" 
@@ -320,7 +320,7 @@ export default function SupplierProductsPage() {
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Đơn vị tính</label>
                                     <input 
-                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#FAF8F5] transition-all" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
                                         value={form.unit || "Cái"} 
                                         onChange={e => setForm({ ...form, unit: e.target.value })}
                                         placeholder="Cái, Giờ, Gói..." 
@@ -331,7 +331,7 @@ export default function SupplierProductsPage() {
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Giá tham khảo (VNĐ) <span className="text-black">*</span></label>
                                     <input 
                                         type="number" 
-                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-black text-[#B4533A] text-lg placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#FAF8F5] transition-all" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-black text-[#2563EB] text-lg placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
                                         value={form.unitPriceRef || 0} 
                                         onChange={e => setForm({ ...form, unitPriceRef: Number(e.target.value) })}
                                     />
@@ -341,7 +341,7 @@ export default function SupplierProductsPage() {
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Danh mục hệ thống <span className="text-black">*</span></label>
                                     <div className="relative">
                                         <select 
-                                            className="w-full pl-4 pr-10 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] appearance-none cursor-pointer focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#FAF8F5] transition-all"
+                                            className="w-full pl-4 pr-10 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] appearance-none cursor-pointer focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all"
                                             value={form.categoryId || ""}
                                             onChange={e => setForm({ ...form, categoryId: e.target.value })}
                                         >
@@ -357,7 +357,7 @@ export default function SupplierProductsPage() {
                                 <div className="col-span-2">
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Mô tả chi tiết</label>
                                     <textarea 
-                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-medium text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#FAF8F5] transition-all h-24 resize-none" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-medium text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all h-24 resize-none" 
                                         value={form.description || ""} 
                                         onChange={e => setForm({ ...form, description: e.target.value })}
                                         placeholder="Nhập các đặc tính kỹ thuật, cam kết bảo hành..."
@@ -371,7 +371,7 @@ export default function SupplierProductsPage() {
                                     </div>
                                     <button 
                                         onClick={() => setForm({...form, isActive: !form.isActive})}
-                                        className={`w-14 h-7 rounded-full p-1 transition-all duration-500 shadow-inner ${form.isActive ? 'bg-[#B4533A]' : 'bg-[#000000]'}`}
+                                        className={`w-14 h-7 rounded-full p-1 transition-all duration-500 shadow-inner ${form.isActive ? 'bg-[#2563EB]' : 'bg-[#000000]'}`}
                                     >
                                         <div className={`h-5 w-5 bg-white rounded-full shadow-md transition-transform duration-500 ${form.isActive ? 'translate-x-7' : 'translate-x-0'}`} />
                                     </button>
@@ -382,19 +382,19 @@ export default function SupplierProductsPage() {
                         {/* Footer */}
                         <div className="p-10 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] flex justify-end gap-4">
                             {loading && (
-                                <div className="flex items-center gap-2 text-[#B4533A] font-black uppercase text-[10px] tracking-widest mr-auto">
+                                <div className="flex items-center gap-2 text-[#2563EB] font-black uppercase text-[10px] tracking-widest mr-auto">
                                     <Loader2 size={16} className="animate-spin" /> Đang cập nhật dữ liệu...
                                 </div>
                             )}
                             <button 
-                                className="px-10 py-4 font-black text-[#000000] uppercase tracking-widest border border-[rgba(148,163,184,0.1)] hover:bg-[#FAF8F5] hover:text-[#000000] rounded-2xl transition-all shadow-sm active:scale-95" 
+                                className="px-10 py-4 font-black text-[#000000] uppercase tracking-widest border border-[rgba(148,163,184,0.1)] hover:bg-[#F1F5F9] hover:text-[#000000] rounded-2xl transition-all shadow-sm active:scale-95" 
                                 onClick={() => setIsModalOpen(false)}
                                 disabled={loading}
                             >
                                 Đóng
                             </button>
                             <button 
-                                className="py-4 px-12 bg-[#B4533A] text-[#000000] rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-[#B4533A]/20 active:scale-95 disabled:opacity-50 hover:bg-[#A85032] transition-all" 
+                                className="py-4 px-12 bg-[#2563EB] text-[#000000] rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 active:scale-95 disabled:opacity-50 hover:bg-[#1D4ED8] transition-all" 
                                 onClick={handleSave} 
                                 disabled={loading}
                             >

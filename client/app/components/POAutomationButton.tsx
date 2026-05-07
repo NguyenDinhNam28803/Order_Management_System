@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useProcurement } from "../context/ProcurementContext";
@@ -49,7 +49,7 @@ export function POAutomationButton({
           {result.contractCreated ? (
             <FileText className="w-5 h-5 text-emerald-600 mt-0.5" />
           ) : (
-            <Bot className="w-5 h-5 text-[#A85032] mt-0.5" />
+            <Bot className="w-5 h-5 text-[#1D4ED8] mt-0.5" />
           )}
           <div>
             <p className={`text-sm font-medium ${
@@ -58,7 +58,7 @@ export function POAutomationButton({
               {result.contractCreated ? 'Hợp đồng đã được tạo!' : 'Kiểm tra hoàn tất'}
             </p>
             <p className={`text-sm mt-1 ${
-              result.contractCreated ? 'text-emerald-600' : 'text-[#A85032]'
+              result.contractCreated ? 'text-emerald-600' : 'text-[#1D4ED8]'
             }`}>
               {result.message}
             </p>

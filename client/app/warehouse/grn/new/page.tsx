@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 import { Search, Package, AlertTriangle, FileCheck, CheckCircle2, RotateCcw, UploadCloud, FileText, ArrowLeft } from "lucide-react";
@@ -109,7 +109,7 @@ export default function CreateGRN() {
             <div className="mt-8 mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-[#000000] tracking-tight flex items-center gap-3">
-                        Goods Receipt Note (GRN) <span className="text-[10px] font-bold text-black bg-[#B4533A]/10 border border-[#B4533A]/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu Nhập & QC</span>
+                        Goods Receipt Note (GRN) <span className="text-[10px] font-bold text-black bg-[#2563EB]/10 border border-[#2563EB]/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu Nhập & QC</span>
                     </h1>
                     <p className="text-sm text-[#000000] mt-1">Chọn PO đang chờ nhập kho bên dưới để bắt đầu đếm số lượng & kiểm định chất lượng.</p>
                 </div>
@@ -118,13 +118,13 @@ export default function CreateGRN() {
             {!activePO ? (
                 <div className="space-y-4">
                     {/* Search filter */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 p-6">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                         <label className="text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2 block">Lọc đơn mua hàng (PO)</label>
                         <div className="relative">
                             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" />
                             <input
                                 type="text"
-                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-10 pr-4 py-3 font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30 focus:bg-[#FAF8F5] transition-all"
+                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-10 pr-4 py-3 font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all"
                                 placeholder="Tìm theo mã PO, nhà cung cấp..."
                                 value={poLookup}
                                 onChange={e => setPoLookup(e.target.value)}
@@ -133,7 +133,7 @@ export default function CreateGRN() {
                     </div>
 
                     {/* PO list */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                         <div className="p-4 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                             <span className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Đơn hàng chờ nhập kho (SHIPPED)</span>
                             <span className="text-[10px] font-bold text-black bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">{filteredPos.length} đơn</span>
@@ -178,13 +178,13 @@ export default function CreateGRN() {
                     {/* Back button */}
                     <button
                         onClick={() => setActivePO(null)}
-                        className="flex items-center gap-2 text-xs font-bold text-[#000000] hover:text-[#B4533A] transition-colors uppercase tracking-widest"
+                        className="flex items-center gap-2 text-xs font-bold text-[#000000] hover:text-[#2563EB] transition-colors uppercase tracking-widest"
                     >
                         <ArrowLeft size={14} /> Quay lại danh sách PO
                     </button>
 
                     {/* Header Info PO */}
-                    <div className="bg-[#FAF8F5] text-[#000000] rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-center z-10 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] text-[#000000] rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-center z-10 border border-[rgba(148,163,184,0.1)]">
                         <div className="absolute top-0 right-0 p-4 opacity-5"><Package size={150} /></div>
                         <div>
                             <div className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-1">Incoming Shipment</div>
@@ -198,12 +198,12 @@ export default function CreateGRN() {
                     </div>
 
                     {/* Step 1: Nhận hàng vật lý */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 !p-0 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
                         <div className="p-4 bg-amber-500/10 border-b border-amber-500/20 flex items-center gap-2">
                             <Package size={16} className="text-black" />
                             <h3 className="text-sm font-black uppercase tracking-widest text-black">Bước 1: Đối chiếu & đếm số lượng (Phát sinh chênh lệch)</h3>
                         </div>
-                        <div className="bg-[#FAF8F5]">
+                        <div className="bg-[#F1F5F9]">
                             <table className="erp-table text-xs m-0">
                                 <thead>
                                     <tr>
@@ -225,7 +225,7 @@ export default function CreateGRN() {
                                                 <td className="font-bold text-[#000000]">{item.description}</td>
                                                 <td className="text-center font-bold text-[#000000]">{item.qty}</td>
                                                 <td className="text-center border-l border-[rgba(148,163,184,0.1)]">
-                                                    <input type="number" className="w-16 text-center text-xs bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded focus:outline-none focus:border-[#B4533A]/30 text-[#000000] py-1" value={rData.pList} onChange={e => handleRecvChange(item.id, 'pList', Number(e.target.value))} />
+                                                    <input type="number" className="w-16 text-center text-xs bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded focus:outline-none focus:border-[#2563EB]/30 text-[#000000] py-1" value={rData.pList} onChange={e => handleRecvChange(item.id, 'pList', Number(e.target.value))} />
                                                 </td>
                                                 <td className="text-center border-l-2 border-amber-500/20 bg-amber-500/5 p-2">
                                                     <input type="number" className="w-full text-center font-black text-sm bg-[#FFFFFF] border border-amber-500/30 rounded shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-[#000000] py-1" value={rData.actual} onChange={e => handleRecvChange(item.id, 'actual', Number(e.target.value))} />
@@ -250,16 +250,16 @@ export default function CreateGRN() {
                     </div>
 
                     {/* Step 2: Quality Control */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 !p-0 overflow-hidden">
-                        <div className="p-4 bg-[#B4533A]/10 border-b border-[#B4533A]/20 flex justify-between items-center">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
+                        <div className="p-4 bg-[#2563EB]/10 border-b border-[#2563EB]/20 flex justify-between items-center">
                             <div className="flex items-center gap-2">
                                 <FileCheck size={16} className="text-black" />
                                 <h3 className="text-sm font-black uppercase tracking-widest text-black">Bước 2: Quality Control (QC)</h3>
                             </div>
-                            <span className="text-[10px] font-bold text-black bg-[#FFFFFF] px-2 py-1 border border-[#B4533A]/20 rounded">Checklist: Đã áp dụng tiêu chuẩn ISO-9001</span>
+                            <span className="text-[10px] font-bold text-black bg-[#FFFFFF] px-2 py-1 border border-[#2563EB]/20 rounded">Checklist: Đã áp dụng tiêu chuẩn ISO-9001</span>
                         </div>
 
-                        <div className="divide-y divide-[rgba(148,163,184,0.1)] bg-[#FAF8F5]">
+                        <div className="divide-y divide-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
                             {activePO.items?.map((item) => {
                                 const qData = qcData[item.id];
                                 if (!qData) return null;
@@ -280,11 +280,11 @@ export default function CreateGRN() {
                                                 </select>
                                                 <div className="mt-4 space-y-2">
                                                     <label className="flex items-center gap-2 cursor-pointer">
-                                                        <input type="checkbox" className="w-3 h-3 text-[#B4533A] bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] rounded focus:ring-[#B4533A]/30" defaultChecked />
+                                                        <input type="checkbox" className="w-3 h-3 text-[#2563EB] bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] rounded focus:ring-[#2563EB]/30" defaultChecked />
                                                         <span className="text-[10px] text-[#000000] font-medium">Bao bì nguyên vẹn</span>
                                                     </label>
                                                     <label className="flex items-center gap-2 cursor-pointer">
-                                                        <input type="checkbox" className="w-3 h-3 text-[#B4533A] bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] rounded focus:ring-[#B4533A]/30" defaultChecked={qData.status === 'PASS'} />
+                                                        <input type="checkbox" className="w-3 h-3 text-[#2563EB] bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] rounded focus:ring-[#2563EB]/30" defaultChecked={qData.status === 'PASS'} />
                                                         <span className="text-[10px] text-[#000000] font-medium">Đúng quy cách kỹ thuật</span>
                                                     </label>
                                                 </div>
@@ -306,7 +306,7 @@ export default function CreateGRN() {
                                                                 </div>
                                                                 <div>
                                                                     <label className="text-[10px] font-black uppercase text-[#000000] mb-1 block">Lý do chính</label>
-                                                                    <select className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-3 py-2 text-xs text-[#000000] focus:outline-none focus:border-[#B4533A]/30" value={qData.reason} onChange={e => handleQcChange(item.id, 'reason', e.target.value)}>
+                                                                    <select className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-3 py-2 text-xs text-[#000000] focus:outline-none focus:border-[#2563EB]/30" value={qData.reason} onChange={e => handleQcChange(item.id, 'reason', e.target.value)}>
                                                                         <option value="">-- Chọn --</option>
                                                                         <option value="Hư hỏng vật lý">Hư hỏng vật lý (Bể vỡ)</option>
                                                                         <option value="Sai quy cách">Sai quy cách (Specs)</option>
@@ -318,7 +318,7 @@ export default function CreateGRN() {
                                                             <div className="grid grid-cols-2 gap-4 mt-2">
                                                                 <div>
                                                                     <label className="text-[10px] font-black uppercase text-[#000000] mb-1 block flex items-center gap-1"><RotateCcw size={10} /> Action Xử lý</label>
-                                                                    <select className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-3 py-2 text-xs text-black font-bold focus:outline-none focus:border-[#B4533A]/30" value={qData.action} onChange={e => handleQcChange(item.id, 'action', e.target.value)}>
+                                                                    <select className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-3 py-2 text-xs text-black font-bold focus:outline-none focus:border-[#2563EB]/30" value={qData.action} onChange={e => handleQcChange(item.id, 'action', e.target.value)}>
                                                                         <option value="">-- Hành động kho --</option>
                                                                         <option value="Trả Nhà Cung Cấp">Return to Vendor (RTV)</option>
                                                                         <option value="Giữ tại kho chờ giải quyết">Hold & Chờ Procurement QĐ</option>
@@ -354,7 +354,7 @@ export default function CreateGRN() {
                     </div>
 
                     {/* Step 3: Tổng Kết & Submit */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 text-[#000000] relative overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 text-[#000000] relative overflow-hidden">
                         <div className="absolute -right-20 -bottom-20 opacity-10"><FileText size={250} /></div>
                         <div className="flex flex-col md:flex-row justify-between items-center gap-8 relative z-10 p-4">
                             <div className="w-full md:w-1/2">

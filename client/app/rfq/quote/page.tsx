@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import {
@@ -208,7 +208,7 @@ function RfqQuotePageContent() {
     return (
       <div className="min-h-screen bg-linear-to-br from-[#F9EFEC] to-indigo-100 flex items-center justify-center text-gray-900">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 text-[#A85032] animate-spin mx-auto mb-3" />
+          <Loader2 className="w-10 h-10 text-[#1D4ED8] animate-spin mx-auto mb-3" />
           <p className="text-black font-medium">Đang tải thông tin yêu cầu báo giá...</p>
         </div>
       </div>
@@ -343,7 +343,7 @@ function RfqQuotePageContent() {
           {/* Items table */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
-              <Package className="w-4 h-4 text-[#A85032]" />
+              <Package className="w-4 h-4 text-[#1D4ED8]" />
               <h2 className="font-semibold text-gray-800">Danh sách hàng hóa cần báo giá</h2>
             </div>
             <div className="divide-y divide-gray-50">
@@ -363,7 +363,7 @@ function RfqQuotePageContent() {
                       <p className="text-xs text-black">Số lượng yêu cầu</p>
                       <p className="font-bold text-gray-700">{convertPrismaDecimal(item.qty)} <span className="text-black font-normal">{item.unit}</span></p>
                       {item.targetPrice && (
-                        <p className="text-xs text-[#A85032] mt-0.5">Giá tham khảo: {fmt(convertPrismaDecimal(item.targetPrice))}</p>
+                        <p className="text-xs text-[#1D4ED8] mt-0.5">Giá tham khảo: {fmt(convertPrismaDecimal(item.targetPrice))}</p>
                       )}
                     </div>
                   </div>
@@ -385,7 +385,7 @@ function RfqQuotePageContent() {
                           next[idx] = { ...next[idx], unitPrice: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A] focus:border-transparent"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -399,7 +399,7 @@ function RfqQuotePageContent() {
                           next[idx] = { ...next[idx], qtyOffered: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A]"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                       />
                     </div>
                     <div className="md:col-span-1">
@@ -413,7 +413,7 @@ function RfqQuotePageContent() {
                           next[idx] = { ...next[idx], notes: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A]"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                       />
                     </div>
                   </div>
@@ -441,7 +441,7 @@ function RfqQuotePageContent() {
           {/* Terms */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-[#A85032]" />
+              <FileText className="w-4 h-4 text-[#1D4ED8]" />
               <h2 className="font-semibold text-gray-800">Điều khoản & Thông tin giao hàng</h2>
             </div>
             <div className="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -455,7 +455,7 @@ function RfqQuotePageContent() {
                   required
                   value={leadTimeDays}
                   onChange={(e) => setLeadTimeDays(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A]"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                 />
               </div>
               <div>
@@ -465,7 +465,7 @@ function RfqQuotePageContent() {
                   placeholder="Net 30, COD, 50% trước..."
                   value={paymentTerms}
                   onChange={(e) => setPaymentTerms(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A]"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                 />
               </div>
               <div>
@@ -475,7 +475,7 @@ function RfqQuotePageContent() {
                   placeholder="DDP, FOB, CIF..."
                   value={deliveryTerms}
                   onChange={(e) => setDeliveryTerms(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A]"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                 />
               </div>
               <div>
@@ -485,7 +485,7 @@ function RfqQuotePageContent() {
                   placeholder="Thông tin bổ sung, ưu đãi đặc biệt..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#B4533A] resize-none"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB] resize-none"
                 />
               </div>
             </div>
@@ -495,7 +495,7 @@ function RfqQuotePageContent() {
           <button
             type="submit"
             disabled={submitting || totalPrice === 0}
-            className="w-full bg-gradient-to-r from-[#A85032] to-indigo-600 hover:from-[#8F442B] hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-[#000000] font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
+            className="w-full bg-gradient-to-r from-[#1D4ED8] to-indigo-600 hover:from-[#8F442B] hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-[#000000] font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
           >
             {submitting ? (
               <>

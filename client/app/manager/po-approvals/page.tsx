@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Check, X, Eye, FileText, ShoppingCart, User, Landmark, History } from "lucide-react";
@@ -52,7 +52,7 @@ export default function POApprovalsPage() {
                 <p className="text-[#000000] font-medium">Danh sách PO đang chờ bạn phê duyệt trước khi phát hành</p>
             </header>
 
-            <div className="bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#B4533A]/5">
+            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
@@ -71,15 +71,15 @@ export default function POApprovalsPage() {
                                 <tr key={po.id} className="hover:bg-[#FFFFFF]/30 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-lg bg-[#B4533A]/10 flex items-center justify-center border border-[#B4533A]/20">
-                                                <ShoppingCart size={14} className="text-[#B4533A]" />
+                                            <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center border border-[#2563EB]/20">
+                                                <ShoppingCart size={14} className="text-[#2563EB]" />
                                             </div>
                                             <span className="font-bold text-[#000000]">{po.id}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 font-bold text-[#000000]">{po.vendor}</td>
                                     <td className="px-6 py-4">
-                                        <span className="text-xs font-bold text-[#B4533A] underline decoration-[#B4533A]/30 cursor-pointer">{po.prId}</span>
+                                        <span className="text-xs font-bold text-[#2563EB] underline decoration-[#2563EB]/30 cursor-pointer">{po.prId}</span>
                                     </td>
                                     <td className="px-6 py-4 font-black text-[#000000]">{formatVND(po.total)}</td>
                                     <td className="px-6 py-4">
@@ -96,7 +96,7 @@ export default function POApprovalsPage() {
                                             <button onClick={() => setRejectModal({ isOpen: true, poId: po.id })} className="h-8 w-8 rounded-lg bg-rose-500 text-[#000000] flex items-center justify-center hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/20">
                                                 <X size={16} />
                                             </button>
-                                            <button className="h-8 w-8 rounded-lg bg-[#FFFFFF] text-[#000000] flex items-center justify-center hover:bg-[#FAF8F5] transition-colors border border-[rgba(148,163,184,0.1)]">
+                                            <button className="h-8 w-8 rounded-lg bg-[#FFFFFF] text-[#000000] flex items-center justify-center hover:bg-[#F1F5F9] transition-colors border border-[rgba(148,163,184,0.1)]">
                                                 <Eye size={16} />
                                             </button>
                                         </div>
@@ -120,7 +120,7 @@ export default function POApprovalsPage() {
             {/* Reject Modal */}
             {rejectModal.isOpen && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#FFFFFF]/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-[#FAF8F5] rounded-3xl w-full max-w-md p-8 shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
+                    <div className="bg-[#F1F5F9] rounded-3xl w-full max-w-md p-8 shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
                         <h2 className="text-xl font-black text-[#000000] mb-2 tracking-tight uppercase">TỪ CHỐI ĐƠN HÀNG</h2>
                         <p className="text-[#000000] text-sm mb-6 font-medium">Lý do từ chối sẽ được gửi đến bộ phận mua sắm</p>
                         
@@ -128,7 +128,7 @@ export default function POApprovalsPage() {
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
                             placeholder="Nhập lý do chi tiết..."
-                            className="w-full h-32 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl p-4 text-sm font-medium text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#B4533A]/20 outline-none transition-all mb-6"
+                            className="w-full h-32 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl p-4 text-sm font-medium text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all mb-6"
                         />
 
                         <div className="flex gap-3">

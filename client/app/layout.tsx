@@ -1,17 +1,34 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Inter, DM_Mono, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const sans = Plus_Jakarta_Sans({
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+});
+
+/* Kept as fallback variables so any inline var(--font-jakarta) references still work */
+const jakartaFallback = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const jetbrainsMonoFallback = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -31,7 +48,7 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body
-        className={`${sans.variable} ${jetbrainsMono.variable} antialiased bg-[#FFFFFF] text-[#000000] font-sans min-h-screen`}
+        className={`${inter.variable} ${dmMono.variable} ${jakartaFallback.variable} ${jetbrainsMonoFallback.variable} antialiased bg-[#F8FAFC] text-[#0F172A] font-sans min-h-screen`}
         suppressHydrationWarning
       >
         <Providers>

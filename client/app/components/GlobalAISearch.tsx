@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { Sparkles, MessageSquare, FilePlus, X, Zap, Brain } from "lucide-react";
@@ -81,7 +81,7 @@ export default function GlobalAISearch() {
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="h-7 w-7 flex items-center justify-center rounded-lg bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#000000] hover:border-[rgba(148,163,184,0.25)] transition-all"
+                                className="h-7 w-7 flex items-center justify-center rounded-lg bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#000000] hover:border-[rgba(148,163,184,0.25)] transition-all"
                             >
                                 <X size={14} />
                             </button>
@@ -93,11 +93,11 @@ export default function GlobalAISearch() {
                             <button
                                 onClick={() => setAiMode("chat")}
                                 className="flex flex-col items-center gap-3 p-5 rounded-xl
-                                           bg-[#FAF8F5] border border-[rgba(148,163,184,0.08)]
+                                           bg-[#F1F5F9] border border-[rgba(148,163,184,0.08)]
                                            hover:border-[#6366F1]/50 hover:bg-[rgba(99,102,241,0.08)]
                                            transition-all group text-left"
                             >
-                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#B4533A] to-[#6366F1] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-[#B4533A]/25">
+                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#6366F1] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-[#2563EB]/25">
                                     <MessageSquare size={20} className="text-[#000000]" />
                                 </div>
                                 <div className="text-center">
@@ -110,11 +110,11 @@ export default function GlobalAISearch() {
                             <button
                                 onClick={() => setAiMode("pr-generator")}
                                 className="flex flex-col items-center gap-3 p-5 rounded-xl
-                                           bg-[#FAF8F5] border border-[rgba(148,163,184,0.08)]
+                                           bg-[#F1F5F9] border border-[rgba(148,163,184,0.08)]
                                            hover:border-[#10B981]/50 hover:bg-[rgba(16,185,129,0.08)]
                                            transition-all group text-left"
                             >
-                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#10B981] to-[#B4533A] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-emerald-500/25">
+                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#10B981] to-[#2563EB] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-emerald-500/25">
                                     <FilePlus size={20} className="text-[#000000]" />
                                 </div>
                                 <div className="text-center">

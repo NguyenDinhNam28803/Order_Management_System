@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 import { 
@@ -109,8 +109,8 @@ export default function FinanceBudgetApprovalPage() {
         <main className="p-6 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-screen bg-[#FFFFFF] text-[#000000]">
             {/* Header */}
             <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-[#B4533A]">
-                    <ShieldCheck size={28} className="text-[#B4533A]" />
+                <div className="flex items-center gap-2 text-[#2563EB]">
+                    <ShieldCheck size={28} className="text-[#2563EB]" />
                     <h1 className="text-2xl md:text-3xl font-black tracking-tight text-[#000000]">
                         Duyệt Ngân Sách
                     </h1>
@@ -122,7 +122,7 @@ export default function FinanceBudgetApprovalPage() {
 
             {/* Dashboard Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-[#FAF8F5] rounded-3xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 flex items-center justify-between">
+                <div className="bg-[#F1F5F9] rounded-3xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-bold text-[#000000] mb-1">CẦN DUYỆT</p>
                         <h3 className="text-3xl font-black text-black">{submittedBudgets.length}</h3>
@@ -134,8 +134,8 @@ export default function FinanceBudgetApprovalPage() {
             </div>
 
             {/* List Header */}
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-[#FAF8F5] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5">
-                <div className="relative flex-1 max-w-md w-full focus-within:ring-2 ring-[#B4533A]/20 rounded-xl transition-all">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-[#F1F5F9] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
+                <div className="relative flex-1 max-w-md w-full focus-within:ring-2 ring-[#2563EB]/20 rounded-xl transition-all">
                     <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[#000000]">
                         <Search size={18} />
                     </div>
@@ -151,7 +151,7 @@ export default function FinanceBudgetApprovalPage() {
 
             {/* List */}
             {filteredRequests.length === 0 ? (
-                 <div className="flex flex-col items-center justify-center bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-3xl p-16 text-center shadow-xl shadow-[#B4533A]/5">
+                 <div className="flex flex-col items-center justify-center bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-3xl p-16 text-center shadow-xl shadow-[#2563EB]/5">
                     <div className="w-20 h-20 bg-emerald-500/10 text-black rounded-full flex items-center justify-center mb-6">
                         <CheckCircle2 size={40} />
                     </div>
@@ -167,10 +167,10 @@ export default function FinanceBudgetApprovalPage() {
                         const dept = departments.find(d => d.id === cc?.deptId);
                         
                         return (
-                            <div key={req.id} className="group bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] p-6 shadow-xl shadow-[#B4533A]/5 hover:border-amber-400/20 transition-all duration-300">
+                            <div key={req.id} className="group bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] p-6 shadow-xl shadow-[#2563EB]/5 hover:border-amber-400/20 transition-all duration-300">
                                 <div className="flex justify-between items-start mb-6">
                                     <div className="flex gap-4 items-center">
-                                        <div className="w-12 h-12 bg-[#B4533A]/10 rounded-2xl flex items-center justify-center text-[#B4533A] border border-[#B4533A]/20">
+                                        <div className="w-12 h-12 bg-[#2563EB]/10 rounded-2xl flex items-center justify-center text-[#2563EB] border border-[#2563EB]/20">
                                             <FileText size={24} />
                                         </div>
                                         <div>
@@ -204,7 +204,7 @@ export default function FinanceBudgetApprovalPage() {
                                             <div className="flex items-center gap-1.5 text-[#000000] text-xs font-bold">
                                                 <Calendar size={14} /> KỲ NGÂN SÁCH
                                             </div>
-                                            <p className="font-bold text-[#B4533A] text-sm">{getPeriodInfo(req.budgetPeriodId)}</p>
+                                            <p className="font-bold text-[#2563EB] text-sm">{getPeriodInfo(req.budgetPeriodId)}</p>
                                         </div>
                                         <div className="space-y-1">
                                             <div className="flex items-center gap-1.5 text-[#000000] text-xs font-bold">
@@ -252,9 +252,9 @@ export default function FinanceBudgetApprovalPage() {
                 <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
                     <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={() => !isSubmitting && setActionType(null)} />
                     
-                    <div className="relative w-full max-w-lg bg-[#FAF8F5] rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
+                    <div className="relative w-full max-w-lg bg-[#F1F5F9] rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
                         <div className={`p-8 pb-10 ${actionType === "APPROVE" ? "bg-emerald-500/10" : "bg-rose-500/10"}`}>
-                            <div className="w-16 h-16 rounded-2xl bg-[#FAF8F5] shadow-sm flex items-center justify-center mb-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="w-16 h-16 rounded-2xl bg-[#F1F5F9] shadow-sm flex items-center justify-center mb-6 border border-[rgba(148,163,184,0.1)]">
                                 {actionType === "APPROVE" ? (
                                     <CheckCircle2 size={32} className="text-black" />
                                 ) : (
@@ -288,7 +288,7 @@ export default function FinanceBudgetApprovalPage() {
 
                             <div className="flex gap-4">
                                 <button 
-                                    className="flex-1 py-4 font-bold rounded-2xl text-[#000000] bg-[#FFFFFF] hover:bg-[#FAF8F5] transition-colors"
+                                    className="flex-1 py-4 font-bold rounded-2xl text-[#000000] bg-[#FFFFFF] hover:bg-[#F1F5F9] transition-colors"
                                     onClick={() => setActionType(null)}
                                     disabled={isSubmitting}
                                 >

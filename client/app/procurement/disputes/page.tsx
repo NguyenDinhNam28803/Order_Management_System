@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useProcurement } from "../../context/ProcurementContext";
@@ -30,9 +30,9 @@ export default function DisputesPage() {
             case DisputeStatus.RESOLVED:
                 return <span className="px-2 py-1 bg-emerald-500/10 text-black border border-emerald-500/20 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><CheckCircle size={12}/> Đã giải quyết</span>;
             case DisputeStatus.CLOSED:
-                return <span className="px-2 py-1 bg-[#FAF8F5] text-[#000000] border border-[rgba(148,163,184,0.1)] rounded-full text-xs font-bold flex items-center gap-1 w-fit"><XCircle size={12}/> Đã đóng</span>;
+                return <span className="px-2 py-1 bg-[#F1F5F9] text-[#000000] border border-[rgba(148,163,184,0.1)] rounded-full text-xs font-bold flex items-center gap-1 w-fit"><XCircle size={12}/> Đã đóng</span>;
             default:
-                return <span className="px-2 py-1 bg-[#B4533A]/10 text-[#B4533A] border border-[#B4533A]/20 rounded-full text-xs font-bold w-fit">{status}</span>;
+                return <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20 rounded-full text-xs font-bold w-fit">{status}</span>;
         }
     };
 
@@ -48,16 +48,16 @@ export default function DisputesPage() {
                 </button>
             </div>
 
-            <div className="bg-[#FAF8F5] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 flex flex-wrap gap-4 items-center mb-8">
+            <div className="bg-[#F1F5F9] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 flex flex-wrap gap-4 items-center mb-8">
                 <div className="flex-1 min-w-[300px] flex gap-3">
                     <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
-                        <Search size={20} className="text-[#B4533A]" />
+                        <Search size={20} className="text-[#2563EB]" />
                     </div>
                     <div className="relative flex-1">
                         <input 
                             type="text" 
                             placeholder="Tìm theo mã khiếu nại, nội dung..." 
-                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all text-sm font-bold"
+                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-sm font-bold"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -65,9 +65,9 @@ export default function DisputesPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="relative">
-                        <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
+                        <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
                         <select 
-                            className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] text-sm font-bold focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                            className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] text-sm font-bold focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                         >
@@ -83,7 +83,7 @@ export default function DisputesPage() {
 
             <div className="grid grid-cols-1 gap-4">
                 {filteredDisputes.length > 0 ? filteredDisputes.map((d) => (
-                    <div key={d.id} className="bg-[#FAF8F5] p-5 rounded-2xl shadow-xl shadow-[#B4533A]/5 border border-[rgba(148,163,184,0.1)] hover:border-rose-500/20 transition-all group relative">
+                    <div key={d.id} className="bg-[#F1F5F9] p-5 rounded-2xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] hover:border-rose-500/20 transition-all group relative">
                         <div className="flex justify-between items-start mb-3">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-3">
@@ -108,7 +108,7 @@ export default function DisputesPage() {
                         <div className="flex justify-between items-center pt-4 border-t border-[rgba(148,163,184,0.1)]">
                             <div className="flex items-center gap-4 text-xs">
                                 <div className="flex items-center gap-1.5 text-[#000000]">
-                                    <div className="w-6 h-6 rounded-full bg-[#B4533A]/10 flex items-center justify-center text-[10px] font-bold text-[#B4533A] border border-[#B4533A]/20">
+                                    <div className="w-6 h-6 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[10px] font-bold text-[#2563EB] border border-[#2563EB]/20">
                                         {d.reportedBy?.fullName?.charAt(0) || "U"}
                                     </div>
                                     <span>Bởi: <b className="text-[#000000]">{d.reportedBy?.fullName || "N/A"}</b></span>
@@ -123,7 +123,7 @@ export default function DisputesPage() {
                                 )}
                             </div>
                             <div className="flex items-center gap-4">
-                                <button className="flex items-center gap-1.5 text-[#B4533A] font-bold text-xs hover:underline">
+                                <button className="flex items-center gap-1.5 text-[#2563EB] font-bold text-xs hover:underline">
                                     Xem chi tiết & Thảo luận <ArrowUpRight size={14} />
                                 </button>
                                 {d.status === DisputeStatus.OPEN && (
@@ -136,7 +136,7 @@ export default function DisputesPage() {
                         </div>
                     </div>
                 )) : (
-                    <div className="bg-[#FAF8F5] p-12 rounded-2xl border border-dashed border-[rgba(148,163,184,0.1)] text-center space-y-3">
+                    <div className="bg-[#F1F5F9] p-12 rounded-2xl border border-dashed border-[rgba(148,163,184,0.1)] text-center space-y-3">
                         <div className="w-16 h-16 bg-[#FFFFFF] rounded-full flex items-center justify-center mx-auto text-[#000000] border border-[rgba(148,163,184,0.1)]">
                             <MessageSquare size={32} />
                         </div>

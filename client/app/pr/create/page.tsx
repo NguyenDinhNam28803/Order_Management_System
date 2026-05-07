@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -57,13 +57,13 @@ const BudgetAllocationCard = ({
             onClick={onClick}
             className={`group relative cursor-pointer rounded-[32px] border-2 p-6 transition-all duration-300 shadow-xl
                 ${isSelected
-                    ? "border-[#B4533A] bg-[#B4533A]/5 shadow-[#B4533A]/10 scale-[1.02]"
-                    : "border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] hover:border-[#B4533A]/30 hover:bg-[#FAF8F5]"
+                    ? "border-[#2563EB] bg-[#2563EB]/5 shadow-[#2563EB]/10 scale-[1.02]"
+                    : "border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] hover:border-[#2563EB]/30 hover:bg-[#F1F5F9]"
                 }`}
         >
             <div className="flex items-start justify-between gap-3 mb-6">
                 <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-2xl transition-all ${isSelected ? "bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/30" : "bg-[#FAF8F5] text-[#000000] group-hover:text-[#B4533A]"}`}>
+                    <div className={`p-3 rounded-2xl transition-all ${isSelected ? "bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/30" : "bg-[#F1F5F9] text-[#000000] group-hover:text-[#2563EB]"}`}>
                         <Wallet size={16} />
                     </div>
                     <div>
@@ -79,7 +79,7 @@ const BudgetAllocationCard = ({
             <div className="grid grid-cols-3 gap-3 mb-6">
                 {[
                     { label: "Đã chi",     value: spent,     color: "text-[#000000]", bg: "bg-[#FFFFFF]" },
-                    { label: "Cam kết",    value: committed, color: "text-[#B4533A]", bg: "bg-[#B4533A]/5" },
+                    { label: "Cam kết",    value: committed, color: "text-[#2563EB]", bg: "bg-[#2563EB]/5" },
                     { label: "Còn lại",    value: remaining, color: isOver ? "text-black" : "text-black", bg: isOver ? "bg-rose-500/5" : "bg-emerald-500/5" },
                 ].map(({ label, value, color, bg }) => (
                     <div key={label} className={`${bg} rounded-2xl p-3 text-center border border-[rgba(148,163,184,0.05)]`}>
@@ -94,10 +94,10 @@ const BudgetAllocationCard = ({
             <div className="space-y-2">
                 <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest">
                     <span className="text-[#000000]">Mức sử dụng</span>
-                    <span className={isOver ? "text-black" : "text-[#B4533A]"}>{usedPct.toFixed(1)}%</span>
+                    <span className={isOver ? "text-black" : "text-[#2563EB]"}>{usedPct.toFixed(1)}%</span>
                 </div>
-                <div className="h-1.5 w-full bg-[#FAF8F5] rounded-full overflow-hidden flex shadow-inner">
-                    <div className="h-full bg-[#B4533A] transition-all duration-1000" style={{ width: `${Math.min(100, (spent / total) * 100)}%` }} />
+                <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden flex shadow-inner">
+                    <div className="h-full bg-[#2563EB] transition-all duration-1000" style={{ width: `${Math.min(100, (spent / total) * 100)}%` }} />
                     <div className={`${isOver ? "bg-rose-400" : "bg-indigo-400 opacity-60"} h-full transition-all duration-1000`} style={{ width: `${Math.min(100 - (spent / total) * 100, (committed / total) * 100)}%` }} />
                 </div>
             </div>
@@ -126,10 +126,10 @@ const BudgetAllocationsPanel = ({
     const totalRemaining  = totalAllocated - totalSpent - totalCommitted;
 
     return (
-        <div className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 overflow-hidden">
+        <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
             <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]/50">
                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000] flex items-center gap-3">
-                     <PieChart size={16} className="text-[#B4533A]" /> Phân bổ Ngân sách Chi tiết
+                     <PieChart size={16} className="text-[#2563EB]" /> Phân bổ Ngân sách Chi tiết
                  </h3>
             </div>
 
@@ -139,7 +139,7 @@ const BudgetAllocationsPanel = ({
                         {[
                             { icon: <Wallet size={14} />, label: "Tổng cấp phát",  value: totalAllocated,  color: "text-[#000000]",     bg: "bg-[#FFFFFF]" },
                             { icon: <TrendingUp size={14} />, label: "Đã tiêu thụ", value: totalSpent,      color: "text-[#000000]",    bg: "bg-[#FFFFFF]" },
-                            { icon: <Sparkles size={14} />,   label: "Đang cam kết", value: totalCommitted, color: "text-[#B4533A]",    bg: "bg-[#B4533A]/5" },
+                            { icon: <Sparkles size={14} />,   label: "Đang cam kết", value: totalCommitted, color: "text-[#2563EB]",    bg: "bg-[#2563EB]/5" },
                             { icon: <CheckCircle2 size={14} />, label: "Còn khả dụng", value: totalRemaining, color: totalRemaining < 0 ? "text-black" : "text-black", bg: totalRemaining < 0 ? "bg-rose-500/5" : "bg-emerald-500/5" },
                         ].map(({ icon, label, value, color, bg }) => (
                             <div key={label} className={`${bg} rounded-[32px] p-6 border border-[rgba(148,163,184,0.05)] shadow-sm hover:translate-y-[-2px] transition-all`}>
@@ -508,13 +508,13 @@ export default function CreatePRPage() {
                 <div>
                    <h1 className="text-4xl font-black text-[#000000] tracking-tighter uppercase mb-2">Tạo Phiếu Yêu Cầu (PR)</h1>
                    <p className="text-sm font-bold text-[#000000] tracking-tight uppercase">
-                      Xin chào, <span className="text-[#B4533A]">{currentUser?.name || currentUser?.fullName}</span> – Hệ thống AI Procurement đang hỗ trợ bạn lập kế hoạch.
+                      Xin chào, <span className="text-[#2563EB]">{currentUser?.name || currentUser?.fullName}</span> – Hệ thống AI Procurement đang hỗ trợ bạn lập kế hoạch.
                    </p>
                 </div>
                 <div className="flex gap-4">
-                    <button className="px-5 py-2 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1A1D23] transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
+                    <button className="px-5 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#0F172A] transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
                     <button 
-                        className="px-6 py-2.5 bg-[#B4533A] text-[#000000] rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#B4533A]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2" 
+                        className="px-6 py-2.5 bg-[#2563EB] text-[#000000] rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2" 
                         onClick={handleSubmit} 
                         disabled={isSubmitting}
                     >
@@ -530,8 +530,8 @@ export default function CreatePRPage() {
                     onClick={() => setActiveTab('ai')}
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
                         activeTab === 'ai'
-                            ? 'bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/30'
-                            : 'bg-[#FAF8F5] text-[#000000] border border-[rgba(148,163,184,0.1)] hover:text-[#000000]'
+                            ? 'bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/30'
+                            : 'bg-[#F1F5F9] text-[#000000] border border-[rgba(148,163,184,0.1)] hover:text-[#000000]'
                     }`}
                 >
                     <Bot size={16} />
@@ -544,14 +544,14 @@ export default function CreatePRPage() {
                     onClick={() => setActiveTab('manual')}
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
                         activeTab === 'manual'
-                            ? 'bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/30'
-                            : 'bg-[#FAF8F5] text-[#000000] border border-[rgba(148,163,184,0.1)] hover:text-[#000000]'
+                            ? 'bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/30'
+                            : 'bg-[#F1F5F9] text-[#000000] border border-[rgba(148,163,184,0.1)] hover:text-[#000000]'
                     }`}
                 >
                     <PenTool size={16} />
                     <span>Tạo thủ công</span>
                     {form.items.length > 0 && (
-                        <span className="ml-2 px-2 py-0.5 bg-[#B4533A]/20 text-[#B4533A] rounded-full text-[9px]">
+                        <span className="ml-2 px-2 py-0.5 bg-[#2563EB]/20 text-[#2563EB] rounded-full text-[9px]">
                             {form.items.length}
                         </span>
                     )}
@@ -562,10 +562,10 @@ export default function CreatePRPage() {
             {activeTab === 'ai' && (
                 <div className="animate-in fade-in duration-500 space-y-8">
                     {/* AI Chat Interface */}
-                    <div className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]/50">
                             <div className="flex items-center gap-3">
-                                <div className="bg-gradient-to-br from-[#B4533A] to-[#8B5CF6] p-2.5 rounded-xl text-[#000000] shadow-lg shadow-[#B4533A]/20">
+                                <div className="bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] p-2.5 rounded-xl text-[#000000] shadow-lg shadow-[#2563EB]/20">
                                     <Sparkles size={18} />
                                 </div>
                                 <div>
@@ -582,14 +582,14 @@ export default function CreatePRPage() {
                                     {aiMessages.map((msg, idx) => (
                                         <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                                                msg.role === 'user' ? 'bg-[#B4533A]' : 'bg-gradient-to-br from-[#B4533A] to-[#8B5CF6]'
+                                                msg.role === 'user' ? 'bg-[#2563EB]' : 'bg-gradient-to-br from-[#2563EB] to-[#8B5CF6]'
                                             }`}>
                                                 {msg.role === 'user' ? <MessageSquare size={14} /> : <Bot size={14} />}
                                             </div>
                                             <div className={`max-w-[80%] p-4 rounded-2xl text-sm ${
                                                 msg.role === 'user' 
-                                                    ? 'bg-[#B4533A] text-[#000000]' 
-                                                    : 'bg-[#FAF8F5] text-[#000000] border border-[rgba(148,163,184,0.1)]'
+                                                    ? 'bg-[#2563EB] text-[#000000]' 
+                                                    : 'bg-[#F1F5F9] text-[#000000] border border-[rgba(148,163,184,0.1)]'
                                             }`}>
                                                 {msg.content}
                                             </div>
@@ -597,11 +597,11 @@ export default function CreatePRPage() {
                                     ))}
                                     {isGenerating && (
                                         <div className="flex gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#B4533A] to-[#8B5CF6] flex items-center justify-center">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
                                                 <Bot size={14} />
                                             </div>
-                                            <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)]">
-                                                <Loader2 className="animate-spin text-[#B4533A]" size={20} />
+                                            <div className="p-4 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
+                                                <Loader2 className="animate-spin text-[#2563EB]" size={20} />
                                             </div>
                                         </div>
                                     )}
@@ -622,13 +622,13 @@ export default function CreatePRPage() {
                                         }
                                     }}
                                     placeholder="VD: Tôi cần mua 10 laptop Dell cho phòng IT, ngân sách khoảng 500 triệu, giao hàng trong tuần sau..."
-                                    className="w-full h-32 bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl p-5 text-sm text-[#000000] focus:outline-none focus:ring-2 focus:ring-[#B4533A]/20 resize-none placeholder:text-[#000000]/50"
+                                    className="w-full h-32 bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl p-5 text-sm text-[#000000] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 resize-none placeholder:text-[#000000]/50"
                                 />
                                 <div className="flex gap-3">
                                     <button
                                         onClick={handleGenerateDraft}
                                         disabled={isGenerating || !aiPrompt.trim()}
-                                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#B4533A] text-[#000000] rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#B4533A]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#2563EB] text-[#000000] rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isGenerating ? (
                                             <><Loader2 className="animate-spin" size={16} /> Đang tạo...</>
@@ -639,7 +639,7 @@ export default function CreatePRPage() {
                                     {aiMessages.length > 0 && (
                                         <button
                                             onClick={handleClearAI}
-                                            className="px-4 py-3 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-[10px] uppercase tracking-widest hover:text-[#000000] transition-all"
+                                            className="px-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-[10px] uppercase tracking-widest hover:text-[#000000] transition-all"
                                         >
                                             <XCircle size={16} />
                                         </button>
@@ -649,7 +649,7 @@ export default function CreatePRPage() {
                             
                             {/* AI Draft Preview */}
                             {aiDraft && (
-                                <div className="border border-[rgba(59,130,246,0.3)] rounded-2xl p-6 bg-[#B4533A]/5 space-y-4">
+                                <div className="border border-[rgba(59,130,246,0.3)] rounded-2xl p-6 bg-[#2563EB]/5 space-y-4">
                                     <div className="flex items-center gap-2">
                                         <CheckCircle2 className="text-black" size={20} />
                                         <span className="text-sm font-black text-[#000000]">Bản nháp đã sẵn sàng</span>
@@ -679,7 +679,7 @@ export default function CreatePRPage() {
                                         </div>
                                     </div>
                                     {aiDraft.reasoning && (
-                                        <p className="text-xs text-[#000000] italic border-l-2 border-[#B4533A] pl-3">
+                                        <p className="text-xs text-[#000000] italic border-l-2 border-[#2563EB] pl-3">
                                             {aiDraft.reasoning}
                                         </p>
                                     )}
@@ -703,7 +703,7 @@ export default function CreatePRPage() {
                             { icon: <Zap size={16} />, title: "Tiêu chí đặc biệt", desc: "Thương hiệu, specs kỹ thuật" }
                         ].map((tip, idx) => (
                             <div key={idx} className="bg-[#FFFFFF] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
-                                <div className="text-[#B4533A] mb-2">{tip.icon}</div>
+                                <div className="text-[#2563EB] mb-2">{tip.icon}</div>
                                 <h4 className="text-xs font-black text-[#000000] mb-1">{tip.title}</h4>
                                 <p className="text-[10px] text-[#000000]">{tip.desc}</p>
                             </div>
@@ -719,17 +719,17 @@ export default function CreatePRPage() {
                 <div className="xl:col-span-6 space-y-10">
                     
                     {/* FORM SECTION 1 — THÔNG TIN CHUNG */}
-                    <div className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]/50">
                              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000] flex items-center gap-3">
-                                 <Activity size={16} className="text-[#B4533A]" /> Thông tin chung
+                                 <Activity size={16} className="text-[#2563EB]" /> Thông tin chung
                              </h3>
                         </div>
                         <div className="p-10 space-y-8">
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-[#000000] uppercase tracking-widest ml-1">Tiêu đề yêu cầu</label>
                                 <input 
-                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#000000] focus:outline-none focus:ring-2 focus:ring-[#B4533A]/20 transition-all placeholder:text-[#000000]/50" 
+                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#000000] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all placeholder:text-[#000000]/50" 
                                     placeholder="Nhập tên dịch vụ/sản phẩm cần mua sắm..."
                                     value={form.title} 
                                     onChange={e => setForm({ ...form, title: e.target.value })} 
@@ -742,13 +742,13 @@ export default function CreatePRPage() {
                                     <label className="text-[10px] font-black text-[#000000] uppercase tracking-widest ml-1">Trung tâm chi phí</label>
                                     <div className="relative">
                                         <select 
-                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#000000] appearance-none cursor-pointer focus:ring-2 focus:ring-[#B4533A]/20 transition-all" 
+                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#000000] appearance-none cursor-pointer focus:ring-2 focus:ring-[#2563EB]/20 transition-all" 
                                             value={form.costCenterId} 
                                             onChange={e => setForm({ ...form, costCenterId: e.target.value })}
                                         >
-                                            <option value="" className="bg-[#FAF8F5]">-- Chọn trung tâm chi phí --</option>
+                                            <option value="" className="bg-[#F1F5F9]">-- Chọn trung tâm chi phí --</option>
                                             {filteredCostCenters.map(cc => (
-                                                <option key={cc.id} value={cc.id} className="bg-[#FAF8F5]">{String(cc.code)} - {String(cc.name)}</option>
+                                                <option key={cc.id} value={cc.id} className="bg-[#F1F5F9]">{String(cc.code)} - {String(cc.name)}</option>
                                             ))}
                                         </select>
                                         <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-[#000000] pointer-events-none" size={16} />
@@ -758,14 +758,14 @@ export default function CreatePRPage() {
                                     <label className="text-[10px] font-black text-[#000000] uppercase tracking-widest ml-1">Độ ưu tiên</label>
                                     <div className="relative">
                                         <select 
-                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#000000] appearance-none cursor-pointer focus:ring-2 focus:ring-[#B4533A]/20 transition-all"
+                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#000000] appearance-none cursor-pointer focus:ring-2 focus:ring-[#2563EB]/20 transition-all"
                                             value={form.priority} 
                                             onChange={e => setForm({ ...form, priority: Number(e.target.value) })}
                                         >
-                                            <option value={1} className="bg-[#FAF8F5]">THẤP</option>
-                                            <option value={2} className="bg-[#FAF8F5]">BÌNH THƯỜNG</option>
-                                            <option value={3} className="bg-[#FAF8F5]">GẤP (ƯU TIÊN)</option>
-                                            <option value={4} className="bg-[#FAF8F5]">KHẨN CẤP (SLA 4H)</option>
+                                            <option value={1} className="bg-[#F1F5F9]">THẤP</option>
+                                            <option value={2} className="bg-[#F1F5F9]">BÌNH THƯỜNG</option>
+                                            <option value={3} className="bg-[#F1F5F9]">GẤP (ƯU TIÊN)</option>
+                                            <option value={4} className="bg-[#F1F5F9]">KHẨN CẤP (SLA 4H)</option>
                                         </select>
                                         <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-[#000000] pointer-events-none" size={16} />
                                     </div>
@@ -782,10 +782,10 @@ export default function CreatePRPage() {
                     />
 
                     {/* FORM SECTION 3 — DANH MỤC HÀNG HÓA */}
-                    <div className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]/50 flex justify-between items-center">
                              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000] flex items-center gap-3">
-                                 <ShoppingCart size={16} className="text-[#B4533A]" /> Danh mục hàng hóa đề xuất
+                                 <ShoppingCart size={16} className="text-[#2563EB]" /> Danh mục hàng hóa đề xuất
                              </h3>
                         </div>
                         <div className="p-10">
@@ -808,7 +808,7 @@ export default function CreatePRPage() {
                                         }),
                                         menu: (base) => ({
                                             ...base,
-                                            background: '#FAF8F5',
+                                            background: '#F1F5F9',
                                             border: '1px solid rgba(148,163,184,0.1)',
                                             borderRadius: '16px',
                                             zIndex: 9999
@@ -844,7 +844,7 @@ export default function CreatePRPage() {
                             <div className="overflow-hidden rounded-3xl border border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                                 <table className="erp-table text-xs m-0">
                                     <thead>
-                                        <tr className="bg-[#FAF8F5] text-[9px] font-black text-[#000000] border-b border-[rgba(148,163,184,0.1)] uppercase tracking-[0.1em]">
+                                        <tr className="bg-[#F1F5F9] text-[9px] font-black text-[#000000] border-b border-[rgba(148,163,184,0.1)] uppercase tracking-[0.1em]">
                                             <th className="px-8 py-5">Sản phẩm / Mô tả</th>
                                             <th className="px-8 py-5 text-center">Số lượng</th>
                                             <th className="px-8 py-5 text-right">Đơn giá tham chiếu</th>
@@ -859,12 +859,12 @@ export default function CreatePRPage() {
                                             </tr>
                                         ) : (
                                             form.items.map((item, i) => (
-                                                <tr key={i} className="hover:bg-[#FAF8F5]/50 transition-colors">
+                                                <tr key={i} className="hover:bg-[#F1F5F9]/50 transition-colors">
                                                     <td className="px-8 py-6 font-black text-[#000000] text-xs transition-colors">{item.productDesc}</td>
                                                     <td className="px-8 py-6 text-center">
                                                         <input 
                                                             type="number" 
-                                                            className="w-20 text-center bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl py-2 px-3 text-xs font-black text-[#000000] focus:outline-none focus:ring-1 focus:ring-[#B4533A]/50" 
+                                                            className="w-20 text-center bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl py-2 px-3 text-xs font-black text-[#000000] focus:outline-none focus:ring-1 focus:ring-[#2563EB]/50" 
                                                             value={item.qty} 
                                                             onChange={e => {
                                                                 const items = [...form.items];
@@ -874,7 +874,7 @@ export default function CreatePRPage() {
                                                         />
                                                     </td>
                                                     <td className="px-8 py-6 text-right font-bold text-[#000000] text-[11px]">{formatVND(item.estimatedPrice)}</td>
-                                                    <td className="px-8 py-6 text-right font-black text-[#B4533A] text-sm tracking-tight">{formatVND(item.qty * convertPrismaDecimal(item.estimatedPrice))}</td>
+                                                    <td className="px-8 py-6 text-right font-black text-[#2563EB] text-sm tracking-tight">{formatVND(item.qty * convertPrismaDecimal(item.estimatedPrice))}</td>
                                                     <td className="px-8 py-6 text-center">
                                                         <button 
                                                             className="p-3 text-[#000000] hover:text-black hover:bg-rose-500/10 rounded-2xl transition-all"
@@ -897,19 +897,19 @@ export default function CreatePRPage() {
                 <div className="xl:col-span-4">
                     <div className="sticky top-24 space-y-8">
                         {/* TOTAL CARD */}
-                        <div className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/10 p-10 overflow-hidden relative group">
+                        <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/10 p-10 overflow-hidden relative group">
                             <div className="absolute top-0 right-0 p-10 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
                                 <Wallet size={200} />
                             </div>
                             
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B4533A] mb-10 flex items-center gap-3">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] mb-10 flex items-center gap-3">
                                 <PieChart size={16} /> Tổng quan Ngân sách
                             </h3>
                             
                             <div className="space-y-8 relative">
                                 <div className="flex justify-between items-center p-6 bg-[#FFFFFF] rounded-[32px] border border-[rgba(148,163,184,0.1)]">
                                     <div className="text-[10px] font-black text-[#000000] uppercase tracking-[0.2em]">Trung tâm:</div>
-                                    <div className="text-[10px] font-black text-[#000000] bg-[#FAF8F5] px-4 py-2 rounded-xl border border-[#B4533A]/10 shadow-lg tracking-widest">
+                                    <div className="text-[10px] font-black text-[#000000] bg-[#F1F5F9] px-4 py-2 rounded-xl border border-[#2563EB]/10 shadow-lg tracking-widest">
                                         {activeCC ? String(activeCC.code) : "CHƯA CHỌN"}
                                     </div>
                                 </div>
@@ -949,7 +949,7 @@ export default function CreatePRPage() {
                                 </div>
                                 
                                 <button
-                                    className="w-full py-3 mt-4 bg-[#B4533A] hover:bg-[#A85032] text-[#000000] text-xs font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-[#B4533A]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 group/btn"
+                                    className="w-full py-3 mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] text-xs font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-[#2563EB]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 group/btn"
                                     onClick={handleSubmit}
                                     disabled={isSubmitting}
                                 >
@@ -960,7 +960,7 @@ export default function CreatePRPage() {
                         </div>
 
                         {/* HELPER CARD */}
-                        <div className="bg-gradient-to-br from-[#B4533A] to-[#8B5CF6] rounded-2xl p-5 text-[#000000] shadow-lg shadow-[#B4533A]/20 relative overflow-hidden group">
+                        <div className="bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] rounded-2xl p-5 text-[#000000] shadow-lg shadow-[#2563EB]/20 relative overflow-hidden group">
                              <div className="absolute top-2 right-2 p-2 opacity-20 group-hover:scale-125 transition-transform duration-700">
                                  <Bot size={40} />
                              </div>
@@ -978,10 +978,10 @@ export default function CreatePRPage() {
             {/* STATUS OVERLAY */}
             {submissionStatus !== 'idle' && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#FFFFFF]/80 backdrop-blur-xl animate-in fade-in duration-500">
-                    <div className="bg-[#FAF8F5] p-12 rounded-[40px] text-center shadow-2xl max-w-sm w-full border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-300">
+                    <div className="bg-[#F1F5F9] p-12 rounded-[40px] text-center shadow-2xl max-w-sm w-full border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-300">
                         {submissionStatus === 'loading' && (
                             <div className="py-10 space-y-6">
-                                <div className="h-20 w-20 border-8 border-[#B4533A]/20 border-t-[#B4533A] rounded-full animate-spin mx-auto shadow-xl shadow-[#B4533A]/10"></div>
+                                <div className="h-20 w-20 border-8 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin mx-auto shadow-xl shadow-[#2563EB]/10"></div>
                                 <div>
                                     <h3 className="text-lg font-black text-[#000000] uppercase tracking-tighter">Đang khởi tạo yêu cầu...</h3>
                                     <p className="text-[#000000] text-[10px] font-bold uppercase tracking-[0.2em] mt-3 animate-pulse">Vui lòng chờ trong giây lát</p>
@@ -1015,7 +1015,7 @@ export default function CreatePRPage() {
                         {submissionStatus !== 'loading' && (
                             <button 
                                 onClick={() => setSubmissionStatus('idle')} 
-                                className="w-full mt-6 py-4 bg-[#FFFFFF] text-[#000000] font-black text-[10px] uppercase tracking-widest rounded-2xl border border-[rgba(148,163,184,0.1)] hover:bg-[#1A1D23] transition-all"
+                                className="w-full mt-6 py-4 bg-[#FFFFFF] text-[#000000] font-black text-[10px] uppercase tracking-widest rounded-2xl border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-all"
                             >
                                 Quay lại chỉnh sửa
                             </button>

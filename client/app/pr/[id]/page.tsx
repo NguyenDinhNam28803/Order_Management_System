@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -66,7 +66,7 @@ export default function PRDetailPage() {
         <div>
           <button 
             onClick={() => router.back()} 
-            className="flex items-center gap-2 text-xs font-bold text-[#000000] hover:text-[#B4533A] transition-colors mb-4 uppercase tracking-widest"
+            className="flex items-center gap-2 text-xs font-bold text-[#000000] hover:text-[#2563EB] transition-colors mb-4 uppercase tracking-widest"
           >
             <ArrowLeft size={14} /> Quay lại danh sách
           </button>
@@ -81,7 +81,7 @@ export default function PRDetailPage() {
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="btn-primary w-full md:w-auto text-xs uppercase tracking-widest shadow-xl shadow-[#B4533A]/20"
+            className="btn-primary w-full md:w-auto text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/20"
           >
             {submitting ? (
               <><Clock size={16} className="animate-spin" /> Đang gửi...</>
@@ -177,7 +177,7 @@ export default function PRDetailPage() {
                       <div className="text-[10px] text-[#000000] mt-1">{item.description}</div>
                     )}
                   </td>
-                  <td className="text-right font-bold text-[#B4533A]">
+                  <td className="text-right font-bold text-[#2563EB]">
                     {item.qty} <span className="text-[9px] text-[#000000] ml-1 uppercase">{item.unit || "Cái"}</span>
                   </td>
                   <td className="text-right font-semibold text-[#000000]">

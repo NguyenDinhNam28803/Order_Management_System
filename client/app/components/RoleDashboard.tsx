@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { 
@@ -16,9 +16,9 @@ export function CEODashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Strategic Overview */}
-      <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
         <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
-          <Activity size={14} className="text-[#B4533A]" /> Tổng quan chiến lược
+          <Activity size={14} className="text-[#2563EB]" /> Tổng quan chiến lược
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard 
@@ -55,7 +55,7 @@ export function CEODashboard() {
       {/* Spend Heatmap */}
       <div className="glass-card p-6">
         <h3 className="section-title">
-          <BarChart3 size={16} className="text-[#B4533A]" />
+          <BarChart3 size={16} className="text-[#2563EB]" />
           Spend Heatmap theo Phòng ban
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -106,7 +106,7 @@ export function CEODashboard() {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[#000000]">Tỷ lệ phê duyệt</span>
-              <span className="font-bold text-[#CB7A62]">94.2%</span>
+              <span className="font-bold text-[#3B82F6]">94.2%</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[#000000]">Tỷ lệ từ chối</span>
@@ -146,9 +146,9 @@ export function CEODashboard() {
 export function FinanceDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
         <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
-          <Activity size={14} className="text-[#B4533A]" /> Kiểm soát tài chính
+          <Activity size={14} className="text-[#2563EB]" /> Kiểm soát tài chính
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard 
@@ -184,17 +184,17 @@ export function FinanceDashboard() {
           Dòng tiền & Thanh toán
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-4 bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)]">
+          <div className="p-4 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)]">
             <h4 className="text-sm font-semibold text-[#000000] mb-2">Tuần này</h4>
             <p className="text-2xl font-bold text-black">2.4B ₫</p>
             <p className="text-xs text-[#000000] mt-1">8 thanh toán</p>
           </div>
-          <div className="p-4 bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)]">
+          <div className="p-4 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)]">
             <h4 className="text-sm font-semibold text-[#000000] mb-2">Tuần tới</h4>
-            <p className="text-2xl font-bold text-[#CB7A62]">3.1B ₫</p>
+            <p className="text-2xl font-bold text-[#3B82F6]">3.1B ₫</p>
             <p className="text-xs text-[#000000] mt-1">12 thanh toán</p>
           </div>
-          <div className="p-4 bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)]">
+          <div className="p-4 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)]">
             <h4 className="text-sm font-semibold text-[#000000] mb-2">Quá hạn</h4>
             <p className="text-2xl font-bold text-black">890M ₫</p>
             <p className="text-xs text-[#000000] mt-1">Cần xử lý ngay</p>
@@ -209,9 +209,9 @@ export function FinanceDashboard() {
 export function ProcurementDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
         <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
-          <Activity size={14} className="text-[#B4533A]" /> Pipeline thu mua
+          <Activity size={14} className="text-[#2563EB]" /> Pipeline thu mua
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard
@@ -246,14 +246,14 @@ export function ProcurementDashboard() {
       {/* PR → PO Pipeline */}
       <div className="glass-card p-6">
         <h3 className="section-title">
-          <Activity size={16} className="text-[#B4533A]" />
+          <Activity size={16} className="text-[#2563EB]" />
           PR → PO Pipeline
         </h3>
         <div className="flex items-center justify-between">
           {[
             { label: "Draft PR", count: 12, color: "#000000" },
             { label: "Chờ Duyệt", count: 8, color: "#F59E0B" },
-            { label: "Đã Duyệt", count: 15, color: "#B4533A" },
+            { label: "Đã Duyệt", count: 15, color: "#2563EB" },
             { label: "Đã Tạo PO", count: 24, color: "#10B981" },
             { label: "Đã Giao", count: 156, color: "#8B5CF6" },
           ].map((stage, idx, arr) => (
@@ -282,9 +282,9 @@ export function ProcurementDashboard() {
 export function StaffDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
         <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
-          <Activity size={14} className="text-[#B4533A]" /> Tổng quan công việc
+          <Activity size={14} className="text-[#2563EB]" /> Tổng quan công việc
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <StatsCard
@@ -322,10 +322,10 @@ export function StaffDashboard() {
           ].map((item) => (
             <button
               key={item.label}
-              className="p-4 bg-[#FAF8F5] hover:bg-[rgba(59,130,246,0.1)] border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] rounded-xl transition-all text-left group"
+              className="p-4 bg-[#F1F5F9] hover:bg-[rgba(59,130,246,0.1)] border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] rounded-xl transition-all text-left group"
             >
               <span className="text-2xl mb-2 block">{item.icon}</span>
-              <span className="text-sm font-semibold text-[#000000] group-hover:text-[#B4533A] transition-colors">
+              <span className="text-sm font-semibold text-[#000000] group-hover:text-[#2563EB] transition-colors">
                 {item.label}
               </span>
             </button>
@@ -340,9 +340,9 @@ export function StaffDashboard() {
 export function WarehouseDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
         <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
-          <Activity size={14} className="text-[#B4533A]" /> Hoạt động kho
+          <Activity size={14} className="text-[#2563EB]" /> Hoạt động kho
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard
@@ -384,7 +384,7 @@ export function WarehouseDashboard() {
             { time: "14:00", po: "***", supplier: "Cloud Solutions", items: "Thiết bị mạng", status: "delayed" },
             { time: "16:00", po: "***", supplier: "BuildRight Co.", items: "Vật liệu xây dựng", status: "incoming" },
           ].map((delivery, idx) => (
-            <div key={idx} className="flex items-center gap-4 p-3 bg-[#FAF8F5] rounded-lg border border-[rgba(148,163,184,0.05)]">
+            <div key={idx} className="flex items-center gap-4 p-3 bg-[#F1F5F9] rounded-lg border border-[rgba(148,163,184,0.05)]">
               <div className="text-sm font-mono text-[#000000] w-16">{delivery.time}</div>
               <div className={`w-2 h-2 rounded-full ${delivery.status === "incoming" ? "bg-emerald-400" : "bg-amber-400"}`} />
               <div className="flex-1">

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useProcurement } from "@/app/context/ProcurementContext";
@@ -17,8 +17,8 @@ export default function ApprovalHistoryPage() {
                 </div>
                 
                 <div className="flex gap-4 mt-6 lg:mt-0">
-                    <div className="flex bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] p-1 shadow-sm">
-                        <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[#000000] bg-[#B4533A] rounded-xl transition-all shadow-sm">Hôm nay</button>
+                    <div className="flex bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-1 shadow-sm">
+                        <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[#000000] bg-[#2563EB] rounded-xl transition-all shadow-sm">Hôm nay</button>
                         <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[#000000] hover:text-[#000000] transition-all">Tuần này</button>
                         <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[#000000] hover:text-[#000000] transition-all">Tháng này</button>
                     </div>
@@ -26,12 +26,12 @@ export default function ApprovalHistoryPage() {
             </header>
 
             {/* Filter Bar */}
-            <div className="bg-[#FAF8F5] p-6 rounded-[32px] border border-[rgba(148,163,184,0.1)] mb-8 shadow-2xl shadow-[#B4533A]/5 flex flex-wrap gap-6 items-end">
+            <div className="bg-[#F1F5F9] p-6 rounded-[32px] border border-[rgba(148,163,184,0.1)] mb-8 shadow-2xl shadow-[#2563EB]/5 flex flex-wrap gap-6 items-end">
                 <div className="flex-1 min-w-[200px]">
-                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#B4533A] mb-3 leading-none">Loại chứng từ</label>
+                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] mb-3 leading-none">Loại chứng từ</label>
                     <div className="relative">
-                        <FolderTree size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
-                        <select className="w-full h-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-12 pr-10 text-sm font-bold text-[#000000] focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer">
+                        <FolderTree size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
+                        <select className="w-full h-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-12 pr-10 text-sm font-bold text-[#000000] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer">
                             <option value="ALL">Tất cả chứng từ</option>
                             <option value="PURCHASE_REQUISITION">Yêu cầu mua hàng (PR)</option>
                             <option value="PURCHASE_ORDER">Đơn đặt hàng (PO)</option>
@@ -40,10 +40,10 @@ export default function ApprovalHistoryPage() {
                 </div>
 
                 <div className="flex-1 min-w-[200px]">
-                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#B4533A] mb-3 leading-none">Quyết định</label>
+                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] mb-3 leading-none">Quyết định</label>
                     <div className="relative">
-                        <CheckCircle size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
-                        <select className="w-full h-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-12 pr-10 text-sm font-bold text-[#000000] focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer">
+                        <CheckCircle size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
+                        <select className="w-full h-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-12 pr-10 text-sm font-bold text-[#000000] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer">
                             <option value="ALL">Tất cả trạng thái</option>
                             <option value="APPROVED">Đã phê duyệt</option>
                             <option value="REJECTED">Đã từ chối</option>
@@ -51,13 +51,13 @@ export default function ApprovalHistoryPage() {
                     </div>
                 </div>
 
-                <button className="bg-[#B4533A] text-black h-14 flex items-center justify-center px-10 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#B4533A]/20 cursor-pointer hover:bg-[#A85032] transition-all active:scale-95 border-none">
+                <button className="bg-[#2563EB] text-black h-14 flex items-center justify-center px-10 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 cursor-pointer hover:bg-[#1D4ED8] transition-all active:scale-95 border-none">
                     Áp dụng bộ lọc
                 </button>
             </div>
 
             {/* History Table */}
-            <div className="bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#B4533A]/5 mb-8">
+            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5 mb-8">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
@@ -73,7 +73,7 @@ export default function ApprovalHistoryPage() {
                         {approvals.map((item) => (
                             <tr key={item.id} className="hover:bg-[#FFFFFF]/30 transition-colors">
                                 <td className="px-6 py-5">
-                                    <span className={`px-2 py-1 rounded-md text-[10px] font-black tracking-widest uppercase border ${item.documentType === "PURCHASE_REQUISITION" ? 'bg-amber-500/10 text-black border-amber-500/20' : 'bg-[#B4533A]/10 text-[#B4533A] border-[#B4533A]/20'}`}>
+                                    <span className={`px-2 py-1 rounded-md text-[10px] font-black tracking-widest uppercase border ${item.documentType === "PURCHASE_REQUISITION" ? 'bg-amber-500/10 text-black border-amber-500/20' : 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20'}`}>
                                         {item.documentType === "PURCHASE_REQUISITION" ? 'Yêu cầu mua hàng' : 'Đơn đặt hàng'}
                                     </span>
                                 </td>
@@ -118,10 +118,10 @@ export default function ApprovalHistoryPage() {
             <div className="flex items-center justify-between px-6">
                 <span className="text-xs font-black text-[#000000] uppercase tracking-widest">Trang 1 / 1</span>
                 <div className="flex gap-2 text-[#000000]">
-                    <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF] transition-colors">
+                    <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF] transition-colors">
                         <ChevronLeft size={18} />
                     </button>
-                    <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF] transition-colors">
+                    <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF] transition-colors">
                         <ChevronRight size={18} />
                     </button>
                 </div>

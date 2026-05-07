@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 import { 
@@ -43,29 +43,29 @@ export default function QuoteRequestPage() {
     const getStatusInfo = (status: QuoteRequestStatus) => {
         switch (status) {
             case QuoteRequestStatus.DRAFT:
-                return { label: "Nháp", color: "bg-[#1A1D23] text-[#000000] border border-[rgba(148,163,184,0.1)]", icon: FileText };
+                return { label: "Nháp", color: "bg-[#0F172A] text-[#000000] border border-[rgba(148,163,184,0.1)]", icon: FileText };
             case QuoteRequestStatus.SUBMITTED:
-                return { label: "Đã gửi Thu mua", color: "bg-[#B4533A]/10 text-[#B4533A] border border-[#B4533A]/20", icon: ClipboardList };
+                return { label: "Đã gửi Thu mua", color: "bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20", icon: ClipboardList };
             case QuoteRequestStatus.PROCESSING:
                 return { label: "Đang hỏi giá NCC", color: "bg-amber-500/10 text-black border border-amber-500/20", icon: Clock };
             case QuoteRequestStatus.COMPLETED:
                 return { label: "Đã có báo giá", color: "bg-emerald-500/10 text-black border border-emerald-500/20", icon: BadgeCheck };
             default:
-                return { label: status, color: "bg-[#1A1D23] text-[#000000] border border-[rgba(148,163,184,0.1)]", icon: FileText };
+                return { label: status, color: "bg-[#0F172A] text-[#000000] border border-[rgba(148,163,184,0.1)]", icon: FileText };
         }
     };
 
     return (
         <main className="animate-in fade-in duration-500 min-h-screen bg-[#FFFFFF] text-[#000000]">
             <div className="px-6 py-6 space-y-6">
-            <header className="flex justify-between items-center bg-[#FAF8F5] p-6 rounded-2xl shadow-sm border border-[rgba(148,163,184,0.1)]">
+            <header className="flex justify-between items-center bg-[#F1F5F9] p-6 rounded-2xl shadow-sm border border-[rgba(148,163,184,0.1)]">
                 <div>
-                    <h1 className="text-2xl font-black text-[#B4533A] tracking-tight">Yêu cầu báo giá</h1>
+                    <h1 className="text-2xl font-black text-[#2563EB] tracking-tight">Yêu cầu báo giá</h1>
                     <p className="text-sm text-[#000000] font-medium">Quản lý và theo dõi các báo giá từ bộ phận Thu mua</p>
                 </div>
                 <Link 
                     href="/quote-requests/create"
-                    className="flex items-center gap-2 bg-[#B4533A] text-[#000000] px-5 py-2.5 rounded-xl font-bold hover:bg-[#A85032] transition-all shadow-lg active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-5 py-2.5 rounded-xl font-bold hover:bg-[#1D4ED8] transition-all shadow-lg active:scale-95"
                 >
                     <Plus size={20} />
                     Tạo yêu cầu báo giá mới
@@ -73,14 +73,14 @@ export default function QuoteRequestPage() {
             </header>
 
             {/* Filter Bar */}
-            <div className="flex flex-wrap items-center gap-4 bg-[#FAF8F5] p-4 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] justify-between">
+            <div className="flex flex-wrap items-center gap-4 bg-[#F1F5F9] p-4 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] justify-between">
                 <div className="flex items-center gap-3">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" size={18} />
                         <input 
                             type="text"
                             placeholder="Tìm kiếm báo giá..."
-                            className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-4 focus:ring-[#B4533A]/10 transition-all outline-none placeholder:text-[#000000] text-[#000000]"
+                            className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-4 focus:ring-[#2563EB]/10 transition-all outline-none placeholder:text-[#000000] text-[#000000]"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -90,7 +90,7 @@ export default function QuoteRequestPage() {
                 <div className="flex items-center gap-2">
                     <button 
                         onClick={() => setStatusFilter("ALL")}
-                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === 'ALL' ? 'bg-[#B4533A] text-[#000000]' : 'bg-[#FFFFFF] text-[#000000] hover:bg-[#1A1D23]'}`}
+                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === 'ALL' ? 'bg-[#2563EB] text-[#000000]' : 'bg-[#FFFFFF] text-[#000000] hover:bg-[#0F172A]'}`}
                     >
                         Tất cả
                     </button>
@@ -100,7 +100,7 @@ export default function QuoteRequestPage() {
                             <button 
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
-                                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === status ? 'bg-[#B4533A] text-[#000000]' : 'bg-[#FFFFFF] text-[#000000] hover:bg-[#1A1D23]'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === status ? 'bg-[#2563EB] text-[#000000]' : 'bg-[#FFFFFF] text-[#000000] hover:bg-[#0F172A]'}`}
                             >
                                 {label}
                             </button>
@@ -113,7 +113,7 @@ export default function QuoteRequestPage() {
                 {/* Main List */}
                 <div className="lg:col-span-2 space-y-4">
                     {filteredQRs.length === 0 ? (
-                        <div className="bg-[#FAF8F5] p-12 rounded-2xl border border-dashed border-[rgba(148,163,184,0.2)] text-center space-y-3">
+                        <div className="bg-[#F1F5F9] p-12 rounded-2xl border border-dashed border-[rgba(148,163,184,0.2)] text-center space-y-3">
                             <div className="bg-[#FFFFFF] w-16 h-16 rounded-full flex items-center justify-center mx-auto text-[#000000]">
                                 <Search size={32} />
                             </div>
@@ -126,7 +126,7 @@ export default function QuoteRequestPage() {
                                 <div 
                                     key={qr.id}
                                     onClick={() => setSelectedQR(qr)}
-                                    className={`group bg-[#FAF8F5] p-5 rounded-2xl border transition-all cursor-pointer hover:shadow-md ${selectedQR?.id === qr.id ? 'border-[#B4533A] ring-2 ring-[#B4533A]/10' : 'border-[rgba(148,163,184,0.1)]'}`}
+                                    className={`group bg-[#F1F5F9] p-5 rounded-2xl border transition-all cursor-pointer hover:shadow-md ${selectedQR?.id === qr.id ? 'border-[#2563EB] ring-2 ring-[#2563EB]/10' : 'border-[rgba(148,163,184,0.1)]'}`}
                                 >
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-center gap-4">
@@ -134,7 +134,7 @@ export default function QuoteRequestPage() {
                                                 <Icon size={24} />
                                             </div>
                                             <div>
-                                                <h3 className="font-black text-[#000000] group-hover:text-[#B4533A] transition-colors">{qr.title}</h3>
+                                                <h3 className="font-black text-[#000000] group-hover:text-[#2563EB] transition-colors">{qr.title}</h3>
                                                 <div className="flex flex-wrap items-center gap-2 mt-1">
                                                     <span className="text-[10px] font-black tracking-widest text-[#000000] uppercase">{qr.qrNumber}</span>
                                                     <span className="w-1 h-1 rounded-full bg-[#000000]"></span>
@@ -159,7 +159,7 @@ export default function QuoteRequestPage() {
                                         <div className="text-[#000000]">
                                             Mặt hàng: <span className="text-[#000000] font-bold">{qr.items.length}</span>
                                         </div>
-                                        <div className="text-[#B4533A] font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                        <div className="text-[#2563EB] font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                                             Xem chi tiết <ChevronRight size={14} />
                                         </div>
                                     </div>
@@ -172,7 +172,7 @@ export default function QuoteRequestPage() {
                 {/* Detail Panel */}
                 <div className="lg:col-span-1">
                     {selectedQR ? (
-                        <div className="bg-[#FAF8F5] p-6 rounded-2xl shadow-xl border border-[rgba(148,163,184,0.1)] sticky top-6 space-y-6">
+                        <div className="bg-[#F1F5F9] p-6 rounded-2xl shadow-xl border border-[rgba(148,163,184,0.1)] sticky top-6 space-y-6">
                             <div className="flex justify-between items-start">
                                 <div>
                                     <h2 className="text-lg font-black text-[#000000] leading-tight">{selectedQR.title}</h2>
@@ -184,7 +184,7 @@ export default function QuoteRequestPage() {
                                         </div>
                                     )}
                                 </div>
-                                <button className="p-2 text-[#000000] hover:bg-[#1A1D23] rounded-lg">
+                                <button className="p-2 text-[#000000] hover:bg-[#0F172A] rounded-lg">
                                     <MoreVertical size={20} />
                                 </button>
                             </div>
@@ -196,7 +196,7 @@ export default function QuoteRequestPage() {
                                         <div key={idx} className="p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                             <div className="flex justify-between items-start mb-2">
                                                 <span className="font-bold text-sm text-[#000000]">{item.productName}</span>
-                                                <span className="text-xs font-black text-[#000000] underline underline-offset-4 decoration-[#B4533A]/30">{item.qty} {item.unit}</span>
+                                                <span className="text-xs font-black text-[#000000] underline underline-offset-4 decoration-[#2563EB]/30">{item.qty} {item.unit}</span>
                                             </div>
                                             
                                             <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">
@@ -208,7 +208,7 @@ export default function QuoteRequestPage() {
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="text-[9px] uppercase font-black text-[#000000]">Đơn giá báo</span>
-                                                    <span className={`text-xs font-bold ${item.unitPrice ? 'text-[#B4533A]' : 'italic text-[#000000]'}`}>
+                                                    <span className={`text-xs font-bold ${item.unitPrice ? 'text-[#2563EB]' : 'italic text-[#000000]'}`}>
                                                         {item.unitPrice ? `${item.unitPrice.toLocaleString('vi-VN')} VNĐ` : "Chờ cập nhật"}
                                                     </span>
                                                 </div>
@@ -246,7 +246,7 @@ export default function QuoteRequestPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center p-12 bg-[#FAF8F5]/50 rounded-2xl border border-dashed border-[rgba(148,163,184,0.2)]">
+                        <div className="h-full flex flex-col items-center justify-center p-12 bg-[#F1F5F9]/50 rounded-2xl border border-dashed border-[rgba(148,163,184,0.2)]">
                             <ClipboardList className="text-[#000000] mb-4" size={48} />
                             <p className="text-[#000000] text-sm font-bold italic text-center max-w-[240px] leading-relaxed">Chọn một yêu cầu để xem chi tiết báo giá và thực hiện hành động</p>
                         </div>

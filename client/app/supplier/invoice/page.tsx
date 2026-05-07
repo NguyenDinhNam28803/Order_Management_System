@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { FileText, Calculator, FileCheck, Search, Info, Send, UploadCloud } from "lucide-react";
@@ -140,10 +140,10 @@ export default function SupplierInvoice() {
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
                 {/* Main Form Form */}
                 <div className="xl:col-span-3 space-y-6">
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 flex items-center gap-4 p-6">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4 p-6">
                         <label className="text-xs font-black uppercase text-[#000000] whitespace-nowrap">Chọn PO Đã Giao</label>
                         <select 
-                            className="w-full md:w-1/2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] focus:outline-none focus:border-[#B4533A]/30"
+                            className="w-full md:w-1/2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] focus:outline-none focus:border-[#2563EB]/30"
                             value={selectedPO}
                             onChange={(e) => setSelectedPO(e.target.value)}
                         >
@@ -156,28 +156,28 @@ export default function SupplierInvoice() {
                     {selectedPO ? (
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 p-6">
+                                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2">Số HĐ Điện Tử VAT</label>
-                                    <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/30" placeholder="VD: 0001234" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} />
+                                    <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30" placeholder="VD: 0001234" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} />
                                 </div>
-                                <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 p-6">
+                                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2">Ký hiệu Mẫu số</label>
-                                    <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] focus:outline-none focus:border-[#B4533A]/30" defaultValue="1C26TAA" />
+                                    <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] focus:outline-none focus:border-[#2563EB]/30" defaultValue="1C26TAA" />
                                 </div>
-                                <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 p-6">
+                                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2">Ngày xuất (Auto)</label>
                                     <input type="date" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] opacity-70 cursor-not-allowed" disabled defaultValue={new Date().toISOString().substring(0, 10)} />
                                 </div>
                             </div>
 
-                            <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 !p-0 overflow-hidden">
+                            <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
                                 <div className="p-4 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex items-center justify-between">
                                     <h3 className="text-[10px] font-black uppercase tracking-widest text-[#000000] flex items-center gap-2">
                                         <FileCheck size={14} /> Danh sách Đối soát HĐ (Items)
                                     </h3>
-                                    <p className="text-[9px] text-[#B4533A] font-bold bg-[#FFFFFF] px-2 py-1 rounded border border-[#B4533A]/20 uppercase tracking-widest">3-Way: PO - GRN - INV</p>
+                                    <p className="text-[9px] text-[#2563EB] font-bold bg-[#FFFFFF] px-2 py-1 rounded border border-[#2563EB]/20 uppercase tracking-widest">3-Way: PO - GRN - INV</p>
                                 </div>
-                                <div className="bg-[#FAF8F5]">
+                                <div className="bg-[#F1F5F9]">
                                     <table className="erp-table text-xs m-0">
                                         <thead>
                                             <tr>
@@ -217,7 +217,7 @@ export default function SupplierInvoice() {
                             </div>
                         </>
                     ) : (
-                        <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] border-dashed py-32 text-center text-[#000000]">
+                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] border-dashed py-32 text-center text-[#000000]">
                             <Search size={48} className="mx-auto mb-4 opacity-10" />
                             <p className="text-xs font-black uppercase tracking-widest">Chưa chọn chứng từ thanh toán</p>
                             <p className="text-[10px] mt-2 italic font-medium">Bạn chỉ được lập invoice khi có xác nhận nhập kho từ Buyer.</p>
@@ -227,7 +227,7 @@ export default function SupplierInvoice() {
 
                 {/* Right Column: Tổng kết thuế & Submit */}
                 <div className="space-y-6">
-                    <div className={`bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 transition-all ${selectedPO ? 'border-[#B4533A]/20' : 'opacity-50 grayscale pointer-events-none'}`}>
+                    <div className={`bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 transition-all ${selectedPO ? 'border-[#2563EB]/20' : 'opacity-50 grayscale pointer-events-none'}`}>
                         <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] mb-6 flex items-center gap-2 border-b border-[rgba(148,163,184,0.1)] pb-4">
                             <Calculator size={16}/> Tích Toán Giá Trị
                         </h3>
@@ -238,31 +238,31 @@ export default function SupplierInvoice() {
                                 <span className="text-base text-[#000000]">{subTotal.toLocaleString()} ₫</span>
                             </div>
                             <div className="flex justify-between items-center group">
-                                <span className="uppercase tracking-widest text-[10px] text-[#000000] flex items-center gap-2">Thuế SUẤT VAT <input type="number" className="w-12 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-2 py-1 text-center font-bold text-[#000000] focus:outline-none focus:border-[#B4533A]/30" value={vat} onChange={e => setVat(Number(e.target.value))}/> %</span>
+                                <span className="uppercase tracking-widest text-[10px] text-[#000000] flex items-center gap-2">Thuế SUẤT VAT <input type="number" className="w-12 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-2 py-1 text-center font-bold text-[#000000] focus:outline-none focus:border-[#2563EB]/30" value={vat} onChange={e => setVat(Number(e.target.value))}/> %</span>
                                 <span className="text-base text-[#000000] group-hover:text-[#000000] transition-colors">{vatAmount.toLocaleString()} ₫</span>
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-1 text-right mb-6">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-[#B4533A] mb-1">Tổng Tiền THANH TOÁN YÊU CẦU</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#2563EB] mb-1">Tổng Tiền THANH TOÁN YÊU CẦU</span>
                             <span className="text-3xl font-black text-[#000000] tracking-tight">{totalAmount.toLocaleString()} <span className="text-sm">VND</span></span>
                         </div>
                         
                         <div className="space-y-3 pt-6 border-t border-[rgba(148,163,184,0.1)]">
                              <div className="border border-dashed border-[rgba(148,163,184,0.1)] p-4 text-center rounded-xl hover:bg-[#FFFFFF] cursor-pointer group">
-                                 <UploadCloud size={16} className="mx-auto mb-1 text-[#000000] group-hover:text-[#B4533A] transition-colors" />
+                                 <UploadCloud size={16} className="mx-auto mb-1 text-[#000000] group-hover:text-[#2563EB] transition-colors" />
                                  <div className="text-[10px] font-black uppercase text-[#000000] mt-2">Upload XML Hóa Đơn Phạt Phụ Lục</div>
                              </div>
 
-                             <button onClick={handleSubmit} className="w-full bg-[#B4533A] hover:bg-[#A85032] text-[#000000] px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#B4533A]/20 transition-all">
+                             <button onClick={handleSubmit} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#2563EB]/20 transition-all">
                                  <Send size={16}/> Submit cho AP Khách hàng
                              </button>
                         </div>
                     </div>
 
-                    <div className="bg-[#B4533A]/10 p-4 rounded-xl border border-[#B4533A]/20 flex items-start gap-3">
-                        <Info size={16} className="text-[#B4533A] shrink-0 mt-0.5" />
-                        <p className="text-[10px] text-[#B4533A] leading-relaxed font-medium">Hệ thống khách hàng sẽ tự động Check lệch chuẩn (Tolerance) qua tool AI OCR. Hóa đơn của bạn sẽ được thanh toán tự động vào mùng 15 tháng T+1 theo quy trình Net 30.</p>
+                    <div className="bg-[#2563EB]/10 p-4 rounded-xl border border-[#2563EB]/20 flex items-start gap-3">
+                        <Info size={16} className="text-[#2563EB] shrink-0 mt-0.5" />
+                        <p className="text-[10px] text-[#2563EB] leading-relaxed font-medium">Hệ thống khách hàng sẽ tự động Check lệch chuẩn (Tolerance) qua tool AI OCR. Hóa đơn của bạn sẽ được thanh toán tự động vào mùng 15 tháng T+1 theo quy trình Net 30.</p>
                     </div>
                 </div>
             </div>

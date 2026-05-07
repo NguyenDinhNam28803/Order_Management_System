@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { useProcurement, PR } from "../context/ProcurementContext";
@@ -60,7 +60,7 @@ export default function PRPage() {
             key: "id",
             render: (row: PR) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-lg bg-[#B4533A]/10 text-[#B4533A] flex items-center justify-center border border-[#B4533A]/20">
+                    <div className="h-9 w-9 rounded-lg bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center border border-[#2563EB]/20">
                         <FileText size={16} />
                     </div>
                     <span className="font-bold text-[#000000] tracking-tight">********</span>
@@ -107,7 +107,7 @@ export default function PRPage() {
                     'DRAFT': { bg: 'bg-slate-500/10', text: 'text-black', border: 'border-slate-500/20' },
                     'PENDING': { bg: 'bg-amber-500/10', text: 'text-black', border: 'border-amber-500/20' },
                     'PENDING_APPROVAL': { bg: 'bg-amber-500/10', text: 'text-black', border: 'border-amber-500/20' },
-                    'SUBMITTED': { bg: 'bg-[#B4533A]/10', text: 'text-[#CB7A62]', border: 'border-[#B4533A]/20' },
+                    'SUBMITTED': { bg: 'bg-[#2563EB]/10', text: 'text-[#3B82F6]', border: 'border-[#2563EB]/20' },
                     'UNDER_REVIEW': { bg: 'bg-purple-500/10', text: 'text-black', border: 'border-purple-500/20' },
                     'APPROVED': { bg: 'bg-emerald-500/10', text: 'text-black', border: 'border-emerald-500/20' },
                     'REJECTED': { bg: 'bg-rose-500/10', text: 'text-black', border: 'border-rose-500/20' },
@@ -150,7 +150,7 @@ export default function PRPage() {
                     <div className="flex gap-1 justify-end items-center">
                         <Link
                             href={`/pr/${row.id}`}
-                            className="p-1 rounded bg-[#FFFFFF] text-[#000000] hover:text-[#B4533A] hover:bg-[#B4533A]/10 border border-[rgba(148,163,184,0.1)] transition-all"
+                            className="p-1 rounded bg-[#FFFFFF] text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 border border-[rgba(148,163,184,0.1)] transition-all"
                             title="Xem chi tiết PR"
                         >
                             <FileText size={14} />
@@ -188,7 +188,7 @@ export default function PRPage() {
                                         </button>
                                         <button
                                             onClick={() => submitPR(row.id)}
-                                            className="py-1 px-2 text-[10px] bg-[#B4533A] text-[#000000] rounded font-bold uppercase tracking-wider hover:bg-[#A85032] transition-all flex items-center gap-1"
+                                            className="py-1 px-2 text-[10px] bg-[#2563EB] text-[#000000] rounded font-bold uppercase tracking-wider hover:bg-[#1D4ED8] transition-all flex items-center gap-1"
                                         >
                                             <Send size={12} />
                                         </button>
@@ -217,7 +217,7 @@ export default function PRPage() {
                     <p className="text-sm font-medium text-[#000000] mt-1">Quản lý và theo dõi tiến độ phê duyệt định mức mua sắm tập trung.</p>
                 </div>
                 {currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN" && (
-                    <Link href="/pr/create" className="py-3 px-6 bg-[#B4533A] text-[#000000] rounded-xl font-black uppercase tracking-wider text-xs shadow-lg shadow-[#B4533A]/20 hover:bg-[#A85032] transition-all flex flex-col items-center">
+                    <Link href="/pr/create" className="py-3 px-6 bg-[#2563EB] text-[#000000] rounded-xl font-black uppercase tracking-wider text-xs shadow-lg shadow-[#2563EB]/20 hover:bg-[#1D4ED8] transition-all flex flex-col items-center">
                         <div className="flex items-center gap-2">
                             <Plus size={18} />
                             <span className="text-sm font-semibold">Tạo yêu cầu mới</span>
@@ -226,7 +226,7 @@ export default function PRPage() {
                 )}
             </header>
 
-            <div className="bg-[#FAF8F5] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden mx-6">
+            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden mx-6">
                 <div className="p-5 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <div className="text-xs font-black text-[#000000] uppercase tracking-widest px-2">Bộ lọc nhanh</div>
@@ -236,7 +236,7 @@ export default function PRPage() {
                                     key={filter}
                                     onClick={() => setActiveTab(filter)}
                                     className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === filter
-                                            ? "bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20"
+                                            ? "bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20"
                                             : "text-[#000000] hover:text-[#000000] hover:bg-[#FFFFFF]"
                                         }`}
                                 >

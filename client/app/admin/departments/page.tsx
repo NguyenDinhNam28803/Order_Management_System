@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Building2, Plus, Edit2, Trash2, Users, Search } from "lucide-react";
@@ -78,23 +78,23 @@ export default function DepartmentsPage() {
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#B4533A] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#B4533A]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm phòng ban
                 </button>
             </div>
 
-            <div className="bg-[#FAF8F5] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="text-[10px] font-black text-[#000000] uppercase tracking-widest border-r border-[rgba(148,163,184,0.1)] pr-4">Cơ cấu Tổ chức (Structure)</div>
-                        <div className="text-[10px] font-black text-[#B4533A] bg-[#B4533A]/10 px-3 py-1 rounded-full border border-[#B4533A]/20">{filteredDepartments?.length || 0} Phòng ban</div>
+                        <div className="text-[10px] font-black text-[#2563EB] bg-[#2563EB]/10 px-3 py-1 rounded-full border border-[#2563EB]/20">{filteredDepartments?.length || 0} Phòng ban</div>
                     </div>
                     <div className="flex items-center gap-3">
                         <select
                             value={filterOrgId}
                             onChange={(e) => setFilterOrgId(e.target.value)}
-                            className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-[#000000] focus:ring-2 focus:ring-[#B4533A]/20 py-2 px-4 outline-none"
+                            className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-[#000000] focus:ring-2 focus:ring-[#2563EB]/20 py-2 px-4 outline-none"
                         >
                             <option value="">Tất cả tổ chức</option>
                             {organizations?.map((org: Organization) => (
@@ -108,7 +108,7 @@ export default function DepartmentsPage() {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Tìm kiếm phòng ban..."
-                                className="pl-10 pr-4 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#B4533A]/20 w-64 outline-none"
+                                className="pl-10 pr-4 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#2563EB]/20 w-64 outline-none"
                             />
                         </div>
                     </div>
@@ -129,7 +129,7 @@ export default function DepartmentsPage() {
                                 <tr key={dept.id} className="hover:bg-[#FFFFFF]/30 transition-colors">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-2xl bg-[#FFFFFF] flex items-center justify-center font-black text-[#B4533A] shadow-sm transition-transform hover:rotate-12 border border-[rgba(148,163,184,0.1)]">
+                                            <div className="h-12 w-12 rounded-2xl bg-[#FFFFFF] flex items-center justify-center font-black text-[#2563EB] shadow-sm transition-transform hover:rotate-12 border border-[rgba(148,163,184,0.1)]">
                                                 <Building2 size={20} />
                                             </div>
                                             <div>
@@ -142,7 +142,7 @@ export default function DepartmentsPage() {
                                     </td>
                                     <td className="p-5">
                                         <div className="flex items-center gap-2">
-                                            <div className="h-6 w-6 rounded-full bg-[#B4533A]/10 flex items-center justify-center text-[8px] font-black text-[#B4533A]">
+                                            <div className="h-6 w-6 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[8px] font-black text-[#2563EB]">
                                                 {dept.head?.fullName?.substring(0, 2).toUpperCase() || "NA"}
                                             </div>
                                             <span className="font-bold text-[#000000]">{dept.head?.fullName || "Chưa chỉ định"}</span>
@@ -150,7 +150,7 @@ export default function DepartmentsPage() {
                                     </td>
                                     <td className="p-5 text-center font-bold text-black uppercase tracking-widest text-[10px]">Đang hoạt động</td>
                                     <td className="p-5 text-center">
-                                        <div className="flex items-center justify-center gap-1 text-[#B4533A] font-black">
+                                        <div className="flex items-center justify-center gap-1 text-[#2563EB] font-black">
                                             <Users size={12} />
                                             <span>{dept._count?.users || 0} nhân viên</span>
                                         </div>
@@ -159,7 +159,7 @@ export default function DepartmentsPage() {
                                         <div className="flex justify-center gap-3">
                                             <button
                                                 onClick={() => handleOpenModal(dept)}
-                                                className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#B4533A] hover:border-[#B4533A]/30 rounded-xl transition-all shadow-sm"
+                                                className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Edit2 size={14} />
                                             </button>
@@ -185,7 +185,7 @@ export default function DepartmentsPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-[#FAF8F5] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         <div className="p-10">
                             <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
                                 {editingDept ? "Cập nhật Phòng ban" : "Thêm Phòng ban mới"}
@@ -242,7 +242,7 @@ export default function DepartmentsPage() {
                                                 onChange={(e) => setFormData({ ...formData, budgetAnnual: Number(e.target.value) })}
                                                 type="number"
                                                 placeholder="0"
-                                                className="erp-input pr-12 font-bold text-[#B4533A]"
+                                                className="erp-input pr-12 font-bold text-[#2563EB]"
                                             />
                                             <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#000000]">VND</span>
                                         </div>

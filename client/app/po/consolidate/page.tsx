@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
@@ -294,7 +294,7 @@ export default function POConsolidatePage() {
           </div>
           <h2 className="page-title mb-1">PO Gộp tạo thành công</h2>
           <p className="page-subtitle mb-6">
-            Mã PO: <span className="text-[#CB7A62] font-bold font-mono">{result.poNumber}</span>
+            Mã PO: <span className="text-[#3B82F6] font-bold font-mono">{result.poNumber}</span>
           </p>
 
           <div className="grid grid-cols-2 gap-3 text-left mb-6">
@@ -341,8 +341,8 @@ export default function POConsolidatePage() {
       {/* Header */}
       <div className="page-header">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#A85032]/10 border border-[#A85032]/20 flex items-center justify-center shrink-0">
-            <GitMerge size={18} className="text-[#CB7A62]" />
+          <div className="w-9 h-9 rounded-xl bg-[#1D4ED8]/10 border border-[#1D4ED8]/20 flex items-center justify-center shrink-0">
+            <GitMerge size={18} className="text-[#3B82F6]" />
           </div>
           <div>
             <h1 className="page-title">Gộp PO từ nhiều PR</h1>
@@ -355,7 +355,7 @@ export default function POConsolidatePage() {
 
       {/* Info banner */}
       <div className="info-banner">
-        <Info size={15} className="text-[#CB7A62] shrink-0 mt-0.5" />
+        <Info size={15} className="text-[#3B82F6] shrink-0 mt-0.5" />
         <span>
           <strong className="text-[#000000]">SKU Match</strong>: gộp items cùng mã SKU — tối ưu cho văn phòng phẩm, linh kiện.&ensp;
           <strong className="text-[#000000]">Category Match</strong>: gộp cùng danh mục — tối ưu cho nhóm hàng theo ngành.&ensp;
@@ -396,21 +396,21 @@ export default function POConsolidatePage() {
               </h3>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[#000000]">
-                  <span className="text-[#CB7A62] font-bold">{selectedPrIds.length}</span>
+                  <span className="text-[#3B82F6] font-bold">{selectedPrIds.length}</span>
                   /{approvedPRs.length} đã chọn
                 </span>
                 {approvedPRs.length > 0 && (
                   selectedPrIds.length === approvedPRs.length ? (
                     <button
                       onClick={clearAll}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold text-[#000000] hover:text-[#000000] hover:bg-[#FAF8F5] transition-colors"
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold text-[#000000] hover:text-[#000000] hover:bg-[#F1F5F9] transition-colors"
                     >
                       <X size={10} /> Bỏ chọn
                     </button>
                   ) : (
                     <button
                       onClick={selectAll}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold text-[#CB7A62] hover:bg-[#A85032]/10 transition-colors"
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold text-[#3B82F6] hover:bg-[#1D4ED8]/10 transition-colors"
                     >
                       <CheckCheck size={10} /> Chọn tất cả
                     </button>
@@ -435,12 +435,12 @@ export default function POConsolidatePage() {
                       onClick={() => togglePr(pr.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-colors text-left ${
                         sel
-                          ? "bg-[#A85032]/10 border-[#A85032]/30"
+                          ? "bg-[#1D4ED8]/10 border-[#1D4ED8]/30"
                           : "bg-[#FFFFFF] border-[rgba(148,163,184,0.07)] hover:border-[rgba(148,163,184,0.18)]"
                       }`}
                     >
                       {sel
-                        ? <CheckSquare size={15} className="text-[#CB7A62] shrink-0" />
+                        ? <CheckSquare size={15} className="text-[#3B82F6] shrink-0" />
                         : <Square size={15} className="text-[#000000] shrink-0" />}
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-bold text-[#000000] font-mono truncate">********</p>
@@ -474,13 +474,13 @@ export default function POConsolidatePage() {
                   onClick={() => setMode(m)}
                   className={`p-3.5 rounded-xl border text-left transition-colors ${
                     mode === m
-                      ? "bg-[#A85032]/10 border-[#A85032]/30"
+                      ? "bg-[#1D4ED8]/10 border-[#1D4ED8]/30"
                       : "bg-[#FFFFFF] border-[rgba(148,163,184,0.08)] hover:border-[rgba(148,163,184,0.18)]"
                   }`}
                 >
                   {m === "SKU_MATCH"
-                    ? <Package size={16} className={mode === m ? "text-[#CB7A62]" : "text-[#000000]"} />
-                    : <Layers size={16} className={mode === m ? "text-[#CB7A62]" : "text-[#000000]"} />}
+                    ? <Package size={16} className={mode === m ? "text-[#3B82F6]" : "text-[#000000]"} />
+                    : <Layers size={16} className={mode === m ? "text-[#3B82F6]" : "text-[#000000]"} />}
                   <p className="text-xs font-bold text-[#000000] mt-2">
                     {m === "SKU_MATCH" ? "SKU Match" : "Category Match"}
                   </p>
@@ -518,9 +518,9 @@ export default function POConsolidatePage() {
 
                 {/* Selected display */}
                 {selectedSupplier ? (
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-[#A85032]/10 border border-[#A85032]/30">
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-[#1D4ED8]/10 border border-[#1D4ED8]/30">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-[#A85032]/20 flex items-center justify-center text-[#CB7A62]">
+                      <div className="w-8 h-8 rounded-lg bg-[#1D4ED8]/20 flex items-center justify-center text-[#3B82F6]">
                         <Building2 size={14} />
                       </div>
                       <div>
@@ -550,15 +550,15 @@ export default function POConsolidatePage() {
                       className="erp-input pl-9"
                     />
                     {showDropdown && supplierSearch && (
-                      <div className="absolute top-full mt-1 left-0 right-0 z-30 bg-[#FAF8F5] border border-[rgba(148,163,184,0.12)] rounded-xl shadow-2xl overflow-hidden max-h-52 overflow-y-auto">
+                      <div className="absolute top-full mt-1 left-0 right-0 z-30 bg-[#F1F5F9] border border-[rgba(148,163,184,0.12)] rounded-xl shadow-2xl overflow-hidden max-h-52 overflow-y-auto">
                         {filteredSuppliers.length > 0 ? filteredSuppliers.map((s: Organization) => (
                           <button
                             key={s.id}
                             type="button"
                             onClick={() => pickSupplier(s)}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#A85032]/10 text-left transition-colors"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#1D4ED8]/10 text-left transition-colors"
                           >
-                            <div className="w-7 h-7 rounded-lg bg-[#FFFFFF] flex items-center justify-center text-[#CB7A62] shrink-0">
+                            <div className="w-7 h-7 rounded-lg bg-[#FFFFFF] flex items-center justify-center text-[#3B82F6] shrink-0">
                               <Building2 size={12} />
                             </div>
                             <div>
@@ -646,7 +646,7 @@ export default function POConsolidatePage() {
                                   <span className="flex items-center gap-1 text-[10px] text-black">
                                     <Star size={10} /> {s.historicalData.qualityScore.toFixed(1)}/5
                                   </span>
-                                  <span className="flex items-center gap-1 text-[10px] text-[#CB7A62]">
+                                  <span className="flex items-center gap-1 text-[10px] text-[#3B82F6]">
                                     <TrendingUp size={10} /> {s.historicalData.avgPrice.toLocaleString("vi-VN")} ₫/unit
                                   </span>
                                 </div>
@@ -735,7 +735,7 @@ export default function POConsolidatePage() {
         <div className="xl:col-span-2">
           <div className="erp-card sticky top-20">
             <h3 className="text-sm font-bold text-[#000000] flex items-center gap-2 mb-4">
-              <GitMerge size={15} className="text-[#CB7A62]" />
+              <GitMerge size={15} className="text-[#3B82F6]" />
               Xem trước kết quả gộp
             </h3>
 
@@ -750,7 +750,7 @@ export default function POConsolidatePage() {
                 {/* KPI row */}
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   {[
-                    { label: "PR nguồn", value: selectedPrIds.length,          color: "text-[#CB7A62]" },
+                    { label: "PR nguồn", value: selectedPrIds.length,          color: "text-[#3B82F6]" },
                     { label: "Item gộp", value: previewItems.length,           color: "text-violet-400" },
                     { label: "VND",      value: (previewTotal / 1e6).toFixed(1) + "M", color: "text-black" },
                   ].map(({ label, value, color }) => (
@@ -767,7 +767,7 @@ export default function POConsolidatePage() {
                     <div key={item.key} className="p-3 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.07)]">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-start gap-2 min-w-0">
-                          <span className="w-5 h-5 rounded-full bg-[#A85032]/20 text-[#CB7A62] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                          <span className="w-5 h-5 rounded-full bg-[#1D4ED8]/20 text-[#3B82F6] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                             {idx + 1}
                           </span>
                           <div className="min-w-0">

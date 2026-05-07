@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -47,7 +47,7 @@ export default function FinanceInvoicesPage() {
             case "AUTO_APPROVED":
                 return <CheckCircle2 size={16} className="text-black" />;
             case "MATCHED":
-                return <CheckCircle2 size={16} className="text-[#CB7A62]" />;
+                return <CheckCircle2 size={16} className="text-[#3B82F6]" />;
             case "SUBMITTED":
             case "PENDING":
             case "MATCHING":
@@ -58,7 +58,7 @@ export default function FinanceInvoicesPage() {
             case "DISPUTED":
                 return <XCircle size={16} className="text-black" />;
             case "PAID":
-                return <CreditCard size={16} className="text-[#CB7A62]" />;
+                return <CreditCard size={16} className="text-[#3B82F6]" />;
             default:
                 return <FileText size={16} className="text-[#000000]" />;
         }
@@ -70,7 +70,7 @@ export default function FinanceInvoicesPage() {
             case "AUTO_APPROVED":
                 return "bg-emerald-500/10 text-black border-emerald-500/20";
             case "MATCHED":
-                return "bg-[#B4533A]/10 text-[#CB7A62] border-[#B4533A]/20";
+                return "bg-[#2563EB]/10 text-[#3B82F6] border-[#2563EB]/20";
             case "SUBMITTED":
             case "PENDING":
             case "MATCHING":
@@ -81,7 +81,7 @@ export default function FinanceInvoicesPage() {
             case "DISPUTED":
                 return "bg-rose-500/10 text-black border-rose-500/20";
             case "PAID":
-                return "bg-[#B4533A]/10 text-[#CB7A62] border-[#B4533A]/20";
+                return "bg-[#2563EB]/10 text-[#3B82F6] border-[#2563EB]/20";
             default:
                 return "bg-[#FFFFFF] text-[#000000] border-[rgba(148,163,184,0.1)]";
         }
@@ -100,22 +100,22 @@ export default function FinanceInvoicesPage() {
                         Quản lý Hóa đơn
                     </h1>
                     <p className="text-[#000000] font-bold text-sm tracking-tight flex items-center gap-2">
-                        <FileText size={14} className="text-[#B4533A]" />
+                        <FileText size={14} className="text-[#2563EB]" />
                         Danh sách hóa đơn chờ đối soát và thanh toán
                     </p>
                 </div>
             </div>
 
             {/* Filter Bar */}
-            <div className="bg-[#FAF8F5] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 mb-8">
+            <div className="bg-[#F1F5F9] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1 flex gap-3">
                         <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
-                            <Search size={20} className="text-[#B4533A]" />
+                            <Search size={20} className="text-[#2563EB]" />
                         </div>
                         <div className="relative flex-1">
                             <input
-                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all"
+                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                 placeholder="Tìm theo số hóa đơn, nhà cung cấp, PO..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -124,9 +124,9 @@ export default function FinanceInvoicesPage() {
                     </div>
                     <div className="flex gap-3">
                         <div className="relative">
-                            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B4533A]" />
+                            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
                             <select
-                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                             >
@@ -146,7 +146,7 @@ export default function FinanceInvoicesPage() {
             </div>
 
             {/* Invoices Table */}
-            <div className="erp-card p-0! overflow-hidden bg-[#FAF8F5] shadow-sm border border-[rgba(148,163,184,0.1)]">
+            <div className="erp-card p-0! overflow-hidden bg-[#F1F5F9] shadow-sm border border-[rgba(148,163,184,0.1)]">
                 <div className="overflow-x-auto">
                     <table className="erp-table">
                         <thead>
@@ -173,8 +173,8 @@ export default function FinanceInvoicesPage() {
                                     <tr key={inv.id} className="hover:bg-[#FFFFFF]/50 transition-all group">
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-[#B4533A]/10 flex items-center justify-center">
-                                                    <FileText size={18} className="text-[#B4533A]" />
+                                                <div className="w-10 h-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
+                                                    <FileText size={18} className="text-[#2563EB]" />
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-[#000000]">{inv.invoiceNumber}</p>
@@ -219,7 +219,7 @@ export default function FinanceInvoicesPage() {
                                         <td className="px-6 py-5 text-right">
                                             <button
                                                 onClick={() => handleViewMatching(inv.id)}
-                                                className="inline-flex items-center gap-2 px-4 py-2 bg-[#B4533A]/10 hover:bg-[#B4533A]/20 text-[#B4533A] rounded-lg text-xs font-bold transition-colors border border-[#B4533A]/20"
+                                                className="inline-flex items-center gap-2 px-4 py-2 bg-[#2563EB]/10 hover:bg-[#2563EB]/20 text-[#2563EB] rounded-lg text-xs font-bold transition-colors border border-[#2563EB]/20"
                                             >
                                                 <FileCheck size={14} />
                                                 {inv.status === "SUBMITTED" || inv.status === "PENDING" || inv.status === "MATCHING" 
@@ -238,23 +238,23 @@ export default function FinanceInvoicesPage() {
 
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-                <div className="bg-[#FAF8F5] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#000000] uppercase tracking-widest mb-1">Tổng hóa đơn</p>
                     <p className="text-2xl font-black text-[#000000]">{invoices.length}</p>
                 </div>
-                <div className="bg-[#FAF8F5] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#000000] uppercase tracking-widest mb-1">Chờ đối soát</p>
                     <p className="text-2xl font-black text-black">
                         {invoicesWithDetails.filter((i: InvoiceWithDetails) => i.status === "SUBMITTED" || i.status === "PENDING" || i.status === "MATCHING").length}
                     </p>
                 </div>
-                <div className="bg-[#FAF8F5] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#000000] uppercase tracking-widest mb-1">Lỗi đối soát</p>
                     <p className="text-2xl font-black text-black">
                         {invoicesWithDetails.filter((i: InvoiceWithDetails) => i.status === "EXCEPTION_REVIEW").length}
                     </p>
                 </div>
-                <div className="bg-[#FAF8F5] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#000000] uppercase tracking-widest mb-1">Tổng giá trị</p>
                     <p className="text-xl font-black text-[#000000]">
                         {formatVND(invoicesWithDetails.reduce((sum, i: InvoiceWithDetails) => sum + Number(i.totalAmount || i.amount || 0), 0))}

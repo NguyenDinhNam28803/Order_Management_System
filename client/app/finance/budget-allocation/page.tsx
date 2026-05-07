@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import { 
@@ -80,7 +80,7 @@ export default function BudgetAllocationPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black text-[#000000] tracking-tight flex items-center gap-3">
-            <Building className="text-[#B4533A]" size={32} />
+            <Building className="text-[#2563EB]" size={32} />
             Phân bổ ngân sách theo Quý
           </h1>
           <p className="text-[#000000] font-medium mt-1">
@@ -89,15 +89,15 @@ export default function BudgetAllocationPage() {
         </div>
         
         <div className="flex items-center gap-3">
-          <div className="flex bg-[#FAF8F5] p-1 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)]">
+          <div className="flex bg-[#F1F5F9] p-1 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)]">
             {[1, 2, 3, 4].map((q) => (
               <button
                 key={q}
                 onClick={() => setSelectedQuarter(q)}
                 className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                   selectedQuarter === q 
-                    ? "bg-[#B4533A] text-[#000000] shadow-md shadow-[#B4533A]/20" 
-                    : "text-[#000000] hover:bg-[#1A1D23]"
+                    ? "bg-[#2563EB] text-[#000000] shadow-md shadow-[#2563EB]/20" 
+                    : "text-[#000000] hover:bg-[#0F172A]"
                 }`}
               >
                 Quý {q}
@@ -107,7 +107,7 @@ export default function BudgetAllocationPage() {
           
           <button 
             onClick={() => setShowDistributeModal(true)}
-            className="flex items-center gap-2 bg-[#B4533A] hover:bg-[#A85032] text-[#000000] px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-[#B4533A]/20 transition-all active:scale-95"
+            className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-[#2563EB]/20 transition-all active:scale-95"
           >
             <Zap size={18} />
             Phân bổ 20/80
@@ -117,8 +117,8 @@ export default function BudgetAllocationPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-[#FAF8F5] p-6 rounded-3xl shadow-sm border border-[rgba(148,163,184,0.1)] relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-[#B4533A]">
+        <div className="bg-[#F1F5F9] p-6 rounded-3xl shadow-sm border border-[rgba(148,163,184,0.1)] relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-[#2563EB]">
             <CalculatorIcon size={80} />
           </div>
           <p className="text-xs font-black uppercase tracking-widest text-[#000000] mb-2">Tổng hạn mức Quý {selectedQuarter}</p>
@@ -129,21 +129,21 @@ export default function BudgetAllocationPage() {
           </div>
         </div>
 
-        <div className="bg-[#FAF8F5] p-6 rounded-3xl shadow-sm border border-[rgba(148,163,184,0.1)] relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-[#B4533A]">
+        <div className="bg-[#F1F5F9] p-6 rounded-3xl shadow-sm border border-[rgba(148,163,184,0.1)] relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-[#2563EB]">
             <DollarSign size={80} />
           </div>
           <p className="text-xs font-black uppercase tracking-widest text-[#000000] mb-2">Đã chi tiêu thực tế</p>
           <p className="text-2xl font-black text-[#000000]">{totalSpent.toLocaleString()} VND</p>
           <div className="w-full bg-[#FFFFFF] h-1.5 rounded-full mt-4">
             <div 
-              className="bg-[#B4533A] h-full rounded-full transition-all duration-1000" 
+              className="bg-[#2563EB] h-full rounded-full transition-all duration-1000" 
               style={{ width: `${totalQuota > 0 ? (totalSpent / totalQuota) * 100 : 0}%` }}
             />
           </div>
         </div>
 
-        <div className="bg-[#FAF8F5] p-6 rounded-3xl shadow-sm border border-[rgba(148,163,184,0.1)] relative overflow-hidden group">
+        <div className="bg-[#F1F5F9] p-6 rounded-3xl shadow-sm border border-[rgba(148,163,184,0.1)] relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-black">
             <Clock size={80} />
           </div>
@@ -152,8 +152,8 @@ export default function BudgetAllocationPage() {
           <p className="text-black text-xs font-bold mt-2 italic">*Từ PO/PR đang xử lý</p>
         </div>
 
-        <div className="bg-[#FAF8F5] p-6 rounded-3xl shadow-xl shadow-[#B4533A]/5 relative overflow-hidden group text-[#000000] border border-[rgba(148,163,184,0.1)]">
-          <div className="absolute top-0 right-0 p-4 opacity-10 text-[#B4533A]">
+        <div className="bg-[#F1F5F9] p-6 rounded-3xl shadow-xl shadow-[#2563EB]/5 relative overflow-hidden group text-[#000000] border border-[rgba(148,163,184,0.1)]">
+          <div className="absolute top-0 right-0 p-4 opacity-10 text-[#2563EB]">
             <PieChart size={80} />
           </div>
           <p className="text-xs font-black uppercase tracking-widest text-[#000000] mb-2">Hiệu suất sử dụng</p>
@@ -163,11 +163,11 @@ export default function BudgetAllocationPage() {
       </div>
 
       {/* Main Table Section */}
-      <div className="bg-[#FAF8F5] rounded-[2rem] shadow-xl shadow-[#B4533A]/5 border border-[rgba(148,163,184,0.1)] overflow-hidden">
+      <div className="bg-[#F1F5F9] rounded-[2rem] shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] overflow-hidden">
         <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#FFFFFF]">
           <div className="flex items-center gap-4">
-            <div className="bg-[#FAF8F5] p-2 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)]">
-              <LayoutGrid size={20} className="text-[#B4533A]" />
+            <div className="bg-[#F1F5F9] p-2 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)]">
+              <LayoutGrid size={20} className="text-[#2563EB]" />
             </div>
             <h2 className="font-black text-[#000000] tracking-tight">Dữ liệu phân bổ ngân sách {selectedYear}</h2>
           </div>
@@ -179,10 +179,10 @@ export default function BudgetAllocationPage() {
                 placeholder="Tìm phòng ban..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#B4533A]/20 text-[#000000] placeholder:text-[#000000]"
+                className="pl-10 pr-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 text-[#000000] placeholder:text-[#000000]"
               />
             </div>
-            <button className="p-2 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] hover:bg-[#1A1D23] transition-colors">
+            <button className="p-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] hover:bg-[#0F172A] transition-colors">
               <Filter size={18} />
             </button>
           </div>
@@ -209,7 +209,7 @@ export default function BudgetAllocationPage() {
                   <tr key={item.id} className="group hover:bg-[#FFFFFF]/50 transition-colors cursor-pointer">
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-[#B4533A] flex items-center justify-center text-white transition-all">
+                        <div className="h-10 w-10 rounded-xl bg-[#2563EB] flex items-center justify-center text-white transition-all">
                           <Building size={20} />
                         </div>
                         <div>
@@ -224,13 +224,13 @@ export default function BudgetAllocationPage() {
                     </td>
                     <td className="px-6 py-5 min-w-[200px]">
                       <div className="flex items-center gap-3">
-                        <div className="flex-1 bg-[#1A1D23] h-2 rounded-full overflow-hidden">
+                        <div className="flex-1 bg-[#0F172A] h-2 rounded-full overflow-hidden">
                           <div 
-                            className="h-full rounded-full transition-all duration-1000 bg-[#B4533A]"
+                            className="h-full rounded-full transition-all duration-1000 bg-[#2563EB]"
                             style={{ width: `${percent}%` }}
                           />
                         </div>
-                        <span className="text-xs font-black text-[#B4533A] whitespace-nowrap">
+                        <span className="text-xs font-black text-[#2563EB] whitespace-nowrap">
                           {percent.toFixed(0)}%
                         </span>
                       </div>
@@ -240,7 +240,7 @@ export default function BudgetAllocationPage() {
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <p className={`font-black ${remaining < 0 ? 'text-red-500' : 'text-[#B4533A]'}`}>{remaining.toLocaleString()}</p>
+                      <p className={`font-black ${remaining < 0 ? 'text-red-500' : 'text-[#2563EB]'}`}>{remaining.toLocaleString()}</p>
                       <p className="text-[10px] font-extrabold text-black uppercase">Khả dụng</p>
                     </td>
                     <td className="px-6 py-5 text-right">
@@ -274,9 +274,9 @@ export default function BudgetAllocationPage() {
         <div className="p-4 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] flex items-center justify-between">
           <p className="text-xs font-bold text-[#000000] uppercase tracking-widest">Hiển thị {activeAllocations.length} phòng ban</p>
           <div className="flex items-center gap-1">
-            <button className="px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] bg-[#FAF8F5] text-xs font-black hover:bg-[#1A1D23] transition-colors uppercase text-[#000000]">Trước</button>
-            <button className="px-3 py-1 rounded-lg bg-[#B4533A] text-[#000000] text-xs font-black shadow-md shadow-[#B4533A]/20 uppercase">1</button>
-            <button className="px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] bg-[#FAF8F5] text-xs font-black hover:bg-[#1A1D23] transition-colors uppercase text-[#000000]">Sau</button>
+            <button className="px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9] text-xs font-black hover:bg-[#0F172A] transition-colors uppercase text-[#000000]">Trước</button>
+            <button className="px-3 py-1 rounded-lg bg-[#2563EB] text-[#000000] text-xs font-black shadow-md shadow-[#2563EB]/20 uppercase">1</button>
+            <button className="px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9] text-xs font-black hover:bg-[#0F172A] transition-colors uppercase text-[#000000]">Sau</button>
           </div>
         </div>
       </div>
@@ -296,13 +296,13 @@ export default function BudgetAllocationPage() {
           </div>
         </div>
         
-        <div className="bg-[#FAF8F5] p-8 rounded-[2rem] flex items-center justify-between group overflow-hidden relative border border-[rgba(148,163,184,0.1)]">
-          <div className="absolute -right-10 -bottom-10 h-40 w-40 bg-[#B4533A] opacity-5 rounded-full group-hover:scale-150 transition-transform duration-700" />
+        <div className="bg-[#F1F5F9] p-8 rounded-[2rem] flex items-center justify-between group overflow-hidden relative border border-[rgba(148,163,184,0.1)]">
+          <div className="absolute -right-10 -bottom-10 h-40 w-40 bg-[#2563EB] opacity-5 rounded-full group-hover:scale-150 transition-transform duration-700" />
           <div className="relative z-10 text-[#000000]">
             <h3 className="font-black text-xl mb-1">Quyết toán tài chính?</h3>
             <p className="text-[#000000] text-sm font-medium max-w-xs">Tự động kết chuyển số dư thừa vào quỹ dự phòng khi kết thúc chu kỳ quý.</p>
           </div>
-          <button className="relative z-10 bg-[#B4533A] text-[#000000] px-6 py-3 rounded-2xl font-black text-sm shadow-xl shadow-[#B4533A]/20 hover:scale-105 transition-transform active:scale-95 uppercase tracking-wider">
+          <button className="relative z-10 bg-[#2563EB] text-[#000000] px-6 py-3 rounded-2xl font-black text-sm shadow-xl shadow-[#2563EB]/20 hover:scale-105 transition-transform active:scale-95 uppercase tracking-wider">
             Thực hiện quyết toán
           </button>
         </div>
@@ -311,10 +311,10 @@ export default function BudgetAllocationPage() {
       {/* Distribution Modal */}
       {showDistributeModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#FFFFFF]/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#FAF8F5] rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-[rgba(148,163,184,0.1)]">
             <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#FFFFFF]">
               <div className="flex items-center gap-4">
-                <div className="bg-[#B4533A] p-3 rounded-2xl text-[#000000] shadow-lg shadow-[#B4533A]/20">
+                <div className="bg-[#2563EB] p-3 rounded-2xl text-[#000000] shadow-lg shadow-[#2563EB]/20">
                   <Zap size={24} />
                 </div>
                 <div>
@@ -322,7 +322,7 @@ export default function BudgetAllocationPage() {
                   <p className="text-[#000000] font-bold text-sm uppercase tracking-wider">Quy tắc 20% Dự phòng / 80% Quý (20% mỗi quý)</p>
                 </div>
               </div>
-              <button onClick={() => setShowDistributeModal(false)} className="p-2 hover:bg-[#1A1D23] rounded-full transition-colors text-[#000000]">
+              <button onClick={() => setShowDistributeModal(false)} className="p-2 hover:bg-[#0F172A] rounded-full transition-colors text-[#000000]">
                 <X size={24} />
               </button>
             </div>
@@ -331,19 +331,19 @@ export default function BudgetAllocationPage() {
               <div className="space-y-4">
                 <p className="text-sm font-bold text-[#000000] mb-4 px-2 italic">⚠️ Chọn Trung tâm chi phí (Cost Center) để thực hiện tính toán và phân bổ tự động cho cả năm {selectedYear}:</p>
                 {costCenters.map(cc => (
-                  <div key={cc.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] hover:bg-[#1A1D23] border border-[rgba(148,163,184,0.1)] rounded-3xl transition-all group">
+                  <div key={cc.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] hover:bg-[#0F172A] border border-[rgba(148,163,184,0.1)] rounded-3xl transition-all group">
                     <div>
                       <p className="font-black text-[#000000] group-hover:text-white transition-colors">{cc.name}</p>
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-[10px] font-black uppercase text-[#000000] group-hover:text-white/70 tracking-widest transition-colors">{cc.code}</span>
                         <span className="h-1 w-1 rounded-full bg-[#000000] group-hover:bg-white transition-colors" />
-                        <span className="text-xs font-bold text-[#B4533A] group-hover:text-[#CB7A62] transition-colors">Hạn mức năm: {Number(cc.budgetAnnual).toLocaleString()} {cc.currency}</span>
+                        <span className="text-xs font-bold text-[#2563EB] group-hover:text-[#3B82F6] transition-colors">Hạn mức năm: {Number(cc.budgetAnnual).toLocaleString()} {cc.currency}</span>
                       </div>
                     </div>
                     <button 
                       disabled={loading}
                       onClick={() => handleDistribute(cc.id)}
-                      className="px-6 py-2.5 bg-[#FAF8F5] border-2 border-[rgba(148,163,184,0.1)] hover:border-[#B4533A] hover:bg-[#B4533A] hover:text-[#000000] rounded-2xl font-black text-sm transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-[#000000]"
+                      className="px-6 py-2.5 bg-[#F1F5F9] border-2 border-[rgba(148,163,184,0.1)] hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-[#000000] rounded-2xl font-black text-sm transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-[#000000]"
                     >
                       {loading ? <Loader2 size={18} className="animate-spin" /> : "PHÂN BỔ NGAY"}
                     </button>

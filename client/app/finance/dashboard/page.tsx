@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { 
@@ -40,10 +40,10 @@ export default function FinanceDashboard() {
                     <p className="text-sm font-bold text-[#000000]">Hệ thống quản trị khoản phải trả & Đối soát 3 bên tự động tích hợp AI.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-[#000000] hover:bg-[#1A1D23] transition-all shadow-sm">
+                    <button className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-[#000000] hover:bg-[#0F172A] transition-all shadow-sm">
                         <Download size={14} /> Export Report
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-[#B4533A] text-[#000000] rounded-xl text-xs font-bold hover:bg-[#A85032] transition-all shadow-lg shadow-[#B4533A]/20">
+                    <button className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-[#000000] rounded-xl text-xs font-bold hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20">
                         <Activity size={14} /> System Health
                     </button>
                 </div>
@@ -108,7 +108,7 @@ export default function FinanceDashboard() {
                     title="Thanh Toán Theo Trạng Thái"
                     data={[
                         { label: 'Chờ matching', value: invoices.filter(i => i.status === 'PENDING').reduce((sum, i) => sum + (Number(i.amount) || 0), 0), color: '#F59E0B' },
-                        { label: 'Đã matching', value: invoices.filter(i => i.status === 'MATCHED').reduce((sum, i) => sum + (Number(i.amount) || 0), 0), color: '#B4533A' },
+                        { label: 'Đã matching', value: invoices.filter(i => i.status === 'MATCHED').reduce((sum, i) => sum + (Number(i.amount) || 0), 0), color: '#2563EB' },
                         { label: 'Đã thanh toán', value: totalSpentThisMonth, color: '#10B981' },
                     ]}
                 />
@@ -120,10 +120,10 @@ export default function FinanceDashboard() {
             </div>
 
             {/* Invoices Interface */}
-            <div className="bg-[#FAF8F5] rounded-[40px] overflow-hidden border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5">
-                <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#FAF8F5]">
+            <div className="bg-[#F1F5F9] rounded-[40px] overflow-hidden border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
+                <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#F1F5F9]">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[#FFFFFF] text-[#B4533A] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-2 bg-[#FFFFFF] text-[#2563EB] rounded-xl border border-[rgba(148,163,184,0.1)]">
                             <BarChart3 size={18} />
                         </div>
                         <h3 className="text-base font-bold text-[#000000] tracking-tight">Invoice Processing Queue</h3>
@@ -132,7 +132,7 @@ export default function FinanceDashboard() {
                     <div className="flex items-center gap-4">
                         <div className="bg-[#FFFFFF] p-1 rounded-xl flex gap-1 border border-[rgba(148,163,184,0.1)]">
                             <button 
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20' : 'text-[#000000] hover:text-[#000000]'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:text-[#000000]'}`}
                                 onClick={() => setActiveTab("ALL")}
                             >
                                 Tất cả
@@ -149,11 +149,11 @@ export default function FinanceDashboard() {
                             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" />
                             <input 
                                 type="text" 
-                                className="w-64 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-9 pr-4 py-2 text-xs font-medium text-[#000000] placeholder:text-[#000000] focus:ring-4 focus:ring-[#B4533A]/10 transition-all outline-none" 
+                                className="w-64 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-9 pr-4 py-2 text-xs font-medium text-[#000000] placeholder:text-[#000000] focus:ring-4 focus:ring-[#2563EB]/10 transition-all outline-none" 
                                 placeholder="Search by INV / Supplier..." 
                             />
                         </div>
-                        <button className="p-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] hover:bg-[#FAF8F5] transition-all shadow-sm">
+                        <button className="p-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] hover:bg-[#F1F5F9] transition-all shadow-sm">
                             <Filter size={16} />
                         </button>
                     </div>
@@ -177,7 +177,7 @@ export default function FinanceDashboard() {
                                 <tr key={inv.id} className="cursor-pointer group hover:bg-[#FFFFFF]/50 transition-colors" onClick={() => router.push(`/finance/matching?id=${inv.id}`)}>
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-lg bg-[#B4533A]/10 text-[#B4533A] flex items-center justify-center font-bold text-[10px] group-hover:bg-[#B4533A] group-hover:text-[#000000] transition-colors duration-300 border border-[#B4533A]/20">
+                                            <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center font-bold text-[10px] group-hover:bg-[#2563EB] group-hover:text-[#000000] transition-colors duration-300 border border-[#2563EB]/20">
                                                 ID
                                             </div>
                                             <span className="font-bold text-[#000000] tracking-tight">INV-***</span>
@@ -187,7 +187,7 @@ export default function FinanceDashboard() {
                                         <div className="text-sm font-bold text-[#000000]">{inv.vendor}</div>
                                         <div className="text-[10px] text-[#000000] font-medium uppercase tracking-tighter">Verified Partner</div>
                                     </td>
-                                    <td className=" text-[#B4533A] text-[11px] font-bold">PO-***</td>
+                                    <td className=" text-[#2563EB] text-[11px] font-bold">PO-***</td>
                                     <td className="text-right font-bold text-[#000000] text-sm">{formatVND(inv.amount)} ₫</td>
                                     <td className="text-[#000000] text-[11px] font-semibold">{inv.createdAt}</td>
                                     <td className="text-center">
@@ -207,10 +207,10 @@ export default function FinanceDashboard() {
                                     </td>
                                     <td className="text-right pr-6">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button className="h-8 w-8 rounded-lg border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#B4533A] hover:border-[#B4533A]/30 flex items-center justify-center transition-all bg-[#FFFFFF] shadow-sm">
+                                            <button className="h-8 w-8 rounded-lg border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#2563EB] hover:border-[#2563EB]/30 flex items-center justify-center transition-all bg-[#FFFFFF] shadow-sm">
                                                 <MoreHorizontal size={14} />
                                             </button>
-                                            <button className="flex items-center gap-1 px-3 py-1.5 bg-[#B4533A]/10 text-[#B4533A] rounded-lg text-[11px] font-bold hover:bg-[#B4533A] hover:text-[#000000] transition-all shadow-sm border border-[#B4533A]/20">
+                                            <button className="flex items-center gap-1 px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-[11px] font-bold hover:bg-[#2563EB] hover:text-[#000000] transition-all shadow-sm border border-[#2563EB]/20">
                                                 Audit <ArrowRight size={12}/>
                                             </button>
                                         </div>
@@ -225,7 +225,7 @@ export default function FinanceDashboard() {
                     <p className="text-[10px] font-bold text-[#000000] uppercase tracking-widest">Showing {displayedInvoices.length} of {activeInvoices.length} invoices in queue</p>
                     <div className="flex gap-1">
                          {[1, 2, 3].map(i => (
-                             <button key={i} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === 1 ? 'bg-[#B4533A] border-[#B4533A] text-[#000000] shadow-sm' : 'border-transparent text-[#000000] hover:text-[#000000]'}`}>{i}</button>
+                             <button key={i} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === 1 ? 'bg-[#2563EB] border-[#2563EB] text-[#000000] shadow-sm' : 'border-transparent text-[#000000] hover:text-[#000000]'}`}>{i}</button>
                          ))}
                     </div>
                 </div>
@@ -236,7 +236,7 @@ export default function FinanceDashboard() {
 
 function MetricCard({ icon, label, value, unit, color, onClick, subValue }: any) {
     const colorStyles: any = {
-        indigo: "bg-[#B4533A]/10 text-[#B4533A] border-[#B4533A]/20",
+        indigo: "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20",
         rose: "bg-rose-500/10 text-black border-rose-500/20",
         amber: "bg-amber-500/10 text-black border-amber-500/20",
         emerald: "bg-emerald-500/10 text-black border-emerald-500/20",
@@ -245,13 +245,13 @@ function MetricCard({ icon, label, value, unit, color, onClick, subValue }: any)
     return (
         <div 
             onClick={onClick}
-            className={`bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-3xl p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#B4533A]/30 ${onClick ? 'cursor-pointer' : ''}`}
+            className={`bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-3xl p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#2563EB]/30 ${onClick ? 'cursor-pointer' : ''}`}
         >
             <div className="flex justify-between items-start mb-6">
                 <div className={`p-3 rounded-[18px] shadow-sm transition-transform group-hover:scale-110 duration-500 border ${colorStyles[color]}`}>
                     {icon}
                 </div>
-                <div className="text-[10px] font-black text-[#000000] uppercase tracking-widest leading-none mt-1 group-hover:text-[#B4533A] transition-colors">KPI Meter</div>
+                <div className="text-[10px] font-black text-[#000000] uppercase tracking-widest leading-none mt-1 group-hover:text-[#2563EB] transition-colors">KPI Meter</div>
             </div>
             <div className="space-y-1">
                 <div className="text-3xl font-bold text-[#000000] tracking-tight tabular-nums flex items-end gap-1.5">
@@ -263,7 +263,7 @@ function MetricCard({ icon, label, value, unit, color, onClick, subValue }: any)
             {subValue && (
                 <div className="mt-4 pt-4 border-t border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                     <span className="text-[10px] font-bold text-[#000000] uppercase tracking-widest">Detail Forecast</span>
-                    <span className={`text-[11px] font-black tabular-nums ${color === 'amber' ? 'text-black' : color === 'rose' ? 'text-black' : color === 'emerald' ? 'text-black' : 'text-[#B4533A]'}`}>{subValue}</span>
+                    <span className={`text-[11px] font-black tabular-nums ${color === 'amber' ? 'text-black' : color === 'rose' ? 'text-black' : color === 'emerald' ? 'text-black' : 'text-[#2563EB]'}`}>{subValue}</span>
                 </div>
             )}
             {/* Visual element decor */}

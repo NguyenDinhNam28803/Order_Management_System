@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -138,7 +138,7 @@ const DefectRateChart: React.FC<{ supplierId: string | null }> = ({ supplierId }
 
   if (!supplierId) {
     return (
-      <div className="w-full h-[400px] bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)] flex flex-col items-center justify-center text-[#6b7280]">
+      <div className="w-full h-[400px] bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] flex flex-col items-center justify-center text-[#6b7280]">
         <AlertTriangle size={48} className="mb-4 opacity-20" />
         <p className="font-bold text-lg">Chưa chọn nhà cung cấp</p>
         <p className="text-sm">Vui lòng chọn nhà cung cấp từ danh sách ở trên để xem dữ liệu lỗi trực quan.</p>
@@ -149,7 +149,7 @@ const DefectRateChart: React.FC<{ supplierId: string | null }> = ({ supplierId }
   if (loading) {
     return (
       <div className="w-full h-[400px] flex items-center justify-center">
-        <Loader2 className="animate-spin text-[#B4533A]" size={32} />
+        <Loader2 className="animate-spin text-[#2563EB]" size={32} />
       </div>
     );
   }

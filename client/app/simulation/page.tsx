@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 import { 
@@ -523,7 +523,7 @@ const StatusBadge = ({ status, type = "default" }: { status: string, type?: "def
         success: "bg-emerald-500/10 text-black border-emerald-500/20",
         warning: "bg-amber-500/10 text-black border-amber-500/20",
         danger: "bg-rose-500/10 text-black border-rose-500/20",
-        info: "bg-[#B4533A]/10 text-[#B4533A] border-[#B4533A]/20"
+        info: "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20"
     };
     
     return (
@@ -535,7 +535,7 @@ const StatusBadge = ({ status, type = "default" }: { status: string, type?: "def
 
 const RoleBadge = ({ role, icon }: { role: string, icon: React.ReactNode }) => (
     <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFFFFF] rounded-lg border border-[rgba(148,163,184,0.1)]">
-        <span className="text-[#B4533A]">{icon}</span>
+        <span className="text-[#2563EB]">{icon}</span>
         <span className="text-[10px] font-black text-[#000000] uppercase tracking-wider">{role}</span>
     </div>
 );
@@ -679,7 +679,7 @@ export default function SimulationPage() {
         <div className="min-h-screen bg-[#FFFFFF] text-[#000000] p-6 font-sans">
             <header className="max-w-[1600px] mx-auto flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-gradient-to-br from-[#B4533A] to-purple-600 rounded-2xl shadow-lg shadow-[#B4533A]/20">
+                    <div className="p-3 bg-gradient-to-br from-[#2563EB] to-purple-600 rounded-2xl shadow-lg shadow-[#2563EB]/20">
                         <Zap className="text-[#000000] fill-white/20" size={24} />
                     </div>
                     <div>
@@ -688,10 +688,10 @@ export default function SimulationPage() {
                     </div>
                 </div>
 
-                <div className="flex bg-[#FAF8F5] p-1 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                <div className="flex bg-[#F1F5F9] p-1 rounded-2xl border border-[rgba(148,163,184,0.1)]">
                     <button 
                         onClick={() => { setActiveWorkflow("CATALOG"); handleReset(); }}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#B4533A] text-[#000000] shadow-lg" : "text-[#000000] hover:text-[#000000]"}`}
+                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#2563EB] text-[#000000] shadow-lg" : "text-[#000000] hover:text-[#000000]"}`}
                     >
                         Workflow 1: Catalog
                     </button>
@@ -703,7 +703,7 @@ export default function SimulationPage() {
                     </button>
                 </div>
 
-                <button onClick={handleReset} className="p-3 text-[#000000] hover:text-[#000000] transition-colors bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                <button onClick={handleReset} className="p-3 text-[#000000] hover:text-[#000000] transition-colors bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <RefreshCw size={18} />
                 </button>
             </header>
@@ -726,15 +726,15 @@ export default function SimulationPage() {
                                     key={idx} 
                                     onClick={() => goToStep(step.id)}
                                     className={`cursor-pointer rounded-2xl border transition-all duration-300 ${
-                                        isActive ? "bg-[#FAF8F5] border-[#B4533A]/30" : 
-                                        isCompleted ? "bg-[#FAF8F5]/50 border-[rgba(148,163,184,0.1)]" : 
+                                        isActive ? "bg-[#F1F5F9] border-[#2563EB]/30" : 
+                                        isCompleted ? "bg-[#F1F5F9]/50 border-[rgba(148,163,184,0.1)]" : 
                                         "bg-[#FFFFFF] border-[rgba(148,163,184,0.05)] opacity-60"
                                     }`}
                                 >
                                     {/* Step Header */}
                                     <div className="p-4 flex items-start gap-3">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                                            isActive ? "bg-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20" : 
+                                            isActive ? "bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20" : 
                                             isCompleted ? "bg-emerald-500/20 text-black border border-emerald-500/30" : 
                                             "bg-[#FFFFFF] text-[#000000] border border-[rgba(148,163,184,0.1)]"
                                         }`}>
@@ -742,7 +742,7 @@ export default function SimulationPage() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
-                                                <span className={`text-[10px] font-black uppercase tracking-wider ${isActive ? "text-[#B4533A]" : "text-[#000000]"}`}>
+                                                <span className={`text-[10px] font-black uppercase tracking-wider ${isActive ? "text-[#2563EB]" : "text-[#000000]"}`}>
                                                     Bước {step.id}
                                                 </span>
                                                 <RoleBadge role={step.role} icon={step.roleIcon} />
@@ -766,7 +766,7 @@ export default function SimulationPage() {
                                             {/* Function */}
                                             <div className="mb-4">
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <Eye size={12} className="text-[#B4533A]" />
+                                                    <Eye size={12} className="text-[#2563EB]" />
                                                     <span className="text-[10px] font-black uppercase tracking-wider text-[#000000]">Chức năng chi tiết</span>
                                                 </div>
                                                 <p className="text-xs text-[#000000] leading-relaxed bg-[#FFFFFF] p-3 rounded-lg border border-[rgba(148,163,184,0.1)]">
@@ -785,7 +785,7 @@ export default function SimulationPage() {
                                                         <div key={cidx} className="flex items-center gap-2 text-[11px] bg-[#FFFFFF] p-2 rounded-lg border border-[rgba(148,163,184,0.1)]">
                                                             <span className="text-[#000000] font-medium">{change.field}:</span>
                                                             <span className="text-[#000000] line-through">{change.from}</span>
-                                                            <ArrowRight size={10} className="text-[#B4533A]" />
+                                                            <ArrowRight size={10} className="text-[#2563EB]" />
                                                             <span className="text-black font-bold">{change.to}</span>
                                                         </div>
                                                     ))}
@@ -826,8 +826,8 @@ export default function SimulationPage() {
                 </div>
 
                 <div className="lg:col-span-5">
-                    <div className="bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-[32px] p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden sticky top-6">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#B4533A]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-[32px] p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden sticky top-6">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#2563EB]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
                         <div className="relative z-10 w-full animate-in fade-in duration-500">
@@ -858,9 +858,9 @@ export default function SimulationPage() {
                                 disabled={currentStep === steps.length}
                                 className={`group relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all duration-300 active:scale-95 ${
                                     currentStep === steps.length 
-                                    ? "bg-[#FAF8F5] text-[#000000] cursor-not-allowed border border-[rgba(148,163,184,0.1)]" 
+                                    ? "bg-[#F1F5F9] text-[#000000] cursor-not-allowed border border-[rgba(148,163,184,0.1)]" 
                                     : activeWorkflow === "CATALOG" 
-                                    ? "bg-[#B4533A] text-[#000000] shadow-[#B4533A]/20 hover:shadow-[#B4533A]/40 hover:scale-105" 
+                                    ? "bg-[#2563EB] text-[#000000] shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 hover:scale-105" 
                                     : "bg-purple-600 text-[#000000] shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105"
                                 }`}
                             >
@@ -872,12 +872,12 @@ export default function SimulationPage() {
                             {activeWorkflow === "NON_CATALOG" && currentStep === 4 && (
                                 <div className="mt-10 grid grid-cols-3 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     {quotations.map(q => (
-                                        <div key={q.id} className="p-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-left hover:border-[#B4533A]/30 transition-all">
+                                        <div key={q.id} className="p-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-left hover:border-[#2563EB]/30 transition-all">
                                             <div className="flex justify-between items-start mb-2">
                                                 <span className="text-[10px] font-black text-[#000000]">{q.supplier}</span>
                                                 <span className="text-black text-[10px] font-black">{q.aiScore}%</span>
                                             </div>
-                                            <div className="text-xs text-[#B4533A] font-black">{(q.price/1000000).toFixed(0)}M ₫</div>
+                                            <div className="text-xs text-[#2563EB] font-black">{(q.price/1000000).toFixed(0)}M ₫</div>
                                             <div className="text-[9px] mt-2 text-[#000000] uppercase tracking-widest font-black flex items-center gap-1">
                                                 <Bot size={10} className="text-black" /> {q.aiRec}
                                             </div>
@@ -891,7 +891,7 @@ export default function SimulationPage() {
 
                 <div className="lg:col-span-3 space-y-4">
                     {/* Entities */}
-                    <div className="bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl p-5">
+                    <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl p-5">
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000] mb-4 flex items-center gap-2">
                             <BarChart3 size={14} /> Đối tượng dữ liệu
                         </h3>
@@ -901,7 +901,7 @@ export default function SimulationPage() {
                                 <div className="p-3 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-[#B4533A]/10 rounded-lg"><FileText size={12} className="text-[#B4533A]" /></div>
+                                            <div className="p-1.5 bg-[#2563EB]/10 rounded-lg"><FileText size={12} className="text-[#2563EB]" /></div>
                                             <span className="text-[11px] font-black text-[#000000]">{pr.id}</span>
                                         </div>
                                         <StatusBadge status={pr.status} type={getStatusColor(pr.status)} />
@@ -971,7 +971,7 @@ export default function SimulationPage() {
                     </div>
 
                     {/* Budget */}
-                    <div className="bg-gradient-to-br from-[#FAF8F5] to-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl p-5">
+                    <div className="bg-gradient-to-br from-[#F1F5F9] to-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl p-5">
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
                             <Wallet size={14} /> Kiểm soát ngân sách
                         </h3>
@@ -990,12 +990,12 @@ export default function SimulationPage() {
                             </div>
                             <div>
                                 <div className="flex justify-between text-[10px] font-black uppercase mb-1.5">
-                                    <span className="text-[#B4533A]">Spent</span>
+                                    <span className="text-[#2563EB]">Spent</span>
                                     <span className="text-[#000000]">{(budget.spent/1000000).toFixed(1)}M</span>
                                 </div>
                                 <div className="h-1.5 w-full bg-[#FFFFFF] rounded-full overflow-hidden border border-[rgba(148,163,184,0.1)]">
                                     <div 
-                                        className="h-full bg-[#B4533A] transition-all duration-500" 
+                                        className="h-full bg-[#2563EB] transition-all duration-500" 
                                         style={{ width: `${Math.min((budget.spent / budget.allocated) * 100, 100)}%` }}
                                     ></div>
                                 </div>
@@ -1012,7 +1012,7 @@ export default function SimulationPage() {
             </main>
 
             {activeWorkflow === "NON_CATALOG" && currentStep >= 4 && (
-                <div className="fixed bottom-12 right-12 w-80 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-3xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="fixed bottom-12 right-12 w-80 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-3xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="p-2 bg-purple-600 rounded-xl"><Bot size={18} className="text-[#000000]" /></div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-[#000000]">AI Analyst</span>

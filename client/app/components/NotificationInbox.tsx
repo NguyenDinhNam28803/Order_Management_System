@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
@@ -29,14 +29,14 @@ function getEventIcon(eventType?: EmailEventType) {
     case 'USER_LOGIN':
     case 'USER_REGISTERED':
     case 'NEW_USER_ACCOUNT':
-      return <User size={14} className="text-[#CB7A62]" />;
+      return <User size={14} className="text-[#3B82F6]" />;
 
     case 'RFQ_INVITATION':
     case 'RFQ_MAGIC_LINK':
       return <Send size={14} className="text-teal-400" />;
 
     case 'QUOTATION_RECEIVED':
-      return <FileText size={14} className="text-[#CB7A62]" />;
+      return <FileText size={14} className="text-[#3B82F6]" />;
 
     case 'PO_APPROVAL_REQUEST':
       return <FileCheck size={14} className="text-black" />;
@@ -60,7 +60,7 @@ function getEventIcon(eventType?: EmailEventType) {
 
     case 'INVOICE_RECEIVED':
     case 'INVOICE_SUBMIT_LINK':
-      return <Receipt size={14} className="text-[#CB7A62]" />;
+      return <Receipt size={14} className="text-[#3B82F6]" />;
 
     case 'PAYMENT_CONFIRMED':
       return <BadgeCheck size={14} className="text-black" />;
@@ -76,7 +76,7 @@ function getEventIcon(eventType?: EmailEventType) {
 
 function getIconContainerClass(eventType?: EmailEventType, isPending?: boolean): string {
   if (!isPending) return "bg-[#FFFFFF] border-[rgba(240,246,252,0.05)]";
-  if (!eventType) return "bg-[#B4533A]/10 border-[#B4533A]/20";
+  if (!eventType) return "bg-[#2563EB]/10 border-[#2563EB]/20";
 
   const cfg = EVENT_DISPLAY_CONFIG[eventType];
   if (!cfg) return "bg-gray-100 border-gray-200";
@@ -217,8 +217,8 @@ export default function NotificationInbox() {
         onClick={() => setIsOpen(!isOpen)}
         className={`relative flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${
           isOpen
-            ? "bg-[#B4533A] border-[#B4533A] text-[#000000] shadow-lg shadow-[#B4533A]/20"
-            : "bg-[#FFFFFF] border-[rgba(240,246,252,0.08)] text-[#000000] hover:text-[#000000] hover:border-[rgba(240,246,252,0.18)]"
+            ? "bg-[#2563EB] border-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20"
+            : "bg-[#FFFFFF] border-[#E2E8F0] text-[#000000] hover:text-[#000000] hover:border-[rgba(240,246,252,0.18)]"
         }`}
       >
         <Bell size={14} className={unreadCount > 0 ? "animate-pulse" : ""} />
@@ -230,16 +230,16 @@ export default function NotificationInbox() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-[420px] bg-[#FAF8F5] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl shadow-black/80 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="absolute right-0 mt-3 w-[420px] bg-[#F1F5F9] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl shadow-black/80 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
           {/* Header */}
           <div className="p-4 bg-[#111827] border-b border-white/5 shadow-xl relative overflow-hidden">
             {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#B4533A]/10 blur-[50px] -mr-10 -mt-10" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#2563EB]/10 blur-[50px] -mr-10 -mt-10" />
             
             <div className="flex items-center justify-between mb-4 relative z-10">
               <div>
                 <h3 className="text-sm font-bold tracking-tight flex items-center gap-2" style={{ color: '#FFFFFF' }}>
-                  <Inbox size={16} className="text-[#B4533A]" /> Inbox Hệ thống
+                  <Inbox size={16} className="text-[#2563EB]" /> Inbox Hệ thống
                 </h3>
                 <p className="text-[10px] font-medium mt-0.5" style={{ color: '#D1D5DB' }}>
                   Bạn có {unreadCount} thông báo chưa xử lý
@@ -252,7 +252,7 @@ export default function NotificationInbox() {
                       onClick={() => setFilter(f)}
                       className={`px-3 py-1.5 rounded-lg text-[9px] font-bold transition-all duration-200 ${
                         filter === f
-                          ? "bg-[#B4533A] text-white shadow-lg shadow-[#B4533A]/20"
+                          ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
                           : "text-gray-400 hover:text-white hover:bg-white/5"
                       }`}
                     >
@@ -269,7 +269,7 @@ export default function NotificationInbox() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm kiếm thông báo..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-[10px] text-white placeholder:text-gray-500 outline-none focus:border-[#B4533A]/50 focus:ring-1 focus:ring-[#B4533A]/50 transition-all backdrop-blur-sm"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-[10px] text-white placeholder:text-gray-500 outline-none focus:border-[#2563EB]/50 focus:ring-1 focus:ring-[#2563EB]/50 transition-all backdrop-blur-sm"
               />
             </div>
           </div>
@@ -278,7 +278,7 @@ export default function NotificationInbox() {
           <div className="max-h-[480px] overflow-y-auto custom-scrollbar bg-[#FFFFFF]/30">
             {isLoading ? (
               <div className="p-16 text-center">
-                <div className="w-8 h-8 border-2 border-[#B4533A] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                <div className="w-8 h-8 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
                 <p className="text-[11px] text-[#000000] font-medium tracking-widest uppercase">Đang đồng bộ dữ liệu...</p>
               </div>
             ) : mergedItems.length > 0 ? (
@@ -295,8 +295,8 @@ export default function NotificationInbox() {
           </div>
 
           {/* Footer */}
-          <div className="p-3 border-t border-[rgba(240,246,252,0.05)] bg-[#FAF8F5]/50 flex justify-center">
-            <button className="text-[10px] font-bold text-[#B4533A] hover:text-[#CB7A62] flex items-center gap-1.5 transition-all group">
+          <div className="p-3 border-t border-[rgba(240,246,252,0.05)] bg-[#F1F5F9]/50 flex justify-center">
+            <button className="text-[10px] font-bold text-[#2563EB] hover:text-[#3B82F6] flex items-center gap-1.5 transition-all group">
               Xem tất cả thông báo hệ thống <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
@@ -326,7 +326,7 @@ const NotificationItem = ({ item }: { item: any }) => {
 
   const typeLabelColorClass = cfg
     ? cfg.colorClass
-    : isPending ? 'text-[#B4533A]' : 'text-[#000000]';
+    : isPending ? 'text-[#2563EB]' : 'text-[#000000]';
 
   return (
     <div className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-all relative group overflow-hidden ${!isPending ? 'opacity-60 grayscale-[0.5]' : ''}`}>
@@ -334,8 +334,8 @@ const NotificationItem = ({ item }: { item: any }) => {
         <div
           className="absolute left-0 top-0 bottom-0 w-[3px]"
           style={{ 
-            backgroundColor: cfg?.accentHex ?? '#B4533A', 
-            boxShadow: `2px 0 10px ${cfg?.accentHex ?? '#B4533A'}44` 
+            backgroundColor: cfg?.accentHex ?? '#2563EB', 
+            boxShadow: `2px 0 10px ${cfg?.accentHex ?? '#2563EB'}44` 
           }}
         />
       )}
@@ -366,7 +366,7 @@ const NotificationItem = ({ item }: { item: any }) => {
           <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-2">
               {item.amount && (
-                <span className="text-[12px] font-bold text-[#B4533A] tracking-tight">{item.amount}</span>
+                <span className="text-[12px] font-bold text-[#2563EB] tracking-tight">{item.amount}</span>
               )}
               <span className="text-[9px] text-gray-500 font-semibold uppercase truncate max-w-[120px]">
                 {item.requester}

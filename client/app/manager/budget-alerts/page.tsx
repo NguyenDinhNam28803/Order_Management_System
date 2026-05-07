@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { ShieldAlert, CheckCircle, ArrowRight, DollarSign, List, Calculator, AlertTriangle, AlertCircle, Loader2 } from "lucide-react";
@@ -15,7 +15,7 @@ export default function BudgetAlertsPage() {
             case "CAUTION": return "bg-amber-500/10 border-amber-500/20 text-black";
             case "CRITICAL": return "bg-rose-500/10 border-rose-500/20 text-black";
             case "EXCEEDED": return "bg-rose-500 border-rose-600 text-[#000000] shadow-lg shadow-rose-500/20 animate-pulse";
-            default: return "bg-[#FAF8F5] border-[rgba(148,163,184,0.1)] text-[#000000]";
+            default: return "bg-[#F1F5F9] border-[rgba(148,163,184,0.1)] text-[#000000]";
         }
     };
 
@@ -107,7 +107,7 @@ export default function BudgetAlertsPage() {
                                         onClick={() => handleApprove(alert.id)}
                                         disabled={loadingId === alert.id}
                                         className={`px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transform hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${
-                                            severity === 'EXCEEDED' ? 'bg-white text-rose-600' : 'bg-[#B4533A] text-[#000000]'
+                                            severity === 'EXCEEDED' ? 'bg-white text-rose-600' : 'bg-[#2563EB] text-[#000000]'
                                         }`}
                                     >
                                         {loadingId === alert.id ? <Loader2 size={16} className="animate-spin" /> : "PHÊ DUYỆT VƯỢT MỨC"}
@@ -127,7 +127,7 @@ export default function BudgetAlertsPage() {
                     })}
                 </div>
             ) : (
-                <div className="bg-[#FAF8F5] rounded-[3rem] p-32 border border-dashed border-[rgba(148,163,184,0.1)] flex flex-col items-center justify-center opacity-60">
+                <div className="bg-[#F1F5F9] rounded-[3rem] p-32 border border-dashed border-[rgba(148,163,184,0.1)] flex flex-col items-center justify-center opacity-60">
                     <div className="h-24 w-24 bg-emerald-500/10 rounded-[2rem] flex items-center justify-center mb-10 text-black">
                         <CheckCircle size={64} />
                     </div>

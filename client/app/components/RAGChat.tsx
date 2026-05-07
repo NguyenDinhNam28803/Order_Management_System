@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef, useEffect } from "react";
 import { 
@@ -293,15 +293,15 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
             {/* Header */}
             <div className="px-6 py-4 flex items-center gap-3 bg-[#FFFFFF]">
                 <div className="w-10 h-10 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
-                    <Lock size={20} className="text-[#CB7A62]" />
+                    <Lock size={20} className="text-[#3B82F6]" />
                 </div>
                 <div className="flex-1">
                     <h2 className="text-base font-semibold text-[#000000]">AI Procurement Assistant</h2>
                     <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[11px] px-2 py-0.5 bg-[#1E3A5F]/50 text-[#CB7A62] rounded-full">
+                        <span className="text-[11px] px-2 py-0.5 bg-[#1E3A5F]/50 text-[#3B82F6] rounded-full">
                             RAG • Vector Search
                         </span>
-                        <span className="text-[11px] px-2 py-0.5 bg-[#1E3A5F]/50 text-[#CB7A62] rounded-full">
+                        <span className="text-[11px] px-2 py-0.5 bg-[#1E3A5F]/50 text-[#3B82F6] rounded-full">
                             20 bảng dữ liệu
                         </span>
                         <span className="text-[11px] px-2 py-0.5 bg-[#065F46]/50 text-[#34D399] rounded-full">
@@ -322,9 +322,9 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center h-full gap-5">
                         <div className="relative">
-                            <div className="w-16 h-16 border-4 border-[#B4533A]/20 border-t-[#B4533A] rounded-full animate-spin" />
+                            <div className="w-16 h-16 border-4 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <Sparkles size={20} className="text-[#B4533A] animate-pulse" />
+                                <Sparkles size={20} className="text-[#2563EB] animate-pulse" />
                             </div>
                         </div>
                         <div className="text-center space-y-2">
@@ -338,11 +338,11 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl mx-auto">
                         {/* Answer Summary Section */}
                         <div className="space-y-3">
-                            <div className="flex items-center gap-2 text-[#B4533A]">
+                            <div className="flex items-center gap-2 text-[#2563EB]">
                                 <Sparkles size={14} />
                                 <span className="text-[10px] font-black uppercase tracking-widest">Tóm tắt từ AI</span>
                             </div>
-                            <div className="bg-[#FAF8F5] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl">
+                            <div className="bg-[#F1F5F9] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl">
                                 <div className="text-sm text-[#000000] leading-relaxed font-medium whitespace-pre-wrap">
                                     {formatAnswer(aiResponse?.data?.answer?.summary)}
                                 </div>
@@ -358,7 +358,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                     </div>
                                     <div className="space-y-3">
                                         {(aiResponse.data.answer.data as Array<Record<string, any>>).map((item, idx) => (
-                                            <div key={idx} className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                                            <div key={idx} className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                                                 {/* Header with status if available */}
                                                 {!!(item.status || (item.details as any)?.["Đánh giá nhà cung cấp"]) && (
                                                     <div className="px-4 py-3 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
@@ -368,7 +368,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                                         {!!item.status && (
                                                             <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${
                                                                 item.status === 'PREFERRED' ? 'bg-emerald-500/20 text-black' :
-                                                                item.status === 'APPROVED' ? 'bg-[#B4533A]/20 text-[#B4533A]' :
+                                                                item.status === 'APPROVED' ? 'bg-[#2563EB]/20 text-[#2563EB]' :
                                                                 'bg-amber-500/20 text-black'
                                                             }`}>
                                                                 {item.status as string}
@@ -400,7 +400,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                                                             <span className={`text-sm font-bold ${
                                                                                 key.includes('Điểm') || key.includes('tỉ lệ') || key.includes('score') || key.includes('rate')
                                                                                     ? isNumeric && value >= 90 ? 'text-black' :
-                                                                                      isNumeric && value >= 70 ? 'text-[#B4533A]' : 'text-black'
+                                                                                      isNumeric && value >= 70 ? 'text-[#2563EB]' : 'text-black'
                                                                                     : 'text-[#000000]'
                                                                             }`}>
                                                                                 {displayValue}
@@ -440,14 +440,14 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                         {aiResponse.data.sources.map((s, idx) => (
                                             <div 
                                                 key={idx} 
-                                                className="flex items-start gap-3 p-3 bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] transition-all group"
+                                                className="flex items-start gap-3 p-3 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] transition-all group"
                                             >
-                                                <div className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg text-[#000000] shrink-0 group-hover:text-[#B4533A] group-hover:border-[#B4533A]/30 transition-all">
+                                                <div className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg text-[#000000] shrink-0 group-hover:text-[#2563EB] group-hover:border-[#2563EB]/30 transition-all">
                                                     {TABLE_ICONS[s.metadata.table] || <FileText size={14} />}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 mb-1">
-                                                        <span className="text-[10px] font-bold text-[#B4533A] uppercase tracking-wide px-2 py-0.5 bg-[#B4533A]/10 rounded-full">
+                                                        <span className="text-[10px] font-bold text-[#2563EB] uppercase tracking-wide px-2 py-0.5 bg-[#2563EB]/10 rounded-full">
                                                             {TABLE_NAMES[s.metadata.table] || s.metadata.table}
                                                         </span>
                                                         {s.similarity && (
@@ -471,7 +471,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                         {/* Center Icon and Welcome */}
                         <div className="text-center mb-8">
                             <div className="w-16 h-16 bg-[#1E3A5F] rounded-2xl flex items-center justify-center mx-auto mb-5">
-                                <LayoutGrid size={32} className="text-[#CB7A62]" />
+                                <LayoutGrid size={32} className="text-[#3B82F6]" />
                             </div>
                             <h3 className="text-xl font-semibold text-[#000000] mb-2">
                                 Xin chào, {roleDisplayNames[userRole] || userRole} {currentUser?.name?.split(' ').pop() || ''}
@@ -483,15 +483,15 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
 
                         {/* Stats Cards */}
                         <div className="grid grid-cols-3 gap-4 mb-8">
-                            <div className="bg-[#FAF8F5] border border-[#1E293B] rounded-2xl p-4 text-center">
+                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-2xl p-4 text-center">
                                 <div className="text-2xl font-bold text-[#F59E0B] mb-1">{pendingPRCount}</div>
                                 <div className="text-xs text-[#000000]">PR chờ duyệt</div>
                             </div>
-                            <div className="bg-[#FAF8F5] border border-[#1E293B] rounded-2xl p-4 text-center">
+                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-2xl p-4 text-center">
                                 <div className="text-2xl font-bold text-[#EF4444] mb-1">{overdueInvoiceCount}</div>
                                 <div className="text-xs text-[#000000]">Hóa đơn quá hạn</div>
                             </div>
-                            <div className="bg-[#FAF8F5] border border-[#1E293B] rounded-2xl p-4 text-center">
+                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-2xl p-4 text-center">
                                 <div className="text-2xl font-bold text-[#10B981] mb-1">{budgetRemainingPercent}%</div>
                                 <div className="text-xs text-[#000000]">Ngân sách còn lại</div>
                             </div>
@@ -511,9 +511,9 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                                 setSearchQuery(item.text);
                                             }
                                         }}
-                                        className="flex items-start gap-3 p-4 bg-[#FAF8F5] border border-[#1E293B] rounded-xl text-sm text-[#000000] hover:border-[#B4533A]/50 hover:bg-[#1E293B] transition-all text-left group"
+                                        className="flex items-start gap-3 p-4 bg-[#F1F5F9] border border-[#1E293B] rounded-xl text-sm text-[#000000] hover:border-[#2563EB]/50 hover:bg-[#1E293B] transition-all text-left group"
                                     >
-                                        <span className="text-[#CB7A62] mt-0.5">
+                                        <span className="text-[#3B82F6] mt-0.5">
                                             {item.icon}
                                         </span>
                                         <span className="leading-tight">{item.text}</span>
@@ -534,7 +534,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                 ref={inputRef}
                                 type="text" 
                                 placeholder="Hỏi về ngân sách, PO, hóa đơn, nhà cung cấp..."
-                                className="w-full bg-[#FAF8F5] border border-[#1E293B] rounded-xl px-4 py-3.5 text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#B4533A]/50 transition-all"
+                                className="w-full bg-[#F1F5F9] border border-[#1E293B] rounded-xl px-4 py-3.5 text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/50 transition-all"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -550,7 +550,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                             <button 
                                 type="submit"
                                 disabled={isLoading || !searchQuery.trim()}
-                                className="w-10 h-10 bg-[#B4533A] text-[#000000] rounded-xl flex items-center justify-center hover:bg-[#A85032] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="w-10 h-10 bg-[#2563EB] text-[#000000] rounded-xl flex items-center justify-center hover:bg-[#1D4ED8] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
                             </button>

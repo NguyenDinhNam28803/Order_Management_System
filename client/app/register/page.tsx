@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Lock, Mail, User, ShieldCheck, ArrowRight, CheckCircle2, Zap } from "lucide-react";
@@ -53,7 +53,7 @@ export default function RegisterPage() {
     return (
         <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center p-6 relative overflow-hidden">
             {/* Background Decorations */}
-            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#A85032]/10 blur-[120px] rounded-full"></div>
+            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#1D4ED8]/10 blur-[120px] rounded-full"></div>
             <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-600/10 blur-[120px] rounded-full"></div>
 
             <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 relative z-10 items-center">

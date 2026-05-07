@@ -33,13 +33,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 };
 
 export const useToast = () => {
-    // Try local context first
     const local = useContext(ToastContext);
     if (local) return local;
 
-    // Fallback to ProcurementContext logic (bridged)
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const proc = useProcurement(); 
+    const proc = useProcurement();
     return {
         notifications: proc.notifications,
         notify: proc.notify,
@@ -47,10 +45,7 @@ export const useToast = () => {
     };
 };
 
-/**
- * ToastItem - Individual toast notification with progress bar and hover pause
- */
-const ToastItem = ({ notification, onRemove }: { notification: Notification, onRemove: (id: number) => void }) => {
+const ToastItem = ({ notification, onRemove }: { notification: Notification; onRemove: (id: number) => void }) => {
     const [isPaused, setIsPaused] = useState(false);
     const duration = 5000;
     const startTimeRef = useRef<number>(0);
@@ -87,164 +82,196 @@ const ToastItem = ({ notification, onRemove }: { notification: Notification, onR
 
     const getIcon = () => {
         switch (notification.type) {
-            case 'success': return <CheckCircle2 className="w-5 h-5" />;
-            case 'error': return <XCircle className="w-5 h-5" />;
-            case 'warning': return <AlertTriangle className="w-5 h-5" />;
-            case 'info': return <Info className="w-5 h-5" />;
-            default: return <Info className="w-5 h-5" />;
+            case 'success': return <CheckCircle2 className="w-[18px] h-[18px]" />;
+            case 'error':   return <XCircle      className="w-[18px] h-[18px]" />;
+            case 'warning': return <AlertTriangle className="w-[18px] h-[18px]" />;
+            default:        return <Info          className="w-[18px] h-[18px]" />;
         }
     };
 
     return (
-        <div 
+        <div
             className={`toast-item ${notification.type} ${isPaused ? 'paused' : ''}`}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            style={{
-                '--toast-duration': `${duration}ms`
-            } as React.CSSProperties}
+            style={{ '--toast-duration': `${duration}ms` } as React.CSSProperties}
         >
-            <div className="toast-icon">
-                {getIcon()}
-            </div>
-            
+            <div className="toast-icon">{getIcon()}</div>
+
             <div className="toast-content">
+                {(notification as any).title && (
+                    <p className="toast-title">{(notification as any).title}</p>
+                )}
                 <p className="toast-message">{notification.message}</p>
             </div>
 
             <button className="toast-close" onClick={remove}>
-                <X size={14} />
+                <X size={13} />
             </button>
 
             <div className="toast-progress-bar">
-                <div 
-                    className="progress-fill" 
-                    style={{ 
+                <div
+                    className="progress-fill"
+                    style={{
                         animationDuration: `${duration}ms`,
                         animationPlayState: isPaused ? 'paused' : 'running'
                     }}
-                ></div>
+                />
             </div>
         </div>
     );
 };
 
-/**
- * ToastContainer - Global container for all notifications
- */
+const MAX_VISIBLE = 3;
+
 export const ToastContainer: React.FC = () => {
     const { notifications, removeNotification } = useToast();
-    
-    // For role filtering, try to get currentUser if ProcurementContext is available
+
     let currentUser: any = null;
     try {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const proc = useProcurement();
         currentUser = proc.currentUser;
-    } catch {
-        // Silently fail if ProcurementContext is not present
-    }
+    } catch { /* ok */ }
 
     if (!notifications || notifications.length === 0) return null;
 
-    // Filter notifications based on role parity
-    const filteredNotifications = notifications.filter((n: Notification) => 
+    const filteredNotifications = notifications.filter((n: Notification) =>
         !n.role || (currentUser && n.role === currentUser.role)
     );
 
     if (filteredNotifications.length === 0) return null;
 
+    const visible = filteredNotifications.slice(-MAX_VISIBLE);
+    const hiddenCount = filteredNotifications.length - visible.length;
+
     return (
         <div className="toast-container-global">
-            {filteredNotifications.map((t) => (
+            {hiddenCount > 0 && (
+                <div className="toast-stack-counter">
+                    +{hiddenCount} thông báo khác
+                </div>
+            )}
+            {visible.map((t) => (
                 <ToastItem key={t.id} notification={t} onRemove={removeNotification} />
             ))}
             <style jsx global>{`
                 .toast-container-global {
                     position: fixed;
-                    top: 24px;
+                    bottom: 24px;
                     right: 24px;
                     z-index: 10000;
                     display: flex;
-                    flex-direction: column;
-                    gap: 12px;
-                    max-width: 400px;
+                    flex-direction: column-reverse;
+                    gap: 10px;
+                    max-width: 380px;
                     width: calc(100% - 48px);
                     pointer-events: none;
+                }
+
+                .toast-stack-counter {
+                    text-align: center;
+                    font-size: 11px;
+                    font-weight: 600;
+                    color: #64748B;
+                    background: #F1F5F9;
+                    border: 1px solid #E2E8F0;
+                    border-radius: 8px;
+                    padding: 6px 12px;
+                    pointer-events: auto;
+                    cursor: pointer;
                 }
 
                 .toast-item {
                     position: relative;
                     display: flex;
-                    align-items: center;
-                    padding: 18px 24px;
-                    background: rgba(255, 255, 255, 0.95);
-                    border-radius: 20px;
-                    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1), 0 5px 15px -5px rgba(0, 0, 0, 0.05);
+                    align-items: flex-start;
+                    padding: 14px 16px;
+                    background: #FFFFFF;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
                     overflow: hidden;
                     pointer-events: auto;
-                    backdrop-filter: blur(12px);
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-                    animation: toast-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    border: 1px solid #E2E8F0;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                    animation: toast-slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
 
-                @keyframes toast-in {
-                    from { transform: translateX(50px) scale(0.9); opacity: 0; }
-                    to { transform: translateX(0) scale(1); opacity: 1; }
+                @keyframes toast-slide-up {
+                    from { transform: translateY(16px); opacity: 0; }
+                    to   { transform: translateY(0);    opacity: 1; }
                 }
 
-                .toast-item.success { border-left: 6px solid #10b981; }
-                .toast-item.error { border-left: 6px solid #ef4444; }
-                .toast-item.warning { border-left: 6px solid #f59e0b; }
-                .toast-item.info { border-left: 6px solid #B4533A; }
+                .toast-item.success { border-left: 4px solid #10B981; }
+                .toast-item.error   { border-left: 4px solid #EF4444; animation: toast-slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1), shake 0.4s ease-in-out 0.3s; }
+                .toast-item.warning { border-left: 4px solid #F59E0B; }
+                .toast-item.info    { border-left: 4px solid #2563EB; }
 
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25%      { transform: translateX(-4px); }
+                    75%      { transform: translateX(4px); }
+                }
+
+                .toast-item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+
+                /* Icon — solid colored square background */
                 .toast-icon {
-                    margin-right: 16px;
+                    margin-right: 12px;
                     display: flex;
                     align-items: center;
+                    justify-content: center;
                     flex-shrink: 0;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 8px;
+                    margin-top: 1px;
                 }
 
-                .success .toast-icon { color: #10b981; }
-                .error .toast-icon { color: #ef4444; }
-                .warning .toast-icon { color: #f59e0b; }
-                .info .toast-icon { color: #B4533A; }
+                .success .toast-icon { background: #ECFDF5; color: #059669; }
+                .error   .toast-icon { background: #FEF2F2; color: #DC2626; }
+                .warning .toast-icon { background: #FFFBEB; color: #D97706; }
+                .info    .toast-icon { background: #EFF6FF; color: #2563EB; }
 
-                .toast-content {
-                    flex: 1;
-                    padding-right: 8px;
+                .toast-content { flex: 1; padding-right: 8px; min-width: 0; }
+
+                .toast-title {
+                    margin: 0 0 2px;
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: #0F172A;
+                    line-height: 1.3;
                 }
 
                 .toast-message {
                     margin: 0;
-                    font-size: 14px;
-                    font-weight: 700;
-                    color: #0f172a;
-                    line-height: 1.5;
+                    font-size: 12px;
+                    font-weight: 400;
+                    color: #64748B;
+                    line-height: 1.4;
                     font-family: var(--font-sans);
                 }
 
                 .toast-close {
-                    background: rgba(0, 0, 0, 0.05);
+                    background: rgba(0,0,0,0.04);
                     border: none;
-                    color: #64748b;
+                    color: #94A3B8;
                     cursor: pointer;
-                    width: 28px;
-                    height: 28px;
-                    border-radius: 10px;
+                    width: 26px;
+                    height: 26px;
+                    border-radius: 6px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    transition: all 0.2s;
+                    transition: all 0.15s;
                     flex-shrink: 0;
+                    margin-top: 1px;
                 }
 
                 .toast-close:hover {
-                    background: #ef4444;
-                    color: #FFFFFF;
-                    transform: rotate(90deg) scale(1.1);
-                    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+                    background: #FEF2F2;
+                    color: #DC2626;
+                    transform: rotate(90deg);
                 }
 
                 /* Progress Bar */
@@ -253,8 +280,8 @@ export const ToastContainer: React.FC = () => {
                     bottom: 0;
                     left: 0;
                     width: 100%;
-                    height: 4px;
-                    background: rgba(0, 0, 0, 0.03);
+                    height: 3px;
+                    background: transparent;
                 }
 
                 .progress-fill {
@@ -264,53 +291,18 @@ export const ToastContainer: React.FC = () => {
                     animation: progress-shrink linear forwards;
                 }
 
-                .success .progress-fill { background: #10b981; }
-                .error .progress-fill { background: #ef4444; }
-                .warning .progress-fill { background: #f59e0b; }
-                .info .progress-fill { background: #B4533A; }
+                .success .progress-fill { background: #10B981; }
+                .error   .progress-fill { background: #EF4444; }
+                .warning .progress-fill { background: #F59E0B; }
+                .info    .progress-fill { background: #2563EB; }
 
                 @keyframes progress-shrink {
                     from { transform: scaleX(1); }
-                    to { transform: scaleX(0); }
-                }
-
-                /* Interaction Effects */
-                .toast-item.success:hover {
-                    box-shadow: 0 10px 40px rgba(16, 185, 129, 0.15);
-                    transform: translateY(-2px);
-                }
-
-                .toast-item.error:hover {
-                    box-shadow: 0 10px 40px rgba(239, 68, 68, 0.15);
-                    transform: translateY(-2px);
-                }
-
-                /* Animation Keyframes */
-                @keyframes shake {
-                    0%, 100% { transform: translateX(0); }
-                    20% { transform: translateX(-4px); }
-                    40% { transform: translateX(4px); }
-                    60% { transform: translateX(-4px); }
-                    80% { transform: translateX(4px); }
-                }
-
-                .toast-item.error {
-                    animation: toast-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), shake 0.5s ease-in-out 0.5s;
-                }
-
-                @keyframes glow {
-                    0% { box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1); }
-                    50% { box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3); }
-                    100% { box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1); }
-                }
-
-                .toast-item.success {
-                    animation: toast-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), glow 2s infinite ease-in-out;
+                    to   { transform: scaleX(0); }
                 }
             `}</style>
         </div>
     );
-}
+};
 
 export default ToastContainer;
-

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { Package, Truck, AlertTriangle, CheckCircle2, RotateCcw, Info, Box } from "lucide-react";
@@ -83,13 +83,13 @@ export default function WarehouseDashboard() {
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {/* Sắp giao hàng (7.1) */}
-                <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 !p-0 overflow-hidden flex flex-col">
+                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
                         <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] flex items-center gap-2">
                             <Truck size={16} /> Lịch Giao Hàng (7 Ngày Tới)
                         </h3>
                     </div>
-                    <div className="flex-1 overflow-auto bg-[#FAF8F5] max-h-[400px]">
+                    <div className="flex-1 overflow-auto bg-[#F1F5F9] max-h-[400px]">
                         <table className="erp-table text-xs m-0 !border-none w-full" style={{ tableLayout: 'fixed' }}>
                             <thead className="sticky top-0 bg-[#FFFFFF] shadow-sm z-10">
                                 <tr>
@@ -116,7 +116,7 @@ export default function WarehouseDashboard() {
                                         <td className="text-center text-[#000000] py-4 px-4 text-xs">{po.deliveryDate}</td>
                                         <td className="text-center py-4 px-4">
                                             {po.status === "PENDING" ? (
-                                                <span className="text-[9px] font-black uppercase tracking-widest bg-[#B4533A]/10 text-[#B4533A] px-2 py-1 rounded border border-[#B4533A]/20">Sắp tới</span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest bg-[#2563EB]/10 text-[#2563EB] px-2 py-1 rounded border border-[#2563EB]/20">Sắp tới</span>
                                             ) : (
                                                 <span className="text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-black px-2 py-1 rounded border border-amber-500/20">Trễ hạn</span>
                                             )}
@@ -129,13 +129,13 @@ export default function WarehouseDashboard() {
                 </div>
 
                 {/* GRN Cần Xử Lý (Draft) (7.1) */}
-                <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 !p-0 overflow-hidden flex flex-col">
+                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
                         <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] flex items-center gap-2">
                             <Info size={16} /> Phiếu GRN Đang Draft (Cần Xử Lý)
                         </h3>
                     </div>
-                    <div className="flex-1 overflow-auto bg-[#FAF8F5] max-h-[400px]">
+                    <div className="flex-1 overflow-auto bg-[#F1F5F9] max-h-[400px]">
                         <table className="erp-table text-xs m-0 !border-none w-full" style={{ tableLayout: 'fixed' }}>
                             <thead className="sticky top-0 bg-[#FFFFFF] shadow-sm z-10">
                                 <tr>
@@ -165,7 +165,7 @@ export default function WarehouseDashboard() {
                                         <td className="text-right py-4 px-4">
                                             <button 
                                                 onClick={() => router.push(`/warehouse/grn/new?grn=${grn.id}`)}
-                                                className="text-[10px] font-black uppercase tracking-widest text-[#B4533A] hover:bg-[#B4533A]/10 px-3 py-2 rounded-lg transition-colors border border-[#B4533A]/20"
+                                                className="text-[10px] font-black uppercase tracking-widest text-[#2563EB] hover:bg-[#2563EB]/10 px-3 py-2 rounded-lg transition-colors border border-[#2563EB]/20"
                                             >
                                                 Tiếp tục QC
                                             </button>

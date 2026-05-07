@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { useProcurement, User } from "../../context/ProcurementContext";
@@ -39,7 +39,7 @@ const COMPANY_TYPE_LABELS: Record<string, string> = {
 };
 
 const ROLE_COLORS: Record<string, string> = {
-    REQUESTER: "bg-[#B4533A]/20 text-[#CB7A62] border-[#B4533A]/30",
+    REQUESTER: "bg-[#2563EB]/20 text-[#3B82F6] border-[#2563EB]/30",
     DEPT_APPROVER: "bg-emerald-500/20 text-black border-emerald-500/30",
     PROCUREMENT: "bg-purple-500/20 text-black border-purple-500/30",
     FINANCE: "bg-amber-500/20 text-black border-amber-500/30",
@@ -87,7 +87,7 @@ export default function UserProfilePage() {
         return (
             <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] flex items-center justify-center">
                 <div className="flex items-center gap-3">
-                    <Loader2 className="h-6 w-6 animate-spin text-[#B4533A]" />
+                    <Loader2 className="h-6 w-6 animate-spin text-[#2563EB]" />
                     <span className="text-[#000000] text-sm font-medium">Đang tải...</span>
                 </div>
             </main>
@@ -98,7 +98,7 @@ export default function UserProfilePage() {
         return (
             <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF]">
                 <div className="max-w-2xl mx-auto mt-20">
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] p-12 text-center shadow-xl">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-12 text-center shadow-xl">
                         <UserCircle className="mx-auto h-16 w-16 text-[#000000] mb-4" />
                         <h2 className="text-xl font-black text-[#000000] mb-2">Không tìm thấy thông tin</h2>
                         <p className="text-[#000000]">{error || "Không tìm thấy thông tin người dùng"}</p>
@@ -117,11 +117,11 @@ export default function UserProfilePage() {
                     <p className="text-sm text-[#000000] mt-1">Quản lý thông tin cá nhân và tổ chức</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2.5 border border-[rgba(148,163,184,0.2)] rounded-xl text-sm font-bold text-[#000000] hover:bg-[#FAF8F5] hover:text-[#000000] transition-all">
+                    <button className="flex items-center gap-2 px-4 py-2.5 border border-[rgba(148,163,184,0.2)] rounded-xl text-sm font-bold text-[#000000] hover:bg-[#F1F5F9] hover:text-[#000000] transition-all">
                         <Lock size={16} />
                         <span className="hidden sm:inline">Đổi mật khẩu</span>
                     </button>
-                    <button className="flex items-center gap-2 bg-[#B4533A] hover:bg-[#A85032] text-[#000000] px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#B4533A]/20 transition-all">
+                    <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#2563EB]/20 transition-all">
                         <Edit size={16} />
                         <span className="hidden sm:inline">Chỉnh sửa</span>
                     </button>
@@ -132,10 +132,10 @@ export default function UserProfilePage() {
                 {/* Left Column - Main Info */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Thông tin cá nhân */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.1)]">
                             <h2 className="text-sm font-black uppercase tracking-wider text-[#000000] flex items-center gap-2">
-                                <UserCircle className="h-4 w-4 text-[#B4533A]" />
+                                <UserCircle className="h-4 w-4 text-[#2563EB]" />
                                 Thông tin cá nhân
                             </h2>
                         </div>
@@ -150,7 +150,7 @@ export default function UserProfilePage() {
                                             className="h-24 w-24 rounded-2xl object-cover border-2 border-[rgba(148,163,184,0.2)]"
                                         />
                                     ) : (
-                                        <div className="h-24 w-24 rounded-2xl bg-gradient-to-br from-[#B4533A] to-[#8B5CF6] flex items-center justify-center text-[#000000] text-3xl font-black border-2 border-[rgba(148,163,184,0.2)]">
+                                        <div className="h-24 w-24 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center text-[#000000] text-3xl font-black border-2 border-[rgba(148,163,184,0.2)]">
                                             {user.fullName?.charAt(0).toUpperCase() || "U"}
                                         </div>
                                     )}
@@ -160,7 +160,7 @@ export default function UserProfilePage() {
                                 <div className="flex-1 space-y-4">
                                     <div>
                                         <h3 className="text-xl font-black text-[#000000]">{user.fullName}</h3>
-                                        <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold mt-2 border ${ROLE_COLORS[user.role] || "bg-[#B4533A]/20 text-[#B4533A] border-[#B4533A]/30"}`}>
+                                        <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold mt-2 border ${ROLE_COLORS[user.role] || "bg-[#2563EB]/20 text-[#2563EB] border-[#2563EB]/30"}`}>
                                             {ROLE_LABELS[user.role] || user.role}
                                         </span>
                                         {user.jobTitle && (
@@ -173,8 +173,8 @@ export default function UserProfilePage() {
                             {/* Contact Details Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-6 border-t border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-xl bg-[#B4533A]/10 flex items-center justify-center shrink-0">
-                                        <Mail className="h-5 w-5 text-[#B4533A]" />
+                                    <div className="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center shrink-0">
+                                        <Mail className="h-5 w-5 text-[#2563EB]" />
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-black uppercase tracking-wider text-[#000000]">Email</p>
@@ -238,10 +238,10 @@ export default function UserProfilePage() {
                     </div>
 
                     {/* Thông tin tổ chức */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.1)]">
                             <h2 className="text-sm font-black uppercase tracking-wider text-[#000000] flex items-center gap-2">
-                                <Building2 className="h-4 w-4 text-[#B4533A]" />
+                                <Building2 className="h-4 w-4 text-[#2563EB]" />
                                 Thông tin tổ chức
                             </h2>
                         </div>
@@ -253,14 +253,14 @@ export default function UserProfilePage() {
                                     {user.organization ? (
                                         <div className="bg-[#FFFFFF] rounded-xl p-5 border border-[rgba(148,163,184,0.1)]">
                                             <div className="flex items-start gap-4">
-                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#B4533A] to-[#8B5CF6] flex items-center justify-center shrink-0">
+                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center shrink-0">
                                                     <Building2 className="h-6 w-6 text-[#000000]" />
                                                 </div>
                                                 <div className="min-w-0">
                                                     <h4 className="text-base font-bold text-[#000000] truncate">{user.organization.name}</h4>
                                                     <p className="text-xs text-[#000000]">Mã: {user.organization.code}</p>
                                                     {user.organization.companyType && (
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-[#B4533A]/20 text-[#B4533A] border border-[#B4533A]/30 mt-2">
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-[#2563EB]/20 text-[#2563EB] border border-[#2563EB]/30 mt-2">
                                                             {COMPANY_TYPE_LABELS[user.organization.companyType] || user.organization.companyType}
                                                         </span>
                                                     )}
@@ -301,16 +301,16 @@ export default function UserProfilePage() {
                 {/* Right Column - Role & Quick Actions */}
                 <div className="space-y-6">
                     {/* Vai trò */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.1)]">
                             <h2 className="text-sm font-black uppercase tracking-wider text-[#000000] flex items-center gap-2">
-                                <Shield className="h-4 w-4 text-[#B4533A]" />
+                                <Shield className="h-4 w-4 text-[#2563EB]" />
                                 Vai trò hệ thống
                             </h2>
                         </div>
                         <div className="p-6">
                             <div className="space-y-4">
-                                <span className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold border ${ROLE_COLORS[user.role] || "bg-[#B4533A]/20 text-[#B4533A] border-[#B4533A]/30"}`}>
+                                <span className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold border ${ROLE_COLORS[user.role] || "bg-[#2563EB]/20 text-[#2563EB] border-[#2563EB]/30"}`}>
                                     {ROLE_LABELS[user.role] || user.role}
                                 </span>
                                 <p className="text-xs text-[#000000] leading-relaxed">
@@ -330,12 +330,12 @@ export default function UserProfilePage() {
                     </div>
 
                     {/* Quick Actions */}
-                    <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.1)]">
                             <h2 className="text-sm font-black uppercase tracking-wider text-[#000000]">Thao tác nhanh</h2>
                         </div>
                         <div className="p-4 space-y-2">
-                            <button className="w-full flex items-center gap-3 px-4 py-3 bg-[#FFFFFF] hover:bg-[#B4533A]/10 border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 rounded-xl text-sm font-bold text-[#000000] hover:text-[#B4533A] transition-all group">
+                            <button className="w-full flex items-center gap-3 px-4 py-3 bg-[#FFFFFF] hover:bg-[#2563EB]/10 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 rounded-xl text-sm font-bold text-[#000000] hover:text-[#2563EB] transition-all group">
                                 <Edit size={16} className="group-hover:scale-110 transition-transform" />
                                 Cập nhật thông tin
                             </button>

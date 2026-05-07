@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo, useEffect } from "react";
 import { useProcurement, RFQ } from "../../context/ProcurementContext";
@@ -122,7 +122,7 @@ export default function QuotationManagementPage() {
         const bestQuote = sortedByScore[0];
         return [
             { label: "Tổng báo giá", value: quotations.length, icon: Users, color: "text-black", bg: "bg-slate-50" },
-            { label: "Chưa trao thầu", value: quotations.filter((q: Quotation) => q.status === 'SUBMITTED').length, icon: Send, color: "text-[#B4533A]", bg: "bg-[#F9EFEC]" },
+            { label: "Chưa trao thầu", value: quotations.filter((q: Quotation) => q.status === 'SUBMITTED').length, icon: Send, color: "text-[#2563EB]", bg: "bg-[#F9EFEC]" },
             { label: "Đã trao thầu", value: quotations.filter((q: Quotation) => q.status === 'ACCEPTED').length, icon: Award, color: "text-emerald-500", bg: "bg-emerald-50" },
             { label: bestQuote?.aiScore ? "Đề xuất AI" : "Giá thấp nhất", value: formatVND(Math.min(...quotations.map(q => q.totalPrice))), icon: Sparkles, color: "text-purple-500", bg: "bg-purple-50" },
         ];
@@ -160,7 +160,7 @@ export default function QuotationManagementPage() {
             key: "rfqNumber",
             render: (row: RFQ) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-[#B4533A]/10 flex items-center justify-center text-[#B4533A] border border-[#B4533A]/20">
+                    <div className="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] border border-[#2563EB]/20">
                         <FileText size={20} />
                     </div>
                     <div className="flex flex-col">
@@ -195,11 +195,11 @@ export default function QuotationManagementPage() {
             render: (row: RFQ) => (
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-[#B4533A]/10 flex items-center justify-center">
-                            <Users size={16} className="text-[#B4533A]" />
+                        <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center">
+                            <Users size={16} className="text-[#2563EB]" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-sm font-black text-[#B4533A]">
+                            <span className="text-sm font-black text-[#2563EB]">
                                 {row.suppliers?.length || 0} nhà cung cấp
                             </span>
                             <span className="text-[9px] text-[#000000]">Đã mời tham gia</span>
@@ -219,7 +219,7 @@ export default function QuotationManagementPage() {
                 <div className="flex items-center gap-1">
                     <button
                         onClick={() => setSelectedRFQ(row)}
-                        className="inline-flex items-center gap-1 bg-[#B4533A] text-[#000000] px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider hover:bg-[#A85032] transition-all"
+                        className="inline-flex items-center gap-1 bg-[#2563EB] text-[#000000] px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider hover:bg-[#1D4ED8] transition-all"
                     >
                         <Eye size={12} /> Xem
                     </button>
@@ -299,7 +299,7 @@ export default function QuotationManagementPage() {
                                 <span className={`text-xs font-black ${row.aiScore >= 80 ? "text-black" : "text-violet-400"}`}>
                                     {row.aiScore}/100
                                 </span>
-                                <div className="w-16 bg-[#1A1D23] rounded-full h-1">
+                                <div className="w-16 bg-[#0F172A] rounded-full h-1">
                                     <div
                                         className={`h-1 rounded-full ${row.aiScore >= 80 ? "bg-amber-500" : "bg-violet-500"}`}
                                         style={{ width: `${row.aiScore}%` }}
@@ -330,7 +330,7 @@ export default function QuotationManagementPage() {
                 <div className="flex items-center justify-end gap-2">
                     <button
                         onClick={() => handleViewQuotation(row)}
-                        className="inline-flex items-center gap-2 bg-[#1A1D23] text-[#F2EFE9] px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#FFFFFF] hover:text-black transition-all border border-[rgba(148,163,184,0.1)]"
+                        className="inline-flex items-center gap-2 bg-[#0F172A] text-[#F8FAFC] px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#FFFFFF] hover:text-black transition-all border border-[rgba(148,163,184,0.1)]"
                         title="Xem chi tiết"
                     >
                         <Eye size={14} />
@@ -367,7 +367,7 @@ export default function QuotationManagementPage() {
                         {selectedRFQ ? `BÁO GIÁ CHO RFQ` : "QUẢN LÝ BÁO GIÁ"}
                     </h1>
                     <p className="text-[#000000] font-bold text-sm tracking-tight flex items-center gap-2 uppercase">
-                        <ShieldAlert size={14} className="text-[#B4533A]" />
+                        <ShieldAlert size={14} className="text-[#2563EB]" />
                         {selectedRFQ ? selectedRFQ.title || "Xem xét và trao thầu" : "Chọn RFQ để xem báo giá"}
                     </p>
                 </div>
@@ -375,28 +375,28 @@ export default function QuotationManagementPage() {
                     {selectedRFQ ? (
                         <button
                             onClick={() => setSelectedRFQ(null)}
-                            className="inline-flex items-center gap-2 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#1A1D23] transition-all shadow-sm"
+                            className="inline-flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#0F172A] transition-all shadow-sm"
                         >
                             <ArrowLeft size={16} /> Quay lại danh sách RFQ
                         </button>
                     ) : (
                         <div className="flex gap-3 grow md:w-80">
-                            <div className="h-14 w-14 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
-                                <Search size={20} className="text-[#B4533A]" />
+                            <div className="h-14 w-14 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
+                                <Search size={20} className="text-[#2563EB]" />
                             </div>
                             <div className="relative flex-1">
                                 <input
                                     type="text"
                                     placeholder="Tìm kiếm RFQ..."
-                                    className="w-full h-14 pl-6 pr-4 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#B4533A] focus:ring-4 focus:ring-[#B4533A]/5 transition-all"
+                                    className="w-full h-14 pl-6 pr-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
                         </div>
                     )}
-                    <button className="h-14 w-14 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-xl shadow-[#B4533A]/5 hover:bg-[#1A1D23] transition-all shrink-0">
-                        <ListFilter size={20} className="text-[#B4533A]" />
+                    <button className="h-14 w-14 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-xl shadow-[#2563EB]/5 hover:bg-[#0F172A] transition-all shrink-0">
+                        <ListFilter size={20} className="text-[#2563EB]" />
                     </button>
                 </div>
             </div>
@@ -405,7 +405,7 @@ export default function QuotationManagementPage() {
             {selectedRFQ && rfqStats.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     {rfqStats.map((stat) => (
-                        <div key={stat.label} className="bg-[#FAF8F5] p-6 rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 flex items-center gap-4 group hover:border-[#B4533A]/20 transition-all">
+                        <div key={stat.label} className="bg-[#F1F5F9] p-6 rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 flex items-center gap-4 group hover:border-[#2563EB]/20 transition-all">
                             <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                                 <stat.icon size={24} />
                             </div>
@@ -420,8 +420,8 @@ export default function QuotationManagementPage() {
 
             {/* Analyzing Indicator */}
             {analyzingRFQ && (
-                <div className="bg-[#B4533A]/10 border border-[#B4533A]/20 rounded-2xl p-4 mb-6 flex items-center gap-3">
-                    <Sparkles size={20} className="text-[#B4533A] animate-pulse" />
+                <div className="bg-[#2563EB]/10 border border-[#2563EB]/20 rounded-2xl p-4 mb-6 flex items-center gap-3">
+                    <Sparkles size={20} className="text-[#2563EB] animate-pulse" />
                     <span className="text-sm font-bold text-[#000000]">AI đang phân tích các báo giá...</span>
                 </div>
             )}
@@ -429,7 +429,7 @@ export default function QuotationManagementPage() {
             {/* Award Modal */}
             {awardModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/80 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#FAF8F5] rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
                         <div className="bg-emerald-600 px-8 py-6 text-[#000000] flex justify-between items-center">
                             <div>
                                 <h3 className="text-xl font-black uppercase tracking-tight">Trao thầu</h3>
@@ -473,7 +473,7 @@ export default function QuotationManagementPage() {
                             </div>
 
                             <div className="flex gap-4 pt-4">
-                                <button onClick={() => setAwardModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#1A1D23] text-[#F2EFE9] font-black text-xs uppercase tracking-widest hover:bg-[#FFFFFF] hover:text-black transition-all border border-[rgba(148,163,184,0.1)]">Hủy bỏ</button>
+                                <button onClick={() => setAwardModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#0F172A] text-[#F8FAFC] font-black text-xs uppercase tracking-widest hover:bg-[#FFFFFF] hover:text-black transition-all border border-[rgba(148,163,184,0.1)]">Hủy bỏ</button>
                                 <button
                                     onClick={() => handleAward(awardModal)}
                                     className="flex-1 px-6 py-4 rounded-2xl bg-emerald-600 text-[#000000] font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
@@ -492,10 +492,10 @@ export default function QuotationManagementPage() {
                     <div className="bg-[#FFFFFF] rounded-3xl w-full max-w-4xl shadow-2xl shadow-black/50 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.2)] overflow-y-auto">
 
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-[#1A1D23] to-[#FAF8F5] px-8 py-5 flex justify-between items-center border-b border-[rgba(148,163,184,0.1)] shrink-0">
+                        <div className="bg-gradient-to-r from-[#0F172A] to-[#F1F5F9] px-8 py-5 flex justify-between items-center border-b border-[rgba(148,163,184,0.1)] shrink-0">
                             <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-2xl bg-[#B4533A]/10 flex items-center justify-center border border-[#B4533A]/20">
-                                    <Building2 size={24} className="text-[#B4533A]" />
+                                <div className="h-12 w-12 rounded-2xl bg-[#2563EB]/10 flex items-center justify-center border border-[#2563EB]/20">
+                                    <Building2 size={24} className="text-[#2563EB]" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-black text-[#000000] tracking-tight">{viewQuotation.supplier?.name || "Nhà cung cấp"}</h3>
@@ -504,7 +504,7 @@ export default function QuotationManagementPage() {
                             </div>
                             <div className="flex items-center gap-3">
                                 <StatusPill status={viewQuotation.status} />
-                                <button onClick={() => setViewQuotation(null)} className="h-10 w-10 rounded-xl bg-[#1A1D23] border border-[rgba(148,163,184,0.2)] flex items-center justify-center hover:bg-[#FAF8F5] transition-all">
+                                <button onClick={() => setViewQuotation(null)} className="h-10 w-10 rounded-xl bg-[#0F172A] border border-[rgba(148,163,184,0.2)] flex items-center justify-center hover:bg-[#F1F5F9] transition-all">
                                     <X size={18} className="text-[#000000]" />
                                 </button>
                             </div>
@@ -515,8 +515,8 @@ export default function QuotationManagementPage() {
                             <div className="flex-1 flex flex-col bg-[#FFFFFF] min-h-0 overflow-hidden">
                                 {/* Horizontal Tabs */}
                                 <div className="flex px-6 pt-4 border-b border-[rgba(148,163,184,0.1)] gap-6 shrink-0 bg-[#FFFFFF]">
-                                    <button onClick={() => setActiveModalTab('AI')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${activeModalTab === 'AI' ? 'border-[#B4533A] text-[#B4533A]' : 'border-transparent text-[#000000] hover:text-[#000000]'}`}>Phân tích AI</button>
-                                    <button onClick={() => setActiveModalTab('QA')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'QA' ? 'border-[#B4533A] text-[#B4533A]' : 'border-transparent text-[#000000] hover:text-[#000000]'}`}>Trao đổi (Q&A) <span className="bg-[#B4533A]/20 text-[#B4533A] px-1.5 py-0.5 rounded text-[9px]">{qaThreadsList?.length || 0}</span></button>
+                                    <button onClick={() => setActiveModalTab('AI')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${activeModalTab === 'AI' ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-[#000000] hover:text-[#000000]'}`}>Phân tích AI</button>
+                                    <button onClick={() => setActiveModalTab('QA')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'QA' ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-[#000000] hover:text-[#000000]'}`}>Trao đổi (Q&A) <span className="bg-[#2563EB]/20 text-[#2563EB] px-1.5 py-0.5 rounded text-[9px]">{qaThreadsList?.length || 0}</span></button>
                                     <button onClick={() => setActiveModalTab('NEGOTIATION')} className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'NEGOTIATION' ? 'border-emerald-500 text-black' : 'border-transparent text-[#000000] hover:text-[#000000]'}`}>Đàm phán Giá <span className="bg-emerald-500/20 text-black px-1.5 py-0.5 rounded text-[9px]">{counterOffersList?.length || 0}</span></button>
                                 </div>
                                 <div className="flex-1 overflow-y-auto p-6">
@@ -565,10 +565,10 @@ export default function QuotationManagementPage() {
                                                     </div>
 
                                                     {/* Assessment */}
-                                                    <div className="p-5 bg-[#FAF8F5]">
+                                                    <div className="p-5 bg-[#F1F5F9]">
                                                         <div className="flex items-start gap-3">
-                                                            <div className="h-8 w-8 rounded-lg bg-[#B4533A]/10 flex items-center justify-center shrink-0">
-                                                                <MessageSquare size={16} className="text-[#B4533A]" />
+                                                            <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center shrink-0">
+                                                                <MessageSquare size={16} className="text-[#2563EB]" />
                                                             </div>
                                                             <div>
                                                                 <div className="text-[10px] font-black uppercase text-[#000000] tracking-wider mb-1">Đánh giá tổng quan</div>
@@ -624,8 +624,8 @@ export default function QuotationManagementPage() {
                                         ) : (
                                             /* AI Analysis Loading / Not Available */
                                             <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                                                <div className="h-20 w-20 rounded-3xl bg-[#B4533A]/10 flex items-center justify-center mb-4 animate-pulse">
-                                                    <Sparkles size={36} className="text-[#B4533A]" />
+                                                <div className="h-20 w-20 rounded-3xl bg-[#2563EB]/10 flex items-center justify-center mb-4 animate-pulse">
+                                                    <Sparkles size={36} className="text-[#2563EB]" />
                                                 </div>
                                                 <h4 className="text-lg font-black text-[#000000] mb-2">Đang phân tích AI...</h4>
                                                 <p className="text-sm text-[#000000] max-w-xs">Vui lòng đợi trong giây lát</p>
@@ -636,9 +636,9 @@ export default function QuotationManagementPage() {
                                         <div className="flex flex-col h-full">
                                             <div className="flex-1 overflow-y-auto space-y-4 mb-4">
                                                 {qaThreadsList.map((qa, idx) => (
-                                                    <div key={idx} className="bg-[#FAF8F5] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                                    <div key={idx} className="bg-[#F1F5F9] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)]">
                                                         <div className="flex gap-2">
-                                                            <div className="h-8 w-8 bg-[#B4533A]/10 rounded-xl flex items-center justify-center text-[#B4533A] shrink-0 font-black text-xs">Q</div>
+                                                            <div className="h-8 w-8 bg-[#2563EB]/10 rounded-xl flex items-center justify-center text-[#2563EB] shrink-0 font-black text-xs">Q</div>
                                                             <div className="flex-1">
                                                                 <div className="text-[10px] text-[#000000] mb-1">MUA HÀNG HỎI</div>
                                                                 <p className="text-sm text-[#000000]">{qa.question}</p>
@@ -658,14 +658,14 @@ export default function QuotationManagementPage() {
                                                 {qaThreadsList.length === 0 && <p className="text-center text-[#000000] p-4 text-xs font-bold uppercase">Chưa có câu hỏi nào</p>}
                                             </div>
                                             <div className="mt-auto flex gap-2">
-                                                <input value={newMsg} onChange={(e) => setNewMsg(e.target.value)} type="text" placeholder="Nhập câu hỏi cho NCC..." className="flex-1 bg-[#FAF8F5] border border-[rgba(148,163,184,0.2)] rounded-xl px-4 py-3 text-sm text-[#000000] focus:ring-2 outline-none" />
+                                                <input value={newMsg} onChange={(e) => setNewMsg(e.target.value)} type="text" placeholder="Nhập câu hỏi cho NCC..." className="flex-1 bg-[#F1F5F9] border border-[rgba(148,163,184,0.2)] rounded-xl px-4 py-3 text-sm text-[#000000] focus:ring-2 outline-none" />
                                                 <button onClick={async () => {
                                                     if (!newMsg) return;
                                                     await createQAThread(viewQuotation.rfqId, { question: newMsg, supplierId: viewQuotation.supplierId });
                                                     setNewMsg('');
                                                     const qas = await fetchQAThreadsBySupplier(viewQuotation.rfqId, viewQuotation.supplierId);
                                                     setQaThreadsList(qas || []);
-                                                }} className="bg-[#B4533A] text-[#000000] px-5 rounded-xl font-black text-xs uppercase hover:bg-[#A85032] transition-all">Gửi</button>
+                                                }} className="bg-[#2563EB] text-[#000000] px-5 rounded-xl font-black text-xs uppercase hover:bg-[#1D4ED8] transition-all">Gửi</button>
                                             </div>
                                         </div>
                                     )}
@@ -683,7 +683,7 @@ export default function QuotationManagementPage() {
                                             </div>
                                             <div className="flex-1 overflow-y-auto space-y-4 mb-4">
                                                 {counterOffersList.map((co, idx) => (
-                                                    <div key={idx} className="bg-[#FAF8F5] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                                    <div key={idx} className="bg-[#F1F5F9] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)]">
                                                         <div className="flex justify-between items-center mb-3">
                                                             <div className="text-[10px] uppercase font-black text-[#000000]">BẠN ĐỀ XUẤT</div>
                                                             <StatusPill status={co.status} />
@@ -694,7 +694,7 @@ export default function QuotationManagementPage() {
                                                 ))}
                                                 {counterOffersList.length === 0 && <p className="text-center text-[#000000] p-4 text-xs font-bold uppercase">Chưa có đề xuất đàm phán</p>}
                                             </div>
-                                            <div className="mt-auto bg-[#FAF8F5] p-4 rounded-2xl border border-[rgba(148,163,184,0.2)]">
+                                            <div className="mt-auto bg-[#F1F5F9] p-4 rounded-2xl border border-[rgba(148,163,184,0.2)]">
                                                 <div className="grid grid-cols-2 gap-4 mb-3">
                                                     <div>
                                                         <label className="text-[10px] font-black uppercase text-[#000000] block mb-1">Mức giá đề xuất</label>
@@ -719,7 +719,7 @@ export default function QuotationManagementPage() {
                             </div>
 
                             {/* Right Panel - Quotation Details */}
-                            <div className="w-80 bg-[#FAF8F5] border-l border-[rgba(148,163,184,0.1)] p-6 overflow-y-auto shrink-0">
+                            <div className="w-80 bg-[#F1F5F9] border-l border-[rgba(148,163,184,0.1)] p-6 overflow-y-auto shrink-0">
                                 <div className="text-xs font-black uppercase text-[#000000] tracking-wider mb-4">Chi tiết báo giá</div>
 
                                 <div className="space-y-4">
@@ -730,7 +730,7 @@ export default function QuotationManagementPage() {
 
                                     <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
                                         <div className="text-[10px] text-[#000000] uppercase mb-1">Lead Time</div>
-                                        <div className="text-xl font-black text-[#B4533A]">{viewQuotation.leadTimeDays} <span className="text-sm text-[#000000]">ngày</span></div>
+                                        <div className="text-xl font-black text-[#2563EB]">{viewQuotation.leadTimeDays} <span className="text-sm text-[#000000]">ngày</span></div>
                                     </div>
 
                                     {viewQuotation.validityDays && (
@@ -751,7 +751,7 @@ export default function QuotationManagementPage() {
                         </div>
 
                         {/* Footer Actions */}
-                        <div className="px-6 py-4 bg-[#FAF8F5] border-t border-[rgba(148,163,184,0.1)] flex justify-between items-center shrink-0">
+                        <div className="px-6 py-4 bg-[#F1F5F9] border-t border-[rgba(148,163,184,0.1)] flex justify-between items-center shrink-0">
                             <button
                                 onClick={() => setViewQuotation(null)}
                                 className="px-6 py-3 rounded-xl bg-[#FFFFFF] text-[#000000] font-black text-xs uppercase tracking-wider hover:text-[#000000] transition-all border border-[rgba(148,163,184,0.2)]"
@@ -775,12 +775,12 @@ export default function QuotationManagementPage() {
             )}
 
             {/* Table */}
-                    <div className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                         {selectedRFQ ? (
                             // Show quotations for selected RFQ
                             loading ? (
                                 <div className="py-32 text-center">
-                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#F2EFE9] mb-6 animate-pulse">
+                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0F172A] text-[#F8FAFC] mb-6 animate-pulse">
                                         <TrendingUp size={40} />
                                     </div>
                                     <h3 className="text-xl font-black text-[#000000] mb-2 uppercase tracking-tight">Đang tải báo giá...</h3>
@@ -790,7 +790,7 @@ export default function QuotationManagementPage() {
                                     <ERPTable columns={quotationColumns} data={quotations} />
                                     {quotations.length === 0 && (
                                         <div className="py-32 text-center">
-                                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#F2EFE9] mb-6">
+                                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0F172A] text-[#F8FAFC] mb-6">
                                                 <AlertCircle size={40} />
                                             </div>
                                             <h3 className="text-xl font-black text-[#000000] mb-2 uppercase tracking-tight">Chưa có báo giá nào</h3>
@@ -807,7 +807,7 @@ export default function QuotationManagementPage() {
                                 ) : null}
                                 {(!Array.isArray(filteredRFQs) || filteredRFQs.length === 0) && (
                                     <div className="py-32 text-center">
-                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#1A1D23] text-[#F2EFE9] mb-6">
+                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0F172A] text-[#F8FAFC] mb-6">
                                             <Search size={40} />
                                         </div>
                                         <h3 className="text-xl font-black text-[#000000] mb-2 uppercase tracking-tight">Không có RFQ nào</h3>
@@ -825,7 +825,7 @@ export default function QuotationManagementPage() {
 function RFQStatusPill({ status }: { status: string }) {
     const config: Record<string, { bg: string, text: string, border: string }> = {
         'DRAFT': { bg: 'bg-slate-500/10', text: 'text-black', border: 'border-slate-500/20' },
-        'PUBLISHED': { bg: 'bg-[#B4533A]/10', text: 'text-[#CB7A62]', border: 'border-[#B4533A]/20' },
+        'PUBLISHED': { bg: 'bg-[#2563EB]/10', text: 'text-[#3B82F6]', border: 'border-[#2563EB]/20' },
         'CLOSED': { bg: 'bg-amber-500/10', text: 'text-black', border: 'border-amber-500/20' },
         'AWARDED': { bg: 'bg-emerald-500/10', text: 'text-black', border: 'border-emerald-500/20' },
         'CANCELLED': { bg: 'bg-rose-500/10', text: 'text-black', border: 'border-rose-500/20' },
@@ -851,12 +851,12 @@ function RFQStatusPill({ status }: { status: string }) {
 
 function StatusPill({ status }: { status: string }) {
     const config: Record<string, { bg: string, text: string }> = {
-        'DRAFT': { bg: 'bg-[#1A1D23]', text: 'text-[#F2EFE9]' },
-        'SUBMITTED': { bg: 'bg-[#B4533A]/10', text: 'text-[#B4533A]' },
+        'DRAFT': { bg: 'bg-[#0F172A]', text: 'text-[#F8FAFC]' },
+        'SUBMITTED': { bg: 'bg-[#2563EB]/10', text: 'text-[#2563EB]' },
         'UNDER_REVIEW': { bg: 'bg-amber-500/10', text: 'text-black' },
         'ACCEPTED': { bg: 'bg-emerald-500/10', text: 'text-black' },
         'REJECTED': { bg: 'bg-rose-500/10', text: 'text-black' },
-        'EXPIRED': { bg: 'bg-[#1A1D23]', text: 'text-[#F2EFE9]' },
+        'EXPIRED': { bg: 'bg-[#0F172A]', text: 'text-[#F8FAFC]' },
     };
 
     const style = config[status] || config['DRAFT'];

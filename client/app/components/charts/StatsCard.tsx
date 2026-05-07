@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { LucideIcon } from "lucide-react";
@@ -19,7 +19,7 @@ interface StatsCardProps {
 }
 
 const colorClasses = {
-  blue: "bg-[#FFFFFF] border-[#B4533A]/30 text-[#B4533A]",
+  blue: "bg-[#FFFFFF] border-[#2563EB]/30 text-[#2563EB]",
   green: "bg-[#FFFFFF] border-emerald-500/30 text-black",
   amber: "bg-[#FFFFFF] border-amber-500/30 text-black",
   red: "bg-[#FFFFFF] border-rose-500/30 text-black",
@@ -27,7 +27,7 @@ const colorClasses = {
 };
 
 const iconBgClasses = {
-  blue: "bg-[#B4533A]/10",
+  blue: "bg-[#2563EB]/10",
   green: "bg-emerald-500/10",
   amber: "bg-amber-500/10",
   red: "bg-rose-500/10",
@@ -64,12 +64,12 @@ export default function StatsCard({
           )}
         </div>
         
-        <p className="text-[9px] font-black uppercase tracking-widest text-[#000000] mb-0.5">
+        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">
           {title}
         </p>
-        <h3 className="text-2xl font-black text-[#000000] leading-tight">{value}</h3>
+        <h3 className="text-2xl font-black text-slate-900 leading-tight">{value}</h3>
         {subValue && (
-          <p className="text-xs text-[#000000] mt-0.5 opacity-70">{subValue}</p>
+          <p className="text-xs text-slate-500 mt-0.5">{subValue}</p>
         )}
 
         {children && <div className="mt-2 pt-2 border-t border-[rgba(148,163,184,0.05)]">{children}</div>}

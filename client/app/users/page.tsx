@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -129,17 +129,17 @@ export default function UsersPage() {
                 </div>
                 <button 
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#B4533A] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#B4533A]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <UserPlus size={18} /> Thêm nhân sự mới
                 </button>
             </div>
 
-            <div className="bg-[#FAF8F5] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="text-[10px] font-black text-[#000000] uppercase tracking-widest border-r border-[rgba(148,163,184,0.1)] pr-4">Danh mục nhân sự (Directory)</div>
-                        <div className="text-[10px] font-black text-[#B4533A] bg-[#B4533A]/10 px-3 py-1 rounded-full">{filteredUsers?.length || 0} Kết quả</div>
+                        <div className="text-[10px] font-black text-[#2563EB] bg-[#2563EB]/10 px-3 py-1 rounded-full">{filteredUsers?.length || 0} Kết quả</div>
                     </div>
                     <div className="flex items-center gap-3 flex-wrap">
                         {/* Org Filter */}
@@ -147,7 +147,7 @@ export default function UsersPage() {
                             <select 
                                 value={selectedOrg}
                                 onChange={(e) => setSelectedOrg(e.target.value)}
-                                className="pl-4 pr-8 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[10px] font-black uppercase text-[#000000] outline-none focus:ring-2 focus:ring-[#B4533A]/10 appearance-none shadow-sm min-w-[140px]"
+                                className="pl-4 pr-8 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[10px] font-black uppercase text-[#000000] outline-none focus:ring-2 focus:ring-[#2563EB]/10 appearance-none shadow-sm min-w-[140px]"
                             >
                                 <option value="all">Tổ chức</option>
                                 {organizations?.map((org: Organization) => (
@@ -164,7 +164,7 @@ export default function UsersPage() {
                             <select 
                                 value={selectedDept}
                                 onChange={(e) => setSelectedDept(e.target.value)}
-                                className="pl-4 pr-8 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[10px] font-black uppercase text-[#000000] outline-none focus:ring-2 focus:ring-[#B4533A]/10 appearance-none shadow-sm min-w-[140px]"
+                                className="pl-4 pr-8 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[10px] font-black uppercase text-[#000000] outline-none focus:ring-2 focus:ring-[#2563EB]/10 appearance-none shadow-sm min-w-[140px]"
                             >
                                 <option value="all">Phòng ban</option>
                                 {departments?.map((d: Department) => (
@@ -181,7 +181,7 @@ export default function UsersPage() {
                             <select 
                                 value={selectedRole}
                                 onChange={(e) => setSelectedRole(e.target.value)}
-                                className="pl-4 pr-8 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[10px] font-black uppercase text-[#000000] outline-none focus:ring-2 focus:ring-[#B4533A]/10 appearance-none shadow-sm min-w-[140px]"
+                                className="pl-4 pr-8 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[10px] font-black uppercase text-[#000000] outline-none focus:ring-2 focus:ring-[#2563EB]/10 appearance-none shadow-sm min-w-[140px]"
                             >
                                 <option value="all">Vai trò</option>
                                 <option value="REQUESTER">REQUESTER</option>
@@ -205,7 +205,7 @@ export default function UsersPage() {
                                 placeholder="Tìm kiếm tên, email..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#B4533A]/20 w-48 shadow-inner text-[#000000] placeholder:text-[#000000]"
+                                className="pl-10 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#2563EB]/20 w-48 shadow-inner text-[#000000] placeholder:text-[#000000]"
                             />
                         </div>
                     </div>
@@ -226,7 +226,7 @@ export default function UsersPage() {
                                 <tr key={user.id || i} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-[rgba(148,163,184,0.1)]">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
-                                            <div className={`h-12 w-12 rounded-2xl ${user.isActive === false ? 'bg-[#000000]' : 'bg-[#B4533A]'} flex items-center justify-center font-black text-[#000000] shadow-lg shadow-[#B4533A]/10 text-xs`}>
+                                            <div className={`h-12 w-12 rounded-2xl ${user.isActive === false ? 'bg-[#000000]' : 'bg-[#2563EB]'} flex items-center justify-center font-black text-[#000000] shadow-lg shadow-[#2563EB]/10 text-xs`}>
                                                 {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="h-full w-full rounded-2xl object-cover" /> : (user.fullName || user.name || "??").substring(0,2).toUpperCase()}
                                             </div>
                                             <div>
@@ -253,10 +253,10 @@ export default function UsersPage() {
                                             <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${
                                                 user.role === 'ADMIN' || user.role === 'PLATFORM_ADMIN' ? 'bg-purple-500/10 text-black border border-purple-500/20' :
                                                 user.role === 'DIRECTOR' || user.role === 'CEO' ? 'bg-amber-500/10 text-black border border-amber-500/20' :
-                                                user.role === 'PROCUREMENT' ? 'bg-[#B4533A]/10 text-[#CB7A62] border border-[#B4533A]/20' :
+                                                user.role === 'PROCUREMENT' ? 'bg-[#2563EB]/10 text-[#3B82F6] border border-[#2563EB]/20' :
                                                 user.role === 'FINANCE' || user.role === 'CFO' ? 'bg-emerald-500/10 text-black border border-emerald-500/20' :
                                                 user.role === 'REQUESTER' ? 'bg-slate-500/10 text-black border border-slate-500/20' :
-                                                'bg-[#B4533A]/10 text-[#B4533A] border border-[#B4533A]/20'
+                                                'bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20'
                                             }`}>
                                                 <ShieldCheck size={10} /> {user.role}
                                             </span>
@@ -276,7 +276,7 @@ export default function UsersPage() {
                                         <div className="flex justify-center gap-1">
                                             <button 
                                                 onClick={() => handleOpenModal(user)}
-                                                className="p-1.5 text-[#000000] hover:text-[#B4533A] hover:bg-[#B4533A]/10 rounded-lg border border-transparent hover:border-[#B4533A]/20 transition-all"
+                                                className="p-1.5 text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg border border-transparent hover:border-[#2563EB]/20 transition-all"
                                             >
                                                 <Edit2 size={14} />
                                             </button>
@@ -286,7 +286,7 @@ export default function UsersPage() {
                                                         removeUser(user.id);
                                                     }
                                                 }}
-                                                className="h-9 w-9 flex items-center justify-center bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-red-500 hover:border-red-500/30 rounded-xl transition-all shadow-sm"
+                                                className="h-9 w-9 flex items-center justify-center bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-red-500 hover:border-red-500/30 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Trash2 size={14} />
                                             </button>
@@ -302,7 +302,7 @@ export default function UsersPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-[#FAF8F5] rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         <div className="p-10">
                             <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
                                 {editingUser ? "Cập nhật hồ sơ Nhân sự" : "Tạo tài khoản nhân viên mới"}
@@ -320,7 +320,7 @@ export default function UsersPage() {
                                             type="text" 
                                             placeholder="VD: Nguyễn Văn A"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#B4533A]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -332,7 +332,7 @@ export default function UsersPage() {
                                             type="email" 
                                             placeholder="email@company.com"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#B4533A]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
@@ -344,7 +344,7 @@ export default function UsersPage() {
                                             required
                                             value={formData.role}
                                             onChange={(e) => setFormData({...formData, role: e.target.value as UserRole})}
-                                            className="w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#B4533A]/20 focus:bg-[#FFFFFF] outline-none transition-all text-[#000000]"
+                                            className="w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all text-[#000000]"
                                         >
                                             <option value={UserRole.REQUESTER}>REQUESTER (Người yêu cầu)</option>
                                             <option value={UserRole.DEPT_APPROVER}>DEPT_APPROVER (Trưởng bộ phận)</option>
@@ -361,7 +361,7 @@ export default function UsersPage() {
                                         <select 
                                             value={formData.deptId}
                                             onChange={(e) => setFormData({...formData, deptId: e.target.value})}
-                                            className="w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#B4533A]/20 focus:bg-[#FFFFFF] outline-none transition-all text-[#000000]"
+                                            className="w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all text-[#000000]"
                                         >
                                             <option value="">Chưa phân bổ</option>
                                             {departments?.map((d: Department) => (
@@ -380,7 +380,7 @@ export default function UsersPage() {
                                             type="text" 
                                             placeholder="VD: Senior Developer"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#B4533A]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -391,7 +391,7 @@ export default function UsersPage() {
                                             type="text" 
                                             placeholder="VD: EMP001"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#B4533A]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
@@ -413,13 +413,13 @@ export default function UsersPage() {
                                     <button 
                                         type="button"
                                         onClick={() => setShowModal(false)}
-                                        className="flex-1 px-8 py-4 bg-[#FFFFFF] rounded-3xl font-black text-[#000000] uppercase tracking-widest hover:bg-[#1A1D23] transition-colors"
+                                        className="flex-1 px-8 py-4 bg-[#FFFFFF] rounded-3xl font-black text-[#000000] uppercase tracking-widest hover:bg-[#0F172A] transition-colors"
                                     >
                                         Bỏ qua
                                     </button>
                                     <button 
                                         type="submit"
-                                        className="flex-1 px-8 py-4 bg-[#B4533A] text-[#000000] rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-[#B4533A]/20 hover:scale-[1.02] transition-all"
+                                        className="flex-1 px-8 py-4 bg-[#2563EB] text-[#000000] rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-all"
                                     >
                                         {editingUser ? "Lưu cập nhật" : "Tạo tài khoản"}
                                     </button>

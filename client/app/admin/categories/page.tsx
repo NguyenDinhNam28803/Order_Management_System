@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Search, Layers, Building2, ChevronRight, Hash, Globe, CheckCircle2, AlertCircle } from "lucide-react";
@@ -106,12 +106,12 @@ export default function CategoriesPage() {
             key: "name",
             render: (row) => (
                 <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#B4533A] shadow-sm">
+                    <div className="h-12 w-12 rounded-2xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#2563EB] shadow-sm">
                         <Layers size={22} />
                     </div>
                     <div>
                         <div className="text-sm font-black text-[#000000] tracking-tight">{row.name}</div>
-                        <div className="text-[10px] font-black text-[#B4533A] bg-[#B4533A]/10 px-2 py-0.5 rounded mt-1 w-fit uppercase">
+                        <div className="text-[10px] font-black text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded mt-1 w-fit uppercase">
                             CODE: {row.code}
                         </div>
                     </div>
@@ -160,7 +160,7 @@ export default function CategoriesPage() {
                 <div className="flex gap-1">
                     <button 
                         onClick={() => handleOpenModal(row)}
-                        className="p-1.5 text-[#000000] hover:text-[#B4533A] hover:bg-[#B4533A]/10 rounded-lg border border-transparent hover:border-[#B4533A]/20 transition-all"
+                        className="p-1.5 text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg border border-transparent hover:border-[#2563EB]/20 transition-all"
                     >
                         <Edit2 size={14} />
                     </button>
@@ -189,13 +189,13 @@ export default function CategoriesPage() {
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#B4533A] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#B4533A]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm Danh mục
                 </button>
             </div>
 
-            <div className="bg-[#FAF8F5] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#B4533A]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
                         <div className="flex flex-col">
@@ -203,20 +203,20 @@ export default function CategoriesPage() {
                             <div className="text-2xl font-black text-[#000000]">{categories.length} <span className="text-xs text-[#000000] font-bold uppercase ml-1">Nhóm ngành</span></div>
                         </div>
                         <div className="h-10 w-px bg-[rgba(148,163,184,0.1)] hidden md:block" />
-                        <div className="flex items-center gap-2 bg-[#B4533A]/10 px-4 py-2 rounded-2xl border border-[#B4533A]/20">
-                            <Globe size={14} className="text-[#B4533A]" />
-                            <span className="text-[10px] font-black text-[#B4533A] uppercase tracking-tight">Cấu trúc đa chi nhánh</span>
+                        <div className="flex items-center gap-2 bg-[#2563EB]/10 px-4 py-2 rounded-2xl border border-[#2563EB]/20">
+                            <Globe size={14} className="text-[#2563EB]" />
+                            <span className="text-[10px] font-black text-[#2563EB] uppercase tracking-tight">Cấu trúc đa chi nhánh</span>
                         </div>
                     </div>
 
                     <div className="relative group w-full max-w-sm">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#B4533A] transition-colors" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#2563EB] transition-colors" size={18} />
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Tìm kiếm mã hoặc tên danh mục..."
-                            className="w-full pl-12 pr-4 py-3.5 bg-[#FAF8F5] border-2 border-[rgba(148,163,184,0.1)] rounded-[20px] text-xs text-[#000000] font-bold focus:border-[#B4533A] focus:ring-0 outline-none transition-all placeholder:text-[#000000]"
+                            className="w-full pl-12 pr-4 py-3.5 bg-[#F1F5F9] border-2 border-[rgba(148,163,184,0.1)] rounded-[20px] text-xs text-[#000000] font-bold focus:border-[#2563EB] focus:ring-0 outline-none transition-all placeholder:text-[#000000]"
                         />
                     </div>
                 </div>
@@ -227,7 +227,7 @@ export default function CategoriesPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-[#FAF8F5] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         <div className="p-10">
                             <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
                                 {editingCategory ? "Cập nhật Danh mục" : "Thêm Danh mục mới"}
@@ -294,7 +294,7 @@ export default function CategoriesPage() {
                                     <button 
                                         type="button"
                                         onClick={() => setFormData({...formData, isActive: !formData.isActive})}
-                                        className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${formData.isActive ? 'bg-[#B4533A]' : 'bg-[#000000]'}`}
+                                        className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${formData.isActive ? 'bg-[#2563EB]' : 'bg-[#000000]'}`}
                                     >
                                         <div className={`h-4 w-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${formData.isActive ? 'translate-x-6' : 'translate-x-0'}`} />
                                     </button>

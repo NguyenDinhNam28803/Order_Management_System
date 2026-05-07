@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useSearchParams } from "next/navigation";
 import RFQInteraction from "../../components/RFQInteraction";
@@ -22,7 +22,7 @@ export default function RFQInteractionPage() {
                 <h3 className="text-xs font-black uppercase tracking-widest text-black mb-6">Mô tả quy trình nghiệp vụ</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-2">
-                        <div className="w-8 h-8 bg-[#F3DDD6] text-[#A85032] rounded-lg flex items-center justify-center font-black">1</div>
+                        <div className="w-8 h-8 bg-[#F3DDD6] text-[#1D4ED8] rounded-lg flex items-center justify-center font-black">1</div>
                         <p className="text-xs font-bold text-brand-primary uppercase">Lọc Top 3</p>
                         <p className="text-[10px] text-black leading-relaxed font-medium">Hệ thống tự động chấm điểm Rating của hàng nghìn NCC và lọc ra 3 đối tác tin cậy nhất cho mặt hàng này.</p>
                     </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Plus, Edit2, Trash2, Search, DollarSign, Building, Eye, X } from "lucide-react";
@@ -121,13 +121,13 @@ export default function CostCentersPage() {
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#B4533A] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#B4533A]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm Cost Center
                 </button>
             </div>
 
-            <div className="erp-card p-0! overflow-hidden bg-[#FAF8F5] shadow-sm border border-[rgba(148,163,184,0.1)]">
+            <div className="erp-card p-0! overflow-hidden bg-[#F1F5F9] shadow-sm border border-[rgba(148,163,184,0.1)]">
                 <div className="p-5 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                     <div className="flex items-center gap-3">
                         <span className="text-xs font-bold text-[#000000] uppercase tracking-wider">Hệ thống:</span>
@@ -136,7 +136,7 @@ export default function CostCentersPage() {
                     <div className="flex items-center gap-4">
                         <button 
                             onClick={toggleMyDept}
-                            className={`text-[10px] font-black px-4 py-2 rounded-xl transition-all border ${isMyDept ? 'bg-[#B4533A] text-[#000000] border-[#B4533A]' : 'bg-transparent text-[#000000] border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30'}`}
+                            className={`text-[10px] font-black px-4 py-2 rounded-xl transition-all border ${isMyDept ? 'bg-[#2563EB] text-[#000000] border-[#2563EB]' : 'bg-transparent text-[#000000] border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30'}`}
                         >
                             {isMyDept ? "PHÒNG BAN CỦA TÔI" : "TẤT CẢ ĐƠN VỊ"}
                         </button>
@@ -187,12 +187,12 @@ export default function CostCentersPage() {
                                     <tr key={cc.id} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-[rgba(148,163,184,0.1)]">
                                         <td className="py-5">
                                             <div className="flex items-center gap-4">
-                                                <div className="h-10 w-10 rounded-lg bg-[#B4533A]/10 flex items-center justify-center text-[#B4533A] border border-[#B4533A]/20">
+                                                <div className="h-10 w-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] border border-[#2563EB]/20">
                                                     <Building size={18} />
                                                 </div>
                                                 <div>
                                                     <div className="text-sm font-bold text-[#000000] leading-tight">{cc.name}</div>
-                                                    <div className="text-[10px] text-[#B4533A] font-bold mt-0.5 tracking-wider">
+                                                    <div className="text-[10px] text-[#2563EB] font-bold mt-0.5 tracking-wider">
                                                         {cc.code}
                                                     </div>
                                                 </div>
@@ -213,14 +213,14 @@ export default function CostCentersPage() {
                                             <div className="space-y-1.5 max-w-50">
                                                 <div className="flex justify-between text-[10px] font-bold">
                                                     <span className="text-[#000000] uppercase tracking-wider">{formatVND(cc.budgetUsed || 0)}</span>
-                                                    <span className={usagePercent > 90 ? 'text-red-400' : 'text-[#B4533A]'}>
+                                                    <span className={usagePercent > 90 ? 'text-red-400' : 'text-[#2563EB]'}>
                                                         {usagePercent.toFixed(1)}%
                                                     </span>
                                                 </div>
                                                 <div className="budget-meter">
                                                     <div
                                                         className={`h-full transition-all duration-700 ${usagePercent > 90 ? 'bg-red-500' :
-                                                                 usagePercent > 70 ? 'bg-amber-400' : 'bg-[#B4533A]'
+                                                                 usagePercent > 70 ? 'bg-amber-400' : 'bg-[#2563EB]'
                                                             }`}
                                                         style={{ width: `${Math.min(usagePercent, 100)}%` }}
                                                     ></div>
@@ -231,14 +231,14 @@ export default function CostCentersPage() {
                                             <div className="flex justify-end gap-2">
                                                 <button
                                                     onClick={() => handleViewDetail(cc.id)}
-                                                    className="p-2 border border-[rgba(148,163,184,0.1)] rounded-lg hover:bg-[#FFFFFF] transition-colors text-[#000000] hover:text-[#B4533A]"
+                                                    className="p-2 border border-[rgba(148,163,184,0.1)] rounded-lg hover:bg-[#FFFFFF] transition-colors text-[#000000] hover:text-[#2563EB]"
                                                     title="Xem chi tiết"
                                                 >
                                                     <Eye size={14} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleOpenModal(cc)}
-                                                    className="p-2 border border-[rgba(148,163,184,0.1)] rounded-lg hover:bg-[#FFFFFF] transition-colors text-[#000000] hover:text-[#B4533A]"
+                                                    className="p-2 border border-[rgba(148,163,184,0.1)] rounded-lg hover:bg-[#FFFFFF] transition-colors text-[#000000] hover:text-[#2563EB]"
                                                     title="Sửa"
                                                 >
                                                     <Edit2 size={14} />
@@ -267,7 +267,7 @@ export default function CostCentersPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-                    <div className="bg-[#FAF8F5] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
+                    <div className="bg-[#F1F5F9] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
                         <div className="p-8">
                             <div className="flex justify-between items-center mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4">
                                 <h2 className="text-xl font-bold text-[#000000]">
@@ -325,7 +325,7 @@ export default function CostCentersPage() {
                                             value={formatVND(formData.budgetAnnual)}
                                             onChange={(e) => setFormData({ ...formData, budgetAnnual: parseMoney(e.target.value) })}
                                             type="text"
-                                            className="erp-input font-bold text-[#B4533A]"
+                                            className="erp-input font-bold text-[#2563EB]"
                                         />
                                     </div>
                                     <div className="form-group">
@@ -365,7 +365,7 @@ export default function CostCentersPage() {
             {/* Detail Modal */}
             {showDetailModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-                    <div className="bg-[#FAF8F5] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
+                    <div className="bg-[#F1F5F9] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
                         <div className="p-8">
                              <div className="flex justify-between items-center mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4">
                                 <h2 className="text-xl font-bold text-[#000000]">Chi tiết Trung tâm Chi phí</h2>
@@ -374,7 +374,7 @@ export default function CostCentersPage() {
 
                             {isLoadingDetail ? (
                                 <div className="py-20 flex flex-col items-center justify-center gap-3">
-                                    <div className="h-10 w-10 border-4 border-[#FAF8F5] border-t-[#B4533A] rounded-full animate-spin"></div>
+                                    <div className="h-10 w-10 border-4 border-[#F1F5F9] border-t-[#2563EB] rounded-full animate-spin"></div>
                                     <span className="text-xs font-bold text-[#000000] uppercase tracking-widest">Đang trích xuất dữ liệu...</span>
                                 </div>
                             ) : viewingCC ? (
@@ -382,7 +382,7 @@ export default function CostCentersPage() {
                                     <div className="grid grid-cols-2 gap-8 p-6 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-inner">
                                         <div className="form-group">
                                             <label className="erp-label">Mã định danh</label>
-                                            <div className="text-sm font-bold text-[#B4533A] tracking-wider">{viewingCC.code}</div>
+                                            <div className="text-sm font-bold text-[#2563EB] tracking-wider">{viewingCC.code}</div>
                                         </div>
                                         <div className="form-group">
                                             <label className="erp-label">Tên hiển thị</label>
@@ -409,9 +409,9 @@ export default function CostCentersPage() {
                                         <div className="max-h-64 overflow-y-auto pr-2 space-y-3">
                                             {viewingCC.budgetAllocations && viewingCC.budgetAllocations.length > 0 ? (
                                                 viewingCC.budgetAllocations.map((alloc) => (
-                                                    <div key={alloc.id} className="flex justify-between items-center p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] hover:border-[#B4533A]/30 transition-all shadow-sm">
+                                                    <div key={alloc.id} className="flex justify-between items-center p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all shadow-sm">
                                                         <div className="flex items-center gap-4">
-                                                            <div className="h-10 w-10 rounded-lg bg-[#FAF8F5] flex items-center justify-center text-[#B4533A] font-bold text-xs border border-[rgba(148,163,184,0.1)]">
+                                                            <div className="h-10 w-10 rounded-lg bg-[#F1F5F9] flex items-center justify-center text-[#2563EB] font-bold text-xs border border-[rgba(148,163,184,0.1)]">
                                                                 {alloc.budgetPeriod?.periodNumber ? `Q${alloc.budgetPeriod.periodNumber}` : 'FY'}
                                                             </div>
                                                             <div>
@@ -443,7 +443,7 @@ export default function CostCentersPage() {
                             ) : (
                                 <div className="py-10 text-center">
                                     <p className="text-red-400 font-bold">Không trích xuất được hồ sơ đơn vị.</p>
-                                    <button onClick={() => setShowDetailModal(false)} className="mt-4 text-[#B4533A] font-bold text-xs hover:underline">Vui lòng thử lại</button>
+                                    <button onClick={() => setShowDetailModal(false)} className="mt-4 text-[#2563EB] font-bold text-xs hover:underline">Vui lòng thử lại</button>
                                 </div>
                             )}
                         </div>

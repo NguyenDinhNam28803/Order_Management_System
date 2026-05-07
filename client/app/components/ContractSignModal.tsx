@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
@@ -173,7 +173,7 @@ export default function ContractSignModal({
                 onClick={step !== "signing" ? onClose : undefined}
             />
 
-            <div className="relative w-full max-w-lg bg-[#FAF8F5] rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex flex-col max-h-[92vh] overflow-hidden pointer-events-auto animate-in zoom-in-95 duration-200">
+            <div className="relative w-full max-w-lg bg-[#F1F5F9] rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex flex-col max-h-[92vh] overflow-hidden pointer-events-auto animate-in zoom-in-95 duration-200">
 
                 {/* ── Header ── */}
                 <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-[2rem] flex items-center justify-between shrink-0">
@@ -379,7 +379,7 @@ export default function ContractSignModal({
                         <div className="flex gap-3 justify-end">
                             <button
                                 onClick={onClose}
-                                className="px-5 py-2 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#1A1D23] transition-all"
+                                className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all"
                             >
                                 Hủy
                             </button>
@@ -397,7 +397,7 @@ export default function ContractSignModal({
                         <div className="flex gap-3 justify-end">
                             <button
                                 onClick={onClose}
-                                className="px-5 py-2 rounded-xl bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#1A1D23] transition-all"
+                                className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all"
                             >
                                 Hủy
                             </button>
@@ -439,7 +439,7 @@ function StepIndicator({ step }: { step: ModalStep }) {
     const total = 3; // success doesn't count as a "step" to complete
     if (step === "signing" || step === "success") return null;
     return (
-        <span className="text-[10px] font-bold text-[#000000] bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] px-2 py-0.5 rounded-full">
+        <span className="text-[10px] font-bold text-[#000000] bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] px-2 py-0.5 rounded-full">
             Bước {current} / {total}
         </span>
     );

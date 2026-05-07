@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { FileCheck, ShieldAlert, CheckCircle2, AlertTriangle, ArrowLeft, Send, Calendar, CreditCard } from "lucide-react";
@@ -71,10 +71,10 @@ export default function FinanceMatching() {
             
             <div className="mt-8 mb-6 flex flex-col md:flex-row justify-between items-start md:items-end border-b border-[rgba(148,163,184,0.1)] pb-4">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => router.back()} className="w-10 h-10 bg-[#FAF8F5] border border-[rgba(148,163,184,0.1)] rounded-full flex justify-center items-center text-[#000000] hover:text-[#000000] hover:border-[#B4533A]/30 shadow-sm transition-all"><ArrowLeft size={16}/></button>
+                    <button onClick={() => router.back()} className="w-10 h-10 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-full flex justify-center items-center text-[#000000] hover:text-[#000000] hover:border-[#2563EB]/30 shadow-sm transition-all"><ArrowLeft size={16}/></button>
                     <div>
                         <div className="flex items-center gap-2 mb-1 text-[10px] font-black uppercase text-[#000000] tracking-widest">
-                            Nhà CC: {invoice?.vendor?.length && invoice.vendor.length > 16 ? "Supplier-***" : (invoice?.vendor || "N/A")} <span className="text-[#B4533A] bg-[#B4533A]/10 px-2 rounded ml-2 border border-[#B4533A]/20">Payment: Net 30</span>
+                            Nhà CC: {invoice?.vendor?.length && invoice.vendor.length > 16 ? "Supplier-***" : (invoice?.vendor || "N/A")} <span className="text-[#2563EB] bg-[#2563EB]/10 px-2 rounded ml-2 border border-[#2563EB]/20">Payment: Net 30</span>
                         </div>
                         <h1 className="text-3xl font-black text-[#000000] tracking-tight flex items-center gap-4">
                             Hóa Đơn ***
@@ -94,19 +94,19 @@ export default function FinanceMatching() {
 
             {/* 3-Way Panel Section */}
             <div className="space-y-6">
-                <div className="bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 !p-0 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
                     <div className="p-4 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center text-[#000000]">
                         <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
                             <FileCheck size={16}/> 3-Way Matching Panel (Bảng Đối Soát 3 Cột)
                         </h3>
                     </div>
                     
-                    <div className="bg-[#FAF8F5]">
+                    <div className="bg-[#F1F5F9]">
                         <table className="erp-table text-xs m-0 w-full table-fixed">
                             <thead>
                                 <tr className="bg-[#FFFFFF]">
                                     <th className="w-[20%] font-black uppercase tracking-widest text-[9px] text-[#000000]">Hàng Hóa/Thông Số</th>
-                                    <th className="w-[25%] bg-[#B4533A]/10 border-r border-l border-[#B4533A]/20 text-center"><span className="text-[12px] font-black text-[#B4533A]">1. PO (Lệnh Đặt Hàng)</span></th>
+                                    <th className="w-[25%] bg-[#2563EB]/10 border-r border-l border-[#2563EB]/20 text-center"><span className="text-[12px] font-black text-[#2563EB]">1. PO (Lệnh Đặt Hàng)</span></th>
                                     <th className="w-[25%] bg-amber-500/10 border-r border-amber-500/20 text-center"><span className="text-[12px] font-black text-black">2. GRN (Kho Thực Nhận)</span></th>
                                     <th className="w-[30%] bg-purple-500/10 border-purple-500/20 text-center"><span className="text-[12px] font-black text-black">3. INVOICE (NCC Đòi Tiền)</span></th>
                                 </tr>
@@ -115,7 +115,7 @@ export default function FinanceMatching() {
                                 {items.map((item: MatchItem) => (
                                     <tr key={item.id} className={`border-b ${item.matched ? 'border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF]' : 'bg-rose-500/5'}`}>
                                         <td className="font-bold text-[#000000] p-4 border-r border-[rgba(148,163,184,0.1)]">{item.desc}</td>
-                                        <td className="p-4 text-center border-r border-[rgba(148,163,184,0.1)] bg-[#B4533A]/5">
+                                        <td className="p-4 text-center border-r border-[rgba(148,163,184,0.1)] bg-[#2563EB]/5">
                                             <div className="flex flex-col gap-1 items-center">
                                                 <span className="font-black text-[#000000] bg-[#FFFFFF] px-2 py-0.5 rounded text-[10px] border border-[rgba(148,163,184,0.1)]">SL: {item.po.qty}</span>
                                                 <span className="text-[9px] text-[#000000]">@ {formatVND(item.po.price)}</span>
@@ -163,7 +163,7 @@ export default function FinanceMatching() {
                             <p className="text-xl font-black text-[#000000]">{vat.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
                         </div>
                         <div className="text-right space-y-2">
-                            <p className="text-[10px] font-black uppercase text-[#B4533A] tracking-widest border-b border-[#B4533A]/30 pb-1 mb-1 inline-block">Tổng Yêu Cầu T/T (Invoice)</p>
+                            <p className="text-[10px] font-black uppercase text-[#2563EB] tracking-widest border-b border-[#2563EB]/30 pb-1 mb-1 inline-block">Tổng Yêu Cầu T/T (Invoice)</p>
                             <p className="text-3xl font-black text-[#000000]">{(subTotal + vat).toLocaleString()} <span className="text-xs">VNĐ</span></p>
                         </div>
                     </div>
@@ -172,7 +172,7 @@ export default function FinanceMatching() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                     {/* Resolution (8.2) */}
                     {isException ? (
-                        <div className="bg-[#FAF8F5] rounded-2xl border border-rose-500/20 shadow-xl shadow-rose-500/5">
+                        <div className="bg-[#F1F5F9] rounded-2xl border border-rose-500/20 shadow-xl shadow-rose-500/5">
                             <h3 className="text-sm font-black uppercase tracking-widest text-black mb-6 flex items-center gap-2 border-b border-rose-500/20 pb-2">
                                 <AlertTriangle size={16}/> Exception Resolution (Xử lý Lệch)
                             </h3>
@@ -203,7 +203,7 @@ export default function FinanceMatching() {
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-[#FAF8F5] rounded-2xl border border-emerald-500/20 shadow-xl shadow-emerald-500/5 flex flex-col items-center justify-center text-black text-center py-12">
+                        <div className="bg-[#F1F5F9] rounded-2xl border border-emerald-500/20 shadow-xl shadow-emerald-500/5 flex flex-col items-center justify-center text-black text-center py-12">
                             <CheckCircle2 size={48} className="mx-auto mb-4 opacity-50" />
                             <h3 className="text-xl font-black uppercase tracking-widest mb-2">Hoàn Toàn Khớp (Matched)</h3>
                             <p className="text-xs font-bold opacity-70">Có thể duyệt ngày thanh toán cho hóa đơn này.</p>
@@ -211,7 +211,7 @@ export default function FinanceMatching() {
                     )}
 
                     {/* Lên Lịch / Duyệt Thanh toán (8.2) */}
-                    <div className={`bg-[#FAF8F5] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#B4533A]/5 ${(!isException || action === "Accept") ? '' : 'opacity-50 pointer-events-none grayscale'}`}>
+                    <div className={`bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 ${(!isException || action === "Accept") ? '' : 'opacity-50 pointer-events-none grayscale'}`}>
                          <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] mb-6 flex items-center gap-2 border-b border-[rgba(148,163,184,0.1)] pb-2">
                              <CreditCard size={16}/> Lên Lịch & Phê Duyệt Thanh Toán (AP)
                          </h3>
@@ -238,7 +238,7 @@ export default function FinanceMatching() {
                              </div>
                              <div>
                                  <label className="text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2 block items-center gap-1"><CreditCard size={12}/> Phương thức Bank</label>
-                                 <select className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 text-xs text-[#000000] focus:outline-none focus:border-[#B4533A]/30" value={payMethod} onChange={e=>setPayMethod(e.target.value)}>
+                                 <select className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 text-xs text-[#000000] focus:outline-none focus:border-[#2563EB]/30" value={payMethod} onChange={e=>setPayMethod(e.target.value)}>
                                      <option value="Bank Transfer (VND)">Bank Transfer (Techcombank VND)</option>
                                      <option value="LC">Thư Tín Dụng (L/C)</option>
                                      <option value="Cash">Tiền Mặt</option>
@@ -246,7 +246,7 @@ export default function FinanceMatching() {
                              </div>
                              
                              <div className="pt-6 mt-4 border-t border-[rgba(148,163,184,0.1)]">
-                                 <button onClick={handleApprove} className="w-full bg-[#B4533A] hover:bg-[#A85032] text-[#000000] px-8 py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-lg shadow-[#B4533A]/20 transition-all flex justify-center items-center gap-2">
+                                 <button onClick={handleApprove} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-8 py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-lg shadow-[#2563EB]/20 transition-all flex justify-center items-center gap-2">
                                      Phê Duyệt Lệnh Thanh Toán
                                  </button>
                                  <p className="text-[9px] text-center font-bold text-[#000000] mt-3 px-8">Hành động này sẽ Schedule chứng từ vào hàng chờ chạy Bank. Require Manager OTP Approval.</p>

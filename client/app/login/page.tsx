@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Lock, Mail, ArrowRight, ShieldCheck, Zap, ChevronLeft, ChevronRight, PanelRightOpen, PanelRightClose, X } from "lucide-react";
@@ -52,32 +52,32 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F2EFE9] flex flex-col font-sans selection:bg-[#B4533A] selection:text-white">
+        <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-[#2563EB] selection:text-white">
             {/* Top Bar */}
-            <div className="h-12 border-b border-[#D1CDC2] flex items-center justify-between px-6 bg-[#FAF8F5] z-50">
+            <div className="h-12 border-b border-[#E2E8F0] flex items-center justify-between px-6 bg-[#F1F5F9] z-50">
                 <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#000000]">Sign In</div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8C887D]">
+                <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#94A3B8]">
                     /Login — <span className="text-[#000000]">Editorial Split Layout</span>
                 </div>
             </div>
 
             <div className="flex-1 flex flex-col md:flex-row">
                 {/* Left Panel - Brand */}
-                <div className="flex-1 bg-[#1A1A17] relative flex flex-col justify-center px-12 md:px-20 py-20 overflow-hidden">
+                <div className="flex-1 bg-[#0F172A] relative flex flex-col justify-center px-12 md:px-20 py-20 overflow-hidden">
                     {/* Background Subtle Gradient */}
                     <div className="absolute inset-0 bg-linear-to-br from-[#2A2A25] to-transparent opacity-50"></div>
 
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-auto">
-                            <div className="w-10 h-10 bg-[#B4533A] rounded-lg flex items-center justify-center text-white font-serif text-xl font-bold shadow-xl shadow-[#B4533A]/20">P</div>
+                            <div className="w-10 h-10 bg-[#2563EB] rounded-lg flex items-center justify-center text-white font-serif text-xl font-bold shadow-xl shadow-[#2563EB]/20">P</div>
                             <span className="text-xl font-serif font-black text-bg-primary tracking-tight">ProcureSmart</span>
                         </div>
 
                         <div className="my-auto max-w-xl">
                             <h1 className="text-5xl md:text-7xl font-serif font-bold leading-[1.1] tracking-tight mb-8">
-                                <span className="text-white">Mua sắm thông minh,</span> <span className="italic text-[#B4533A]">quy trình tinh gọn.</span>
+                                <span className="text-white">Mua sắm thông minh,</span> <span className="italic text-[#2563EB]">quy trình tinh gọn.</span>
                             </h1>
-                            <p className="text-lg md:text-xl text-[#8C887D] leading-relaxed font-medium max-w-lg">
+                            <p className="text-lg md:text-xl text-[#94A3B8] leading-relaxed font-medium max-w-lg">
                                 Một hệ thống duy nhất cho toàn bộ chu trình Procure-to-Pay — từ yêu cầu, phê duyệt đa cấp, RFQ, nhập kho đến đối soát và thanh toán. Tự động hoá bằng AI, minh bạch bằng audit trail.
                             </p>
                         </div>
@@ -90,10 +90,10 @@ export default function LoginPage() {
                 </div>
 
                 {/* Right Panel - Form */}
-                <div className="flex-1 bg-[#F2EFE9] flex flex-col justify-center px-12 md:px-24 py-20 relative">
+                <div className="flex-1 bg-[#F8FAFC] flex flex-col justify-center px-12 md:px-24 py-20 relative">
                     <div className="max-w-md w-full mx-auto">
                         <div className="mb-12">
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8C887D] mb-4">Đăng nhập doanh nghiệp</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#94A3B8] mb-4">Đăng nhập doanh nghiệp</p>
                             <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#000000]">
                                 Chào mừng <span className="italic font-medium text-[#6B6658]">trở lại.</span>
                             </h2>
@@ -107,56 +107,56 @@ export default function LoginPage() {
                             )}
 
                             <div className="space-y-3">
-                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#8C887D] ml-1">Email Công ty</label>
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#94A3B8] ml-1">Email Công ty</label>
                                 <input
                                     type="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="lam@procuresmart.vn"
-                                    className="w-full bg-[#FAF8F5] border border-[#D1CDC2] rounded-xl px-6 py-4 text-[#000000] text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#D1CDC2]"
+                                    className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-6 py-4 text-[#000000] text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#E2E8F0]"
                                 />
                             </div>
 
                             <div className="space-y-3">
-                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#8C887D] ml-1">Mật khẩu</label>
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#94A3B8] ml-1">Mật khẩu</label>
                                 <input
                                     type="password"
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••••••"
-                                    className="w-full bg-[#FAF8F5] border border-[#D1CDC2] rounded-xl px-6 py-4 text-[#000000] text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#D1CDC2]"
+                                    className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-6 py-4 text-[#000000] text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#E2E8F0]"
                                 />
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-[#1A1A17] hover:bg-black text-[#F2EFE9] font-black text-sm py-4 rounded-xl transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
+                                className="w-full bg-[#0F172A] hover:bg-black text-[#F8FAFC] font-black text-sm py-4 rounded-xl transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
                             >
                                 {isLoading ? "Đang xử lý..." : "Đăng nhập · ↵"}
                             </button>
 
                             <div className="flex justify-between items-center pt-4">
-                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#8C887D] hover:text-[#000000] transition-colors border-b border-transparent hover:border-[#000000]">
+                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#94A3B8] hover:text-[#000000] transition-colors border-b border-transparent hover:border-[#000000]">
                                     Quên mật khẩu?
                                 </button>
-                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#8C887D] hover:text-[#000000] transition-colors border-b border-transparent hover:border-[#000000]">
+                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#94A3B8] hover:text-[#000000] transition-colors border-b border-transparent hover:border-[#000000]">
                                     Liên hệ quản trị
                                 </button>
                             </div>
                         </form>
 
-                        <div className="mt-12 pt-12 border-t border-[#D1CDC2]">
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8C887D] mb-6">Truy cập nhanh Demo</p>
+                        <div className="mt-12 pt-12 border-t border-[#E2E8F0]">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#94A3B8] mb-6">Truy cập nhanh Demo</p>
                             <div className="grid grid-cols-2 gap-3">
                                 {demoUsers.map((u, i) => (
                                     <button
                                         key={i}
                                         type="button"
                                         onClick={() => { setEmail(u.email); setPassword("ProcureSmart@2024"); }}
-                                        className="p-3 bg-[#FFFFFF] border border-[#D1CDC2] rounded-xl text-left hover:border-[#000000] transition-all group flex flex-col gap-1"
+                                        className="p-3 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-left hover:border-[#000000] transition-all group flex flex-col gap-1"
                                     >
                                         <div className="text-[8px] font-black text-black uppercase tracking-widest">{u.role}</div>
                                         <div className="text-[11px] font-bold text-[#000000] truncate">{u.name}</div>

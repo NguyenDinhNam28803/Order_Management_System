@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo } from "react";
 import DOMPurify from "dompurify";
@@ -93,7 +93,7 @@ export default function NotificationTemplatePreview({
   }), [rawPreview]);
 
   return (
-    <div className={`bg-[#FAF8F5] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden ${className}`}>
+    <div className={`bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden ${className}`}>
       {/* Header */}
       <div 
         className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[#FFFFFF] transition-colors"
@@ -125,11 +125,11 @@ export default function NotificationTemplatePreview({
       {isExpanded && (
         <div className="border-t border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
           {/* Action Bar */}
-          <div className="px-4 py-3 bg-[#FAF8F5] border-b border-[rgba(148,163,184,0.1)] flex items-center gap-2">
+          <div className="px-4 py-3 bg-[#F1F5F9] border-b border-[rgba(148,163,184,0.1)] flex items-center gap-2">
             <button
               onClick={(e) => { e.stopPropagation(); loadServerPreview(); }}
               disabled={isLoading}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#000000] bg-[#FFFFFF] border border-[rgba(148,163,184,0.2)] rounded-lg hover:bg-[#B4533A]/10 hover:text-[#000000] hover:border-[#B4533A]/50 disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#000000] bg-[#FFFFFF] border border-[rgba(148,163,184,0.2)] rounded-lg hover:bg-[#2563EB]/10 hover:text-[#000000] hover:border-[#2563EB]/50 disabled:opacity-50 transition-all"
             >
               {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
               {showServerPreview ? 'Ẩn xem trước' : 'Xem trước từ server'}
@@ -138,7 +138,7 @@ export default function NotificationTemplatePreview({
             {onSend && (
               <button
                 onClick={(e) => { e.stopPropagation(); onSend(); }}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#000000] bg-gradient-to-r from-[#B4533A] to-[#CB7A62] rounded-lg hover:shadow-lg hover:shadow-[#B4533A]/30 transition-all"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#000000] bg-gradient-to-r from-[#2563EB] to-[#3B82F6] rounded-lg hover:shadow-lg hover:shadow-[#2563EB]/30 transition-all"
               >
                 <Send size={14} />
                 Gửi email
@@ -162,7 +162,7 @@ export default function NotificationTemplatePreview({
           <div className="p-4 bg-[#0A0A0A]">
             <div className="bg-[#1A1A1A] rounded-lg border border-[rgba(148,163,184,0.1)] overflow-hidden">
               {/* Email Subject */}
-              <div className="px-4 py-3 border-b border-[rgba(148,163,184,0.1)] bg-[#FAF8F5]">
+              <div className="px-4 py-3 border-b border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
                 <span className="text-sm text-[#000000]">Subject: </span>
                 <span className="text-sm font-medium text-[#000000]">{displayPreview.subject}</span>
               </div>
@@ -178,7 +178,7 @@ export default function NotificationTemplatePreview({
           {/* Data Preview */}
           <div className="px-4 py-3 border-t border-[rgba(148,163,184,0.1)]">
             <h4 className="text-sm font-medium text-[#000000] mb-2">Dữ liệu template:</h4>
-            <pre className="text-xs text-[#CB7A62] bg-[#FFFFFF] p-3 rounded-lg overflow-x-auto border border-[rgba(148,163,184,0.1)]">
+            <pre className="text-xs text-[#3B82F6] bg-[#FFFFFF] p-3 rounded-lg overflow-x-auto border border-[rgba(148,163,184,0.1)]">
               {JSON.stringify(data, null, 2)}
             </pre>
           </div>
