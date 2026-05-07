@@ -36,7 +36,8 @@
       "PowerShell(head *)",
       "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\client\\\\app\" -Recurse -Filter \"*.tsx\")",
       "Bash(Measure-Object)",
-      "Bash(Select-Object -ExpandProperty Count)"
+      "Bash(Select-Object -ExpandProperty Count)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
