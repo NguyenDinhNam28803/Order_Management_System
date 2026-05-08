@@ -408,6 +408,7 @@ model PurchaseRequisition {
   completedAt    DateTime?       @map("completed_at") @db.Timestamptz(6)
   cancelledAt    DateTime?       @map("cancelled_at") @db.Timestamptz(6)
   cancelReason   String?         @map("cancel_reason")
+  deletedAt      DateTime?       @map("deleted_at") @db.Timestamptz(6)
   metadata       Json            @default("{}")
   createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -490,6 +491,7 @@ model RfqRequest {
   aiReport               Json                @default("{}") @map("ai_report")
   awardedSupplierId      String?             @map("awarded_supplier_id") @db.Uuid
   awardedAt              DateTime?           @map("awarded_at") @db.Timestamptz(6)
+  deletedAt              DateTime?           @map("deleted_at") @db.Timestamptz(6)
   createdById            String              @map("created_by") @db.Uuid
   createdAt              DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -505,6 +507,8 @@ model RfqRequest {
   singleSourceApprover   User?               @relation("RfqSingleSourceApprover", fields: [singleSourceApproverId], references: [id])
   suppliers              RfqSupplier[]
 
+  @@index([orgId, status])
+  @@index([createdById])
   @@map("rfq_requests")
 }
 
@@ -658,6 +662,7 @@ model PurchaseOrder {
   completedAt        DateTime?              @map("completed_at") @db.Timestamptz(6)
   cancelledAt        DateTime?              @map("cancelled_at") @db.Timestamptz(6)
   cancelReason       String?                @map("cancel_reason")
+  deletedAt          DateTime?              @map("deleted_at") @db.Timestamptz(6)
   poPdfUrl           String?                @map("po_pdf_url") @db.VarChar(500)
   escrowLocked       Boolean                @default(false) @map("escrow_locked")
   escrowLockedAt     DateTime?              @map("escrow_locked_at") @db.Timestamptz(6)
@@ -796,6 +801,7 @@ model GoodsReceipt {
   packingListUrl        String?           @map("packing_list_url") @db.VarChar(500)
   coaUrl                String?           @map("coa_url") @db.VarChar(500)
   waybillNumber         String?           @map("waybill_number") @db.VarChar(100)
+  deletedAt             DateTime?         @map("deleted_at") @db.Timestamptz(6)
   notes                 String?
   createdAt             DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt             DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -928,6 +934,7 @@ model SupplierInvoice {
   approvedAt       DateTime?           @map("approved_at") @db.Timestamptz(6)
   approvedById     String?             @map("approved_by") @db.Uuid
   paidAt           DateTime?           @map("paid_at") @db.Timestamptz(6)
+  deletedAt        DateTime?           @map("deleted_at") @db.Timestamptz(6)
   notes            String?
   createdAt        DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)

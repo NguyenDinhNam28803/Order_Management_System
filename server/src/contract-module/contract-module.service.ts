@@ -10,6 +10,7 @@ import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
 import { ContractStatus, DocumentType } from '@prisma/client';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
+import { generateDocNumber } from '../common/utils/doc-number.util';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
 import { PdfGeneratorService } from '../notification-module/pdf-generator.service';
 import { ExternalTokenService } from '../external-token-module/external-token.service';
@@ -51,7 +52,7 @@ export class ContractModuleService {
       }
     }
 
-    const contractNumber = `CON-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const contractNumber = generateDocNumber('CON');
 
     const contract = await this.prisma.contract.create({
       data: {
