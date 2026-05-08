@@ -36,9 +36,66 @@ export interface AiQuotationAnalysis {
   recommendation: 'RECOMMEND' | 'CONSIDER' | 'REJECT';
 }
 
+export interface QuotationEmailExtract {
+  rfqNumber?: string;
+  quotationNumber?: string;
+  totalPrice?: number;
+  currency?: string;
+  leadTimeDays?: number;
+  validityDays?: number;
+  paymentTerms?: string;
+  deliveryTerms?: string;
+  items?: Array<{
+    description: string;
+    qty: number;
+    unitPrice: number;
+    unit?: string;
+  }>;
+}
+
+export interface PoConfirmationEmailExtract {
+  poNumber?: string;
+  estimatedDelivery?: string;
+  notes?: string;
+}
+
+export interface ShippingEmailExtract {
+  poNumber?: string;
+  trackingNumber?: string;
+  carrier?: string;
+  shippedDate?: string;
+  estimatedArrival?: string;
+  notes?: string;
+}
+
+export interface InvoiceEmailExtract {
+  poNumber?: string;
+  invoiceNumber?: string;
+  invoiceDate?: string;
+  dueDate?: string;
+  subtotal?: number;
+  taxRate?: number;
+  taxAmount?: number;
+  totalAmount?: number;
+  currency?: string;
+  paymentTerms?: string;
+  eInvoiceRef?: string;
+  notes?: string;
+}
+
 export interface AiEmailAnalysis {
-  intent: 'CREATE_PR' | 'UPDATE_PO' | 'GENERAL_INQUIRY';
-  data: any;
+  intent:
+    | 'QUOTATION'
+    | 'PO_CONFIRMATION'
+    | 'SHIPPING_NOTIFICATION'
+    | 'INVOICE_SUBMISSION'
+    | 'GENERAL_INQUIRY';
+  data:
+    | QuotationEmailExtract
+    | PoConfirmationEmailExtract
+    | ShippingEmailExtract
+    | InvoiceEmailExtract
+    | Record<string, never>;
   confidence: number;
 }
 
@@ -46,6 +103,7 @@ export interface AiEmailAnalysis {
 export class AiService implements OnModuleInit {
   private readonly logger = new Logger(AiService.name);
   private client: GoogleGenAI;
+  private aiEnabled = true;
 
   constructor(
     private configService: ConfigService,
@@ -53,9 +111,22 @@ export class AiService implements OnModuleInit {
   ) {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY');
     if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not defined in environment variables');
+      this.logger.warn(
+        'GEMINI_API_KEY is not set — AI features disabled. Set the key in .env to enable.',
+      );
+      this.aiEnabled = false;
+      this.client = {} as GoogleGenAI;
+    } else {
+      this.client = new GoogleGenAI({ apiKey });
     }
-    this.client = new GoogleGenAI({ apiKey });
+  }
+
+  private ensureAiEnabled(method: string): void {
+    if (!this.aiEnabled) {
+      throw new Error(
+        `AI is disabled (GEMINI_API_KEY not set) — ${method} unavailable`,
+      );
+    }
   }
 
   /** Retry wrapper: up to 3 attempts with 1s / 2s exponential backoff. */
@@ -76,32 +147,108 @@ export class AiService implements OnModuleInit {
     throw new Error('unreachable');
   }
   /**
-   * Phân tích nội dung email bằng AI
+   * Phân tích nội dung email từ nhà cung cấp, xác định loại và trích xuất dữ liệu nghiệp vụ.
    */
-  async analyzeEmailContent(emailContent: string): Promise<AiEmailAnalysis> {
-    const prompt = `
-      Đóng vai trợ lý mua sắm thông minh. Hãy phân tích email sau và trích xuất dữ liệu:
-      "${emailContent}"
+  /**
+   * Kiểm tra email có liên quan đến procurement không (dùng trong EmailFilterService).
+   * Method riêng biệt, không dùng lại analyzeEmailContent để tránh double-wrapping prompt.
+   */
+  async filterEmailRelevance(
+    subject: string,
+    from: string,
+    bodySnippet: string,
+  ): Promise<{ relevant: boolean; confidence: number; reason: string }> {
+    this.ensureAiEnabled('filterEmailRelevance');
 
-      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT:
-      {
-        "intent": "CREATE_PR" | "UPDATE_PO" | "GENERAL_INQUIRY",
-        "data": { "description": "string", "quantity": number, "supplierId": "string" | null },
-        "confidence": number
-      }
-    `;
+    const prompt = `Bạn là bộ lọc email cho hệ thống quản lý mua hàng (OMS).
+
+Phân tích email sau và cho biết có nên xử lý không:
+
+Subject: ${subject}
+From: ${from}
+Body (200 ký tự đầu): ${bodySnippet.slice(0, 200)}
+
+Hệ thống CHỈ xử lý các email liên quan đến:
+- Yêu cầu mua hàng (Purchase Requisition)
+- Đặt hàng, báo giá, hợp đồng với nhà cung cấp
+- Phê duyệt / từ chối đơn hàng
+- Thông báo giao hàng, hóa đơn
+
+Trả lời JSON (KHÔNG markdown, KHÔNG giải thích):
+{"relevant": true hoặc false, "reason": "lý do ngắn gọn dưới 20 từ", "confidence": 0.0-1.0}`;
 
     const result = await this.withRetry(
-      () => this.client.models.generateContent({
-        model: 'gemini-3.1-flash-lite-preview',
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      }),
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-2.0-flash-lite',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
+      'filterEmailRelevance',
+    );
+
+    const parsed = this.parseSpecificJson<{
+      relevant: boolean;
+      reason: string;
+      confidence: number;
+    }>(result.text ?? '');
+
+    return {
+      relevant: parsed.relevant ?? false,
+      confidence: parsed.confidence ?? 0,
+      reason: parsed.reason ?? '',
+    };
+  }
+
+  async analyzeEmailContent(emailContent: string): Promise<AiEmailAnalysis> {
+    this.ensureAiEnabled('analyzeEmailContent');
+    const prompt = `Bạn là trợ lý phân tích email cho hệ thống quản lý mua hàng (OMS).
+Phân tích email dưới đây và xác định intent, sau đó trích xuất dữ liệu tương ứng.
+
+EMAIL:
+"""
+${emailContent}
+"""
+
+INTENT CÓ THỂ CÓ (chọn đúng 1):
+- QUOTATION: Nhà cung cấp gửi báo giá / đề xuất giá cho RFQ
+- PO_CONFIRMATION: Nhà cung cấp xác nhận đã nhận đơn đặt hàng (PO)
+- SHIPPING_NOTIFICATION: Nhà cung cấp thông báo đã xuất kho / đang vận chuyển
+- INVOICE_SUBMISSION: Nhà cung cấp gửi hoá đơn đề nghị thanh toán
+- GENERAL_INQUIRY: Email hỏi thông tin, không thuộc 4 loại trên
+
+TRẢ VỀ JSON THUẦN TÚY (không markdown, không giải thích):
+
+Nếu intent = QUOTATION:
+{"intent":"QUOTATION","confidence":0.0-1.0,"data":{"rfqNumber":"RFQ-XXXX hoặc null","quotationNumber":"số báo giá hoặc null","totalPrice":số hoặc null,"currency":"VND/USD/...","leadTimeDays":số ngày hoặc null,"validityDays":số ngày hoặc null,"paymentTerms":"điều khoản thanh toán hoặc null","deliveryTerms":"điều khoản giao hàng hoặc null","items":[{"description":"tên hàng","qty":số,"unitPrice":đơn giá,"unit":"cái/kg/..."}]}}
+
+Nếu intent = PO_CONFIRMATION:
+{"intent":"PO_CONFIRMATION","confidence":0.0-1.0,"data":{"poNumber":"PO-XXXX hoặc null","estimatedDelivery":"ngày dự kiến hoặc null","notes":"ghi chú hoặc null"}}
+
+Nếu intent = SHIPPING_NOTIFICATION:
+{"intent":"SHIPPING_NOTIFICATION","confidence":0.0-1.0,"data":{"poNumber":"PO-XXXX hoặc null","trackingNumber":"mã vận đơn hoặc null","carrier":"đơn vị vận chuyển hoặc null","shippedDate":"ngày xuất kho hoặc null","estimatedArrival":"ngày dự kiến đến hoặc null","notes":"ghi chú hoặc null"}}
+
+Nếu intent = INVOICE_SUBMISSION:
+{"intent":"INVOICE_SUBMISSION","confidence":0.0-1.0,"data":{"poNumber":"PO-XXXX hoặc null","invoiceNumber":"số hoá đơn hoặc null","invoiceDate":"ngày hoặc null","dueDate":"hạn thanh toán hoặc null","subtotal":số hoặc null,"taxRate":phần trăm hoặc null,"taxAmount":số hoặc null,"totalAmount":tổng tiền hoặc null,"currency":"VND/USD","paymentTerms":"điều khoản hoặc null","eInvoiceRef":"mã hoá đơn điện tử hoặc null","notes":"ghi chú hoặc null"}}
+
+Nếu intent = GENERAL_INQUIRY:
+{"intent":"GENERAL_INQUIRY","confidence":0.0-1.0,"data":{}}
+
+Lưu ý:
+- Trả về null cho trường không tìm thấy trong email, không bịa đặt
+- confidence phản ánh mức chắc chắn về intent (0.0 = không chắc, 1.0 = chắc chắn)
+- Ưu tiên phân tích tiếng Việt và tiếng Anh`;
+
+    const result = await this.withRetry(
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-2.0-flash-lite',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
       'analyzeEmailContent',
     );
 
     return this.parseSpecificJson<AiEmailAnalysis>(result.text ?? '');
   }
-
 
   async onModuleInit() {
     await this.listModels();
@@ -115,6 +262,7 @@ export class AiService implements OnModuleInit {
     quotationData: any,
     supplierData: any,
   ): Promise<AiQuotationAnalysis> {
+    this.ensureAiEnabled('analyzeQuotation');
     const prompt = `
       Đóng vai một chuyên gia mua sắm (Procurement Expert). Hãy phân tích báo giá sau:
       1. YÊU CẦU (RFQ): ${JSON.stringify(rfqData.items)}
@@ -132,28 +280,37 @@ export class AiService implements OnModuleInit {
     `;
 
     const result = await this.withRetry(
-      () => this.client.models.generateContent({
-        model: 'gemini-3.1-flash-lite-preview',
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      }),
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-2.0-flash-lite',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
       'analyzeQuotation',
     );
 
-    const parsed = this.parseSpecificJson<AiQuotationAnalysis>(result.text ?? '');
+    const parsed = this.parseSpecificJson<AiQuotationAnalysis>(
+      result.text ?? '',
+    );
 
     // VALIDATION: Ensure score matches assessment
     // If assessment indicates major issues (unreasonable price, fraud suspicion), cap the score
     const assessmentLower = parsed.assessment?.toLowerCase() || '';
-    const hasPriceIssue = assessmentLower.includes('vô lý') ||
-                         assessmentLower.includes('quá cao') ||
-                         assessmentLower.includes('gian lận') ||
-                         assessmentLower.includes('không hợp lý') ||
-                         assessmentLower.includes('vượt xa giá trị');
+    const hasPriceIssue =
+      assessmentLower.includes('vô lý') ||
+      assessmentLower.includes('quá cao') ||
+      assessmentLower.includes('gian lận') ||
+      assessmentLower.includes('không hợp lý') ||
+      assessmentLower.includes('vượt xa giá trị');
 
-    const hasManyCons = parsed.cons && parsed.cons.length > 0 && parsed.cons.length >= (parsed.pros?.length || 0);
+    const hasManyCons =
+      parsed.cons &&
+      parsed.cons.length > 0 &&
+      parsed.cons.length >= (parsed.pros?.length || 0);
 
     if ((hasPriceIssue || hasManyCons) && parsed.score > 3) {
-      this.logger.warn(`Score ${parsed.score} capped to 3 for problematic quotation`);
+      this.logger.warn(
+        `Score ${parsed.score} capped to 3 for problematic quotation`,
+      );
       parsed.score = 3;
     }
 
@@ -167,6 +324,7 @@ export class AiService implements OnModuleInit {
     supplierData: any,
     performanceData: any,
   ): Promise<AiSupplierEvaluation> {
+    this.ensureAiEnabled('analyzeSupplierPerformance');
     const prompt = `
       Đóng vai chuyên gia Quản lý Nhà cung cấp. Phân tích hiệu năng: ${supplierData.name}. 
       Dữ liệu hiệu năng: ${JSON.stringify(performanceData)}.
@@ -186,10 +344,11 @@ export class AiService implements OnModuleInit {
     `;
 
     const result = await this.withRetry(
-      () => this.client.models.generateContent({
-        model: 'gemini-3.1-flash-lite-preview',
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      }),
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-2.0-flash-lite',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
       'analyzeSupplierPerformance',
     );
 
@@ -200,6 +359,14 @@ export class AiService implements OnModuleInit {
    * Phương thức chính để AI tương tác với database qua Prisma (Full logic)
    */
   async askAiAboutDatabase(userPrompt: string): Promise<AiDatabaseResponse> {
+    if (!this.aiEnabled) {
+      return {
+        success: false,
+        summary: 'AI disabled (GEMINI_API_KEY not set)',
+        data: [],
+        total: 0,
+      };
+    }
     try {
       const systemInstruction = `
         # ROLE: Bạn là Giám đốc Sách lược Mua sắm (CPO).
@@ -229,15 +396,16 @@ export class AiService implements OnModuleInit {
       ];
 
       let response = await this.withRetry(
-        () => this.client.models.generateContent({
-          model: 'gemini-3.1-flash-lite-preview',
-          config: {
-            systemInstruction: { parts: [{ text: systemInstruction }] },
-            thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
-            tools: tools,
-          },
-          contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-        }),
+        () =>
+          this.client.models.generateContent({
+            model: 'gemini-2.0-flash-lite',
+            config: {
+              systemInstruction: { parts: [{ text: systemInstruction }] },
+              thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
+              tools: tools,
+            },
+            contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+          }),
         'askAiAboutDatabase',
       );
 
@@ -278,17 +446,18 @@ export class AiService implements OnModuleInit {
 
         chatHistory.push({ role: 'function', parts: functionResponses });
         response = await this.withRetry(
-          () => this.client.models.generateContent({
-            model: 'gemini-3.1-flash-lite-preview',
-            config: { tools: tools },
-            contents: chatHistory,
-          }),
+          () =>
+            this.client.models.generateContent({
+              model: 'gemini-2.0-flash-lite',
+              config: { tools: tools },
+              contents: chatHistory,
+            }),
           'askAiAboutDatabase:toolLoop',
         );
       }
 
       return this.parseSpecificJson<AiDatabaseResponse>(response.text ?? '');
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`askAiAboutDatabase failed: ${error.message}`);
       return {
         success: false,
@@ -323,7 +492,7 @@ export class AiService implements OnModuleInit {
           typeof v === 'bigint' ? v.toString() : v,
         ),
       );
-    } catch (error) {
+    } catch (error: any) {
       return { error: error.message };
     }
   }
@@ -344,9 +513,14 @@ export class AiService implements OnModuleInit {
       }
       try {
         return JSON.parse(cleaned) as T;
-      } catch {
-        this.logger.error(`AI response parse failed: ${text.slice(0, 200)}`);
-        return {} as T;
+      } catch (parseErr: any) {
+        this.logger.error(
+          `AI response parse failed (${parseErr.message}): "${text.slice(0, 300)}"`,
+        );
+        // Throw instead of returning an empty object to surface failures early
+        throw new Error(
+          `AI returned unparseable response: ${parseErr.message}`,
+        );
       }
     }
   }

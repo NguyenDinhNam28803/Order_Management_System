@@ -7,6 +7,7 @@ import {
   UseGuards,
   Request,
   Put,
+  Query,
 } from '@nestjs/common';
 import { PomoduleService } from './pomodule.service';
 import { CreatePoDto } from './dto/create-po.dto';
@@ -160,10 +161,22 @@ export class PomoduleController {
     return this.poService.findBySupplier(supplierId);
   }
 
+  @Get('paginated')
+  @ApiOperation({ summary: 'Lấy PO có phân trang' })
+  async findPaginated(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: { user: JwtPayload },
+  ) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+    const data = await this.poService.findPaginated(req.user.orgId, skip, take);
+    const total = await this.poService.count(req.user.orgId);
+    return { data, total, page: Number(page), limit: Number(limit) };
+  }
+
   /**
    * Lấy danh sách tất cả các đơn đặt hàng của tổ chức hiện tại
-   * @param req Thông tin người dùng để xác định tổ chức
-   * @returns Danh sách các đơn đặt hàng
    */
   @Get()
   @Roles(

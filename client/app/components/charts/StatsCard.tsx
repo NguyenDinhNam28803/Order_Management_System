@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { LucideIcon } from "lucide-react";
@@ -19,15 +19,15 @@ interface StatsCardProps {
 }
 
 const colorClasses = {
-  blue: "bg-[#0F1117] border-[#3B82F6]/30 text-[#3B82F6]",
-  green: "bg-[#0F1117] border-emerald-500/30 text-emerald-400",
-  amber: "bg-[#0F1117] border-amber-500/30 text-amber-400",
-  red: "bg-[#0F1117] border-rose-500/30 text-rose-400",
-  purple: "bg-[#0F1117] border-purple-500/30 text-purple-400",
+  blue: "bg-[#FFFFFF] border-[#2563EB]/30 text-[#2563EB]",
+  green: "bg-[#FFFFFF] border-emerald-500/30 text-black",
+  amber: "bg-[#FFFFFF] border-amber-500/30 text-black",
+  red: "bg-[#FFFFFF] border-rose-500/30 text-black",
+  purple: "bg-[#FFFFFF] border-purple-500/30 text-black",
 };
 
 const iconBgClasses = {
-  blue: "bg-[#3B82F6]/10",
+  blue: "bg-[#2563EB]/10",
   green: "bg-emerald-500/10",
   amber: "bg-amber-500/10",
   red: "bg-rose-500/10",
@@ -46,33 +46,33 @@ export default function StatsCard({
 }: StatsCardProps) {
   return (
     <div
-      className={`${colorClasses[color]} rounded-2xl p-4 border relative overflow-hidden ${className}`}
+      className={`${colorClasses[color]} rounded-xl p-3.5 border relative overflow-hidden ${className}`}
     >
       <div className="relative z-10">
-        <div className="flex items-start justify-between mb-3">
-          <div className={`p-2 rounded-lg ${iconBgClasses[color]}`}>
-            <Icon size={18} className={colorClasses[color].split(" ").pop()} />
+        <div className="flex items-start justify-between mb-2">
+          <div className={`p-1.5 rounded-lg ${iconBgClasses[color]}`}>
+            <Icon size={16} className={colorClasses[color].split(" ").pop()} />
           </div>
           {trend && (
             <div
-              className={`flex items-center gap-1 text-xs font-medium ${
-                trend.isPositive ? "text-emerald-400" : "text-rose-400"
+              className={`flex items-center gap-1 text-[10px] font-medium ${
+                trend.isPositive ? "text-black" : "text-black"
               }`}
             >
               {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%
             </div>
           )}
         </div>
-
-        <p className="text-[10px] font-black uppercase tracking-widest text-[#64748B] mb-1">
+        
+        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">
           {title}
         </p>
-        <h3 className="text-3xl font-black text-[#F8FAFC]">{value}</h3>
+        <h3 className="text-2xl font-black text-slate-900 leading-tight">{value}</h3>
         {subValue && (
-          <p className="text-sm text-[#94A3B8] mt-1">{subValue}</p>
+          <p className="text-xs text-slate-500 mt-0.5">{subValue}</p>
         )}
 
-        {children && <div className="mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">{children}</div>}
+        {children && <div className="mt-2 pt-2 border-t border-[rgba(148,163,184,0.05)]">{children}</div>}
       </div>
 
       {/* Background decoration */}
@@ -82,3 +82,4 @@ export default function StatsCard({
     </div>
   );
 }
+

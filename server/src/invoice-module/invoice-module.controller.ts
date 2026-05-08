@@ -8,7 +8,9 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
+import { ApiProperty, ApiOperation as _Op } from '@nestjs/swagger';
 import { InvoiceModuleService } from './invoice-module.service';
 import { CreateInvoiceModuleDto } from './dto/create-invoice-module.dto';
 import { UpdateInvoiceModuleDto } from './dto/update-invoice-module.dto';
@@ -16,6 +18,19 @@ import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 import { Roles } from '../common/roles.guard';
+
+class CreateFromTextDto {
+  @ApiProperty({
+    description: 'Nội dung text hoá đơn (copy từ email / Zalo / điện thoại)',
+  })
+  rawText!: string;
+
+  @ApiProperty({ description: 'UUID của nhà cung cấp' })
+  supplierId!: string;
+
+  @ApiProperty({ description: 'UUID của tổ chức mua hàng' })
+  orgId!: string;
+}
 
 @ApiTags('Invoice Management')
 @ApiBearerAuth('JWT-auth')
@@ -33,6 +48,27 @@ export class InvoiceModuleController {
   @ApiOperation({ summary: 'Tạo hóa đơn mới' })
   create(@Body() createInvoiceModuleDto: CreateInvoiceModuleDto) {
     return this.invoiceModuleService.create(createInvoiceModuleDto);
+  }
+
+  @Get('paginated')
+  @ApiOperation({ summary: 'Lấy Invoice có phân trang' })
+  async findPaginated(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: any,
+  ) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment
+    const data = await this.invoiceModuleService.findPaginated(
+      req.user.orgId,
+      skip,
+      take,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment
+    const total = await this.invoiceModuleService.count(req.user.orgId);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    return { data, total, page: Number(page), limit: Number(limit) };
   }
 
   /**
@@ -81,9 +117,11 @@ export class InvoiceModuleController {
 
   @Post(':id/approve-exception')
   @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
-  @ApiOperation({ summary: 'Finance duyệt bỏ qua exception trong 3-way matching' })
+  @ApiOperation({
+    summary: 'Finance duyệt bỏ qua exception trong 3-way matching',
+  })
   approveException(@Param('id') id: string, @Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.invoiceModuleService.approveMatchingException(id, req.user);
   }
 
@@ -103,17 +141,6 @@ export class InvoiceModuleController {
   }
 
   /**
-   * Đánh dấu hóa đơn là đã thanh toán
-   * @param id ID của hóa đơn
-   * @returns Hóa đơn sau khi được cập nhật trạng thái
-   */
-  @Post(':id/pay')
-  @ApiOperation({ summary: 'Thanh toán hóa đơn' })
-  pay(@Param('id') id: string) {
-    return this.invoiceModuleService.markAsPaid(id);
-  }
-
-  /**
    * Xóa một hóa đơn khỏi hệ thống theo ID
    * @param id ID của hóa đơn cần xóa
    * @returns Kết quả xóa
@@ -122,5 +149,23 @@ export class InvoiceModuleController {
   @ApiOperation({ summary: 'Xóa hóa đơn theo ID' })
   remove(@Param('id') id: string) {
     return this.invoiceModuleService.remove(id);
+  }
+
+  /**
+   * Dán nội dung hoá đơn từ email / Zalo / điện thoại → AI phân tích → tạo invoice draft
+   */
+  @Post('from-text')
+  @ApiOperation({
+    summary: 'Tạo hoá đơn từ text (AI)',
+    description:
+      'Procurement dán nội dung NCC gửi qua email/Zalo/điện thoại. AI trích xuất số liệu và tạo hoá đơn DRAFT để kiểm tra lại.',
+  })
+  createFromText(@Body() dto: CreateFromTextDto, @Request() req: any) {
+    return this.invoiceModuleService.createFromText(
+      dto.rawText,
+      dto.supplierId,
+      dto.orgId,
+      req.user,
+    );
   }
 }

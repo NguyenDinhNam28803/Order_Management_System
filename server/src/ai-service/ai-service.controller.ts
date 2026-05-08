@@ -35,7 +35,10 @@ export class AiController {
    */
   @Get('ask')
   @ApiOperation({ summary: 'Hỏi AI về dữ liệu trong hệ thống (Gemini)' })
-  @ApiQuery({ name: 'prompt', description: 'Câu hỏi bằng tiếng Việt, ví dụ: Liệt kê 3 PO mới nhất' })
+  @ApiQuery({
+    name: 'prompt',
+    description: 'Câu hỏi bằng tiếng Việt, ví dụ: Liệt kê 3 PO mới nhất',
+  })
   @ApiResponse({ status: 200, description: 'Câu trả lời từ AI' })
   async askAi(@Query('prompt') prompt: string) {
     if (!prompt?.trim()) {
@@ -55,9 +58,18 @@ export class AiController {
       type: 'object',
       required: ['rfqData', 'quotationData', 'supplierData'],
       properties: {
-        rfqData:       { type: 'object', description: 'Dữ liệu RFQ (items, requirements)' },
-        quotationData: { type: 'object', description: 'Dữ liệu báo giá (totalPrice, items)' },
-        supplierData:  { type: 'object', description: 'Dữ liệu nhà cung cấp (name, tier)' },
+        rfqData: {
+          type: 'object',
+          description: 'Dữ liệu RFQ (items, requirements)',
+        },
+        quotationData: {
+          type: 'object',
+          description: 'Dữ liệu báo giá (totalPrice, items)',
+        },
+        supplierData: {
+          type: 'object',
+          description: 'Dữ liệu nhà cung cấp (name, tier)',
+        },
       },
     },
   })
@@ -70,11 +82,18 @@ export class AiController {
       supplierData: any;
     },
   ): Promise<AiQuotationAnalysis> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { rfqData, quotationData, supplierData } = body;
     if (!rfqData || !quotationData || !supplierData) {
-      throw new BadRequestException('rfqData, quotationData và supplierData là bắt buộc');
+      throw new BadRequestException(
+        'rfqData, quotationData và supplierData là bắt buộc',
+      );
     }
-    return this.aiService.analyzeQuotation(rfqData, quotationData, supplierData);
+    return this.aiService.analyzeQuotation(
+      rfqData,
+      quotationData,
+      supplierData,
+    );
   }
 
   /**
@@ -87,8 +106,11 @@ export class AiController {
       type: 'object',
       required: ['supplierData', 'performanceData'],
       properties: {
-        supplierData:    { type: 'object', description: 'Thông tin nhà cung cấp' },
-        performanceData: { type: 'object', description: 'Dữ liệu KPI (OTD, chất lượng, giá cả)' },
+        supplierData: { type: 'object', description: 'Thông tin nhà cung cấp' },
+        performanceData: {
+          type: 'object',
+          description: 'Dữ liệu KPI (OTD, chất lượng, giá cả)',
+        },
       },
     },
   })
@@ -96,11 +118,17 @@ export class AiController {
   async analyzeSupplier(
     @Body() body: { supplierData: any; performanceData: any },
   ): Promise<AiSupplierEvaluation> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { supplierData, performanceData } = body;
     if (!supplierData || !performanceData) {
-      throw new BadRequestException('supplierData và performanceData là bắt buộc');
+      throw new BadRequestException(
+        'supplierData và performanceData là bắt buộc',
+      );
     }
-    return this.aiService.analyzeSupplierPerformance(supplierData, performanceData);
+    return this.aiService.analyzeSupplierPerformance(
+      supplierData,
+      performanceData,
+    );
   }
 
   /**
@@ -113,7 +141,10 @@ export class AiController {
       type: 'object',
       required: ['emailContent'],
       properties: {
-        emailContent: { type: 'string', description: 'Nội dung email cần phân tích' },
+        emailContent: {
+          type: 'string',
+          description: 'Nội dung email cần phân tích',
+        },
       },
     },
   })

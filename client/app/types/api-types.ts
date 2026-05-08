@@ -669,6 +669,10 @@ export interface Contract {
     milestones?: ContractMilestone[];
     supplier?: Organization;
     organization?: Organization;
+    notes?: string;
+    terms?: string;
+    autoRenew?: boolean;
+    contractType?: string;
 }
 
 export enum DisputeStatus {
@@ -705,10 +709,8 @@ export interface AuditLog {
     action: string;
     entityType: string;
     entityId: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    oldValue?: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    newValue?: any;
+    oldValue?: unknown;
+    newValue?: unknown;
     ipAddress?: string;
     userAgent?: string;
     createdAt: string;

@@ -13,6 +13,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 
 export interface AuthTokens {
   accessToken: string;
@@ -30,6 +31,7 @@ export class AuthModuleRepository {
     private readonly hashPasswordService: HashPasswordService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   /**
@@ -70,6 +72,22 @@ export class AuthModuleRepository {
 
     const tokens = await this.generateToken(user);
     await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
+
+    void this.notificationService
+      .sendDirectEmail(
+        user.email,
+        '[SPMS] Đăng nhập thành công',
+        'USER_LOGIN',
+        {
+          name: user.fullName || user.email,
+          loginAt: new Date().toLocaleString('vi-VN'),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          dashUrl:
+            this.configService.get('FRONTEND_URL') ??
+            'http://procuresmart.io.vn/',
+        },
+      )
+      .catch(() => {});
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, hashedRefreshToken, ...userInfo } = user;
@@ -175,12 +193,17 @@ export class AuthModuleRepository {
       }
 
       // Kiểm tra refresh token hết hạn
-      if (user.refreshTokenExpiresAt && user.refreshTokenExpiresAt < new Date()) {
+      if (
+        user.refreshTokenExpiresAt &&
+        user.refreshTokenExpiresAt < new Date()
+      ) {
         await this.prisma.user.update({
           where: { id: user.id },
           data: { hashedRefreshToken: null, refreshTokenExpiresAt: null },
         });
-        throw new ForbiddenException('Refresh token đã hết hạn, vui lòng đăng nhập lại');
+        throw new ForbiddenException(
+          'Refresh token đã hết hạn, vui lòng đăng nhập lại',
+        );
       }
 
       const refreshTokenMatches = await bcrypt.compare(
@@ -282,7 +305,10 @@ export class AuthModuleRepository {
 
   private async updateRefreshTokenHash(userId: string, refreshToken: string) {
     const hash = await bcrypt.hash(refreshToken, 10);
-    const refreshTokenTtlDays = this.configService.get<number>('REFRESH_TOKEN_TTL_DAYS', 7);
+    const refreshTokenTtlDays = this.configService.get<number>(
+      'REFRESH_TOKEN_TTL_DAYS',
+      7,
+    );
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + refreshTokenTtlDays);
     await this.prisma.user.update({

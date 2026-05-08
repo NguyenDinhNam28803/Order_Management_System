@@ -11,7 +11,11 @@ import { EmailRagService } from './email-rag.service';
 import { ProductModuleModule } from '../product-module/product-module.module';
 
 @Module({
-  imports: [BullModule.registerQueue({ name: RAG_SYNC_QUEUE }), ConfigModule, ProductModuleModule],
+  imports: [
+    BullModule.registerQueue({ name: RAG_SYNC_QUEUE }),
+    ConfigModule,
+    ProductModuleModule,
+  ],
   controllers: [RagController],
   providers: [
     EmbeddingService,
@@ -19,7 +23,7 @@ import { ProductModuleModule } from '../product-module/product-module.module';
     RagQueryService,
     RagSyncProcessor,
     RagPrGeneratorService,
-    EmailRagService,   // Service đọc Gmail qua IMAP và ingest vào vector store
+    EmailRagService, // Service đọc Gmail qua IMAP và ingest vào vector store
   ],
   exports: [RagQueryService, RagPrGeneratorService, EmailRagService],
 })

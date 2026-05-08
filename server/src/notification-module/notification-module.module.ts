@@ -7,7 +7,9 @@ import { EmailService } from './email.service';
 import { SmsService } from './sms.service';
 import { EmailTemplatesService } from './email-template.service';
 import { EmailProcessor } from './email.processor';
+import { PdfGeneratorService } from './pdf-generator.service';
 import { ExternalTokenModule } from '../external-token-module/external-token.module';
+import { GatewayModule } from '../gateway/gateway.module';
 
 @Module({
   imports: [
@@ -15,6 +17,7 @@ import { ExternalTokenModule } from '../external-token-module/external-token.mod
       name: 'email-queue',
     }),
     ExternalTokenModule,
+    GatewayModule,
   ],
   controllers: [NotificationModuleController],
   providers: [
@@ -24,7 +27,8 @@ import { ExternalTokenModule } from '../external-token-module/external-token.mod
     EmailTemplatesService,
     SmsService,
     EmailProcessor,
+    PdfGeneratorService,
   ],
-  exports: [NotificationModuleService, EmailService],
+  exports: [NotificationModuleService, EmailService, PdfGeneratorService],
 })
 export class NotificationModuleModule {}

@@ -14,6 +14,7 @@ import { ApprovalModuleService } from '../approval-module/approval-module.servic
 import { SupplierKpimoduleService } from '../supplier-kpimodule/supplier-kpimodule.service';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { AutomationService } from '../common/automation/automation.service';
+import { ContractModuleService } from '../contract-module/contract-module.service';
 import { generateDocNumber } from '../common/utils/doc-number.util';
 
 @Injectable()
@@ -27,6 +28,7 @@ export class PomoduleService {
     private readonly supplierKpiService: SupplierKpimoduleService,
     private readonly budgetService: BudgetModuleService,
     private readonly automationService: AutomationService,
+    private readonly contractService: ContractModuleService,
   ) {}
 
   async create(createPoDto: CreatePoDto, user: JwtPayload) {
@@ -67,6 +69,16 @@ export class PomoduleService {
     if (pr.status !== 'APPROVED') {
       throw new BadRequestException(
         'Chỉ có thể tạo PO từ PR đã được duyệt hoàn toàn.',
+      );
+    }
+
+    // [Thêm mới] Kiểm tra trạng thái nhà cung cấp
+    const supplier = await this.prisma.organization.findUnique({
+      where: { id: supplierId },
+    });
+    if (!supplier || supplier.supplierTier !== 'APPROVED') {
+      throw new BadRequestException(
+        'Nhà cung cấp chưa được duyệt (APPROVED), không thể tạo PO.',
       );
     }
 
@@ -161,8 +173,8 @@ export class PomoduleService {
         po.supplierId,
       );
     } catch (automationError) {
-      console.error(
-        'Failed to create GRN draft automatically:',
+      this.logger.error(
+        'Failed to create GRN draft automatically',
         automationError,
       );
       // Don't fail the confirmation if automation fails
@@ -174,7 +186,7 @@ export class PomoduleService {
         po.orgId,
       );
     } catch (aiError) {
-      console.error('AI Evaluation failed, continuing flow:', aiError);
+      this.logger.error('AI Evaluation failed, continuing flow', aiError);
     }
 
     if (po.prId) {
@@ -229,6 +241,22 @@ export class PomoduleService {
 
   async findOne(id: string) {
     return this.repository.findOne(id);
+  }
+
+  async findPaginated(orgId: string, skip: number, take: number) {
+    return this.prisma.purchaseOrder.findMany({
+      where: { orgId },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take,
+      include: { supplier: true },
+    });
+  }
+
+  async count(orgId: string) {
+    return this.prisma.purchaseOrder.count({
+      where: { orgId },
+    });
   }
 
   // ─── PO Consolidation ────────────────────────────────────────────────────────
@@ -290,6 +318,27 @@ export class PomoduleService {
       );
     }
     const orgId = orgIds[0];
+
+    // ── Kiểm tra hợp đồng khung ACTIVE với nhà cung cấp ─────────────────────
+    const activeContract =
+      await this.contractService.findActiveBySupplierAndOrg(supplierId, orgId);
+
+    if (!activeContract) {
+      throw new BadRequestException(
+        'Không tìm thấy hợp đồng khung ACTIVE với nhà cung cấp này. ' +
+          'Vui lòng tạo hợp đồng khung trước, hoặc sử dụng luồng RFQ để đấu thầu.',
+      );
+    }
+
+    if (
+      activeContract.endDate &&
+      new Date(activeContract.endDate) < new Date(deliveryDate)
+    ) {
+      throw new BadRequestException(
+        `Hợp đồng khung (${activeContract.contractNumber}) sẽ hết hạn trước ngày giao hàng. ` +
+          'Vui lòng gia hạn hợp đồng hoặc chọn ngày giao hàng sớm hơn.',
+      );
+    }
 
     // ── Bước 2: Gom tất cả PR items vào 1 danh sách phẳng ───────────────────
     // Đính kèm prId và costCenterId của PR mẹ vào từng item
@@ -392,7 +441,7 @@ export class PomoduleService {
       });
     }
 
-    // ── Bước 5: Reserve budget theo từng costCenter ───────────────────────────
+    // ── Bước 5: Tính budget theo từng costCenter ─────────────────────────────
     //
     // Vì các PR có thể từ nhiều phòng ban khác nhau (nhiều costCenter),
     // cần tính xem mỗi costCenter phải trả bao nhiêu rồi reserve riêng.
@@ -417,20 +466,13 @@ export class PomoduleService {
       }
     }
 
-    // Gọi BudgetService.reserveBudget cho từng costCenter
-    for (const [costCenterId, amount] of budgetByCostCenter) {
-      await this.budgetService.reserveBudget(costCenterId, orgId, amount, user);
-      this.logger.log(
-        `Reserved ${amount.toLocaleString('vi-VN')} VND for costCenter ${costCenterId}`,
-      );
-    }
-
     const totalAmount = consolidatedItems.reduce((sum, i) => sum + i.total, 0);
 
     // PO gộp có prefix PO-CONS để phân biệt với PO thường
     const poNumber = generateDocNumber('PO-CONS');
 
     // ── Bước 6: Tạo PO + items + sources trong 1 transaction ─────────────────
+    // Budget reservation xảy ra SAU transaction để nếu thất bại có thể compensate
     const po = await this.prisma.$transaction(async (tx) => {
       // A. Tạo PO gộp
       // prId để null vì PO này có nhiều PR nguồn (track qua PoItemSource)
@@ -440,6 +482,7 @@ export class PomoduleService {
           orgId,
           supplierId,
           buyerId: user.sub,
+          contractId: activeContract.id,
           status: PoStatus.DRAFT,
           totalAmount,
           currency: prs[0].currency,
@@ -493,6 +536,57 @@ export class PomoduleService {
       return newPo;
     });
 
+    // ── Bước 7: Reserve budget SAU transaction (compensation nếu thất bại) ────
+    // PO đã được tạo thành công. Giờ mới reserve budget từng costCenter.
+    // Nếu reserve thất bại → xóa PO và reset PR về APPROVED (compensating transaction).
+    const reservedCostCenters: Array<{ costCenterId: string; amount: number }> =
+      [];
+    try {
+      for (const [costCenterId, amount] of budgetByCostCenter) {
+        await this.budgetService.reserveBudget(
+          costCenterId,
+          orgId,
+          amount,
+          user,
+        );
+        reservedCostCenters.push({ costCenterId, amount });
+        this.logger.log(
+          `Reserved ${amount.toLocaleString('vi-VN')} VND for costCenter ${costCenterId}`,
+        );
+      }
+    } catch (budgetError) {
+      this.logger.error(
+        `Budget reservation failed for consolidated PO ${po.poNumber}. Rolling back...`,
+        budgetError,
+      );
+      // Giải phóng các budget đã reserve trước đó
+      for (const { costCenterId, amount } of reservedCostCenters) {
+        await this.budgetService
+          .releaseBudget(costCenterId, orgId, amount, user)
+          .catch((e: unknown) =>
+            this.logger.error(
+              `Failed to release budget for ${costCenterId}`,
+              e,
+            ),
+          );
+      }
+      // Xóa PO vừa tạo và reset PR về APPROVED
+      await this.prisma
+        .$transaction(async (tx) => {
+          await tx.poItemSource.deleteMany({ where: { prId: { in: prIds } } });
+          await tx.poItem.deleteMany({ where: { poId: po.id } });
+          await tx.purchaseOrder.delete({ where: { id: po.id } });
+          await tx.purchaseRequisition.updateMany({
+            where: { id: { in: prIds } },
+            data: { status: PrStatus.APPROVED },
+          });
+        })
+        .catch((e: unknown) =>
+          this.logger.error(`Compensation rollback failed for PO ${po.id}`, e),
+        );
+      throw budgetError;
+    }
+
     this.logger.log(
       `Created consolidated PO ${po.poNumber} from ${prIds.length} PRs, ` +
         `${consolidatedItems.length} merged items, total: ${totalAmount.toLocaleString('vi-VN')} VND`,
@@ -506,7 +600,7 @@ export class PomoduleService {
         sourcePrNumbers: prs.map((p) => p.prNumber),
         mergedItemCount: consolidatedItems.length,
         totalOriginalItems: allItems.length,
-        savedItems: allItems.length - consolidatedItems.length, // Số item đã gộp được
+        savedItems: allItems.length - consolidatedItems.length,
         totalAmount,
         budgetReservedByCostCenter: Object.fromEntries(budgetByCostCenter),
       },

@@ -433,10 +433,6 @@ export const reportAPI = {
     const q = new URLSearchParams(params as Record<string, string>).toString();
     return apiFetch(`/reports/spend${q ? `?${q}` : ''}`);
   },
-  getApReport: async (params?: Record<string, string>) => {
-    const q = new URLSearchParams(params).toString();
-    return apiFetch(`/reports/ap${q ? `?${q}` : ''}`);
-  },
 };
 
 // ==========================================

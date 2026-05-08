@@ -7,6 +7,7 @@ import { ApprovalModuleModule } from '../approval-module/approval-module.module'
 import { SupplierKpimoduleModule } from '../supplier-kpimodule/supplier-kpimodule.module';
 import { BudgetModuleModule } from '../budget-module/budget-module.module';
 import { AutomationModule } from '../common/automation/automation.module';
+import { ContractModuleModule } from '../contract-module/contract-module.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AutomationModule } from '../common/automation/automation.module';
     SupplierKpimoduleModule,
     BudgetModuleModule,
     AutomationModule,
+    ContractModuleModule,
   ],
   controllers: [PomoduleController],
   providers: [PomoduleService, PoRepository],

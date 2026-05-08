@@ -3,7 +3,6 @@ import {
   Logger,
   NotFoundException,
   BadRequestException,
-  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
@@ -12,6 +11,7 @@ import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import {
   CHECK_TYPES,
   CreateVettingRequestDto,
+  CreateVettingFromAiDto,
   UpdateVettingCheckDto,
   SubmitVettingDto,
   ApproveVettingDto,
@@ -42,6 +42,7 @@ export class SupplierVettingService {
           assignedToId: dto.assignedToId,
           priceVsMarket: dto.priceVsMarket,
           notes: dto.notes,
+
           status: VettingStatus.IN_REVIEW,
         },
       });
@@ -64,11 +65,50 @@ export class SupplierVettingService {
     return this.findOne(vetting.id);
   }
 
-  async findAll(user: JwtPayload) {
+  async createFromAi(dto: CreateVettingFromAiDto, user: JwtPayload) {
+    const supplier = await this.prisma.organization.findUnique({
+      where: { id: dto.supplierId },
+    });
+    if (!supplier) throw new NotFoundException('Nhà cung cấp không tồn tại');
+
+    const vetting = await this.prisma.$transaction(async (tx) => {
+      const req = await tx.supplierVettingRequest.create({
+        data: {
+          orgId: user.orgId,
+          supplierId: dto.supplierId,
+          requestedById: user.sub,
+          notes: dto.notes,
+          status: VettingStatus.DRAFT,
+        },
+      });
+
+      const checks = CHECK_TYPES.map((checkType) => ({
+        vettingId: req.id,
+        checkType,
+        checkStatus: 'PENDING',
+      }));
+      await tx.supplierVettingCheck.createMany({ data: checks });
+
+      return req;
+    });
+
+    return this.findOne(vetting.id);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  findAll(user: JwtPayload) {
     return this.prisma.supplierVettingRequest.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
-        supplier: { select: { id: true, name: true, email: true, kycStatus: true, supplierTier: true } },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            kycStatus: true,
+            supplierTier: true,
+          },
+        },
         requestedBy: { select: { id: true, fullName: true, email: true } },
         assignedTo: { select: { id: true, fullName: true, email: true } },
         checks: { select: { checkType: true, checkStatus: true } },
@@ -80,7 +120,17 @@ export class SupplierVettingService {
     const vetting = await this.prisma.supplierVettingRequest.findUnique({
       where: { id },
       include: {
-        supplier: { select: { id: true, name: true, email: true, phone: true, address: true, kycStatus: true, supplierTier: true } },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            address: true,
+            kycStatus: true,
+            supplierTier: true,
+          },
+        },
         requestedBy: { select: { id: true, fullName: true, email: true } },
         assignedTo: { select: { id: true, fullName: true, email: true } },
         checks: {
@@ -105,7 +155,10 @@ export class SupplierVettingService {
       where: { id: vettingId },
     });
     if (!vetting) throw new NotFoundException('Vetting request không tồn tại');
-    if (vetting.status === VettingStatus.APPROVED || vetting.status === VettingStatus.REJECTED) {
+    if (
+      vetting.status === VettingStatus.APPROVED ||
+      vetting.status === VettingStatus.REJECTED
+    ) {
       throw new BadRequestException('Không thể cập nhật check khi đã kết thúc');
     }
 
@@ -165,14 +218,20 @@ export class SupplierVettingService {
       where: { id },
     });
     if (!vetting) throw new NotFoundException('Vetting request không tồn tại');
-    if (vetting.status !== VettingStatus.PENDING_APPROVAL && vetting.status !== VettingStatus.IN_REVIEW) {
+    if (
+      vetting.status !== VettingStatus.PENDING_APPROVAL &&
+      vetting.status !== VettingStatus.IN_REVIEW
+    ) {
       throw new BadRequestException('Không thể approve ở trạng thái hiện tại');
     }
 
     await this.prisma.$transaction([
       this.prisma.supplierVettingRequest.update({
         where: { id },
-        data: { status: VettingStatus.APPROVED, notes: dto.notes ?? vetting.notes },
+        data: {
+          status: VettingStatus.APPROVED,
+          notes: dto.notes ?? vetting.notes,
+        },
       }),
       this.prisma.organization.update({
         where: { id: vetting.supplierId },
@@ -188,19 +247,26 @@ export class SupplierVettingService {
     return this.findOne(id);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async reject(id: string, dto: RejectVettingDto, user: JwtPayload) {
     const vetting = await this.prisma.supplierVettingRequest.findUnique({
       where: { id },
     });
     if (!vetting) throw new NotFoundException('Vetting request không tồn tại');
-    if (vetting.status === VettingStatus.APPROVED || vetting.status === VettingStatus.REJECTED) {
+    if (
+      vetting.status === VettingStatus.APPROVED ||
+      vetting.status === VettingStatus.REJECTED
+    ) {
       throw new BadRequestException('Vetting đã kết thúc');
     }
 
     await this.prisma.$transaction([
       this.prisma.supplierVettingRequest.update({
         where: { id },
-        data: { status: VettingStatus.REJECTED, rejectedReason: dto.rejectedReason },
+        data: {
+          status: VettingStatus.REJECTED,
+          rejectedReason: dto.rejectedReason,
+        },
       }),
       this.prisma.organization.update({
         where: { id: vetting.supplierId },
@@ -211,12 +277,16 @@ export class SupplierVettingService {
     return this.findOne(id);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async cancel(id: string, user: JwtPayload) {
     const vetting = await this.prisma.supplierVettingRequest.findUnique({
       where: { id },
     });
     if (!vetting) throw new NotFoundException('Vetting request không tồn tại');
-    if (vetting.status === VettingStatus.APPROVED || vetting.status === VettingStatus.CANCELLED) {
+    if (
+      vetting.status === VettingStatus.APPROVED ||
+      vetting.status === VettingStatus.CANCELLED
+    ) {
       throw new BadRequestException('Không thể huỷ ở trạng thái này');
     }
 

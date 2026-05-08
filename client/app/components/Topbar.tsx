@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { useProcurement } from "../context/ProcurementContext";
 import { usePathname } from "next/navigation";
-import { Bell, Search, User, ChevronDown, CheckCircle2, Clock, AlertTriangle, ChevronRight, Sparkles } from "lucide-react";
+import { Search, User, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
+import Link from "next/link";
 import NotificationInbox from "./NotificationInbox";
+
+const SUPPLIER_DISCOVERY_ROLES = ['PROCUREMENT', 'ADMIN', 'DIRECTOR', 'CEO', 'PLATFORM_ADMIN'];
 
 // Breadcrumb label overrides
 const PAGE_LABELS: Record<string, string> = {
@@ -58,32 +61,15 @@ const PAGE_LABELS: Record<string, string> = {
     "users":         "Người dùng",
     "profile":       "Hồ sơ",
     "settings":      "Cài đặt",
-    "sourcing":      "Nguồn hàng",
+    "sourcing":          "Nguồn hàng",
+    "supplier-discovery":"Khám phá NCC (AI)",
     "help":          "Trợ giúp",
 };
 
-// Fake notification data
-const MOCK_NOTIFICATIONS = [
-    { id: 1, type: "approval", icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-400/10", title: "PR-2024-0041 đã được duyệt", time: "2 phút trước" },
-    { id: 2, type: "warning",  icon: AlertTriangle, color: "text-amber-400",  bg: "bg-amber-400/10",   title: "Ngân sách Q2 đã dùng 85%",  time: "15 phút trước" },
-];
 
 export default function Topbar() {
     const { currentUser } = useProcurement();
     const pathname = usePathname() ?? "/";
-    const [showNotifications, setShowNotifications] = useState(false);
-    const notifRef = useRef<HTMLDivElement>(null);
-
-    // Close on outside click
-    useEffect(() => {
-        const handler = (e: MouseEvent) => {
-            if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
-                setShowNotifications(false);
-            }
-        };
-        document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
-    }, []);
 
     // Build breadcrumb parts
     const breadcrumbParts = (() => {
@@ -102,24 +88,24 @@ export default function Topbar() {
         .split(" ").slice(-2).map((w: string) => w[0]?.toUpperCase() ?? "").join("").slice(0, 2) || "GU";
 
     return (
-        <header className="sticky top-0 z-40 w-full bg-[#161B22]/96 backdrop-blur-xl border-b border-[rgba(240,246,252,0.08)] h-14 flex items-center justify-between px-5 gap-3">
+        <header className="sticky top-0 z-40 w-full bg-white border-b border-[#E2E8F0] shadow-[0_1px_3px_rgba(0,0,0,0.06)] h-14 flex items-center justify-between px-5 gap-3">
 
             {/* ── Left: Breadcrumb ── */}
             <div className="flex items-center gap-1.5 min-w-0">
                 <div className="flex flex-col min-w-0">
                     {/* mini breadcrumb path */}
                     <div className="hidden sm:flex items-center gap-1 leading-none mb-0.5">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-[#30363D]">ProcureSmart</span>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">ProcureSmart</span>
                         {breadcrumbParts.length > 1 && breadcrumbParts.slice(0, -1).map((p, i) => (
                             <React.Fragment key={i}>
-                                <ChevronRight size={9} className="text-[#30363D]" />
-                                <span className="text-[9px] font-semibold text-[#484F58] truncate max-w-[60px]">{p.label}</span>
+                                <ChevronRight size={9} className="text-slate-300" />
+                                <span className="text-[9px] font-semibold text-slate-500 truncate max-w-[60px]">{p.label}</span>
                             </React.Fragment>
                         ))}
                     </div>
                     {/* page title */}
-                    <h2 className="text-[13px] font-bold text-[#E6EDF3] tracking-tight leading-tight truncate flex items-center gap-1.5">
-                        {isAIPage && <Sparkles size={12} className="text-violet-400 shrink-0" />}
+                    <h2 className="text-[13px] font-bold text-slate-900 tracking-tight leading-tight truncate flex items-center gap-1.5">
+                        {isAIPage && <Sparkles size={12} className="text-violet-500 shrink-0" />}
                         {pageTitle}
                     </h2>
                 </div>
@@ -128,17 +114,28 @@ export default function Topbar() {
             {/* ── Right: Actions ── */}
             <div className="flex items-center gap-2 shrink-0">
 
+                {/* Quick: Khám phá NCC — chỉ hiện với role được phép */}
+                {SUPPLIER_DISCOVERY_ROLES.includes(currentUser?.role ?? '') && pathname !== '/procurement/supplier-discovery' && (
+                    <Link
+                        href="/procurement/supplier-discovery"
+                        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold border border-violet-200 bg-violet-50 text-violet-600 hover:bg-violet-100 hover:border-violet-300 transition-all duration-150 shrink-0"
+                    >
+                        <Sparkles size={11} className="shrink-0" />
+                        Khám phá NCC
+                    </Link>
+                )}
+
                 {/* Search with ⌘K hint */}
                 <div className="hidden md:flex relative group">
                     <Search
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-[#484F58] group-focus-within:text-[#3B82F6] transition-colors"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#2563EB] transition-colors"
                         size={13}
                     />
                     <input
                         type="text"
                         placeholder="Tìm kiếm..."
                         readOnly
-                        className="pl-8 pr-16 py-1.5 bg-[#21262D] border border-[rgba(240,246,252,0.08)] rounded-lg text-[11.5px] font-medium text-[#E6EDF3] placeholder:text-[#484F58] focus:outline-none focus:border-[#3B82F6]/40 focus:ring-1 focus:ring-[#3B82F6]/20 w-48 transition-all cursor-pointer hover:border-[rgba(240,246,252,0.15)]"
+                        className="pl-8 pr-16 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11.5px] font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 w-48 transition-all cursor-pointer hover:border-slate-300"
                     />
                     <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
                         <span className="kbd">⌘</span>
@@ -146,79 +143,24 @@ export default function Topbar() {
                     </div>
                 </div>
 
-                {/* Notification Inbox (from existing component) */}
+                {/* Notification Inbox */}
                 <NotificationInbox />
 
-                {/* System Notifications Bell */}
-                <div className="relative" ref={notifRef}>
-                    <button
-                        onClick={() => setShowNotifications(v => !v)}
-                        className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-[#21262D] border border-[rgba(240,246,252,0.08)] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[rgba(240,246,252,0.18)] transition-all focus:outline-none"
-                    >
-                        <Bell size={14} />
-                        {MOCK_NOTIFICATIONS.length > 0 && (
-                            <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-[15px] px-0.5 flex items-center justify-center bg-rose-500 text-white text-[8px] font-bold rounded-full border border-[#161B22]">
-                                {MOCK_NOTIFICATIONS.length}
-                            </span>
-                        )}
-                    </button>
-
-                    {showNotifications && (
-                        <div className="absolute right-0 mt-2 w-76 bg-[#21262D] border border-[rgba(240,246,252,0.1)] rounded-xl shadow-2xl shadow-black/60 overflow-hidden z-50 animate-slide-up">
-                            <div className="p-3 border-b border-[rgba(240,246,252,0.08)] flex items-center justify-between">
-                                <div>
-                                    <h4 className="text-[12px] font-bold text-[#E6EDF3]">Thông báo</h4>
-                                    <p className="text-[9px] text-[#484F58] font-medium uppercase tracking-wider">{MOCK_NOTIFICATIONS.length} mới</p>
-                                </div>
-                                <button
-                                    className="text-[9px] font-bold text-[#3B82F6] hover:text-blue-300 uppercase tracking-widest"
-                                    onClick={() => setShowNotifications(false)}
-                                >
-                                    Đánh dấu đã đọc
-                                </button>
-                            </div>
-                            <div className="max-h-64 overflow-y-auto no-scrollbar">
-                                {MOCK_NOTIFICATIONS.map((n) => (
-                                    <div
-                                        key={n.id}
-                                        className="flex items-start gap-3 p-3 border-b border-[rgba(240,246,252,0.05)] hover:bg-[rgba(37,99,235,0.06)] transition-colors cursor-pointer"
-                                    >
-                                        <div className={`mt-0.5 h-7 w-7 rounded-lg ${n.bg} flex items-center justify-center shrink-0`}>
-                                            <n.icon size={14} className={n.color} />
-                                        </div>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-[11px] text-[#E6EDF3] font-semibold leading-snug">{n.title}</p>
-                                            <p className="text-[9px] text-[#484F58] mt-0.5 flex items-center gap-1">
-                                                <Clock size={8} />
-                                                {n.time}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="p-2 text-center border-t border-[rgba(240,246,252,0.06)]">
-                                <button className="text-[10px] font-bold text-[#484F58] hover:text-[#8B949E] transition-colors">
-                                    Xem tất cả thông báo →
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
                 {/* User Profile */}
-                <div className="flex items-center gap-2 pl-2.5 border-l border-[rgba(240,246,252,0.08)] cursor-pointer hover:bg-[rgba(240,246,252,0.04)] px-2 py-1.5 rounded-lg transition-all group">
-                    <div className="h-7 w-7 rounded-md bg-gradient-to-br from-[#3B82F6]/30 to-[#6366F1]/40 border border-[#3B82F6]/30 flex items-center justify-center text-[#60A5FA] font-black text-[10px] shrink-0 select-none">
+                <div className="flex items-center gap-2 pl-2.5 border-l border-slate-200 cursor-pointer hover:bg-slate-50 px-2 py-1.5 rounded-lg transition-all group">
+                    <div className="h-7 w-7 rounded-md bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-black text-[10px] shrink-0 select-none">
                         {currentUser?.fullName?.charAt(0)?.toUpperCase() || <User size={13} />}
                     </div>
                     <div className="hidden md:flex flex-col leading-none">
-                        <span className="text-[11px] font-bold text-[#E6EDF3] leading-tight">{currentUser?.fullName || "Guest"}</span>
-                        <span className="text-[8.5px] font-semibold uppercase tracking-widest text-[#484F58] mt-0.5">
+                        <span className="text-[11px] font-semibold text-slate-800 leading-tight">{currentUser?.fullName || "Guest"}</span>
+                        <span className="text-[8.5px] font-semibold uppercase tracking-widest text-slate-400 mt-0.5">
                             {currentUser?.role?.replace(/_/g, " ") || "No Role"}
                         </span>
                     </div>
-                    <ChevronDown size={11} className="text-[#484F58] group-hover:text-[#8B949E] transition-colors" />
+                    <ChevronDown size={11} className="text-slate-400 group-hover:text-slate-600 transition-colors" />
                 </div>
             </div>
         </header>
     );
 }
+

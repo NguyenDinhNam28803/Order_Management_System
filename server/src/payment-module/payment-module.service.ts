@@ -4,15 +4,11 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  PaymentStatus,
-  InvoiceStatus,
-  PoStatus,
-  DocumentType,
-} from '@prisma/client';
+import { PaymentStatus, InvoiceStatus, PoStatus } from '@prisma/client';
 import { CreatePaymentModuleDto } from './dto/create-payment-module.dto';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 import { generateDocNumber } from '../common/utils/doc-number.util';
 
 @Injectable()
@@ -20,6 +16,7 @@ export class PaymentModuleService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly budgetService: BudgetModuleService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   /**
@@ -129,8 +126,55 @@ export class PaymentModuleService {
         });
       }
 
+      // Gửi email PAYMENT_CONFIRMED cho nhà cung cấp (non-blocking)
+      void this.notifyPaymentConfirmed(payment, updatedPayment).catch(() => {});
+
       return updatedPayment;
     });
+  }
+
+  private async notifyPaymentConfirmed(payment: any, updatedPayment: any) {
+    const supplierUser = await this.prisma.user.findFirst({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        orgId: payment.supplierId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        role: 'SUPPLIER' as any,
+        isActive: true,
+      },
+      include: { organization: true },
+    });
+    if (!supplierUser?.email) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName =
+      (supplierUser.organization as any)?.name ??
+      supplierUser.fullName ??
+      supplierUser.email;
+
+    await this.notificationService.sendDirectEmail(
+      supplierUser.email,
+      `[Xác nhận thanh toán] ${payment.paymentNumber}`,
+      'PAYMENT_CONFIRMED',
+      {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        paymentCode: payment.paymentNumber,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        invoiceCode: payment.invoice?.invoiceNumber ?? '',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        poCode: payment.po?.poNumber ?? '',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        supplierName,
+        amount: Number(payment.amount),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        bankRef: payment.paymentNumber,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        paidAt: updatedPayment?.processedAt ?? new Date(),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        paymentMethod: payment.method ?? 'Chuyển khoản ngân hàng',
+        historyLink: process.env['FRONTEND_URL'] ?? '#',
+      },
+    );
   }
 
   async findAll(orgId: string) {

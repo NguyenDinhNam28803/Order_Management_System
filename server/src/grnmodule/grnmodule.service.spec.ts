@@ -4,7 +4,7 @@ import { GrnmoduleService } from './grnmodule.service';
 import { GrnRepository } from './grn.repository';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
-import { GrnStatus, PoStatus } from '@prisma/client';
+import { PoStatus } from '@prisma/client';
 
 const mockRepository = {
   create: jest.fn(),
@@ -38,7 +38,8 @@ const makePo = (overrides: Partial<any> = {}) => ({
   ...overrides,
 });
 
-const makeUser = () => ({ sub: 'user-1', orgId: 'org-1', role: 'BUYER' } as any);
+const makeUser = () =>
+  ({ sub: 'user-1', orgId: 'org-1', role: 'BUYER' }) as any;
 
 describe('GrnmoduleService', () => {
   let service: GrnmoduleService;
@@ -51,7 +52,10 @@ describe('GrnmoduleService', () => {
         GrnmoduleService,
         { provide: GrnRepository, useValue: mockRepository },
         { provide: PrismaService, useValue: mockPrisma },
-        { provide: NotificationModuleService, useValue: mockNotificationService },
+        {
+          provide: NotificationModuleService,
+          useValue: mockNotificationService,
+        },
       ],
     }).compile();
 
@@ -63,6 +67,7 @@ describe('GrnmoduleService', () => {
   });
 
   describe('create()', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const dto = {
       poId: 'po-1',
       items: [{ poItemId: 'item-1', receivedQty: 3, notes: '' }],
@@ -89,7 +94,11 @@ describe('GrnmoduleService', () => {
     it('throws BadRequestException when item does not belong to PO', async () => {
       mockPrisma.purchaseOrder.findUnique.mockResolvedValue(makePo());
 
-      const badDto = { poId: 'po-1', items: [{ poItemId: 'item-999', receivedQty: 1 }] } as any;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const badDto = {
+        poId: 'po-1',
+        items: [{ poItemId: 'item-999', receivedQty: 1 }],
+      } as any;
 
       await expect(service.create(badDto, makeUser())).rejects.toThrow(
         BadRequestException,
@@ -101,6 +110,7 @@ describe('GrnmoduleService', () => {
       // No previous receipts
       mockPrisma.grnItem.groupBy.mockResolvedValue([]);
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const overQtyDto = {
         poId: 'po-1',
         items: [{ poItemId: 'item-1', receivedQty: 99 }],
@@ -121,7 +131,9 @@ describe('GrnmoduleService', () => {
       mockPrisma.purchaseOrder.update.mockResolvedValue({});
 
       // Prevent fire-and-forget notification from throwing
-      jest.spyOn(service as any, 'notifyGrnMilestoneUpdate').mockResolvedValue(undefined);
+      jest
+        .spyOn(service as any, 'notifyGrnMilestoneUpdate')
+        .mockResolvedValue(undefined);
 
       const result = await service.create(dto, makeUser());
 
@@ -142,7 +154,11 @@ describe('GrnmoduleService', () => {
       ]);
 
       // Trying to receive 3 more would push total to 11 > 10
-      const dto2 = { poId: 'po-1', items: [{ poItemId: 'item-1', receivedQty: 3 }] } as any;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const dto2 = {
+        poId: 'po-1',
+        items: [{ poItemId: 'item-1', receivedQty: 3 }],
+      } as any;
 
       await expect(service.create(dto2, makeUser())).rejects.toThrow(
         BadRequestException,

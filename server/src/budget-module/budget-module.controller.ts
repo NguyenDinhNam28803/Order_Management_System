@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Logger,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
@@ -30,6 +31,8 @@ import {
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class BudgetModuleController {
+  private readonly logger = new Logger(BudgetModuleController.name);
+
   constructor(
     private readonly budgetService: BudgetModuleService,
     private readonly budgetOverrideService: BudgetOverrideService,
@@ -236,10 +239,10 @@ export class BudgetModuleController {
         requesterId: req.user.sub,
         user: req.user,
       });
-      console.log(`✅ Approval workflow created for budget allocation ${id}`);
+      this.logger.log(`Approval workflow created for budget allocation ${id}`);
     } catch (error) {
-      console.warn(
-        `⚠️ Could not create approval workflow: ${(error as Error).message}`,
+      this.logger.warn(
+        `Could not create approval workflow: ${(error as Error).message}`,
       );
       // Không block submission nếu workflow creation thất bại
     }

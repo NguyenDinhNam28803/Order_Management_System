@@ -9,6 +9,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { GrnStatus, PoStatus } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { UpdateGrnItemQcResultDto } from './dto/update-grn-item-qc.dto';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
+import { TokenType } from '../external-token-module/external-token.service';
 import { generateDocNumber } from '../common/utils/doc-number.util';
 
 @Injectable()
@@ -16,6 +18,7 @@ export class GrnmoduleService {
   constructor(
     private readonly repository: GrnRepository,
     private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   async create(createGrnDto: CreateGrnmoduleDto, user: JwtPayload) {
@@ -56,22 +59,29 @@ export class GrnmoduleService {
       }
     }
 
-    // 3. Validate Quantity (Received vs PO)
+    // 3. Validate Quantity (Received vs PO) — single batch query instead of N+1
+    const incomingPoItemIds = items.map((i) => i.poItemId);
+    const prevReceivedRows = await this.prisma.grnItem.groupBy({
+      by: ['poItemId'],
+      where: {
+        poItemId: { in: incomingPoItemIds },
+        grn: { status: { not: GrnStatus.DISPUTED } },
+      },
+      _sum: { receivedQty: true },
+    });
+    const prevReceivedMap = new Map<string, number>(
+      prevReceivedRows.map((r) => [
+        r.poItemId,
+        Number(r._sum.receivedQty) || 0,
+      ]),
+    );
+
     for (const item of items) {
       const poItem = po.items.find((i) => i.id === item.poItemId);
       if (!poItem) continue;
 
-      const previouslyReceived = await this.prisma.grnItem.aggregate({
-        where: {
-          poItemId: item.poItemId,
-          grn: { status: { not: GrnStatus.DISPUTED } },
-        },
-        _sum: { receivedQty: true },
-      });
-
       const totalReceived =
-        (Number(previouslyReceived._sum.receivedQty) || 0) +
-        Number(item.receivedQty);
+        (prevReceivedMap.get(item.poItemId) || 0) + Number(item.receivedQty);
       if (totalReceived > Number(poItem.qty)) {
         throw new BadRequestException(
           `Tổng số lượng nhận (${totalReceived}) vượt quá số lượng đặt hàng (${poItem.qty.toString()}) cho item ${poItem.sku}`,
@@ -93,6 +103,9 @@ export class GrnmoduleService {
       where: { id: poId },
       data: { status: PoStatus.IN_PROGRESS },
     });
+
+    // Gửi magic link cho NCC để cập nhật trạng thái giao hàng
+    void this.notifyGrnMilestoneUpdate(grn.id, po).catch(() => {});
 
     return grn;
   }
@@ -166,17 +179,21 @@ export class GrnmoduleService {
     });
 
     if (po) {
-      let allReceived = true;
-      for (const poItem of po.items) {
-        const received = await this.prisma.grnItem.aggregate({
-          where: { poItemId: poItem.id, grn: { status: GrnStatus.CONFIRMED } },
-          _sum: { acceptedQty: true },
-        });
-        if ((Number(received._sum.acceptedQty) || 0) < Number(poItem.qty)) {
-          allReceived = false;
-          break;
-        }
-      }
+      // Batch query instead of N+1 per PO item
+      const confirmedRows = await this.prisma.grnItem.groupBy({
+        by: ['poItemId'],
+        where: {
+          poItemId: { in: po.items.map((i) => i.id) },
+          grn: { status: GrnStatus.CONFIRMED },
+        },
+        _sum: { acceptedQty: true },
+      });
+      const confirmedMap = new Map<string, number>(
+        confirmedRows.map((r) => [r.poItemId, Number(r._sum.acceptedQty) || 0]),
+      );
+      const allReceived = po.items.every(
+        (poItem) => (confirmedMap.get(poItem.id) || 0) >= Number(poItem.qty),
+      );
 
       // Nếu đã nhận đủ, chuyển PO sang trạng thái COMPLETED hoặc GRN_CREATED (Dựa trên Enum)
       if (allReceived) {
@@ -187,6 +204,100 @@ export class GrnmoduleService {
       }
     }
 
+    // Gửi email GRN_CONFIRMED cho các finance user trong org
+    void this.notifyGrnConfirmed(id, grn).catch(() => {});
+
     return result;
+  }
+
+  private async notifyGrnMilestoneUpdate(grnId: string, po: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierOrgId: string | undefined = po?.supplierId;
+    if (!supplierOrgId) return;
+
+    const supplierUser = await this.prisma.user.findFirst({
+      where: {
+        orgId: supplierOrgId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        role: 'SUPPLIER' as any,
+        isActive: true,
+      },
+      include: { organization: true },
+    });
+    if (!supplierUser?.email) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName: string =
+      (supplierUser.organization as any)?.name ??
+      supplierUser.fullName ??
+      supplierUser.email;
+
+    await this.notificationService.sendExternalEmailWithMagicLink({
+      to: supplierUser.email,
+      subject: `[Cập nhật giao hàng] ${po.poNumber as string}`,
+      eventType: 'GRN_MILESTONE_UPDATE',
+      referenceId: grnId,
+      tokenType: TokenType.GRN_MILESTONE,
+      expiresInDays: 7,
+      data: {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        poCode: po.poNumber,
+
+        supplierName,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        expectedDelivery: po.deliveryDate ?? new Date(),
+        completedSteps: ['Đặt hàng', 'Xác nhận PO'],
+        currentStep: 'Đang giao hàng',
+        pendingSteps: ['Xác nhận nhận hàng'],
+        warehouseEmail:
+          process.env['WAREHOUSE_EMAIL'] ??
+          process.env['EMAIL_FROM_EMAIL'] ??
+          '',
+      },
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async notifyGrnConfirmed(grnId: string, grn: any) {
+    const fullGrn = await this.prisma.goodsReceipt.findUnique({
+      where: { id: grnId },
+      include: { po: { include: { supplier: true } } },
+    });
+    if (!fullGrn) return;
+
+    const financeUsers = await this.prisma.user.findMany({
+      where: {
+        orgId: fullGrn.orgId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        role: { in: ['FINANCE', 'ADMIN'] as any },
+        isActive: true,
+      },
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = (fullGrn.po as any)?.supplier?.name ?? 'Nhà cung cấp';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poCode = (fullGrn.po as any)?.poNumber ?? '';
+    const totalAmount = Number((fullGrn.po as any)?.totalAmount ?? 0);
+
+    for (const user of financeUsers) {
+      if (!user.email) continue;
+      await this.notificationService.sendDirectEmail(
+        user.email,
+        `[Xác nhận nhận hàng] GRN ${fullGrn.grnNumber}`,
+        'GRN_CONFIRMED',
+        {
+          name: user.fullName || user.email,
+          grnCode: fullGrn.grnNumber,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          poCode,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          supplierName,
+          confirmedAt: new Date(),
+          totalAmount,
+          loginUrl: process.env['FRONTEND_URL'] ?? '#',
+        },
+      );
+    }
   }
 }

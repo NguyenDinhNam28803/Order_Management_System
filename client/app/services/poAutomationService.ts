@@ -7,7 +7,7 @@
  */
 
 import { PO } from "../context/ProcurementContext";
-import { Contract } from "../types/api-types";
+import { Contract, CurrencyCode, ContractStatus } from "../types/api-types";
 
 export interface POAutomationConfig {
   // Ngưỡng giá tối thiểu để tạo hợp đồng (VND)
@@ -41,7 +41,7 @@ export function shouldCreateContract(
   po: PO,
   config: POAutomationConfig = defaultAutomationConfig
 ): boolean {
-  return po.total >= config.contractThreshold;
+  return (po.total ?? po.totalAmount ?? 0) >= config.contractThreshold;
 }
 
 /**
@@ -57,14 +57,14 @@ export function generateContractFromPO(
 
   return {
     title: `Hợp đồng từ PO ${po.poNumber}`,
-    description: `Hợp đồng tự động tạo từ đơn hàng ${po.poNumber} với giá trị ${po.total.toLocaleString('vi-VN')} VND`,
+    description: `Hợp đồng tự động tạo từ đơn hàng ${po.poNumber} với giá trị ${(po.total ?? po.totalAmount ?? 0).toLocaleString('vi-VN')} VND`,
     supplierId: po.supplierId || po.vendor,
     poId: po.id,
-    totalValue: po.total,
-    currency: 'VND' as any,
+    totalValue: po.total ?? po.totalAmount,
+    currency: CurrencyCode.VND,
     startDate: startDate.toISOString().split('T')[0],
     endDate: endDate.toISOString().split('T')[0],
-    status: 'DRAFT' as any,
+    status: ContractStatus.DRAFT,
   };
 }
 
@@ -76,7 +76,7 @@ export function generateContractEmailContent(
   contract: Partial<Contract>,
   supplierName: string
 ): { subject: string; body: string } {
-  const subject = `Hợp đồng mới từ PO ${po.poNumber} - Giá trị ${po.total.toLocaleString('vi-VN')} VND`;
+  const subject = `Hợp đồng mới từ PO ${po.poNumber} - Giá trị ${(po.total ?? po.totalAmount ?? 0).toLocaleString('vi-VN')} VND`;
   
   const body = `
 Kính gửi ${supplierName},
@@ -85,7 +85,7 @@ Hệ thống đã tự động tạo hợp đồng từ đơn hàng ${po.poNumbe
 
 📋 THÔNG TIN HỢP ĐỒNG:
 - Mã hợp đồng: ${contract.contractNumber || 'Đang chờ cấp số'}
-- Giá trị: ${po.total.toLocaleString('vi-VN')} VND
+- Giá trị: ${(po.total ?? po.totalAmount ?? 0).toLocaleString('vi-VN')} VND
 - Ngày bắt đầu: ${contract.startDate}
 - Ngày kết thúc: ${contract.endDate}
 - Trạng thái: Chờ ký kết
@@ -93,7 +93,7 @@ Hệ thống đã tự động tạo hợp đồng từ đơn hàng ${po.poNumbe
 📦 CHI TIẾT ĐƠN HÀNG:
 - Mã PO: ${po.poNumber}
 - Nhà cung cấp: ${supplierName}
-- Tổng giá trị: ${po.total.toLocaleString('vi-VN')} VND
+- Tổng giá trị: ${(po.total ?? po.totalAmount ?? 0).toLocaleString('vi-VN')} VND
 
 Vui lòng đăng nhập vào hệ thống để xem chi tiết và ký kết hợp đồng.
 

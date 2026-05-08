@@ -6,8 +6,10 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
   IsUUID,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
@@ -34,9 +36,10 @@ export class CreatePrItemDto {
   @IsOptional()
   categoryId?: string;
 
-  @ApiProperty({ example: 5 })
+  @ApiProperty({ example: 5, minimum: 1 })
   @IsNumber()
   @IsNotEmpty()
+  @Min(1, { message: 'Số lượng phải lớn hơn hoặc bằng 1' })
   qty: number;
 
   @ApiPropertyOptional({ example: 'PCS', default: 'PCS' })
@@ -44,9 +47,10 @@ export class CreatePrItemDto {
   @IsOptional()
   unit?: string;
 
-  @ApiProperty({ example: 1500.0 })
+  @ApiProperty({ example: 1500.0, minimum: 0.01 })
   @IsNumber()
   @IsNotEmpty()
+  @IsPositive({ message: 'Đơn giá dự tính phải lớn hơn 0' })
   estimatedPrice: number;
 
   @ApiPropertyOptional({ enum: CurrencyCode, default: CurrencyCode.VND })

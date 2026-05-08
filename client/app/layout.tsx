@@ -1,17 +1,34 @@
 import type { Metadata } from "next";
-import { DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Inter, DM_Mono, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  display: "swap",
+});
+
+/* Kept as fallback variables so any inline var(--font-jakarta) references still work */
+const jakartaFallback = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const jetbrainsMonoFallback = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -20,6 +37,7 @@ export const metadata: Metadata = {
 };
 
 import { ProcurementProvider } from "./context/ProcurementContext";
+import Providers from "./components/Providers";
 import AppContent from "./components/AppContent";
 
 export default function RootLayout({
@@ -30,15 +48,18 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body
-        className={`${dmSans.variable} ${jetbrainsMono.variable} antialiased bg-[#0D1117] text-[#E6EDF3] font-sans min-h-screen`}
+        className={`${inter.variable} ${dmMono.variable} ${jakartaFallback.variable} ${jetbrainsMonoFallback.variable} antialiased bg-[#F8FAFC] text-[#0F172A] font-sans min-h-screen`}
         suppressHydrationWarning
       >
-        <ProcurementProvider>
-          <AppContent>
-            {children}
-          </AppContent>
-        </ProcurementProvider>
+        <Providers>
+          <ProcurementProvider>
+            <AppContent>
+              {children}
+            </AppContent>
+          </ProcurementProvider>
+        </Providers>
       </body>
     </html>
   );
 }
+

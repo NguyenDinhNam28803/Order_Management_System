@@ -25,25 +25,22 @@ export type ConsolidationMode = 'SKU_MATCH' | 'CATEGORY_MATCH';
 
 export class ConsolidatePRsDto {
   @ApiProperty({
-    description: 'Danh sách ID của các PR đã APPROVED cần gộp vào 1 PO (tối thiểu 2 PR)',
+    description:
+      'Danh sách ID của các PR đã APPROVED cần gộp vào 1 PO (tối thiểu 2 PR)',
     type: [String],
-    example: [
-      'uuid-pr-001',
-      'uuid-pr-002',
-      'uuid-pr-003',
-    ],
+    example: ['uuid-pr-001', 'uuid-pr-002', 'uuid-pr-003'],
   })
   @IsArray()
   @IsUUID('4', { each: true })
   @ArrayMinSize(2, { message: 'Cần ít nhất 2 PR để gộp' })
-  prIds: string[];
+  prIds!: string[];
 
   @ApiProperty({
     description: 'ID nhà cung cấp được chọn để gửi PO gộp',
     example: 'uuid-supplier-001',
   })
   @IsUUID('4')
-  supplierId: string;
+  supplierId!: string;
 
   @ApiPropertyOptional({
     description:
@@ -64,7 +61,7 @@ export class ConsolidatePRsDto {
   @Transform(({ value }) => (value === '' ? undefined : value))
   @Type(() => Date)
   @IsDate()
-  deliveryDate: Date;
+  deliveryDate!: Date;
 
   @ApiPropertyOptional({
     description: 'Điều khoản thanh toán',

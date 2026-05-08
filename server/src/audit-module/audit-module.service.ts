@@ -18,6 +18,25 @@ export class AuditModuleService {
     });
   }
 
+  async findPaginated(
+    user: JwtPayload,
+    skip: number,
+    take: number,
+  ): Promise<AuditLog[]> {
+    return this.prisma.auditLog.findMany({
+      where: { orgId: user.orgId },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take,
+    });
+  }
+
+  async count(user: JwtPayload): Promise<number> {
+    return this.prisma.auditLog.count({
+      where: { orgId: user.orgId },
+    });
+  }
+
   async findAll(user: JwtPayload): Promise<AuditLog[]> {
     return this.prisma.auditLog.findMany({
       where: { orgId: user.orgId },

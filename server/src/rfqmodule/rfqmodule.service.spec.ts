@@ -23,7 +23,10 @@ const mockPrisma = {
 };
 
 const mockNotificationService = { sendExternalEmailWithMagicLink: jest.fn() };
-const mockAiService = { getCompanySuggestion: jest.fn(), analyzeQuotation: jest.fn() };
+const mockAiService = {
+  getCompanySuggestion: jest.fn(),
+  analyzeQuotation: jest.fn(),
+};
 const mockAutomationService = {};
 
 const makeUser = () => ({ sub: 'user-1', orgId: 'org-1', role: 'BUYER' });
@@ -49,7 +52,10 @@ describe('RfqmoduleService', () => {
         RfqmoduleService,
         { provide: RfqRepository, useValue: mockRepository },
         { provide: PrismaService, useValue: mockPrisma },
-        { provide: NotificationModuleService, useValue: mockNotificationService },
+        {
+          provide: NotificationModuleService,
+          useValue: mockNotificationService,
+        },
         { provide: AiService, useValue: mockAiService },
         { provide: AutomationService, useValue: mockAutomationService },
       ],
@@ -65,6 +71,7 @@ describe('RfqmoduleService', () => {
   // ─── create() ────────────────────────────────────────────────────────────────
 
   describe('create()', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const dto = { prId: 'pr-1', supplierIds: [] } as any;
 
     it('throws NotFoundException when PR does not exist', async () => {
@@ -110,7 +117,9 @@ describe('RfqmoduleService', () => {
 
       await service.create(dto, makeUser());
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const createCall = mockRepository.create.mock.calls[0];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const rfqNumber: string = createCall[3]; // 4th arg is rfqNumber
       expect(rfqNumber).toMatch(/^RFQ-\d{4}-\d{4}$/);
     });
@@ -121,7 +130,9 @@ describe('RfqmoduleService', () => {
         status: PrStatus.APPROVED,
       });
 
-      const rfq = makeRfq({ items: [{ description: 'Laptop', qty: 5, unit: 'cái' }] });
+      const rfq = makeRfq({
+        items: [{ description: 'Laptop', qty: 5, unit: 'cái' }],
+      });
       mockRepository.create.mockResolvedValue(rfq);
 
       const supplierUser = {
@@ -133,10 +144,16 @@ describe('RfqmoduleService', () => {
       };
       mockPrisma.user.findMany.mockResolvedValue([supplierUser]);
 
-      const dtoWithSuppliers = { prId: 'pr-1', supplierIds: ['sup-org-1'] } as any;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const dtoWithSuppliers = {
+        prId: 'pr-1',
+        supplierIds: ['sup-org-1'],
+      } as any;
       await service.create(dtoWithSuppliers, makeUser());
 
-      expect(mockNotificationService.sendExternalEmailWithMagicLink).toHaveBeenCalledTimes(1);
+      expect(
+        mockNotificationService.sendExternalEmailWithMagicLink,
+      ).toHaveBeenCalledTimes(1);
     });
 
     it('does not fail if email sending fails', async () => {
@@ -146,14 +163,22 @@ describe('RfqmoduleService', () => {
       });
       mockRepository.create.mockResolvedValue(makeRfq());
       mockPrisma.user.findMany.mockResolvedValue([
-        { id: 'u-1', email: 'supplier@test.com', orgId: 'sup-1', organization: { name: 'Co' } },
+        {
+          id: 'u-1',
+          email: 'supplier@test.com',
+          orgId: 'sup-1',
+          organization: { name: 'Co' },
+        },
       ]);
       mockNotificationService.sendExternalEmailWithMagicLink.mockRejectedValue(
         new Error('SMTP down'),
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const dtoWithSuppliers = { prId: 'pr-1', supplierIds: ['sup-1'] } as any;
-      await expect(service.create(dtoWithSuppliers, makeUser())).resolves.toBeDefined();
+      await expect(
+        service.create(dtoWithSuppliers, makeUser()),
+      ).resolves.toBeDefined();
     });
   });
 

@@ -6,7 +6,7 @@ import {
     Organization, CostCenter, Department, CurrencyCode, CompanyType, KycStatus, UserRole, 
     PrStatus, RfqStatus, QuotationStatus, PoStatus, GrnStatus, InvoiceStatus, ApprovalStatus, DocumentType, 
     BudgetAllocationStatus, BudgetOverrideStatus, BudgetPeriodType,
-    ApiResponse, LoginPayload, LoginResponse, RegisterPayload, CreatePrDto, UpdatePrDto, CreateRfqDto, ConsolidateRfqDto, 
+    RegisterPayload, CreatePrDto, UpdatePrDto, CreateRfqDto, ConsolidateRfqDto,
     CreateGrnDto, CreateInvoiceDto, CreateQuoteDto, CreateOrganizationPayload, UpdateOrganizationPayload, 
     CreateCostCenterPayload, UpdateCostCenterPayload, CreateDepartmentPayload, UpdateDepartmentPayload, 
     Product, ProductCategory, CreateProductDtoShort, UpdateProductDtoShort, CreateCategoryDto, UpdateCategoryDto,
@@ -14,20 +14,21 @@ import {
     CreateBudgetAllocationPayload, UpdateBudgetAllocationPayload, CreatePoDto,
     PR, PRItem, QuoteRequest, QuoteRequestItem, BudgetOverride, PrType, QuoteRequestStatus,
     Contract, Dispute, AuditLog, SupplierEvaluation,
-    Quotation, QuotationItem, CreateQuotationDto, QAThread, CreateQAThreadDto, AnswerQAThreadDto,
-    CounterOffer, CreateCounterOfferDto, RespondCounterOfferDto,
-    Payment, CreatePaymentDto, PaymentStatus,
+    Quotation, QAThread, CreateQAThreadDto,
+    CounterOffer, CreateCounterOfferDto,
+    Payment, CreatePaymentDto,
     UserDelegation, CreateDelegationDto,
-    ContractMilestone, UpdateMilestoneDto,
-    UpdateInvoiceDto, UpdateGrnStatusDto,
-    SupplierKPI, AuditLogFilterDto,
-    RefreshTokenDto, ValidateTokenDto
+    UpdateMilestoneDto,
+    UpdateInvoiceDto,
+    SupplierKPI,
+
 } from "../types/api-types";
+import { convertPrismaDecimal } from "../utils/formatUtils";
 
 export type { 
     Organization, CostCenter, Department, Product, ProductCategory, User, BudgetPeriod, BudgetAllocation, 
     PR, PRItem, QuoteRequest, QuoteRequestItem, BudgetOverride,
-    Contract, Dispute, AuditLog, SupplierEvaluation 
+    Contract, Dispute, AuditLog, SupplierEvaluation, Quotation
 };
 
 export {
@@ -92,7 +93,8 @@ export interface POItem {
 }
 
 export interface PO {
-    id: string; poNumber: string; vendor: string; supplierId?: string; orgId?: string; items: POItem[]; status: PoStatus | string; total: number; createdAt?: string;
+    id: string; poNumber: string; vendor?: string; supplierId?: string; orgId?: string; items: POItem[]; status: PoStatus | string; total?: number; totalAmount?: number; createdAt?: string;
+    supplier?: { id?: string; name?: string; [key: string]: unknown };
 }
 
 export interface RFQ {
@@ -181,14 +183,11 @@ export interface ProcurementContextType extends ProcurementState {
     removeCategory: (id: string) => Promise<boolean>;
     payInvoice: (id: string) => Promise<boolean>;
     matchInvoice: (id: string) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    addCostCenter: (d: any) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    updateCostCenter: (id: string, d: any) => Promise<boolean>;
+    addCostCenter: (d: CreateCostCenterPayload) => Promise<boolean>;
+    updateCostCenter: (id: string, d: UpdateCostCenterPayload) => Promise<boolean>;
     removeCostCenter: (id: string) => Promise<boolean>;
     fetchCostCenter: (id: string) => Promise<CostCenter | null>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fetchMyDeptCostCenters: () => Promise<any>;
+    fetchMyDeptCostCenters: () => Promise<CostCenter[]>;
     addBudgetPeriod: (d: CreateBudgetPeriodPayload) => Promise<boolean>;
     addBudgetAllocation: (d: CreateBudgetAllocationPayload) => Promise<BudgetAllocation | null>;
     submitAllocation: (id: string) => Promise<boolean>;
@@ -197,10 +196,8 @@ export interface ProcurementContextType extends ProcurementState {
     distributeAnnualBudget: (costCenterId: string, fiscalYear: number) => Promise<boolean>;
     reconcileQuarter: (costCenterId: string, fiscalYear: number, quarter: number) => Promise<boolean>;
     fetchQuarterlyAllocation: (cc: string, year: number, quarter: number) => Promise<BudgetAllocation | null>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    addQuoteRequest: (d: any) => Promise<QuoteRequest | null>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    updateQuoteRequest: (id: string, d: any) => Promise<boolean>;
+    addQuoteRequest: (d: Record<string, unknown>) => Promise<QuoteRequest | null>;
+    updateQuoteRequest: (id: string, d: Partial<QuoteRequest>) => Promise<boolean>;
     submitQuoteRequest: (id: string) => Promise<boolean>;
     convertQuoteToPR: (qrId: string) => Promise<boolean>;
     sendQuoteRequestToSupplier: (id: string, supplierIds: string[]) => Promise<boolean>;
@@ -208,8 +205,7 @@ export interface ProcurementContextType extends ProcurementState {
     startSimulation: (wf: "CATALOG" | "NON_CATALOG") => void;
     nextSimulationStep: () => void;
     stopSimulation: () => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    confirmCatalogPrice: (d: any) => Promise<boolean>;
+    confirmCatalogPrice: (d: Record<string, unknown>) => Promise<boolean>;
     approveOverride: (id: string) => Promise<boolean>;
     rejectOverride: (id: string, reason: string) => Promise<boolean>;
     removeNotification: (id: number) => void;
@@ -257,13 +253,14 @@ export interface ProcurementContextType extends ProcurementState {
     deleteRFQ: (id: string) => Promise<boolean>;
     updateRFQStatus: (id: string, status: RfqStatus) => Promise<boolean>;
     fetchRFQById: (id: string) => Promise<RFQ | null>;
-    fetchSuppliersByRFQ: (rfqId: string) => Promise<User[]>;
+    fetchSuppliersByRFQ: (rfqId: string) => Promise<Organization[]>;
     analyzeQuotationWithAI: (quotationId: string) => Promise<unknown>;
     fetchMySupplierRFQs: () => Promise<RFQ[]>;
     fetchContractById: (id: string) => Promise<Contract | null>;
     updateContract: (id: string, d: Partial<Contract>) => Promise<boolean>;
     removeContract: (id: string) => Promise<boolean>;
-    submitContractForApproval: (id: string, approverId: string) => Promise<boolean>;
+    submitContractForApproval: (id: string) => Promise<boolean>;
+    terminateContract: (id: string, reason: string) => Promise<boolean>;
     updateContractMilestone: (milestoneId: string, d: UpdateMilestoneDto) => Promise<boolean>;
     fetchContractsBySupplier: (supplierId: string) => Promise<Contract[]>;
     fetchGRNById: (id: string) => Promise<GRN | null>;
@@ -288,15 +285,12 @@ export interface ProcurementContextType extends ProcurementState {
     createGRN: (d: CreateGrnDto) => Promise<boolean>;
     updateGrnItemQc: (id: string, itemId: string, status: string, notes?: string) => Promise<boolean>;
     createInvoice: (d: CreateInvoiceDto) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createContract: (d: any) => Promise<boolean>;
+    createContract: (d: Partial<Contract>) => Promise<boolean>;
     signContract: (id: string, isBuyer: boolean) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createDispute: (d: any) => Promise<boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createReview: (d: any) => Promise<boolean>;
+    createDispute: (d: Partial<Dispute>) => Promise<boolean>;
+    createReview: (d: { type: 'BUYER' | 'SUPPLIER'; rating: number; comment: string; relatedId: string }) => Promise<boolean>;
     // PO Consolidation
-    consolidatePRs: (dto: ConsolidatePRsInput) => Promise<ConsolidatePRsResult | null>;
+    consolidatePRs: (dto: ConsolidatePRsInput) => Promise<ConsolidatePRsResult>;
     // RAG / AI Sync
     syncRAG: () => Promise<boolean>;
     ingestRAGEntity: (entity: string) => Promise<boolean>;
@@ -304,6 +298,8 @@ export interface ProcurementContextType extends ProcurementState {
     fetchSpendOverview: () => Promise<SpendOverview | null>;
     fetchSpendBySupplier: () => Promise<SpendBySupplier[]>;
     fetchSpendByCategory: () => Promise<SpendByCategory[]>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fetchBuyerDashboard: () => Promise<any>;
 }
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
@@ -320,9 +316,19 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     });
 
     const notify = useCallback((message: string, type: Notification['type'] = 'info') => {
-        const id = Date.now();
-        setState(prev => ({ ...prev, notifications: [...prev.notifications, { id, message, type }] }));
-        setTimeout(() => setState(prev => ({ ...prev, notifications: prev.notifications.filter(n => n.id !== id) })), 5000);
+        const id = Date.now() + Math.random();
+        setState(prev => ({ 
+            ...prev, 
+            notifications: [...prev.notifications, { id, message, type }] 
+        }));
+        
+        // Auto-remove after 6 seconds (slightly longer than before)
+        setTimeout(() => {
+            setState(prev => ({ 
+                ...prev, 
+                notifications: prev.notifications.filter(n => n.id !== id) 
+            }));
+        }, 6000);
     }, []);
 
     const removeNotification = useCallback((id: number) => {
@@ -331,210 +337,173 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const apiFetch = useCallback(async (url: string, options: RequestInit = {}) => {
         const token = Cookies.get('token');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const headers: any = { 
+        const headers: Record<string, string> = {
             'Content-Type': 'application/json',
-            ...(options.headers || {})
+            ...(options.headers as Record<string, string> || {})
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const baseUrl = 'http://localhost:5000';
-        // process.env.NEXT_PUBLIC_API_URL ||
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
         return fetch(`${baseUrl}${url}`, { ...options, headers });
     }, []);
 
-    // Helper function to run promises in batches with delay
-    const runInBatches = async <T,>(
-        factories: (() => Promise<T>)[],
-        batchSize: number
-    ): Promise<T[]> => {
-        const results: T[] = [];
-        for (let i = 0; i < factories.length; i += batchSize) {
-            const batch = factories.slice(i, i + batchSize);
-            const batchResults = await Promise.all(batch.map(fn => fn()));
-            results.push(...batchResults);
-            if (i + batchSize < factories.length) {
-                await new Promise(resolve => setTimeout(resolve, 150));
-            }
-        }
-        return results;
-    };
-
-    const refreshData = useCallback(async () => {
+    const refreshDataCore = useCallback(async () => {
         setState(prev => ({ ...prev, loadingMyPrs: true }));
         try {
             const userJson = Cookies.get('user');
             const user = userJson ? JSON.parse(userJson) : null;
-            
-            // Split API calls into batches of 5 to avoid overwhelming the connection pool
-            const apiCalls = [
-                () => apiFetch('/budgets/periods'),
-                () => apiFetch('/budgets/allocations'),
-                () => apiFetch('/procurement-requests'),
-                () => apiFetch('/procurement-requests/my'),
-                () => apiFetch('/approvals/pending'),
-                () => apiFetch('/organizations'),
-                () => apiFetch('/departments'),
-                () => apiFetch('/users'),
-                () => apiFetch('/products'),
-                () => apiFetch('/products/categories'),
-                () => apiFetch('/cost-centers'),
-                () => apiFetch('/purchase-orders'),
-                () => apiFetch('/purchase-orders/all'),
-                () => apiFetch('/request-for-quotations'),
-                () => apiFetch('/grn'),
-                () => apiFetch('/invoices'),
-                () => apiFetch('/contracts'),
-                () => apiFetch('/disputes')
-            ];
-            
+
+            // Fire all requests in parallel — no artificial batching delay
             const [
-                periodsResp, allocsResp, prsResp, myPrsResp, approvalsResp, 
-                orgsResp, deptsResp, usersResp, productsResp, categoriesResp, 
+                periodsResp, allocsResp, prsResp, myPrsResp, approvalsResp,
+                orgsResp, deptsResp, usersResp, productsResp, categoriesResp,
                 ccResp, posResp, posAllResp, rfqsResp, grnsResp, invoicesResp,
                 contractsResp, disputesResp
-            ] = await runInBatches(apiCalls, 2);
+            ] = await Promise.all([
+                apiFetch('/budgets/periods'),
+                apiFetch('/budgets/allocations'),
+                apiFetch('/procurement-requests'),
+                apiFetch('/procurement-requests/my'),
+                apiFetch('/approvals/pending'),
+                apiFetch('/organizations'),
+                apiFetch('/departments'),
+                apiFetch('/users'),
+                apiFetch('/products'),
+                apiFetch('/products/categories'),
+                apiFetch('/cost-centers'),
+                apiFetch('/purchase-orders'),
+                apiFetch('/purchase-orders/all'),
+                apiFetch('/request-for-quotations'),
+                apiFetch('/grn'),
+                apiFetch('/invoices'),
+                apiFetch('/contracts'),
+                apiFetch('/disputes'),
+            ]);
 
+            // Role-gated calls (parallel with each other)
+            let newBudgetOverrides: BudgetOverride[] | null = null;
+            let newAuditLogs: AuditLog[] | null = null;
             if (user && ["FINANCE", "DIRECTOR", "CEO", "PLATFORM_ADMIN"].includes(user.role)) {
-                const overridesResp = await apiFetch('/budgets/overrides');
+                const [overridesResp, auditResp] = await Promise.all([
+                    apiFetch('/budgets/overrides'),
+                    apiFetch('/audit-logs'),
+                ]);
                 if (overridesResp.ok) {
                     const res = await overridesResp.json();
-                    const data = res.data || res;
-                    if (Array.isArray(data)) setState(prev => ({ ...prev, budgetOverrides: data }));
+                    const d = res.data || res;
+                    if (Array.isArray(d)) {
+                        newBudgetOverrides = d.map((override: BudgetOverride) => ({
+                            ...override,
+                            overrideAmount: convertPrismaDecimal(override.overrideAmount),
+                        }));
+                    }
                 }
-
-                const auditResp = await apiFetch('/audit-logs');
                 if (auditResp.ok) {
                     const res = await auditResp.json();
-                    const data = res.data || res;
-                    if (Array.isArray(data)) setState(prev => ({ ...prev, auditLogs: data }));
+                    const d = res.data || res;
+                    if (Array.isArray(d)) newAuditLogs = d;
                 }
             }
 
-            if (contractsResp.ok) {
-                const res = await contractsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, contracts: data }));
-            }
+            // Parse all responses into local variables
+            const parseArr = async (resp: Response) => {
+                const res = await resp.json();
+                const d = res.data || res;
+                return Array.isArray(d) ? d : null;
+            };
 
-            if (disputesResp.ok) {
-                const res = await disputesResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, disputes: data }));
-            }
+            const [
+                periodsData, allocsData, rawPrsData, rawMyPrsData, approvalsData,
+                orgsData, deptsData, usersData, productsData, categoriesData,
+                ccData, posData, posAllData, rfqsData, grnsData, invoicesData,
+                contractsData, disputesData,
+            ] = await Promise.all([
+                periodsResp.ok  ? parseArr(periodsResp)    : Promise.resolve(null),
+                allocsResp.ok   ? parseArr(allocsResp)     : Promise.resolve(null),
+                prsResp.ok      ? parseArr(prsResp)        : Promise.resolve(null),
+                myPrsResp.ok    ? parseArr(myPrsResp)      : Promise.resolve(null),
+                approvalsResp.ok? parseArr(approvalsResp)  : Promise.resolve(null),
+                orgsResp.ok     ? parseArr(orgsResp)       : Promise.resolve(null),
+                deptsResp.ok    ? parseArr(deptsResp)      : Promise.resolve(null),
+                usersResp.ok    ? parseArr(usersResp)      : Promise.resolve(null),
+                productsResp.ok ? parseArr(productsResp)   : Promise.resolve(null),
+                categoriesResp.ok? parseArr(categoriesResp): Promise.resolve(null),
+                ccResp?.ok      ? parseArr(ccResp)         : Promise.resolve(null),
+                posResp?.ok     ? parseArr(posResp)        : Promise.resolve(null),
+                posAllResp?.ok  ? parseArr(posAllResp)     : Promise.resolve(null),
+                rfqsResp?.ok    ? parseArr(rfqsResp)       : Promise.resolve(null),
+                grnsResp?.ok    ? parseArr(grnsResp)       : Promise.resolve(null),
+                invoicesResp?.ok? parseArr(invoicesResp)   : Promise.resolve(null),
+                contractsResp.ok? parseArr(contractsResp)  : Promise.resolve(null),
+                disputesResp.ok ? parseArr(disputesResp)   : Promise.resolve(null),
+            ]);
 
-            if (periodsResp.ok) {
-                const res = await periodsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, budgetPeriods: data }));
-            }
+            const normalizePR = (p: PR): PR => ({
+                ...p,
+                title:     p.title || p.description || p.prNumber || "Yêu cầu mua sắm",
+                type:      p.type || PrType.NON_CATALOG,
+                requester: p.requester || { id: "u-unknown" },
+                totalEstimate: convertPrismaDecimal(p.totalEstimate),
+                items: p.items?.map(item => ({
+                    ...item,
+                    qty: convertPrismaDecimal(item.qty),
+                    quantity: convertPrismaDecimal(item.quantity),
+                    estimatedPrice: convertPrismaDecimal(item.estimatedPrice),
+                    totalPrice: convertPrismaDecimal(item.totalPrice),
+                })) || p.items,
+            });
 
-            if (allocsResp.ok) {
-                const res = await allocsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, budgetAllocations: data }));
-            }
-            
-            if (prsResp.ok) {
-                const res = await prsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) {
-                    setState(prev => ({ 
-                        ...prev, 
-                        prs: data.map((p: PR) => ({
-                            ...p,
-                            title: p.title || p.description || p.prNumber || "Yêu cầu mua sắm",
-                            type: p.type || PrType.NON_CATALOG,
-                            requester: p.requester || { id: "u-unknown" }
-                        })) 
-                    }));
-                }
-            }
-            if (myPrsResp.ok) {
-                const res = await myPrsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) {
-                    setState(prev => ({ 
-                        ...prev, 
-                        myPrs: data.map((p: PR) => ({
-                            ...p,
-                            title: p.title || p.description || p.prNumber || "Yêu cầu mua sắm",
-                            type: p.type || PrType.NON_CATALOG,
-                            requester: p.requester || { id: "u-unknown" }
-                        }))
-                    }));
-                }
-            }
-            if (ccResp && ccResp.ok) {
-                const res = await ccResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, costCenters: data }));
-            }
-            if (posResp && posResp.ok) {
-                const res = await posResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) {
-                    setState(prev => ({ ...prev, pos: data }));
-                }
-            }
-            if (posAllResp && posAllResp.ok) {
-                // Lưu tất cả PO trong hệ thống vào allPos (riêng biệt với pos)
-                const res = await posAllResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, allPos: data }));
-            }
-            if (rfqsResp && rfqsResp.ok) {
-                const res = await rfqsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, rfqs: data }));
-            }
-            if (grnsResp && grnsResp.ok) {
-                const res = await grnsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, grns: data }));
-            }
-            if (invoicesResp && invoicesResp.ok) {
-                const res = await invoicesResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, invoices: data }));
-            }
-            if (orgsResp.ok) {
-                const res = await orgsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, organizations: data }));
-            }
-            if (deptsResp.ok) {
-                const res = await deptsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, departments: data }));
-            }
-            if (usersResp.ok) {
-                const res = await usersResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, users: data }));
-            }
-            if (productsResp.ok) {
-                const res = await productsResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, products: data }));
-            }
-            if (categoriesResp.ok) {
-                const res = await categoriesResp.json();
-                const data = res.data || res;
-                if (Array.isArray(data)) setState(prev => ({ ...prev, categories: data }));
-            }
-            if (approvalsResp.ok) {
-                const res = await approvalsResp.json();
-                const data = res.data || res;
-                console.log("Pending Approvals", data);
-                if (Array.isArray(data)) setState(prev => ({ ...prev, approvals: data }));
-            }
-        } catch (e) {
-            console.error("Refresh Data Error", e);
-        } finally {
+            const normalizeBudgetAlloc = (b: BudgetAllocation): BudgetAllocation => ({
+                ...b,
+                allocatedAmount: convertPrismaDecimal(b.allocatedAmount),
+                committedAmount: convertPrismaDecimal(b.committedAmount),
+                spentAmount: convertPrismaDecimal(b.spentAmount),
+            });
+
+            const prsData   = rawPrsData   ? rawPrsData.map(normalizePR)   : null;
+            const myPrsData = rawMyPrsData ? rawMyPrsData.map(normalizePR) : null;
+            const allocsDataNormalized = allocsData ? allocsData.map(normalizeBudgetAlloc) : null;
+
+            // Single atomic setState — triggers exactly 1 re-render
+            setState(prev => ({
+                ...prev,
+                ...(periodsData    !== null && { budgetPeriods: periodsData }),
+                ...(allocsDataNormalized !== null && { budgetAllocations: allocsDataNormalized }),
+                ...(prsData        !== null && { prs: prsData }),
+                ...(myPrsData      !== null && { myPrs: myPrsData }),
+                ...(approvalsData  !== null && { approvals: approvalsData }),
+                ...(orgsData       !== null && { organizations: orgsData }),
+                ...(deptsData      !== null && { departments: deptsData }),
+                ...(usersData      !== null && { users: usersData }),
+                ...(productsData   !== null && { products: productsData }),
+                ...(categoriesData !== null && { categories: categoriesData }),
+                ...(ccData         !== null && { costCenters: ccData }),
+                ...(posData        !== null && { pos: posData }),
+                ...(posAllData     !== null && { allPos: posAllData }),
+                ...(rfqsData       !== null && { rfqs: rfqsData }),
+                ...(grnsData       !== null && { grns: grnsData }),
+                ...(invoicesData   !== null && { invoices: invoicesData }),
+                ...(contractsData  !== null && { contracts: (contractsData as Contract[]).map((c) => ({ ...c, totalValue: (c as unknown as Record<string,unknown>).totalValue ?? (c as unknown as Record<string,unknown>).value ?? 0, supplier: (c as unknown as Record<string,unknown>).supplierOrg ?? c.supplier })) as Contract[] }),
+                ...(disputesData   !== null && { disputes: disputesData }),
+                ...(newBudgetOverrides !== null && { budgetOverrides: newBudgetOverrides }),
+                ...(newAuditLogs       !== null && { auditLogs: newAuditLogs }),
+                loadingMyPrs: false,
+            }));
+        } catch {
             setState(prev => ({ ...prev, loadingMyPrs: false }));
         }
     }, [apiFetch]);
+
+    const refreshData = useCallback(async (attempt = 0): Promise<void> => {
+        try {
+            await refreshDataCore();
+        } catch {
+            if (attempt < 2) {
+                await new Promise(res => setTimeout(res, (attempt + 1) * 1000));
+                return refreshData(attempt + 1);
+            }
+        }
+    }, [refreshDataCore]);
 
     // Restore user from cookies on mount
     const refreshDataRef = useRef(refreshData);
@@ -600,14 +569,18 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const submitPR = useCallback(async (id: string) => {
         const resp = await apiFetch(`/procurement-requests/${id}/submit`, { method: 'POST' });
-        if (resp.ok) { notify("Gửi duyệt thành công", "success"); await refreshData(); return true; }
-        return false;
+        if (resp.ok) {
+            notify("Gửi duyệt thành công", "success");
+            refreshData(); // Run in background
+            return true;
+        }
+        notify("Gửi duyệt thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const updatePR = useCallback(async (id: string, d: UpdatePrDto) => {
         const resp = await apiFetch(`/procurement-requests/${id}`, { method: 'PATCH', body: JSON.stringify(d) });
         if (resp.ok) { notify("Cập nhật thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Cập nhật thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const fetchPrDetail = useCallback(async (id: string) => {
@@ -619,30 +592,38 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const actionApproval = useCallback(async (id: string, action: 'APPROVE' | 'REJECT', comment?: string) => {
         const resp = await apiFetch(`/approvals/${id}/action`, { method: 'POST', body: JSON.stringify({ action, comment }) });
-        if (resp.ok) { notify("Phê duyệt thành công", "success"); await refreshData(); return true; }
-        return false;
+        if (resp.ok) {
+            notify("Phê duyệt thành công", "success");
+            refreshData(); // background
+            return true;
+        }
+        notify("Phê duyệt thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const addBudgetAllocation = useCallback(async (d: CreateBudgetAllocationPayload) => {
         const resp = await apiFetch('/budgets/allocations', { method: 'POST', body: JSON.stringify(d) });
-        if (resp.ok) { 
+        if (resp.ok) {
             const res = await resp.json();
-            await refreshData(); 
-            return res.data || res; 
+            refreshData(); // background
+            return res.data || res;
         }
-        return false;
-    }, [apiFetch, refreshData]);
+        notify("Tạo phân bổ ngân sách thất bại", "error"); return false;
+    }, [apiFetch, refreshData, notify]);
 
     const submitAllocation = useCallback(async (id: string) => {
         const resp = await apiFetch(`/budgets/allocations/${id}/submit`, { method: 'PATCH' });
-        if (resp.ok) { notify("Đã gửi duyệt ngân sách", "success"); await refreshData(); return true; }
-        return false;
+        if (resp.ok) {
+            notify("Đã gửi duyệt ngân sách", "success");
+            refreshData(); // background
+            return true;
+        }
+        notify("Gửi duyệt ngân sách thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const approveAllocation = useCallback(async (id: string) => {
         const resp = await apiFetch(`/budgets/allocations/${id}/approve`, { method: 'PATCH' });
         if (resp.ok) { notify("Đã duyệt ngân sách thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Duyệt ngân sách thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const rejectAllocation = useCallback(async (id: string, reason: string) => {
@@ -652,52 +633,158 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData, notify]);
 
     const distributeAnnualBudget = useCallback(async (costCenterId: string, fiscalYear: number) => {
-        const resp = await apiFetch(`/budgets/distribute-annual/${costCenterId}/${fiscalYear}`, { method: 'POST' });
-        if (resp.ok) { notify("Phân bổ 20/80 thành công", "success"); await refreshData(); return true; }
+        // Lấy thông tin cost center để biết hạn mức năm
+        const ccResp = await apiFetch(`/cost-centers/${costCenterId}`);
+        if (!ccResp.ok) {
+            notify("Không lấy được thông tin Cost Center", "error");
+            return false;
+        }
+        const ccData = await ccResp.json();
+        const costCenter = ccData.data || ccData;
+        
+        // Chuyển đổi budgetAnnual từ Prisma Decimal nếu cần
+        const annualBudget = convertPrismaDecimal(costCenter.budgetAnnual);
+        if (!annualBudget || annualBudget <= 0) {
+            notify("Cost Center chưa có hạn mức năm", "error");
+            return false;
+        }
+        
+        // Tính toán phân bổ: 20% mỗi quý = 80% tổng năm (20% dự phòng)
+        const quarterlyAllocation = Math.floor(annualBudget * 0.20); // 20% mỗi quý
+        
+        const quarters = [
+            { q: 1, start: `${fiscalYear}-01-01`, end: `${fiscalYear}-03-31` },
+            { q: 2, start: `${fiscalYear}-04-01`, end: `${fiscalYear}-06-30` },
+            { q: 3, start: `${fiscalYear}-07-01`, end: `${fiscalYear}-09-30` },
+            { q: 4, start: `${fiscalYear}-10-01`, end: `${fiscalYear}-12-31` },
+        ];
+        
+        let successCount = 0;
+        
+        for (const item of quarters) {
+            // 1. Kiểm tra xem period đã tồn tại chưa (tránh lỗi unique constraint)
+            const existingPeriod = state.budgetPeriods.find(
+                p => p.fiscalYear === fiscalYear && 
+                     p.periodType === 'QUARTERLY' && 
+                     p.periodNumber === item.q
+            );
+            
+            let period;
+            if (existingPeriod) {
+                console.log(`Using existing period Q${item.q}: ${existingPeriod.id.slice(0,8)}...`);
+                period = existingPeriod;
+            } else {
+                // Tạo Budget Period mới
+                const periodResp = await apiFetch('/budgets/periods', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        fiscalYear,
+                        periodType: 'QUARTERLY',
+                        periodNumber: item.q,
+                        startDate: item.start,
+                        endDate: item.end,
+                    }),
+                });
+                
+                if (!periodResp.ok) {
+                    const errorText = await periodResp.text();
+                    console.log(`Failed to create period Q${item.q}:`, errorText);
+                    // Nếu lỗi do trùng lặp, thử refresh để lấy period mới nhất
+                    if (errorText.includes('Unique constraint') || errorText.includes('P2002')) {
+                        await refreshData();
+                        continue;
+                    }
+                    continue;
+                }
+                
+                const periodData = await periodResp.json();
+                period = periodData.data || periodData;
+            }
+            
+            // 2. Kiểm tra allocation đã tồn tại chưa
+            const existingAlloc = state.budgetAllocations.find(
+                a => a.budgetPeriodId === period.id && a.costCenterId === costCenterId
+            );
+            
+            if (existingAlloc) {
+                console.log(`Allocation already exists for Q${item.q}, skipping`);
+                continue;
+            }
+            
+            // 3. Tạo Budget Allocation cho quý
+            const allocResp = await apiFetch('/budgets/allocations', {
+                method: 'POST',
+                body: JSON.stringify({
+                    budgetPeriodId: period.id,
+                    costCenterId: costCenterId,
+                    deptId: costCenter.deptId,
+                    allocatedAmount: quarterlyAllocation,
+                    committedAmount: 0,
+                    spentAmount: 0,
+                    currency: 'VND',
+                    status: 'APPROVED',
+                    notes: `Phân bổ 20/80 - Quý ${item.q}/${fiscalYear}: 20% của ${annualBudget.toLocaleString()} VND`,
+                }),
+            });
+            
+            if (allocResp.ok) {
+                successCount++;
+            } else {
+                console.log(`Failed to create allocation Q${item.q}:`, await allocResp.text());
+            }
+        }
+        
+        if (successCount > 0) {
+            notify(`Phân bổ 20/80 thành công: ${successCount}/4 quý (${quarterlyAllocation.toLocaleString()} VND/quý)`, "success");
+            await refreshData();
+            return true;
+        }
+        
+        notify("Phân bổ ngân sách thất bại", "error");
         return false;
     }, [apiFetch, refreshData, notify]);
 
     const reconcileQuarter = useCallback(async (costCenterId: string, fiscalYear: number, quarter: number) => {
         const resp = await apiFetch(`/budgets/reconcile-quarter/${costCenterId}/${fiscalYear}/${quarter}`, { method: 'POST' });
         if (resp.ok) { notify("Quyết toán thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Quyết toán thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const approveOverride = useCallback(async (id: string) => {
         const resp = await apiFetch(`/budgets/overrides/${id}/approve`, { method: 'PATCH' });
         if (resp.ok) { notify("Đã duyệt vượt định mức", "success"); await refreshData(); return true; }
-        return false;
+        notify("Duyệt vượt định mức thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const rejectOverride = useCallback(async (id: string, reason: string) => {
         const resp = await apiFetch(`/budgets/overrides/${id}/reject`, { method: 'PATCH', body: JSON.stringify({ reason }) });
         if (resp.ok) { notify("Đã từ chối", "info"); await refreshData(); return true; }
-        return false;
+        notify("Từ chối vượt định mức thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createPO = useCallback(async (d: CreatePoDto) => {
         const resp = await apiFetch('/purchase-orders', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Tạo đơn hàng thành công!", "success"); await refreshData(); return true; }
-        return false;
+        notify("Tạo đơn hàng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createPOFromPR = useCallback(async (prId: string, supplierId?: string) => {
-        const resp = await apiFetch('/purchase-orders/create-from-pr', { 
-            method: 'POST', 
-            body: JSON.stringify({ prId, supplierId }) 
+        const resp = await apiFetch('/purchase-orders/create-from-pr', {
+            method: 'POST',
+            body: JSON.stringify({ prId, supplierId })
         });
-        if (resp.ok) { 
+        if (resp.ok) {
             const result = await resp.json();
-            notify("Tạo đơn hàng từ PR thành công!", "success"); 
-            await refreshData(); 
-            return result.data || result; 
+            notify("Tạo đơn hàng từ PR thành công!", "success");
+            await refreshData();
+            return result.data || result;
         }
-        return null;
+        notify("Tạo đơn hàng từ PR thất bại", "error"); return null;
     }, [apiFetch, refreshData, notify]);
 
     const processPOAutomation = useCallback(async (poId: string) => {
         const resp = await apiFetch(`/po-automation/process/${poId}`, { method: 'POST' });
-        if (resp.ok) { 
+        if (resp.ok) {
             const result = await resp.json();
             if (result.contractCreated) {
                 notify(result.message, "success");
@@ -707,30 +794,30 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             await refreshData();
             return result;
         }
-        return null;
+        notify("Xử lý tự động PO thất bại", "error"); return null;
     }, [apiFetch, refreshData, notify]);
 
     const ackPO = useCallback(async (id: string) => {
         const resp = await apiFetch(`/purchase-orders/${id}/acknowledge`, { method: 'POST' });
         if (resp.ok) { notify("Đã xác nhận đơn hàng", "success"); await refreshData(); return true; }
-        return false;
+        notify("Xác nhận đơn hàng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const rejectPO = useCallback(async (id: string) => {
         const resp = await apiFetch(`/purchase-orders/${id}/reject`, { method: 'POST' });
-        if (resp.ok) { 
-            notify("Đã từ chối đơn hàng", "success"); 
-            await refreshData(); 
+        if (resp.ok) {
+            notify("Đã từ chối đơn hàng", "success");
+            await refreshData();
             const res = await resp.json();
             return res.data || res;
         }
-        return null;
+        notify("Từ chối đơn hàng thất bại", "error"); return null;
     }, [apiFetch, refreshData, notify]);
 
     const shipPO = useCallback(async (id: string) => {
         const resp = await apiFetch(`/purchase-orders/${id}/status`, { method: 'PUT', body: JSON.stringify({ status: 'SHIPPED' }) });
         if (resp.ok) { notify("Đã cập nhật trạng thái giao hàng", "success"); await refreshData(); return true; }
-        return false;
+        notify("Cập nhật trạng thái giao hàng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const fetchQuarterlyAllocation = useCallback(async (cc: string, year: number, quarter: number) => {
@@ -741,46 +828,71 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const createRFQ = useCallback(async (d: CreateRfqDto) => {
         const resp = await apiFetch('/request-for-quotations', { method: 'POST', body: JSON.stringify(d) });
-        if (resp.ok) { 
-            notify("Tạo RFQ thành công!", "success"); 
-            await refreshData(); 
+        if (resp.ok) {
+            notify("Tạo RFQ thành công!", "success");
+            refreshData(); // Run in background
             const res = await resp.json();
-            return res.data || res; 
+            return res.data || res;
         }
-        return null;
+        notify("Tạo RFQ thất bại", "error"); return null;
+    }, [apiFetch, refreshData, notify]);
+
+    const createRFQConsolidated = useCallback(async (d: ConsolidateRfqDto): Promise<boolean> => {
+        const { prIds, title, description, deadline, supplierIds } = d;
+        let anySuccess = false;
+        let anyFail = false;
+        for (const prId of prIds) {
+            const resp = await apiFetch('/request-for-quotations', {
+                method: 'POST',
+                body: JSON.stringify({ prId, title, description, deadline, supplierIds })
+            });
+            if (resp.ok) { anySuccess = true; }
+            else { anyFail = true; }
+        }
+        if (anySuccess) {
+            notify(anyFail ? "Một số RFQ tạo thành công, một số thất bại" : "Tạo RFQ thành công!", anyFail ? "info" : "success");
+            refreshData(); // background
+        } else {
+            notify("Tạo RFQ thất bại", "error");
+        }
+        return anySuccess && !anyFail;
     }, [apiFetch, refreshData, notify]);
 
     const awardQuotation = useCallback(async (rfqId: string, quotationId: string) => {
-        const resp = await apiFetch(`/request-for-quotations/${rfqId}/award`, { 
-            method: 'PUT', 
-            body: JSON.stringify({ quotationId }) 
+        const resp = await apiFetch(`/request-for-quotations/${rfqId}/award`, {
+            method: 'PUT',
+            body: JSON.stringify({ quotationId })
         });
-        if (resp.ok) { notify("Đã chọn nhà thầu thành công!", "success"); await refreshData(); return true; }
-        return false;
+        if (resp.ok) {
+            notify("Đã chọn nhà thầu thành công!", "success");
+            refreshData(); // background
+            return true;
+        }
+        notify("Chọn nhà thầu thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createGRN = useCallback(async (d: CreateGrnDto) => {
         const resp = await apiFetch('/grn', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Nhập kho thành công!", "success"); await refreshData(); return true; }
-        return false;
+        notify("Nhập kho thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createInvoice = useCallback(async (d: CreateInvoiceDto) => {
         const resp = await apiFetch('/invoices', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Tạo hóa đơn thành công!", "success"); await refreshData(); return true; }
-        return false;
+        notify("Tạo hóa đơn thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const payInvoice = useCallback(async (id: string) => {
         const resp = await apiFetch(`/invoices/${id}/pay`, { method: 'POST' });
         if (resp.ok) { notify("Đã thanh toán hóa đơn", "success"); await refreshData(); return true; }
-        return false;
+        notify("Thanh toán hóa đơn thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const matchInvoice = useCallback(async (id: string) => {
         const resp = await apiFetch(`/invoices/${id}/run-matching`, { method: 'POST' });
         if (resp.ok) { notify("Đã thực hiện đối soát 3 bên", "success"); await refreshData(); return true; }
-        return false;
+        notify("Đối soát 3 bên thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const convertQuoteToPR = useCallback(async (qrId: string) => {
@@ -936,41 +1048,49 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     const removeUser = useCallback(async (id: string) => {
         const resp = await apiFetch(`/users/${id}`, { method: 'DELETE' });
         if (resp.ok) { notify("Đã xóa người dùng", "success"); await refreshData(); return true; }
-        return false;
+        notify("Xóa người dùng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const updateGrnItemQc = useCallback(async (id: string, itemId: string, status: string, notes?: string) => {
-        const resp = await apiFetch(`/grn/${id}/items/${itemId}/qc`, { 
-            method: 'PATCH', 
-            body: JSON.stringify({ status, notes }) 
+        const resp = await apiFetch(`/grn/${id}/items/${itemId}/qc`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status, notes })
         });
         if (resp.ok) { notify("Cập nhật kết quả QC thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Cập nhật kết quả QC thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createContract = useCallback(async (d: Partial<Contract>) => {
-        const resp = await apiFetch('/contracts', { method: 'POST', body: JSON.stringify(d) });
+        // Backend dùng `value`, frontend dùng `totalValue` — map trước khi gửi
+        const { totalValue, ...rest } = d as Contract & { totalValue?: number };
+        const payload = { ...rest, value: totalValue };
+        const resp = await apiFetch('/contracts', { method: 'POST', body: JSON.stringify(payload) });
         if (resp.ok) { notify("Tạo hợp đồng thành công", "success"); await refreshData(); return true; }
+        try {
+            const errBody = await resp.json();
+            const msg = errBody?.message ?? errBody?.error ?? "Tạo hợp đồng thất bại";
+            notify(Array.isArray(msg) ? msg.join('; ') : String(msg), "error");
+        } catch { notify("Tạo hợp đồng thất bại", "error"); }
         return false;
     }, [apiFetch, refreshData, notify]);
 
     const signContract = useCallback(async (id: string, isBuyer: boolean) => {
         const resp = await apiFetch(`/contracts/${id}/sign`, { method: 'POST', body: JSON.stringify({ isBuyer }) });
         if (resp.ok) { notify("Ký hợp đồng thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Ký hợp đồng thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createDispute = useCallback(async (d: Partial<Dispute>) => {
         const resp = await apiFetch('/disputes', { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Tạo khiếu nại thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Tạo khiếu nại thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     const createReview = useCallback(async (d: { type: 'BUYER' | 'SUPPLIER', rating: number, comment: string, relatedId: string }) => {
         const url = d.type === 'BUYER' ? '/reviews/buyer-rating' : '/reviews/supplier-review';
         const resp = await apiFetch(url, { method: 'POST', body: JSON.stringify(d) });
         if (resp.ok) { notify("Đã gửi đánh giá thành công", "success"); await refreshData(); return true; }
-        return false;
+        notify("Gửi đánh giá thất bại", "error"); return false;
     }, [apiFetch, refreshData, notify]);
 
     // ========== Auth Module ==========
@@ -1268,7 +1388,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const fetchSuppliersByRFQ = useCallback(async (rfqId: string) => {
         const resp = await apiFetch(`/request-for-quotations/${rfqId}/suppliers`);
-        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        if (resp.ok) {
+            const res = await resp.json();
+            const arr = res.data || res;
+            // Server returns RfqSupplier[] with nested { supplier: Organization } — extract the Organization objects
+            return Array.isArray(arr) ? arr.map((s: { supplier?: Organization }) => (s.supplier ?? s) as Organization).filter(Boolean) : [];
+        }
         return [];
     }, [apiFetch]);
 
@@ -1286,7 +1411,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         const resp = await apiFetch('/request-for-quotations/my-supplier-rfqs');
         if (resp.ok) {
             const res = await resp.json();
-            console.log("My supplier RFQs:", res.data);
             return res.data || res;
         }
         return [];
@@ -1300,7 +1424,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch]);
 
     const updateContract = useCallback(async (id: string, d: Partial<Contract>) => {
-        const resp = await apiFetch(`/contracts/${id}`, { method: 'PATCH', body: JSON.stringify(d) });
+        const { totalValue, ...rest } = d as Contract & { totalValue?: number };
+        const payload = { ...rest, value: totalValue };
+        const resp = await apiFetch(`/contracts/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
         if (resp.ok) { notify("Cập nhật hợp đồng thành công", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
@@ -1311,11 +1437,27 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const submitContractForApproval = useCallback(async (id: string, approverId: string) => {
-        const resp = await apiFetch(`/contracts/${id}/submit`, { method: 'POST', body: JSON.stringify({ approverId }) });
-        if (resp.ok) { notify("Đã gửi hợp đồng để phê duyệt", "success"); return true; }
+    const submitContractForApproval = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/contracts/${id}/submit`, { method: 'POST' });
+        if (resp.ok) { notify("Đã gửi hợp đồng để phê duyệt", "success"); await refreshData(); return true; }
+        try {
+            const errBody = await resp.json();
+            const msg = errBody?.message ?? "Gửi phê duyệt thất bại";
+            notify(Array.isArray(msg) ? msg.join('; ') : String(msg), "error");
+        } catch { notify("Gửi phê duyệt thất bại", "error"); }
         return false;
-    }, [apiFetch, notify]);
+    }, [apiFetch, notify, refreshData]);
+
+    const terminateContract = useCallback(async (id: string, reason: string) => {
+        const resp = await apiFetch(`/contracts/${id}/terminate`, { method: 'POST', body: JSON.stringify({ reason }) });
+        if (resp.ok) { notify("Đã chấm dứt hợp đồng", "success"); await refreshData(); return true; }
+        try {
+            const errBody = await resp.json();
+            const msg = errBody?.message ?? "Chấm dứt hợp đồng thất bại";
+            notify(Array.isArray(msg) ? msg.join('; ') : String(msg), "error");
+        } catch { notify("Chấm dứt hợp đồng thất bại", "error"); }
+        return false;
+    }, [apiFetch, notify, refreshData]);
 
     const updateContractMilestone = useCallback(async (milestoneId: string, d: UpdateMilestoneDto) => {
         const resp = await apiFetch(`/contracts/milestones/${milestoneId}`, { method: 'PATCH', body: JSON.stringify(d) });
@@ -1420,22 +1562,22 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const confirmPO = useCallback(async (id: string) => {
         const resp = await apiFetch(`/purchase-orders/${id}/confirm`, { method: 'POST' });
-        if (resp.ok) { 
-            notify("Đã xác nhận đơn hàng", "success"); 
+        if (resp.ok) {
+            notify("Đã xác nhận đơn hàng", "success");
             const res = await resp.json();
-            return res.data || res; 
+            return res.data || res;
         }
-        return null;
+        notify("Xác nhận đơn hàng thất bại", "error"); return null;
     }, [apiFetch, notify]);
 
     const submitPO = useCallback(async (id: string) => {
         const resp = await apiFetch(`/purchase-orders/${id}/submit`, { method: 'POST' });
-        if (resp.ok) { 
-            notify("Đã gửi đơn hàng phê duyệt", "success"); 
+        if (resp.ok) {
+            notify("Đã gửi đơn hàng phê duyệt", "success");
             const res = await resp.json();
-            return res.data || res; 
+            return res.data || res;
         }
-        return null;
+        notify("Gửi đơn hàng phê duyệt thất bại", "error"); return null;
     }, [apiFetch, notify]);
 
     // ========== Invoices ==========
@@ -1447,12 +1589,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const runMatching = useCallback(async (id: string) => {
         const resp = await apiFetch(`/invoices/${id}/run-matching`, { method: 'POST' });
-        if (resp.ok) { 
-            notify("Đã thực hiện đối soát 3 bên", "success"); 
+        if (resp.ok) {
+            notify("Đã thực hiện đối soát 3 bên", "success");
             const res = await resp.json();
-            return res.data || res; 
+            return res.data || res;
         }
-        return null;
+        notify("Đối soát 3 bên thất bại", "error"); return null;
     }, [apiFetch, notify]);
 
     // ========== Supplier KPI ==========
@@ -1517,23 +1659,47 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 'PROVISIONAL': 'BRONZE',
                 'BLACKLISTED': 'BRONZE',
             };
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return items.map((item: any) => {
-                const kpiScore = item?.kpiScore || item;
-                const aiInsights = item?.aiInsights;
+            interface KpiScoreData {
+                overallScore?: number;
+                otdScore?: number;
+                qualityScore?: number;
+                priceScore?: number;
+                invoiceAccuracy?: string;
+                responseTimeScore?: string;
+                fulfillmentRate?: string;
+                periodQuarter?: number;
+                periodYear?: number;
+                tier?: string;
+                supplier?: { id?: string; name?: string };
+            }
+            interface AiInsightsData {
+                overallScore?: number;
+            }
+            return items.map((item: Record<string, unknown>) => {
+                const kpiScore = (item?.kpiScore || item) as KpiScoreData;
+                const aiInsights = item?.aiInsights as AiInsightsData | undefined;
+                const overallScore = aiInsights?.overallScore ?? kpiScore?.overallScore ?? kpiScore?.otdScore ?? 0;
                 return {
-                    ...kpiScore,
-                    score: aiInsights?.overallScore ?? kpiScore?.overallScore ?? kpiScore?.otdScore ?? 0,
+                    id: (item?.id as string) || `${supplierId}-kpi-${Date.now()}`,
+                    supplierId: supplierId,
+                    period: `Q${kpiScore?.periodQuarter || 1} ${kpiScore?.periodYear || 2026}`,
+                    onTimeDeliveryScore: kpiScore?.otdScore ?? 0,
+                    qualityScore: kpiScore?.qualityScore ?? 0,
+                    priceScore: kpiScore?.priceScore ?? 0,
+                    responsivenessScore: parseFloat(kpiScore?.responseTimeScore || '0') || 0,
+                    complianceScore: parseFloat(kpiScore?.invoiceAccuracy || '0') || 0,
+                    overallScore: overallScore,
+                    tier: (tierMap[kpiScore?.tier || ''] || 'BRONZE') as import('../types/api-types').SupplierTier,
+                    evaluatedAt: new Date().toISOString(),
                     quarter: `Q${kpiScore?.periodQuarter || 1} ${kpiScore?.periodYear || 2026}`,
-                    tier: tierMap[kpiScore?.tier] || 'BRONZE',
                     supplier: kpiScore?.supplier || { id: supplierId, name: 'Nhà cung cấp' },
                     metrics: {
                         onTimeDelivery: { score: kpiScore?.otdScore ?? 0 },
                         qualityScore: { score: kpiScore?.qualityScore ?? 0 },
                         priceCompetitiveness: { score: kpiScore?.priceScore ?? 0 },
-                        invoiceAccuracy: { score: parseFloat(kpiScore?.invoiceAccuracy) || 0 },
-                        responsiveness: { score: parseFloat(kpiScore?.responseTimeScore) || 0 },
-                        orderFulfillment: { score: parseFloat(kpiScore?.fulfillmentRate) || 0 },
+                        invoiceAccuracy: { score: parseFloat(kpiScore?.invoiceAccuracy || '0') || 0 },
+                        responsiveness: { score: parseFloat(kpiScore?.responseTimeScore || '0') || 0 },
+                        orderFulfillment: { score: parseFloat(kpiScore?.fulfillmentRate || '0') || 0 },
                     },
                     aiInsights,
                 };
@@ -1561,26 +1727,24 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const addQuoteRequest = useCallback(async (d: any): Promise<QuoteRequest | null> => {
+    const addQuoteRequest = useCallback(async (d: Record<string, unknown>): Promise<QuoteRequest | null> => {
         const id = "qr-" + Math.random().toString(36).substring(2, 11);
         const newQR: QuoteRequest = {
             id,
             qrNumber: "QR-" + id.substring(0, 5).toUpperCase(),
-            title: d.title,
-            description: d.description || "",
+            title: d.title as string,
+            description: (d.description as string) || "",
             status: QuoteRequestStatus.DRAFT,
             createdAt: new Date().toISOString(),
-            items: d.items || [],
-            requiredDate: d.requiredDate
+            items: (d.items as QuoteRequestItem[]) || [],
+            requiredDate: d.requiredDate as string | undefined
         };
         setState(prev => ({ ...prev, quoteRequests: [...prev.quoteRequests, newQR] }));
         notify("Tạo yêu cầu báo giá thành công (Mô phỏng)", "success");
         return newQR;
     }, [notify]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updateQuoteRequest = useCallback(async (id: string, d: any): Promise<boolean> => {
+    const updateQuoteRequest = useCallback(async (id: string, d: Partial<QuoteRequest>): Promise<boolean> => {
         setState(prev => ({
             ...prev,
             quoteRequests: prev.quoteRequests.map(qr => qr.id === id ? { ...qr, ...d } : qr)
@@ -1599,7 +1763,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [notify]);
 
     // ========== PO Consolidation ==========
-    const consolidatePRs = useCallback(async (dto: ConsolidatePRsInput): Promise<ConsolidatePRsResult | null> => {
+    const consolidatePRs = useCallback(async (dto: ConsolidatePRsInput): Promise<ConsolidatePRsResult> => {
         const resp = await apiFetch('/purchase-orders/consolidate', {
             method: 'POST',
             body: JSON.stringify(dto),
@@ -1610,9 +1774,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             notify(`PO gộp ${data.poNumber} tạo thành công`, 'success');
             return data as ConsolidatePRsResult;
         }
-        const errText = await resp.text().catch(() => '');
-        notify(errText || 'Không thể tạo PO gộp', 'error');
-        return null;
+        const errBody = await resp.json().catch(() => ({}));
+        const errMsg = errBody?.message || 'Không thể tạo PO gộp';
+        notify(errMsg, 'error');
+        throw new Error(errMsg);
     }, [apiFetch, notify]);
 
     // ========== RAG / AI Sync ==========
@@ -1652,14 +1817,20 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return [];
     }, [apiFetch]);
 
-    const contextValue: ProcurementContextType = {
+    const fetchBuyerDashboard = useCallback(async () => {
+        const resp = await apiFetch('/reports/buyer-dashboard');
+        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        return null;
+    }, [apiFetch]);
+
+    const contextValue = useMemo<ProcurementContextType>(() => ({
         ...state,
         login, logout, refreshData, apiFetch, addPR, submitPR, updatePR, fetchPrDetail, actionApproval,
         addBudgetAllocation, submitAllocation, approveAllocation, rejectAllocation, distributeAnnualBudget, reconcileQuarter,
         approveOverride, rejectOverride, convertQuoteToPR,
         removeNotification, notify,
         createPO, createPOFromPR, processPOAutomation, ackPO, shipPO, fetchPOById, confirmPO, submitPO, fetchSupplierPOs, rejectPO,
-        createRFQ, createRFQConsolidated: async () => true, awardQuotation,
+        createRFQ, createRFQConsolidated, awardQuotation,
         addDept, updateDept, removeDept,
         addUser, updateUser, removeUser,
         addOrganization, updateOrganization, removeOrganization,
@@ -1676,45 +1847,28 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         createGRN, updateGrnItemQc, createInvoice, payInvoice, matchInvoice,
         approvePR: async () => true,
         createContract, signContract, createDispute, createReview,
-        // Auth
         logoutApi, refreshToken, validateToken,
-        // Users
         fetchUserProfile, fetchUserById, createDelegation, fetchMyDelegations, toggleDelegation,
-        // Organizations & Departments
         fetchOrganizationById, fetchMyOrganization, fetchDepartmentById,
-        // Budget
         fetchBudgetPeriodsByType, fetchMyDeptBudgets, fetchBudgetAllocationById, fetchBudgetOverrideById,
-        // RFQ Quotations
         fetchQuotationsByRfq, fetchQuotationById, submitQuotation, reviewQuotation, acceptQuotation, rejectQuotation, updateQuotationAiScore,
-        // Q&A Threads
         createQAThread, fetchQAThreadsByRfq, fetchQAThreadById, answerQAThread, fetchQAThreadsBySupplier,
-        // RFQ Suppliers
         inviteSuppliersToRFQ, removeSupplierFromRFQ, searchAndAddSuppliers,
-        // Counter Offers
         createCounterOffer, fetchCounterOffersByQuotation, fetchCounterOfferById, respondCounterOffer,
-        // RFQ Management
         deleteRFQ, updateRFQStatus, fetchRFQById, fetchSuppliersByRFQ, analyzeQuotationWithAI, fetchMySupplierRFQs,
-        // Contracts
-        fetchContractById, updateContract, removeContract, submitContractForApproval, updateContractMilestone, fetchContractsBySupplier,
-        // GRN
+        fetchContractById, updateContract, removeContract, submitContractForApproval, terminateContract, updateContractMilestone, fetchContractsBySupplier,
         fetchGRNById, updateGRNStatus, confirmGRN,
-        // Invoices
         fetchInvoiceById, updateInvoice, removeInvoice, fetchInvoices, runMatching,
-        // Payments
         createPayment, completePayment, fetchPayments, fetchPaymentById,
-        // Reviews
         fetchSupplierReviews, fetchBuyerRatings,
-        // Supplier KPI
         evaluateSupplierKPI, fetchSupplierKPIReport,
-        // Audit Logs
         fetchAuditLogsByEntity, fetchAuditLogById, createAuditLog,
-        // PO Consolidation
         consolidatePRs,
-        // RAG / AI Sync
         syncRAG, ingestRAGEntity,
-        // Spend Reports
         fetchSpendOverview, fetchSpendBySupplier, fetchSpendByCategory,
-    };
+        fetchBuyerDashboard,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }), [state, fetchBuyerDashboard]); // callbacks are stable useCallback refs; only state triggers re-render
 
     return <ProcurementContext.Provider value={contextValue}>{children}</ProcurementContext.Provider>;
 }
@@ -1724,3 +1878,4 @@ export const useProcurement = () => {
     if (!context) throw new Error("useProcurement must be used within a ProcurementProvider");
     return context;
 };
+

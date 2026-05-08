@@ -259,7 +259,7 @@ Procurement System
 
     const html = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-  <h2 style="color: #3B82F6;">New Contract Notification</h2>
+  <h2 style="color: #B4533A;">New Contract Notification</h2>
   <p>Dear <strong>${contract.supplier.name || 'Supplier'}</strong>,</p>
   <p>A new contract has been created from PO <strong>${po.poNumber}</strong>:</p>
   
@@ -276,7 +276,7 @@ Procurement System
 
   <p style="margin-top: 30px;">
     <a href="${process.env.CLIENT_URL || 'http://localhost:3000'}/contracts/${contract.id}" 
-       style="background: #3B82F6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+       style="background: #B4533A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
       View Contract
     </a>
   </p>
