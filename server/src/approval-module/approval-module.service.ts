@@ -181,13 +181,18 @@ export class ApprovalModuleService {
         for (const step of pendingSteps) {
           const approver = approverMap.get(step.approverId);
           if (!approver) continue;
-          void this.notifyApproverWithData(
+          this.notifyApproverWithData(
             approver,
             docLabel,
             docId,
             totalAmount,
             docType,
             prDoc,
+          ).catch((err: Error) =>
+            this.logger.error(
+              `notifyApproverWithData failed for approver ${approver.id}: ${err.message}`,
+              err.stack,
+            ),
           );
         }
       }
@@ -244,13 +249,15 @@ export class ApprovalModuleService {
         'REJECTED',
         user,
       );
-      void this.notifyRequesterOnResult(
+      this.notifyRequesterOnResult(
         currentStep.documentType,
         currentStep.documentId,
         'REJECTED',
         comment,
+      ).catch((err: Error) =>
+        this.logger.error(`notifyRequesterOnResult (REJECTED) failed: ${err.message}`, err.stack),
       );
-      void this.emitApprovalEvent(currentStep, 'REJECTED', user.orgId);
+      this.emitApprovalEvent(currentStep, 'REJECTED', user.orgId);
       return { status: 'REJECTED', message: 'Tài liệu đã bị từ chối.' };
     }
 
@@ -272,12 +279,14 @@ export class ApprovalModuleService {
         user,
       );
       // Thông báo cho người yêu cầu biết tài liệu đã được duyệt hoàn toàn
-      void this.notifyRequesterOnResult(
+      this.notifyRequesterOnResult(
         currentStep.documentType,
         currentStep.documentId,
         'APPROVED',
+      ).catch((err: Error) =>
+        this.logger.error(`notifyRequesterOnResult (APPROVED) failed: ${err.message}`, err.stack),
       );
-      void this.emitApprovalEvent(currentStep, 'APPROVED', user.orgId);
+      this.emitApprovalEvent(currentStep, 'APPROVED', user.orgId);
       return {
         status: 'FULLY_APPROVED',
         message: 'Tài liệu đã được duyệt hoàn toàn.',
@@ -290,12 +299,14 @@ export class ApprovalModuleService {
         currentStep.documentType,
         currentStep.documentId,
       );
-      void this.notifyApprover(
+      this.notifyApprover(
         nextStep.approverId,
         docLabel,
         currentStep.documentId,
         docAmount,
         currentStep.documentType,
+      ).catch((err: Error) =>
+        this.logger.error(`notifyApprover (next step) failed for approver ${nextStep.approverId}: ${err.message}`, err.stack),
       );
       return {
         status: 'PARTIALLY_APPROVED',
@@ -547,7 +558,13 @@ export class ApprovalModuleService {
     }
 
     if (actionStatus === 'APPROVED') {
-      void this.automationService.handleDocumentApproved(type, id);
+      this.automationService.handleDocumentApproved(type, id).catch(
+        (err: Error) =>
+          this.logger.error(
+            `handleDocumentApproved failed for ${type} ${id}: ${err.message}`,
+            err.stack,
+          ),
+      );
     }
   }
 

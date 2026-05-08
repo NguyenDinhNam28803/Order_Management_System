@@ -15,6 +15,7 @@ import { SupplierKpimoduleService } from '../supplier-kpimodule/supplier-kpimodu
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { AutomationService } from '../common/automation/automation.service';
 import { ContractModuleService } from '../contract-module/contract-module.service';
+import { generateDocNumber } from '../common/utils/doc-number.util';
 
 @Injectable()
 export class PomoduleService {
@@ -43,7 +44,7 @@ export class PomoduleService {
       );
     }
 
-    const poNumber = `PO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const poNumber = generateDocNumber('PO');
     return this.repository.create(createPoDto, user.sub, orgId, poNumber);
   }
 
@@ -72,7 +73,7 @@ export class PomoduleService {
     }
 
     // 2. Chuẩn bị dữ liệu PO từ PR
-    const poNumber = `PO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const poNumber = generateDocNumber('PO');
 
     const po = await this.prisma.$transaction(async (tx) => {
       // A. Tạo PO
@@ -439,7 +440,7 @@ export class PomoduleService {
     const totalAmount = consolidatedItems.reduce((sum, i) => sum + i.total, 0);
 
     // PO gộp có prefix PO-CONS để phân biệt với PO thường
-    const poNumber = `PO-CONS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const poNumber = generateDocNumber('PO-CONS');
 
     // ── Bước 6: Tạo PO + items + sources trong 1 transaction ─────────────────
     // Budget reservation xảy ra SAU transaction để nếu thất bại có thể compensate

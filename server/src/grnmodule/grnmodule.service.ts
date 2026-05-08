@@ -11,6 +11,7 @@ import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { UpdateGrnItemQcResultDto } from './dto/update-grn-item-qc.dto';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
 import { TokenType } from '../external-token-module/external-token.service';
+import { generateDocNumber } from '../common/utils/doc-number.util';
 
 @Injectable()
 export class GrnmoduleService {
@@ -89,7 +90,7 @@ export class GrnmoduleService {
     }
 
     // 4. Create GRN
-    const grnNumber = `GRN-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+    const grnNumber = generateDocNumber('GRN');
     const grn = await this.repository.create(
       createGrnDto,
       grnNumber,
@@ -127,7 +128,7 @@ export class GrnmoduleService {
 
     // Auto-create a Return To Vendor record when GRN is marked DISPUTED
     if (status === GrnStatus.DISPUTED && grn.po?.supplierId) {
-      const rtvNumber = `RTV-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+      const rtvNumber = generateDocNumber('RTV');
       await this.prisma.returnToVendor.create({
         data: {
           rtvNumber,
