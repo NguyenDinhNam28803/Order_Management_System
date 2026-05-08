@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   Query,
   Request,
   UseGuards,
@@ -58,9 +57,23 @@ export class OrganizationModuleController {
     return this.organizationService.update(id, updateDto);
   }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Deactivate organization by ID' })
-  remove(@Param('id') id: string) {
-    return this.organizationService.remove(id);
+  @Post(':id/submit')
+  @ApiOperation({ summary: 'Submit supplier for review' })
+  submitForReview(@Param('id') id: string) {
+    return this.organizationService.submitForReview(id);
+  }
+
+  @Post(':id/approve')
+  @ApiOperation({ summary: 'Approve supplier' })
+  approveSupplier(@Param('id') id: string, @Req() req: Request) {
+    const user = req['user'] as JwtPayload;
+    // Note: Assuming Roles Guard handles authorization
+    return this.organizationService.approveSupplier(id, user.sub);
+  }
+
+  @Post(':id/reject')
+  @ApiOperation({ summary: 'Reject supplier' })
+  rejectSupplier(@Param('id') id: string, @Body('reason') reason: string) {
+    return this.organizationService.rejectSupplier(id, reason);
   }
 }

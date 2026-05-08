@@ -147,7 +147,7 @@ export function useWebSocket({
 
 // Specialized hook for contract notifications
 export function useContractNotifications(supplierId: string, onNotification?: (data: unknown) => void) {
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001";
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:5000";
     
     const handleMessage = useCallback((message: WebSocketMessage) => {
         if (message.type === "CONTRACT_NOTIFICATION" || message.type === "CONTRACT_UPDATE") {

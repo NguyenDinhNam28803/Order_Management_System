@@ -39,6 +39,7 @@ import { RagModule } from './rag/rag.module';
 import { EmailProcessorModule } from './email-processor/email-processor.module';
 import { SupplierDiscoveryModule } from './supplier-discovery/supplier-discovery.module';
 import { SupplierVettingModule } from './supplier-vetting-module/supplier-vetting-module.module';
+import { QualityModule } from './quality-module/quality.module';
 import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
@@ -67,7 +68,7 @@ import { GatewayModule } from './gateway/gateway.module';
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 100,
+        limit: 1000,
       },
     ]),
     JwtModule.registerAsync({
@@ -114,6 +115,7 @@ import { GatewayModule } from './gateway/gateway.module';
     EmailProcessorModule,
     SupplierDiscoveryModule,
     SupplierVettingModule,
+    QualityModule,
     GatewayModule,
   ],
   controllers: [AppController],

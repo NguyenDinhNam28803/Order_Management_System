@@ -670,6 +670,9 @@ export interface Contract {
     supplier?: Organization;
     organization?: Organization;
     notes?: string;
+    terms?: string;
+    autoRenew?: boolean;
+    contractType?: string;
 }
 
 export enum DisputeStatus {

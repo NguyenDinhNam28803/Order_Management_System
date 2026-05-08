@@ -39,6 +39,7 @@ export class EmailService {
     body: string,
     attachments?: { filename: string; content: Buffer; contentType: string }[],
   ) {
+    const startTime = Date.now();
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const info = await this.transporter.sendMail({
@@ -52,10 +53,17 @@ export class EmailService {
           contentType: a.contentType,
         })),
       });
-      this.logger.log(`Email sent: ${info.messageId}`);
+      const duration = Date.now() - startTime;
+      this.logger.log(
+        `Email sent to ${to} in ${duration}ms: ${info.messageId}`,
+      );
       return true;
     } catch (error) {
-      this.logger.error(`Error sending email to ${to}:`, error);
+      const duration = Date.now() - startTime;
+      this.logger.error(
+        `Error sending email to ${to} after ${duration}ms:`,
+        error,
+      );
       throw error;
     }
   }

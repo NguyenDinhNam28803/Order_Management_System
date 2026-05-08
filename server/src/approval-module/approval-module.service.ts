@@ -19,6 +19,7 @@ import {
   InvoiceStatus,
   PaymentStatus,
   VettingStatus,
+  ContractStatus,
 } from '@prisma/client';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
@@ -88,7 +89,9 @@ export class ApprovalModuleService {
     });
 
     if (rules.length === 0) {
-      this.logger.log(`No rules found for ${docType} ${docId}. Auto-approving...`);
+      this.logger.log(
+        `No rules found for ${docType} ${docId}. Auto-approving...`,
+      );
       await this.updateSourceDocumentStatus(docType, docId, 'APPROVED', user);
       return { message: 'No rules found. Document auto-approved.' };
     }
@@ -555,6 +558,22 @@ export class ApprovalModuleService {
         });
         break;
       }
+
+      case DocumentType.CONTRACT: {
+        let cStatus: ContractStatus = ContractStatus.PENDING_SIGNATURE;
+        if (actionStatus === 'REJECTED') cStatus = ContractStatus.DRAFT;
+
+        await this.prisma.contract.update({
+          where: { id },
+          data: { status: cStatus },
+        });
+
+        // Khi được duyệt → thông báo cả hai bên cần ký
+        if (actionStatus === 'APPROVED' || actionStatus === 'PENDING_APPROVAL') {
+          void this.notifyContractSigningParties(id);
+        }
+        break;
+      }
     }
 
     if (actionStatus === 'APPROVED') {
@@ -604,17 +623,19 @@ export class ApprovalModuleService {
           `[OMS] Yêu cầu phê duyệt PR: ${prDoc?.prNumber ?? docId}`,
           'PR_APPROVAL_LINK',
           {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             prCode: prDoc?.prNumber ?? docId,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             prTitle: prDoc?.title ?? docLabel,
             approverName: approver.fullName ?? approver.email,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            requesterName: (prDoc?.requester as any)?.fullName ?? 'Người dùng',
+            requesterName: prDoc?.requester?.fullName ?? 'Người dùng',
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            requesterDept: (prDoc?.department as any)?.name ?? '',
+            requesterDept: prDoc?.department?.name ?? '',
             totalAmount,
             remainingBudget: 0,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            justification: (prDoc as any)?.justification ?? '',
+            justification: prDoc?.justification ?? '',
             slaDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
             approveLink: `${frontendUrl}/approvals`,
             rejectLink: `${frontendUrl}/approvals`,
@@ -813,6 +834,13 @@ export class ApprovalModuleService {
         });
         return budget?.createdById ?? null;
       }
+      case DocumentType.CONTRACT: {
+        const contract = await this.prisma.contract.findUnique({
+          where: { id: docId },
+          select: { createdById: true },
+        });
+        return contract?.createdById ?? null;
+      }
       default:
         return null;
     }
@@ -859,6 +887,13 @@ export class ApprovalModuleService {
         });
         return Number(budget?.allocatedAmount ?? 0);
       }
+      case DocumentType.CONTRACT: {
+        const contract = await this.prisma.contract.findUnique({
+          where: { id: docId },
+          select: { value: true },
+        });
+        return Number(contract?.value ?? 0);
+      }
       default:
         return 0;
     }
@@ -874,11 +909,95 @@ export class ApprovalModuleService {
       [DocumentType.PAYMENT]: 'Thanh toán',
       [DocumentType.BUDGET_ALLOCATION]: 'Phân bổ ngân sách',
       [DocumentType.SUPPLIER_VETTING]: 'Xét duyệt nhà cung cấp',
+      [DocumentType.CONTRACT]: 'Hợp đồng',
     };
     return labels[docType] ?? docType;
   }
 
-  private emitApprovalEvent(step: any, status: 'APPROVED' | 'REJECTED', orgId: string) {
+  /** Gửi email yêu cầu ký cho cả bên mua lẫn nhà cung cấp */
+  private async notifyContractSigningParties(contractId: string): Promise<void> {
+    try {
+      const contract = await this.prisma.contract.findUnique({
+        where: { id: contractId },
+        include: { buyerOrg: true, supplierOrg: true },
+      });
+      if (!contract) return;
+
+      const frontendUrl = process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn';
+      const baseData = {
+        contractNumber: contract.contractNumber,
+        contractTitle: contract.title,
+        value: Number(contract.value ?? 0),
+        currency: contract.currency,
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+      };
+
+      // ── Thông báo bên mua (PROCUREMENT / DIRECTOR / CEO) ──
+      const buyerUsers = await this.prisma.user.findMany({
+        where: {
+          orgId: contract.orgId,
+          role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as any },
+          isActive: true,
+        },
+        select: { email: true, fullName: true },
+      });
+
+      for (const u of buyerUsers) {
+        if (!u.email) continue;
+        void this.notificationService.sendDirectEmail(
+          u.email,
+          `[OMS] Hợp đồng ${contract.contractNumber} cần chữ ký của bạn`,
+          'CONTRACT_SIGN_REQUEST',
+          {
+            ...baseData,
+            recipientName: u.fullName ?? u.email,
+            partnerName: contract.supplierOrg?.name ?? 'Nhà cung cấp',
+            signingLink: `${frontendUrl}/procurement/contracts/${contractId}`,
+            role: 'buyer',
+          },
+        ).catch(() => {});
+      }
+
+      // ── Thông báo nhà cung cấp (SUPPLIER role trong supplier org) ──
+      const supplierUsers = await this.prisma.user.findMany({
+        where: {
+          orgId: contract.supplierId,
+          role: 'SUPPLIER' as any,
+          isActive: true,
+        },
+        select: { email: true, fullName: true },
+      });
+
+      for (const u of supplierUsers) {
+        if (!u.email) continue;
+        void this.notificationService.sendDirectEmail(
+          u.email,
+          `[OMS] Hợp đồng ${contract.contractNumber} cần chữ ký của bạn`,
+          'CONTRACT_SIGN_REQUEST',
+          {
+            ...baseData,
+            recipientName: u.fullName ?? u.email,
+            partnerName: contract.buyerOrg?.name ?? 'Bên mua',
+            signingLink: `${frontendUrl}/supplier/contracts`,
+            role: 'supplier',
+          },
+        ).catch(() => {});
+      }
+
+      this.logger.log(
+        `Sent CONTRACT_SIGN_REQUEST to ${buyerUsers.length} buyer(s) and ${supplierUsers.length} supplier(s) for contract ${contract.contractNumber}`,
+      );
+    } catch (err: any) {
+      this.logger.warn(`notifyContractSigningParties failed: ${err.message}`);
+    }
+  }
+
+  private emitApprovalEvent(
+    step: any,
+    status: 'APPROVED' | 'REJECTED',
+    orgId: string,
+  ) {
     try {
       this.eventsGateway.emitApprovalUpdate(orgId, {
         workflowId: step.id as string,

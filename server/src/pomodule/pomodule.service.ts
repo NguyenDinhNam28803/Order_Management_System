@@ -72,6 +72,16 @@ export class PomoduleService {
       );
     }
 
+    // [Thêm mới] Kiểm tra trạng thái nhà cung cấp
+    const supplier = await this.prisma.organization.findUnique({
+      where: { id: supplierId },
+    });
+    if (!supplier || supplier.supplierTier !== 'APPROVED') {
+      throw new BadRequestException(
+        'Nhà cung cấp chưa được duyệt (APPROVED), không thể tạo PO.',
+      );
+    }
+
     // 2. Chuẩn bị dữ liệu PO từ PR
     const poNumber = generateDocNumber('PO');
 
@@ -163,7 +173,10 @@ export class PomoduleService {
         po.supplierId,
       );
     } catch (automationError) {
-      this.logger.error('Failed to create GRN draft automatically', automationError);
+      this.logger.error(
+        'Failed to create GRN draft automatically',
+        automationError,
+      );
       // Don't fail the confirmation if automation fails
     }
 
@@ -228,6 +241,22 @@ export class PomoduleService {
 
   async findOne(id: string) {
     return this.repository.findOne(id);
+  }
+
+  async findPaginated(orgId: string, skip: number, take: number) {
+    return this.prisma.purchaseOrder.findMany({
+      where: { orgId },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take,
+      include: { supplier: true },
+    });
+  }
+
+  async count(orgId: string) {
+    return this.prisma.purchaseOrder.count({
+      where: { orgId },
+    });
   }
 
   // ─── PO Consolidation ────────────────────────────────────────────────────────

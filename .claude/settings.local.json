@@ -26,7 +26,18 @@
       "Bash(bash /tmp/analyze_comprehensive.sh)",
       "Bash(xargs ls *)",
       "Bash(xargs cat *)",
-      "Bash(grep -E \"\\\\.\\(ts|js\\)$\")"
+      "Bash(grep -E \"\\\\.\\(ts|js\\)$\")",
+      "Bash(npm install *)",
+      "Bash(npx ts-node *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\" -Directory -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object Name)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\" -Directory)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\client\" -Depth 2 | Where-Object { $_.PSIsContainer } | Select-Object FullName)",
+      "PowerShell(head *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\client\\\\app\" -Recurse -Filter \"*.tsx\")",
+      "Bash(Measure-Object)",
+      "Bash(Select-Object -ExpandProperty Count)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

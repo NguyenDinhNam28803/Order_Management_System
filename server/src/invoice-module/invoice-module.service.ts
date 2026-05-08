@@ -5,7 +5,13 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { InvoiceStatus, PoStatus, CurrencyCode, Prisma, UserRole } from '@prisma/client';
+import {
+  InvoiceStatus,
+  PoStatus,
+  CurrencyCode,
+  Prisma,
+  UserRole,
+} from '@prisma/client';
 import { AiService } from '../ai-service/ai-service.service';
 import {
   CreateInvoiceModuleDto,
@@ -473,7 +479,14 @@ export class InvoiceModuleService {
         where: {
           supplierId,
           orgId,
-          status: { in: [PoStatus.SHIPPED, PoStatus.GRN_CREATED, PoStatus.ACKNOWLEDGED, PoStatus.IN_PROGRESS] },
+          status: {
+            in: [
+              PoStatus.SHIPPED,
+              PoStatus.GRN_CREATED,
+              PoStatus.ACKNOWLEDGED,
+              PoStatus.IN_PROGRESS,
+            ],
+          },
         },
         orderBy: { createdAt: 'desc' },
         select: { id: true },
@@ -546,6 +559,32 @@ export class InvoiceModuleService {
         total: Number(item.total),
       })),
     }));
+  }
+
+  async findPaginated(orgId: string, skip: number, take: number) {
+    const invoices = await this.prisma.supplierInvoice.findMany({
+      where: { orgId },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take,
+      include: { po: true, supplier: true, items: true },
+    });
+    return invoices.map((inv) => ({
+      ...inv,
+      subtotal: Number(inv.subtotal),
+      taxRate: inv.taxRate ? Number(inv.taxRate) : null,
+      totalAmount: Number(inv.totalAmount),
+      items: inv.items?.map((item) => ({
+        ...item,
+        qty: Number(item.qty),
+        unitPrice: Number(item.unitPrice),
+        total: Number(item.total),
+      })),
+    }));
+  }
+
+  async count(orgId: string) {
+    return this.prisma.supplierInvoice.count({ where: { orgId } });
   }
 
   async findOne(id: string) {

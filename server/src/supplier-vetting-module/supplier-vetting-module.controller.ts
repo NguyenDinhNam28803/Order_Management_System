@@ -21,6 +21,7 @@ import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { SupplierVettingService } from './supplier-vetting-module.service';
 import {
   CreateVettingRequestDto,
+  CreateVettingFromAiDto,
   UpdateVettingCheckDto,
   SubmitVettingDto,
   ApproveVettingDto,
@@ -59,6 +60,13 @@ export class SupplierVettingController {
   create(@Body() dto: CreateVettingRequestDto, @Req() req: any) {
     this.checkRole(req);
     return this.service.createRequest(dto, this.getUser(req));
+  }
+
+  @Post('from-ai')
+  @ApiOperation({ summary: 'Tạo nháp xét duyệt nhà cung cấp từ gợi ý AI' })
+  createFromAi(@Body() dto: CreateVettingFromAiDto, @Req() req: any) {
+    this.checkRole(req);
+    return this.service.createFromAi(dto, this.getUser(req));
   }
 
   @Get()

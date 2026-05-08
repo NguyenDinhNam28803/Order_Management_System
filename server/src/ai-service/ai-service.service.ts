@@ -123,7 +123,9 @@ export class AiService implements OnModuleInit {
 
   private ensureAiEnabled(method: string): void {
     if (!this.aiEnabled) {
-      throw new Error(`AI is disabled (GEMINI_API_KEY not set) — ${method} unavailable`);
+      throw new Error(
+        `AI is disabled (GEMINI_API_KEY not set) — ${method} unavailable`,
+      );
     }
   }
 
@@ -358,7 +360,12 @@ Lưu ý:
    */
   async askAiAboutDatabase(userPrompt: string): Promise<AiDatabaseResponse> {
     if (!this.aiEnabled) {
-      return { success: false, summary: 'AI disabled (GEMINI_API_KEY not set)', data: [], total: 0 };
+      return {
+        success: false,
+        summary: 'AI disabled (GEMINI_API_KEY not set)',
+        data: [],
+        total: 0,
+      };
     }
     try {
       const systemInstruction = `

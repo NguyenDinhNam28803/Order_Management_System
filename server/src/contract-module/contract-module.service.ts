@@ -8,9 +8,12 @@ import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
-import { ContractStatus, DocumentType, ApprovalStatus } from '@prisma/client';
+import { ContractStatus, DocumentType } from '@prisma/client';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
 import { generateDocNumber } from '../common/utils/doc-number.util';
+import { ApprovalModuleService } from '../approval-module/approval-module.service';
+import { PdfGeneratorService } from '../notification-module/pdf-generator.service';
+import { ExternalTokenService } from '../external-token-module/external-token.service';
 
 @Injectable()
 export class ContractModuleService {
@@ -19,6 +22,9 @@ export class ContractModuleService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationModuleService,
+    private readonly approvalService: ApprovalModuleService,
+    private readonly pdfGenerator: PdfGeneratorService,
+    private readonly externalTokenService: ExternalTokenService,
   ) {}
 
   async create(
@@ -27,9 +33,28 @@ export class ContractModuleService {
     orgId: string,
   ) {
     const { milestones, ...contractData } = createContractDto;
+
+    // Validate tổng paymentPct = 100% nếu có milestone dùng paymentPct
+    if (milestones && milestones.length > 0) {
+      const hasPct = milestones.some(
+        (m) => m.paymentPct !== undefined && m.paymentPct !== null,
+      );
+      if (hasPct) {
+        const totalPct = milestones.reduce(
+          (sum, m) => sum + (m.paymentPct ?? 0),
+          0,
+        );
+        if (Math.abs(totalPct - 100) > 0.01) {
+          throw new BadRequestException(
+            `Tổng phần trăm thanh toán các milestone phải bằng 100% (hiện tại: ${totalPct}%)`,
+          );
+        }
+      }
+    }
+
     const contractNumber = generateDocNumber('CON');
 
-    return this.prisma.contract.create({
+    const contract = await this.prisma.contract.create({
       data: {
         ...contractData,
         contractNumber,
@@ -46,9 +71,26 @@ export class ContractModuleService {
       },
       include: { milestones: true },
     });
+
+    // Tự động khởi tạo quy trình duyệt
+    try {
+      await this.approvalService.initiateWorkflow({
+        docType: DocumentType.CONTRACT,
+        docId: contract.id,
+        totalAmount: Number(contract.value ?? 0),
+        orgId,
+        requesterId: userId,
+      });
+      this.logger.log(`Workflow initiated for contract: ${contract.id}`);
+    } catch (err) {
+      this.logger.error(`Failed to initiate workflow for contract ${contract.id}: ${err}`);
+    }
+
+    return contract;
   }
 
-  async submitForApproval(id: string, approverId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async submitForApproval(id: string, requesterId: string, orgId: string) {
     const contract = await this.prisma.contract.findUnique({ where: { id } });
     if (!contract) throw new NotFoundException('Hợp đồng không tồn tại');
     if (contract.status !== ContractStatus.DRAFT) {
@@ -57,25 +99,13 @@ export class ContractModuleService {
       );
     }
 
-    return this.prisma.$transaction(async (tx) => {
-      // 1. Cập nhật trạng thái hợp đồng
-      const updatedContract = await tx.contract.update({
-        where: { id },
-        data: { status: ContractStatus.PENDING_SIGNATURE },
-      });
-
-      // 2. Tạo bản ghi luồng phê duyệt
-      await tx.approvalWorkflow.create({
-        data: {
-          documentType: DocumentType.CONTRACT,
-          documentId: id,
-          step: 1,
-          approverId,
-          status: ApprovalStatus.PENDING,
-        },
-      });
-
-      return updatedContract;
+    // Dùng ApprovalMatrix để tự động xác định người duyệt theo quy tắc tổ chức
+    return this.approvalService.initiateWorkflow({
+      docType: DocumentType.CONTRACT,
+      docId: id,
+      totalAmount: Number(contract.value ?? 0),
+      orgId: contract.orgId,
+      requesterId,
     });
   }
 
@@ -124,8 +154,21 @@ export class ContractModuleService {
     });
   }
 
-  async signContract(id: string, userId: string, isBuyer: boolean) {
-    const contract = await this.prisma.contract.findUnique({ where: { id } });
+  async signContract(id: string, userId: string, isBuyer: boolean, token?: string) {
+    // Nếu có token, xác thực
+    if (token) {
+        const tokenInfo = await this.externalTokenService.validateToken(token);
+        if (!tokenInfo || tokenInfo.referenceId !== id) {
+            throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
+        }
+        // Có thể mark token đã dùng sau khi ký
+        await this.externalTokenService.markTokenAsUsed(token);
+    }
+
+    const contract = await this.prisma.contract.findUnique({
+      where: { id },
+      include: { buyerOrg: true, supplierOrg: true },
+    });
     if (!contract) throw new NotFoundException('Hợp đồng không tồn tại');
 
     const updateData: any = {};
@@ -135,24 +178,121 @@ export class ContractModuleService {
       updateData.signedBySupplierId = userId;
     }
 
-    // Nếu cả hai bên đã ký, chuyển trạng thái sang ACTIVE
     const updatedContract = await this.prisma.contract.update({
       where: { id },
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       data: updateData,
+      include: { buyerOrg: true, supplierOrg: true },
     });
 
+    // Cả hai bên đã ký → ACTIVE
     if (updatedContract.signedByBuyerId && updatedContract.signedBySupplierId) {
       return this.prisma.contract.update({
         where: { id },
-        data: {
-          status: ContractStatus.ACTIVE,
-          signedAt: new Date(),
-        },
+        data: { status: ContractStatus.ACTIVE, signedAt: new Date() },
       });
     }
 
+    // Một bên mới ký → nhắc bên còn lại
+    void this.notifyOtherPartyToSign(updatedContract as any, isBuyer);
     return updatedContract;
+  }
+
+  private async notifyOtherPartyToSign(contract: any, buyerJustSigned: boolean): Promise<void> {
+    try {
+      const frontendUrl = process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn';
+      
+      // Tạo PDF
+      const pdfBuffer = await this.pdfGenerator.generatePoPdf({
+        poNumber: contract.contractNumber,
+        issuedDate: new Date(),
+        buyerOrg: contract.buyerOrg,
+        supplierOrg: contract.supplierOrg,
+        items: [], // Hợp đồng có thể không có items cụ thể như PO
+        subtotal: Number(contract.value ?? 0),
+        totalAmount: Number(contract.value ?? 0),
+        currency: contract.currency,
+        notes: contract.title
+      });
+
+      const attachments = [{
+        filename: `HopDong_${contract.contractNumber}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf'
+      }];
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const baseData = {
+        contractNumber: contract.contractNumber,
+        contractTitle: contract.title,
+        value: Number(contract.value ?? 0),
+        currency: contract.currency,
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+      };
+
+      if (buyerJustSigned) {
+        const supplierUsers = await this.prisma.user.findMany({
+          where: { orgId: contract.supplierId, role: 'SUPPLIER' as any, isActive: true },
+          select: { email: true, fullName: true },
+        });
+
+        let recipients = supplierUsers.filter(u => u.email).map(u => ({ email: u.email!, name: u.fullName }));
+
+        if (recipients.length === 0) {
+          const supplierOrg = await this.prisma.organization.findUnique({
+            where: { id: contract.supplierId },
+            select: { email: true, name: true }
+          });
+          if (supplierOrg?.email) {
+            recipients.push({ email: supplierOrg.email, name: supplierOrg.name });
+          }
+        }
+
+        for (const u of recipients) {
+          void this.notificationService.sendDirectEmail(
+            u.email,
+            `[OMS] Bên mua đã ký — Hợp đồng ${contract.contractNumber as string} cần chữ ký của bạn`,
+            'CONTRACT_SIGN_REQUEST',
+            {
+              ...baseData,
+              recipientName: u.name ?? u.email,
+              partnerName: contract.buyerOrg?.name ?? 'Bên mua',
+              signingLink: `${frontendUrl}/supplier/contracts`,
+              role: 'supplier',
+            },
+            'CONTRACT',
+            contract.id,
+            attachments
+          ).catch(() => {});
+        }
+      } else {
+        const buyerUsers = await this.prisma.user.findMany({
+          where: { orgId: contract.orgId, role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as any }, isActive: true },
+          select: { email: true, fullName: true },
+        });
+        for (const u of buyerUsers) {
+          if (!u.email) continue;
+          void this.notificationService.sendDirectEmail(
+            u.email,
+            `[OMS] Nhà cung cấp đã ký — Hợp đồng ${contract.contractNumber as string} cần chữ ký của bạn`,
+            'CONTRACT_SIGN_REQUEST',
+            {
+              ...baseData,
+              recipientName: u.fullName ?? u.email,
+              partnerName: contract.supplierOrg?.name ?? 'Nhà cung cấp',
+              signingLink: `${frontendUrl}/procurement/contracts/${contract.id as string}`,
+              role: 'buyer',
+            },
+            'CONTRACT',
+            contract.id,
+            attachments
+          ).catch(() => {});
+        }
+      }
+    } catch (err: any) {
+      this.logger.warn(`notifyOtherPartyToSign failed: ${err.message}`);
+    }
   }
 
   async updateMilestone(
@@ -184,9 +324,30 @@ export class ContractModuleService {
     });
   }
 
+  async terminate(id: string, reason: string) {
+    const contract = await this.prisma.contract.findUnique({ where: { id } });
+    if (!contract) throw new NotFoundException('Hợp đồng không tồn tại');
+    if (!['ACTIVE', 'PENDING_SIGNATURE'].includes(contract.status)) {
+      throw new BadRequestException(
+        'Chỉ hợp đồng đang hiệu lực hoặc chờ ký mới có thể chấm dứt',
+      );
+    }
+
+    const terminationNote = `[CHẤM DỨT ${new Date().toLocaleDateString('vi-VN')}] Lý do: ${reason}`;
+    const updatedNotes = contract.notes
+      ? `${contract.notes}\n${terminationNote}`
+      : terminationNote;
+
+    return this.prisma.contract.update({
+      where: { id },
+      data: {
+        status: ContractStatus.TERMINATED,
+        notes: updatedNotes,
+      },
+    });
+  }
+
   async remove(id: string) {
-    // Prisma sẽ tự động xóa milestones nếu bạn cấu hình onDelete: Cascade trong schema
-    // Nếu không, hãy xóa thủ công trong transaction
     return this.prisma.$transaction(async (tx) => {
       await tx.contractMilestone.deleteMany({ where: { contractId: id } });
       return tx.contract.delete({ where: { id } });
@@ -197,6 +358,19 @@ export class ContractModuleService {
   async checkContractExpiry() {
     try {
       const now = new Date();
+
+      // Tự động chuyển trạng thái EXPIRED cho hợp đồng đã qua ngày kết thúc
+      const expired = await this.prisma.contract.updateMany({
+        where: {
+          status: ContractStatus.ACTIVE,
+          endDate: { lt: now },
+        },
+        data: { status: ContractStatus.EXPIRED },
+      });
+      if (expired.count > 0) {
+        this.logger.log(`Auto-expired ${expired.count} contract(s)`);
+      }
+
       const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
       const expiringContracts = await this.prisma.contract.findMany({

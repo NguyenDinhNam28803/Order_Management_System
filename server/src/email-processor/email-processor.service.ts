@@ -581,7 +581,8 @@ export class EmailProcessorService {
     // 4. Tính toán các giá trị tài chính
     const subtotal = data.subtotal ?? data.totalAmount ?? 0;
     const taxRate = data.taxRate ?? null; // null: không áp đặt thuế suất nếu NCC không ghi
-    const taxAmount = data.taxAmount ?? (taxRate !== null ? (subtotal * taxRate) / 100 : 0);
+    const taxAmount =
+      data.taxAmount ?? (taxRate !== null ? (subtotal * taxRate) / 100 : 0);
     const totalAmount = data.totalAmount ?? subtotal + taxAmount;
     const currency = (data.currency as CurrencyCode) ?? CurrencyCode.VND;
 

@@ -16,6 +16,7 @@ import {
   ExternalTokenService,
   TokenType,
 } from '../external-token-module/external-token.service';
+import { EventsGateway } from '../gateway/events.gateway';
 
 @Injectable()
 export class NotificationModuleService {
@@ -28,7 +29,8 @@ export class NotificationModuleService {
     private readonly prisma: PrismaService,
     private readonly emailTemplates: EmailTemplatesService,
     private readonly externalTokenService: ExternalTokenService,
-    @InjectQueue('email-queue') private readonly emailQueue: bull.Queue, // Thêm queue
+    private readonly eventsGateway: EventsGateway,
+    @InjectQueue('email-queue') private readonly emailQueue: bull.Queue,
   ) {}
 
   onModuleInit() {
@@ -63,6 +65,14 @@ export class NotificationModuleService {
 
     const results: any[] = [];
 
+    // Danh sách các sự kiện ưu tiên cao cần gửi trực tiếp
+    const criticalEvents = [
+      'PO_APPROVAL_REQUEST',
+      'PR_APPROVED',
+      'PR_REJECTED',
+      'CONTRACT_SIGN_REQUEST',
+    ];
+
     for (const template of templates) {
       const renderedSubject = template.subject
         ? this.renderTemplate(template.subject, data)
@@ -70,7 +80,7 @@ export class NotificationModuleService {
 
       const renderedBody =
         template.channel === NotificationChannel.EMAIL
-          ? await this.emailTemplates.render(eventType as any, {
+          ? this.emailTemplates.render(eventType as any, {
               ...data,
               name: user.fullName ?? user.email,
               email: user.email,
@@ -90,23 +100,23 @@ export class NotificationModuleService {
         status: NotificationStatus.QUEUED,
       });
 
+      this.eventsGateway.broadcastToUser(recipientId, 'notification:new', {
+        id: notification.id,
+        eventType,
+        subject: renderedSubject,
+        body: renderedBody,
+        referenceType: referenceType ?? null,
+        referenceId: referenceId ?? null,
+        status: NotificationStatus.QUEUED,
+        createdAt: notification.createdAt,
+      });
+
       try {
         if (template.channel === NotificationChannel.EMAIL) {
           if (user.email) {
-            try {
-              // Thử đẩy vào hàng đợi trước
-              await this.emailQueue.add('send-email', {
-                to: user.email,
-                subject: renderedSubject || 'OMS Notification',
-                body: renderedBody,
-                notificationId: notification.id,
-              });
-              results.push({ channel: template.channel, status: 'QUEUED' });
-            } catch (queueError: any) {
-              this.logger.warn(
-                `Queue failed, fallback to direct email: ${queueError.message}`,
-              );
-              // Fallback: Gửi trực tiếp nếu Queue lỗi
+            const isCritical = criticalEvents.includes(eventType);
+
+            if (isCritical) {
               await this.emailService.sendEmail(
                 user.email,
                 renderedSubject || 'OMS Notification',
@@ -117,6 +127,14 @@ export class NotificationModuleService {
                 NotificationStatus.SENT,
               );
               results.push({ channel: template.channel, status: 'SENT' });
+            } else {
+              await this.emailQueue.add('send-email', {
+                to: user.email,
+                subject: renderedSubject || 'OMS Notification',
+                body: renderedBody,
+                notificationId: notification.id,
+              });
+              results.push({ channel: template.channel, status: 'QUEUED' });
             }
           } else {
             throw new Error('User does not have an email address');
@@ -169,20 +187,61 @@ export class NotificationModuleService {
    * Gửi email trực tiếp không cần template trong DB.
    * Dùng nội bộ (vd: ApprovalModuleService) khi cần notify ngay mà không
    * phụ thuộc vào cấu hình template trong database.
+   * Tự động tạo DB record + push WebSocket nếu tìm thấy user nội bộ theo email.
    */
   async sendDirectEmail(
     to: string,
     subject: string,
     eventType: EmailEventType,
     data: Record<string, any>,
+    referenceType?: string,
+    referenceId?: string,
+    attachments?: { filename: string; content: Buffer; contentType: string }[],
   ): Promise<void> {
     try {
-      const body = await this.emailTemplates.render(eventType, data);
-      await this.emailQueue.add('send-email', { to, subject, body });
-      this.logger.log(`Direct email queued → ${to} [${eventType}]`);
+      const body = this.emailTemplates.render(eventType, data);
+
+      // 1. Tạo in-app notification record nếu người nhận là user nội bộ
+      const user = await this.prisma.user.findUnique({ where: { email: to } });
+      if (user) {
+        try {
+          const notification = await this.repository.createNotification({
+            recipientId: user.id,
+            orgId: user.orgId,
+            eventType,
+            channel: NotificationChannel.EMAIL,
+            priority: 2,
+            subject,
+            body,
+            referenceType: referenceType ?? null,
+            referenceId: referenceId ?? null,
+            status: NotificationStatus.QUEUED,
+          });
+          this.eventsGateway.broadcastToUser(user.id, 'notification:new', {
+            id: notification.id,
+            eventType,
+            subject,
+            body,
+            referenceType: referenceType ?? null,
+            referenceId: referenceId ?? null,
+            status: NotificationStatus.QUEUED,
+            createdAt: notification.createdAt,
+          });
+        } catch (err) {
+          this.logger.warn(
+            `Could not create in-app notification for ${to}: ${err}`,
+          );
+        }
+      }
+
+      // 2. Gửi trực tiếp để tránh delay (bypass queue theo yêu cầu)
+      await this.emailService.sendEmail(to, subject, body, attachments);
+      this.logger.log(
+        `Direct email sent successfully to ${to} [${eventType}] (Bypassed Queue)`,
+      );
     } catch (error) {
       this.logger.error(
-        `Failed to queue direct email to ${to} [${eventType}]:`,
+        `Failed to send direct email to ${to} [${eventType}]:`,
         error,
       );
     }
@@ -228,7 +287,7 @@ export class NotificationModuleService {
       });
 
       // 2. Render email template với link
-      const emailBody = await this.emailTemplates.render(eventType, {
+      const emailBody = this.emailTemplates.render(eventType, {
         ...data,
         email: to,
         // Thêm các biến link vào template
@@ -243,25 +302,11 @@ export class NotificationModuleService {
         submitLink: tokenResult.link,
       });
 
-      // 3. Thêm vào queue — nếu Redis không sẵn sàng thì gửi trực tiếp
-      try {
-        await this.emailQueue.add('send-email', {
-          to,
-          subject,
-          body: emailBody,
-          tokenId: tokenResult.id,
-        });
-        this.logger.log(
-          `External email with magic link queued: ${to} - ${eventType}`,
-        );
-      } catch (queueError) {
-        this.logger.warn(
-          `Email queue unavailable, sending directly to ${to}`,
-          queueError,
-        );
-        await this.emailService.sendEmail(to, subject, emailBody);
-        this.logger.log(`External email sent directly: ${to} - ${eventType}`);
-      }
+      // 3. Gửi trực tiếp để tránh delay (bypass queue theo yêu cầu)
+      await this.emailService.sendEmail(to, subject, emailBody);
+      this.logger.log(
+        `External email sent directly to ${to} [${eventType}] (Bypassed Queue)`,
+      );
 
       return {
         success: true,

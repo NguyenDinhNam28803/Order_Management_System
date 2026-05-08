@@ -23,6 +23,7 @@ import {
     SupplierKPI,
 
 } from "../types/api-types";
+import { convertPrismaDecimal } from "../utils/formatUtils";
 
 export type { 
     Organization, CostCenter, Department, Product, ProductCategory, User, BudgetPeriod, BudgetAllocation, 
@@ -258,7 +259,8 @@ export interface ProcurementContextType extends ProcurementState {
     fetchContractById: (id: string) => Promise<Contract | null>;
     updateContract: (id: string, d: Partial<Contract>) => Promise<boolean>;
     removeContract: (id: string) => Promise<boolean>;
-    submitContractForApproval: (id: string, approverId: string) => Promise<boolean>;
+    submitContractForApproval: (id: string) => Promise<boolean>;
+    terminateContract: (id: string, reason: string) => Promise<boolean>;
     updateContractMilestone: (milestoneId: string, d: UpdateMilestoneDto) => Promise<boolean>;
     fetchContractsBySupplier: (supplierId: string) => Promise<Contract[]>;
     fetchGRNById: (id: string) => Promise<GRN | null>;
@@ -296,6 +298,8 @@ export interface ProcurementContextType extends ProcurementState {
     fetchSpendOverview: () => Promise<SpendOverview | null>;
     fetchSpendBySupplier: () => Promise<SpendBySupplier[]>;
     fetchSpendByCategory: () => Promise<SpendByCategory[]>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fetchBuyerDashboard: () => Promise<any>;
 }
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
@@ -339,7 +343,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const baseUrl = 'http://localhost:5000';
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
         return fetch(`${baseUrl}${url}`, { ...options, headers });
     }, []);
 
@@ -387,7 +391,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 if (overridesResp.ok) {
                     const res = await overridesResp.json();
                     const d = res.data || res;
-                    if (Array.isArray(d)) newBudgetOverrides = d;
+                    if (Array.isArray(d)) {
+                        newBudgetOverrides = d.map((override: BudgetOverride) => ({
+                            ...override,
+                            overrideAmount: convertPrismaDecimal(override.overrideAmount),
+                        }));
+                    }
                 }
                 if (auditResp.ok) {
                     const res = await auditResp.json();
@@ -434,16 +443,32 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 title:     p.title || p.description || p.prNumber || "Yêu cầu mua sắm",
                 type:      p.type || PrType.NON_CATALOG,
                 requester: p.requester || { id: "u-unknown" },
+                totalEstimate: convertPrismaDecimal(p.totalEstimate),
+                items: p.items?.map(item => ({
+                    ...item,
+                    qty: convertPrismaDecimal(item.qty),
+                    quantity: convertPrismaDecimal(item.quantity),
+                    estimatedPrice: convertPrismaDecimal(item.estimatedPrice),
+                    totalPrice: convertPrismaDecimal(item.totalPrice),
+                })) || p.items,
+            });
+
+            const normalizeBudgetAlloc = (b: BudgetAllocation): BudgetAllocation => ({
+                ...b,
+                allocatedAmount: convertPrismaDecimal(b.allocatedAmount),
+                committedAmount: convertPrismaDecimal(b.committedAmount),
+                spentAmount: convertPrismaDecimal(b.spentAmount),
             });
 
             const prsData   = rawPrsData   ? rawPrsData.map(normalizePR)   : null;
             const myPrsData = rawMyPrsData ? rawMyPrsData.map(normalizePR) : null;
+            const allocsDataNormalized = allocsData ? allocsData.map(normalizeBudgetAlloc) : null;
 
             // Single atomic setState — triggers exactly 1 re-render
             setState(prev => ({
                 ...prev,
                 ...(periodsData    !== null && { budgetPeriods: periodsData }),
-                ...(allocsData     !== null && { budgetAllocations: allocsData }),
+                ...(allocsDataNormalized !== null && { budgetAllocations: allocsDataNormalized }),
                 ...(prsData        !== null && { prs: prsData }),
                 ...(myPrsData      !== null && { myPrs: myPrsData }),
                 ...(approvalsData  !== null && { approvals: approvalsData }),
@@ -458,7 +483,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 ...(rfqsData       !== null && { rfqs: rfqsData }),
                 ...(grnsData       !== null && { grns: grnsData }),
                 ...(invoicesData   !== null && { invoices: invoicesData }),
-                ...(contractsData  !== null && { contracts: contractsData }),
+                ...(contractsData  !== null && { contracts: (contractsData as Contract[]).map((c) => ({ ...c, totalValue: (c as unknown as Record<string,unknown>).totalValue ?? (c as unknown as Record<string,unknown>).value ?? 0, supplier: (c as unknown as Record<string,unknown>).supplierOrg ?? c.supplier })) as Contract[] }),
                 ...(disputesData   !== null && { disputes: disputesData }),
                 ...(newBudgetOverrides !== null && { budgetOverrides: newBudgetOverrides }),
                 ...(newAuditLogs       !== null && { auditLogs: newAuditLogs }),
@@ -608,9 +633,115 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData, notify]);
 
     const distributeAnnualBudget = useCallback(async (costCenterId: string, fiscalYear: number) => {
-        const resp = await apiFetch(`/budgets/distribute-annual/${costCenterId}/${fiscalYear}`, { method: 'POST' });
-        if (resp.ok) { notify("Phân bổ 20/80 thành công", "success"); await refreshData(); return true; }
-        notify("Phân bổ ngân sách thất bại", "error"); return false;
+        // Lấy thông tin cost center để biết hạn mức năm
+        const ccResp = await apiFetch(`/cost-centers/${costCenterId}`);
+        if (!ccResp.ok) {
+            notify("Không lấy được thông tin Cost Center", "error");
+            return false;
+        }
+        const ccData = await ccResp.json();
+        const costCenter = ccData.data || ccData;
+        
+        // Chuyển đổi budgetAnnual từ Prisma Decimal nếu cần
+        const annualBudget = convertPrismaDecimal(costCenter.budgetAnnual);
+        if (!annualBudget || annualBudget <= 0) {
+            notify("Cost Center chưa có hạn mức năm", "error");
+            return false;
+        }
+        
+        // Tính toán phân bổ: 20% mỗi quý = 80% tổng năm (20% dự phòng)
+        const quarterlyAllocation = Math.floor(annualBudget * 0.20); // 20% mỗi quý
+        
+        const quarters = [
+            { q: 1, start: `${fiscalYear}-01-01`, end: `${fiscalYear}-03-31` },
+            { q: 2, start: `${fiscalYear}-04-01`, end: `${fiscalYear}-06-30` },
+            { q: 3, start: `${fiscalYear}-07-01`, end: `${fiscalYear}-09-30` },
+            { q: 4, start: `${fiscalYear}-10-01`, end: `${fiscalYear}-12-31` },
+        ];
+        
+        let successCount = 0;
+        
+        for (const item of quarters) {
+            // 1. Kiểm tra xem period đã tồn tại chưa (tránh lỗi unique constraint)
+            const existingPeriod = state.budgetPeriods.find(
+                p => p.fiscalYear === fiscalYear && 
+                     p.periodType === 'QUARTERLY' && 
+                     p.periodNumber === item.q
+            );
+            
+            let period;
+            if (existingPeriod) {
+                console.log(`Using existing period Q${item.q}: ${existingPeriod.id.slice(0,8)}...`);
+                period = existingPeriod;
+            } else {
+                // Tạo Budget Period mới
+                const periodResp = await apiFetch('/budgets/periods', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        fiscalYear,
+                        periodType: 'QUARTERLY',
+                        periodNumber: item.q,
+                        startDate: item.start,
+                        endDate: item.end,
+                    }),
+                });
+                
+                if (!periodResp.ok) {
+                    const errorText = await periodResp.text();
+                    console.log(`Failed to create period Q${item.q}:`, errorText);
+                    // Nếu lỗi do trùng lặp, thử refresh để lấy period mới nhất
+                    if (errorText.includes('Unique constraint') || errorText.includes('P2002')) {
+                        await refreshData();
+                        continue;
+                    }
+                    continue;
+                }
+                
+                const periodData = await periodResp.json();
+                period = periodData.data || periodData;
+            }
+            
+            // 2. Kiểm tra allocation đã tồn tại chưa
+            const existingAlloc = state.budgetAllocations.find(
+                a => a.budgetPeriodId === period.id && a.costCenterId === costCenterId
+            );
+            
+            if (existingAlloc) {
+                console.log(`Allocation already exists for Q${item.q}, skipping`);
+                continue;
+            }
+            
+            // 3. Tạo Budget Allocation cho quý
+            const allocResp = await apiFetch('/budgets/allocations', {
+                method: 'POST',
+                body: JSON.stringify({
+                    budgetPeriodId: period.id,
+                    costCenterId: costCenterId,
+                    deptId: costCenter.deptId,
+                    allocatedAmount: quarterlyAllocation,
+                    committedAmount: 0,
+                    spentAmount: 0,
+                    currency: 'VND',
+                    status: 'APPROVED',
+                    notes: `Phân bổ 20/80 - Quý ${item.q}/${fiscalYear}: 20% của ${annualBudget.toLocaleString()} VND`,
+                }),
+            });
+            
+            if (allocResp.ok) {
+                successCount++;
+            } else {
+                console.log(`Failed to create allocation Q${item.q}:`, await allocResp.text());
+            }
+        }
+        
+        if (successCount > 0) {
+            notify(`Phân bổ 20/80 thành công: ${successCount}/4 quý (${quarterlyAllocation.toLocaleString()} VND/quý)`, "success");
+            await refreshData();
+            return true;
+        }
+        
+        notify("Phân bổ ngân sách thất bại", "error");
+        return false;
     }, [apiFetch, refreshData, notify]);
 
     const reconcileQuarter = useCallback(async (costCenterId: string, fiscalYear: number, quarter: number) => {
@@ -930,7 +1061,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch, refreshData, notify]);
 
     const createContract = useCallback(async (d: Partial<Contract>) => {
-        const resp = await apiFetch('/contracts', { method: 'POST', body: JSON.stringify(d) });
+        // Backend dùng `value`, frontend dùng `totalValue` — map trước khi gửi
+        const { totalValue, ...rest } = d as Contract & { totalValue?: number };
+        const payload = { ...rest, value: totalValue };
+        const resp = await apiFetch('/contracts', { method: 'POST', body: JSON.stringify(payload) });
         if (resp.ok) { notify("Tạo hợp đồng thành công", "success"); await refreshData(); return true; }
         try {
             const errBody = await resp.json();
@@ -1290,7 +1424,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, [apiFetch]);
 
     const updateContract = useCallback(async (id: string, d: Partial<Contract>) => {
-        const resp = await apiFetch(`/contracts/${id}`, { method: 'PATCH', body: JSON.stringify(d) });
+        const { totalValue, ...rest } = d as Contract & { totalValue?: number };
+        const payload = { ...rest, value: totalValue };
+        const resp = await apiFetch(`/contracts/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
         if (resp.ok) { notify("Cập nhật hợp đồng thành công", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
@@ -1301,11 +1437,27 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const submitContractForApproval = useCallback(async (id: string, approverId: string) => {
-        const resp = await apiFetch(`/contracts/${id}/submit`, { method: 'POST', body: JSON.stringify({ approverId }) });
-        if (resp.ok) { notify("Đã gửi hợp đồng để phê duyệt", "success"); return true; }
+    const submitContractForApproval = useCallback(async (id: string) => {
+        const resp = await apiFetch(`/contracts/${id}/submit`, { method: 'POST' });
+        if (resp.ok) { notify("Đã gửi hợp đồng để phê duyệt", "success"); await refreshData(); return true; }
+        try {
+            const errBody = await resp.json();
+            const msg = errBody?.message ?? "Gửi phê duyệt thất bại";
+            notify(Array.isArray(msg) ? msg.join('; ') : String(msg), "error");
+        } catch { notify("Gửi phê duyệt thất bại", "error"); }
         return false;
-    }, [apiFetch, notify]);
+    }, [apiFetch, notify, refreshData]);
+
+    const terminateContract = useCallback(async (id: string, reason: string) => {
+        const resp = await apiFetch(`/contracts/${id}/terminate`, { method: 'POST', body: JSON.stringify({ reason }) });
+        if (resp.ok) { notify("Đã chấm dứt hợp đồng", "success"); await refreshData(); return true; }
+        try {
+            const errBody = await resp.json();
+            const msg = errBody?.message ?? "Chấm dứt hợp đồng thất bại";
+            notify(Array.isArray(msg) ? msg.join('; ') : String(msg), "error");
+        } catch { notify("Chấm dứt hợp đồng thất bại", "error"); }
+        return false;
+    }, [apiFetch, notify, refreshData]);
 
     const updateContractMilestone = useCallback(async (milestoneId: string, d: UpdateMilestoneDto) => {
         const resp = await apiFetch(`/contracts/milestones/${milestoneId}`, { method: 'PATCH', body: JSON.stringify(d) });
@@ -1665,6 +1817,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return [];
     }, [apiFetch]);
 
+    const fetchBuyerDashboard = useCallback(async () => {
+        const resp = await apiFetch('/reports/buyer-dashboard');
+        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        return null;
+    }, [apiFetch]);
+
     const contextValue = useMemo<ProcurementContextType>(() => ({
         ...state,
         login, logout, refreshData, apiFetch, addPR, submitPR, updatePR, fetchPrDetail, actionApproval,
@@ -1698,7 +1856,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         inviteSuppliersToRFQ, removeSupplierFromRFQ, searchAndAddSuppliers,
         createCounterOffer, fetchCounterOffersByQuotation, fetchCounterOfferById, respondCounterOffer,
         deleteRFQ, updateRFQStatus, fetchRFQById, fetchSuppliersByRFQ, analyzeQuotationWithAI, fetchMySupplierRFQs,
-        fetchContractById, updateContract, removeContract, submitContractForApproval, updateContractMilestone, fetchContractsBySupplier,
+        fetchContractById, updateContract, removeContract, submitContractForApproval, terminateContract, updateContractMilestone, fetchContractsBySupplier,
         fetchGRNById, updateGRNStatus, confirmGRN,
         fetchInvoiceById, updateInvoice, removeInvoice, fetchInvoices, runMatching,
         createPayment, completePayment, fetchPayments, fetchPaymentById,
@@ -1708,8 +1866,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         consolidatePRs,
         syncRAG, ingestRAGEntity,
         fetchSpendOverview, fetchSpendBySupplier, fetchSpendByCategory,
+        fetchBuyerDashboard,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }), [state]); // callbacks are stable useCallback refs; only state triggers re-render
+    }), [state, fetchBuyerDashboard]); // callbacks are stable useCallback refs; only state triggers re-render
 
     return <ProcurementContext.Provider value={contextValue}>{children}</ProcurementContext.Provider>;
 }
@@ -1719,3 +1878,4 @@ export const useProcurement = () => {
     if (!context) throw new Error("useProcurement must be used within a ProcurementProvider");
     return context;
 };
+

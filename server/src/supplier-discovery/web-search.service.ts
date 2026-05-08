@@ -25,7 +25,9 @@ export class WebSearchService {
 
   async search(query: string, maxResults = 10): Promise<WebSearchResult[]> {
     if (!this.tavilyApiKey) {
-      this.logger.warn('TAVILY_API_KEY not set — using mock results for development');
+      this.logger.warn(
+        'TAVILY_API_KEY not set — using mock results for development',
+      );
       return this.mockResults(query);
     }
 
@@ -47,7 +49,7 @@ export class WebSearchService {
       if (response.status === 401 || response.status === 403) {
         this.logger.error(
           `Tavily API key is invalid or unauthorized (${response.status}). ` +
-          'Using mock results. Please update TAVILY_API_KEY in your .env file.',
+            'Using mock results. Please update TAVILY_API_KEY in your .env file.',
         );
         this._usingMock = true;
         return this.mockResults(query);

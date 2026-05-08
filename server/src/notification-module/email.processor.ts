@@ -13,11 +13,11 @@ export class EmailProcessor {
   async handleSendEmail(job: bull.Job) {
     this.logger.log(`Processing email job ${job.id}: ${job.data.subject}`);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { to, subject, body } = job.data;
+    const { to, subject, body, attachments } = job.data;
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      await this.emailService.sendEmail(to, subject, body);
+      await this.emailService.sendEmail(to, subject, body, attachments);
       this.logger.log(`Successfully sent email to ${to}`);
     } catch (error: any) {
       this.logger.error(`Failed to send email to ${to}: ${error.message}`);
