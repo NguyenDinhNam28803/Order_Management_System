@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
 import { ContractStatus, DocumentType, ApprovalStatus } from '@prisma/client';
+import { generateDocNumber } from '../common/utils/doc-number.util';
 
 @Injectable()
 export class ContractModuleService {
@@ -18,7 +19,7 @@ export class ContractModuleService {
     orgId: string,
   ) {
     const { milestones, ...contractData } = createContractDto;
-    const contractNumber = `CON-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const contractNumber = generateDocNumber('CON');
 
     return this.prisma.contract.create({
       data: {

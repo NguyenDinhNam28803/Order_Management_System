@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
 import { PrRepository } from './pr.repository';
@@ -20,6 +21,7 @@ import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { BudgetOverrideService } from '../budget-module/budget-override.service';
 import { EmailService } from '../notification-module/email.service';
 import { ConfigService } from '@nestjs/config';
+import { generateDocNumber } from '../common/utils/doc-number.util';
 
 @Injectable()
 export class PrmoduleService {
@@ -141,7 +143,7 @@ export class PrmoduleService {
       }
     }
 
-    const prNumber = `PR-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const prNumber = generateDocNumber('PR');
     const orgId = user.orgId;
     let deptId = user.deptId;
 

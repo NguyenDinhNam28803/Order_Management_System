@@ -15,6 +15,7 @@ import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
 import { AutomationService } from '../common/automation/automation.service';
+import { generateDocNumber } from '../common/utils/doc-number.util';
 
 export class RfqSupplierCreateManyInput {
   rfqId!: string;
@@ -218,7 +219,7 @@ export class RfqmoduleService {
       throw new NotFoundException('Yêu cầu mua hàng chưa được duyệt !');
     }
 
-    const rfqNumber = `RFQ-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const rfqNumber = generateDocNumber('RFQ');
     const rfq = await this.repository.create(
       createRfqDto,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -341,7 +342,7 @@ export class RfqmoduleService {
       throw new BadRequestException('Supplier is not invited for this RFQ');
     }
 
-    const quotationNumber = `QUO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const quotationNumber = generateDocNumber('QUO');
     return this.repository.createQuotation(
       rfqId,
       createQuotationDto.supplierId,

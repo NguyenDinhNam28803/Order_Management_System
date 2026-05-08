@@ -90,21 +90,18 @@ async function bootstrap() {
     customSiteTitle: 'OMS API Documentation',
   });
 
-  // Enable CORS
+  // Enable CORS — origins loaded from ALLOWED_ORIGINS env var (comma-separated)
+  // Falls back to localhost:3000 for local dev when env var is not set.
+  const allowedOriginsEnv = configService.get<string>('ALLOWED_ORIGINS', '');
+  const allowedOrigins = allowedOriginsEnv
+    ? allowedOriginsEnv.split(',').map((o) => o.trim()).filter(Boolean)
+    : ['http://localhost:3000', 'https://localhost:3000'];
+
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'https://localhost:3000',
-      'http://procuresmart.io.vn:3000',
-      'https://procuresmart.io.vn:3000',
-      'http://procuresmart.io.vn',
-      'https://procuresmart.io.vn',
-      'http://157.66.6.59:3000',
-      'http://157.66.6.59',
-    ], // Đảm bảo khớp với URL của client
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // Quan trọng: Cho phép gửi/nhận cookie
+    credentials: true,
   });
 
   const port = configService.get<number>('PORT', 3000);

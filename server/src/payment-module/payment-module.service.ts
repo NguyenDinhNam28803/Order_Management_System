@@ -13,6 +13,7 @@ import {
 import { CreatePaymentModuleDto } from './dto/create-payment-module.dto';
 import { BudgetModuleService } from '../budget-module/budget-module.service';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { generateDocNumber } from '../common/utils/doc-number.util';
 
 @Injectable()
 export class PaymentModuleService {
@@ -44,7 +45,7 @@ export class PaymentModuleService {
       );
     }
 
-    const paymentNumber = `PAY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const paymentNumber = generateDocNumber('PAY');
 
     return this.prisma.$transaction(async (tx) => {
       // 1. Tạo bản ghi thanh toán

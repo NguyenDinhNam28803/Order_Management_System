@@ -18,6 +18,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AutomationService } from '../common/automation/automation.service';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
+import { generateDocNumber } from '../common/utils/doc-number.util';
 import {
   SubmitQuotationDto,
   ConfirmPoDto,
@@ -155,7 +156,7 @@ export class ExternalTokenController {
       supplierId = user.orgId;
     }
 
-    const quotationNumber = `QUO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const quotationNumber = generateDocNumber('QUO');
 
     const quotation = await this.prisma.rfqQuotation.create({
       data: {

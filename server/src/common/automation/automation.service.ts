@@ -11,6 +11,7 @@ import {
   QcResult,
   PriceVolatility,
 } from '@prisma/client';
+import { generateDocNumber } from '../utils/doc-number.util';
 
 interface AutomationConfig {
   contractThreshold: number;
@@ -91,7 +92,7 @@ export class AutomationService {
       }
 
       // Tạo GRN draft
-      const grnNumber = `GRN-DRAFT-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+      const grnNumber = generateDocNumber('GRN-DRAFT');
 
       const grn = await this.prisma.goodsReceipt.create({
         data: {
@@ -216,7 +217,7 @@ export class AutomationService {
       this.logger.log(`Auto-creating GRN for PO: ${po.poNumber}`);
 
       // 3. Tạo GRN và GRN Items trong transaction
-      const grnNumber = `GRN-AUTO-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+      const grnNumber = generateDocNumber('GRN-AUTO');
 
       await this.prisma.$transaction(async (tx) => {
         const grn = await tx.goodsReceipt.create({
@@ -302,7 +303,7 @@ export class AutomationService {
       this.logger.log(`Auto-creating PO for RFQ: ${rfq.rfqNumber}`);
 
       // 3. Chuẩn bị dữ liệu PO
-      const poNumber = `PO-AUTO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const poNumber = generateDocNumber('PO-AUTO');
 
       // Tính toán ngày giao hàng dựa trên leadTime của báo giá
       const deliveryDate = new Date();
@@ -543,7 +544,7 @@ export class AutomationService {
       this.logger.log(`Auto-creating RFQ for PR: ${pr.prNumber}`);
 
       // 3. Chuẩn bị dữ liệu RFQ
-      const rfqNumber = `RFQ-AUTO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const rfqNumber = generateDocNumber('RFQ-AUTO');
 
       // Tạo RFQ Request
       const rfq = await this.prisma.rfqRequest.create({
