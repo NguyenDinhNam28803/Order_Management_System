@@ -164,7 +164,7 @@ export default function QuotationManagementPage() {
                         <FileText size={20} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-black text-[#000000] tracking-tight">********</span>
+                        <span className="font-black text-[#0F172A] tracking-tight">********</span>
                         <span className="text-[9px] text-[#000000] font-bold uppercase">{formatDate(row.createdAt)}</span>
                     </div>
                 </div>
@@ -219,7 +219,7 @@ export default function QuotationManagementPage() {
                 <div className="flex items-center gap-1">
                     <button
                         onClick={() => setSelectedRFQ(row)}
-                        className="inline-flex items-center gap-1 bg-[#2563EB] text-[#000000] px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider hover:bg-[#1D4ED8] transition-all"
+                        className="inline-flex items-center gap-1 bg-[#2563EB] text-white px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider hover:bg-[#1D4ED8] transition-all"
                     >
                         <Eye size={12} /> Xem
                     </button>
@@ -363,7 +363,7 @@ export default function QuotationManagementPage() {
             {/* Header */}
             <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
                 <div>
-                    <h1 className="text-4xl font-black text-[#000000] tracking-tighter uppercase mb-2">
+                    <h1 className="text-4xl font-black text-[#0F172A] tracking-tighter uppercase mb-2">
                         {selectedRFQ ? `BÁO GIÁ CHO RFQ` : "QUẢN LÝ BÁO GIÁ"}
                     </h1>
                     <p className="text-[#000000] font-bold text-sm tracking-tight flex items-center gap-2 uppercase">
@@ -388,7 +388,7 @@ export default function QuotationManagementPage() {
                                 <input
                                     type="text"
                                     placeholder="Tìm kiếm RFQ..."
-                                    className="w-full h-14 pl-6 pr-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                    className="w-full h-14 pl-6 pr-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[#000000] placeholder:text-[#94A3B8]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -411,7 +411,7 @@ export default function QuotationManagementPage() {
                             </div>
                             <div>
                                 <div className="text-[10px] uppercase font-black tracking-widest text-[#000000] mb-1">{stat.label}</div>
-                                <div className="text-2xl font-black text-[#000000]">{stat.value}</div>
+                                <div className="text-2xl font-black text-[#0F172A]">{stat.value}</div>
                             </div>
                         </div>
                     ))}
@@ -429,7 +429,7 @@ export default function QuotationManagementPage() {
             {/* Award Modal */}
             {awardModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/80 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
                         <div className="bg-emerald-600 px-8 py-6 text-[#000000] flex justify-between items-center">
                             <div>
                                 <h3 className="text-xl font-black uppercase tracking-tight">Trao thầu</h3>
@@ -489,7 +489,7 @@ export default function QuotationManagementPage() {
             {/* View Quotation Detail Modal - Redesigned */}
             {viewQuotation && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/90 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#FFFFFF] rounded-3xl w-full max-w-4xl shadow-2xl shadow-black/50 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.2)] overflow-y-auto">
+                    <div className="bg-[#FFFFFF] rounded-xl w-full max-w-4xl shadow-2xl shadow-black/50 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.2)] overflow-y-auto">
 
                         {/* Header */}
                         <div className="bg-gradient-to-r from-[#0F172A] to-[#F1F5F9] px-8 py-5 flex justify-between items-center border-b border-[rgba(148,163,184,0.1)] shrink-0">
@@ -498,7 +498,7 @@ export default function QuotationManagementPage() {
                                     <Building2 size={24} className="text-[#2563EB]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-black text-[#000000] tracking-tight">{viewQuotation.supplier?.name || "Nhà cung cấp"}</h3>
+                                    <h3 className="text-lg font-black text-[#0F172A] tracking-tight">{viewQuotation.supplier?.name || "Nhà cung cấp"}</h3>
                                     <p className="text-xs text-[#000000] mt-0.5">{formatVND(viewQuotation.totalPrice)} ₫ • {viewQuotation.leadTimeDays} ngày</p>
                                 </div>
                             </div>
@@ -624,7 +624,7 @@ export default function QuotationManagementPage() {
                                         ) : (
                                             /* AI Analysis Loading / Not Available */
                                             <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                                                <div className="h-20 w-20 rounded-3xl bg-[#2563EB]/10 flex items-center justify-center mb-4 animate-pulse">
+                                                <div className="h-20 w-20 rounded-xl bg-[#2563EB]/10 flex items-center justify-center mb-4 animate-pulse">
                                                     <Sparkles size={36} className="text-[#2563EB]" />
                                                 </div>
                                                 <h4 className="text-lg font-black text-[#000000] mb-2">Đang phân tích AI...</h4>
@@ -665,7 +665,7 @@ export default function QuotationManagementPage() {
                                                     setNewMsg('');
                                                     const qas = await fetchQAThreadsBySupplier(viewQuotation.rfqId, viewQuotation.supplierId);
                                                     setQaThreadsList(qas || []);
-                                                }} className="bg-[#2563EB] text-[#000000] px-5 rounded-xl font-black text-xs uppercase hover:bg-[#1D4ED8] transition-all">Gửi</button>
+                                                }} className="bg-[#2563EB] text-white px-5 rounded-xl font-black text-xs uppercase hover:bg-[#1D4ED8] transition-all">Gửi</button>
                                             </div>
                                         </div>
                                     )}
@@ -780,20 +780,20 @@ export default function QuotationManagementPage() {
                             // Show quotations for selected RFQ
                             loading ? (
                                 <div className="py-32 text-center">
-                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0F172A] text-[#F8FAFC] mb-6 animate-pulse">
+                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-[#0F172A] text-[#F8FAFC] mb-6 animate-pulse">
                                         <TrendingUp size={40} />
                                     </div>
-                                    <h3 className="text-xl font-black text-[#000000] mb-2 uppercase tracking-tight">Đang tải báo giá...</h3>
+                                    <h3 className="text-xl font-black text-[#0F172A] mb-2 uppercase tracking-tight">Đang tải báo giá...</h3>
                                 </div>
                             ) : (
                                 <>
                                     <ERPTable columns={quotationColumns} data={quotations} />
                                     {quotations.length === 0 && (
                                         <div className="py-32 text-center">
-                                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0F172A] text-[#F8FAFC] mb-6">
+                                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-[#0F172A] text-[#F8FAFC] mb-6">
                                                 <AlertCircle size={40} />
                                             </div>
-                                            <h3 className="text-xl font-black text-[#000000] mb-2 uppercase tracking-tight">Chưa có báo giá nào</h3>
+                                            <h3 className="text-xl font-black text-[#0F172A] mb-2 uppercase tracking-tight">Chưa có báo giá nào</h3>
                                             <p className="text-[#000000] font-medium">RFQ này chưa nhận được báo giá từ nhà cung cấp.</p>
                                         </div>
                                     )}
@@ -807,10 +807,10 @@ export default function QuotationManagementPage() {
                                 ) : null}
                                 {(!Array.isArray(filteredRFQs) || filteredRFQs.length === 0) && (
                                     <div className="py-32 text-center">
-                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0F172A] text-[#F8FAFC] mb-6">
+                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-[#0F172A] text-[#F8FAFC] mb-6">
                                             <Search size={40} />
                                         </div>
-                                        <h3 className="text-xl font-black text-[#000000] mb-2 uppercase tracking-tight">Không có RFQ nào</h3>
+                                        <h3 className="text-xl font-black text-[#0F172A] mb-2 uppercase tracking-tight">Không có RFQ nào</h3>
                                         <p className="text-[#000000] font-medium">Chưa có yêu cầu báo giá nào trong hệ thống.</p>
                                     </div>
                                 )}

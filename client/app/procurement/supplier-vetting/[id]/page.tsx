@@ -144,7 +144,7 @@ function CheckRow({
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
               placeholder="https://..."
-              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/50"
+              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/50"
             />
           </div>
           <div>
@@ -153,7 +153,7 @@ function CheckRow({
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/50 resize-none"
+              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/50 resize-none"
             />
           </div>
           <div className="flex gap-2">
@@ -430,7 +430,7 @@ export default function SupplierVettingDetailPage() {
                 <div className="text-[10px] text-[#000000]">Failed</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-black text-[#000000]">{vetting.checks.length - passed - failed}</div>
+                <div className="text-2xl font-black text-[#0F172A]">{vetting.checks.length - passed - failed}</div>
                 <div className="text-[10px] text-[#000000]">Pending/Skip</div>
               </div>
             </div>

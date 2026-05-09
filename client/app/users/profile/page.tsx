@@ -100,7 +100,7 @@ export default function UserProfilePage() {
                 <div className="max-w-2xl mx-auto mt-20">
                     <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-12 text-center shadow-xl">
                         <UserCircle className="mx-auto h-16 w-16 text-[#000000] mb-4" />
-                        <h2 className="text-xl font-black text-[#000000] mb-2">Không tìm thấy thông tin</h2>
+                        <h2 className="text-xl font-black text-[#0F172A] mb-2">Không tìm thấy thông tin</h2>
                         <p className="text-[#000000]">{error || "Không tìm thấy thông tin người dùng"}</p>
                     </div>
                 </div>
@@ -113,7 +113,7 @@ export default function UserProfilePage() {
             {/* Header */}
             <div className="mt-4 mb-8 flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-black text-[#000000] tracking-tight">Hồ sơ người dùng</h1>
+                    <h1 className="text-2xl font-black text-[#0F172A] tracking-tight">Hồ sơ người dùng</h1>
                     <p className="text-sm text-[#000000] mt-1">Quản lý thông tin cá nhân và tổ chức</p>
                 </div>
                 <div className="flex gap-3">
@@ -121,7 +121,7 @@ export default function UserProfilePage() {
                         <Lock size={16} />
                         <span className="hidden sm:inline">Đổi mật khẩu</span>
                     </button>
-                    <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#2563EB]/20 transition-all">
+                    <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#2563EB]/20 transition-all">
                         <Edit size={16} />
                         <span className="hidden sm:inline">Chỉnh sửa</span>
                     </button>
@@ -159,7 +159,7 @@ export default function UserProfilePage() {
                                 {/* Info */}
                                 <div className="flex-1 space-y-4">
                                     <div>
-                                        <h3 className="text-xl font-black text-[#000000]">{user.fullName}</h3>
+                                        <h3 className="text-xl font-black text-[#0F172A]">{user.fullName}</h3>
                                         <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold mt-2 border ${ROLE_COLORS[user.role] || "bg-[#2563EB]/20 text-[#2563EB] border-[#2563EB]/30"}`}>
                                             {ROLE_LABELS[user.role] || user.role}
                                         </span>

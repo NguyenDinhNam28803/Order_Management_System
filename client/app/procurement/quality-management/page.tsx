@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { 
@@ -172,7 +172,7 @@ export default function ProcurementQualityHub() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-20 text-center">
+        <div className="bg-white rounded-xl border border-dashed border-slate-300 p-20 text-center">
           <ShieldCheck size={64} className="mx-auto text-slate-200 mb-4" />
           <h2 className="text-xl font-bold text-slate-400">Vui lòng chọn nhà cung cấp để bắt đầu quản trị chất lượng</h2>
           <p className="text-slate-400 text-sm mt-1">Dữ liệu phân tích và lịch sử RCA sẽ hiển thị tại đây.</p>

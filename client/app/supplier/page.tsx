@@ -114,7 +114,7 @@ const StatCard = ({ title, value, subtitle, icon: Icon, color, trend, onClick }:
         </div>
       )}
     </div>
-    <div className="text-2xl font-black text-[#000000] mb-1">{value}</div>
+    <div className="text-2xl font-black text-[#0F172A] mb-1">{value}</div>
     <div className="text-xs font-bold text-[#000000] uppercase tracking-wider">{title}</div>
     {subtitle && <div className="text-[10px] text-[#000000] mt-1">{subtitle}</div>}
   </div>
@@ -362,7 +362,7 @@ export default function SupplierPortalPage() {
             <LayoutDashboard size={24} className="text-[#000000]" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-[#000000] tracking-tight">
+            <h1 className="text-2xl font-black text-[#0F172A] tracking-tight">
               Cổng thông tin Nhà cung cấp
             </h1>
             <p className="text-sm text-[#000000]">
@@ -747,7 +747,7 @@ export default function SupplierPortalPage() {
               <button
                 onClick={handleEvaluateKPI}
                 disabled={kpiLoading || !supplierId}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
               >
                 {kpiLoading ? (
                   <>

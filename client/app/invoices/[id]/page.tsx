@@ -175,17 +175,17 @@ export default function InvoiceDetailPage() {
     switch (status) {
       case 'APPROVED':
       case 'AUTO_APPROVED':
-        return <CheckCircle2 size={20} className="text-black" />;
+        return <CheckCircle2 size={20} className="text-emerald-600" />;
       case 'EXCEPTION_REVIEW':
       case 'REJECTED':
-        return <XCircle size={20} className="text-black" />;
+        return <XCircle size={20} className="text-rose-600" />;
       case 'MATCHING':
       case 'SUBMITTED':
-        return <Clock size={20} className="text-black" />;
+        return <Clock size={20} className="text-amber-600" />;
       case 'PAID':
         return <CreditCard size={20} className="text-[#3B82F6]" />;
       default:
-        return <FileText size={20} className="text-black" />;
+        return <FileText size={20} className="text-[#64748B]" />;
     }
   };
 
@@ -193,23 +193,24 @@ export default function InvoiceDetailPage() {
     switch (status) {
       case 'APPROVED':
       case 'AUTO_APPROVED':
-        return 'bg-emerald-500/10 text-black border-emerald-500/20';
+        return 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20';
       case 'EXCEPTION_REVIEW':
       case 'REJECTED':
-        return 'bg-rose-500/10 text-black border-rose-500/20';
+        return 'bg-rose-500/10 text-rose-700 border-rose-500/20';
       case 'MATCHING':
       case 'SUBMITTED':
-        return 'bg-amber-500/10 text-black border-amber-500/20';
+        return 'bg-amber-500/10 text-amber-700 border-amber-500/20';
       case 'PAID':
         return 'bg-[#2563EB]/10 text-[#3B82F6] border-[#2563EB]/20';
       default:
-        return 'bg-slate-500/10 text-black border-slate-500/20';
+        return 'bg-slate-500/10 text-[#64748B] border-slate-500/20';
     }
   };
 
-  const formatCurrency = (value: string | number | undefined) => {
-    const num = typeof value === 'string' ? parseFloat(value) : value;
-    return num?.toLocaleString('vi-VN') || '0';
+  const formatCurrency = (value: string | number | null | undefined) => {
+    const num = typeof value === 'string' ? parseFloat(value) : (value ?? 0);
+    const safe = isNaN(num as number) ? 0 : (num as number);
+    return safe.toLocaleString('vi-VN');
   };
 
   const formatDate = (dateString: string | null | undefined) => {
@@ -233,16 +234,16 @@ export default function InvoiceDetailPage() {
   
   if (error) return (
     <div className="min-h-screen bg-bg-primary p-8">
-      <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-6 text-black">
+      <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-6 text-rose-700">
         <AlertCircle className="inline mr-2" size={20} />
         Lỗi: {error}
       </div>
     </div>
   );
-  
+
   if (!invoice) return (
     <div className="min-h-screen bg-bg-primary p-8">
-      <div className="bg-slate-500/10 border border-slate-500/20 rounded-xl p-6 text-black">
+      <div className="bg-slate-500/10 border border-slate-500/20 rounded-xl p-6 text-[#64748B]">
         Không tìm thấy hóa đơn
       </div>
     </div>
@@ -263,11 +264,11 @@ export default function InvoiceDetailPage() {
         </div>
 
         {/* Header Card with Key Info */}
-        <div className="bg-bg-secondary rounded-2xl border border-border p-6 mb-6">
+        <div className="bg-bg-secondary rounded-xl border border-border p-6 mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             {/* Left: Icon & Title */}
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-[#2563EB]/10 flex items-center justify-center">
+              <div className="w-14 h-14 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
                 <FileText size={28} className="text-[#2563EB]" />
               </div>
               <div>
@@ -284,7 +285,7 @@ export default function InvoiceDetailPage() {
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <p className="text-text-secondary text-sm">Tổng thanh toán</p>
-                <p className="text-[#3B82F6] font-black text-2xl">
+                <p className="text-[#3B82F6] font-bold text-2xl">
                   {formatCurrency(invoice.totalAmount)} {invoice.currency}
                 </p>
               </div>
@@ -301,7 +302,7 @@ export default function InvoiceDetailPage() {
               <button
                 onClick={handleRunMatching}
                 disabled={processing}
-                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <RefreshCw size={16} className={processing ? 'animate-spin' : ''} />
                 {processing ? 'Đang xử lý...' : 'Chạy đối soát 3 bên'}
@@ -312,7 +313,7 @@ export default function InvoiceDetailPage() {
               <button
                 onClick={handlePay}
                 disabled={processing}
-                className="bg-emerald-500 hover:bg-emerald-600 text-[#000000] px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <CreditCard size={16} />
                 {processing ? 'Đang xử lý...' : 'Thanh toán ngay'}
@@ -342,7 +343,7 @@ export default function InvoiceDetailPage() {
             {invoice.supplier?.id && (
               <button
                 onClick={() => setShowContractModal(true)}
-                className="inline-flex items-center gap-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-black px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors"
+                className="inline-flex items-center gap-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-700 px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors"
               >
                 <FileSignature size={16} />
                 Tạo hợp đồng
@@ -355,9 +356,9 @@ export default function InvoiceDetailPage() {
         {invoice.status === 'EXCEPTION_REVIEW' && invoice.exceptionReason && (
           <div className="mb-6 p-5 bg-rose-500/10 border border-rose-500/20 rounded-xl">
             <div className="flex items-start gap-3">
-              <AlertCircle size={20} className="text-black shrink-0 mt-0.5" />
+              <AlertCircle size={20} className="text-rose-600 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-bold text-black mb-1">Lỗi đối soát 3 bên</h3>
+                <h3 className="font-bold text-rose-700 mb-1">Lỗi đối soát 3 bên</h3>
                 <p className="text-rose-300/80 text-sm">{invoice.exceptionReason}</p>
               </div>
             </div>
@@ -369,8 +370,8 @@ export default function InvoiceDetailPage() {
           {/* Left Column - Main Content */}
           <div className="xl:col-span-2 space-y-6">
             {/* Invoice Details Card */}
-            <div className="bg-bg-secondary rounded-2xl border border-border p-6">
-              <h2 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
+            <div className="bg-bg-secondary rounded-xl border border-border p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-6 flex items-center gap-2">
                 <FileText size={18} className="text-[#2563EB]" />
                 Chi tiết Hóa đơn
               </h2>
@@ -390,7 +391,7 @@ export default function InvoiceDetailPage() {
                 </div>
                 <div className="p-4 bg-bg-primary rounded-xl">
                   <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Thuế suất</label>
-                  <p className="text-text-primary font-semibold mt-2">{invoice.taxRate}%</p>
+                  <p className="text-text-primary font-semibold mt-2">{invoice.taxRate ?? 0}%</p>
                 </div>
                 
                 <div className="p-4 bg-bg-primary rounded-xl md:col-span-2">
@@ -406,8 +407,8 @@ export default function InvoiceDetailPage() {
 
             {/* Matching Results */}
             {invoice.matchingResult && invoice.matchingResult.length > 0 && (
-              <div className="bg-bg-secondary rounded-2xl border border-border p-6">
-                <h2 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
+              <div className="bg-bg-secondary rounded-xl border border-border p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-6 flex items-center gap-2">
                   <RefreshCw size={18} className="text-[#2563EB]" />
                   Kết quả Đối soát 3 bên
                 </h2>
@@ -430,20 +431,20 @@ export default function InvoiceDetailPage() {
                           </td>
                           <td className="py-3 px-4 text-center">
                             {result.qtyMatch ? (
-                              <CheckCircle2 size={16} className="text-black mx-auto" />
+                              <CheckCircle2 size={16} className="text-emerald-600 mx-auto" />
                             ) : (
-                              <XCircle size={16} className="text-black mx-auto" />
+                              <XCircle size={16} className="text-rose-600 mx-auto" />
                             )}
                           </td>
                           <td className="py-3 px-4 text-center">
                             {result.priceMatch ? (
-                              <CheckCircle2 size={16} className="text-black mx-auto" />
+                              <CheckCircle2 size={16} className="text-emerald-600 mx-auto" />
                             ) : (
-                              <XCircle size={16} className="text-black mx-auto" />
+                              <XCircle size={16} className="text-rose-600 mx-auto" />
                             )}
                           </td>
                           <td className="py-3 px-4 text-right text-text-primary">
-                            {result.variance}%
+                            {result.variance ?? 0}%
                           </td>
                         </tr>
                       ))}
@@ -454,50 +455,50 @@ export default function InvoiceDetailPage() {
             )}
 
             {/* Timeline */}
-            <div className="bg-bg-secondary rounded-2xl border border-border p-6">
-              <h2 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
+            <div className="bg-bg-secondary rounded-xl border border-border p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-6 flex items-center gap-2">
                 <Calendar size={18} className="text-[#2563EB]" />
                 Timeline xử lý
               </h2>
-              
+
               <div className="relative">
                 {/* Vertical Line */}
                 <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-border"></div>
-                
+
                 <div className="space-y-6 relative">
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center relative z-10 ${invoice.createdAt ? 'bg-emerald-500/10' : 'bg-slate-500/10'}`}>
-                      <FileText size={16} className={invoice.createdAt ? 'text-black' : 'text-black'} />
+                      <FileText size={16} className={invoice.createdAt ? 'text-emerald-600' : 'text-[#64748B]'} />
                     </div>
                     <div className="flex-1">
                       <p className="text-text-primary font-semibold">Tạo hóa đơn</p>
                       <p className="text-text-secondary text-sm">{formatDate(invoice.createdAt)}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center relative z-10 ${invoice.matchedAt ? 'bg-amber-500/10' : 'bg-slate-500/10'}`}>
-                      <RefreshCw size={16} className={invoice.matchedAt ? 'text-black' : 'text-black'} />
+                      <RefreshCw size={16} className={invoice.matchedAt ? 'text-amber-600' : 'text-[#64748B]'} />
                     </div>
                     <div className="flex-1">
                       <p className="text-text-primary font-semibold">Đối soát 3 bên</p>
                       <p className="text-text-secondary text-sm">{formatDate(invoice.matchedAt) || 'Chưa đối soát'}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center relative z-10 ${invoice.approvedAt ? 'bg-emerald-500/10' : 'bg-slate-500/10'}`}>
-                      <CheckCircle2 size={16} className={invoice.approvedAt ? 'text-black' : 'text-black'} />
+                      <CheckCircle2 size={16} className={invoice.approvedAt ? 'text-emerald-600' : 'text-[#64748B]'} />
                     </div>
                     <div className="flex-1">
                       <p className="text-text-primary font-semibold">Phê duyệt</p>
                       <p className="text-text-secondary text-sm">{formatDate(invoice.approvedAt) || 'Chưa phê duyệt'}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center relative z-10 ${invoice.paidAt ? 'bg-[#2563EB]/10' : 'bg-slate-500/10'}`}>
-                      <CreditCard size={16} className={invoice.paidAt ? 'text-[#3B82F6]' : 'text-black'} />
+                      <CreditCard size={16} className={invoice.paidAt ? 'text-[#3B82F6]' : 'text-[#64748B]'} />
                     </div>
                     <div className="flex-1">
                       <p className="text-text-primary font-semibold">Thanh toán</p>
@@ -513,8 +514,8 @@ export default function InvoiceDetailPage() {
           <div className="space-y-6">
             {/* PO Card */}
             {invoice.po && (
-              <div className="bg-bg-secondary rounded-2xl border border-border p-6">
-                <h2 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
+              <div className="bg-bg-secondary rounded-xl border border-border p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-6 flex items-center gap-2">
                   <ShoppingCart size={18} className="text-[#2563EB]" />
                   Thông tin PO
                 </h2>
@@ -544,8 +545,8 @@ export default function InvoiceDetailPage() {
 
             {/* Supplier Card */}
             {invoice.supplier && (
-              <div className="bg-bg-secondary rounded-2xl border border-border p-6">
-                <h2 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
+              <div className="bg-bg-secondary rounded-xl border border-border p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-6 flex items-center gap-2">
                   <Building2 size={18} className="text-[#2563EB]" />
                   Nhà cung cấp
                 </h2>
@@ -570,7 +571,7 @@ export default function InvoiceDetailPage() {
                     </div>
                     <div className="p-3 bg-bg-primary rounded-xl">
                       <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Trust Score</label>
-                      <p className="text-black font-semibold mt-1">{invoice.supplier.trustScore}/100</p>
+                      <p className="text-text-primary font-semibold mt-1">{invoice.supplier.trustScore}/100</p>
                     </div>
                   </div>
                 </div>
@@ -578,13 +579,13 @@ export default function InvoiceDetailPage() {
             )}
 
             {/* Status Info */}
-            <div className="bg-bg-secondary rounded-2xl border border-border p-6">
-              <h2 className="text-lg font-black text-text-primary mb-4">Trạng thái</h2>
-              
+            <div className="bg-bg-secondary rounded-xl border border-border p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">Trạng thái</h2>
+
               <div className="space-y-3">
                 {invoice.status === 'EXCEPTION_REVIEW' && (
                   <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
-                    <p className="text-black text-sm font-semibold text-center">
+                    <p className="text-rose-700 text-sm font-semibold text-center">
                       Cần xử lý lỗi đối soát trước khi thanh toán
                     </p>
                   </div>
@@ -600,7 +601,7 @@ export default function InvoiceDetailPage() {
 
                 {(invoice.status === 'APPROVED' || invoice.status === 'AUTO_APPROVED') && (
                   <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                    <p className="text-black text-sm font-semibold text-center">
+                    <p className="text-emerald-700 text-sm font-semibold text-center">
                       Sẵn sàng thanh toán
                     </p>
                   </div>
@@ -608,7 +609,7 @@ export default function InvoiceDetailPage() {
 
                 {invoice.status === 'SUBMITTED' && (
                   <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
-                    <p className="text-black text-sm font-semibold text-center">
+                    <p className="text-amber-700 text-sm font-semibold text-center">
                       Chờ đối soát 3 bên
                     </p>
                   </div>
@@ -622,10 +623,10 @@ export default function InvoiceDetailPage() {
       {/* Contract Creation Modal */}
       {showContractModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-          <div className="bg-bg-secondary border border-border rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
+          <div className="bg-bg-secondary border border-border rounded-xl p-6 w-full max-w-md mx-4 shadow-lg">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-black text-text-primary flex items-center gap-2">
-                <FileSignature size={20} className="text-black" />
+              <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+                <FileSignature size={20} className="text-purple-500" />
                 Tạo hợp đồng mới
               </h2>
               <button
@@ -645,7 +646,7 @@ export default function InvoiceDetailPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1.5">
-                  Tiêu đề hợp đồng <span className="text-black">*</span>
+                  Tiêu đề hợp đồng <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -721,7 +722,7 @@ export default function InvoiceDetailPage() {
               <button
                 onClick={handleCreateContract}
                 disabled={creatingContract}
-                className="flex-1 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-[#000000] font-bold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {creatingContract ? (
                   <>

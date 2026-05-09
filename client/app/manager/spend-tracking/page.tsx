@@ -24,9 +24,9 @@ export default function SpendTrackingPage() {
 
     const stats = useMemo(() => {
         return filteredAllocations.reduce((acc, curr) => ({
-            allocated: acc.allocated + Number(curr.allocatedAmount),
-            committed: acc.committed + Number(curr.committedAmount),
-            spent: acc.spent + Number(curr.spentAmount),
+            allocated: acc.allocated + (Number(curr.allocatedAmount) || 0),
+            committed: acc.committed + (Number(curr.committedAmount) || 0),
+            spent: acc.spent + (Number(curr.spentAmount) || 0),
         }), { allocated: 0, committed: 0, spent: 0 });
     }, [filteredAllocations]);
 
@@ -137,7 +137,7 @@ export default function SpendTrackingPage() {
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 {/* Donut Chart Card */}
-                <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                     <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                         <h4 className="text-xs font-black uppercase tracking-widest text-[#000000] leading-none">Phân Bổ Ngân Sách</h4>
                     </div>
@@ -156,7 +156,7 @@ export default function SpendTrackingPage() {
                 </div>
 
                 {/* Bar Chart Card with Pagination */}
-                <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                     <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex items-center justify-between">
                         <h4 className="text-xs font-black uppercase tracking-widest text-[#000000] leading-none">Chi Tiêu Theo Cost Center</h4>
                         {filteredAllocations.length > 5 && (
@@ -185,7 +185,7 @@ export default function SpendTrackingPage() {
             </div>
 
             {/* Allocation Table Detail */}
-            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#FFFFFF]">
                     <h4 className="text-xs font-black uppercase tracking-widest text-[#000000] leading-none">Chi tiết phân bổ ngân sách</h4>
                     <button className="flex items-center gap-2 text-[#000000] hover:text-[#2563EB] transition-colors">
@@ -216,7 +216,7 @@ export default function SpendTrackingPage() {
                                     <tr key={alloc.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
                                         <td className="py-5 px-6">
                                             <div className="flex items-center gap-3">
-                                                <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-[#000000] group-hover:scale-110 transition-transform">
+                                                <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                                                     <Building size={14} />
                                                 </div>
                                                 <div className="flex flex-col">
@@ -270,7 +270,7 @@ export default function SpendTrackingPage() {
                                         onClick={() => setCurrentPage(page)}
                                         className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
                                             currentPage === page
-                                                ? 'bg-[#2563EB] text-[#000000]'
+                                                ? 'bg-[#2563EB] text-white'
                                                 : 'bg-[#F1F5F9] text-[#000000] hover:text-[#000000] hover:bg-[#0F172A]'
                                         }`}
                                     >

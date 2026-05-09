@@ -133,7 +133,7 @@ export default function SupplierPO() {
                         <div className="flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-widest text-[#000000]">
                             PO Mới <span className="text-black font-bold ml-1">{po.createdAt}</span>
                         </div>
-                        <h1 className="text-3xl font-black text-[#000000] tracking-tight">Đơn hàng mới</h1>
+                        <h1 className="text-3xl font-black text-[#0F172A] tracking-tight">Đơn hàng mới</h1>
                         <p className="text-sm font-bold text-[#000000] mt-1">Hợp đồng mua bán từ ProcurePro</p>
                     </div>
                     {/* Action Banner (6.3 Spec) */}
@@ -162,7 +162,7 @@ export default function SupplierPO() {
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                     {/* Cột trái: PO Document Info */}
                     <div className="xl:col-span-2 space-y-6">
-                        <div className="bg-[#F1F5F9] rounded-3xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] min-h-[500px] flex flex-col p-0 overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] min-h-[500px] flex flex-col p-0 overflow-hidden">
                             <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] flex items-center gap-2">
                                     <FileText size={16}/> Purchase Order PDF
@@ -176,7 +176,7 @@ export default function SupplierPO() {
                                 {/* Mock PDF View */}
                                 <div className="bg-[#F1F5F9] mx-auto w-full max-w-2xl border border-[rgba(148,163,184,0.1)] shadow-sm p-10 mt-4 flex-1 relative">
                                     <div className="absolute top-10 right-10 p-2 border-2 border-rose-500 text-rose-500 font-bold uppercase tracking-widest -rotate-12 opacity-50">Confidential</div>
-                                    <h1 className="text-3xl font-black text-[#000000] mb-6 border-b-2 border-[rgba(148,163,184,0.1)] pb-4">PURCHASE ORDER</h1>
+                                    <h1 className="text-3xl font-black text-[#0F172A] mb-6 border-b-2 border-[rgba(148,163,184,0.1)] pb-4">PURCHASE ORDER</h1>
                                     <div className="flex justify-between text-sm mb-8 text-[#000000] font-sans">
                                         <div><strong className="text-[#000000]">TO:</strong> {po.vendor}<br/><strong className="text-[#000000]">ATTN:</strong> Account Manager</div>
                                         <div><strong className="text-[#000000]">DATE:</strong> {po.createdAt}</div>
@@ -198,7 +198,7 @@ export default function SupplierPO() {
 
                     {/* Cột phải: Timeline Cập nhật giao hàng (6.3) */}
                     <div className="space-y-6 flex flex-col">
-                        <div className="bg-[#F1F5F9] rounded-3xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
+                        <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
                             <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 border-b border-[rgba(148,163,184,0.1)] pb-2 flex items-center gap-2">
                                 <Clock size={16}/> Timeline Tiến độ Sản xuất/Nhập hàng
                             </h3>
@@ -223,26 +223,26 @@ export default function SupplierPO() {
                             <div className="mt-4 pt-4 border-t border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] p-4 rounded-xl relative">
                                 <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2">Thêm Log Progress:</label>
                                 <div className="flex gap-2">
-                                    <input type="text" className="w-full pl-4 pr-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#0F172A] transition-all" placeholder="Ví dụ: Lên chuyền sản xuất..." value={progressStatus} onChange={e => setProgressStatus(e.target.value)}/>
-                                    <button className="bg-[#2563EB] text-[#000000] p-2 rounded-xl hover:bg-[#1D4ED8] transition-colors"><Send size={16}/></button>
+                                    <input type="text" className="w-full pl-4 pr-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#0F172A] transition-all" placeholder="Ví dụ: Lên chuyền sản xuất..." value={progressStatus} onChange={e => setProgressStatus(e.target.value)}/>
+                                    <button className="bg-[#2563EB] text-white p-2 rounded-xl hover:bg-[#1D4ED8] transition-colors"><Send size={16}/></button>
                                 </div>
                                 <p className="text-[9px] text-[#000000] mt-2 font-medium">Buyer sẽ nhận Notification khi bạn cập nhật Status này.</p>
                             </div>
                         </div>
 
                         {/* Chuẩn bị Giao - Tạo Vận Đơn (6.3) */}
-                        <div className={`bg-[#F1F5F9] rounded-3xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex-1 ${!isConfirmed ? 'opacity-50 pointer-events-none filter grayscale' : 'border-[#2563EB]/30'}`}>
+                        <div className={`bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex-1 ${!isConfirmed ? 'opacity-50 pointer-events-none filter grayscale' : 'border-[#2563EB]/30'}`}>
                             <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 border-b border-[rgba(148,163,184,0.1)] pb-2 flex items-center gap-2">
                                 <Truck size={16}/> Lệnh Giao Hàng (ASN / DO)
                             </h3>
                             <div className="space-y-4 text-xs font-medium text-[#000000]">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-1">Số Vận Đơn (Mã DO NCC)</label>
-                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#2563EB] font-bold placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" placeholder="DO-2026-###"/>
+                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#2563EB] font-bold placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" placeholder="DO-2026-###"/>
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-1">Bên Vận Chuyển / Biển số Xe</label>
-                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" placeholder="Biển số 51C-12345"/>
+                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" placeholder="Biển số 51C-12345"/>
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-1">Upload Packing List + Giấy kiểm xưởng (COA)</label>
@@ -250,7 +250,7 @@ export default function SupplierPO() {
                                         Tải file lên
                                     </div>
                                 </div>
-                                <button onClick={handleShip} className="w-full mt-4 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] shadow-xl shadow-[#2563EB]/20 uppercase tracking-widest text-[10px] font-black rounded-xl transition-colors flex items-center gap-2 justify-center">
+                                <button onClick={handleShip} className="w-full mt-4 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-xl shadow-[#2563EB]/20 uppercase tracking-widest text-[10px] font-black rounded-xl transition-colors flex items-center gap-2 justify-center">
                                     <Truck size={14}/> Notify Shipped (Báo Giao)
                                 </button>
                             </div>
@@ -264,12 +264,12 @@ export default function SupplierPO() {
     return (
         <main className="pt-16 px-8 pb-12 bg-[#FFFFFF] min-h-screen text-[#000000]">
             <div className="mt-8 mb-4 flex justify-between items-center">
-                <h1 className="text-3xl font-black text-[#000000] tracking-tight">Hợp đồng mua bán từ Buyer</h1>
+                <h1 className="text-3xl font-black text-[#0F172A] tracking-tight">Hợp đồng mua bán từ Buyer</h1>
                 <div className="flex gap-2 items-center">
                     <span className="text-xs text-[#000000]">Tổng PO: {pos.length} | PO của bạn: {supplierPOs.length}</span>
                     <button 
                         onClick={() => setShowAll(!showAll)} 
-                        className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl ${showAll ? 'bg-[#2563EB] text-[#000000]' : 'bg-[#F1F5F9] text-[#000000] border border-[rgba(148,163,184,0.1)]'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl ${showAll ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-[#000000] border border-[rgba(148,163,184,0.1)]'}`}
                     >
                         {showAll ? 'Chỉ hiện PO của tôi' : 'Hiện tất cả PO'}
                     </button>
@@ -288,11 +288,11 @@ export default function SupplierPO() {
                         value={poIdInput}
                         onChange={(e) => setPoIdInput(e.target.value)}
                         placeholder="Nhập PO ID..."
-                        className="flex-1 px-3 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg text-sm text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30"
+                        className="flex-1 px-3 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg text-sm text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30"
                     />
                     <button 
                         onClick={handleCheckPO}
-                        className="px-4 py-2 bg-[#2563EB] text-[#000000] text-xs font-bold uppercase rounded-lg hover:bg-[#1D4ED8] transition-colors"
+                        className="px-4 py-2 bg-[#2563EB] text-white text-xs font-bold uppercase rounded-lg hover:bg-[#1D4ED8] transition-colors"
                     >
                         Kiểm tra
                     </button>
@@ -309,7 +309,7 @@ export default function SupplierPO() {
                 )}
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-3xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
+            <div className="bg-[#F1F5F9] rounded-xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
                 <table className="erp-table text-xs w-full" style={{ tableLayout: 'fixed' }}>
                     <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
                         <tr className="text-[10px] font-black uppercase tracking-widest text-[#000000]">
@@ -443,7 +443,7 @@ export default function SupplierPO() {
                         {/* Header */}
                         <div className="flex justify-between items-center p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] rounded-t-2xl">
                             <div>
-                                <h2 className="text-xl font-black text-[#000000] tracking-tight">Chi tiết Purchase Order</h2>
+                                <h2 className="text-xl font-black text-[#0F172A] tracking-tight">Chi tiết Purchase Order</h2>
                                 <p className="text-sm text-[#000000]">Chi tiết đơn hàng</p>
                             </div>
                             <button 
@@ -470,7 +470,7 @@ export default function SupplierPO() {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-sm font-bold text-[#000000]">Tổng tiền:</p>
-                                    <p className="text-2xl font-black text-[#000000]">{Number(selectedPO.totalAmount || selectedPO.total || 0).toLocaleString()} ₫</p>
+                                    <p className="text-2xl font-black text-[#0F172A]">{Number(selectedPO.totalAmount || selectedPO.total || 0).toLocaleString()} ₫</p>
                                 </div>
                             </div>
 
@@ -549,7 +549,7 @@ export default function SupplierPO() {
                                     <>
                                         <button 
                                             onClick={handleShipModal}
-                                            className="px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-[#2563EB]/20"
+                                            className="px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-[#2563EB]/20"
                                         >
                                             <Truck size={14}/> Báo Giao Hàng
                                         </button>

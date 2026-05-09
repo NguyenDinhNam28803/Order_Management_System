@@ -34,8 +34,8 @@ function buildSigRef(): string {
     return `SIG-${year}-${mm}${dd}-${suffix}`;
 }
 
-function fmtCurrency(value: number, currency: string) {
-    return `${Number(value).toLocaleString("vi-VN")} ${currency}`;
+function fmtCurrency(value: number | string | null | undefined, currency: string) {
+    return `${(Number(value) || 0).toLocaleString("vi-VN")} ${currency}`;
 }
 
 function fmtDate(s?: string) {

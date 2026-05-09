@@ -76,7 +76,7 @@ export default function FinanceMatching() {
                         <div className="flex items-center gap-2 mb-1 text-[10px] font-black uppercase text-[#000000] tracking-widest">
                             Nhà CC: {invoice?.vendor?.length && invoice.vendor.length > 16 ? "Supplier-***" : (invoice?.vendor || "N/A")} <span className="text-[#2563EB] bg-[#2563EB]/10 px-2 rounded ml-2 border border-[#2563EB]/20">Payment: Net 30</span>
                         </div>
-                        <h1 className="text-3xl font-black text-[#000000] tracking-tight flex items-center gap-4">
+                        <h1 className="text-3xl font-black text-[#0F172A] tracking-tight flex items-center gap-4">
                             Hóa Đơn ***
                             {isException ? (
                                 <span className="text-[12px] uppercase font-black tracking-widest text-black bg-rose-500/10 px-4 py-1.5 border border-rose-500/20 rounded-full shadow-sm flex items-center gap-1">
@@ -156,15 +156,15 @@ export default function FinanceMatching() {
                     <div className="p-6 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] flex justify-end gap-12">
                         <div className="text-right space-y-2">
                             <p className="text-[10px] font-black uppercase text-[#000000] tracking-widest">Tổng trước thuế</p>
-                            <p className="text-xl font-black text-[#000000]">{subTotal.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
+                            <p className="text-xl font-black text-[#0F172A]">{subTotal.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
                         </div>
                         <div className="text-right space-y-2">
                             <p className="text-[10px] font-black uppercase text-[#000000] tracking-widest">Thuế GTGT (10%)</p>
-                            <p className="text-xl font-black text-[#000000]">{vat.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
+                            <p className="text-xl font-black text-[#0F172A]">{vat.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
                         </div>
                         <div className="text-right space-y-2">
                             <p className="text-[10px] font-black uppercase text-[#2563EB] tracking-widest border-b border-[#2563EB]/30 pb-1 mb-1 inline-block">Tổng Yêu Cầu T/T (Invoice)</p>
-                            <p className="text-3xl font-black text-[#000000]">{(subTotal + vat).toLocaleString()} <span className="text-xs">VNĐ</span></p>
+                            <p className="text-3xl font-black text-[#0F172A]">{(subTotal + vat).toLocaleString()} <span className="text-xs">VNĐ</span></p>
                         </div>
                     </div>
                 </div>
@@ -188,7 +188,7 @@ export default function FinanceMatching() {
                                 </div>
                                 <div className="mt-4">
                                     <label className="text-[10px] font-black uppercase text-black tracking-widest mb-2 block">Feedback gửi NCC & Manager (Ghi chú)</label>
-                                    <textarea className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 text-xs text-[#000000] placeholder:text-[#000000] min-h-25 focus:outline-none focus:border-rose-500/30" placeholder="Lý do Reject / Credit Note..." value={note} onChange={e=>setNote(e.target.value)}></textarea>
+                                    <textarea className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 text-xs text-[#000000] placeholder:text-[#94A3B8] min-h-25 focus:outline-none focus:border-rose-500/30" placeholder="Lý do Reject / Credit Note..." value={note} onChange={e=>setNote(e.target.value)}></textarea>
                                 </div>
                             </div>
                             <div className="mt-6 flex justify-end gap-4">
@@ -246,7 +246,7 @@ export default function FinanceMatching() {
                              </div>
                              
                              <div className="pt-6 mt-4 border-t border-[rgba(148,163,184,0.1)]">
-                                 <button onClick={handleApprove} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-8 py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-lg shadow-[#2563EB]/20 transition-all flex justify-center items-center gap-2">
+                                 <button onClick={handleApprove} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-lg shadow-[#2563EB]/20 transition-all flex justify-center items-center gap-2">
                                      Phê Duyệt Lệnh Thanh Toán
                                  </button>
                                  <p className="text-[9px] text-center font-bold text-[#000000] mt-3 px-8">Hành động này sẽ Schedule chứng từ vào hàng chờ chạy Bank. Require Manager OTP Approval.</p>

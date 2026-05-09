@@ -26,7 +26,7 @@ export default function ApprovalHistoryPage() {
             </header>
 
             {/* Filter Bar */}
-            <div className="bg-[#F1F5F9] p-6 rounded-[32px] border border-[rgba(148,163,184,0.1)] mb-8 shadow-2xl shadow-[#2563EB]/5 flex flex-wrap gap-6 items-end">
+            <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] mb-8 shadow-2xl shadow-[#2563EB]/5 flex flex-wrap gap-6 items-end">
                 <div className="flex-1 min-w-[200px]">
                     <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] mb-3 leading-none">Loại chứng từ</label>
                     <div className="relative">
@@ -57,7 +57,7 @@ export default function ApprovalHistoryPage() {
             </div>
 
             {/* History Table */}
-            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5 mb-8">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5 mb-8">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">

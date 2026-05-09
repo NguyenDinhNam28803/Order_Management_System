@@ -167,13 +167,13 @@ export default function BudgetPlanningPage() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
             <header className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight uppercase">LẬP NGÂN SÁCH PHÒNG BAN</h1>
-                    <p className="text-sm text-[#000000] mt-1 font-medium italic">CẤU HÌNH PHÂN BỔ NGÂN SÁCH CHI TIẾT</p>
+                    <h1 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">LẬP NGÂN SÁCH PHÒNG BAN</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-medium italic">CẤU HÌNH PHÂN BỔ NGÂN SÁCH CHI TIẾT</p>
                 </div>
 
                 <button
                     onClick={() => setShowModal(true)}
-                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-lg font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm Phân Bổ
                 </button>
@@ -181,17 +181,17 @@ export default function BudgetPlanningPage() {
 
             {/* Stats Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div className="bg-[#F1F5F9] p-6 rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
+                <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
                     <p className="text-[10px] font-black uppercase text-[#000000] mb-2">Tổng yêu cầu</p>
-                    <p className="text-2xl font-black text-[#000000]">{myAllocations.length} Bản ghi</p>
+                    <p className="text-2xl font-black text-[#0F172A]">{myAllocations.length} Bản ghi</p>
                 </div>
-                <div className="bg-[#F1F5F9] p-6 rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
+                <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
                     <p className="text-[10px] font-black uppercase text-[#000000] mb-2">Tổng tiền dự kiến</p>
                     <p className="text-2xl font-black text-black">
                         {formatVND(myAllocations.reduce((s, a) => s + Number(a.allocatedAmount), 0))}
                     </p>
                 </div>
-                <div className="bg-[#F1F5F9] p-6 rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
+                <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
                     <p className="text-[10px] font-black uppercase text-[#000000] mb-2">Trạng thái phê duyệt</p>
                     <div className="flex items-center gap-2">
                         <span className="h-2 w-2 rounded-full bg-[#2563EB] animate-pulse" />
@@ -201,7 +201,7 @@ export default function BudgetPlanningPage() {
             </div>
 
             {/* Allocation List */}
-            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
@@ -251,7 +251,7 @@ export default function BudgetPlanningPage() {
                                             {alloc.status === 'DRAFT' && (
                                                 <button 
                                                     onClick={(e) => { e.stopPropagation(); submitAllocation(alloc.id); }}
-                                                    className="p-3 bg-[#2563EB] text-[#000000] rounded-xl hover:bg-[#1D4ED8] hover:scale-105 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-[#2563EB]/20"
+                                                    className="p-3 bg-[#2563EB] text-white rounded-xl hover:bg-[#1D4ED8] hover:scale-105 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-[#2563EB]/20"
                                                 >
                                                     GỬI DUYỆT
                                                 </button>
@@ -286,7 +286,7 @@ export default function BudgetPlanningPage() {
                             <div className="h-16 w-16 bg-[#2563EB]/10 rounded-[1.5rem] flex items-center justify-center mb-5 border border-[#2563EB]/20 shadow-lg shadow-[#2563EB]/10">
                                 <Calculator size={32} className="text-[#2563EB]" />
                             </div>
-                            <h2 className="text-3xl font-black text-[#000000] tracking-tight uppercase leading-none mb-2">TẠO NGÂN SÁCH MỚI</h2>
+                            <h2 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase leading-none mb-2">TẠO NGÂN SÁCH MỚI</h2>
                             <p className="text-[#000000] font-bold uppercase tracking-widest text-[10px]">
                                 Phòng ban: {currentUser?.department && typeof currentUser.department !== "string" ? currentUser.department.name : currentUser?.deptId}
                             </p>
@@ -339,7 +339,7 @@ export default function BudgetPlanningPage() {
                                             value={formData.allocatedAmount}
                                             onChange={(e) => setFormData({...formData, allocatedAmount: e.target.value.replace(/\D/g, "")})}
                                             onBlur={(e) => setFormData({...formData, allocatedAmount: formatVND(parseMoney(e.target.value)).replace(" ₫", "").trim()})}
-                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-[1.5rem] py-4 pl-14 pr-6 text-2xl font-black text-[#000000] outline-none transition-all focus:border-[#2563EB]/30 focus:bg-[#F1F5F9]"
+                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-[1.5rem] py-4 pl-14 pr-6 text-2xl font-black text-[#0F172A] outline-none transition-all focus:border-[#2563EB]/30 focus:bg-[#F1F5F9]"
                                             placeholder="0"
                                         />
                                     </div>
@@ -369,7 +369,7 @@ export default function BudgetPlanningPage() {
                                     value={formData.notes}
                                     onChange={(e) => setFormData({...formData, notes: e.target.value})}
                                     placeholder="Giải trình chi tiết về nhu cầu ngân sách này..."
-                                    className="w-full h-28 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-[1.5rem] p-6 text-sm font-bold text-[#000000] outline-none transition-all focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] resize-none placeholder:text-[#000000]"
+                                    className="w-full h-28 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-[1.5rem] p-6 text-sm font-bold text-[#000000] outline-none transition-all focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] resize-none placeholder:text-[#94A3B8]"
                                 />
                             </div>
 
@@ -377,7 +377,7 @@ export default function BudgetPlanningPage() {
                                 <button
                                     type="button"
                                     onClick={(e) => handleSubmit(e, "DRAFT")}
-                                    className="flex-1 py-4 rounded-[20px] border border-[rgba(148,163,184,0.1)] text-[#000000] font-black uppercase tracking-widest text-[11px] hover:bg-[#F1F5F9] transition-all flex items-center justify-center gap-3 active:scale-95"
+                                    className="flex-1 py-4 rounded-lg border border-[rgba(148,163,184,0.1)] text-[#000000] font-black uppercase tracking-widest text-[11px] hover:bg-[#F1F5F9] transition-all flex items-center justify-center gap-3 active:scale-95"
                                 >
                                     <Save size={18} />
                                     Lưu bản nháp
@@ -385,7 +385,7 @@ export default function BudgetPlanningPage() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="flex-[2] py-4 rounded-[20px] bg-[#2563EB] text-[#000000] font-black uppercase tracking-widest text-xs shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
+                                    className="flex-[2] py-4 rounded-lg bg-[#2563EB] text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
                                 >
                                     {isSubmitting ? (
                                         <Loader2 size={20} className="animate-spin" />

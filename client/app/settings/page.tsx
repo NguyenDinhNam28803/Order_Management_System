@@ -7,7 +7,7 @@ export default function SettingsPage() {
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
             <div className="mt-8 mb-12">
-                <h1 className="text-2xl font-black text-[#000000] tracking-tight">Cài đặt hệ thống</h1>
+                <h1 className="text-2xl font-black text-[#0F172A] tracking-tight">Cài đặt hệ thống</h1>
                 <p className="text-sm text-text-secondary mt-1">Cấu hình tham số nghiệp vụ và bảo mật toàn hệ thống.</p>
             </div>
 
@@ -53,7 +53,7 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="pt-8 flex justify-end">
-                                <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-8 py-3 rounded-xl font-bold shadow-lg shadow-[#2563EB]/20 transition-colors">
+                                <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-[#2563EB]/20 transition-colors">
                                     <Save size={18} /> Lưu thay đổi
                                 </button>
                             </div>

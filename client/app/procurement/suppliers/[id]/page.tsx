@@ -269,7 +269,7 @@ export default function ProcurementSupplierDetailPage() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-3 mb-1">
-                                    <h1 className="text-2xl font-black text-[#000000]">{supplier.name}</h1>
+                                    <h1 className="text-2xl font-black text-[#0F172A]">{supplier.name}</h1>
                                     <span className={`px-3 py-1 rounded-full text-xs font-black uppercase border ${getTierColor(latestKPI?.tier)}`}>
                                         {latestKPI?.tier || "Chưa đánh giá"}
                                     </span>
@@ -297,7 +297,7 @@ export default function ProcurementSupplierDetailPage() {
                             <button
                                 onClick={handleEvaluate}
                                 disabled={evaluating}
-                                className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-6 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50"
+                                className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-6 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50"
                             >
                                 {evaluating ? (
                                     <Loader2 size={18} className="animate-spin" />
@@ -632,7 +632,7 @@ export default function ProcurementSupplierDetailPage() {
                                     <ShoppingBag size={16} className="text-black" />
                                 </div>
                                 <div>
-                                    <p className="text-xl font-black text-[#000000]">{supplierPOs.length}</p>
+                                    <p className="text-xl font-black text-[#0F172A]">{supplierPOs.length}</p>
                                     <p className="text-xs text-[#000000]">Tổng PO</p>
                                 </div>
                             </div>
@@ -652,7 +652,7 @@ export default function ProcurementSupplierDetailPage() {
                                     <CheckCircle size={16} className="text-[#3B82F6]" />
                                 </div>
                                 <div>
-                                    <p className="text-xl font-black text-[#000000]">{latestKPI?.poCount || "0"}</p>
+                                    <p className="text-xl font-black text-[#0F172A]">{latestKPI?.poCount || "0"}</p>
                                     <p className="text-xs text-[#000000]">PO đã đánh giá</p>
                                 </div>
                             </div>
@@ -661,7 +661,7 @@ export default function ProcurementSupplierDetailPage() {
                                     <Shield size={16} className="text-black" />
                                 </div>
                                 <div>
-                                    <p className="text-xl font-black text-[#000000]">{kpiHistory.length}</p>
+                                    <p className="text-xl font-black text-[#0F172A]">{kpiHistory.length}</p>
                                     <p className="text-xs text-[#000000]">Số kỳ đánh giá</p>
                                 </div>
                             </div>
@@ -671,7 +671,7 @@ export default function ProcurementSupplierDetailPage() {
 
                 {activeTab === "kpi" && (
                     <div className="space-y-6">
-                        <h2 className="text-xl font-black text-[#000000] uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
+                        <h2 className="text-xl font-black text-[#0F172A] uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
                         
                         <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                             <table className="erp-table text-xs">
@@ -699,12 +699,12 @@ export default function ProcurementSupplierDetailPage() {
                                                 </span>
                                             </td>
                                             <td className={`px-6 py-4 text-center font-black ${getScoreColor(kpi.overallScore)}`}>
-                                                {kpi.overallScore?.toFixed(1)}%
+                                                {kpi.overallScore != null ? kpi.overallScore.toFixed(1) + '%' : '--'}
                                             </td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.otdScore?.toFixed(1)}%</td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.qualityScore?.toFixed(1)}%</td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.priceScore?.toFixed(1)}%</td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.manualScore?.toFixed(1)}%</td>
+                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.otdScore != null ? kpi.otdScore.toFixed(1) + '%' : '--'}</td>
+                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.qualityScore != null ? kpi.qualityScore.toFixed(1) + '%' : '--'}</td>
+                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.priceScore != null ? kpi.priceScore.toFixed(1) + '%' : '--'}</td>
+                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.manualScore != null ? kpi.manualScore.toFixed(1) + '%' : '--'}</td>
                                             <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.poCount}</td>
                                         </tr>
                                     ))}
@@ -725,7 +725,7 @@ export default function ProcurementSupplierDetailPage() {
                 {activeTab === "pos" && (
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-black text-[#000000] uppercase tracking-tight">
+                            <h2 className="text-xl font-black text-[#0F172A] uppercase tracking-tight">
                                 Danh sách PO ({supplierPOs.length})
                             </h2>
                             <Tooltip content={

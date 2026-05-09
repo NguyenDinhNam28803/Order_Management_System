@@ -108,7 +108,7 @@ export default function CreateGRN() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
             <div className="mt-8 mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4 flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight flex items-center gap-3">
+                    <h1 className="text-3xl font-black text-[#0F172A] tracking-tight flex items-center gap-3">
                         Goods Receipt Note (GRN) <span className="text-[10px] font-bold text-black bg-[#2563EB]/10 border border-[#2563EB]/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu Nhập & QC</span>
                     </h1>
                     <p className="text-sm text-[#000000] mt-1">Chọn PO đang chờ nhập kho bên dưới để bắt đầu đếm số lượng & kiểm định chất lượng.</p>
@@ -121,10 +121,10 @@ export default function CreateGRN() {
                     <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                         <label className="text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2 block">Lọc đơn mua hàng (PO)</label>
                         <div className="relative">
-                            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" />
+                            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                             <input
                                 type="text"
-                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-10 pr-4 py-3 font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all"
+                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-10 pr-4 py-3 font-bold text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all"
                                 placeholder="Tìm theo mã PO, nhà cung cấp..."
                                 value={poLookup}
                                 onChange={e => setPoLookup(e.target.value)}
@@ -188,7 +188,7 @@ export default function CreateGRN() {
                         <div className="absolute top-0 right-0 p-4 opacity-5"><Package size={150} /></div>
                         <div>
                             <div className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-1">Incoming Shipment</div>
-                            <h2 className="text-2xl font-black text-[#000000]">Đơn hàng nhập kho</h2>
+                            <h2 className="text-2xl font-black text-[#0F172A]">Đơn hàng nhập kho</h2>
                             <p className="text-sm text-[#000000] font-medium">Bên giao: <span className="font-bold text-[#000000]">{activePO.supplier?.name || activePO.vendor || "—"}</span></p>
                         </div>
                         <div className="flex flex-col text-right mt-4 md:mt-0 relative z-10">
@@ -239,7 +239,7 @@ export default function CreateGRN() {
                                                     ) : <span className="text-black font-bold text-[10px]">Khớp</span>}
                                                 </td>
                                                 <td>
-                                                    <input type="text" className="w-full text-xs text-[#000000] bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded px-2 py-1 placeholder:text-[#000000] text-[#000000]" placeholder="Lý do lệch..." value={rData.note} onChange={e => handleRecvChange(item.id, 'note', e.target.value)} />
+                                                    <input type="text" className="w-full text-xs text-[#000000] bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded px-2 py-1 placeholder:text-[#94A3B8] text-[#000000]" placeholder="Lý do lệch..." value={rData.note} onChange={e => handleRecvChange(item.id, 'note', e.target.value)} />
                                                 </td>
                                             </tr>
                                         );
@@ -333,7 +333,7 @@ export default function CreateGRN() {
                                                                 </div>
                                                             </div>
                                                             <div>
-                                                                <input type="text" className="w-full text-xs text-[#000000] bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-3 py-2 placeholder:text-[#000000] text-[#000000]" placeholder="Ghi chú chi tiết cho bộ phận Thu Mua theo dõi..." />
+                                                                <input type="text" className="w-full text-xs text-[#000000] bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-3 py-2 placeholder:text-[#94A3B8] text-[#000000]" placeholder="Ghi chú chi tiết cho bộ phận Thu Mua theo dõi..." />
                                                             </div>
                                                         </div>
                                                     </div>

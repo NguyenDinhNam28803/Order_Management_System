@@ -43,7 +43,7 @@ export default function QuoteRequestPage() {
     const getStatusInfo = (status: QuoteRequestStatus) => {
         switch (status) {
             case QuoteRequestStatus.DRAFT:
-                return { label: "Nháp", color: "bg-[#0F172A] text-[#000000] border border-[rgba(148,163,184,0.1)]", icon: FileText };
+                return { label: "Nháp", color: "bg-[#0F172A] text-white border border-[rgba(148,163,184,0.1)]", icon: FileText };
             case QuoteRequestStatus.SUBMITTED:
                 return { label: "Đã gửi Thu mua", color: "bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20", icon: ClipboardList };
             case QuoteRequestStatus.PROCESSING:
@@ -51,7 +51,7 @@ export default function QuoteRequestPage() {
             case QuoteRequestStatus.COMPLETED:
                 return { label: "Đã có báo giá", color: "bg-emerald-500/10 text-black border border-emerald-500/20", icon: BadgeCheck };
             default:
-                return { label: status, color: "bg-[#0F172A] text-[#000000] border border-[rgba(148,163,184,0.1)]", icon: FileText };
+                return { label: status, color: "bg-[#0F172A] text-white border border-[rgba(148,163,184,0.1)]", icon: FileText };
         }
     };
 
@@ -65,7 +65,7 @@ export default function QuoteRequestPage() {
                 </div>
                 <Link 
                     href="/quote-requests/create"
-                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-5 py-2.5 rounded-xl font-bold hover:bg-[#1D4ED8] transition-all shadow-lg active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-5 py-2.5 rounded-xl font-bold hover:bg-[#1D4ED8] transition-all shadow-lg active:scale-95"
                 >
                     <Plus size={20} />
                     Tạo yêu cầu báo giá mới
@@ -76,11 +76,11 @@ export default function QuoteRequestPage() {
             <div className="flex flex-wrap items-center gap-4 bg-[#F1F5F9] p-4 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] justify-between">
                 <div className="flex items-center gap-3">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" size={18} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={18} />
                         <input 
                             type="text"
                             placeholder="Tìm kiếm báo giá..."
-                            className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-4 focus:ring-[#2563EB]/10 transition-all outline-none placeholder:text-[#000000] text-[#000000]"
+                            className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-4 focus:ring-[#2563EB]/10 transition-all outline-none placeholder:text-[#94A3B8] text-[#000000]"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -90,7 +90,7 @@ export default function QuoteRequestPage() {
                 <div className="flex items-center gap-2">
                     <button 
                         onClick={() => setStatusFilter("ALL")}
-                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === 'ALL' ? 'bg-[#2563EB] text-[#000000]' : 'bg-[#FFFFFF] text-[#000000] hover:bg-[#0F172A]'}`}
+                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === 'ALL' ? 'bg-[#2563EB] text-white' : 'bg-[#FFFFFF] text-[#000000] hover:bg-[#0F172A]'}`}
                     >
                         Tất cả
                     </button>
@@ -100,7 +100,7 @@ export default function QuoteRequestPage() {
                             <button 
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
-                                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === status ? 'bg-[#2563EB] text-[#000000]' : 'bg-[#FFFFFF] text-[#000000] hover:bg-[#0F172A]'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === status ? 'bg-[#2563EB] text-white' : 'bg-[#FFFFFF] text-[#000000] hover:bg-[#0F172A]'}`}
                             >
                                 {label}
                             </button>

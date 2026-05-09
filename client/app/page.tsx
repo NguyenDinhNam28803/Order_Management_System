@@ -106,25 +106,25 @@ export default function Dashboard() {
                             <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-[#000000] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
+                            <h1 className="text-lg font-black text-[#0F172A] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
                             <p className="text-xs text-[#000000]">{currentUser?.role} • {typeof currentUser?.department === 'object' ? (currentUser.department as { name: string })?.name : (currentUser?.department || 'Phòng ban')}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-[#000000] transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-white transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-4 py-2.5 bg-[#2563EB] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
+                                className="px-4 py-2.5 bg-[#2563EB] text-white rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
                             >
                                 + Tạo PR
                                 <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                                     <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
@@ -161,7 +161,7 @@ export default function Dashboard() {
                 </header>
 
                 {/* HÀNG 1 — Stats Cards with Reports/Spend Style */}
-                <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6 mb-6">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6 mb-6">
                     <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
                         <Activity size={14} className="text-[#2563EB]" /> Tổng quan hoạt động
                     </h3>
@@ -327,7 +327,7 @@ export default function Dashboard() {
                              <div className="p-8 space-y-4">
                                  {quoteRequests.length > 0 ? (
                                      [...quoteRequests].sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 3).map(qr => (
-                                         <div key={qr.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/20 transition-all group">
+                                         <div key={qr.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/20 transition-all group">
                                              <div className="flex flex-col gap-1">
                                                  <div className="flex items-center gap-2">
                                                      <span className="text-[10px] font-black text-[#000000]">{qr.qrNumber}</span>
@@ -345,7 +345,7 @@ export default function Dashboard() {
                                                         const success = await createPRFromQuoteRequest(qr.id);
                                                         if (success) await refreshData();
                                                     }} 
-                                                    className="px-3 py-1.5 bg-[#2563EB] text-[#000000] rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-95 shadow-md shadow-[#2563EB]/10"
+                                                    className="px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-95 shadow-md shadow-[#2563EB]/10"
                                                   >
                                                     CHUYỂN SANG PR
                                                   </button>
@@ -397,7 +397,7 @@ export default function Dashboard() {
                     <div className={`p-4 rounded-2xl ${color} bg-opacity-10 ${color.replace('bg-', 'text-')}`}>
                         {icon}
                     </div>
-                    <div className="text-4xl font-black text-[#000000] tracking-tighter">{value}</div>
+                    <div className="text-4xl font-black text-[#0F172A] tracking-tighter">{value}</div>
                 </div>
                 <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000] leading-none">{title}</div>
             </div>
@@ -434,9 +434,9 @@ export default function Dashboard() {
         };
 
         return (
-            <div className="bg-[#FFFFFF] p-6 rounded-[32px] border border-[rgba(148,163,184,0.1)] flex items-center justify-between shadow-xl shadow-[#2563EB]/5 hover:-translate-y-1 transition-all duration-300 group">
+            <div className="bg-[#FFFFFF] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center justify-between shadow-xl shadow-[#2563EB]/5 hover:-translate-y-1 transition-all duration-300 group">
                 <div className="flex items-center gap-4">
-                    <div className="p-4 bg-[#2563EB]/10 text-[#2563EB] rounded-[20px] group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
+                    <div className="p-4 bg-[#2563EB]/10 text-[#2563EB] rounded-lg group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
                     <div>
                         <h4 className="text-xs font-black text-[#000000] uppercase mb-1">{qr.qrNumber} ĐÃ CÓ BÁO GIÁ</h4>
                         <p className="text-[10px] text-[#000000] font-bold uppercase tracking-tight opacity-70">Nhà cung cấp đã nộp giá. Chuyển sang PR để duyệt mua hàng.</p>
@@ -445,7 +445,7 @@ export default function Dashboard() {
                 <button 
                     onClick={handleConvert} 
                     disabled={isConverting}
-                    className="px-8 py-4 bg-[#2563EB] hover:bg-emerald-500 text-[#000000] text-[10px] font-black uppercase tracking-[0.1em] rounded-2xl shadow-xl shadow-[#2563EB]/20 transition-all flex items-center gap-2 disabled:opacity-50"
+                    className="px-8 py-4 bg-[#2563EB] hover:bg-emerald-500 text-white text-[10px] font-black uppercase tracking-[0.1em] rounded-2xl shadow-xl shadow-[#2563EB]/20 transition-all flex items-center gap-2 disabled:opacity-50"
                 >
                     {isConverting ? (
                         <Loader2 className="animate-spin" size={14} />
@@ -505,25 +505,25 @@ export default function Dashboard() {
                             <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-[#000000] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
+                            <h1 className="text-lg font-black text-[#0F172A] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
                             <p className="text-xs text-[#000000]">{currentUser?.role} • Tài chính Vĩ mô</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-[#000000] transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-white transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-4 py-2.5 bg-[#2563EB] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
+                                className="px-4 py-2.5 bg-[#2563EB] text-white rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
                             >
                                 + Tạo PR
                                 <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                                     <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
@@ -587,7 +587,7 @@ export default function Dashboard() {
                                 <Calendar size={20} className="text-[#2563EB]" />
                             </div>
                         </div>
-                        <div className="text-2xl font-black text-[#000000] mb-1">{formatVND(weeklyForecast)}</div>
+                        <div className="text-2xl font-black text-[#0F172A] mb-1">{formatVND(weeklyForecast)}</div>
                         <div className="text-sm font-bold text-[#2563EB]">{pendingPayments.length} PO đang chờ thanh toán</div>
                         <div className="text-[10px] text-[#000000] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Dự kiến thanh toán trong 7 ngày tới</div>
                     </div>
@@ -689,12 +689,12 @@ export default function Dashboard() {
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000]" size={14} />
-                            <input type="text" placeholder="Tìm kiếm chứng từ..." className="pl-10 pr-6 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-medium w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 transition-all text-[#000000] placeholder:text-[#000000]"/>
+                            <input type="text" placeholder="Tìm kiếm chứng từ..." className="pl-10 pr-6 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-medium w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 transition-all text-[#000000] placeholder:text-[#94A3B8]"/>
                         </div>
                         <button className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[9px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#0F172A] transition-all shadow-sm">
                             Lọc <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#2563EB] text-[#000000] rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-md shadow-[#2563EB]/20">
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-md shadow-[#2563EB]/20">
                             <Zap size={14} /> Xuất
                         </button>
                     </div>
@@ -741,7 +741,7 @@ export default function Dashboard() {
                                     <tr>
                                         <td colSpan={7} className="py-20 text-center text-[#000000] font-black uppercase text-[10px]">
                                             <div className="flex flex-col items-center gap-3">
-                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-[#000000]" /></div>
+                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-white" /></div>
                                                 Không có phiếu nào chờ duyệt
                                             </div>
                                         </td>
@@ -777,7 +777,7 @@ export default function Dashboard() {
                             <div className="h-2 w-2 rounded-full bg-[#2563EB] animate-pulse"></div>
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000]">Hệ thống Quản trị Chuỗi cung ứng</span>
                         </div>
-                        <h1 className="text-4xl font-black text-[#000000] tracking-tight">Trung tâm Quản lý Thu mua</h1>
+                        <h1 className="text-4xl font-black text-[#0F172A] tracking-tight">Trung tâm Quản lý Thu mua</h1>
                     </div>
                 </div>
 
@@ -852,15 +852,15 @@ export default function Dashboard() {
                                                     <td className="py-5 px-4 first:pl-6">
                                                         <div className="flex flex-col">
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-[11px] font-black text-[#000000] tracking-tight">{pr.prNumber}</span>
-                                                                {isSimulation && <span className="bg-[#2563EB] text-[#000000] text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse shadow-sm ring-2 ring-[#2563EB]/20">GIẢ LẬP</span>}
+                                                                <span className="text-[11px] font-black text-[#0F172A] tracking-tight">{pr.prNumber}</span>
+                                                                {isSimulation && <span className="bg-[#2563EB] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse shadow-sm ring-2 ring-[#2563EB]/20">GIẢ LẬP</span>}
                                                             </div>
                                                             <span className="text-[9px] font-bold text-[#000000] uppercase mt-1">{formatDate(pr.createdAt)}</span>
                                                         </div>
                                                     </td>
                                                     <td className="py-5 px-4">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-[#000000] group-hover:scale-110 transition-transform">
+                                                            <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                                                                 <FileText size={14} />
                                                             </div>
                                                             <div className="flex flex-col">
@@ -886,14 +886,14 @@ export default function Dashboard() {
                                                         {pr.type === "CATALOG" ? (
                                                             <button 
                                                                 onClick={() => setConfirmModal(pr)}
-                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#1D4ED8] text-[#000000] text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#8F442B] transition-all shadow-sm"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#1D4ED8] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#8F442B] transition-all shadow-sm"
                                                             >
                                                                 Xác nhận giá
                                                             </button>
                                                         ) : (
                                                             <Link 
                                                                 href={`/procurement/rfq/create?prId=${pr.id}`} 
-                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-[#000000] text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all shadow-sm"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all shadow-sm"
                                                             >
                                                                 Lấy Báo Giá
                                                             </Link>
@@ -927,7 +927,7 @@ export default function Dashboard() {
                                                         onClick={() => setCurrentPrPage(page)}
                                                         className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
                                                             currentPrPage === page
-                                                                ? 'bg-[#2563EB] text-[#000000]'
+                                                                ? 'bg-[#2563EB] text-white'
                                                                 : 'bg-[#F1F5F9] text-[#000000] hover:text-[#000000] hover:bg-[#0F172A]'
                                                         }`}
                                                     >
@@ -1021,7 +1021,7 @@ export default function Dashboard() {
                                                     <td className="text-right pl-2 pr-6">
                                                         <Link 
                                                             href={`/po/${po.id}`}
-                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-[#000000] text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all"
+                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all"
                                                         >
                                                             Chi tiết
                                                         </Link>
@@ -1060,25 +1060,25 @@ export default function Dashboard() {
                             <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-[#000000] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
+                            <h1 className="text-lg font-black text-[#0F172A] tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
                             <p className="text-xs text-[#000000]">{currentUser?.role} • {typeof currentUser?.department === 'object' ? (currentUser.department as { name: string })?.name : (currentUser?.department || 'Phòng ban')}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-[#000000] transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-white transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-4 py-2.5 bg-[#2563EB] text-[#000000] rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
+                                className="px-4 py-2.5 bg-[#2563EB] text-white rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
                             >
                                 + Tạo PR
                                 <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                                     <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
@@ -1124,7 +1124,7 @@ export default function Dashboard() {
                                 <FileText size={20} className="text-[#2563EB]" />
                             </div>
                         </div>
-                        <div className="text-3xl font-black text-[#000000] mb-1">{pendingPRCount}</div>
+                        <div className="text-3xl font-black text-[#0F172A] mb-1">{pendingPRCount}</div>
                         <div className="text-sm font-bold text-[#2563EB]">{formatVND(pendingPRValue)}</div>
                         <div className="text-[10px] text-[#000000] mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Tổng giá trị chờ phê duyệt</div>
                     </div>
@@ -1190,7 +1190,7 @@ export default function Dashboard() {
                                         <DollarSign size={16} className="text-[#2563EB]" />
                                     </div>
                                 </div>
-                                <div className="text-xl font-black text-[#000000]">
+                                <div className="text-xl font-black text-[#0F172A]">
                                     {deptAllocation ? formatVND(deptAllocation.allocatedAmount) : '---'}
                                 </div>
                                 <div className="text-[10px] text-[#000000] mt-1">Được phân bổ cho kỳ này</div>
@@ -1385,7 +1385,7 @@ export default function Dashboard() {
                 )}
 
                 {/* Search & Filter Toolbar */}
-                <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#F1F5F9] p-4 rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm">
                     <div className="flex items-center gap-4">
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-[#000000] flex items-center gap-2 px-4 border-r border-[rgba(148,163,184,0.1)]">
                             <FileText size={16} className="text-[#2563EB]" /> Queue Cần Duyệt Mới Nhất
@@ -1404,7 +1404,7 @@ export default function Dashboard() {
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm mã PR, người tạo..."
-                                className="pl-11 pr-6 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-xs font-bold w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-[#FFFFFF] transition-all text-[#000000] placeholder:text-[#000000]"
+                                className="pl-11 pr-6 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-xs font-bold w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-[#FFFFFF] transition-all text-[#000000] placeholder:text-[#94A3B8]"
                             />
                         </div>
                         <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#0F172A] transition-all shadow-sm">
@@ -1497,7 +1497,7 @@ export default function Dashboard() {
                                     <tr>
                                         <td colSpan={9} className="py-20 text-center text-[#000000] font-black uppercase tracking-widest text-[10px]">
                                             <div className="flex flex-col items-center gap-3">
-                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-[#000000]" /></div>
+                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-white" /></div>
                                                 Hiện tại không có phiếu nào cần bạn phê duyệt
                                             </div>
                                         </td>
@@ -1524,7 +1524,7 @@ export default function Dashboard() {
                             <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse"></div>
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#000000]">Hệ thống Quản trị Nhà cung cấp</span>
                         </div>
-                        <h1 className="text-4xl font-black text-[#000000] tracking-tight">Bảng điều khiển B2B</h1>
+                        <h1 className="text-4xl font-black text-[#0F172A] tracking-tight">Bảng điều khiển B2B</h1>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="text-right">
@@ -1569,7 +1569,7 @@ export default function Dashboard() {
                                             <td className="font-semibold text-[#000000]">ProcurePro Corp</td>
                                             <td className="text-right text-[#000000] font-bold">{formatDate(rfq.createdAt)}</td>
                                             <td className="text-right px-8 whitespace-nowrap">
-                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-[#2563EB] text-[#000000] text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-[#1D4ED8] transition-all">Báo giá</Link>
+                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-[#2563EB] text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-[#1D4ED8] transition-all">Báo giá</Link>
                                             </td>
                                         </tr>
                                     )) : (
@@ -1590,11 +1590,11 @@ export default function Dashboard() {
                                  <Zap size={100} />
                              </div>
                              <div className="relative z-10 space-y-6">
-                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-colors cursor-pointer">
+                                 <div className="p-6 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-colors cursor-pointer">
                                      <h4 className="text-xs font-black uppercase tracking-widest text-black mb-2">Cập nhật Chính sách Thanh toán</h4>
                                      <p className="text-[11px] text-[#000000] leading-relaxed font-medium">Hệ thống ProcurePro sẽ rút ngắn thời hạn thanh toán từ 45 ngày xuống còn 30 ngày cho các đối tác Gold.</p>
                                  </div>
-                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-colors cursor-pointer">
+                                 <div className="p-6 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-colors cursor-pointer">
                                      <h4 className="text-xs font-black uppercase tracking-widest text-black mb-2">Bảo trì Hệ thống B2B</h4>
                                      <p className="text-[11px] text-[#000000] leading-relaxed font-medium">Hệ thống sẽ bảo trì từ 2h00 đến 4h00 sáng Chủ Nhật tới. Vui lòng hoàn tất báo giá trước thời gian này.</p>
                                  </div>
@@ -1608,10 +1608,10 @@ export default function Dashboard() {
 
     const renderAdminDashboard = () => (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
-            <h1 className="text-3xl font-black text-[#000000] tracking-tight mb-8">Hệ thống Quản trị Tổng thể</h1>
+            <h1 className="text-3xl font-black text-[#0F172A] tracking-tight mb-8">Hệ thống Quản trị Tổng thể</h1>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
                 <div className="erp-card p-6! border-l-4 border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
-                    <div className="text-2xl font-black text-[#000000]">{formatVND(budgets?.allocated || 0)} ₫</div>
+                    <div className="text-2xl font-black text-[#0F172A]">{formatVND(budgets?.allocated || 0)} ₫</div>
                     <div className="mt-2 text-[10px] text-[#000000] font-bold">Ngân sách đã phân bổ</div>
                 </div>
             </div>
@@ -1649,7 +1649,7 @@ export default function Dashboard() {
                     <div className="bg-[#F1F5F9] rounded-[2rem] shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
                         <div className="flex justify-between items-center p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                             <div>
-                                <h2 className="text-2xl font-black text-[#000000] flex items-center gap-3 tracking-tighter">
+                                <h2 className="text-2xl font-black text-[#0F172A] flex items-center gap-3 tracking-tighter">
                                     <FileText size={24} className="text-[#2563EB]" />
                                     CHI TIẾT PHIẾU: <span className="text-[#2563EB]">{selectedPRDetails.prNumber || selectedPRDetails.id}</span>
                                 </h2>

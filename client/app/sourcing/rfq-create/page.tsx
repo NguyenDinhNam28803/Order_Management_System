@@ -118,16 +118,16 @@ export default function RFQCreatePage() {
                         <ArrowLeft size={20} />
                     </button>
                     <div>
-                        <h1 className="text-3xl font-black text-[#000000] tracking-tight flex items-center gap-3 uppercase">
+                        <h1 className="text-3xl font-black text-[#0F172A] tracking-tight flex items-center gap-3 uppercase">
                             Khởi tạo Báo giá (RFQ) Thủ công
                         </h1>
-                        <p className="text-sm text-[#000000] mt-1 font-bold">Lựa chọn các mặt hàng từ PR đã duyệt để yêu cầu NCC báo giá.</p>
+                        <p className="text-sm text-[#64748B] mt-1 font-medium">Lựa chọn các mặt hàng từ PR đã duyệt để yêu cầu NCC báo giá.</p>
                     </div>
                 </div>
                 <div className="flex gap-4">
                     <button onClick={() => router.back()} className="px-6 py-3 font-black text-[#000000] hover:text-[#000000] hover:bg-[#0F172A] rounded-xl text-xs uppercase tracking-widest transition-colors">Hủy bỏ</button>
                     <button 
-                        className="flex items-center gap-3 bg-[#2563EB] text-[#000000] py-4 px-8 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/30 hover:scale-105 active:scale-95 transition-all" 
+                        className="flex items-center gap-3 bg-[#2563EB] text-white py-4 px-8 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/30 hover:scale-105 active:scale-95 transition-all" 
                         onClick={handleSubmit} 
                         disabled={isSubmitting}
                     >
@@ -338,7 +338,7 @@ export default function RFQCreatePage() {
                             {approvedPRs.map((pr: PR) => (
                                 <div 
                                     key={pr.id} 
-                                    className="p-4 rounded-3xl border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group cursor-pointer bg-[#FFFFFF]/30"
+                                    className="p-4 rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group cursor-pointer bg-[#FFFFFF]/30"
                                     onClick={() => addPRItems(pr.id)}
                                 >
                                     <div className="flex justify-between items-start mb-2">

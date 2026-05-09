@@ -122,7 +122,7 @@ export default function FinanceBudgetApprovalPage() {
 
             {/* Dashboard Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-[#F1F5F9] rounded-3xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center justify-between">
+                <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-bold text-[#000000] mb-1">CẦN DUYỆT</p>
                         <h3 className="text-3xl font-black text-black">{submittedBudgets.length}</h3>
@@ -142,7 +142,7 @@ export default function FinanceBudgetApprovalPage() {
                     <input 
                         type="text" 
                         placeholder="Tìm theo phòng ban, trung tâm chi phí, danh mục..." 
-                        className="w-full pl-11 pr-4 py-3 bg-[#FFFFFF] border-none rounded-xl text-sm font-medium text-[#000000] placeholder:text-[#000000] focus:ring-0"
+                        className="w-full pl-11 pr-4 py-3 bg-[#FFFFFF] border-none rounded-xl text-sm font-medium text-[#000000] placeholder:text-[#94A3B8] focus:ring-0"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -151,11 +151,11 @@ export default function FinanceBudgetApprovalPage() {
 
             {/* List */}
             {filteredRequests.length === 0 ? (
-                 <div className="flex flex-col items-center justify-center bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-3xl p-16 text-center shadow-xl shadow-[#2563EB]/5">
+                 <div className="flex flex-col items-center justify-center bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-16 text-center shadow-xl shadow-[#2563EB]/5">
                     <div className="w-20 h-20 bg-emerald-500/10 text-black rounded-full flex items-center justify-center mb-6">
                         <CheckCircle2 size={40} />
                     </div>
-                    <h3 className="text-xl font-black text-[#000000] mb-2">Hoàn tất công việc!</h3>
+                    <h3 className="text-xl font-black text-[#0F172A] mb-2">Hoàn tất công việc!</h3>
                     <p className="text-[#000000] font-medium max-w-md">
                         Không còn yêu cầu phân bổ ngân sách nào đang chờ duyệt vào lúc này.
                     </p>
@@ -167,7 +167,7 @@ export default function FinanceBudgetApprovalPage() {
                         const dept = departments.find(d => d.id === cc?.deptId);
                         
                         return (
-                            <div key={req.id} className="group bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] p-6 shadow-xl shadow-[#2563EB]/5 hover:border-amber-400/20 transition-all duration-300">
+                            <div key={req.id} className="group bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] p-6 shadow-xl shadow-[#2563EB]/5 hover:border-amber-400/20 transition-all duration-300">
                                 <div className="flex justify-between items-start mb-6">
                                     <div className="flex gap-4 items-center">
                                         <div className="w-12 h-12 bg-[#2563EB]/10 rounded-2xl flex items-center justify-center text-[#2563EB] border border-[#2563EB]/20">
@@ -252,7 +252,7 @@ export default function FinanceBudgetApprovalPage() {
                 <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
                     <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={() => !isSubmitting && setActionType(null)} />
                     
-                    <div className="relative w-full max-w-lg bg-[#F1F5F9] rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
+                    <div className="relative w-full max-w-lg bg-[#F1F5F9] rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
                         <div className={`p-8 pb-10 ${actionType === "APPROVE" ? "bg-emerald-500/10" : "bg-rose-500/10"}`}>
                             <div className="w-16 h-16 rounded-2xl bg-[#F1F5F9] shadow-sm flex items-center justify-center mb-6 border border-[rgba(148,163,184,0.1)]">
                                 {actionType === "APPROVE" ? (
@@ -277,7 +277,7 @@ export default function FinanceBudgetApprovalPage() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-[#000000]">Lý do từ chối (Bắt buộc)</label>
                                     <textarea 
-                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] focus:border-rose-400/50 focus:ring-0 rounded-2xl p-4 min-h-[100px] text-sm font-medium text-[#000000] placeholder:text-[#000000]"
+                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] focus:border-rose-400/50 focus:ring-0 rounded-2xl p-4 min-h-[100px] text-sm font-medium text-[#000000] placeholder:text-[#94A3B8]"
                                         placeholder="Nhập lý do để Trưởng phòng có thể điều chỉnh lại..."
                                         value={rejectReason}
                                         onChange={e => setRejectReason(e.target.value)}

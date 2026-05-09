@@ -124,18 +124,18 @@ export default function UsersPage() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
             <div className="flex justify-between items-end mb-10">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight uppercase">Quản trị Nhân sự</h1>
-                    <p className="text-sm text-[#000000] mt-1 font-medium italic">TOÀN QUYỀN TRUY CẬP VÀ PHÂN QUYỀN HỆ THỐNG ERP</p>
+                    <h1 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">Quản trị Nhân sự</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-medium italic">TOÀN QUYỀN TRUY CẬP VÀ PHÂN QUYỀN HỆ THỐNG ERP</p>
                 </div>
                 <button 
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-lg font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <UserPlus size={18} /> Thêm nhân sự mới
                 </button>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="text-[10px] font-black text-[#000000] uppercase tracking-widest border-r border-[rgba(148,163,184,0.1)] pr-4">Danh mục nhân sự (Directory)</div>
@@ -199,13 +199,13 @@ export default function UsersPage() {
                         </div>
 
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" size={14} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={14} />
                             <input 
                                 type="text" 
                                 placeholder="Tìm kiếm tên, email..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#2563EB]/20 w-48 shadow-inner text-[#000000] placeholder:text-[#000000]"
+                                className="pl-10 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#2563EB]/20 w-48 shadow-inner text-[#000000] placeholder:text-[#94A3B8]"
                             />
                         </div>
                     </div>
@@ -304,7 +304,7 @@ export default function UsersPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
                     <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         <div className="p-10">
-                            <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
+                            <h2 className="text-2xl font-black text-[#0F172A] uppercase mb-2 tracking-tight">
                                 {editingUser ? "Cập nhật hồ sơ Nhân sự" : "Tạo tài khoản nhân viên mới"}
                             </h2>
                             <p className="text-xs text-[#000000] font-bold uppercase tracking-widest mb-10">QUẢN LÝ QUYỀN TRUY CẬP VÀ PHÂN BỔ PHÒNG BAN</p>
@@ -320,7 +320,7 @@ export default function UsersPage() {
                                             type="text" 
                                             placeholder="VD: Nguyễn Văn A"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#94A3B8] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -332,7 +332,7 @@ export default function UsersPage() {
                                             type="email" 
                                             placeholder="email@company.com"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#94A3B8] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
@@ -380,7 +380,7 @@ export default function UsersPage() {
                                             type="text" 
                                             placeholder="VD: Senior Developer"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#94A3B8] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -391,12 +391,12 @@ export default function UsersPage() {
                                             type="text" 
                                             placeholder="VD: EMP001"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#000000] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-[#94A3B8] text-[#000000] ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="flex items-center justify-between p-6 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                     <div>
                                         <div className="text-xs font-black text-[#000000] uppercase tracking-tight">Trạng thái tài khoản</div>
                                         <div className="text-[10px] text-[#000000] font-bold uppercase mt-1">Khóa hoặc kích hoạt quyền truy nhập hệ thống</div>
@@ -413,13 +413,13 @@ export default function UsersPage() {
                                     <button 
                                         type="button"
                                         onClick={() => setShowModal(false)}
-                                        className="flex-1 px-8 py-4 bg-[#FFFFFF] rounded-3xl font-black text-[#000000] uppercase tracking-widest hover:bg-[#0F172A] transition-colors"
+                                        className="flex-1 px-8 py-4 bg-[#FFFFFF] rounded-xl font-black text-[#000000] uppercase tracking-widest hover:bg-[#0F172A] transition-colors"
                                     >
                                         Bỏ qua
                                     </button>
                                     <button 
                                         type="submit"
-                                        className="flex-1 px-8 py-4 bg-[#2563EB] text-[#000000] rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-all"
+                                        className="flex-1 px-8 py-4 bg-[#2563EB] text-white rounded-xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-all"
                                     >
                                         {editingUser ? "Lưu cập nhật" : "Tạo tài khoản"}
                                     </button>

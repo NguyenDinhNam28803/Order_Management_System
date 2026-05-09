@@ -121,7 +121,7 @@ export default function ContractDetailPage() {
                             <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-1">
                                 MÃ HỢP ĐỒNG — <span className="font-mono text-[#2563EB]">#{contract.contractNumber}</span>
                             </p>
-                            <h1 className="text-xl font-black text-[#000000] leading-snug">{contract.title}</h1>
+                            <h1 className="text-xl font-black text-[#0F172A] leading-snug">{contract.title}</h1>
                             {contract.description && (
                                 <p className="text-sm text-[#000000] mt-1">{contract.description}</p>
                             )}
@@ -406,7 +406,7 @@ export default function ContractDetailPage() {
                             <textarea
                                 rows={3}
                                 placeholder="Nhập lý do chấm dứt hợp đồng..."
-                                className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.12)] rounded-xl text-sm text-[#000000] placeholder:text-[#000000] outline-none focus:border-[#2563EB]/50 resize-none transition-all"
+                                className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.12)] rounded-xl text-sm text-[#000000] placeholder:text-[#94A3B8] outline-none focus:border-[#2563EB]/50 resize-none transition-all"
                                 value={terminateReason}
                                 onChange={e => setTerminateReason(e.target.value)}
                             />

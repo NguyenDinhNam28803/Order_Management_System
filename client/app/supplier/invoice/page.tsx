@@ -158,7 +158,7 @@ export default function SupplierInvoice() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2">Số HĐ Điện Tử VAT</label>
-                                    <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/30" placeholder="VD: 0001234" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} />
+                                    <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30" placeholder="VD: 0001234" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} />
                                 </div>
                                 <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                                     <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2">Ký hiệu Mẫu số</label>
@@ -245,7 +245,7 @@ export default function SupplierInvoice() {
 
                         <div className="flex flex-col gap-1 text-right mb-6">
                             <span className="text-[10px] font-black uppercase tracking-widest text-[#2563EB] mb-1">Tổng Tiền THANH TOÁN YÊU CẦU</span>
-                            <span className="text-3xl font-black text-[#000000] tracking-tight">{totalAmount.toLocaleString()} <span className="text-sm">VND</span></span>
+                            <span className="text-3xl font-black text-[#0F172A] tracking-tight">{totalAmount.toLocaleString()} <span className="text-sm">VND</span></span>
                         </div>
                         
                         <div className="space-y-3 pt-6 border-t border-[rgba(148,163,184,0.1)]">
@@ -254,7 +254,7 @@ export default function SupplierInvoice() {
                                  <div className="text-[10px] font-black uppercase text-[#000000] mt-2">Upload XML Hóa Đơn Phạt Phụ Lục</div>
                              </div>
 
-                             <button onClick={handleSubmit} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#2563EB]/20 transition-all">
+                             <button onClick={handleSubmit} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#2563EB]/20 transition-all">
                                  <Send size={16}/> Submit cho AP Khách hàng
                              </button>
                         </div>

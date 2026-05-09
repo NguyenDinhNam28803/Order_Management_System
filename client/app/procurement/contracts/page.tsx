@@ -25,7 +25,7 @@ const STATUS_CFG: Record<string, { label: string; bg: string; text: string; bord
 function StatusBadge({ status }: { status: string }) {
     const c = STATUS_CFG[status] || STATUS_CFG.DRAFT;
     return (
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border ${c.bg} ${c.text} ${c.border}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-wider border ${c.bg} ${c.text} ${c.border}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
             {c.label}
         </span>
@@ -137,7 +137,7 @@ export default function ContractsPage() {
 
     // ── Render ────────────────────────────────────────────────────────────────
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#0F172A]">
 
             {/* ── Header ── */}
             <div className="mt-4 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -148,13 +148,13 @@ export default function ContractsPage() {
                         </div>
                         <h1 className="text-2xl font-black tracking-tight">Quản lý Hợp đồng</h1>
                     </div>
-                    <p className="text-sm text-[#000000] font-medium ml-11">
+                    <p className="text-sm text-[#64748B] font-medium ml-11">
                         Quản lý và theo dõi các thỏa thuận thu mua với nhà cung cấp
                     </p>
                 </div>
                 <button
                     onClick={openCreate}
-                    className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-[#2563EB]/20 transition-all"
+                    className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2.5 rounded-xl font-semibold text-xs uppercase tracking-wider shadow-lg shadow-[#2563EB]/20 transition-all"
                 >
                     <Plus size={16} /> Tạo hợp đồng mới
                 </button>
@@ -169,31 +169,31 @@ export default function ContractsPage() {
                     { label: "Hết hạn", value: stats.expired, icon: AlertCircle, color: "bg-orange-500/10 text-black" },
                     { label: "Tổng giá trị HĐ", value: `${(stats.totalValue / 1e6).toFixed(1)}M ₫`, icon: TrendingUp, color: "bg-purple-500/10 text-black" },
                 ].map(({ label, value, icon: Icon, color }) => (
-                    <div key={label} className="bg-[#F1F5F9] rounded-xl p-4 border border-[rgba(148,163,184,0.08)] flex items-center gap-3">
+                    <div key={label} className="bg-[#F1F5F9] rounded-xl p-4 border border-[#E2E8F0] flex items-center gap-3">
                         <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
                             <Icon size={18} />
                         </div>
                         <div className="min-w-0">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] truncate">{label}</p>
-                            <p className="text-lg font-black text-[#000000] truncate">{value}</p>
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#64748B] truncate">{label}</p>
+                            <p className="text-lg font-black text-[#0F172A] truncate">{value}</p>
                         </div>
                     </div>
                 ))}
             </div>
 
             {/* ── Toolbar ── */}
-            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] p-4 mb-6 flex flex-col md:flex-row gap-3">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[#E2E8F0] p-4 mb-6 flex flex-col md:flex-row gap-3">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" size={16} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={16} />
                     <input
                         type="text"
                         placeholder="Tìm số hợp đồng, tiêu đề, nhà cung cấp..."
-                        className="w-full pl-10 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-medium text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-[#2563EB]/50 transition-all"
+                        className="w-full pl-10 pr-4 py-2.5 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-sm font-medium text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/50 transition-all"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
                 </div>
-                <div className="flex gap-1 bg-[#FFFFFF] border border-[rgba(148,163,184,0.08)] rounded-xl p-1">
+                <div className="flex gap-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl p-1">
                     {[
                         { k: "ALL", l: "Tất cả" },
                         { k: "DRAFT", l: "Nháp" },
@@ -204,9 +204,9 @@ export default function ContractsPage() {
                         <button
                             key={k}
                             onClick={() => setStatus(k)}
-                            className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${statusFilter === k
-                                ? "bg-[#2563EB] text-[#000000] shadow"
-                                : "text-[#000000] hover:text-[#000000]"
+                            className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider whitespace-nowrap transition-all ${statusFilter === k
+                                ? "bg-[#2563EB] text-white shadow"
+                                : "text-[#0F172A] hover:text-[#2563EB]"
                                 }`}
                         >
                             {l}
@@ -216,12 +216,12 @@ export default function ContractsPage() {
             </div>
 
             {/* ── Table ── */}
-            <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[#E2E8F0] overflow-hidden">
                 {filtered.length === 0 ? (
-                    <div className="py-24 flex flex-col items-center gap-4 text-[#000000]">
+                    <div className="py-24 flex flex-col items-center gap-4 text-[#0F172A]">
                         <FileText size={40} className="opacity-20" />
                         <div className="text-center">
-                            <p className="font-bold text-[#000000] text-sm">Không có hợp đồng nào</p>
+                            <p className="font-bold text-[#0F172A] text-sm">Không có hợp đồng nào</p>
                             <p className="text-xs mt-1">
                                 {search || statusFilter !== "ALL"
                                     ? "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm"
@@ -233,9 +233,9 @@ export default function ContractsPage() {
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF]">
+                                <tr className="border-b border-[#E2E8F0] bg-[#FFFFFF]">
                                     {["Số hợp đồng", "Tiêu đề / Đối tác", "Giá trị", "Thời hạn", "Trạng thái", ""].map((h, i) => (
-                                        <th key={i} className={`px-5 py-4 text-[10px] font-black uppercase tracking-widest text-[#000000] ${i >= 5 ? "text-right" : "text-left"}`}>
+                                        <th key={i} className={`px-5 py-4 text-[10px] font-semibold uppercase tracking-widest text-[#0F172A] ${i >= 5 ? "text-right" : "text-left"}`}>
                                             {h}
                                         </th>
                                     ))}
@@ -268,8 +268,8 @@ export default function ContractsPage() {
 
                                             {/* Tiêu đề */}
                                             <td className="px-5 py-4 max-w-[220px]">
-                                                <p className="font-bold text-[#000000] truncate">{c.title}</p>
-                                                <div className="flex items-center gap-1 text-[11px] text-[#000000] mt-0.5">
+                                                <p className="font-bold text-[#0F172A] truncate">{c.title}</p>
+                                                <div className="flex items-center gap-1 text-[11px] text-[#0F172A] mt-0.5">
                                                     <Building2 size={11} />
                                                     <span className="truncate">{c.supplier?.name || "—"}</span>
                                                 </div>
@@ -277,28 +277,28 @@ export default function ContractsPage() {
 
                                             {/* Giá trị */}
                                             <td className="px-5 py-4">
-                                                <p className="font-black text-[#000000] tabular-nums">
+                                                <p className="font-black text-[#0F172A] tabular-nums">
                                                     {Number(c.totalValue || 0).toLocaleString("vi-VN")}
                                                 </p>
-                                                <p className="text-[10px] text-[#000000]">{c.currency}</p>
+                                                <p className="text-[10px] text-[#0F172A]">{c.currency}</p>
                                             </td>
 
                                             {/* Thời hạn */}
                                             <td className="px-5 py-4">
                                                 {c.startDate ? (
                                                     <div className="flex items-center gap-2 text-[11px]">
-                                                        <Calendar size={12} className="text-[#000000] flex-shrink-0" />
+                                                        <Calendar size={12} className="text-[#0F172A] flex-shrink-0" />
                                                         <div>
-                                                            <p className="text-[#000000] font-bold">
+                                                            <p className="text-[#0F172A] font-bold">
                                                                 {new Date(c.startDate).toLocaleDateString("vi-VN")}
                                                             </p>
-                                                            <p className="text-[#000000] flex items-center gap-1">
+                                                            <p className="text-[#0F172A] flex items-center gap-1">
                                                                 <ChevronRight size={10} />
                                                                 {c.endDate ? new Date(c.endDate).toLocaleDateString("vi-VN") : "—"}
                                                             </p>
                                                         </div>
                                                     </div>
-                                                ) : <span className="text-[#000000] italic text-xs">Chưa xác định</span>}
+                                                ) : <span className="text-[#0F172A] italic text-xs">Chưa xác định</span>}
                                             </td>
 
                                             {/* Trạng thái */}
@@ -318,7 +318,7 @@ export default function ContractsPage() {
                                                     {/* View */}
                                                     <Link
                                                         href={`/procurement/contracts/${c.id}`}
-                                                        className="p-2 rounded-lg text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 transition-all"
+                                                        className="p-2 rounded-lg text-[#0F172A] hover:text-[#2563EB] hover:bg-[#2563EB]/10 transition-all"
                                                         title="Xem chi tiết"
                                                     >
                                                         <Eye size={15} />
@@ -328,7 +328,7 @@ export default function ContractsPage() {
                                                     {canSign && (
                                                         <button
                                                             onClick={() => setSignTarget(c)}
-                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-black bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all"
+                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold text-black bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all"
                                                             title="Ký hợp đồng"
                                                         >
                                                             <PenTool size={12} /> Ký
@@ -339,7 +339,7 @@ export default function ContractsPage() {
                                                     {isDraft && (
                                                         <button
                                                             onClick={() => openApprove(c)}
-                                                            className="p-2 rounded-lg text-[#000000] hover:text-black hover:bg-amber-500/10 transition-all"
+                                                            className="p-2 rounded-lg text-[#0F172A] hover:text-black hover:bg-amber-500/10 transition-all"
                                                             title="Gửi phê duyệt"
                                                         >
                                                             <Send size={15} />
@@ -350,7 +350,7 @@ export default function ContractsPage() {
                                                     {isDraft && (
                                                         <button
                                                             onClick={() => openEdit(c)}
-                                                            className="p-2 rounded-lg text-[#000000] hover:text-black hover:bg-amber-500/10 transition-all"
+                                                            className="p-2 rounded-lg text-[#0F172A] hover:text-black hover:bg-amber-500/10 transition-all"
                                                             title="Chỉnh sửa"
                                                         >
                                                             <Pencil size={15} />
@@ -361,7 +361,7 @@ export default function ContractsPage() {
                                                     {isDraft && (
                                                         <button
                                                             onClick={() => openDelete(c.id)}
-                                                            className="p-2 rounded-lg text-[#000000] hover:text-black hover:bg-rose-500/10 transition-all"
+                                                            className="p-2 rounded-lg text-[#0F172A] hover:text-black hover:bg-rose-500/10 transition-all"
                                                             title="Xóa hợp đồng"
                                                         >
                                                             <Trash2 size={15} />
@@ -372,7 +372,7 @@ export default function ContractsPage() {
                                                     {isActive && (
                                                         <button
                                                             onClick={() => { setTerminate(c); setModal("terminate"); }}
-                                                            className="p-2 rounded-lg text-[#000000] hover:text-black hover:bg-rose-500/10 transition-all"
+                                                            className="p-2 rounded-lg text-[#0F172A] hover:text-black hover:bg-rose-500/10 transition-all"
                                                             title="Chấm dứt hợp đồng"
                                                         >
                                                             <Ban size={15} />
@@ -383,7 +383,7 @@ export default function ContractsPage() {
                                                     {c.status === "EXPIRED" && (
                                                         <button
                                                             onClick={() => openEdit(c)}
-                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-black bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 transition-all"
+                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold text-black bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 transition-all"
                                                             title="Gia hạn hợp đồng"
                                                         >
                                                             <RotateCcw size={12} /> Gia hạn
@@ -399,9 +399,9 @@ export default function ContractsPage() {
                     </div>
                 )}
                 {filtered.length > 0 && (
-                    <div className="px-5 py-3 border-t border-[rgba(148,163,184,0.08)] flex justify-between items-center">
-                        <p className="text-[11px] text-[#000000]">
-                            Hiển thị <span className="text-[#000000] font-bold">{filtered.length}</span> / {contracts.length} hợp đồng
+                    <div className="px-5 py-3 border-t border-[#E2E8F0] flex justify-between items-center">
+                        <p className="text-[11px] text-[#0F172A]">
+                            Hiển thị <span className="text-[#0F172A] font-bold">{filtered.length}</span> / {contracts.length} hợp đồng
                         </p>
                     </div>
                 )}
@@ -413,23 +413,23 @@ export default function ContractsPage() {
             {(modal === "create" || modal === "edit") && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-2xl bg-[#F1F5F9] rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] max-h-[90vh] flex flex-col pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-2xl bg-[#F1F5F9] rounded-xl border border-[#E2E8F0] shadow-[0_20px_50px_rgba(0,0,0,0.1)] max-h-[90vh] flex flex-col pointer-events-auto animate-in zoom-in-95 duration-200">
                         {/* Header */}
-                        <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-[2rem] flex items-center justify-between">
+                        <div className="px-8 py-6 border-b border-[#E2E8F0] bg-[#FFFFFF] rounded-t-[2rem] flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="w-11 h-11 rounded-2xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB]">
                                     <FileText size={20} />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-black text-[#000000] tracking-tight">
+                                    <h2 className="text-lg font-black text-[#0F172A] tracking-tight">
                                         {modal === "create" ? "Tạo hợp đồng mới" : "Chỉnh sửa hợp đồng"}
                                     </h2>
-                                    <p className="text-xs font-bold text-[#000000] opacity-60 uppercase tracking-widest">
+                                    <p className="text-xs font-bold text-[#0F172A] opacity-60 uppercase tracking-widest">
                                         {modal === "edit" ? `#${editing?.contractNumber}` : "Điền đầy đủ thông tin hợp đồng"}
                                     </p>
                                 </div>
                             </div>
-                            <button onClick={closeModal} className="w-10 h-10 flex items-center justify-center text-[#000000] hover:bg-[rgba(148,163,184,0.08)] rounded-xl transition-all">
+                            <button onClick={closeModal} className="w-10 h-10 flex items-center justify-center text-[#0F172A] hover:bg-[rgba(148,163,184,0.08)] rounded-xl transition-all">
                                 <X size={20} />
                             </button>
                         </div>
@@ -522,14 +522,14 @@ export default function ContractsPage() {
                         </div>
 
                         {/* Footer */}
-                        <div className="px-8 py-6 border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-b-[2rem] flex justify-end gap-3">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all">
+                        <div className="px-8 py-6 border-t border-[#E2E8F0] bg-[#FFFFFF] rounded-b-[2rem] flex justify-end gap-3">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[#E2E8F0] text-[#0F172A] font-bold text-sm hover:bg-[#0F172A] transition-all">
                                 Hủy
                             </button>
                             <button
                                 onClick={handleSave}
                                 disabled={saving || !formValid}
-                                className="px-5 py-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] font-black text-sm shadow-lg shadow-[#2563EB]/20 transition-all disabled:opacity-50"
+                                className="px-5 py-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-sm shadow-lg shadow-[#2563EB]/20 transition-all disabled:opacity-50"
                             >
                                 {saving ? "Đang lưu..." : modal === "create" ? "Tạo hợp đồng" : "Lưu thay đổi"}
                             </button>
@@ -542,26 +542,26 @@ export default function ContractsPage() {
             {modal === "delete" && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-[2rem] border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-xl border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-6">
                             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <Trash2 size={18} />
                             </div>
                             <div>
-                                <h3 className="font-black text-[#000000] mb-1">Xóa hợp đồng</h3>
-                                <p className="text-sm text-[#000000]">
+                                <h3 className="font-black text-[#0F172A] mb-1">Xóa hợp đồng</h3>
+                                <p className="text-sm text-[#0F172A]">
                                     Hành động này không thể hoàn tác. Hợp đồng và tất cả dữ liệu liên quan sẽ bị xóa vĩnh viễn.
                                 </p>
                             </div>
                         </div>
                         <div className="flex gap-3 justify-end">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[#E2E8F0] text-[#0F172A] font-bold text-sm hover:bg-[#0F172A] transition-all">
                                 Hủy
                             </button>
                             <button
                                 onClick={handleDelete}
                                 disabled={saving}
-                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-[#000000] font-black text-sm transition-all disabled:opacity-50"
+                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-semibold text-sm transition-all disabled:opacity-50"
                             >
                                 {saving ? "Đang xóa..." : "Xác nhận xóa"}
                             </button>
@@ -574,37 +574,37 @@ export default function ContractsPage() {
             {modal === "approve" && approveTarget && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-[2rem] border border-amber-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-xl border border-amber-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <ShieldCheck size={18} />
                             </div>
                             <div>
-                                <h3 className="font-black text-[#000000] mb-0.5">Gửi phê duyệt</h3>
-                                <p className="text-xs text-[#000000] font-mono">#{approveTarget.contractNumber}</p>
+                                <h3 className="font-black text-[#0F172A] mb-0.5">Gửi phê duyệt</h3>
+                                <p className="text-xs text-[#0F172A] font-mono">#{approveTarget.contractNumber}</p>
                             </div>
                         </div>
 
-                        <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.08)] mb-5 space-y-2">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Thông tin hợp đồng</p>
-                            <p className="text-sm font-bold text-[#000000]">{approveTarget.title}</p>
-                            <p className="text-xs text-[#000000]">
-                                Giá trị: <span className="text-[#000000] font-bold">{Number(approveTarget.totalValue || 0).toLocaleString("vi-VN")} {approveTarget.currency}</span>
+                        <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[#E2E8F0] mb-5 space-y-2">
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#64748B]">Thông tin hợp đồng</p>
+                            <p className="text-sm font-bold text-[#0F172A]">{approveTarget.title}</p>
+                            <p className="text-xs text-[#0F172A]">
+                                Giá trị: <span className="text-[#0F172A] font-bold">{Number(approveTarget.totalValue || 0).toLocaleString("vi-VN")} {approveTarget.currency}</span>
                             </p>
                         </div>
 
-                        <p className="text-xs text-[#000000] bg-amber-500/5 border border-amber-500/15 rounded-xl p-3 mb-5">
+                        <p className="text-xs text-[#0F172A] bg-amber-500/5 border border-amber-500/15 rounded-xl p-3 mb-5">
                             Hệ thống sẽ tự động chọn người duyệt theo <span className="text-black font-bold">quy tắc phê duyệt</span> của tổ chức. Hợp đồng sẽ chuyển sang trạng thái <span className="text-black font-bold">Chờ ký</span>.
                         </p>
 
                         <div className="flex gap-3 justify-end">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[#E2E8F0] text-[#0F172A] font-bold text-sm hover:bg-[#0F172A] transition-all">
                                 Hủy
                             </button>
                             <button
                                 onClick={handleApprove}
                                 disabled={saving}
-                                className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-[#000000] font-black text-sm transition-all disabled:opacity-50 flex items-center gap-2"
+                                className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-all disabled:opacity-50 flex items-center gap-2"
                             >
                                 <Send size={14} />
                                 {saving ? "Đang gửi..." : "Xác nhận gửi duyệt"}
@@ -618,19 +618,19 @@ export default function ContractsPage() {
             {modal === "terminate" && terminateTarget && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-[2rem] border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-xl border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <Ban size={18} />
                             </div>
                             <div>
-                                <h3 className="font-black text-[#000000] mb-0.5">Chấm dứt hợp đồng</h3>
-                                <p className="text-xs text-[#000000] font-mono">#{terminateTarget.contractNumber}</p>
+                                <h3 className="font-black text-[#0F172A] mb-0.5">Chấm dứt hợp đồng</h3>
+                                <p className="text-xs text-[#0F172A] font-mono">#{terminateTarget.contractNumber}</p>
                             </div>
                         </div>
 
                         <div className="mb-5">
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-[#000000] mb-2">
+                            <label className="block text-[10px] font-semibold uppercase tracking-widest text-[#0F172A] mb-2">
                                 Lý do chấm dứt *
                             </label>
                             <textarea
@@ -642,18 +642,18 @@ export default function ContractsPage() {
                             />
                         </div>
 
-                        <p className="text-xs text-[#000000] bg-[#FFFFFF] rounded-xl p-3 border border-[rgba(148,163,184,0.08)] mb-5">
+                        <p className="text-xs text-[#0F172A] bg-[#FFFFFF] rounded-xl p-3 border border-[#E2E8F0] mb-5">
                             Hành động này sẽ chuyển hợp đồng sang trạng thái <span className="text-black font-bold">Đã chấm dứt</span>. Lý do sẽ được ghi vào ghi chú hợp đồng.
                         </p>
 
                         <div className="flex gap-3 justify-end">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[#E2E8F0] text-[#0F172A] font-bold text-sm hover:bg-[#0F172A] transition-all">
                                 Hủy
                             </button>
                             <button
                                 onClick={handleTerminate}
                                 disabled={saving || !terminateReason.trim()}
-                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-[#000000] font-black text-sm transition-all disabled:opacity-50 flex items-center gap-2"
+                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-semibold text-sm transition-all disabled:opacity-50 flex items-center gap-2"
                             >
                                 <Ban size={14} />
                                 {saving ? "Đang xử lý..." : "Xác nhận chấm dứt"}
@@ -679,14 +679,14 @@ export default function ContractsPage() {
                     background: #FFFFFF;
                     border: 1px solid rgba(148,163,184,0.12);
                     border-radius: 0.75rem;
-                    color: #000000;
+                    color: #0F172A;
                     font-size: 0.875rem;
                     font-weight: 500;
                     outline: none;
                     transition: border-color 0.15s;
                 }
                 .modal-input:focus { border-color: rgba(59,130,246,0.5); }
-                .modal-input::placeholder { color: #000000; }
+                .modal-input::placeholder { color: #94A3B8; }
             `}</style>
         </main>
     );
@@ -696,7 +696,7 @@ export default function ContractsPage() {
 function FormField({ label, children, colSpan = 1 }: { label: string; children: React.ReactNode; colSpan?: number }) {
     return (
         <div className={colSpan === 2 ? "sm:col-span-2" : ""}>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-[#000000] mb-2">{label}</label>
+            <label className="block text-[10px] font-semibold uppercase tracking-widest text-[#0F172A] mb-2">{label}</label>
             {children}
         </div>
     );

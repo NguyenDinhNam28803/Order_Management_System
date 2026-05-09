@@ -253,7 +253,7 @@ export default function ProcurementSuppliersPage() {
                 </div>
 
                 {/* Filters */}
-                <div className="bg-[#F1F5F9] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 flex gap-3">
                             <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
@@ -263,7 +263,7 @@ export default function ProcurementSuppliersPage() {
                                 <input
                                     type="text"
                                     placeholder="Tìm kiếm nhà cung cấp..."
-                                    className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                    className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#94A3B8]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -480,14 +480,14 @@ export default function ProcurementSuppliersPage() {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => router.push(`/procurement/suppliers/${supplier.id}`)}
-                                        className="flex-1 bg-[#FFFFFF] hover:bg-[#0F172A] text-[#000000] hover:text-[#F8FAFC] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
+                                        className="flex-1 bg-[#FFFFFF] hover:bg-[#0F172A] text-white hover:text-[#F8FAFC] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
                                     >
                                         <Eye size={14} />
                                         Xem chi tiết
                                     </button>
                                     <button
                                         onClick={() => router.push(`/supplier/${supplier.id}/kpi-evaluation`)}
-                                        className="flex-1 bg-[#F1F5F9] hover:bg-[#0F172A] text-[#000000] hover:text-[#F8FAFC] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
+                                        className="flex-1 bg-[#F1F5F9] hover:bg-[#0F172A] text-white hover:text-[#F8FAFC] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
                                     >
                                         <BarChart3 size={14} />
                                         KPI
@@ -495,7 +495,7 @@ export default function ProcurementSuppliersPage() {
                                     <button
                                         onClick={() => handleEvaluate(supplier.id)}
                                         disabled={evaluatingId === supplier.id}
-                                        className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                        className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                     >
                                         {evaluatingId === supplier.id ? (
                                             <Loader2 size={14} className="animate-spin" />

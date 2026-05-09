@@ -309,14 +309,14 @@ export default function SupplierDashboard() {
       <nav className="flex flex-col gap-2">
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Pending"); }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:bg-[#0F172A] hover:text-[#000000]'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:bg-[#0F172A] hover:text-white'}`}
         >
           <LayoutDashboard size={20} />
           <span>Dashboard</span>
         </button>
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Quoted"); }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:bg-[#0F172A] hover:text-[#000000]'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:bg-[#0F172A] hover:text-white'}`}
         >
           <History size={20} />
           <span>Lịch sử báo giá</span>
@@ -351,19 +351,19 @@ export default function SupplierDashboard() {
           <div className="flex bg-[#F1F5F9] p-1.5 rounded-xl border border-[rgba(148,163,184,0.1)]">
           <button 
             onClick={() => setActiveTab("Pending")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:text-[#000000]'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:text-[#000000]'}`}
           >
             Chưa xử lý
           </button>
           <button 
             onClick={() => setActiveTab("CatalogConfirmation")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:text-[#000000]'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:text-[#000000]'}`}
           >
             Xác nhận giá Catalog
           </button>
           <button 
             onClick={() => setActiveTab("Quoted")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:text-[#000000]'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:text-[#000000]'}`}
           >
             Đã báo giá
           </button>
@@ -400,7 +400,7 @@ export default function SupplierDashboard() {
                   <td className="py-4 px-4">
                     <div className="font-black text-[#000000] text-xs truncate group-hover:text-[#2563EB] transition-colors">{rfq.rfqId}</div>
                     <div className="flex items-center gap-1 mt-1">
-                       {isSimulation && <span className="bg-[#2563EB] text-[#000000] text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
+                       {isSimulation && <span className="bg-[#2563EB] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
                        {isApiData && <span className="bg-emerald-500 text-[#000000] text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">API</span>}
                     </div>
                   </td>
@@ -420,7 +420,7 @@ export default function SupplierDashboard() {
                     {rfq.status === 'Pending' || rfq.status === 'CatalogConfirmation' ? (
                       <button 
                         onClick={() => handleStartQuoting(rfq)}
-                        className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#2563EB] text-[#000000] border-[#2563EB] shadow-lg' : 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20 group-hover:border-[#2563EB]/50 group-hover:text-[#2563EB]'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#2563EB] text-white border-[#2563EB] shadow-lg' : 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20 group-hover:border-[#2563EB]/50 group-hover:text-[#2563EB]'}`}
                       >
                         Báo giá <ChevronRight size={14} />
                       </button>

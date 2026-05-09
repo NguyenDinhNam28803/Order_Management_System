@@ -71,7 +71,7 @@ export default function PRDetailPage() {
             <ArrowLeft size={14} /> Quay lại danh sách
           </button>
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-black text-[#000000] tracking-tight">Chi tiết Yêu cầu (PR)</h1>
+            <h1 className="text-3xl font-black text-[#0F172A] tracking-tight">Chi tiết Yêu cầu (PR)</h1>
             <span className={`status-pill ${getStatusDisplay(pr.status).class}`}>
               {getStatusDisplay(pr.status).label}
             </span>

@@ -299,12 +299,12 @@ export default function ProductAdminPage() {
         <div className="animate-in fade-in duration-500">            
             <div className="mt-8 flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight uppercase">Quản lý kho hàng & Danh mục</h1>
-                    <p className="text-sm text-[#000000] mt-1 font-bold">DỮ LIỆU SẢN PHẨM SOURCE TỪ HỆ THỐNG TRUNG TÂM</p>
+                    <h1 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">Quản lý kho hàng & Danh mục</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-medium">DỮ LIỆU SẢN PHẨM SOURCE TỪ HỆ THỐNG TRUNG TÂM</p>
                 </div>
                 <div className="flex gap-4">
                     <button 
-                        className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                        className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-lg font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                         onClick={() => {
                             if (activeTab === "Sản phẩm") {
                                 setEditingProduct(null);
@@ -322,7 +322,7 @@ export default function ProductAdminPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-8">
-                <div className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                     {/* Toolbar */}
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="flex gap-1 p-1 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl w-fit">
@@ -332,7 +332,7 @@ export default function ProductAdminPage() {
                                     onClick={() => setActiveTab(tab)}
                                     className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                                         activeTab === tab 
-                                        ? "bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20" 
+                                        ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20" 
                                         : "text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10"
                                     }`}
                                 >
@@ -365,16 +365,16 @@ export default function ProductAdminPage() {
 
                 {/* Stats Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-[#F1F5F9] p-8 rounded-4xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
                         <div className="flex-1">
                             <div className="text-[10px] font-black text-[#000000] uppercase tracking-widest mb-1">Mục sản phẩm</div>
-                            <div className="text-3xl font-black text-[#000000]">{products.length}</div>
+                            <div className="text-3xl font-black text-[#0F172A]">{products.length}</div>
                         </div>
                     </div>
-                    <div className="bg-[#F1F5F9] p-8 rounded-4xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
                         <div className="flex-1">
                             <div className="text-[10px] font-black text-[#000000] uppercase tracking-widest mb-1">Danh mục cấp 1</div>
-                            <div className="text-3xl font-black text-[#000000]">{categories.length}</div>
+                            <div className="text-3xl font-black text-[#0F172A]">{categories.length}</div>
                         </div>
                     </div>
                 </div>
@@ -385,7 +385,7 @@ export default function ProductAdminPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4">
                     <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         <div className="p-10">
-                            <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
+                            <h2 className="text-2xl font-black text-[#0F172A] uppercase mb-2 tracking-tight">
                                 {editingProduct ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới"}
                             </h2>
                             <p className="text-xs text-[#000000] font-bold uppercase tracking-widest mb-10">QUẢN LÝ KHO HÀNG</p>
@@ -514,7 +514,7 @@ export default function ProductAdminPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4">
                     <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         <div className="p-10">
-                            <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
+                            <h2 className="text-2xl font-black text-[#0F172A] uppercase mb-2 tracking-tight">
                                 {editingCategory ? "Cập nhật Danh mục" : "Thêm Danh mục mới"}
                             </h2>
                             <p className="text-xs text-[#000000] font-bold uppercase tracking-widest mb-10">QUẢN LÝ DANH MỤC</p>

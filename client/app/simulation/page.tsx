@@ -683,7 +683,7 @@ export default function SimulationPage() {
                         <Zap className="text-[#000000] fill-white/20" size={24} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black text-[#000000] tracking-tighter uppercase italic">OMS Simulation</h1>
+                        <h1 className="text-2xl font-black text-[#0F172A] tracking-tighter uppercase italic">OMS Simulation</h1>
                         <p className="text-xs text-[#000000] font-bold tracking-widest uppercase">Chi tiết quy trình mua hàng</p>
                     </div>
                 </div>
@@ -691,7 +691,7 @@ export default function SimulationPage() {
                 <div className="flex bg-[#F1F5F9] p-1 rounded-2xl border border-[rgba(148,163,184,0.1)]">
                     <button 
                         onClick={() => { setActiveWorkflow("CATALOG"); handleReset(); }}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#2563EB] text-[#000000] shadow-lg" : "text-[#000000] hover:text-[#000000]"}`}
+                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#2563EB] text-white shadow-lg" : "text-[#000000] hover:text-[#000000]"}`}
                     >
                         Workflow 1: Catalog
                     </button>
@@ -734,7 +734,7 @@ export default function SimulationPage() {
                                     {/* Step Header */}
                                     <div className="p-4 flex items-start gap-3">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                                            isActive ? "bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20" : 
+                                            isActive ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20" : 
                                             isCompleted ? "bg-emerald-500/20 text-black border border-emerald-500/30" : 
                                             "bg-[#FFFFFF] text-[#000000] border border-[rgba(148,163,184,0.1)]"
                                         }`}>
@@ -826,7 +826,7 @@ export default function SimulationPage() {
                 </div>
 
                 <div className="lg:col-span-5">
-                    <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-[32px] p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden sticky top-6">
+                    <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden sticky top-6">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#2563EB]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
@@ -839,7 +839,7 @@ export default function SimulationPage() {
                                 <span className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Bước {currentStepData.id}</span>
                             </div>
                             
-                            <h1 className="text-3xl font-black text-[#000000] tracking-tighter mb-4 uppercase italic">
+                            <h1 className="text-3xl font-black text-[#0F172A] tracking-tighter mb-4 uppercase italic">
                                 {currentStepData.title}
                             </h1>
                             
@@ -860,7 +860,7 @@ export default function SimulationPage() {
                                     currentStep === steps.length 
                                     ? "bg-[#F1F5F9] text-[#000000] cursor-not-allowed border border-[rgba(148,163,184,0.1)]" 
                                     : activeWorkflow === "CATALOG" 
-                                    ? "bg-[#2563EB] text-[#000000] shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 hover:scale-105" 
+                                    ? "bg-[#2563EB] text-white shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 hover:scale-105" 
                                     : "bg-purple-600 text-[#000000] shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105"
                                 }`}
                             >
@@ -1012,7 +1012,7 @@ export default function SimulationPage() {
             </main>
 
             {activeWorkflow === "NON_CATALOG" && currentStep >= 4 && (
-                <div className="fixed bottom-12 right-12 w-80 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-3xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="fixed bottom-12 right-12 w-80 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="p-2 bg-purple-600 rounded-xl"><Bot size={18} className="text-[#000000]" /></div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-[#000000]">AI Analyst</span>

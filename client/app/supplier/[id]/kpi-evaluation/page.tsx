@@ -198,7 +198,7 @@ export default function SupplierKPIPage() {
             <span className="text-sm font-semibold">Quay lại Portal</span>
           </Link>
           <div className="flex-1">
-            <h1 className="text-2xl font-black text-[#000000] uppercase tracking-tight">Đánh Giá Hiệu Suất Nhà Cung Cấp</h1>
+            <h1 className="text-2xl font-black text-[#0F172A] uppercase tracking-tight">Đánh Giá Hiệu Suất Nhà Cung Cấp</h1>
             <p className="text-sm text-[#000000] mt-1">Phân tích chi tiết KPI và xếp hạng nhà cung cấp</p>
           </div>
         </div>
@@ -221,7 +221,7 @@ export default function SupplierKPIPage() {
             <button
               onClick={handleEvaluate}
               disabled={evaluating}
-              className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl bg-[#2563EB] text-[#000000] font-bold hover:bg-[#1D4ED8] disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl bg-[#2563EB] text-white font-bold hover:bg-[#1D4ED8] disabled:opacity-50 transition-all"
             >
               {evaluating ? (
                 <RefreshCcw size={18} className="animate-spin" />
@@ -441,7 +441,7 @@ export default function SupplierKPIPage() {
               
               <Link
                 href={`/procurement/suppliers/${supplierId}`}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#F1F5F9] text-[#000000] font-bold hover:bg-[#0F172A] hover:text-[#000000] transition-all border border-[rgba(148,163,184,0.1)]"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#F1F5F9] text-[#000000] font-bold hover:bg-[#0F172A] hover:text-white transition-all border border-[rgba(148,163,184,0.1)]"
               >
                 <Award size={18} />
                 Xem hồ sơ NCC

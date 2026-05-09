@@ -59,10 +59,10 @@ export default function RegisterPage() {
             <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 relative z-10 items-center">
                 {/* Visual Section */}
                 <div className="hidden md:block pr-8 animate-in fade-in slide-in-from-left-12 duration-700">
-                    <div className="inline-flex items-center justify-center h-20 w-20 bg-emerald-600 rounded-3xl shadow-2xl shadow-emerald-500/30 mb-8 border border-white/10">
+                    <div className="inline-flex items-center justify-center h-20 w-20 bg-emerald-600 rounded-xl shadow-2xl shadow-emerald-500/30 mb-8 border border-white/10">
                         <CheckCircle2 size={40} className="text-[#000000]" />
                     </div>
-                    <h1 className="text-6xl font-black text-[#000000] tracking-tighter mb-4 uppercase leading-none">
+                    <h1 className="text-6xl font-black text-[#0F172A] tracking-tighter mb-4 uppercase leading-none">
                         Gia nhập<br /><span className="text-emerald-500">ProcurePro</span>
                     </h1>
                     <p className="text-black text-lg font-medium mb-12 max-w-md leading-relaxed">
@@ -97,7 +97,7 @@ export default function RegisterPage() {
                         <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
 
                         <div className="mb-8 text-center md:text-left">
-                            <h2 className="text-xl font-black text-[#000000] uppercase tracking-widest mb-2">Đăng ký tài khoản</h2>
+                            <h2 className="text-xl font-black text-[#0F172A] uppercase tracking-widest mb-2">Đăng ký tài khoản</h2>
                             <p className="text-black text-xs font-bold">Khởi tạo định danh công việc mới.</p>
                         </div>
 

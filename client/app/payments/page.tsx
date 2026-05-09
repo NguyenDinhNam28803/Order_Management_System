@@ -37,12 +37,12 @@ export default function PaymentsPage() {
         fetch();
     }, [fetchPayments]);
 
-    const formatCurrency = (amount: number) => {
+    const formatCurrency = (amount: number | string | null | undefined) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
             currency: 'VND',
             minimumFractionDigits: 0,
-        }).format(amount);
+        }).format(Number(amount) || 0);
     };
 
     const getStatusDisplay = (status: string) => {
@@ -69,7 +69,7 @@ export default function PaymentsPage() {
             <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
                 <div className="lg:col-span-2 space-y-8">
                     <div>
-                        <h1 className="text-2xl font-black text-[#000000] tracking-tight mb-2">Hóa đơn & Thanh toán</h1>
+                        <h1 className="text-2xl font-black text-[#0F172A] tracking-tight mb-2">Hóa đơn & Thanh toán</h1>
                         <p className="text-sm text-[#000000]">Thanh toán các đơn hàng đã được đối soát hoàn tất.</p>
                     </div>
 
@@ -120,7 +120,7 @@ export default function PaymentsPage() {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-[#F1F5F9] rounded-3xl p-8 text-[#000000] shadow-2xl relative overflow-hidden border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl p-8 text-[#000000] shadow-2xl relative overflow-hidden border border-[rgba(148,163,184,0.1)]">
                         <div className="absolute -top-10 -right-10 h-40 w-40 bg-[#2563EB]/5 rounded-full blur-2xl font-black"></div>
                         <h3 className="text-xs font-black uppercase text-[#000000] mb-8 tracking-widest">Ví tổng thanh toán</h3>
                         <div className="text-4xl font-black mb-1 text-[#000000]">{formatCurrency(totalAmount)}</div>

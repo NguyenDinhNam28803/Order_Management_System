@@ -385,7 +385,7 @@ function RfqQuotePageContent() {
                           next[idx] = { ...next[idx], unitPrice: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -399,7 +399,7 @@ function RfqQuotePageContent() {
                           next[idx] = { ...next[idx], qtyOffered: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                       />
                     </div>
                     <div className="md:col-span-1">
@@ -413,7 +413,7 @@ function RfqQuotePageContent() {
                           next[idx] = { ...next[idx], notes: e.target.value };
                           setItemForms(next);
                         }}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                       />
                     </div>
                   </div>
@@ -455,7 +455,7 @@ function RfqQuotePageContent() {
                   required
                   value={leadTimeDays}
                   onChange={(e) => setLeadTimeDays(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                 />
               </div>
               <div>
@@ -465,7 +465,7 @@ function RfqQuotePageContent() {
                   placeholder="Net 30, COD, 50% trước..."
                   value={paymentTerms}
                   onChange={(e) => setPaymentTerms(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                 />
               </div>
               <div>
@@ -475,7 +475,7 @@ function RfqQuotePageContent() {
                   placeholder="DDP, FOB, CIF..."
                   value={deliveryTerms}
                   onChange={(e) => setDeliveryTerms(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                 />
               </div>
               <div>
@@ -485,7 +485,7 @@ function RfqQuotePageContent() {
                   placeholder="Thông tin bổ sung, ưu đãi đặc biệt..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-[#2563EB] resize-none"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB] resize-none"
                 />
               </div>
             </div>

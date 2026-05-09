@@ -132,7 +132,7 @@ export default function AdminSupplierDetailPage() {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
             case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
             case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
-            default: return "bg-[#0F172A] text-[#000000] border-[rgba(148,163,184,0.1)]";
+            default: return "bg-[#0F172A] text-white border-[rgba(148,163,184,0.1)]";
         }
     };
 
@@ -184,7 +184,7 @@ export default function AdminSupplierDetailPage() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-3 mb-1">
-                                    <h1 className="text-2xl font-black text-[#000000]">{supplier.name}</h1>
+                                    <h1 className="text-2xl font-black text-[#0F172A]">{supplier.name}</h1>
                                     <span className={`px-3 py-1 rounded-full text-xs font-black uppercase border ${getTierColor(latestKPI?.tier)}`}>
                                         {latestKPI?.tier || "Chưa đánh giá"}
                                     </span>
@@ -299,7 +299,7 @@ export default function AdminSupplierDetailPage() {
                                     <CheckCircle size={16} className="text-black" />
                                     <span className="text-[#000000] text-xs font-bold uppercase">Tổng PO</span>
                                 </div>
-                                <p className="text-3xl font-black text-[#000000]">
+                                <p className="text-3xl font-black text-[#0F172A]">
                                     {latestKPI?.poCount || "0"}
                                 </p>
                                 <p className="text-[#000000] text-xs mt-1">6 tháng gần nhất</p>
@@ -343,7 +343,7 @@ export default function AdminSupplierDetailPage() {
 
                 {activeTab === "kpi" && (
                     <div className="space-y-6">
-                        <h2 className="text-xl font-black text-[#000000] uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
+                        <h2 className="text-xl font-black text-[#0F172A] uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
                         
                         <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                             <table className="erp-table text-xs">
@@ -371,12 +371,12 @@ export default function AdminSupplierDetailPage() {
                                                 </span>
                                             </td>
                                             <td className={`px-6 py-4 text-center font-black ${getScoreColor(kpi.overallScore)}`}>
-                                                {kpi.overallScore?.toFixed(1)}%
+                                                {kpi.overallScore != null ? kpi.overallScore.toFixed(1) + '%' : '--'}
                                             </td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.otdScore?.toFixed(1)}%</td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.qualityScore?.toFixed(1)}%</td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.priceScore?.toFixed(1)}%</td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.manualScore?.toFixed(1)}%</td>
+                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.otdScore != null ? kpi.otdScore.toFixed(1) + '%' : '--'}</td>
+                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.qualityScore != null ? kpi.qualityScore.toFixed(1) + '%' : '--'}</td>
+                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.priceScore != null ? kpi.priceScore.toFixed(1) + '%' : '--'}</td>
+                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.manualScore != null ? kpi.manualScore.toFixed(1) + '%' : '--'}</td>
                                             <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.poCount}</td>
                                         </tr>
                                     ))}
@@ -388,7 +388,7 @@ export default function AdminSupplierDetailPage() {
 
                 {activeTab === "ratings" && (
                     <div className="space-y-6">
-                        <h2 className="text-xl font-black text-[#000000] uppercase tracking-tight">Tiêu chí đánh giá chi tiết</h2>
+                        <h2 className="text-xl font-black text-[#0F172A] uppercase tracking-tight">Tiêu chí đánh giá chi tiết</h2>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Rating Criteria */}

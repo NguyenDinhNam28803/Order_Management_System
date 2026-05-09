@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { useProcurement } from "../context/ProcurementContext";
@@ -41,7 +41,7 @@ export default function SimulationPanel() {
 
     return (
         <div className="fixed top-24 right-8 z-[100] w-80 animate-in slide-in-from-right duration-500">
-            <div className={`overflow-hidden rounded-[32px] border shadow-2xl backdrop-blur-2xl ${isCatalog ? 'bg-erp-blue/10 border-erp-blue/20' : 'bg-purple-600/10 border-purple-600/20'}`}>
+            <div className={`overflow-hidden rounded-xl border shadow-2xl backdrop-blur-2xl ${isCatalog ? 'bg-erp-blue/10 border-erp-blue/20' : 'bg-purple-600/10 border-purple-600/20'}`}>
                 {/* Header */}
                 <div className={`p-5 flex items-center justify-between ${isCatalog ? 'bg-erp-blue text-[#000000]' : 'bg-purple-600 text-[#000000]'}`}>
                     <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ export default function SimulationPanel() {
                             <div className="text-[10px] font-black uppercase tracking-widest text-black">Bước {step} của {currentSteps.length}</div>
                             <div className="text-sm font-black text-[#000000] italic uppercase tracking-tighter">{stepLabel}</div>
                         </div>
-                        <div className="text-2xl font-black text-[#000000]/10">0{step}</div>
+                        <div className="text-2xl font-black text-[#0F172A]/10">0{step}</div>
                     </div>
 
                     {/* Progress Bar */}

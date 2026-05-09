@@ -90,7 +90,7 @@ export default function PODetailPage() {
             <ArrowLeft size={14} /> Quay lại danh sách
           </button>
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-black text-[#000000] tracking-tight">Chi tiết Đơn hàng (PO)</h1>
+            <h1 className="text-3xl font-black text-[#0F172A] tracking-tight">Chi tiết Đơn hàng (PO)</h1>
             <span className={`status-pill ${getStatusDisplay(po.status).class}`}>
               {getStatusDisplay(po.status).label}
             </span>

@@ -55,7 +55,7 @@ const BudgetAllocationCard = ({
     return (
         <div
             onClick={onClick}
-            className={`group relative cursor-pointer rounded-[32px] border-2 p-6 transition-all duration-300 shadow-xl
+            className={`group relative cursor-pointer rounded-xl border-2 p-6 transition-all duration-300 shadow-xl
                 ${isSelected
                     ? "border-[#2563EB] bg-[#2563EB]/5 shadow-[#2563EB]/10 scale-[1.02]"
                     : "border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] hover:border-[#2563EB]/30 hover:bg-[#F1F5F9]"
@@ -63,7 +63,7 @@ const BudgetAllocationCard = ({
         >
             <div className="flex items-start justify-between gap-3 mb-6">
                 <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-2xl transition-all ${isSelected ? "bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/30" : "bg-[#F1F5F9] text-[#000000] group-hover:text-[#2563EB]"}`}>
+                    <div className={`p-3 rounded-2xl transition-all ${isSelected ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30" : "bg-[#F1F5F9] text-[#000000] group-hover:text-[#2563EB]"}`}>
                         <Wallet size={16} />
                     </div>
                     <div>
@@ -142,7 +142,7 @@ const BudgetAllocationsPanel = ({
                             { icon: <Sparkles size={14} />,   label: "Đang cam kết", value: totalCommitted, color: "text-[#2563EB]",    bg: "bg-[#2563EB]/5" },
                             { icon: <CheckCircle2 size={14} />, label: "Còn khả dụng", value: totalRemaining, color: totalRemaining < 0 ? "text-black" : "text-black", bg: totalRemaining < 0 ? "bg-rose-500/5" : "bg-emerald-500/5" },
                         ].map(({ icon, label, value, color, bg }) => (
-                            <div key={label} className={`${bg} rounded-[32px] p-6 border border-[rgba(148,163,184,0.05)] shadow-sm hover:translate-y-[-2px] transition-all`}>
+                            <div key={label} className={`${bg} rounded-xl p-6 border border-[rgba(148,163,184,0.05)] shadow-sm hover:translate-y-[-2px] transition-all`}>
                                 <p className={`flex items-center gap-2 opacity-60 text-[8px] font-black uppercase tracking-widest text-[#000000] mb-2`}>
                                     {icon} {label}
                                 </p>
@@ -155,7 +155,7 @@ const BudgetAllocationsPanel = ({
                 )}
 
                 {filtered.length === 0 ? (
-                    <div className="py-20 text-center bg-[#FFFFFF] rounded-[32px] border border-dashed border-[rgba(148,163,184,0.1)]">
+                    <div className="py-20 text-center bg-[#FFFFFF] rounded-xl border border-dashed border-[rgba(148,163,184,0.1)]">
                         <p className="text-[10px] font-black text-[#000000] uppercase tracking-widest opacity-50">Không tìm thấy dữ liệu ngân sách cho trung tâm chi phí này</p>
                     </div>
                 ) : (
@@ -506,7 +506,7 @@ export default function CreatePRPage() {
             {/* PAGE HEADER SECTION */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-[rgba(148,163,184,0.1)] pb-10">
                 <div>
-                   <h1 className="text-4xl font-black text-[#000000] tracking-tighter uppercase mb-2">Tạo Phiếu Yêu Cầu (PR)</h1>
+                   <h1 className="text-4xl font-black text-[#0F172A] tracking-tighter uppercase mb-2">Tạo Phiếu Yêu Cầu (PR)</h1>
                    <p className="text-sm font-bold text-[#000000] tracking-tight uppercase">
                       Xin chào, <span className="text-[#2563EB]">{currentUser?.name || currentUser?.fullName}</span> – Hệ thống AI Procurement đang hỗ trợ bạn lập kế hoạch.
                    </p>
@@ -514,7 +514,7 @@ export default function CreatePRPage() {
                 <div className="flex gap-4">
                     <button className="px-5 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#0F172A] transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
                     <button 
-                        className="px-6 py-2.5 bg-[#2563EB] text-[#000000] rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2" 
+                        className="px-6 py-2.5 bg-[#2563EB] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2" 
                         onClick={handleSubmit} 
                         disabled={isSubmitting}
                     >
@@ -530,7 +530,7 @@ export default function CreatePRPage() {
                     onClick={() => setActiveTab('ai')}
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
                         activeTab === 'ai'
-                            ? 'bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/30'
+                            ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
                             : 'bg-[#F1F5F9] text-[#000000] border border-[rgba(148,163,184,0.1)] hover:text-[#000000]'
                     }`}
                 >
@@ -544,7 +544,7 @@ export default function CreatePRPage() {
                     onClick={() => setActiveTab('manual')}
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
                         activeTab === 'manual'
-                            ? 'bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/30'
+                            ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
                             : 'bg-[#F1F5F9] text-[#000000] border border-[rgba(148,163,184,0.1)] hover:text-[#000000]'
                     }`}
                 >
@@ -588,7 +588,7 @@ export default function CreatePRPage() {
                                             </div>
                                             <div className={`max-w-[80%] p-4 rounded-2xl text-sm ${
                                                 msg.role === 'user' 
-                                                    ? 'bg-[#2563EB] text-[#000000]' 
+                                                    ? 'bg-[#2563EB] text-white' 
                                                     : 'bg-[#F1F5F9] text-[#000000] border border-[rgba(148,163,184,0.1)]'
                                             }`}>
                                                 {msg.content}
@@ -622,13 +622,13 @@ export default function CreatePRPage() {
                                         }
                                     }}
                                     placeholder="VD: Tôi cần mua 10 laptop Dell cho phòng IT, ngân sách khoảng 500 triệu, giao hàng trong tuần sau..."
-                                    className="w-full h-32 bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl p-5 text-sm text-[#000000] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 resize-none placeholder:text-[#000000]/50"
+                                    className="w-full h-32 bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl p-5 text-sm text-[#000000] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 resize-none placeholder:text-[#94A3B8]/50"
                                 />
                                 <div className="flex gap-3">
                                     <button
                                         onClick={handleGenerateDraft}
                                         disabled={isGenerating || !aiPrompt.trim()}
-                                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#2563EB] text-[#000000] rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#2563EB] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isGenerating ? (
                                             <><Loader2 className="animate-spin" size={16} /> Đang tạo...</>
@@ -729,7 +729,7 @@ export default function CreatePRPage() {
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-[#000000] uppercase tracking-widest ml-1">Tiêu đề yêu cầu</label>
                                 <input 
-                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#000000] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all placeholder:text-[#000000]/50" 
+                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-[#000000] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all placeholder:text-[#94A3B8]/50" 
                                     placeholder="Nhập tên dịch vụ/sản phẩm cần mua sắm..."
                                     value={form.title} 
                                     onChange={e => setForm({ ...form, title: e.target.value })} 
@@ -841,7 +841,7 @@ export default function CreatePRPage() {
                                 />
                             </div>
                             
-                            <div className="overflow-hidden rounded-3xl border border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
+                            <div className="overflow-hidden rounded-xl border border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                                 <table className="erp-table text-xs m-0">
                                     <thead>
                                         <tr className="bg-[#F1F5F9] text-[9px] font-black text-[#000000] border-b border-[rgba(148,163,184,0.1)] uppercase tracking-[0.1em]">
@@ -907,7 +907,7 @@ export default function CreatePRPage() {
                             </h3>
                             
                             <div className="space-y-8 relative">
-                                <div className="flex justify-between items-center p-6 bg-[#FFFFFF] rounded-[32px] border border-[rgba(148,163,184,0.1)]">
+                                <div className="flex justify-between items-center p-6 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                     <div className="text-[10px] font-black text-[#000000] uppercase tracking-[0.2em]">Trung tâm:</div>
                                     <div className="text-[10px] font-black text-[#000000] bg-[#F1F5F9] px-4 py-2 rounded-xl border border-[#2563EB]/10 shadow-lg tracking-widest">
                                         {activeCC ? String(activeCC.code) : "CHƯA CHỌN"}
@@ -917,7 +917,7 @@ export default function CreatePRPage() {
                                 <div className="space-y-6 px-4">
                                     <div className="flex justify-between items-end">
                                         <div className="text-[11px] font-bold text-[#000000] uppercase tracking-tight">Khả dụng (Quý {currentQuarter}):</div>
-                                        <div className="text-lg font-black text-[#000000] tracking-tighter">
+                                        <div className="text-lg font-black text-[#0F172A] tracking-tighter">
                                             {formatVND(remainingBudget)} ₫
                                         </div>
                                     </div>
@@ -941,7 +941,7 @@ export default function CreatePRPage() {
                                     </div>
                                     
                                     {remainingBudget - totalEstimate < 0 && (
-                                        <div className="flex gap-4 p-6 bg-amber-500/10 rounded-3xl border border-amber-500/20 text-black animate-pulse">
+                                        <div className="flex gap-4 p-6 bg-amber-500/10 rounded-xl border border-amber-500/20 text-black animate-pulse">
                                             <AlertTriangle size={24} className="shrink-0" />
                                             <p className="text-[10px] font-black uppercase leading-tight tracking-tight">Cảnh báo: PR vượt quá ngân sách khả dụng. Việc phê duyệt có thể bị CEO/CFO kiểm soát chặt chẽ hơn.</p>
                                         </div>
@@ -949,7 +949,7 @@ export default function CreatePRPage() {
                                 </div>
                                 
                                 <button
-                                    className="w-full py-3 mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] text-xs font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-[#2563EB]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 group/btn"
+                                    className="w-full py-3 mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-[#2563EB]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 group/btn"
                                     onClick={handleSubmit}
                                     disabled={isSubmitting}
                                 >
@@ -994,7 +994,7 @@ export default function CreatePRPage() {
                                     <CheckCircle2 size={56} className="text-[#000000]" />
                                 </div>
                                 <div className="space-y-3">
-                                    <h3 className="text-3xl font-black text-[#000000] tracking-tight uppercase">Thành công!</h3>
+                                    <h3 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">Thành công!</h3>
                                     <p className="text-[#000000] text-[13px] font-bold leading-relaxed px-6">
                                         Đã khởi tạo PR và đẩy vào quy trình phê duyệt đa cấp thành công.
                                     </p>
@@ -1007,7 +1007,7 @@ export default function CreatePRPage() {
                                     <XCircle size={56} className="text-[#000000]" />
                                 </div>
                                 <div className="space-y-3">
-                                    <h3 className="text-3xl font-black text-[#000000] tracking-tight uppercase">Xảy ra lỗi</h3>
+                                    <h3 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">Xảy ra lỗi</h3>
                                     <p className="text-black text-[13px] font-bold px-6 leading-relaxed">{errorMessage}</p>
                                 </div>
                             </div>

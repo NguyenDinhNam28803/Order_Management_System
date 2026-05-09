@@ -261,7 +261,7 @@ const SupplierDetailModal = ({
           {s.status === 'NEW' && (
             <button
               onClick={() => onVetting(s.name)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#1D4ED8] text-[#000000] hover:bg-[#2563EB] disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#1D4ED8] text-white hover:bg-[#2563EB] disabled:opacity-50 transition-all"
             >
               <Import size={13} /> Xét duyệt nhà cung cấp
             </button>
@@ -586,7 +586,7 @@ export default function SupplierDiscoveryPage() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-[#1D4ED8] flex items-center justify-center shadow-lg shadow-violet-500/30">
               <Sparkles size={15} className="text-[#000000]" />
             </div>
-            <h1 className="text-xl font-black text-[#000000]">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
+            <h1 className="text-xl font-black text-[#0F172A]">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
             <span className="ml-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/30 uppercase tracking-wider">Beta</span>
           </div>
           <p className="text-[12px] text-[#000000]">Tìm kiếm nhà cung cấp từ nguồn bên ngoài bằng AI · Gemini + Tavily Search</p>
@@ -597,7 +597,7 @@ export default function SupplierDiscoveryPage() {
           {/* Main query */}
           <div className="flex gap-2 mb-3">
             <div className="relative flex-1">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
               <input
                 type="text"
                 value={query}

@@ -188,7 +188,7 @@ export default function PRPage() {
                                         </button>
                                         <button
                                             onClick={() => submitPR(row.id)}
-                                            className="py-1 px-2 text-[10px] bg-[#2563EB] text-[#000000] rounded font-bold uppercase tracking-wider hover:bg-[#1D4ED8] transition-all flex items-center gap-1"
+                                            className="py-1 px-2 text-[10px] bg-[#2563EB] text-white rounded font-bold uppercase tracking-wider hover:bg-[#1D4ED8] transition-all flex items-center gap-1"
                                         >
                                             <Send size={12} />
                                         </button>
@@ -211,13 +211,13 @@ export default function PRPage() {
         <main className="animate-in fade-in duration-500 min-h-screen bg-[#FFFFFF] text-[#000000]">
             <header className="mt-8 flex items-center justify-between border-b border-[rgba(148,163,184,0.1)] pb-8 mb-8 px-6">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight">
+                    <h1 className="text-3xl font-black text-[#0F172A] tracking-tight">
                         {currentUser?.role === "PROCUREMENT" ? "Toàn bộ Yêu cầu PR" : "Yêu cầu mua sắm của tôi"}
                     </h1>
                     <p className="text-sm font-medium text-[#000000] mt-1">Quản lý và theo dõi tiến độ phê duyệt định mức mua sắm tập trung.</p>
                 </div>
                 {currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN" && (
-                    <Link href="/pr/create" className="py-3 px-6 bg-[#2563EB] text-[#000000] rounded-xl font-black uppercase tracking-wider text-xs shadow-lg shadow-[#2563EB]/20 hover:bg-[#1D4ED8] transition-all flex flex-col items-center">
+                    <Link href="/pr/create" className="py-3 px-6 bg-[#2563EB] text-white rounded-xl font-black uppercase tracking-wider text-xs shadow-lg shadow-[#2563EB]/20 hover:bg-[#1D4ED8] transition-all flex flex-col items-center">
                         <div className="flex items-center gap-2">
                             <Plus size={18} />
                             <span className="text-sm font-semibold">Tạo yêu cầu mới</span>
@@ -226,7 +226,7 @@ export default function PRPage() {
                 )}
             </header>
 
-            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden mx-6">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden mx-6">
                 <div className="p-5 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <div className="text-xs font-black text-[#000000] uppercase tracking-widest px-2">Bộ lọc nhanh</div>
@@ -236,7 +236,7 @@ export default function PRPage() {
                                     key={filter}
                                     onClick={() => setActiveTab(filter)}
                                     className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === filter
-                                            ? "bg-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20"
+                                            ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
                                             : "text-[#000000] hover:text-[#000000] hover:bg-[#FFFFFF]"
                                         }`}
                                 >

@@ -66,7 +66,7 @@ export default function BudgetHeatmap() {
                 {heatmapData.map((item) => (
                     <div 
                         key={item.id}
-                        className="relative h-44 rounded-[32px] border border-[rgba(255,255,255,0.08)] p-6 overflow-hidden transition-all duration-700 hover:scale-[1.04] hover:z-10 cursor-help group/item shadow-2xl shadow-black/20"
+                        className="relative h-44 rounded-xl border border-[rgba(255,255,255,0.08)] p-6 overflow-hidden transition-all duration-700 hover:scale-[1.04] hover:z-10 cursor-help group/item shadow-2xl shadow-black/20"
                     >
                         {/* Background heatmap fill with glass effect */}
                         <div className={`absolute inset-0 transition-colors duration-1000 ${getHeatColor(item.ratio)}`} />

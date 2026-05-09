@@ -151,10 +151,10 @@ export default function NotificationAdminPage() {
       {/* Header */}
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-black text-[#000000] tracking-tight uppercase">
+          <h1 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">
             EMAIL TEMPLATES
           </h1>
-          <p className="text-sm text-[#000000] mt-1 font-medium italic">
+          <p className="text-sm text-[#64748B] mt-1 font-medium italic">
             Quản lý và xem trước các mẫu email thông báo
           </p>
         </div>
@@ -162,14 +162,14 @@ export default function NotificationAdminPage() {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="group relative px-6 py-3 bg-[#F1F5F9] text-[#000000] font-bold rounded-[20px] 
-              border border-[rgba(148,163,184,0.1)] hover:text-[#000000] hover:border-[#2563EB]/50 
+            className="group relative px-6 py-3 bg-[#F1F5F9] text-[#0F172A] font-bold rounded-lg
+              border border-[#E2E8F0] hover:text-[#0F172A] hover:border-[#2563EB]/50
               transition-all duration-300 flex items-center gap-2 disabled:opacity-50"
           >
             <RefreshCw size={18} className={isRefreshing ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-500"} />
             <span>LÀM MỚI</span>
           </button>
-          <button className="group relative px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-[#000000] font-bold rounded-[20px] 
+          <button className="group relative px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white font-bold rounded-lg 
             shadow-lg shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 hover:scale-105 transition-all duration-300 
             flex items-center gap-2">
             <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
@@ -181,15 +181,15 @@ export default function NotificationAdminPage() {
       {/* Template Categories */}
       <div className="space-y-6">
         {templateCategories.map((category, idx) => (
-          <div key={category.title} className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden animate-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${idx * 100}ms` }}>
-            <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
+          <div key={category.title} className="bg-[#F1F5F9] rounded-xl border border-[#E2E8F0] shadow-xl shadow-[#2563EB]/5 overflow-hidden animate-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${idx * 100}ms` }}>
+            <div className="p-8 bg-[#FFFFFF] border-b border-[#E2E8F0]">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold text-[#000000] flex items-center gap-3">
+                  <h2 className="text-xl font-bold text-[#0F172A] flex items-center gap-3">
                     <span className="w-2 h-8 bg-gradient-to-b from-[#2563EB] to-[#3B82F6] rounded-full"></span>
                     {category.title}
                   </h2>
-                  <p className="text-sm text-[#000000] mt-2 ml-5">{category.description}</p>
+                  <p className="text-sm text-[#64748B] mt-2 ml-5">{category.description}</p>
                 </div>
                 <span className="px-4 py-2 bg-[#2563EB]/10 text-[#3B82F6] text-sm font-bold rounded-xl border border-[#2563EB]/20">
                   {category.templates.length} templates
@@ -197,7 +197,7 @@ export default function NotificationAdminPage() {
               </div>
             </div>
             
-            <div className="divide-y divide-[rgba(148,163,184,0.1)]">
+            <div className="divide-y divide-[#E2E8F0]">
               {category.templates.map((template) => (
                 <div key={template.type} className="p-6">
                   <NotificationTemplatePreview
@@ -214,22 +214,22 @@ export default function NotificationAdminPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-gradient-to-br from-[#2563EB]/10 to-[#3B82F6]/5 rounded-4xl p-8 border border-[#2563EB]/20">
-        <h3 className="text-lg font-bold text-[#000000] mb-6 flex items-center gap-2">
+      <div className="bg-gradient-to-br from-[#2563EB]/10 to-[#3B82F6]/5 rounded-xl p-8 border border-[#2563EB]/20">
+        <h3 className="text-lg font-bold text-[#0F172A] mb-6 flex items-center gap-2">
           <Mail className="w-5 h-5 text-[#2563EB]" />
           Hướng dẫn sử dụng
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[#000000]">
-          <div className="flex items-start gap-4 p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[#0F172A]">
+          <div className="flex items-start gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-[#E2E8F0]">
             <div className="w-10 h-10 bg-[#2563EB]/20 rounded-xl flex items-center justify-center shrink-0">
               <Mail className="w-5 h-5 text-[#3B82F6]" />
             </div>
             <div>
-              <p className="font-bold text-[#000000] mb-1">Gửi email từ hệ thống</p>
-              <p className="text-[#000000]">Sử dụng API <code className="text-[#3B82F6] bg-[#2563EB]/10 px-2 py-0.5 rounded">/notifications/send</code> để gửi email với template tương ứng</p>
+              <p className="font-bold text-[#0F172A] mb-1">Gửi email từ hệ thống</p>
+              <p className="text-[#64748B]">Sử dụng API <code className="text-[#3B82F6] bg-[#2563EB]/10 px-2 py-0.5 rounded">/notifications/send</code> để gửi email với template tương ứng</p>
             </div>
           </div>
-          <div className="flex items-start gap-4 p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+          <div className="flex items-start gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-[#E2E8F0]">
             <div className="w-10 h-10 bg-[#2563EB]/20 rounded-xl flex items-center justify-center shrink-0">
               <RefreshCw className="w-5 h-5 text-[#3B82F6]" />
             </div>

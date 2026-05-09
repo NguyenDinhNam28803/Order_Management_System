@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { ShieldAlert, CheckCircle2, XCircle, ArrowRight, Lock, FileCheck, Info } from "lucide-react";
@@ -24,7 +24,7 @@ export default function MatchingPage() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight">Đối soát 3 bên (3-Way Match)</h1>
+                    <h1 className="text-3xl font-black text-[#0F172A] tracking-tight">Đối soát 3 bên (3-Way Match)</h1>
                     <p className="text-sm text-[#000000] mt-1">Hệ thống tự động đối chiếu dữ liệu giữa PO, Nhập kho và Hóa đơn.</p>
                 </div>
             </div>
@@ -38,7 +38,7 @@ export default function MatchingPage() {
                 <div className="space-y-8 animate-in fade-in slide-in-from-top duration-500">
                     {/* --- Alert Banner --- */}
                     {!disputeResolved && (
-                        <div className="bg-red-50 border border-red-100 rounded-3xl p-8 flex items-start gap-6 animate-pulse shadow-sm shadow-red-100">
+                        <div className="bg-red-50 border border-red-100 rounded-xl p-8 flex items-start gap-6 animate-pulse shadow-sm shadow-red-100">
                             <div className="h-14 w-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center shrink-0">
                                 <ShieldAlert size={30} />
                             </div>

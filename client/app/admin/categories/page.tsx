@@ -106,12 +106,12 @@ export default function CategoriesPage() {
             key: "name",
             render: (row) => (
                 <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#2563EB] shadow-sm">
+                    <div className="h-12 w-12 rounded-xl bg-[#FFFFFF] border border-[#E2E8F0] flex items-center justify-center text-[#2563EB] shadow-sm">
                         <Layers size={22} />
                     </div>
                     <div>
-                        <div className="text-sm font-black text-[#000000] tracking-tight">{row.name}</div>
-                        <div className="text-[10px] font-black text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded mt-1 w-fit uppercase">
+                        <div className="text-sm font-bold text-[#0F172A] tracking-tight">{row.name}</div>
+                        <div className="text-[10px] font-bold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded mt-1 w-fit uppercase">
                             CODE: {row.code}
                         </div>
                     </div>
@@ -125,8 +125,8 @@ export default function CategoriesPage() {
                 const org = organizations.find(o => o.id === row.orgId);
                 return (
                     <div className="flex items-center gap-2">
-                        <Building2 size={14} className="text-[#000000]" />
-                        <span className="text-xs font-bold text-[#000000]">{org?.name || "Global / N/A"}</span>
+                        <Building2 size={14} className="text-[#94A3B8]" />
+                        <span className="text-xs font-bold text-[#0F172A]">{org?.name || "Global / N/A"}</span>
                     </div>
                 );
             }
@@ -135,7 +135,7 @@ export default function CategoriesPage() {
             label: "Mô tả",
             key: "description",
             render: (row) => (
-                <div className="max-w-xs text-[11px] text-[#000000] font-medium italic line-clamp-2">
+                <div className="max-w-xs text-[11px] text-[#64748B] font-medium italic line-clamp-2">
                     {row.description || "Không có mô tả..."}
                 </div>
             )
@@ -160,7 +160,7 @@ export default function CategoriesPage() {
                 <div className="flex gap-1">
                     <button 
                         onClick={() => handleOpenModal(row)}
-                        className="p-1.5 text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg border border-transparent hover:border-[#2563EB]/20 transition-all"
+                        className="p-1.5 text-[#64748B] hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg border border-transparent hover:border-[#2563EB]/20 transition-all"
                     >
                         <Edit2 size={14} />
                     </button>
@@ -170,7 +170,7 @@ export default function CategoriesPage() {
                                 removeCategory(row.id);
                             }
                         }}
-                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-black hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
+                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[#E2E8F0] text-[#64748B] hover:text-rose-500 hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
                     >
                         <Trash2 size={14} />
                     </button>
@@ -184,39 +184,39 @@ export default function CategoriesPage() {
 
             <div className="flex justify-between items-end mb-10 mt-6">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight uppercase">Quản lý Danh mục</h1>
-                    <p className="text-sm text-[#000000] mt-1 font-medium italic">PHÂN LOẠI NHÓM HÀNG HÓA VÀ DỊCH VỤ TRONG HỆ THỐNG</p>
+                    <h1 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">Quản lý Danh mục</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-medium italic">PHÂN LOẠI NHÓM HÀNG HÓA VÀ DỊCH VỤ TRONG HỆ THỐNG</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-lg font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm Danh mục
                 </button>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
-                <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[#E2E8F0] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="p-8 bg-[#FFFFFF] border-b border-[#E2E8F0] flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-black text-[#000000] uppercase tracking-widest">Phân loại hàng hóa</span>
-                            <div className="text-2xl font-black text-[#000000]">{categories.length} <span className="text-xs text-[#000000] font-bold uppercase ml-1">Nhóm ngành</span></div>
+                            <span className="text-[10px] font-semibold text-[#64748B] uppercase tracking-widest">Phân loại hàng hóa</span>
+                            <div className="text-2xl font-black text-[#0F172A]">{categories.length} <span className="text-xs text-[#64748B] font-bold uppercase ml-1">Nhóm ngành</span></div>
                         </div>
-                        <div className="h-10 w-px bg-[rgba(148,163,184,0.1)] hidden md:block" />
-                        <div className="flex items-center gap-2 bg-[#2563EB]/10 px-4 py-2 rounded-2xl border border-[#2563EB]/20">
+                        <div className="h-10 w-px bg-[#E2E8F0] hidden md:block" />
+                        <div className="flex items-center gap-2 bg-[#2563EB]/10 px-4 py-2 rounded-xl border border-[#2563EB]/20">
                             <Globe size={14} className="text-[#2563EB]" />
                             <span className="text-[10px] font-black text-[#2563EB] uppercase tracking-tight">Cấu trúc đa chi nhánh</span>
                         </div>
                     </div>
 
                     <div className="relative group w-full max-w-sm">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#2563EB] transition-colors" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8] group-focus-within:text-[#2563EB] transition-colors" size={18} />
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Tìm kiếm mã hoặc tên danh mục..."
-                            className="w-full pl-12 pr-4 py-3.5 bg-[#F1F5F9] border-2 border-[rgba(148,163,184,0.1)] rounded-[20px] text-xs text-[#000000] font-bold focus:border-[#2563EB] focus:ring-0 outline-none transition-all placeholder:text-[#000000]"
+                            className="w-full pl-12 pr-4 py-3.5 bg-[#F1F5F9] border-2 border-[#E2E8F0] rounded-lg text-xs text-[#0F172A] font-bold focus:border-[#2563EB] focus:ring-0 outline-none transition-all placeholder:text-[#94A3B8]"
                         />
                     </div>
                 </div>
@@ -227,12 +227,12 @@ export default function CategoriesPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-[#E2E8F0]">
                         <div className="p-10">
-                            <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
+                            <h2 className="text-2xl font-black text-[#0F172A] uppercase mb-2 tracking-tight">
                                 {editingCategory ? "Cập nhật Danh mục" : "Thêm Danh mục mới"}
                             </h2>
-                            <p className="text-xs text-[#000000] font-bold uppercase tracking-widest mb-10">PHÂN LOẠI HÀNG HÓA</p>
+                            <p className="text-xs text-[#64748B] font-bold uppercase tracking-widest mb-10">PHÂN LOẠI HÀNG HÓA</p>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="form-grid">
@@ -286,10 +286,10 @@ export default function CategoriesPage() {
                                     />
                                 </div>
 
-                                <div className="flex items-center justify-between p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="flex items-center justify-between p-4 bg-[#FFFFFF] rounded-xl border border-[#E2E8F0]">
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-black uppercase text-[#000000] tracking-widest">Kích hoạt Danh mục</span>
-                                        <span className="text-[9px] text-[#000000] font-bold">Danh mục đang hoạt động sẽ xuất hiện khi tạo sản phẩm</span>
+                                        <span className="text-[10px] font-semibold uppercase text-[#0F172A] tracking-widest">Kích hoạt Danh mục</span>
+                                        <span className="text-[9px] text-[#64748B] font-bold">Danh mục đang hoạt động sẽ xuất hiện khi tạo sản phẩm</span>
                                     </div>
                                     <button 
                                         type="button"

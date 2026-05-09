@@ -73,31 +73,31 @@ export default function OrganizationsPage() {
         <div className="animate-in fade-in duration-500">
             <div className="flex justify-between items-end mb-10">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight uppercase">Quản lý Tổ chức</h1>
-                    <p className="text-sm text-[#000000] mt-1 font-medium italic">THIẾT LẬP THỰC THỂ PHÁP NHÂN VÀ THÔNG TIN CÔNG TY</p>
+                    <h1 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">Quản lý Tổ chức</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-medium italic">THIẾT LẬP THỰC THỂ PHÁP NHÂN VÀ THÔNG TIN CÔNG TY</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-lg font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm Tổ chức
                 </button>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="text-[10px] font-black text-[#000000] uppercase tracking-widest border-r border-[rgba(148,163,184,0.1)] pr-4">Entity Directory</div>
                         <div className="text-[10px] font-black text-[#2563EB] bg-[#2563EB]/10 px-3 py-1 rounded-full">{organizations?.length || 0} Entities</div>
                     </div>
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" size={14} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={14} />
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Tìm kiếm mã hoặc tên..."
-                            className="pl-10 pr-4 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#2563EB]/20 w-64 outline-none text-[#000000] placeholder:text-[#000000]"
+                            className="pl-10 pr-4 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#2563EB]/20 w-64 outline-none text-[#000000] placeholder:text-[#94A3B8]"
                         />
                     </div>
                 </div>
@@ -168,7 +168,7 @@ export default function OrganizationsPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
                     <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         <div className="p-10">
-                            <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
+                            <h2 className="text-2xl font-black text-[#0F172A] uppercase mb-2 tracking-tight">
                                 {editingOrg ? "Cập nhật Tổ chức" : "Thêm Tổ chức mới"}
                             </h2>
                             <p className="text-xs text-[#000000] font-bold uppercase tracking-widest mb-10">ENTITY MANAGEMENT SYSTEM</p>

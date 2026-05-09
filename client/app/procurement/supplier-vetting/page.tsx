@@ -120,7 +120,7 @@ function CreateModal({
               value={supplierId}
               onChange={(e) => setSupplierId(e.target.value)}
               placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-              className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-sm text-[#000000] placeholder:text-[#000000] focus:border-[#2563EB]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-sm text-[#000000] placeholder:text-[#94A3B8] focus:border-[#2563EB]/50 focus:outline-none"
             />
           </div>
           <div>
@@ -131,7 +131,7 @@ function CreateModal({
               value={priceVsMarket}
               onChange={(e) => setPriceVsMarket(e.target.value)}
               placeholder="-15.5 nghĩa là rẻ hơn 15.5%"
-              className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-sm text-[#000000] placeholder:text-[#000000] focus:border-[#2563EB]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-sm text-[#000000] placeholder:text-[#94A3B8] focus:border-[#2563EB]/50 focus:outline-none"
             />
           </div>
           <div>
@@ -140,7 +140,7 @@ function CreateModal({
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-sm text-[#000000] placeholder:text-[#000000] focus:border-[#2563EB]/50 focus:outline-none resize-none"
+              className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-sm text-[#000000] placeholder:text-[#94A3B8] focus:border-[#2563EB]/50 focus:outline-none resize-none"
             />
           </div>
           <div className="flex justify-end gap-3 pt-2">
@@ -218,7 +218,7 @@ export default function SupplierVettingListPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Tìm nhà cung cấp..."
-              className="w-full h-14 pl-6 pr-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+              className="w-full h-14 pl-6 pr-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#94A3B8]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
             />
           </div>
         </div>

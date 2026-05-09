@@ -322,7 +322,7 @@ export default function CreateRFQPage() {
                     <div className="w-24 h-24 bg-emerald-500/10 text-black rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
                         <CheckCircle2 size={48} />
                     </div>
-                    <h2 className="text-3xl font-black text-[#000000] mb-2 uppercase">THÀNH CÔNG!</h2>
+                    <h2 className="text-3xl font-black text-[#0F172A] mb-2 uppercase">THÀNH CÔNG!</h2>
                     <p className="text-[#000000] font-medium">Yêu cầu báo giá đã được gửi tới {selectedVendors.length} nhà cung cấp.</p>
                 </div>
             </div>
@@ -338,7 +338,7 @@ export default function CreateRFQPage() {
                             <ChevronLeft size={24} />
                         </button>
                         <div>
-                            <h1 className="text-4xl font-black text-[#000000] tracking-tighter uppercase">TẠO YÊU CẦU BÁO GIÁ (RFQ)</h1>
+                            <h1 className="text-4xl font-black text-[#0F172A] tracking-tighter uppercase">TẠO YÊU CẦU BÁO GIÁ (RFQ)</h1>
                             <nav className="flex items-center gap-2 mt-1">
                                 <span className="text-[10px] font-black text-[#000000] uppercase tracking-widest">Nghiệp vụ Thu mua</span>
                                 <span className="h-1 w-1 bg-[#000000] rounded-full"></span>
@@ -403,7 +403,7 @@ export default function CreateRFQPage() {
                         </div>
                     </div>
 
-                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-[32px] p-8 flex items-start gap-4">
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-8 flex items-start gap-4">
                         <div className="h-10 w-10 bg-amber-500/10 text-black rounded-xl flex items-center justify-center shrink-0 border border-amber-500/20">
                             <Info size={20} />
                         </div>
@@ -434,7 +434,7 @@ export default function CreateRFQPage() {
                                 <input 
                                     type="text" 
                                     placeholder="Tìm kiếm nhà cung cấp từ kho dữ liệu hoặc nhập tên mới..."
-                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-14 pr-6 py-5 h-16 text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#2563EB] transition-all"
+                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-14 pr-6 py-5 h-16 text-[#000000] placeholder:text-[#94A3B8] focus:ring-2 focus:ring-[#2563EB] transition-all"
                                     value={vendorSearch}
                                     onChange={(e) => setVendorSearch(e.target.value)}
                                 />
@@ -662,7 +662,7 @@ export default function CreateRFQPage() {
                                             type="text" 
                                             readOnly
                                             placeholder="Chọn ngày..."
-                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl h-14 px-4 text-[#000000] font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-[#2563EB] transition-all placeholder:text-[#000000]"
+                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl h-14 px-4 text-[#000000] font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-[#2563EB] transition-all placeholder:text-[#94A3B8]"
                                             value={deadline ? (() => {
                                                 const [y, m, d] = deadline.split('-');
                                                 return d + "-" + m + "-" + y;
@@ -702,7 +702,7 @@ export default function CreateRFQPage() {
                             </div>
                             <textarea 
                                 placeholder="Ghi chú thêm cho nhà cung cấp về chất lượng, hình thức thanh toán, thời gian giao hàng mong muốn..."
-                                className="w-full min-h-[150px] rounded-3xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] p-6 text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#2563EB] resize-none"
+                                className="w-full min-h-[150px] rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] p-6 text-[#000000] placeholder:text-[#94A3B8] focus:ring-2 focus:ring-[#2563EB] resize-none"
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
                             ></textarea>
@@ -716,7 +716,7 @@ export default function CreateRFQPage() {
                                         <div key={i} className="h-10 w-10 rounded-full border-4 border-[#F1F5F9] bg-[#FFFFFF] flex items-center justify-center text-[10px] font-black text-[#000000]">{v.name.substring(0,1)}</div>
                                     ))}
                                     {selectedVendors.length > 3 && (
-                                        <div className="h-10 w-10 rounded-full border-4 border-[#F1F5F9] bg-[#2563EB] text-[#000000] flex items-center justify-center text-[10px] font-black">+{selectedVendors.length - 3}</div>
+                                        <div className="h-10 w-10 rounded-full border-4 border-[#F1F5F9] bg-[#2563EB] text-white flex items-center justify-center text-[10px] font-black">+{selectedVendors.length - 3}</div>
                                     )}
                                 </div>
                                 <div className="text-xs text-[#000000] font-medium">Báo giá sẽ được gửi qua Email & Hệ thống Portal.</div>
@@ -724,7 +724,7 @@ export default function CreateRFQPage() {
                             <button 
                                 type="submit" 
                                 disabled={isSubmitting || selectedVendors.length === 0}
-                                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isSubmitting ? "Đang xử lý..." : "PHÁT HÀNH RFQ"}
                                 <Send size={16} />

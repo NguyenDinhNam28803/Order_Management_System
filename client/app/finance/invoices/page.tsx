@@ -96,7 +96,7 @@ export default function FinanceInvoicesPage() {
 
             <div className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
                 <div>
-                    <h1 className="text-4xl font-black text-[#000000] tracking-tighter uppercase mb-2">
+                    <h1 className="text-4xl font-black text-[#0F172A] tracking-tighter uppercase mb-2">
                         Quản lý Hóa đơn
                     </h1>
                     <p className="text-[#000000] font-bold text-sm tracking-tight flex items-center gap-2">
@@ -107,7 +107,7 @@ export default function FinanceInvoicesPage() {
             </div>
 
             {/* Filter Bar */}
-            <div className="bg-[#F1F5F9] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
+            <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1 flex gap-3">
                         <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
@@ -115,7 +115,7 @@ export default function FinanceInvoicesPage() {
                         </div>
                         <div className="relative flex-1">
                             <input
-                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#000000]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#94A3B8]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                 placeholder="Tìm theo số hóa đơn, nhà cung cấp, PO..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -240,7 +240,7 @@ export default function FinanceInvoicesPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
                 <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#000000] uppercase tracking-widest mb-1">Tổng hóa đơn</p>
-                    <p className="text-2xl font-black text-[#000000]">{invoices.length}</p>
+                    <p className="text-2xl font-black text-[#0F172A]">{invoices.length}</p>
                 </div>
                 <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#000000] uppercase tracking-widest mb-1">Chờ đối soát</p>
@@ -256,7 +256,7 @@ export default function FinanceInvoicesPage() {
                 </div>
                 <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <p className="text-xs text-[#000000] uppercase tracking-widest mb-1">Tổng giá trị</p>
-                    <p className="text-xl font-black text-[#000000]">
+                    <p className="text-xl font-black text-[#0F172A]">
                         {formatVND(invoicesWithDetails.reduce((sum, i: InvoiceWithDetails) => sum + Number(i.totalAmount || i.amount || 0), 0))}
                     </p>
                 </div>

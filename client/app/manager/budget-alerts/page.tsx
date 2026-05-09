@@ -107,7 +107,7 @@ export default function BudgetAlertsPage() {
                                         onClick={() => handleApprove(alert.id)}
                                         disabled={loadingId === alert.id}
                                         className={`px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transform hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${
-                                            severity === 'EXCEEDED' ? 'bg-white text-rose-600' : 'bg-[#2563EB] text-[#000000]'
+                                            severity === 'EXCEEDED' ? 'bg-white text-rose-600' : 'bg-[#2563EB] text-white'
                                         }`}
                                     >
                                         {loadingId === alert.id ? <Loader2 size={16} className="animate-spin" /> : "PHÊ DUYỆT VƯỢT MỨC"}
@@ -131,7 +131,7 @@ export default function BudgetAlertsPage() {
                     <div className="h-24 w-24 bg-emerald-500/10 rounded-[2rem] flex items-center justify-center mb-10 text-black">
                         <CheckCircle size={64} />
                     </div>
-                    <h3 className="text-2xl font-black text-[#000000] mb-4 tracking-tight uppercase">Hệ thống an toàn</h3>
+                    <h3 className="text-2xl font-black text-[#0F172A] mb-4 tracking-tight uppercase">Hệ thống an toàn</h3>
                     <p className="font-bold text-[#000000] tracking-widest uppercase text-xs">Không có yêu cầu vượt định mức nào cần xử lý</p>
                 </div>
             )}

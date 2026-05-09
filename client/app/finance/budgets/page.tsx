@@ -160,7 +160,7 @@ export default function FinanceBudgetsPage() {
             {/* Success Toast */}
             {saveSuccess && (
                 <div className="fixed top-10 left-1/2 -translate-x-1/2 z-100 animate-in slide-in-from-top-10 duration-500">
-                    <div className="bg-white rounded-3xl shadow-2xl shadow-erp-navy/20 border border-slate-100 p-6 pr-10 flex items-center gap-5">
+                    <div className="bg-white rounded-xl shadow-2xl shadow-erp-navy/20 border border-slate-100 p-6 pr-10 flex items-center gap-5">
                         <div className="h-14 w-14 rounded-2xl bg-green-500 flex items-center justify-center text-[#000000] shadow-lg shadow-green-200">
                             <CheckCircle2 size={32} className="animate-bounce" />
                         </div>
@@ -244,7 +244,7 @@ export default function FinanceBudgetsPage() {
                             { label: `Đã giải ngân (${dashLabel})`, val: dashStats.spent, color: 'text-amber-600', bg: 'bg-amber-50', icon: ArrowUpRight },
                             { label: `Số dư khả dụng (${dashLabel})`, val: dashStats.remaining, color: 'text-green-600', bg: 'bg-green-50', icon: ShieldCheck },
                         ].map((s, idx) => (
-                            <div key={idx} className="bg-white p-8 rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 relative overflow-hidden group">
+                            <div key={idx} className="bg-white p-8 rounded-xl border border-slate-100 shadow-xl shadow-erp-navy/5 relative overflow-hidden group">
                                 <div className={`absolute top-0 right-0 p-4 ${s.bg} rounded-bl-3xl opacity-50 group-hover:opacity-100 transition-opacity`}>
                                     <s.icon size={20} className={s.color} />
                                 </div>
@@ -277,7 +277,7 @@ export default function FinanceBudgetsPage() {
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
                                     {dashGroupedByCC.length > 0 ? dashGroupedByCC.map((g) => {
-                                        const p = (g.spentAmount / g.allocatedAmount) * 100;
+                                        const p = g.allocatedAmount > 0 ? (g.spentAmount / g.allocatedAmount) * 100 : 0;
                                         return (
                                             <tr key={g.costCenterId} className="hover:bg-slate-50/50 transition-colors">
                                                 <td className="px-8 py-6">
@@ -374,7 +374,7 @@ export default function FinanceBudgetsPage() {
                                     { key: 'q4', label: 'Quý 4', color: 'bg-pink-500' },
                                     { key: 'reserve', label: 'Dự phòng', color: 'bg-amber-500' },
                                 ].map((item) => (
-                                    <div key={item.key} className="p-6 rounded-4xl bg-slate-50/50 border border-slate-100 hover:border-erp-blue/30 transition-all group">
+                                    <div key={item.key} className="p-6 rounded-xl bg-slate-50/50 border border-slate-100 hover:border-erp-blue/30 transition-all group">
                                         <div className="flex justify-between items-center mb-4">
                                             <span className="text-[10px] font-black text-black uppercase tracking-widest">{item.label}</span>
                                             <div className="h-1.5 w-8 bg-slate-200 rounded-full overflow-hidden">
@@ -391,7 +391,7 @@ export default function FinanceBudgetsPage() {
                                     </div>
                                 ))}
 
-                                <div className={`p-6 rounded-4xl border-2 flex flex-col justify-center items-center ${
+                                <div className={`p-6 rounded-xl border-2 flex flex-col justify-center items-center ${
                                     isValid ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100 animate-pulse'
                                 }`}>
                                     <div className="text-[9px] font-black uppercase tracking-widest text-black mb-1">Check Balance</div>
@@ -413,7 +413,7 @@ export default function FinanceBudgetsPage() {
                             <button 
                                 disabled={!isValid || !selectedCCId || isSaving}
                                 onClick={handleSave}
-                                className={`w-full py-5 rounded-3xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all ${
+                                className={`w-full py-5 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all ${
                                     isValid && selectedCCId 
                                     ? 'bg-white text-brand-primary hover:scale-[1.02] shadow-xl' 
                                     : 'bg-white/10 text-[#000000]/30'

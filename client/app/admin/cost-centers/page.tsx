@@ -116,27 +116,27 @@ export default function CostCentersPage() {
 
             <div className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight uppercase">Quản lý Cost Center</h1>
-                    <p className="text-sm text-[#000000] mt-1 font-medium italic">CẤU HÌNH BỘ PHẬN VÀ PHÂN BỔ NGÂN SÁCH ĐỊNH MỨC</p>
+                    <h1 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">Quản lý Cost Center</h1>
+                    <p className="text-sm text-[#64748B] mt-1 font-medium italic">CẤU HÌNH BỘ PHẬN VÀ PHÂN BỔ NGÂN SÁCH ĐỊNH MỨC</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-lg font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm Cost Center
                 </button>
             </div>
 
-            <div className="erp-card p-0! overflow-hidden bg-[#F1F5F9] shadow-sm border border-[rgba(148,163,184,0.1)]">
-                <div className="p-5 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
+            <div className="erp-card p-0! overflow-hidden bg-[#F1F5F9] shadow-sm border border-[#E2E8F0]">
+                <div className="p-5 bg-[#FFFFFF] border-b border-[#E2E8F0] flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                        <span className="text-xs font-bold text-[#000000] uppercase tracking-wider">Hệ thống:</span>
+                        <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Hệ thống:</span>
                         <div className="status-pill status-approved py-0.5 px-3">{costCenters?.length || 0} Đơn vị</div>
                     </div>
                     <div className="flex items-center gap-4">
                         <button 
                             onClick={toggleMyDept}
-                            className={`text-[10px] font-black px-4 py-2 rounded-xl transition-all border ${isMyDept ? 'bg-[#2563EB] text-[#000000] border-[#2563EB]' : 'bg-transparent text-[#000000] border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30'}`}
+                            className={`text-[10px] font-black px-4 py-2 rounded-xl transition-all border ${isMyDept ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-transparent text-[#0F172A] border-[#E2E8F0] hover:border-[#2563EB]/30'}`}
                         >
                             {isMyDept ? "PHÒNG BAN CỦA TÔI" : "TẤT CẢ ĐƠN VỊ"}
                         </button>
@@ -144,7 +144,7 @@ export default function CostCentersPage() {
                         <select
                             value={selectedDeptId}
                             onChange={(e) => setSelectedDeptId(e.target.value)}
-                            className="erp-input py-2 text-[10px] font-bold w-48 shadow-sm bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] text-[#000000] outline-none"
+                            className="erp-input py-2 text-[10px] font-bold w-48 shadow-sm bg-[#FFFFFF] border-[#E2E8F0] text-[#0F172A] outline-none"
                         >
                             <option value="">Tất cả phòng ban</option>
                             {departments?.map(dept => (
@@ -153,13 +153,13 @@ export default function CostCentersPage() {
                         </select>
 
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" size={14} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={14} />
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm mã hoặc tên..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="erp-input pl-10 py-2 text-xs w-64 h-10 shadow-sm bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] text-[#000000] placeholder:text-[#000000]"
+                                className="erp-input pl-10 py-2 text-xs w-64 h-10 shadow-sm bg-[#FFFFFF] border-[#E2E8F0] text-[#0F172A] placeholder:text-[#94A3B8]"
                             />
                         </div>
                     </div>
@@ -184,14 +184,14 @@ export default function CostCentersPage() {
                                 const usagePercent = annual > 0 ? (used / annual) * 100 : 0;
 
                                 return (
-                                    <tr key={cc.id} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-[rgba(148,163,184,0.1)]">
+                                    <tr key={cc.id} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-[#E2E8F0]">
                                         <td className="py-5">
                                             <div className="flex items-center gap-4">
                                                 <div className="h-10 w-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] border border-[#2563EB]/20">
                                                     <Building size={18} />
                                                 </div>
                                                 <div>
-                                                    <div className="text-sm font-bold text-[#000000] leading-tight">{cc.name}</div>
+                                                    <div className="text-sm font-bold text-[#0F172A] leading-tight">{cc.name}</div>
                                                     <div className="text-[10px] text-[#2563EB] font-bold mt-0.5 tracking-wider">
                                                         {cc.code}
                                                     </div>
@@ -200,19 +200,19 @@ export default function CostCentersPage() {
                                         </td>
                                         <td>
                                             <div className="flex items-center gap-2">
-                                                <span className="font-semibold text-[#000000] text-xs">{dept?.name || "Hệ thống chung"}</span>
+                                                <span className="font-semibold text-[#0F172A] text-xs">{dept?.name || "Hệ thống chung"}</span>
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="flex items-center gap-1.5 font-bold text-[#000000]">
-                                                <DollarSign size={14} className="text-[#000000]" />
+                                            <div className="flex items-center gap-1.5 font-bold text-[#0F172A]">
+                                                <DollarSign size={14} className="text-[#94A3B8]" />
                                                 {formatVND(cc.budgetAnnual)}
                                             </div>
                                         </td>
                                         <td>
                                             <div className="space-y-1.5 max-w-50">
                                                 <div className="flex justify-between text-[10px] font-bold">
-                                                    <span className="text-[#000000] uppercase tracking-wider">{formatVND(cc.budgetUsed || 0)}</span>
+                                                    <span className="text-[#64748B] uppercase tracking-wider">{formatVND(cc.budgetUsed || 0)}</span>
                                                     <span className={usagePercent > 90 ? 'text-red-400' : 'text-[#2563EB]'}>
                                                         {usagePercent.toFixed(1)}%
                                                     </span>
@@ -231,14 +231,14 @@ export default function CostCentersPage() {
                                             <div className="flex justify-end gap-2">
                                                 <button
                                                     onClick={() => handleViewDetail(cc.id)}
-                                                    className="p-2 border border-[rgba(148,163,184,0.1)] rounded-lg hover:bg-[#FFFFFF] transition-colors text-[#000000] hover:text-[#2563EB]"
+                                                    className="p-2 border border-[#E2E8F0] rounded-lg hover:bg-[#FFFFFF] transition-colors text-[#64748B] hover:text-[#2563EB]"
                                                     title="Xem chi tiết"
                                                 >
                                                     <Eye size={14} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleOpenModal(cc)}
-                                                    className="p-2 border border-[rgba(148,163,184,0.1)] rounded-lg hover:bg-[#FFFFFF] transition-colors text-[#000000] hover:text-[#2563EB]"
+                                                    className="p-2 border border-[#E2E8F0] rounded-lg hover:bg-[#FFFFFF] transition-colors text-[#64748B] hover:text-[#2563EB]"
                                                     title="Sửa"
                                                 >
                                                     <Edit2 size={14} />
@@ -249,7 +249,7 @@ export default function CostCentersPage() {
                                                             removeCostCenter(cc.id);
                                                         }
                                                     }}
-                                                    className="p-2 border border-[rgba(148,163,184,0.1)] rounded-lg hover:bg-red-500/10 hover:border-red-500/30 transition-colors text-[#000000] hover:text-red-400"
+                                                    className="p-2 border border-[#E2E8F0] rounded-lg hover:bg-red-500/10 hover:border-red-500/30 transition-colors text-[#64748B] hover:text-red-400"
                                                     title="Xóa"
                                                 >
                                                     <Trash2 size={14} />
@@ -267,13 +267,13 @@ export default function CostCentersPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-[#E2E8F0] animate-in zoom-in-95 duration-200">
                         <div className="p-8">
-                            <div className="flex justify-between items-center mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4">
-                                <h2 className="text-xl font-bold text-[#000000]">
+                            <div className="flex justify-between items-center mb-8 border-b border-[#E2E8F0] pb-4">
+                                <h2 className="text-xl font-bold text-[#0F172A]">
                                     {editingCC ? "Cập nhật Cost Center" : "Thêm Trung tâm Chi phí"}
                                 </h2>
-                                <button onClick={() => setShowModal(false)} className="text-[#000000] hover:text-[#000000]"><X size={20}/></button>
+                                <button onClick={() => setShowModal(false)} className="text-[#64748B] hover:text-[#0F172A]"><X size={20}/></button>
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
@@ -365,32 +365,32 @@ export default function CostCentersPage() {
             {/* Detail Modal */}
             {showDetailModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl border border-[#E2E8F0] animate-in zoom-in-95 duration-200">
                         <div className="p-8">
-                             <div className="flex justify-between items-center mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4">
-                                <h2 className="text-xl font-bold text-[#000000]">Chi tiết Trung tâm Chi phí</h2>
-                                <button onClick={() => setShowDetailModal(false)} className="text-[#000000] hover:text-[#000000]"><X size={20}/></button>
+                             <div className="flex justify-between items-center mb-8 border-b border-[#E2E8F0] pb-4">
+                                <h2 className="text-xl font-bold text-[#0F172A]">Chi tiết Trung tâm Chi phí</h2>
+                                <button onClick={() => setShowDetailModal(false)} className="text-[#64748B] hover:text-[#0F172A]"><X size={20}/></button>
                             </div>
 
                             {isLoadingDetail ? (
                                 <div className="py-20 flex flex-col items-center justify-center gap-3">
                                     <div className="h-10 w-10 border-4 border-[#F1F5F9] border-t-[#2563EB] rounded-full animate-spin"></div>
-                                    <span className="text-xs font-bold text-[#000000] uppercase tracking-widest">Đang trích xuất dữ liệu...</span>
+                                    <span className="text-xs font-bold text-[#64748B] uppercase tracking-widest">Đang trích xuất dữ liệu...</span>
                                 </div>
                             ) : viewingCC ? (
                                 <div className="space-y-8">
-                                    <div className="grid grid-cols-2 gap-8 p-6 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-inner">
+                                    <div className="grid grid-cols-2 gap-8 p-6 bg-[#FFFFFF] rounded-xl border border-[#E2E8F0] shadow-inner">
                                         <div className="form-group">
                                             <label className="erp-label">Mã định danh</label>
                                             <div className="text-sm font-bold text-[#2563EB] tracking-wider">{viewingCC.code}</div>
                                         </div>
                                         <div className="form-group">
                                             <label className="erp-label">Tên hiển thị</label>
-                                            <div className="text-sm font-bold text-[#000000]">{viewingCC.name}</div>
+                                            <div className="text-sm font-bold text-[#0F172A]">{viewingCC.name}</div>
                                         </div>
                                         <div className="form-group">
                                             <label className="erp-label">Quản lý bởi</label>
-                                            <div className="text-sm font-semibold text-[#000000]">{viewingCC.department?.name || "Tất cả"}</div>
+                                            <div className="text-sm font-semibold text-[#0F172A]">{viewingCC.department?.name || "Tất cả"}</div>
                                         </div>
                                         <div className="form-group">
                                             <label className="erp-label">Trạng thái vận hành</label>
@@ -402,32 +402,32 @@ export default function CostCentersPage() {
 
                                     <div className="space-y-4">
                                         <div className="flex justify-between items-center">
-                                            <h3 className="text-xs font-bold text-[#000000] uppercase tracking-widest">Lịch sử cấp phát ngân sách (Quarterly)</h3>
+                                            <h3 className="text-xs font-bold text-[#64748B] uppercase tracking-widest">Lịch sử cấp phát ngân sách (Quarterly)</h3>
                                             <div className="status-pill status-draft py-0.5 px-3">{viewingCC.budgetAllocations?.length || 0} Đợt cấp</div>
                                         </div>
                                         
                                         <div className="max-h-64 overflow-y-auto pr-2 space-y-3">
                                             {viewingCC.budgetAllocations && viewingCC.budgetAllocations.length > 0 ? (
                                                 viewingCC.budgetAllocations.map((alloc) => (
-                                                    <div key={alloc.id} className="flex justify-between items-center p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all shadow-sm">
+                                                    <div key={alloc.id} className="flex justify-between items-center p-4 rounded-xl bg-[#FFFFFF] border border-[#E2E8F0] hover:border-[#2563EB]/30 transition-all shadow-sm">
                                                         <div className="flex items-center gap-4">
-                                                            <div className="h-10 w-10 rounded-lg bg-[#F1F5F9] flex items-center justify-center text-[#2563EB] font-bold text-xs border border-[rgba(148,163,184,0.1)]">
+                                                            <div className="h-10 w-10 rounded-lg bg-[#F1F5F9] flex items-center justify-center text-[#2563EB] font-bold text-xs border border-[#E2E8F0]">
                                                                 {alloc.budgetPeriod?.periodNumber ? `Q${alloc.budgetPeriod.periodNumber}` : 'FY'}
                                                             </div>
                                                             <div>
-                                                                <div className="text-xs font-bold text-[#000000]">Ngân sách {alloc.budgetPeriod?.fiscalYear || "Hàng năm"}</div>
-                                                                <div className="text-[10px] text-[#000000] font-medium italic">Ngày cập nhật: {new Date(alloc.createdAt).toLocaleDateString()}</div>
+                                                                <div className="text-xs font-bold text-[#0F172A]">Ngân sách {alloc.budgetPeriod?.fiscalYear || "Hàng năm"}</div>
+                                                                <div className="text-[10px] text-[#64748B] font-medium italic">Ngày cập nhật: {new Date(alloc.createdAt).toLocaleDateString()}</div>
                                                             </div>
                                                         </div>
                                                         <div className="text-right">
-                                                            <div className="text-sm font-bold text-[#000000]">{formatVND(alloc.allocatedAmount)}</div>
-                                                            <div className="text-[9px] font-bold text-black uppercase tracking-tighter">Đã ghi nhận</div>
+                                                            <div className="text-sm font-bold text-[#0F172A]">{formatVND(alloc.allocatedAmount)}</div>
+                                                            <div className="text-[9px] font-bold text-[#64748B] uppercase tracking-tighter">Đã ghi nhận</div>
                                                         </div>
                                                     </div>
                                                 ))
                                             ) : (
-                                                <div className="py-12 text-center bg-[#FFFFFF] rounded-xl border border-dashed border-[rgba(148,163,184,0.2)]">
-                                                    <p className="text-xs font-medium text-[#000000] italic">Chưa có dữ liệu phân bổ ngân sách chi tiết cho đơn vị này</p>
+                                                <div className="py-12 text-center bg-[#FFFFFF] rounded-xl border border-dashed border-[#E2E8F0]">
+                                                    <p className="text-xs font-medium text-[#64748B] italic">Chưa có dữ liệu phân bổ ngân sách chi tiết cho đơn vị này</p>
                                                 </div>
                                             )}
                                         </div>
@@ -435,7 +435,7 @@ export default function CostCentersPage() {
 
                                     <button
                                         onClick={() => setShowDetailModal(false)}
-                                        className="w-full btn-secondary py-3 text-[#000000] bg-[#FFFFFF] border-[rgba(148,163,184,0.1)]"
+                                        className="w-full btn-secondary py-3 text-[#0F172A] bg-[#FFFFFF] border-[#E2E8F0]"
                                     >
                                         Đóng thông tin
                                     </button>
