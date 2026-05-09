@@ -183,7 +183,7 @@ export default function SupplierContractsPage() {
                     >
                         <Bell size={20} />
                         {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-rose-500 text-[#000000] text-[10px] font-black flex items-center justify-center">
+                            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center">
                                 {unreadCount}
                             </span>
                         )}

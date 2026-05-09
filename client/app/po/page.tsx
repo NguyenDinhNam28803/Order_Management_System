@@ -470,7 +470,7 @@ export default function POPage() {
                                         {po.status === "SHIPPED" && (
                                             <button
                                                 onClick={() => router.push("/warehouse/dashboard")}
-                                                className="bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-[#000000] px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-1 transition-all"
+                                                className="bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-1 transition-all"
                                             >
                                                 Nhập kho <ArrowRight size={12} />
                                             </button>

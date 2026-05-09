@@ -147,7 +147,7 @@ export default function SupplierPO() {
                                 <button onClick={handleReject} className="px-6 py-3 border-2 border-rose-500/20 text-black hover:bg-rose-500/10 font-black uppercase tracking-widest text-[10px] rounded-xl transition-colors flex items-center gap-2">
                                     <XCircle size={14}/> Từ chối PO
                                 </button>
-                                <button onClick={handleConfirm} className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-[#000000] font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-md shadow-emerald-500/20">
+                                <button onClick={handleConfirm} className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-white font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-md shadow-emerald-500/20">
                                     <CheckCircle size={16}/> Xác nhận có thể thực hiện (Ack)
                                 </button>
                             </>
@@ -205,7 +205,7 @@ export default function SupplierPO() {
 
                             <div className="space-y-6 relative ml-2 before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#2563EB]/20 before:to-transparent mb-6">
                                 <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                    <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-emerald-500 text-[#000000] shadow relative z-10 font-bold"><CheckCircle size={10} /></div>
+                                    <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-emerald-500 text-white shadow relative z-10 font-bold"><CheckCircle size={10} /></div>
                                     <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-[#FFFFFF] p-3 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] ml-4 font-medium text-xs text-[#000000]">
                                         <div className="font-bold text-[#000000] text-[10px] uppercase tracking-widest mb-1">Hôm nay 10:00</div>
                                         Đã xác nhận PO. Nguyên vật liệu đang được chuẩn bị.
@@ -567,7 +567,7 @@ export default function SupplierPO() {
                                         </button>
                                         <button 
                                             onClick={handleConfirmModal}
-                                            className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-[#000000] font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-md shadow-emerald-500/20"
+                                            className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-white font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-md shadow-emerald-500/20"
                                         >
                                             <CheckCircle size={16}/> Xác nhận PO
                                         </button>

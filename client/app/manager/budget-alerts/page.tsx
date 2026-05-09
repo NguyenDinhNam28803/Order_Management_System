@@ -14,7 +14,7 @@ export default function BudgetAlertsPage() {
         switch(severity) {
             case "CAUTION": return "bg-amber-500/10 border-amber-500/20 text-black";
             case "CRITICAL": return "bg-rose-500/10 border-rose-500/20 text-black";
-            case "EXCEEDED": return "bg-rose-500 border-rose-600 text-[#000000] shadow-lg shadow-rose-500/20 animate-pulse";
+            case "EXCEEDED": return "bg-rose-500 border-rose-600 text-white shadow-lg shadow-rose-500/20 animate-pulse";
             default: return "bg-[#F1F5F9] border-[rgba(148,163,184,0.1)] text-[#000000]";
         }
     };

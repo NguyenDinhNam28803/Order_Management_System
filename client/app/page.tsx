@@ -670,8 +670,8 @@ export default function Dashboard() {
                                                 <td className="text-[#000000] italic text-[11px] font-medium">{b.notes || "Ngân sách định kỳ"}</td>
                                                 <td className="text-right px-8">
                                                     <div className="flex justify-end gap-1">
-                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="py-1.5 px-3 bg-emerald-500/10 text-black border border-emerald-500/20 rounded-lg font-black text-[9px] uppercase tracking-wider hover:bg-emerald-500 hover:text-[#000000] transition-all">Duyệt</button>
-                                                        <button onClick={() => actionApproval(b.workflowId, 'REJECT', 'Không hợp lệ')} className="p-1.5 border border-rose-500/20 text-black rounded-lg hover:bg-rose-500 hover:text-[#000000] transition-all"><XCircle size={12}/></button>
+                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="py-1.5 px-3 bg-emerald-500/10 text-black border border-emerald-500/20 rounded-lg font-black text-[9px] uppercase tracking-wider hover:bg-emerald-500 hover:text-white transition-all">Duyệt</button>
+                                                        <button onClick={() => actionApproval(b.workflowId, 'REJECT', 'Không hợp lệ')} className="p-1.5 border border-rose-500/20 text-black rounded-lg hover:bg-rose-500 hover:text-white transition-all"><XCircle size={12}/></button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -732,8 +732,8 @@ export default function Dashboard() {
                                         <td className="text-right px-8">
                                             <div className="flex justify-end gap-1">
                                                 <button onClick={() => setSelectedPRDetails(pr)} className="p-1.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-lg transition-all"><Eye size={12}/></button>
-                                                <button onClick={() => handleQuickApprove(pr.workflowId)} className="p-1.5 bg-emerald-500/10 border border-emerald-500/20 text-black hover:bg-emerald-500 hover:text-[#000000] rounded-lg transition-all"><CheckCircle size={12}/></button>
-                                                <button className="p-1.5 bg-rose-500/10 border border-rose-500/20 text-black hover:bg-rose-500 hover:text-[#000000] rounded-lg transition-all"><XCircle size={12}/></button>
+                                                <button onClick={() => handleQuickApprove(pr.workflowId)} className="p-1.5 bg-emerald-500/10 border border-emerald-500/20 text-black hover:bg-emerald-500 hover:text-white rounded-lg transition-all"><CheckCircle size={12}/></button>
+                                                <button className="p-1.5 bg-rose-500/10 border border-rose-500/20 text-black hover:bg-rose-500 hover:text-white rounded-lg transition-all"><XCircle size={12}/></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -1153,7 +1153,7 @@ export default function Dashboard() {
                         <div className="text-lg font-black text-[#000000] mb-2">Tạo yêu cầu mua hàng</div>
                         <button 
                             onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                            className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-[#000000] rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+                            className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
                         >
                             + Tạo PR Ngay
                         </button>
@@ -1480,13 +1480,13 @@ export default function Dashboard() {
                                                     <button onClick={() => setSelectedPRDetails(pr)} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-xl transition-all shadow-sm" title="Xem chi tiết">
                                                         <Eye size={14} />
                                                     </button>
-                                                    <button onClick={() => handleQuickApprove(pr.workflowId)} disabled={isSubmitting} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-emerald-500 hover:text-[#000000] rounded-xl transition-all shadow-sm disabled:opacity-50" title="Duyệt nhanh">
+                                                    <button onClick={() => handleQuickApprove(pr.workflowId)} disabled={isSubmitting} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-emerald-500 hover:text-white rounded-xl transition-all shadow-sm disabled:opacity-50" title="Duyệt nhanh">
                                                         <CheckCircle size={14} />
                                                     </button>
-                                                    <button className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-rose-500 hover:text-[#000000] rounded-xl transition-all shadow-sm" title="Từ chối nhanh">
+                                                    <button className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-rose-500 hover:text-white rounded-xl transition-all shadow-sm" title="Từ chối nhanh">
                                                         <XCircle size={14} />
                                                     </button>
-                                                    <button className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-amber-500 hover:text-[#000000] rounded-xl transition-all shadow-sm" title="Yêu cầu chỉnh sửa">
+                                                    <button className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-amber-500 hover:text-white rounded-xl transition-all shadow-sm" title="Yêu cầu chỉnh sửa">
                                                         <RotateCcw size={14} />
                                                     </button>
                                                 </div>
@@ -1719,7 +1719,7 @@ export default function Dashboard() {
                                         <button
                                             onClick={() => handleQuickApprove((selectedPRDetails as PR & { workflowId: string }).workflowId)}
                                             disabled={isSubmitting}
-                                            className="w-full h-14 bg-emerald-500 text-[#000000] rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-emerald-500/20 flex flex-col items-center justify-center hover:bg-emerald-600 transition-all"
+                                            className="w-full h-14 bg-emerald-500 text-white rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-emerald-500/20 flex flex-col items-center justify-center hover:bg-emerald-600 transition-all"
                                         >
                                             {isSubmitting ? <Loader2 className="animate-spin" /> : <><span>Phê duyệt nhanh</span><span className="text-[8px] opacity-60">Duyệt ngay trên Dashboard</span></>}
                                         </button>

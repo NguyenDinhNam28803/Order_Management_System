@@ -159,13 +159,13 @@ export default function PRPage() {
                             <div className="flex gap-1">
                                 <button
                                     onClick={() => handleAction(row.id, 'APPROVE')}
-                                    className="p-1 rounded bg-emerald-500/10 text-black hover:bg-emerald-500 hover:text-[#000000] border border-emerald-500/20 transition-all"
+                                    className="p-1 rounded bg-emerald-500/10 text-black hover:bg-emerald-500 hover:text-white border border-emerald-500/20 transition-all"
                                 >
                                     <Check size={14} />
                                 </button>
                                 <button
                                     onClick={() => handleAction(row.id, 'REJECT')}
-                                    className="p-1 rounded bg-rose-500/10 text-black hover:bg-rose-500 hover:text-[#000000] border border-rose-500/20 transition-all"
+                                    className="p-1 rounded bg-rose-500/10 text-black hover:bg-rose-500 hover:text-white border border-rose-500/20 transition-all"
                                 >
                                     <X size={14} />
                                 </button>

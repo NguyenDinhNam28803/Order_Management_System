@@ -145,7 +145,7 @@ export default function ContractDetailPage() {
                         <button
                             onClick={handleSubmit}
                             disabled={saving}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-[#000000] font-black text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider transition-all disabled:opacity-50"
                         >
                             <Send size={13} />
                             {saving ? "Đang gửi..." : "Gửi phê duyệt"}
@@ -154,7 +154,7 @@ export default function ContractDetailPage() {
                     {canSign && (
                         <button
                             onClick={() => setSignTarget(contract)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-[#000000] font-black text-xs uppercase tracking-wider transition-all"
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs uppercase tracking-wider transition-all"
                         >
                             <PenTool size={13} /> Ký hợp đồng
                         </button>
@@ -336,7 +336,7 @@ export default function ContractDetailPage() {
                         {canSign && (
                             <button
                                 onClick={() => setSignTarget(contract)}
-                                className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-[#000000] font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20"
+                                className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20"
                             >
                                 <PenTool size={13} /> Ký xác nhận ngay
                             </button>
@@ -416,7 +416,7 @@ export default function ContractDetailPage() {
                             <button
                                 onClick={handleTerminate}
                                 disabled={saving || !terminateReason.trim()}
-                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-[#000000] font-black text-sm transition-all disabled:opacity-50 flex items-center gap-2"
+                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black text-sm transition-all disabled:opacity-50 flex items-center gap-2"
                             >
                                 <Ban size={14} />
                                 {saving ? "Đang xử lý..." : "Xác nhận chấm dứt"}

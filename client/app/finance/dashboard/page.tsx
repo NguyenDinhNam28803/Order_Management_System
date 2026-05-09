@@ -138,7 +138,7 @@ export default function FinanceDashboard() {
                                 Tất cả
                             </button>
                             <button 
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-[#000000] shadow-lg shadow-rose-500/20' : 'text-[#000000] hover:text-[#000000]'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-[#000000] hover:text-[#000000]'}`}
                                 onClick={() => setActiveTab("EXCEPTION")}
                             >
                                 Exception <span className="bg-rose-500/20 text-black px-1.5 py-0.5 rounded-md text-[9px] border border-rose-500/20">{activeInvoices.filter((i) => i.status === 'EXCEPTION').length}</span>

@@ -145,7 +145,7 @@ function CreateModal({
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} className="rounded-lg px-4 py-2 text-sm text-[#000000] hover:text-[#000000]">Huỷ</button>
-            <button type="submit" disabled={loading} className="flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2 text-sm font-semibold text-[#000000] hover:bg-[#2563EB] disabled:opacity-50">
+            <button type="submit" disabled={loading} className="flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2563EB] disabled:opacity-50">
               {loading && <Loader2 size={14} className="animate-spin" />}Tạo
             </button>
           </div>
@@ -201,7 +201,7 @@ export default function SupplierVettingListPage() {
           <button onClick={() => void load()} className="rounded-lg border border-[#E2E8F0] bg-[#F1F5F9] px-3 py-2 text-sm text-[#000000] hover:text-[#000000]">
             <RefreshCw size={14} />
           </button>
-          <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2 text-sm font-semibold text-[#000000] hover:bg-[#2563EB]">
+          <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2563EB]">
             <Plus size={14} />Tạo yêu cầu
           </button>
         </div>

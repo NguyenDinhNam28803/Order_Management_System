@@ -90,10 +90,10 @@ export default function POApprovalsPage() {
                                     <td className="px-6 py-4 text-xs font-bold text-[#000000]">{new Date(po.createdAt).toLocaleDateString("vi-VN")}</td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-center gap-2">
-                                            <button onClick={() => handleApprove(po.id)} className="h-8 w-8 rounded-lg bg-emerald-500 text-[#000000] flex items-center justify-center hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/20">
+                                            <button onClick={() => handleApprove(po.id)} className="h-8 w-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/20">
                                                 <Check size={16} />
                                             </button>
-                                            <button onClick={() => setRejectModal({ isOpen: true, poId: po.id })} className="h-8 w-8 rounded-lg bg-rose-500 text-[#000000] flex items-center justify-center hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/20">
+                                            <button onClick={() => setRejectModal({ isOpen: true, poId: po.id })} className="h-8 w-8 rounded-lg bg-rose-500 text-white flex items-center justify-center hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/20">
                                                 <X size={16} />
                                             </button>
                                             <button className="h-8 w-8 rounded-lg bg-[#FFFFFF] text-[#000000] flex items-center justify-center hover:bg-[#F1F5F9] transition-colors border border-[rgba(148,163,184,0.1)]">
@@ -140,7 +140,7 @@ export default function POApprovalsPage() {
                             </button>
                             <button 
                                 onClick={handleReject}
-                                className="flex-1 py-3 rounded-2xl bg-rose-500 text-[#000000] font-black uppercase tracking-widest text-[10px] shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all active:scale-95"
+                                className="flex-1 py-3 rounded-2xl bg-rose-500 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all active:scale-95"
                             >
                                 Xác nhận từ chối
                             </button>

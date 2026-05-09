@@ -120,7 +120,7 @@ export default function SupplierManagementPage() {
                                 <tr key={s.id} className="hover:bg-[#FFFFFF]/50 transition-all group">
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-[#000000] shadow-lg shadow-black/20 transition-transform group-hover:scale-110 ${s.isActive !== false ? 'bg-[#2563EB]' : 'bg-[#000000]'}`}>
+                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white shadow-lg shadow-black/20 transition-transform group-hover:scale-110 ${s.isActive !== false ? 'bg-[#2563EB]' : 'bg-[#475569]'}`}>
                                                 {s.name.substring(0,2).toUpperCase()}
                                             </div>
                                             <div className="flex flex-col">

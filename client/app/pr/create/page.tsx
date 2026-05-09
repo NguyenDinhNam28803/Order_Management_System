@@ -960,13 +960,13 @@ export default function CreatePRPage() {
                         </div>
 
                         {/* HELPER CARD */}
-                        <div className="bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] rounded-2xl p-5 text-[#000000] shadow-lg shadow-[#2563EB]/20 relative overflow-hidden group">
+                        <div className="bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] rounded-2xl p-5 text-white shadow-lg shadow-[#2563EB]/20 relative overflow-hidden group">
                              <div className="absolute top-2 right-2 p-2 opacity-20 group-hover:scale-125 transition-transform duration-700">
                                  <Bot size={40} />
                              </div>
-                             <h4 className="text-[9px] font-black uppercase tracking-wider mb-2 text-[#000000]/80">AI Procurement Tip</h4>
+                             <h4 className="text-[9px] font-black uppercase tracking-wider mb-2 text-white/80">AI Procurement Tip</h4>
                              <p className="text-sm font-bold leading-tight mb-1 pr-8">Hệ thống AI vừa kiểm soát giá tham chiếu.</p>
-                             <p className="text-[10px] font-medium text-[#000000]/70">
+                             <p className="text-[10px] font-medium text-white/70">
                                 Đối chiếu giá từ 4 nhà cung cấp định kỳ.
                              </p>
                         </div>

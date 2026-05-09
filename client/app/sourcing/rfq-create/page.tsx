@@ -287,7 +287,7 @@ export default function RFQCreatePage() {
                                                 <div className="text-[10px] text-[#000000] font-bold uppercase tracking-tighter">SKU: {item.sku || "N/A"}</div>
                                             </td>
                                             <td className="px-4 py-5">
-                                                <div className="text-[10px] font-black text-[#000000] bg-[#2563EB] px-2 py-0.5 rounded-full inline-block uppercase tracking-widest">
+                                                <div className="text-[10px] font-black text-white bg-[#2563EB] px-2 py-0.5 rounded-full inline-block uppercase tracking-widest">
                                                     SP
                                                 </div>
                                             </td>
@@ -353,7 +353,7 @@ export default function RFQCreatePage() {
                                             <span className="text-[8px] font-black text-[#000000] uppercase tracking-widest mb-0.5">Est. Value</span>
                                             <span className="text-xs font-black text-[#2563EB]">{(pr.totalEstimate || 0).toLocaleString()} ₫</span>
                                         </div>
-                                        <div className="w-8 h-8 rounded-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#000000] group-hover:bg-emerald-500 group-hover:text-[#000000] group-hover:border-emerald-500 transition-all shadow-sm">
+                                        <div className="w-8 h-8 rounded-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#000000] group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500 transition-all shadow-sm">
                                             <Plus size={16} />
                                         </div>
                                     </div>

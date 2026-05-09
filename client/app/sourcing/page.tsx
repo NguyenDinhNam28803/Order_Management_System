@@ -258,7 +258,7 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
                                 <button 
                                     onClick={() => onAction(pr.id)}
                                     className={`inline-flex items-center gap-2 px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${
-                                        type === 'CATALOG' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 hover:bg-[#10B981] hover:text-[#000000]'
+                                        type === 'CATALOG' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 hover:bg-[#10B981] hover:text-white'
                                     }`}
                                     disabled={isProcessing}
                                 >
@@ -327,7 +327,7 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
                             </div>
                             <div className="flex gap-2">
                                 {qr.status === 'SUBMITTED' && <button onClick={() => handleStartProcessing(qr)} className="bg-[#2563EB] text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-[#2563EB]/20">Tiếp nhận</button>}
-                                {qr.status === 'PROCESSING' && <button onClick={() => handleOpenEdit(qr)} className="bg-amber-500 text-[#000000] px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-amber-500/20">Nhập giá</button>}
+                                {qr.status === 'PROCESSING' && <button onClick={() => handleOpenEdit(qr)} className="bg-amber-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-amber-500/20">Nhập giá</button>}
                             </div>
                         </div>
                     ))}
@@ -355,7 +355,7 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
                             </div>
                         ))}
                     </div>
-                    <button onClick={handleComplete} className="mt-8 bg-emerald-500 hover:bg-emerald-600 text-[#000000] w-full py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-emerald-500/20 transition-all active:scale-[0.98]">Gửi báo giá hoàn tất</button>
+                    <button onClick={handleComplete} className="mt-8 bg-emerald-500 hover:bg-emerald-600 text-white w-full py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-emerald-500/20 transition-all active:scale-[0.98]">Gửi báo giá hoàn tất</button>
                 </div>
             )}
         </div>

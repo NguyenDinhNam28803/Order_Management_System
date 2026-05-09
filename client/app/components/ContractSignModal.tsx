@@ -386,7 +386,7 @@ export default function ContractSignModal({
                             <button
                                 onClick={enterVerify}
                                 disabled={!agreed}
-                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-[#000000] font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                                 <PenTool size={14} /> Tiếp tục ký
                             </button>
@@ -404,7 +404,7 @@ export default function ContractSignModal({
                             <button
                                 onClick={handleConfirm}
                                 disabled={!codeMatches}
-                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-[#000000] font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                                 <ShieldCheck size={14} /> Xác nhận ký
                             </button>
@@ -420,7 +420,7 @@ export default function ContractSignModal({
                     {step === "success" && (
                         <button
                             onClick={onClose}
-                            className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-[#000000] font-black text-sm transition-all"
+                            className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all"
                         >
                             Hoàn tất
                         </button>

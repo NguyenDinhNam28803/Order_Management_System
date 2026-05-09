@@ -284,7 +284,7 @@ export default function BudgetAllocationPage() {
       {/* Warning Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         <div className="bg-amber-500/10 border border-amber-500/20 p-6 rounded-[2rem] flex items-start gap-4">
-          <div className="p-3 bg-amber-500 rounded-2xl text-[#000000] shadow-lg shadow-amber-500/20">
+          <div className="p-3 bg-amber-500 rounded-2xl text-white shadow-lg shadow-amber-500/20">
             <AlertCircle size={24} />
           </div>
           <div>

@@ -142,7 +142,7 @@ export default function FinanceMatching() {
                                                 </div>
                                             </div>
                                             {!item.matched && (
-                                                <div className="absolute top-1 right-1 text-[9px] font-black bg-rose-500 text-[#000000] px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                                <div className="absolute top-1 right-1 text-[9px] font-black bg-rose-500 text-white px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
                                                     <AlertTriangle size={8}/> +Lệch {item.diffPct.toFixed(1)}% (Invoice &gt; GRN)
                                                 </div>
                                             )}
@@ -192,11 +192,11 @@ export default function FinanceMatching() {
                                 </div>
                             </div>
                             <div className="mt-6 flex justify-end gap-4">
-                                <button className="bg-rose-500 hover:bg-rose-600 text-[#000000] px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-rose-500/20 transition-all flex items-center gap-2" onClick={handleRejectFeedback}>
+                                <button className="bg-rose-500 hover:bg-rose-600 text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-rose-500/20 transition-all flex items-center gap-2" onClick={handleRejectFeedback}>
                                     <Send size={16}/> Gửi Cảnh Cáo
                                 </button>
                                 {action === "Accept" && (
-                                    <button className="bg-indigo-500 hover:bg-indigo-600 text-[#000000] px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-500/20 transition-all flex items-center gap-2" onClick={() => setApprovalState("REVIEW")}>
+                                    <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-500/20 transition-all flex items-center gap-2" onClick={() => setApprovalState("REVIEW")}>
                                         <CheckCircle2 size={16}/> Override Tolerance (Chấp Nhận Lệch)
                                     </button>
                                 )}

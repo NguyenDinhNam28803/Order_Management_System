@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useProcurement, Product, ProductCategory } from "../../context/ProcurementContext";
 import { CreateProductDtoShort, CreateCategoryDto, CurrencyCode, ProductType } from "../../types/api-types";
+import { convertPrismaDecimal, formatVND } from "../../utils/formatUtils";
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
 import { 
     Plus, Search, Edit2, Trash2, 
@@ -44,7 +45,7 @@ export default function ProductAdminPage() {
 
     useEffect(() => {
         if (editingProduct) {
-            setProductForm({ ...editingProduct });
+            setProductForm({ ...editingProduct, unitPriceRef: convertPrismaDecimal(editingProduct.unitPriceRef) });
         } else {
             setProductForm({
                 name: "",
@@ -198,7 +199,7 @@ export default function ProductAdminPage() {
             key: "unitPriceRef",
             render: (row: Product) => (
                 <div className="font-black text-[#000000] text-sm">
-                    {Number(row.unitPriceRef || 0).toLocaleString()} ₫
+                    {formatVND(row.unitPriceRef)} ₫
                 </div>
             )
         },

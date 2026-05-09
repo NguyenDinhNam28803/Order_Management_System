@@ -18,7 +18,7 @@ export default function ApprovalHistoryPage() {
                 
                 <div className="flex gap-4 mt-6 lg:mt-0">
                     <div className="flex bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-1 shadow-sm">
-                        <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[#000000] bg-[#2563EB] rounded-xl transition-all shadow-sm">Hôm nay</button>
+                        <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white bg-[#2563EB] rounded-xl transition-all shadow-sm">Hôm nay</button>
                         <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[#000000] hover:text-[#000000] transition-all">Tuần này</button>
                         <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[#000000] hover:text-[#000000] transition-all">Tháng này</button>
                     </div>
@@ -51,7 +51,7 @@ export default function ApprovalHistoryPage() {
                     </div>
                 </div>
 
-                <button className="bg-[#2563EB] text-black h-14 flex items-center justify-center px-10 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 cursor-pointer hover:bg-[#1D4ED8] transition-all active:scale-95 border-none">
+                <button className="bg-[#2563EB] text-white h-14 flex items-center justify-center px-10 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 cursor-pointer hover:bg-[#1D4ED8] transition-all active:scale-95 border-none">
                     Áp dụng bộ lọc
                 </button>
             </div>
@@ -85,14 +85,14 @@ export default function ApprovalHistoryPage() {
                                     <div className="flex items-center gap-2">
                                         {item.status === 'APPROVED' ? (
                                             <>
-                                                <div className="h-5 w-5 rounded-full bg-emerald-500 text-[#000000] flex items-center justify-center">
+                                                <div className="h-5 w-5 rounded-full bg-emerald-500 text-white flex items-center justify-center">
                                                     <CheckCircle size={12} />
                                                 </div>
                                                 <span className="text-xs font-black text-black uppercase tracking-tight">Đã duyệt</span>
                                             </>
                                         ) : item.status === "PENDING" ? (
                                             <>
-                                                <div className="h-5 w-5 rounded-full bg-amber-500 text-[#000000] flex items-center justify-center">
+                                                <div className="h-5 w-5 rounded-full bg-amber-500 text-white flex items-center justify-center">
                                                     <Clock size={12} />
                                                 </div>
                                                 <span className="text-xs font-black text-black uppercase tracking-tight">Đang chờ duyệt</span>

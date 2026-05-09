@@ -326,7 +326,7 @@ export default function SupplierDashboard() {
       <div className="mt-auto">
         <div className="bg-[#FFFFFF] rounded-2xl p-4 border border-[rgba(148,163,184,0.1)]">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center font-black text-xs text-[#000000]">
+            <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center font-black text-xs text-white">
               ABC
             </div>
             <div className="overflow-hidden">
@@ -401,7 +401,7 @@ export default function SupplierDashboard() {
                     <div className="font-black text-[#000000] text-xs truncate group-hover:text-[#2563EB] transition-colors">{rfq.rfqId}</div>
                     <div className="flex items-center gap-1 mt-1">
                        {isSimulation && <span className="bg-[#2563EB] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
-                       {isApiData && <span className="bg-emerald-500 text-[#000000] text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">API</span>}
+                       {isApiData && <span className="bg-emerald-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">API</span>}
                     </div>
                   </td>
                   <td className="py-4 px-4">
@@ -631,9 +631,9 @@ export default function SupplierDashboard() {
       {/* Notifications */}
       {notification && (
         <div className={`fixed bottom-8 right-8 z-[100] animate-in slide-in-from-bottom-5 p-4 rounded-2xl shadow-2xl border flex items-center gap-3 min-w-[320px] ${
-          notification.type === 'success' ? 'bg-emerald-900 border-emerald-800 text-[#000000]' : 
-          notification.type === 'error' ? 'bg-rose-900 border-rose-800 text-[#000000]' : 
-          'bg-erp-navy border-slate-800 text-[#000000]'
+          notification.type === 'success' ? 'bg-emerald-900 border-emerald-800 text-white' :
+          notification.type === 'error' ? 'bg-rose-900 border-rose-800 text-white' :
+          'bg-erp-navy border-slate-800 text-white'
         }`}>
           {notification.type === 'success' ? <CheckCircle className="text-black" /> : <AlertCircle className="text-black" />}
           <div>
