@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
+import { randomBytes } from 'crypto';
 import { CreateUserModuleDto } from './dto/create-user-module.dto';
 import { UpdateUserModuleDto } from './dto/update-user-module.dto';
 import { UserRepository } from './user.repository';
@@ -25,9 +26,7 @@ export class UserModuleService {
   async create(createUserModuleDto: CreateUserModuleDto) {
     // 1. Nếu không có mật khẩu được cung cấp, tạo một mật khẩu ngẫu nhiên cực mạnh
     if (!createUserModuleDto.passwordHash) {
-      createUserModuleDto.passwordHash =
-        Math.random().toString(36).slice(-12) +
-        Math.random().toString(36).toUpperCase().slice(-12);
+      createUserModuleDto.passwordHash = randomBytes(16).toString('hex');
     }
 
     // 2. Tạo User trong DB (Mật khẩu sẽ được hash trong repository)

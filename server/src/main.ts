@@ -5,6 +5,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as pc from 'picocolors';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { randomUUID } from 'crypto';
+import type { Request, Response, NextFunction } from 'express';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { BigIntInterceptor } from './common/interceptors/bigint.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -12,6 +14,14 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  // --- Request ID middleware — attach x-request-id to every request for tracing ---
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const requestId = (req.headers['x-request-id'] as string) || randomUUID();
+    req.headers['x-request-id'] = requestId;
+    res.setHeader('x-request-id', requestId);
+    next();
+  });
 
   // --- Global Security & Validation ---
   app.use(helmet());

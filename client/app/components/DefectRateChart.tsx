@@ -13,6 +13,7 @@ import {
   ReferenceDot,
 } from "recharts";
 import { ScanLine, AlertTriangle, X, Loader2 } from "lucide-react";
+import Cookies from "js-cookie";
 
 // Constants for data generation
 const TOTAL_DAYS = 365;
@@ -107,7 +108,7 @@ const DefectRateChart: React.FC<{ supplierId: string | null }> = ({ supplierId }
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(true);
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/quality/suppliers/${supplierId}/history`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+        headers: { 'Authorization': `Bearer ${Cookies.get('token') ?? ''}` }
       })
       .then(res => res.json())
       .then(data => {

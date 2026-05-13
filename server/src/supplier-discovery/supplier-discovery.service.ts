@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { randomInt } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI } from '@google/genai';
 import { PrismaService } from '../prisma/prisma.service';
@@ -126,7 +127,7 @@ export class SupplierDiscoveryService {
       .replace(/[^a-zA-Z0-9]/g, '')
       .toUpperCase()
       .slice(0, 8);
-    const suffix = Math.floor(100 + Math.random() * 900);
+    const suffix = randomInt(100, 999);
     const code = `SUP-${base}-${suffix}`;
 
     return this.prisma.organization.create({

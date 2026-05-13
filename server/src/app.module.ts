@@ -67,8 +67,14 @@ import { GatewayModule } from './gateway/gateway.module';
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([
       {
+        name: 'global',
         ttl: 60000,
-        limit: 1000,
+        limit: 200,
+      },
+      {
+        name: 'auth',
+        ttl: 60000,
+        limit: 10,
       },
     ]),
     JwtModule.registerAsync({

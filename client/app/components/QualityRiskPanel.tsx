@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { AlertCircle, Loader2, FileText, TrendingUp, CheckCircle2 } from "lucide-react";
+import Cookies from "js-cookie";
 
 export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,7 +18,7 @@ export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {
     setLoading(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quality/suppliers/${supplierId}/trend`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { 'Authorization': `Bearer ${Cookies.get('token') ?? ''}` }
       });
       const data = await res.json();
       if (data.detected) setTrend(data);
@@ -42,7 +43,7 @@ export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          'Authorization': `Bearer ${Cookies.get('token') ?? ''}`
         },
         body: JSON.stringify({
           startRate: trend.startRate,

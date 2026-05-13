@@ -155,7 +155,7 @@ export default function LoginPage() {
                                     <button
                                         key={i}
                                         type="button"
-                                        onClick={() => { setEmail(u.email); setPassword("ProcureSmart@2024"); }}
+                                        onClick={() => { setEmail(u.email); setPassword(""); }}
                                         className="p-3 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-left hover:border-[#000000] transition-all group flex flex-col gap-1"
                                     >
                                         <div className="text-[8px] font-black text-black uppercase tracking-widest">{u.role}</div>

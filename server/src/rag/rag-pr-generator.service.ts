@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, Logger } from '@nestjs/common';
+import { randomInt } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmbeddingService } from './embedding.service';
 import { ConfigService } from '@nestjs/config';
@@ -553,7 +554,7 @@ Lưu ý:
 
     // Create SKU: first 3 letters of each word + random number
     const prefix = words.map((w) => w.slice(0, 3)).join('-');
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const randomNum = randomInt(1000, 9999);
 
     return `${prefix}-${randomNum}`;
   }

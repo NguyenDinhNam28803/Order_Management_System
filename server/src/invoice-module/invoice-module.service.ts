@@ -86,11 +86,17 @@ export class InvoiceModuleService {
         });
 
         if (budget) {
+          const committed = Number(budget.committedAmount);
+          if (committed < totalAmount) {
+            this.logger.warn(
+              `Budget committed (${committed}) < invoice totalAmount (${totalAmount}) for invoice ${id}. Adjusting to available committed amount.`,
+            );
+          }
           // decrement committedAmount và increment spentAmount
           await tx.budgetAllocation.update({
             where: { id: budget.id },
             data: {
-              committedAmount: { decrement: totalAmount },
+              committedAmount: { decrement: Math.min(totalAmount, committed) },
               spentAmount: { increment: totalAmount },
             },
           });
