@@ -133,7 +133,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                 {SUPPLIER_DISCOVERY_ROLES.includes(currentUser?.role ?? '') && pathname !== '/procurement/supplier-discovery' && (
                     <Link
                         href="/procurement/supplier-discovery"
-                        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold border border-violet-200 bg-violet-50 text-violet-600 hover:bg-violet-100 hover:border-violet-300 transition-all duration-150 shrink-0"
+                        className="hidden sm:flex btn-ai text-[11px] shrink-0"
                     >
                         <Sparkles size={11} className="shrink-0" />
                         Khám phá NCC

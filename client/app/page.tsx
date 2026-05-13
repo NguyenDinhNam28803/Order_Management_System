@@ -111,7 +111,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-slate-900 transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-100 hover:text-slate-900 transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
@@ -345,7 +345,7 @@ export default function Dashboard() {
                                                         const success = await createPRFromQuoteRequest(qr.id);
                                                         if (success) await refreshData();
                                                     }} 
-                                                    className="px-3 py-1.5 bg-[#2563EB] text-slate-900 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-95 shadow-md shadow-[#2563EB]/10"
+                                                    className="px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all active:scale-95 shadow-md shadow-[#2563EB]/10"
                                                   >
                                                     CHUYỂN SANG PR
                                                   </button>
@@ -445,7 +445,7 @@ export default function Dashboard() {
                 <button 
                     onClick={handleConvert} 
                     disabled={isConverting}
-                    className="px-8 py-4 bg-[#2563EB] hover:bg-emerald-500 text-slate-900 text-[10px] font-black uppercase tracking-[0.1em] rounded-2xl shadow-xl shadow-[#2563EB]/20 transition-all flex items-center gap-2 disabled:opacity-50"
+                    className="btn-primary text-[10px] uppercase tracking-[0.1em] disabled:opacity-50"
                 >
                     {isConverting ? (
                         <Loader2 className="animate-spin" size={14} />
@@ -670,8 +670,8 @@ export default function Dashboard() {
                                                 <td className="text-slate-900 italic text-[11px] font-medium">{b.notes || "Ngân sách định kỳ"}</td>
                                                 <td className="text-right px-8">
                                                     <div className="flex justify-end gap-1">
-                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="py-1.5 px-3 bg-emerald-500/10 text-black border border-emerald-500/20 rounded-lg font-black text-[9px] uppercase tracking-wider hover:bg-emerald-500 hover:text-slate-900 transition-all">Duyệt</button>
-                                                        <button onClick={() => actionApproval(b.workflowId, 'REJECT', 'Không hợp lệ')} className="p-1.5 border border-rose-500/20 text-black rounded-lg hover:bg-rose-500 hover:text-slate-900 transition-all"><XCircle size={12}/></button>
+                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="py-1.5 px-3 bg-[#059669] text-white rounded-lg font-black text-[9px] uppercase tracking-wider hover:bg-[#047857] transition-all">Duyệt</button>
+                                                        <button onClick={() => actionApproval(b.workflowId, 'REJECT', 'Không hợp lệ')} className="p-1.5 bg-[#DC2626] text-white rounded-lg hover:bg-[#B91C1C] transition-all"><XCircle size={12}/></button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -694,7 +694,7 @@ export default function Dashboard() {
                         <button className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-[#0F172A] transition-all shadow-sm">
                             Lọc <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#2563EB] text-slate-900 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-md shadow-[#2563EB]/20">
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-md shadow-[#2563EB]/20">
                             <Zap size={14} /> Xuất
                         </button>
                     </div>
@@ -732,8 +732,8 @@ export default function Dashboard() {
                                         <td className="text-right px-8">
                                             <div className="flex justify-end gap-1">
                                                 <button onClick={() => setSelectedPRDetails(pr)} className="p-1.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-lg transition-all"><Eye size={12}/></button>
-                                                <button onClick={() => handleQuickApprove(pr.workflowId)} className="p-1.5 bg-emerald-500/10 border border-emerald-500/20 text-black hover:bg-emerald-500 hover:text-slate-900 rounded-lg transition-all"><CheckCircle size={12}/></button>
-                                                <button className="p-1.5 bg-rose-500/10 border border-rose-500/20 text-black hover:bg-rose-500 hover:text-slate-900 rounded-lg transition-all"><XCircle size={12}/></button>
+                                                <button onClick={() => handleQuickApprove(pr.workflowId)} className="p-1.5 bg-[#059669] text-white hover:bg-[#047857] rounded-lg transition-all"><CheckCircle size={12}/></button>
+                                                <button className="p-1.5 bg-[#DC2626] text-white hover:bg-[#B91C1C] rounded-lg transition-all"><XCircle size={12}/></button>
                                             </div>
                                         </td>
                                     </tr>

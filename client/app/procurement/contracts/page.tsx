@@ -154,7 +154,7 @@ export default function ContractsPage() {
                 </div>
                 <button
                     onClick={openCreate}
-                    className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-[#2563EB]/20 transition-all"
+                    className="btn-primary text-xs uppercase tracking-wider"
                 >
                     <Plus size={16} /> Tạo hợp đồng mới
                 </button>
@@ -328,7 +328,7 @@ export default function ContractsPage() {
                                                     {canSign && (
                                                         <button
                                                             onClick={() => setSignTarget(c)}
-                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-black bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all"
+                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-white bg-[#059669] hover:bg-[#047857] transition-all"
                                                             title="Ký hợp đồng"
                                                         >
                                                             <PenTool size={12} /> Ký
@@ -523,13 +523,13 @@ export default function ContractsPage() {
 
                         {/* Footer */}
                         <div className="px-8 py-6 border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-b-[2rem] flex justify-end gap-3">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-[#0F172A] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-slate-100 transition-all">
                                 Hủy
                             </button>
                             <button
                                 onClick={handleSave}
                                 disabled={saving || !formValid}
-                                className="px-5 py-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 font-black text-sm shadow-lg shadow-[#2563EB]/20 transition-all disabled:opacity-50"
+                                className="btn-primary text-sm disabled:opacity-50"
                             >
                                 {saving ? "Đang lưu..." : modal === "create" ? "Tạo hợp đồng" : "Lưu thay đổi"}
                             </button>
@@ -555,13 +555,13 @@ export default function ContractsPage() {
                             </div>
                         </div>
                         <div className="flex gap-3 justify-end">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-[#0F172A] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-slate-100 transition-all">
                                 Hủy
                             </button>
                             <button
                                 onClick={handleDelete}
                                 disabled={saving}
-                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-slate-900 font-black text-sm transition-all disabled:opacity-50"
+                                className="btn-danger text-sm disabled:opacity-50"
                             >
                                 {saving ? "Đang xóa..." : "Xác nhận xóa"}
                             </button>
@@ -598,13 +598,13 @@ export default function ContractsPage() {
                         </p>
 
                         <div className="flex gap-3 justify-end">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-[#0F172A] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-slate-100 transition-all">
                                 Hủy
                             </button>
                             <button
                                 onClick={handleApprove}
                                 disabled={saving}
-                                className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-900 font-black text-sm transition-all disabled:opacity-50 flex items-center gap-2"
+                                className="btn-warning text-sm disabled:opacity-50"
                             >
                                 <Send size={14} />
                                 {saving ? "Đang gửi..." : "Xác nhận gửi duyệt"}
@@ -647,13 +647,13 @@ export default function ContractsPage() {
                         </p>
 
                         <div className="flex gap-3 justify-end">
-                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-[#0F172A] transition-all">
+                            <button onClick={closeModal} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-slate-100 transition-all">
                                 Hủy
                             </button>
                             <button
                                 onClick={handleTerminate}
                                 disabled={saving || !terminateReason.trim()}
-                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-slate-900 font-black text-sm transition-all disabled:opacity-50 flex items-center gap-2"
+                                className="btn-danger text-sm disabled:opacity-50"
                             >
                                 <Ban size={14} />
                                 {saving ? "Đang xử lý..." : "Xác nhận chấm dứt"}

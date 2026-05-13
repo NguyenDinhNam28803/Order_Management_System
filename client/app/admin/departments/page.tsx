@@ -134,6 +134,15 @@ export default function DepartmentsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                            {(!filteredDepartments || filteredDepartments.length === 0) && (
+                                <tr>
+                                    <td colSpan={5} className="py-16 text-center text-slate-400">
+                                        <svg className="mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" /></svg>
+                                        <p className="text-sm font-semibold">Chưa có phòng ban nào</p>
+                                        <p className="text-xs mt-1">Nhấn &ldquo;Thêm phòng ban&rdquo; để bắt đầu</p>
+                                    </td>
+                                </tr>
+                            )}
                             {filteredDepartments?.map((dept: Department) => (
                                 <tr key={dept.id} className="hover:bg-[#FFFFFF]/30 transition-colors">
                                     <td className="p-5">
@@ -157,7 +166,11 @@ export default function DepartmentsPage() {
                                             <span className="font-bold text-slate-900">{dept.head?.fullName || "Chưa chỉ định"}</span>
                                         </div>
                                     </td>
-                                    <td className="p-5 text-center font-bold text-black uppercase tracking-widest text-[10px]">Đang hoạt động</td>
+                                    <td className="p-5 text-center">
+                                        <span className={`status-pill ${dept.isActive !== false ? 'status-approved' : 'status-draft'}`}>
+                                            {dept.isActive !== false ? 'Đang hoạt động' : 'Tạm ngưng'}
+                                        </span>
+                                    </td>
                                     <td className="p-5 text-center">
                                         <div className="flex items-center justify-center gap-1 text-[#2563EB] font-black">
                                             <Users size={12} />
