@@ -7,6 +7,7 @@ import { ApiBearerAuth } from '@nestjs/swagger/dist/decorators/api-bearer.decora
 import { ValidateTokenDto } from './dto/validate-token.dto';
 import type { Request } from 'express';
 import { ApiOperation } from '@nestjs/swagger/dist/decorators/api-operation.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 interface RequestWithUser extends Request {
   user: { sub: string };
@@ -22,6 +23,7 @@ export class AuthModuleController {
    * @returns Token truy cập và thông tin người dùng
    */
   @Post('login')
+  @Throttle({ auth: { ttl: 60000, limit: 10 } })
   @ApiOperation({
     summary: 'Đăng nhập',
     description: 'Đăng nhập vào hệ thống với thông tin người dùng',
@@ -36,6 +38,7 @@ export class AuthModuleController {
    * @returns Thông tin người dùng vừa được tạo
    */
   @Post('register')
+  @Throttle({ auth: { ttl: 60000, limit: 10 } })
   @ApiOperation({
     summary: 'Đăng ký',
     description: 'Đăng ký tài khoản mới trong hệ thống',
@@ -50,6 +53,7 @@ export class AuthModuleController {
    * @returns Token mới
    */
   @Post('refresh-token')
+  @Throttle({ auth: { ttl: 60000, limit: 10 } })
   @ApiOperation({
     summary: 'Làm mới token',
     description: 'Làm mới token JWT khi token cũ sắp hết hạn',

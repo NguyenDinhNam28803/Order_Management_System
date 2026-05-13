@@ -304,7 +304,7 @@ export class AuthModuleRepository {
   }
 
   private async updateRefreshTokenHash(userId: string, refreshToken: string) {
-    const hash = await bcrypt.hash(refreshToken, 10);
+    const hash = await bcrypt.hash(refreshToken, 12);
     const refreshTokenTtlDays = this.configService.get<number>(
       'REFRESH_TOKEN_TTL_DAYS',
       7,

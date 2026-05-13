@@ -59,20 +59,7 @@ export class PomoduleService {
    * @param user Thông tin người thực hiện (Procurement/Buyer)
    */
   async createFromPr(prId: string, supplierId: string, user: JwtPayload) {
-    // 1. Kiểm tra PR
-    const pr = await this.prisma.purchaseRequisition.findUnique({
-      where: { id: prId },
-      include: { items: true },
-    });
-
-    if (!pr) throw new NotFoundException('Không tìm thấy yêu cầu mua sắm (PR)');
-    if (pr.status !== 'APPROVED') {
-      throw new BadRequestException(
-        'Chỉ có thể tạo PO từ PR đã được duyệt hoàn toàn.',
-      );
-    }
-
-    // [Thêm mới] Kiểm tra trạng thái nhà cung cấp
+    // Kiểm tra nhà cung cấp trước transaction
     const supplier = await this.prisma.organization.findUnique({
       where: { id: supplierId },
     });
@@ -82,11 +69,32 @@ export class PomoduleService {
       );
     }
 
-    // 2. Chuẩn bị dữ liệu PO từ PR
     const poNumber = generateDocNumber('PO');
 
     const po = await this.prisma.$transaction(async (tx) => {
-      // A. Tạo PO
+      // Atomic: cập nhật PR từ APPROVED → PO_CREATED chỉ khi vẫn còn APPROVED.
+      // Nếu 2 request đồng thời, chỉ 1 request thành công; request còn lại nhận count=0.
+      const updated = await tx.purchaseRequisition.updateMany({
+        where: { id: prId, status: 'APPROVED' as PrStatus },
+        data: { status: 'PO_CREATED' as PrStatus },
+      });
+
+      if (updated.count === 0) {
+        // PR không tồn tại hoặc không còn ở trạng thái APPROVED
+        const pr = await tx.purchaseRequisition.findUnique({ where: { id: prId } });
+        if (!pr) throw new NotFoundException('Không tìm thấy yêu cầu mua sắm (PR)');
+        throw new BadRequestException(
+          `Không thể tạo PO: PR đang ở trạng thái ${pr.status}. Chỉ PR đã APPROVED mới được phép.`,
+        );
+      }
+
+      // Lấy PR với items sau khi lock thành công
+      const pr = await tx.purchaseRequisition.findUniqueOrThrow({
+        where: { id: prId },
+        include: { items: true },
+      });
+
+      // Tạo PO
       const newPo = await tx.purchaseOrder.create({
         data: {
           poNumber,
@@ -104,7 +112,7 @@ export class PomoduleService {
         },
       });
 
-      // B. Copy các item từ PR sang PO
+      // Copy items từ PR sang PO
       for (const item of pr.items) {
         await tx.poItem.create({
           data: {
@@ -120,12 +128,6 @@ export class PomoduleService {
           },
         });
       }
-
-      // C. Cập nhật trạng thái PR
-      await tx.purchaseRequisition.update({
-        where: { id: pr.id },
-        data: { status: 'PO_CREATED' as PrStatus },
-      });
 
       return newPo;
     });
