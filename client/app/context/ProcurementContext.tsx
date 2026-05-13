@@ -460,9 +460,36 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 spentAmount: convertPrismaDecimal(b.spentAmount),
             });
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const normalizeInvoice = (i: any): Invoice => ({
+                ...i,
+                amount: convertPrismaDecimal(i.amount ?? i.totalAmount ?? i.total),
+                totalAmount: convertPrismaDecimal(i.totalAmount ?? i.amount ?? i.total),
+                vendor: i.vendor || i.supplierName || i.supplier?.name || 'N/A',
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const normalizePO = (p: any): PO => ({
+                ...p,
+                total: convertPrismaDecimal(p.total ?? p.totalAmount),
+                totalAmount: convertPrismaDecimal(p.totalAmount ?? p.total),
+                vendor: p.vendor || p.supplierName || p.supplier?.name || p.supplierId || 'N/A',
+                items: p.items?.map((item: any) => ({
+                    ...item,
+                    qty: convertPrismaDecimal(item.qty ?? item.quantity),
+                    quantity: convertPrismaDecimal(item.quantity ?? item.qty),
+                    unitPrice: convertPrismaDecimal(item.unitPrice ?? item.estimatedPrice),
+                    estimatedPrice: convertPrismaDecimal(item.estimatedPrice ?? item.unitPrice),
+                    totalPrice: convertPrismaDecimal(item.totalPrice ?? item.total),
+                })) || [],
+            });
+
             const prsData   = rawPrsData   ? rawPrsData.map(normalizePR)   : null;
             const myPrsData = rawMyPrsData ? rawMyPrsData.map(normalizePR) : null;
             const allocsDataNormalized = allocsData ? allocsData.map(normalizeBudgetAlloc) : null;
+            const invoicesNormalized   = invoicesData ? invoicesData.map(normalizeInvoice) : null;
+            const posNormalized        = posData  ? posData.map(normalizePO)  : null;
+            const posAllNormalized     = posAllData ? posAllData.map(normalizePO) : null;
 
             // Single atomic setState — triggers exactly 1 re-render
             setState(prev => ({
@@ -478,11 +505,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 ...(productsData   !== null && { products: productsData }),
                 ...(categoriesData !== null && { categories: categoriesData }),
                 ...(ccData         !== null && { costCenters: ccData }),
-                ...(posData        !== null && { pos: posData }),
-                ...(posAllData     !== null && { allPos: posAllData }),
+                ...(posNormalized        !== null && { pos: posNormalized }),
+                ...(posAllNormalized     !== null && { allPos: posAllNormalized }),
                 ...(rfqsData       !== null && { rfqs: rfqsData }),
                 ...(grnsData       !== null && { grns: grnsData }),
-                ...(invoicesData   !== null && { invoices: invoicesData }),
+                ...(invoicesNormalized   !== null && { invoices: invoicesNormalized }),
                 ...(contractsData  !== null && { contracts: (contractsData as Contract[]).map((c) => ({ ...c, totalValue: (c as unknown as Record<string,unknown>).totalValue ?? (c as unknown as Record<string,unknown>).value ?? 0, supplier: (c as unknown as Record<string,unknown>).supplierOrg ?? c.supplier })) as Contract[] }),
                 ...(disputesData   !== null && { disputes: disputesData }),
                 ...(newBudgetOverrides !== null && { budgetOverrides: newBudgetOverrides }),
@@ -1249,7 +1276,22 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const fetchQuotationsByRfq = useCallback(async (rfqId: string) => {
         const resp = await apiFetch(`/request-for-quotations/${rfqId}/quotations`);
-        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        if (resp.ok) {
+            const res = await resp.json();
+            const arr = res.data || res;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return Array.isArray(arr) ? arr.map((q: any) => ({
+                ...q,
+                totalPrice: convertPrismaDecimal(q.totalPrice ?? q.total ?? q.amount),
+                leadTimeDays: q.leadTimeDays ?? q.leadTime ?? null,
+                items: Array.isArray(q.items) ? q.items.map((i: any) => ({
+                    ...i,
+                    unitPrice: convertPrismaDecimal(i.unitPrice ?? i.price),
+                    totalPrice: convertPrismaDecimal(i.totalPrice ?? i.total),
+                    qty: convertPrismaDecimal(i.qty ?? i.quantity),
+                })) : [],
+            })) : [];
+        }
         return [];
     }, [apiFetch]);
 
@@ -1524,7 +1566,15 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
     const fetchPayments = useCallback(async () => {
         const resp = await apiFetch('/payments');
-        if (resp.ok) { const res = await resp.json(); return res.data || res; }
+        if (resp.ok) {
+            const res = await resp.json();
+            const arr = res.data || res;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return Array.isArray(arr) ? arr.map((p: any) => ({
+                ...p,
+                amount: convertPrismaDecimal(p.amount ?? p.totalAmount),
+            })) : [];
+        }
         return [];
     }, [apiFetch]);
 

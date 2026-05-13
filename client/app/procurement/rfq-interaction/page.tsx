@@ -18,7 +18,7 @@ export default function RFQInteractionPage() {
                 <RFQInteraction rfqId={rfqId} />
             </div>
 
-            <div className="mt-12 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+            <div className="mt-12 bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
                 <h3 className="text-xs font-black uppercase tracking-widest text-black mb-6">Mô tả quy trình nghiệp vụ</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-2">

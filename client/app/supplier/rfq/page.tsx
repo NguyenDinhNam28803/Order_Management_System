@@ -267,7 +267,7 @@ export default function SupplierRFQ() {
                                 </div>
                             </div>
                             
-                            <div className="mx-8 mb-8 border-2 border-dashed border-[#2563EB]/20 rounded-[32px] p-10 text-center hover:bg-[#2563EB]/5 hover:border-[#2563EB]/40 cursor-pointer group transition-all duration-500 bg-[#FFFFFF]/50">
+                            <div className="mx-8 mb-8 border-2 border-dashed border-[#2563EB]/20 rounded-xl p-10 text-center hover:bg-[#2563EB]/5 hover:border-[#2563EB]/40 cursor-pointer group transition-all duration-500 bg-[#FFFFFF]/50">
                                 <div className="h-16 w-16 bg-[#2563EB]/10 text-[#2563EB] rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                                      <UploadCloud size={32} />
                                 </div>

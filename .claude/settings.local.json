@@ -37,7 +37,18 @@
       "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\client\\\\app\" -Recurse -Filter \"*.tsx\")",
       "Bash(Measure-Object)",
       "Bash(Select-Object -ExpandProperty Count)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\" -Force)",
+      "Bash(Select-Object Name, Mode)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(xargs -I {} grep -l \"@Post\\\\|@Get\\\\|@Put\\\\|@Delete\\\\|@Patch\" {})",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\client\" -Recurse -Directory -ErrorAction SilentlyContinue)",
+      "Bash(Get-ChildItem -Recurse -Filter \"*.tsx\")",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\" -Directory)",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\\\\src\" -Directory)"
     ]
   }
 }

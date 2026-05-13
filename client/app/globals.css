@@ -78,10 +78,10 @@
   --muted:                #94A3B8;
   --accent:               rgba(37, 99, 235, 0.06);
 
-  --radius-xl: 0.75rem;
-  --radius-lg: 0.5rem;
-  --radius-md: 0.375rem;
-  --radius-sm: 0.25rem;
+  --radius-xl: 0.625rem;   /* 10px — card corners, not too round */
+  --radius-lg: 0.5rem;     /* 8px  — input corners */
+  --radius-md: 0.375rem;   /* 6px  — inner elements */
+  --radius-sm: 0.25rem;    /* 4px  — badges, tags */
 }
 
 body {
