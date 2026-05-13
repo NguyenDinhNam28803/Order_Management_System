@@ -61,7 +61,7 @@ const Tooltip = ({ children, content, position = 'top' }: { children: React.Reac
 const getScorePercentage = (score?: number) => Math.min(Math.max(score || 0, 0), 100);
 
 const getScoreColor = (score?: number) => {
-  if (!score) return "text-[#000000]";
+  if (!score) return "text-slate-900";
   if (score >= 90) return "text-black";
   if (score >= 70) return "text-yellow-400";
   return "text-black";
@@ -114,9 +114,9 @@ const StatCard = ({ title, value, subtitle, icon: Icon, color, trend, onClick }:
         </div>
       )}
     </div>
-    <div className="text-2xl font-black text-[#0F172A] mb-1">{value}</div>
-    <div className="text-xs font-bold text-[#000000] uppercase tracking-wider">{title}</div>
-    {subtitle && <div className="text-[10px] text-[#000000] mt-1">{subtitle}</div>}
+    <div className="text-2xl font-black text-slate-900 mb-1">{value}</div>
+    <div className="text-xs font-bold text-slate-900 uppercase tracking-wider">{title}</div>
+    {subtitle && <div className="text-[10px] text-slate-900 mt-1">{subtitle}</div>}
   </div>
 );
 
@@ -126,9 +126,9 @@ const QuickAction = ({ icon: Icon, label, href, color }: { icon: React.ElementTy
     className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 hover:bg-[#F1F5F9] transition-all group"
   >
     <div className={`h-12 w-12 rounded-xl ${color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-      <Icon size={24} className="text-[#000000]" />
+      <Icon size={24} className="text-slate-900" />
     </div>
-    <span className="text-xs font-bold text-[#000000] text-center">{label}</span>
+    <span className="text-xs font-bold text-slate-900 text-center">{label}</span>
   </Link>
 );
 
@@ -337,7 +337,7 @@ export default function SupplierPortalPage() {
       case "invoice": return "text-black";
       case "contract": return "text-violet-400";
       case "message": return "text-black";
-      default: return "text-[#000000]";
+      default: return "text-slate-900";
     }
   };
 
@@ -346,7 +346,7 @@ export default function SupplierPortalPage() {
       <main className="min-h-screen bg-[#FFFFFF] p-6">
         <div className="flex flex-col items-center justify-center min-h-[400px]">
           <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4"></div>
-          <div className="text-[#000000] font-bold uppercase tracking-widest">Đang tải cổng thông tin...</div>
+          <div className="text-slate-900 font-bold uppercase tracking-widest">Đang tải cổng thông tin...</div>
         </div>
       </main>
     );
@@ -359,13 +359,13 @@ export default function SupplierPortalPage() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
-            <LayoutDashboard size={24} className="text-[#000000]" />
+            <LayoutDashboard size={24} className="text-slate-900" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-[#0F172A] tracking-tight">
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
               Cổng thông tin Nhà cung cấp
             </h1>
-            <p className="text-sm text-[#000000]">
+            <p className="text-sm text-slate-900">
               Xin chào, <span className="text-[#2563EB] font-bold">{supplierName}</span>
             </p>
           </div>
@@ -435,7 +435,7 @@ export default function SupplierPortalPage() {
           <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={18} className="text-[#2563EB]" />
-              <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Thao tác nhanh</h2>
+              <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Thao tác nhanh</h2>
             </div>
             <div className="grid grid-cols-5 gap-3">
               <QuickAction
@@ -476,7 +476,7 @@ export default function SupplierPortalPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Inbox size={18} className="text-[#2563EB]" />
-                <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">RFQ cần xử lý</h2>
+                <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">RFQ cần xử lý</h2>
               </div>
               <Link href="/supplier/rfq" className="text-xs font-bold text-[#2563EB] hover:text-[#3B82F6] flex items-center gap-1">
                 Xem tất cả <ArrowRight size={14} />
@@ -485,8 +485,8 @@ export default function SupplierPortalPage() {
             
             {recentRFQs.length === 0 ? (
               <div className="text-center py-8 bg-[#FFFFFF] rounded-xl">
-                <Inbox size={40} className="text-[#000000] mx-auto mb-3" />
-                <p className="text-[#000000] text-sm">Không có RFQ nào đang chờ</p>
+                <Inbox size={40} className="text-slate-900 mx-auto mb-3" />
+                <p className="text-slate-900 text-sm">Không có RFQ nào đang chờ</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -501,18 +501,18 @@ export default function SupplierPortalPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#000000] truncate">********</span>
+                        <span className="font-bold text-slate-900 truncate">********</span>
                         <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-black text-[10px] font-bold">
                           Chờ báo giá
                         </span>
                       </div>
-                      <p className="text-xs text-[#000000] mt-0.5 truncate">{rfq.title || "Yêu cầu báo giá"}</p>
+                      <p className="text-xs text-slate-900 mt-0.5 truncate">{rfq.title || "Yêu cầu báo giá"}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-xs text-[#000000]">{rfq.items?.length || 0} sản phẩm</div>
-                      <div className="text-[10px] text-[#000000]">{rfq.createdAt ? new Date(rfq.createdAt).toLocaleDateString() : "N/A"}</div>
+                      <div className="text-xs text-slate-900">{rfq.items?.length || 0} sản phẩm</div>
+                      <div className="text-[10px] text-slate-900">{rfq.createdAt ? new Date(rfq.createdAt).toLocaleDateString() : "N/A"}</div>
                     </div>
-                    <ChevronRight size={16} className="text-[#000000] group-hover:text-[#2563EB] transition-colors" />
+                    <ChevronRight size={16} className="text-slate-900 group-hover:text-[#2563EB] transition-colors" />
                   </div>
                 ))}
               </div>
@@ -524,7 +524,7 @@ export default function SupplierPortalPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <ShoppingCart size={18} className="text-black" />
-                <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Đơn hàng gần đây</h2>
+                <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Đơn hàng gần đây</h2>
               </div>
               <Link href="/supplier/po" className="text-xs font-bold text-black hover:text-emerald-300 flex items-center gap-1">
                 Xem tất cả <ArrowRight size={14} />
@@ -533,8 +533,8 @@ export default function SupplierPortalPage() {
             
             {recentPOs.length === 0 ? (
               <div className="text-center py-8 bg-[#FFFFFF] rounded-xl">
-                <ShoppingCart size={40} className="text-[#000000] mx-auto mb-3" />
-                <p className="text-[#000000] text-sm">Chưa có đơn hàng nào</p>
+                <ShoppingCart size={40} className="text-slate-900 mx-auto mb-3" />
+                <p className="text-slate-900 text-sm">Chưa có đơn hàng nào</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -549,23 +549,23 @@ export default function SupplierPortalPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#000000] truncate">Đơn hàng</span>
+                        <span className="font-bold text-slate-900 truncate">Đơn hàng</span>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           po.status === "ACKNOWLEDGED" ? "bg-emerald-500/10 text-black" :
                           po.status === "PENDING" ? "bg-amber-500/10 text-black" :
                           po.status === "SHIPPED" ? "bg-[#2563EB]/10 text-[#2563EB]" :
-                          "bg-[#000000]/10 text-[#000000]"
+                          "bg-[#000000]/10 text-slate-900"
                         }`}>
                           {po.status}
                         </span>
                       </div>
-                      <p className="text-xs text-[#000000] mt-0.5">{po.vendor || "Khách hàng"}</p>
+                      <p className="text-xs text-slate-900 mt-0.5">{po.vendor || "Khách hàng"}</p>
                     </div>
                     <div className="text-right shrink-0">
                       <div className="font-bold text-black">{formatVND(po.total || 0)}</div>
-                      <div className="text-[10px] text-[#000000]">{po.items?.length || 0} sản phẩm</div>
+                      <div className="text-[10px] text-slate-900">{po.items?.length || 0} sản phẩm</div>
                     </div>
-                    <ChevronRight size={16} className="text-[#000000] group-hover:text-black transition-colors" />
+                    <ChevronRight size={16} className="text-slate-900 group-hover:text-black transition-colors" />
                   </div>
                 ))}
               </div>
@@ -579,7 +579,7 @@ export default function SupplierPortalPage() {
           <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
               <Award size={18} className="text-black" />
-              <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Hiệu suất</h2>
+              <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Hiệu suất</h2>
             </div>
             
             <div className="text-center mb-6">
@@ -588,7 +588,7 @@ export default function SupplierPortalPage() {
                   {kpiLoading ? "..." : stats.performanceScore}
                 </span>
               </div>
-              <p className="text-sm text-[#000000]">Điểm đánh giá nhà cung cấp</p>
+              <p className="text-sm text-slate-900">Điểm đánh giá nhà cung cấp</p>
             </div>
 
             {/* Detailed KPI Metrics Grid */}
@@ -605,10 +605,10 @@ export default function SupplierPortalPage() {
                         <div className="space-y-1">
                           <p className="font-bold text-black">OTD - On-Time Delivery</p>
                           <p>Tỷ lệ giao hàng đúng hẹn</p>
-                          <p className="text-[#000000]">Trọng số: 30%</p>
+                          <p className="text-slate-900">Trọng số: 30%</p>
                         </div>
                       }>
-                        <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-black transition-colors">OTD Score</span>
+                        <span className="text-slate-900 text-xs font-bold uppercase cursor-help hover:text-black transition-colors">OTD Score</span>
                       </Tooltip>
                     </div>
                     <span className={`text-lg font-black ${getScoreColor(kpiData.otdScore)}`}>
@@ -624,7 +624,7 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.otdScore)}%` }}
                     />
                   </div>
-                  <p className="text-[#000000] text-[10px] mt-1">Giao hàng đúng hạn (30%)</p>
+                  <p className="text-slate-900 text-[10px] mt-1">Giao hàng đúng hạn (30%)</p>
                 </div>
 
                 {/* Quality Score */}
@@ -638,10 +638,10 @@ export default function SupplierPortalPage() {
                         <div className="space-y-1">
                           <p className="font-bold text-[#3B82F6]">Quality Score</p>
                           <p>Đánh giá chất lượng sản phẩm</p>
-                          <p className="text-[#000000]">Trọng số: 30%</p>
+                          <p className="text-slate-900">Trọng số: 30%</p>
                         </div>
                       }>
-                        <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-[#3B82F6] transition-colors">Quality</span>
+                        <span className="text-slate-900 text-xs font-bold uppercase cursor-help hover:text-[#3B82F6] transition-colors">Quality</span>
                       </Tooltip>
                     </div>
                     <span className={`text-lg font-black ${getScoreColor(kpiData.qualityScore)}`}>
@@ -657,7 +657,7 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.qualityScore)}%` }}
                     />
                   </div>
-                  <p className="text-[#000000] text-[10px] mt-1">Chất lượng sản phẩm (30%)</p>
+                  <p className="text-slate-900 text-[10px] mt-1">Chất lượng sản phẩm (30%)</p>
                 </div>
 
                 {/* Price Score */}
@@ -671,10 +671,10 @@ export default function SupplierPortalPage() {
                         <div className="space-y-1">
                           <p className="font-bold text-yellow-400">Price Score</p>
                           <p>Đánh giá cạnh tranh giá</p>
-                          <p className="text-[#000000]">Trọng số: 20%</p>
+                          <p className="text-slate-900">Trọng số: 20%</p>
                         </div>
                       }>
-                        <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-yellow-400 transition-colors">Price</span>
+                        <span className="text-slate-900 text-xs font-bold uppercase cursor-help hover:text-yellow-400 transition-colors">Price</span>
                       </Tooltip>
                     </div>
                     <span className={`text-lg font-black ${getScoreColor(kpiData.priceScore)}`}>
@@ -690,7 +690,7 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.priceScore)}%` }}
                     />
                   </div>
-                  <p className="text-[#000000] text-[10px] mt-1">Cạnh tranh giá (20%)</p>
+                  <p className="text-slate-900 text-[10px] mt-1">Cạnh tranh giá (20%)</p>
                 </div>
 
                 {/* Manual Score */}
@@ -704,10 +704,10 @@ export default function SupplierPortalPage() {
                         <div className="space-y-1">
                           <p className="font-bold text-black">Manual Score</p>
                           <p>Đánh giá chủ quan từ Procurement</p>
-                          <p className="text-[#000000]">Trọng số: 20%</p>
+                          <p className="text-slate-900">Trọng số: 20%</p>
                         </div>
                       }>
-                        <span className="text-[#000000] text-xs font-bold uppercase cursor-help hover:text-black transition-colors">Manual</span>
+                        <span className="text-slate-900 text-xs font-bold uppercase cursor-help hover:text-black transition-colors">Manual</span>
                       </Tooltip>
                     </div>
                     <span className={`text-lg font-black ${getScoreColor(kpiData.manualScore)}`}>
@@ -723,7 +723,7 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.manualScore)}%` }}
                     />
                   </div>
-                  <p className="text-[#000000] text-[10px] mt-1">Đánh giá thủ công (20%)</p>
+                  <p className="text-slate-900 text-[10px] mt-1">Đánh giá thủ công (20%)</p>
                 </div>
               </div>
             ) : (
@@ -731,8 +731,8 @@ export default function SupplierPortalPage() {
                 {['OTD Score', 'Quality Score', 'Price Score', 'Manual Score'].map((label, idx) => (
                   <div key={idx} className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[#000000] text-xs font-bold uppercase">{label}</span>
-                      <span className="text-lg font-black text-[#000000]">--%</span>
+                      <span className="text-slate-900 text-xs font-bold uppercase">{label}</span>
+                      <span className="text-lg font-black text-slate-900">--%</span>
                     </div>
                     <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
                       <div className="h-full bg-[#000000]/30 rounded-full" style={{ width: '0%' }} />
@@ -747,7 +747,7 @@ export default function SupplierPortalPage() {
               <button
                 onClick={handleEvaluateKPI}
                 disabled={kpiLoading || !supplierId}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
               >
                 {kpiLoading ? (
                   <>
@@ -764,7 +764,7 @@ export default function SupplierPortalPage() {
 
               <Link
                 href={`/supplier/${supplierId}/kpi-evaluation`}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-[#0F172A] transition-all"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-[#0F172A] transition-all"
               >
                 <Target size={16} />
                 Xem chi tiết đánh giá
@@ -775,8 +775,8 @@ export default function SupplierPortalPage() {
           {/* Recent Activity */}
           <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
-              <Clock size={18} className="text-[#000000]" />
-              <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Hoạt động gần đây</h2>
+              <Clock size={18} className="text-slate-900" />
+              <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Hoạt động gần đây</h2>
             </div>
             
             <div className="space-y-4">
@@ -790,13 +790,13 @@ export default function SupplierPortalPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#000000] text-sm">{activity.title}</span>
+                        <span className="font-bold text-slate-900 text-sm">{activity.title}</span>
                         {activity.priority === "high" && (
                           <span className="w-2 h-2 rounded-full bg-rose-400"></span>
                         )}
                       </div>
-                      <p className="text-xs text-[#000000] mt-0.5">{activity.description}</p>
-                      <p className="text-[10px] text-[#000000] mt-1">{activity.date}</p>
+                      <p className="text-xs text-slate-900 mt-0.5">{activity.description}</p>
+                      <p className="text-[10px] text-slate-900 mt-1">{activity.date}</p>
                     </div>
                   </div>
                 );
@@ -807,17 +807,17 @@ export default function SupplierPortalPage() {
           {/* Quick Links */}
           <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
-              <Target size={18} className="text-[#000000]" />
-              <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Liên kết nhanh</h2>
+              <Target size={18} className="text-slate-900" />
+              <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Liên kết nhanh</h2>
             </div>
             <div className="space-y-2">
               <Link href="/procurement/contracts" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-[#0F172A] transition-all group">
-                <ShieldCheck size={16} className="text-[#000000] group-hover:text-[#2563EB]" />
-                <span className="text-sm text-[#000000] group-hover:text-[#000000]">Hợp đồng & Ký kết</span>
+                <ShieldCheck size={16} className="text-slate-900 group-hover:text-[#2563EB]" />
+                <span className="text-sm text-slate-900 group-hover:text-slate-900">Hợp đồng & Ký kết</span>
               </Link>
               <Link href="/help" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-[#0F172A] transition-all group">
-                <AlertCircle size={16} className="text-[#000000] group-hover:text-[#2563EB]" />
-                <span className="text-sm text-[#000000] group-hover:text-[#000000]">Trung tâm trợ giúp</span>
+                <AlertCircle size={16} className="text-slate-900 group-hover:text-[#2563EB]" />
+                <span className="text-sm text-slate-900 group-hover:text-slate-900">Trung tâm trợ giúp</span>
               </Link>
             </div>
           </div>

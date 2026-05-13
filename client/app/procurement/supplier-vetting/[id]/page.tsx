@@ -117,11 +117,11 @@ function CheckRow({
         onClick={() => editable && setOpen((o) => !o)}
       >
         {statusIcon}
-        <span className="flex-1 text-sm font-medium text-[#000000]">
+        <span className="flex-1 text-sm font-medium text-slate-900">
           {CHECK_LABELS[check.checkType] ?? check.checkType}
         </span>
         {check.verifiedBy && (
-          <span className="text-xs text-[#000000]">{check.verifiedBy.fullName ?? check.verifiedBy.email}</span>
+          <span className="text-xs text-slate-900">{check.verifiedBy.fullName ?? check.verifiedBy.email}</span>
         )}
         {editable && (
           <span className="text-xs text-[#3B82F6]">{open ? "Thu gọn" : "Cập nhật"}</span>
@@ -131,7 +131,7 @@ function CheckRow({
       {open && (
         <div className="border-t border-[rgba(240,246,252,0.06)] px-4 py-3 space-y-3">
           {check.fileUrl && (
-            <div className="text-xs text-[#000000]">
+            <div className="text-xs text-slate-900">
               File hiện tại:{" "}
               <a href={check.fileUrl} target="_blank" rel="noopener noreferrer" className="text-[#3B82F6] hover:underline flex items-center gap-1 inline-flex">
                 Xem <ExternalLink size={10} />
@@ -139,31 +139,31 @@ function CheckRow({
             </div>
           )}
           <div>
-            <label className="mb-1 block text-xs text-[#000000]">URL tài liệu</label>
+            <label className="mb-1 block text-xs text-slate-900">URL tài liệu</label>
             <input
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
               placeholder="https://..."
-              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/50"
+              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/50"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-[#000000]">Ghi chú</label>
+            <label className="mb-1 block text-xs text-slate-900">Ghi chú</label>
             <textarea
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/50 resize-none"
+              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/50 resize-none"
             />
           </div>
           <div className="flex gap-2">
-            <button disabled={saving} onClick={() => save("PASSED")} className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">
+            <button disabled={saving} onClick={() => save("PASSED")} className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-emerald-500 disabled:opacity-50">
               {saving ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}Passed
             </button>
-            <button disabled={saving} onClick={() => save("FAILED")} className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-[#000000] hover:bg-red-500 disabled:opacity-50">
+            <button disabled={saving} onClick={() => save("FAILED")} className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-red-500 disabled:opacity-50">
               {saving ? <Loader2 size={12} className="animate-spin" /> : <XCircle size={12} />}Failed
             </button>
-            <button disabled={saving} onClick={() => save("SKIPPED")} className="flex items-center gap-1.5 rounded-lg border border-[rgba(240,246,252,0.08)] px-3 py-1.5 text-xs text-[#000000] hover:text-[#000000]">
+            <button disabled={saving} onClick={() => save("SKIPPED")} className="flex items-center gap-1.5 rounded-lg border border-[rgba(240,246,252,0.08)] px-3 py-1.5 text-xs text-slate-900 hover:text-slate-900">
               <SkipForward size={12} />Skip
             </button>
           </div>
@@ -181,25 +181,25 @@ function ApproveModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
-        <h2 className="mb-4 text-lg font-bold text-[#000000]">Phê duyệt nhà cung cấp</h2>
+        <h2 className="mb-4 text-lg font-bold text-slate-900">Phê duyệt nhà cung cấp</h2>
         <div className="mb-4">
-          <label className="mb-1 block text-xs text-[#000000]">Xếp hạng (Tier)</label>
-          <select value={tier} onChange={(e) => setTier(e.target.value)} className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-2 text-sm text-[#000000] focus:outline-none">
+          <label className="mb-1 block text-xs text-slate-900">Xếp hạng (Tier)</label>
+          <select value={tier} onChange={(e) => setTier(e.target.value)} className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-2 text-sm text-slate-900 focus:outline-none">
             <option value="APPROVED">APPROVED</option>
             <option value="PREFERRED">PREFERRED</option>
             <option value="CONDITIONAL">CONDITIONAL</option>
           </select>
         </div>
         <div className="mb-4">
-          <label className="mb-1 block text-xs text-[#000000]">Ghi chú</label>
-          <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-2 text-sm text-[#000000] focus:outline-none resize-none" />
+          <label className="mb-1 block text-xs text-slate-900">Ghi chú</label>
+          <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-2 text-sm text-slate-900 focus:outline-none resize-none" />
         </div>
         <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 text-sm text-[#000000] hover:text-[#000000]">Huỷ</button>
+          <button onClick={onClose} className="px-4 py-2 text-sm text-slate-900 hover:text-slate-900">Huỷ</button>
           <button
             disabled={loading}
             onClick={async () => { setLoading(true); await onConfirm(tier, notes); setLoading(false); }}
-            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-emerald-500 disabled:opacity-50"
           >
             {loading && <Loader2 size={14} className="animate-spin" />}<ThumbsUp size={14} />Phê duyệt
           </button>
@@ -216,17 +216,17 @@ function RejectModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: (
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
-        <h2 className="mb-4 text-lg font-bold text-[#000000]">Từ chối nhà cung cấp</h2>
+        <h2 className="mb-4 text-lg font-bold text-slate-900">Từ chối nhà cung cấp</h2>
         <div className="mb-4">
-          <label className="mb-1 block text-xs text-[#000000]">Lý do từ chối *</label>
-          <textarea rows={4} value={reason} onChange={(e) => setReason(e.target.value)} className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-2 text-sm text-[#000000] focus:outline-none resize-none" />
+          <label className="mb-1 block text-xs text-slate-900">Lý do từ chối *</label>
+          <textarea rows={4} value={reason} onChange={(e) => setReason(e.target.value)} className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-2 text-sm text-slate-900 focus:outline-none resize-none" />
         </div>
         <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 text-sm text-[#000000] hover:text-[#000000]">Huỷ</button>
+          <button onClick={onClose} className="px-4 py-2 text-sm text-slate-900 hover:text-slate-900">Huỷ</button>
           <button
             disabled={loading || !reason.trim()}
             onClick={async () => { setLoading(true); await onConfirm(reason); setLoading(false); }}
-            className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-[#000000] hover:bg-red-500 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-red-500 disabled:opacity-50"
           >
             {loading && <Loader2 size={14} className="animate-spin" />}<ThumbsDown size={14} />Từ chối
           </button>
@@ -342,17 +342,17 @@ export default function SupplierVettingDetailPage() {
     <div className="min-h-screen bg-[#FFFFFF] px-6 py-8">
       {/* Header */}
       <div className="mb-6">
-        <Link href="/procurement/supplier-vetting" className="mb-3 flex items-center gap-1 text-xs text-[#000000] hover:text-[#000000]">
+        <Link href="/procurement/supplier-vetting" className="mb-3 flex items-center gap-1 text-xs text-slate-900 hover:text-slate-900">
           <ChevronLeft size={14} />Danh sách xét duyệt
         </Link>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
               <UserCheck size={22} className="text-[#3B82F6]" />
-              <h1 className="text-xl font-bold text-[#000000]">{vetting.supplier.name}</h1>
+              <h1 className="text-xl font-bold text-slate-900">{vetting.supplier.name}</h1>
               <StatusBadge status={vetting.status} />
             </div>
-            <p className="mt-1 text-xs text-[#000000]">
+            <p className="mt-1 text-xs text-slate-900">
               Tạo bởi {vetting.requestedBy.fullName ?? vetting.requestedBy.email} •{" "}
               {new Date(vetting.createdAt).toLocaleDateString("vi-VN")}
               {vetting.assignedTo && ` • Phụ trách: ${vetting.assignedTo.fullName ?? vetting.assignedTo.email}`}
@@ -363,7 +363,7 @@ export default function SupplierVettingDetailPage() {
               <button
                 disabled={submitting}
                 onClick={submit}
-                className="flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2563EB] disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-[#2563EB] disabled:opacity-50"
               >
                 {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 Nộp phê duyệt
@@ -371,10 +371,10 @@ export default function SupplierVettingDetailPage() {
             )}
             {canApprove && (
               <>
-                <button onClick={() => setShowApprove(true)} className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
+                <button onClick={() => setShowApprove(true)} className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-emerald-500">
                   <ThumbsUp size={14} />Phê duyệt
                 </button>
-                <button onClick={() => setShowReject(true)} className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-[#000000] hover:bg-red-500">
+                <button onClick={() => setShowReject(true)} className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-red-500">
                   <ThumbsDown size={14} />Từ chối
                 </button>
               </>
@@ -392,7 +392,7 @@ export default function SupplierVettingDetailPage() {
         <div className="space-y-4">
           {/* Supplier info */}
           <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] p-4">
-            <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#000000]"><Building2 size={14} />Thông tin NCC</h3>
+            <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900"><Building2 size={14} />Thông tin NCC</h3>
             <dl className="space-y-2 text-xs">
               {[
                 ["Email", vetting.supplier.email],
@@ -402,13 +402,13 @@ export default function SupplierVettingDetailPage() {
                 ["Tier", vetting.supplier.supplierTier],
               ].map(([label, val]) => val ? (
                 <div key={label} className="flex justify-between gap-2">
-                  <dt className="text-[#000000] shrink-0">{label}</dt>
-                  <dd className="text-[#000000] text-right truncate">{val}</dd>
+                  <dt className="text-slate-900 shrink-0">{label}</dt>
+                  <dd className="text-slate-900 text-right truncate">{val}</dd>
                 </div>
               ) : null)}
               {vetting.priceVsMarket != null && (
                 <div className="flex justify-between gap-2">
-                  <dt className="text-[#000000] shrink-0">Giá vs thị trường</dt>
+                  <dt className="text-slate-900 shrink-0">Giá vs thị trường</dt>
                   <dd className={`text-right font-semibold ${vetting.priceVsMarket < 0 ? "text-black" : "text-black"}`}>
                     {vetting.priceVsMarket > 0 ? "+" : ""}{vetting.priceVsMarket}%
                   </dd>
@@ -419,19 +419,19 @@ export default function SupplierVettingDetailPage() {
 
           {/* Stats */}
           <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] p-4">
-            <h3 className="mb-3 text-sm font-semibold text-[#000000]">Tiến độ kiểm tra</h3>
+            <h3 className="mb-3 text-sm font-semibold text-slate-900">Tiến độ kiểm tra</h3>
             <div className="flex items-end gap-4">
               <div className="text-center">
                 <div className="text-2xl font-black text-black">{passed}</div>
-                <div className="text-[10px] text-[#000000]">Passed</div>
+                <div className="text-[10px] text-slate-900">Passed</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-black text-red-400">{failed}</div>
-                <div className="text-[10px] text-[#000000]">Failed</div>
+                <div className="text-[10px] text-slate-900">Failed</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-black text-[#0F172A]">{vetting.checks.length - passed - failed}</div>
-                <div className="text-[10px] text-[#000000]">Pending/Skip</div>
+                <div className="text-2xl font-black text-slate-900">{vetting.checks.length - passed - failed}</div>
+                <div className="text-[10px] text-slate-900">Pending/Skip</div>
               </div>
             </div>
             {vetting.overallScore != null && (
@@ -448,22 +448,22 @@ export default function SupplierVettingDetailPage() {
           {vetting.rejectedReason && (
             <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
               <h3 className="mb-2 text-sm font-semibold text-red-400">Lý do từ chối</h3>
-              <p className="text-xs text-[#000000]">{vetting.rejectedReason}</p>
+              <p className="text-xs text-slate-900">{vetting.rejectedReason}</p>
             </div>
           )}
 
           {/* Notes */}
           {vetting.notes && (
             <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] p-4">
-              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#000000]"><FileText size={14} />Ghi chú</h3>
-              <p className="text-xs text-[#000000] whitespace-pre-wrap">{vetting.notes}</p>
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900"><FileText size={14} />Ghi chú</h3>
+              <p className="text-xs text-slate-900 whitespace-pre-wrap">{vetting.notes}</p>
             </div>
           )}
         </div>
 
         {/* Right — checklist */}
         <div className="lg:col-span-2 space-y-3">
-          <h2 className="text-sm font-semibold text-[#000000]">Danh sách kiểm tra ({vetting.checks.length} hạng mục)</h2>
+          <h2 className="text-sm font-semibold text-slate-900">Danh sách kiểm tra ({vetting.checks.length} hạng mục)</h2>
           {vetting.checks.map((check) => (
             <CheckRow key={check.id} check={check} editable={editable} onUpdate={updateCheck} />
           ))}

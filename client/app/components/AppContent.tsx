@@ -1,11 +1,10 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useProcurement } from "../context/ProcurementContext";
 import Sidebar from "./Sidebar";
 import ToastContainer from "./Toast";
-import SmartSearch from "./SmartSearch";
 import GlobalAISearch from "./GlobalAISearch";
 import Topbar from "./Topbar";
 
@@ -13,10 +12,10 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
     const { currentUser, isAuthChecking } = useProcurement();
     const pathname = usePathname();
     const router   = useRouter();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const isAuthPage = pathname === "/login" || pathname === "/register";
 
-    // Public routes không cần đăng nhập: auth pages + magic-link external pages
     const isExternalPage =
         pathname.startsWith("/rfq/quote") ||
         pathname.startsWith("/po/confirm") ||
@@ -28,10 +27,14 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
     useEffect(() => {
         if (isAuthChecking) return;
         if (!currentUser && !isWhiteListed) router.push("/login");
-        if (currentUser  && isAuthPage)     router.push("/");   // chỉ redirect login/register, không redirect external pages
+        if (currentUser  && isAuthPage)     router.push("/");
     }, [currentUser, isAuthChecking, isWhiteListed, isAuthPage, router]);
 
-    // ── Auth checking loading screen (skip với external magic-link pages) ──
+    // Close sidebar on route change (mobile UX)
+    useEffect(() => {
+        setSidebarOpen(false);
+    }, [pathname]);
+
     if (isAuthChecking && !isExternalPage) {
         return (
             <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center relative overflow-hidden">
@@ -82,31 +85,31 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
     if (!currentUser && !isWhiteListed) return null;
 
-    // ── Auth pages + external magic-link pages (không sidebar, không topbar) ──
     if (isWhiteListed) return (
         <main className="animate-in fade-in duration-500 min-h-screen bg-[#F8FAFC] text-[#0F172A]">
             {children}
         </main>
     );
 
-    // ── Main app layout ──
     return (
         <div className="flex h-screen overflow-hidden bg-[#F8FAFC]">
             <ToastContainer />
-            <Sidebar />
+            <Sidebar
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+            />
 
-            <div className="flex-1 flex flex-col h-screen overflow-hidden ml-[180px]">
-                <Topbar />
+            {/* Main content — offset by sidebar width on md+ */}
+            <div className="flex-1 flex flex-col h-screen overflow-hidden md:ml-[180px]">
+                <Topbar onMenuClick={() => setSidebarOpen(prev => !prev)} />
                 <main className="flex-1 overflow-y-auto bg-[#F8FAFC] relative">
-                    <div className="w-full p-6 pb-32">
+                    <div className="w-full p-4 md:p-6 pb-32">
                         {children}
                     </div>
                 </main>
             </div>
 
-            {/* Floating AI Assistant */}
             <GlobalAISearch />
         </div>
     );
 }
-

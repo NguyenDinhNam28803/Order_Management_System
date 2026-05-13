@@ -3,7 +3,7 @@
 import React from "react";
 import { useProcurement } from "../context/ProcurementContext";
 import { usePathname } from "next/navigation";
-import { Search, User, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
+import { Search, User, ChevronDown, ChevronRight, Sparkles, Menu } from "lucide-react";
 import Link from "next/link";
 import NotificationInbox from "./NotificationInbox";
 
@@ -67,7 +67,11 @@ const PAGE_LABELS: Record<string, string> = {
 };
 
 
-export default function Topbar() {
+interface TopbarProps {
+    onMenuClick?: () => void;
+}
+
+export default function Topbar({ onMenuClick }: TopbarProps) {
     const { currentUser } = useProcurement();
     const pathname = usePathname() ?? "/";
 
@@ -90,8 +94,19 @@ export default function Topbar() {
     return (
         <header className="sticky top-0 z-40 w-full bg-white border-b border-[#E2E8F0] shadow-[0_1px_3px_rgba(0,0,0,0.06)] h-14 flex items-center justify-between px-5 gap-3">
 
-            {/* ── Left: Breadcrumb ── */}
-            <div className="flex items-center gap-1.5 min-w-0">
+            {/* ── Left: hamburger (mobile) + Breadcrumb ── */}
+            <div className="flex items-center gap-2 min-w-0">
+                {/* Hamburger — mobile only */}
+                {onMenuClick && (
+                    <button
+                        onClick={onMenuClick}
+                        className="md:hidden p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
+                        aria-label="Mở menu"
+                    >
+                        <Menu size={16} />
+                    </button>
+                )}
+
                 <div className="flex flex-col min-w-0">
                     {/* mini breadcrumb path */}
                     <div className="hidden sm:flex items-center gap-1 leading-none mb-0.5">

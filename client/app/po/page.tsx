@@ -68,14 +68,14 @@ export default function POPage() {
         return (
             <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
                 <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col h-[90vh] animate-in zoom-in-95 duration-200">
-                    <div className="bg-slate-800 text-white p-4 flex justify-between items-center border-b border-slate-700">
+                    <div className="bg-slate-800 text-slate-900 p-4 flex justify-between items-center border-b border-slate-700">
                         <div className="flex items-center gap-3">
                             <FileText size={20} className="text-[#3B82F6]" />
                             <h3 className="font-bold tracking-widest text-sm">PREVIEW: PURCHASE_ORDER_DRAFT.PDF</h3>
                         </div>
                         <div className="flex gap-2">
-                            <button className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white" title="Download"><DownloadCloud size={16}/></button>
-                            <button onClick={() => setShowPreview(false)} className="p-2 bg-slate-700 hover:bg-red-500 rounded-lg text-white"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+                            <button className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-900" title="Download"><DownloadCloud size={16}/></button>
+                            <button onClick={() => setShowPreview(false)} className="p-2 bg-slate-700 hover:bg-red-500 rounded-lg text-slate-900"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
                         </div>
                     </div>
                     
@@ -127,8 +127,8 @@ export default function POPage() {
                                         <tr key={i} className="border-b border-slate-100">
                                             <td className="py-3 px-4">{item.description || item.productName || item.productDesc}</td>
                                             <td className="py-3 px-4 text-center ">{item.qty}</td>
-                                            <td className="py-3 px-4 text-right ">{(Number(item.estimatedPrice) || 0).toLocaleString()}</td>
-                                            <td className="py-3 px-4 text-right  font-bold">{(Number(item.qty || 0) * (Number(item.estimatedPrice) || 0)).toLocaleString()}</td>
+                                            <td className="py-3 px-4 text-right ">{item.estimatedPrice.toLocaleString()}</td>
+                                            <td className="py-3 px-4 text-right  font-bold">{(Number(item.qty || 0) * item.estimatedPrice).toLocaleString()}</td>
                                         </tr>
                                     ))}
                                     {(!relatedPR?.items) && (
@@ -172,7 +172,7 @@ export default function POPage() {
 
     if (isCreateMode) {
         return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
 
                 <div className="mt-8 flex justify-between items-end mb-8 border-b border-slate-200 pb-4">
                     <div>
@@ -334,8 +334,8 @@ export default function POPage() {
                                         <tr key={idx} className="border-b border-slate-50">
                                             <td className="font-bold text-brand-primary">{item.description || item.productName}</td>
                                             <td className="text-center font-black">{item.qty || 0}</td>
-                                            <td className="text-right  text-black">{(Number(item.estimatedPrice) || 0).toLocaleString()}</td>
-                                            <td className="text-right  font-black text-erp-blue">{(Number(item.qty || 0) * (Number(item.estimatedPrice) || 0)).toLocaleString()} ₫</td>
+                                            <td className="text-right  text-black">{item.estimatedPrice.toLocaleString()}</td>
+                                            <td className="text-right  font-black text-erp-blue">{(Number(item.qty || 0) * item.estimatedPrice).toLocaleString()} ₫</td>
                                             <td><input type="text" className="erp-input py-1! text-[10px]! w-full bg-slate-50 font-medium" placeholder="Ghi chú item..." /></td>
                                         </tr>
                                     ))}
@@ -388,7 +388,7 @@ export default function POPage() {
                                 
                                 <button 
                                     onClick={() => setShowPreview(true)}
-                                    className="w-full py-4 bg-erp-navy hover:bg-erp-blue border border-erp-navy hover:border-erp-blue shadow-xl text-[#000000] rounded-xl font-black uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
+                                    className="w-full py-4 bg-erp-navy hover:bg-erp-blue border border-erp-navy hover:border-erp-blue shadow-xl text-slate-900 rounded-xl font-black uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
                                 >
                                     <ShieldCheck size={16} /> Submit Để Phê Duyệt PO
                                 </button>
@@ -403,7 +403,7 @@ export default function POPage() {
     // Default LIST view
     return (
         <ErrorBoundary>
-            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <div className="mt-8 flex justify-between items-end mb-8">
                 <div>
                     <h1 className="text-3xl font-black text-brand-primary tracking-tight">Quản lý Đơn mua hàng (PO)</h1>
@@ -411,16 +411,16 @@ export default function POPage() {
                 </div>
             </div>
             
-            <div className="bg-bg-secondary p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8 flex justify-between items-center">
+            <div className="bg-bg-secondary p-4 rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8 flex justify-between items-center">
                 <div className="flex-1 flex gap-3 max-w-xl">
-                    <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-[#000000] shadow-sm shrink-0">
+                    <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                         <Search size={20} className="text-[#2563EB]" />
                     </div>
                     <div className="relative flex-1">
                         <input 
                             type="text" 
                             placeholder="Tìm kiếm PO #, Nhà cung cấp..." 
-                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-[#000000] placeholder:text-[#94A3B8]/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all" 
+                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all" 
                         />
                     </div>
                     <button className="p-2 bg-white border border-slate-200 rounded-xl text-black hover:text-erp-navy transition-all"><Filter size={20} /></button>
@@ -470,7 +470,7 @@ export default function POPage() {
                                         {po.status === "SHIPPED" && (
                                             <button
                                                 onClick={() => router.push("/warehouse/dashboard")}
-                                                className="bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-1 transition-all"
+                                                className="bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-slate-900 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-1 transition-all"
                                             >
                                                 Nhập kho <ArrowRight size={12} />
                                             </button>

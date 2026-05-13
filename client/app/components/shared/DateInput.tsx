@@ -94,9 +94,9 @@ export default function DateInput({
         required={required}
         disabled={disabled}
         maxLength={10}
-        className="w-full px-[0.875rem] py-[0.625rem] bg-[#FFFFFF] border border-[rgba(148,163,184,0.12)] rounded-[0.75rem] text-[#000000] text-[0.875rem] font-bold outline-none transition-all focus:border-[#2563EB]"
+        className="w-full px-[0.875rem] py-[0.625rem] bg-[#FFFFFF] border border-[rgba(148,163,184,0.12)] rounded-[0.75rem] text-slate-900 text-[0.875rem] font-bold outline-none transition-all focus:border-[#2563EB]"
       />
-      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#000000] pointer-events-none text-[9px] font-black uppercase tracking-widest opacity-30">
+      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-900 pointer-events-none text-[9px] font-black uppercase tracking-widest opacity-30">
         DD/MM/YYYY
       </div>
     </div>

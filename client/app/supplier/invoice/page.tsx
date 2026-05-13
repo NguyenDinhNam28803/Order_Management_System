@@ -129,21 +129,21 @@ export default function SupplierInvoice() {
     }
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <div className="mt-8 mb-8 border-b border-border pb-4">
                 <h1 className="text-3xl font-black text-text-primary tracking-tight flex items-center gap-3">
                     Khởi tạo Hóa đơn VAT Điện tử <span className="text-[10px] font-bold text-black bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu thu & Đối soát</span>
                 </h1>
-                <p className="text-sm text-[#000000] mt-1">Hệ thống áp dụng 3-way Matching. NCC chỉ xuất hóa đơn cho các mặt hàng đã được kho (Buyer) xác nhận thực nhận (GRN).</p>
+                <p className="text-sm text-slate-900 mt-1">Hệ thống áp dụng 3-way Matching. NCC chỉ xuất hóa đơn cho các mặt hàng đã được kho (Buyer) xác nhận thực nhận (GRN).</p>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
                 {/* Main Form Form */}
                 <div className="xl:col-span-3 space-y-6">
                     <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4 p-6">
-                        <label className="text-xs font-black uppercase text-[#000000] whitespace-nowrap">Chọn PO Đã Giao</label>
+                        <label className="text-xs font-black uppercase text-slate-900 whitespace-nowrap">Chọn PO Đã Giao</label>
                         <select 
-                            className="w-full md:w-1/2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] focus:outline-none focus:border-[#2563EB]/30"
+                            className="w-full md:w-1/2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-slate-900 focus:outline-none focus:border-[#2563EB]/30"
                             value={selectedPO}
                             onChange={(e) => setSelectedPO(e.target.value)}
                         >
@@ -157,22 +157,22 @@ export default function SupplierInvoice() {
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
-                                    <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2">Số HĐ Điện Tử VAT</label>
-                                    <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30" placeholder="VD: 0001234" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} />
+                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2">Số HĐ Điện Tử VAT</label>
+                                    <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30" placeholder="VD: 0001234" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} />
                                 </div>
                                 <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
-                                    <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2">Ký hiệu Mẫu số</label>
-                                    <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] focus:outline-none focus:border-[#2563EB]/30" defaultValue="1C26TAA" />
+                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2">Ký hiệu Mẫu số</label>
+                                    <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-slate-900 focus:outline-none focus:border-[#2563EB]/30" defaultValue="1C26TAA" />
                                 </div>
                                 <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
-                                    <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2">Ngày xuất (Auto)</label>
-                                    <input type="date" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-[#000000] opacity-70 cursor-not-allowed" disabled defaultValue={new Date().toISOString().substring(0, 10)} />
+                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2">Ngày xuất (Auto)</label>
+                                    <input type="date" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-slate-900 opacity-70 cursor-not-allowed" disabled defaultValue={new Date().toISOString().substring(0, 10)} />
                                 </div>
                             </div>
 
                             <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
                                 <div className="p-4 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex items-center justify-between">
-                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-[#000000] flex items-center gap-2">
+                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                                         <FileCheck size={14} /> Danh sách Đối soát HĐ (Items)
                                     </h3>
                                     <p className="text-[9px] text-[#2563EB] font-bold bg-[#FFFFFF] px-2 py-1 rounded border border-[#2563EB]/20 uppercase tracking-widest">3-Way: PO - GRN - INV</p>
@@ -190,11 +190,11 @@ export default function SupplierInvoice() {
                                         <tbody>
                                             {currentPO?.items.map((item) => (
                                                 <tr key={item.id} className="border-b border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF] group">
-                                                    <td className="font-bold text-[#000000]">{item.description}</td>
+                                                    <td className="font-bold text-slate-900">{item.description}</td>
                                                     <td className="text-right">
                                                         <div className="inline-flex flex-col items-end">
-                                                            <span className="font-black text-[#000000] bg-[#FFFFFF] px-2 py-0.5 rounded text-[10px] mb-1 border border-[rgba(148,163,184,0.1)]">{item.qty} {item.qty < item.qty && <span className="text-black ml-1">(! thiếu)</span>}</span>
-                                                            <span className="text-[9px] text-[#000000]">@ {(item.unitPrice ?? item.total)}</span>
+                                                            <span className="font-black text-slate-900 bg-[#FFFFFF] px-2 py-0.5 rounded text-[10px] mb-1 border border-[rgba(148,163,184,0.1)]">{item.qty} {item.qty < item.qty && <span className="text-black ml-1">(! thiếu)</span>}</span>
+                                                            <span className="text-[9px] text-slate-900">@ {(item.unitPrice ?? item.total)}</span>
                                                         </div>
                                                     </td>
                                                     <td className="border-l-2 border-emerald-500/20 p-2 bg-emerald-500/5">
@@ -217,7 +217,7 @@ export default function SupplierInvoice() {
                             </div>
                         </>
                     ) : (
-                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] border-dashed py-32 text-center text-[#000000]">
+                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] border-dashed py-32 text-center text-slate-900">
                             <Search size={48} className="mx-auto mb-4 opacity-10" />
                             <p className="text-xs font-black uppercase tracking-widest">Chưa chọn chứng từ thanh toán</p>
                             <p className="text-[10px] mt-2 italic font-medium">Bạn chỉ được lập invoice khi có xác nhận nhập kho từ Buyer.</p>
@@ -228,33 +228,33 @@ export default function SupplierInvoice() {
                 {/* Right Column: Tổng kết thuế & Submit */}
                 <div className="space-y-6">
                     <div className={`bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 transition-all ${selectedPO ? 'border-[#2563EB]/20' : 'opacity-50 grayscale pointer-events-none'}`}>
-                        <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] mb-6 flex items-center gap-2 border-b border-[rgba(148,163,184,0.1)] pb-4">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2 border-b border-[rgba(148,163,184,0.1)] pb-4">
                             <Calculator size={16}/> Tích Toán Giá Trị
                         </h3>
                         
-                        <div className="space-y-4 text-xs font-bold text-[#000000] mb-6 border-b border-[rgba(148,163,184,0.1)] pb-6">
+                        <div className="space-y-4 text-xs font-bold text-slate-900 mb-6 border-b border-[rgba(148,163,184,0.1)] pb-6">
                             <div className="flex justify-between items-center">
-                                <span className="uppercase tracking-widest text-[10px] text-[#000000]">Tổng tiền TRƯỚC THUẾ</span>
-                                <span className="text-base text-[#000000]">{subTotal.toLocaleString()} ₫</span>
+                                <span className="uppercase tracking-widest text-[10px] text-slate-900">Tổng tiền TRƯỚC THUẾ</span>
+                                <span className="text-base text-slate-900">{subTotal.toLocaleString()} ₫</span>
                             </div>
                             <div className="flex justify-between items-center group">
-                                <span className="uppercase tracking-widest text-[10px] text-[#000000] flex items-center gap-2">Thuế SUẤT VAT <input type="number" className="w-12 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-2 py-1 text-center font-bold text-[#000000] focus:outline-none focus:border-[#2563EB]/30" value={vat} onChange={e => setVat(Number(e.target.value))}/> %</span>
-                                <span className="text-base text-[#000000] group-hover:text-[#000000] transition-colors">{vatAmount.toLocaleString()} ₫</span>
+                                <span className="uppercase tracking-widest text-[10px] text-slate-900 flex items-center gap-2">Thuế SUẤT VAT <input type="number" className="w-12 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-2 py-1 text-center font-bold text-slate-900 focus:outline-none focus:border-[#2563EB]/30" value={vat} onChange={e => setVat(Number(e.target.value))}/> %</span>
+                                <span className="text-base text-slate-900 group-hover:text-slate-900 transition-colors">{vatAmount.toLocaleString()} ₫</span>
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-1 text-right mb-6">
                             <span className="text-[10px] font-black uppercase tracking-widest text-[#2563EB] mb-1">Tổng Tiền THANH TOÁN YÊU CẦU</span>
-                            <span className="text-3xl font-black text-[#0F172A] tracking-tight">{totalAmount.toLocaleString()} <span className="text-sm">VND</span></span>
+                            <span className="text-3xl font-black text-slate-900 tracking-tight">{totalAmount.toLocaleString()} <span className="text-sm">VND</span></span>
                         </div>
                         
                         <div className="space-y-3 pt-6 border-t border-[rgba(148,163,184,0.1)]">
                              <div className="border border-dashed border-[rgba(148,163,184,0.1)] p-4 text-center rounded-xl hover:bg-[#FFFFFF] cursor-pointer group">
-                                 <UploadCloud size={16} className="mx-auto mb-1 text-[#000000] group-hover:text-[#2563EB] transition-colors" />
-                                 <div className="text-[10px] font-black uppercase text-[#000000] mt-2">Upload XML Hóa Đơn Phạt Phụ Lục</div>
+                                 <UploadCloud size={16} className="mx-auto mb-1 text-slate-900 group-hover:text-[#2563EB] transition-colors" />
+                                 <div className="text-[10px] font-black uppercase text-slate-900 mt-2">Upload XML Hóa Đơn Phạt Phụ Lục</div>
                              </div>
 
-                             <button onClick={handleSubmit} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#2563EB]/20 transition-all">
+                             <button onClick={handleSubmit} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#2563EB]/20 transition-all">
                                  <Send size={16}/> Submit cho AP Khách hàng
                              </button>
                         </div>

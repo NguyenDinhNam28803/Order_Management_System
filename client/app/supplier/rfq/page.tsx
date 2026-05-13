@@ -85,7 +85,7 @@ export default function SupplierRFQ() {
 
     if (loading) {
         return (
-            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
                 <div className="mt-8 flex flex-col items-center justify-center min-h-[400px]">
                     <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4"></div>
                     <div className="text-black font-bold uppercase tracking-widest">Đang tải danh sách RFQ...</div>
@@ -96,7 +96,7 @@ export default function SupplierRFQ() {
 
     if (viewState === "DETAIL" && activeRFQ) {
         return (
-        <main className="animate-in fade-in duration-700 p-8 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-700 p-8 min-h-screen bg-[#FFFFFF] text-slate-900">
                 <div className="mt-12 mb-10 flex justify-between items-end">
                     <div>
                         <div className="flex items-center gap-3 mb-4 text-[10px] font-black uppercase tracking-[0.2em]">

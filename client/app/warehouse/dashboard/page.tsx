@@ -38,11 +38,11 @@ export default function WarehouseDashboard() {
     ];
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <header className="mb-8 lg:flex items-end justify-between">
                 <div>
-                    <h1 className="text-4xl font-black tracking-tight text-[#000000] mb-2 uppercase">DASHBOARD WAREHOUSE</h1>
-                    <p className="text-[#000000] font-medium">Quản lý lịch giao nhận hàng hóa & Kiểm định chất lượng ngõ vào (Inbound).</p>
+                    <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-2 uppercase">DASHBOARD WAREHOUSE</h1>
+                    <p className="text-slate-900 font-medium">Quản lý lịch giao nhận hàng hóa & Kiểm định chất lượng ngõ vào (Inbound).</p>
                 </div>
             </header>
 
@@ -85,7 +85,7 @@ export default function WarehouseDashboard() {
                 {/* Sắp giao hàng (7.1) */}
                 <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] flex items-center gap-2">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                             <Truck size={16} /> Lịch Giao Hàng (7 Ngày Tới)
                         </h3>
                     </div>
@@ -104,16 +104,16 @@ export default function WarehouseDashboard() {
                                 {incomingPOs.map((po, idx) => (
                                     <tr key={idx} className="cursor-pointer hover:bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]" onClick={() => router.push(`/warehouse/grn/new?po=${po.id}`)}>
                                         <td className="py-4 px-4">
-                                            <div className="font-bold text-[#000000] text-xs truncate">PO-***</div>
+                                            <div className="font-bold text-slate-900 text-xs truncate">PO-***</div>
                                         </td>
                                         <td className="py-4 px-4">
-                                            <div className="font-bold text-[#000000] text-xs truncate">{po.vendor}</div>
+                                            <div className="font-bold text-slate-900 text-xs truncate">{po.vendor}</div>
                                         </td>
                                         <td className="py-4 px-4">
-                                            <div className="truncate font-medium text-[#000000] text-xs">{po.items}</div>
-                                            <div className="text-[10px] text-[#000000]">x {po.qty} SP</div>
+                                            <div className="truncate font-medium text-slate-900 text-xs">{po.items}</div>
+                                            <div className="text-[10px] text-slate-900">x {po.qty} SP</div>
                                         </td>
-                                        <td className="text-center text-[#000000] py-4 px-4 text-xs">{po.deliveryDate}</td>
+                                        <td className="text-center text-slate-900 py-4 px-4 text-xs">{po.deliveryDate}</td>
                                         <td className="text-center py-4 px-4">
                                             {po.status === "PENDING" ? (
                                                 <span className="text-[9px] font-black uppercase tracking-widest bg-[#2563EB]/10 text-[#2563EB] px-2 py-1 rounded border border-[#2563EB]/20">Sắp tới</span>
@@ -131,7 +131,7 @@ export default function WarehouseDashboard() {
                 {/* GRN Cần Xử Lý (Draft) (7.1) */}
                 <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] flex items-center gap-2">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                             <Info size={16} /> Phiếu GRN Đang Draft (Cần Xử Lý)
                         </h3>
                     </div>
@@ -150,13 +150,13 @@ export default function WarehouseDashboard() {
                                 {draftGRNs.map((grn, idx) => (
                                     <tr key={idx} className="border-b border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF]">
                                         <td className="py-4 px-4">
-                                            <div className="font-bold text-[#000000] text-xs truncate">{grn.id.replace('GRN-', '#GRN-')}</div>
+                                            <div className="font-bold text-slate-900 text-xs truncate">{grn.id.replace('GRN-', '#GRN-')}</div>
                                         </td>
                                         <td className="py-4 px-4">
-                                            <div className="font-bold text-[#000000] text-xs truncate">{grn.poId}</div>
-                                            <div className="text-[10px] text-[#000000] truncate">{grn.vendor}</div>
+                                            <div className="font-bold text-slate-900 text-xs truncate">{grn.poId}</div>
+                                            <div className="text-[10px] text-slate-900 truncate">{grn.vendor}</div>
                                         </td>
-                                        <td className="text-[#000000] py-4 px-4 text-xs">{grn.date}</td>
+                                        <td className="text-slate-900 py-4 px-4 text-xs">{grn.date}</td>
                                         <td className="text-center py-4 px-4">
                                             <span className="text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-black px-2 py-1 rounded border border-amber-500/20">
                                                 {grn.missing}
@@ -175,7 +175,7 @@ export default function WarehouseDashboard() {
                             </tbody>
                         </table>
                         {draftGRNs.length === 0 && (
-                            <div className="p-8 text-center text-[#000000]">
+                            <div className="p-8 text-center text-slate-900">
                                 <CheckCircle2 size={32} className="mx-auto mb-2 opacity-50" />
                                 <span className="text-xs uppercase tracking-widest font-bold">Không có chứng từ Draft</span>
                             </div>

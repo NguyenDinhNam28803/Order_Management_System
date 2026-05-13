@@ -306,7 +306,7 @@ export default function POConsolidatePage() {
             ].map(({ label, value }) => (
               <div key={label} className="p-3 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.08)]">
                 <p className="detail-label">{label}</p>
-                <p className="text-base font-bold text-[#000000] mt-0.5">{value}</p>
+                <p className="text-base font-bold text-slate-900 mt-0.5">{value}</p>
               </div>
             ))}
           </div>
@@ -357,8 +357,8 @@ export default function POConsolidatePage() {
       <div className="info-banner">
         <Info size={15} className="text-[#3B82F6] shrink-0 mt-0.5" />
         <span>
-          <strong className="text-[#000000]">SKU Match</strong>: gộp items cùng mã SKU — tối ưu cho văn phòng phẩm, linh kiện.&ensp;
-          <strong className="text-[#000000]">Category Match</strong>: gộp cùng danh mục — tối ưu cho nhóm hàng theo ngành.&ensp;
+          <strong className="text-slate-900">SKU Match</strong>: gộp items cùng mã SKU — tối ưu cho văn phòng phẩm, linh kiện.&ensp;
+          <strong className="text-slate-900">Category Match</strong>: gộp cùng danh mục — tối ưu cho nhóm hàng theo ngành.&ensp;
           Giá PO lấy mức thấp nhất trong nhóm để tối đa đòn bẩy đàm phán.
         </span>
       </div>
@@ -371,7 +371,7 @@ export default function POConsolidatePage() {
             {error.includes('hợp đồng') && (
               <a
                 href="/contracts/create"
-                className="block mt-1.5 text-[11px] font-black text-rose-300 underline underline-offset-2 hover:text-[#000000] transition-colors"
+                className="block mt-1.5 text-[11px] font-black text-rose-300 underline underline-offset-2 hover:text-slate-900 transition-colors"
               >
                 → Tạo hợp đồng khung ngay
               </a>
@@ -390,12 +390,12 @@ export default function POConsolidatePage() {
           {/* Step 1 — Chọn PR */}
           <div className="erp-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold text-[#000000] flex items-center gap-2">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <span className="step-badge">1</span>
                 Chọn PR cần gộp
               </h3>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-[#000000]">
+                <span className="text-xs text-slate-900">
                   <span className="text-[#3B82F6] font-bold">{selectedPrIds.length}</span>
                   /{approvedPRs.length} đã chọn
                 </span>
@@ -403,7 +403,7 @@ export default function POConsolidatePage() {
                   selectedPrIds.length === approvedPRs.length ? (
                     <button
                       onClick={clearAll}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold text-[#000000] hover:text-[#000000] hover:bg-[#F1F5F9] transition-colors"
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-900 hover:text-slate-900 hover:bg-[#F1F5F9] transition-colors"
                     >
                       <X size={10} /> Bỏ chọn
                     </button>
@@ -441,18 +441,18 @@ export default function POConsolidatePage() {
                     >
                       {sel
                         ? <CheckSquare size={15} className="text-[#3B82F6] shrink-0" />
-                        : <Square size={15} className="text-[#000000] shrink-0" />}
+                        : <Square size={15} className="text-slate-900 shrink-0" />}
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-[#000000] font-mono truncate">********</p>
-                        <p className="text-[10px] text-[#000000] truncate mt-0.5">{pr.title ?? pr.description ?? "—"}</p>
+                        <p className="text-xs font-bold text-slate-900 font-mono truncate">********</p>
+                        <p className="text-[10px] text-slate-900 truncate mt-0.5">{pr.title ?? pr.description ?? "—"}</p>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="text-xs font-bold text-[#000000]">
+                        <p className="text-xs font-bold text-slate-900">
                           {pr.totalEstimate != null
                             ? Number(pr.totalEstimate).toLocaleString("vi-VN") + " ₫"
                             : "—"}
                         </p>
-                        <p className="text-[10px] text-[#000000]">{(pr.items ?? []).length} items</p>
+                        <p className="text-[10px] text-slate-900">{(pr.items ?? []).length} items</p>
                       </div>
                     </button>
                   );
@@ -463,7 +463,7 @@ export default function POConsolidatePage() {
 
           {/* Step 2 — Chế độ gộp */}
           <div className="erp-card">
-            <h3 className="text-sm font-bold text-[#000000] flex items-center gap-2 mb-3">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
               <span className="step-badge">2</span>
               Chế độ gộp item
             </h3>
@@ -479,12 +479,12 @@ export default function POConsolidatePage() {
                   }`}
                 >
                   {m === "SKU_MATCH"
-                    ? <Package size={16} className={mode === m ? "text-[#3B82F6]" : "text-[#000000]"} />
-                    : <Layers size={16} className={mode === m ? "text-[#3B82F6]" : "text-[#000000]"} />}
-                  <p className="text-xs font-bold text-[#000000] mt-2">
+                    ? <Package size={16} className={mode === m ? "text-[#3B82F6]" : "text-slate-900"} />
+                    : <Layers size={16} className={mode === m ? "text-[#3B82F6]" : "text-slate-900"} />}
+                  <p className="text-xs font-bold text-slate-900 mt-2">
                     {m === "SKU_MATCH" ? "SKU Match" : "Category Match"}
                   </p>
-                  <p className="text-[10px] text-[#000000] mt-0.5 leading-relaxed">
+                  <p className="text-[10px] text-slate-900 mt-0.5 leading-relaxed">
                     {m === "SKU_MATCH"
                       ? "Gộp items cùng mã SKU (chính xác)"
                       : "Gộp items cùng danh mục sản phẩm"}
@@ -496,7 +496,7 @@ export default function POConsolidatePage() {
 
           {/* Step 3 — Thông tin PO */}
           <div className="erp-card">
-            <h3 className="text-sm font-bold text-[#000000] flex items-center gap-2 mb-4">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-4">
               <span className="step-badge">3</span>
               Thông tin đơn hàng
             </h3>
@@ -524,23 +524,23 @@ export default function POConsolidatePage() {
                         <Building2 size={14} />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-[#000000]">{selectedSupplier.name}</p>
+                        <p className="text-sm font-bold text-slate-900">{selectedSupplier.name}</p>
                         {"email" in selectedSupplier && selectedSupplier.email && (
-                          <p className="text-[10px] text-[#000000]">{selectedSupplier.email}</p>
+                          <p className="text-[10px] text-slate-900">{selectedSupplier.email}</p>
                         )}
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => { setSupplierId(""); setSelectedSupplier(null); }}
-                      className="p-1.5 rounded-lg text-[#000000] hover:text-black hover:bg-rose-500/10 transition-all"
+                      className="p-1.5 rounded-lg text-slate-900 hover:text-black hover:bg-rose-500/10 transition-all"
                     >
                       <X size={14} />
                     </button>
                   </div>
                 ) : (
                   <div ref={searchRef} className="relative">
-                    <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#000000]" />
+                    <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-900" />
                     <input
                       type="text"
                       placeholder="Tìm kiếm nhà cung cấp..."
@@ -562,12 +562,12 @@ export default function POConsolidatePage() {
                               <Building2 size={12} />
                             </div>
                             <div>
-                              <p className="text-xs font-bold text-[#000000]">{s.name}</p>
-                              {s.email && <p className="text-[10px] text-[#000000]">{s.email}</p>}
+                              <p className="text-xs font-bold text-slate-900">{s.name}</p>
+                              {s.email && <p className="text-[10px] text-slate-900">{s.email}</p>}
                             </div>
                           </button>
                         )) : (
-                          <p className="px-4 py-3 text-xs text-[#000000] italic">Không tìm thấy nhà cung cấp</p>
+                          <p className="px-4 py-3 text-xs text-slate-900 italic">Không tìm thấy nhà cung cấp</p>
                         )}
                       </div>
                     )}
@@ -577,8 +577,8 @@ export default function POConsolidatePage() {
                 {/* AI status — auto-trigger, no manual button needed */}
                 <div className="flex items-center gap-2 text-[10px]">
                   {selectedPrIds.length < 2 ? (
-                    <span className="text-[#000000] italic flex items-center gap-1.5">
-                      <Sparkles size={11} className="text-[#000000]" />
+                    <span className="text-slate-900 italic flex items-center gap-1.5">
+                      <Sparkles size={11} className="text-slate-900" />
                       Chọn ≥ 2 PR để AI tự động gợi ý nhà cung cấp
                     </span>
                   ) : isAiLoading ? (
@@ -592,7 +592,7 @@ export default function POConsolidatePage() {
                       AI đã gợi ý {aiSuggestions.length} nhà cung cấp (tự động từ {selectedPrIds.length} PR)
                     </span>
                   ) : (
-                    <span className="text-[#000000] italic flex items-center gap-1.5">
+                    <span className="text-slate-900 italic flex items-center gap-1.5">
                       <Sparkles size={11} />
                       AI không tìm thấy gợi ý — tìm thủ công bên trên
                     </span>
@@ -606,18 +606,18 @@ export default function POConsolidatePage() {
                       <span className="text-[10px] font-black uppercase tracking-widest text-violet-400 flex items-center gap-1.5">
                         <Sparkles size={11} /> Gợi ý từ AI (RAG)
                       </span>
-                      <button type="button" onClick={() => setShowAiPanel(false)} className="text-[#000000] hover:text-[#000000]">
+                      <button type="button" onClick={() => setShowAiPanel(false)} className="text-slate-900 hover:text-slate-900">
                         <X size={13} />
                       </button>
                     </div>
 
                     {isAiLoading ? (
-                      <div className="p-6 flex items-center justify-center gap-3 text-[#000000]">
+                      <div className="p-6 flex items-center justify-center gap-3 text-slate-900">
                         <Loader2 size={16} className="animate-spin text-violet-400" />
                         <span className="text-xs font-medium">Đang truy vấn dữ liệu lịch sử…</span>
                       </div>
                     ) : aiSuggestions.length === 0 ? (
-                      <p className="p-4 text-xs text-[#000000] italic text-center">
+                      <p className="p-4 text-xs text-slate-900 italic text-center">
                         AI không tìm thấy gợi ý phù hợp — thử chọn thêm PR hoặc tìm thủ công.
                       </p>
                     ) : (
@@ -631,7 +631,7 @@ export default function POConsolidatePage() {
 
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1.5">
-                                <p className="text-sm font-bold text-[#000000] truncate">{s.name}</p>
+                                <p className="text-sm font-bold text-slate-900 truncate">{s.name}</p>
                                 <span className="shrink-0 text-[10px] font-black text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded-full border border-violet-500/20">
                                   {s.matchScore}% match
                                 </span>
@@ -654,7 +654,7 @@ export default function POConsolidatePage() {
 
                               <div className="flex flex-wrap gap-1">
                                 {s.reasons.map((r, i) => (
-                                  <span key={i} className="text-[9px] text-[#000000] bg-[#FFFFFF] px-2 py-0.5 rounded-full border border-[rgba(148,163,184,0.08)]">
+                                  <span key={i} className="text-[9px] text-slate-900 bg-[#FFFFFF] px-2 py-0.5 rounded-full border border-[rgba(148,163,184,0.08)]">
                                     {r}
                                   </span>
                                 ))}
@@ -665,7 +665,7 @@ export default function POConsolidatePage() {
                               type="button"
                               onClick={() => pickAiSupplier(s)}
                               disabled={!!selectedSupplier}
-                              className="flex items-center gap-1 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-[#000000] text-[10px] font-black uppercase rounded-lg transition-all shrink-0"
+                              className="flex items-center gap-1 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 text-[10px] font-black uppercase rounded-lg transition-all shrink-0"
                             >
                               <BadgeCheck size={12} /> Chọn
                             </button>
@@ -734,7 +734,7 @@ export default function POConsolidatePage() {
         {/* RIGHT 2 cols — Preview sticky */}
         <div className="xl:col-span-2">
           <div className="erp-card sticky top-20">
-            <h3 className="text-sm font-bold text-[#000000] flex items-center gap-2 mb-4">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-4">
               <GitMerge size={15} className="text-[#3B82F6]" />
               Xem trước kết quả gộp
             </h3>
@@ -771,9 +771,9 @@ export default function POConsolidatePage() {
                             {idx + 1}
                           </span>
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-[#000000] truncate leading-tight">{item.description}</p>
+                            <p className="text-xs font-semibold text-slate-900 truncate leading-tight">{item.description}</p>
                             {item.sku && (
-                              <p className="text-[10px] text-[#000000] font-mono mt-0.5">SKU: {item.sku}</p>
+                              <p className="text-[10px] text-slate-900 font-mono mt-0.5">SKU: {item.sku}</p>
                             )}
                           </div>
                         </div>
@@ -781,7 +781,7 @@ export default function POConsolidatePage() {
                           <p className="text-xs font-bold text-black">
                             {(item.totalQty * item.unitPrice).toLocaleString("vi-VN")} ₫
                           </p>
-                          <p className="text-[10px] text-[#000000]">
+                          <p className="text-[10px] text-slate-900">
                             {item.totalQty} {item.unit} × {item.unitPrice.toLocaleString("vi-VN")}
                           </p>
                         </div>
@@ -790,7 +790,7 @@ export default function POConsolidatePage() {
                       <div className="flex flex-wrap gap-1 mt-2">
                         {item.sources.map((src, sIdx) => (
                           <span key={sIdx} className="source-pill">
-                            ********: <span className="text-[#000000]">{src.qty}</span>
+                            ********: <span className="text-slate-900">{src.qty}</span>
                           </span>
                         ))}
                       </div>
@@ -800,7 +800,7 @@ export default function POConsolidatePage() {
 
                 {/* Total */}
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-[rgba(148,163,184,0.1)]">
-                  <span className="text-xs font-bold text-[#000000] uppercase tracking-wider">Tổng cộng</span>
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">Tổng cộng</span>
                   <span className="text-base font-bold text-black">
                     {previewTotal.toLocaleString("vi-VN")} ₫
                   </span>
@@ -820,7 +820,7 @@ export default function POConsolidatePage() {
                 </button>
 
                 {(!supplierId || !deliveryDate) && (
-                  <p className="text-[10px] text-[#000000] text-center mt-2">
+                  <p className="text-[10px] text-slate-900 text-center mt-2">
                     {!supplierId ? "Chưa chọn nhà cung cấp" : "Chưa nhập ngày giao hàng"}
                   </p>
                 )}

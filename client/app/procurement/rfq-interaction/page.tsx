@@ -8,7 +8,7 @@ export default function RFQInteractionPage() {
     const rfqId = searchParams.get("id") || "";
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <div className="mt-12 mb-8">
                 <h1 className="text-3xl font-black text-brand-primary mb-2 tracking-tight">CÔNG CỤ XỬ LÝ RFQ THÔNG MINH</h1>
                 <p className="text-black font-medium">Demo quy trình tự động lọc & so sánh giá cho Bộ phận Thu mua</p>

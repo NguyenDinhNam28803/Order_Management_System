@@ -275,7 +275,7 @@ function RfqQuotePageContent() {
               <ChevronRight className="w-3 h-3 text-[#D99B89]" />
               <span className="text-[#E6BCB0] text-xs font-semibold">RFQ-********</span>
             </div>
-            <h1 className="text-[#000000] text-xl font-bold leading-snug">{rfq.title}</h1>
+            <h1 className="text-slate-900 text-xl font-bold leading-snug">{rfq.title}</h1>
           </div>
 
           <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm border-b border-gray-100">
@@ -495,7 +495,7 @@ function RfqQuotePageContent() {
           <button
             type="submit"
             disabled={submitting || totalPrice === 0}
-            className="w-full bg-gradient-to-r from-[#1D4ED8] to-indigo-600 hover:from-[#8F442B] hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-[#000000] font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
+            className="w-full bg-gradient-to-r from-[#1D4ED8] to-indigo-600 hover:from-[#8F442B] hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
           >
             {submitting ? (
               <>

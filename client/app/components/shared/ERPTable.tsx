@@ -1,12 +1,16 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { useState } from "react";
+import { ChevronsUpDown, ChevronUp, ChevronDown, Inbox } from "lucide-react";
 
 export interface ERPTableColumn<T> {
     label: string;
     key?: keyof T;
+    sortable?: boolean;
     render?: (item: T) => React.ReactNode;
 }
+
+type SortDir = "asc" | "desc" | null;
 
 interface ERPTableProps<T> {
     columns: ERPTableColumn<T>[];
@@ -14,46 +18,107 @@ interface ERPTableProps<T> {
     density?: "normal" | "compact";
     onRowClick?: (item: T) => void;
     emptyMessage?: string;
+    emptyDescription?: string;
 }
 
-export default function ERPTable<T>({
+export default function ERPTable<T extends object>({
     columns,
     data,
     density = "normal",
     onRowClick,
     emptyMessage = "Không có dữ liệu",
+    emptyDescription = "Dữ liệu sẽ xuất hiện tại đây",
 }: ERPTableProps<T>) {
+    const [sortKey, setSortKey] = useState<keyof T | null>(null);
+    const [sortDir, setSortDir] = useState<SortDir>(null);
+
+    const handleSort = (col: ERPTableColumn<T>) => {
+        if (!col.sortable || !col.key) return;
+        if (sortKey === col.key) {
+            setSortDir(prev => prev === "asc" ? "desc" : prev === "desc" ? null : "asc");
+            if (sortDir === "desc") setSortKey(null);
+        } else {
+            setSortKey(col.key);
+            setSortDir("asc");
+        }
+    };
+
+    const sortedData = (() => {
+        if (!sortKey || !sortDir) return data;
+        return [...data].sort((a, b) => {
+            const av = a[sortKey];
+            const bv = b[sortKey];
+            if (av == null && bv == null) return 0;
+            if (av == null) return sortDir === "asc" ? 1 : -1;
+            if (bv == null) return sortDir === "asc" ? -1 : 1;
+            if (typeof av === "string" && typeof bv === "string") {
+                return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+            }
+            if (av < bv) return sortDir === "asc" ? -1 : 1;
+            if (av > bv) return sortDir === "asc" ? 1 : -1;
+            return 0;
+        });
+    })();
+
+    const SortIcon = ({ col }: { col: ERPTableColumn<T> }) => {
+        if (!col.sortable || !col.key) return null;
+        if (sortKey !== col.key || sortDir === null) return <ChevronsUpDown size={11} className="text-slate-400 ml-1 shrink-0" />;
+        if (sortDir === "asc") return <ChevronUp size={11} className="text-blue-500 ml-1 shrink-0" />;
+        return <ChevronDown size={11} className="text-blue-500 ml-1 shrink-0" />;
+    };
+
     return (
-        <div className="overflow-x-auto w-full rounded-xl overflow-hidden">
-            <table className={`erp-table border-none rounded-none ${density === "compact" ? "compact" : ""}`}>
+        <div className="overflow-x-auto w-full rounded-xl overflow-hidden" role="region" aria-label="Data table">
+            <table
+                className={`erp-table border-none rounded-none ${density === "compact" ? "compact" : ""}`}
+                aria-rowcount={data.length}
+            >
                 <thead>
                     <tr>
                         {columns.map((col, i) => (
-                            <th key={i}>{col.label}</th>
+                            <th
+                                key={i}
+                                onClick={() => handleSort(col)}
+                                className={col.sortable ? "cursor-pointer select-none hover:bg-slate-100 transition-colors" : ""}
+                                aria-sort={
+                                    col.sortable && col.key && sortKey === col.key
+                                        ? (sortDir === "asc" ? "ascending" : sortDir === "desc" ? "descending" : "none")
+                                        : undefined
+                                }
+                            >
+                                <span className="inline-flex items-center">
+                                    {col.label}
+                                    <SortIcon col={col} />
+                                </span>
+                            </th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {data.length === 0 ? (
+                    {sortedData.length === 0 ? (
                         <tr>
                             <td colSpan={columns.length} className="text-center py-16 bg-white">
                                 <div className="flex flex-col items-center gap-3 text-slate-400">
-                                    <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
-                                        <Plus className="rotate-45 text-slate-400" size={20} />
+                                    <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+                                        <Inbox size={22} className="text-slate-300" />
                                     </div>
                                     <div>
                                         <p className="text-sm font-semibold text-slate-500">{emptyMessage}</p>
-                                        <p className="text-xs text-slate-400 mt-0.5">Dữ liệu sẽ xuất hiện tại đây</p>
+                                        <p className="text-xs text-slate-400 mt-0.5">{emptyDescription}</p>
                                     </div>
                                 </div>
                             </td>
                         </tr>
                     ) : (
-                        data.map((row, i) => (
+                        sortedData.map((row, i) => (
                             <tr
                                 key={i}
                                 className={`group ${onRowClick ? "cursor-pointer" : ""}`}
                                 onClick={() => onRowClick?.(row)}
+                                tabIndex={onRowClick ? 0 : undefined}
+                                onKeyDown={onRowClick ? (e) => { if (e.key === "Enter" || e.key === " ") onRowClick(row); } : undefined}
+                                role={onRowClick ? "button" : undefined}
+                                aria-label={onRowClick ? `Xem chi tiết hàng ${i + 1}` : undefined}
                             >
                                 {columns.map((col, j) => (
                                     <td key={j}>

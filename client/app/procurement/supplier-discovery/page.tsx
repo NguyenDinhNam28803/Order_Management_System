@@ -78,10 +78,10 @@ const SupplierDetailModal = ({
         <div className="flex items-start justify-between p-5 border-b border-[#E2E8F0] bg-[#FFFFFF] shrink-0">
           <div className="flex-1 min-w-0 pr-4">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h2 className="text-base font-black text-[#000000] truncate">{s.name}</h2>
+              <h2 className="text-base font-black text-slate-900 truncate">{s.name}</h2>
               <StatusBadge status={s.status} />
             </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[#000000]">
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-slate-900">
               {s.province && <span className="flex items-center gap-1"><MapPin size={10} />{s.province}</span>}
               {s.industry && <span className="flex items-center gap-1"><Building2 size={10} />{s.industry}</span>}
               {s.website && (
@@ -91,7 +91,7 @@ const SupplierDetailModal = ({
               )}
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 text-[#000000] hover:text-[#000000] hover:bg-[rgba(240,246,252,0.06)] rounded-lg transition-all shrink-0">
+          <button onClick={onClose} className="p-1.5 text-slate-900 hover:text-slate-900 hover:bg-[rgba(240,246,252,0.06)] rounded-lg transition-all shrink-0">
             <X size={16} />
           </button>
         </div>
@@ -101,7 +101,7 @@ const SupplierDetailModal = ({
 
           {/* ── AI Score section ── */}
           <div className="bg-[#FFFFFF] rounded-xl border border-[#E2E8F0] p-4">
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-3 flex items-center gap-1.5">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-3 flex items-center gap-1.5">
               <Sparkles size={11} className="text-violet-400" /> Đánh giá AI
             </p>
             {/* Score row */}
@@ -112,7 +112,7 @@ const SupplierDetailModal = ({
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-bold" style={{ color: scoreColor }}>{scoreLabel}</span>
-                  <span className="text-[10px] text-[#000000]">/ 100</span>
+                  <span className="text-[10px] text-slate-900">/ 100</span>
                 </div>
                 <div className="h-2 bg-[rgba(240,246,252,0.06)] rounded-full overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-700" style={{ width: `${s.aiScore}%`, background: scoreColor }} />
@@ -123,7 +123,7 @@ const SupplierDetailModal = ({
             {/* AI Summary */}
             {s.aiSummary && (
               <div className="mb-4">
-                <p className="text-[10px] font-black uppercase tracking-wider text-[#000000] mb-1.5">Nhận xét AI</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900 mb-1.5">Nhận xét AI</p>
                 <p className="text-[12.5px] text-[#C9D1D9] leading-relaxed">{s.aiSummary}</p>
               </div>
             )}
@@ -131,7 +131,7 @@ const SupplierDetailModal = ({
             {/* Match reasons */}
             {s.matchReasons.length > 0 && (
               <div>
-                <p className="text-[10px] font-black uppercase tracking-wider text-[#000000] mb-2">Lý do chấm điểm</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900 mb-2">Lý do chấm điểm</p>
                 <div className="space-y-1.5">
                   {s.matchReasons.map((r, i) => (
                     <div key={i} className="flex items-start gap-2">
@@ -144,14 +144,14 @@ const SupplierDetailModal = ({
             )}
 
             {s.matchReasons.length === 0 && !s.aiSummary && (
-              <p className="text-[11px] text-[#000000] italic">AI chưa cung cấp lý do chi tiết cho lần tìm kiếm này.</p>
+              <p className="text-[11px] text-slate-900 italic">AI chưa cung cấp lý do chi tiết cho lần tìm kiếm này.</p>
             )}
           </div>
 
           {/* ── Company info section ── */}
           <div className="bg-[#FFFFFF] rounded-xl border border-[#E2E8F0] p-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] flex items-center gap-1.5">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-1.5">
                 <Building2 size={11} /> Thông tin liên hệ
               </p>
               <button
@@ -174,41 +174,41 @@ const SupplierDetailModal = ({
 
             <div className="space-y-2.5">
               <div className="flex items-center gap-2 text-[12px]">
-                <Phone size={12} className="text-[#000000] shrink-0" />
-                <span className="text-[#000000] w-24 shrink-0">Điện thoại</span>
+                <Phone size={12} className="text-slate-900 shrink-0" />
+                <span className="text-slate-900 w-24 shrink-0">Điện thoại</span>
                 {s.phone
-                  ? <a href={`tel:${s.phone}`} className="text-[#000000] font-medium hover:text-[#3B82F6] transition-colors">{s.phone}</a>
-                  : <span className="text-[#000000] italic text-[11px]">Chưa có thông tin</span>}
+                  ? <a href={`tel:${s.phone}`} className="text-slate-900 font-medium hover:text-[#3B82F6] transition-colors">{s.phone}</a>
+                  : <span className="text-slate-900 italic text-[11px]">Chưa có thông tin</span>}
               </div>
               <div className="flex items-center gap-2 text-[12px]">
-                <Mail size={12} className="text-[#000000] shrink-0" />
-                <span className="text-[#000000] w-24 shrink-0">Email</span>
+                <Mail size={12} className="text-slate-900 shrink-0" />
+                <span className="text-slate-900 w-24 shrink-0">Email</span>
                 {s.email
                   ? <a href={`mailto:${s.email}`} className="text-black hover:underline">{s.email}</a>
-                  : <span className="text-[#000000] italic text-[11px]">Chưa có thông tin</span>}
+                  : <span className="text-slate-900 italic text-[11px]">Chưa có thông tin</span>}
               </div>
               <div className="flex items-start gap-2 text-[12px]">
-                <MapPin size={12} className="text-[#000000] shrink-0 mt-0.5" />
-                <span className="text-[#000000] w-24 shrink-0">Địa chỉ</span>
+                <MapPin size={12} className="text-slate-900 shrink-0 mt-0.5" />
+                <span className="text-slate-900 w-24 shrink-0">Địa chỉ</span>
                 {s.address
-                  ? <span className="text-[#000000]">{s.address}</span>
-                  : <span className="text-[#000000] italic text-[11px]">{s.province || 'Chưa có thông tin'}</span>}
+                  ? <span className="text-slate-900">{s.address}</span>
+                  : <span className="text-slate-900 italic text-[11px]">{s.province || 'Chưa có thông tin'}</span>}
               </div>
               <div className="flex items-center gap-2 text-[12px]">
-                <Star size={12} className="text-[#000000] shrink-0" />
-                <span className="text-[#000000] w-24 shrink-0">Mã số thuế</span>
+                <Star size={12} className="text-slate-900 shrink-0" />
+                <span className="text-slate-900 w-24 shrink-0">Mã số thuế</span>
                 {s.taxCode
-                  ? <span className="text-[#000000] font-mono">{s.taxCode}</span>
-                  : <span className="text-[#000000] italic text-[11px]">Chưa có thông tin</span>}
+                  ? <span className="text-slate-900 font-mono">{s.taxCode}</span>
+                  : <span className="text-slate-900 italic text-[11px]">Chưa có thông tin</span>}
               </div>
               <div className="flex items-center gap-2 text-[12px]">
-                <Globe size={12} className="text-[#000000] shrink-0" />
-                <span className="text-[#000000] w-24 shrink-0">Website</span>
+                <Globe size={12} className="text-slate-900 shrink-0" />
+                <span className="text-slate-900 w-24 shrink-0">Website</span>
                 {s.website
                   ? <a href={s.website} target="_blank" rel="noopener noreferrer" className="text-[#3B82F6] hover:underline flex items-center gap-1">
                       {s.website.replace(/^https?:\/\//, '')} <ArrowUpRight size={10} />
                     </a>
-                  : <span className="text-[#000000] italic text-[11px]">Chưa có thông tin</span>}
+                  : <span className="text-slate-900 italic text-[11px]">Chưa có thông tin</span>}
               </div>
             </div>
           </div>
@@ -216,12 +216,12 @@ const SupplierDetailModal = ({
           {/* ── Products & Certifications ── */}
           {(s.products.length > 0 || s.certifications.length > 0) && (
             <div className="bg-[#FFFFFF] rounded-xl border border-[#E2E8F0] p-4">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-3 flex items-center gap-1.5">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-3 flex items-center gap-1.5">
                 <Zap size={11} /> Năng lực & Chứng chỉ
               </p>
               {s.products.length > 0 && (
                 <div className="mb-3">
-                  <p className="text-[10px] font-semibold text-[#000000] uppercase mb-1.5">Sản phẩm / Dịch vụ</p>
+                  <p className="text-[10px] font-semibold text-slate-900 uppercase mb-1.5">Sản phẩm / Dịch vụ</p>
                   <div className="flex flex-wrap gap-1.5">
                     {s.products.map((p, i) => (
                       <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-[rgba(240,246,252,0.05)] text-[#C9D1D9] border border-[#E2E8F0]">{p}</span>
@@ -231,7 +231,7 @@ const SupplierDetailModal = ({
               )}
               {s.certifications.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-semibold text-[#000000] uppercase mb-1.5">Chứng chỉ</p>
+                  <p className="text-[10px] font-semibold text-slate-900 uppercase mb-1.5">Chứng chỉ</p>
                   <div className="flex flex-wrap gap-1.5">
                     {s.certifications.map((c, i) => (
                       <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-emerald-500/10 text-black border border-emerald-500/20 flex items-center gap-1">
@@ -255,19 +255,19 @@ const SupplierDetailModal = ({
 
         {/* Footer */}
         <div className="shrink-0 border-t border-[#E2E8F0] bg-[#FFFFFF] px-5 py-4 flex items-center justify-between gap-3">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg text-[12px] text-[#000000] hover:text-[#000000] border border-[#E2E8F0] hover:border-[rgba(240,246,252,0.15)] transition-all">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg text-[12px] text-slate-900 hover:text-slate-900 border border-[#E2E8F0] hover:border-[rgba(240,246,252,0.15)] transition-all">
             Đóng
           </button>
           {s.status === 'NEW' && (
             <button
               onClick={() => onVetting(s.name)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#1D4ED8] text-white hover:bg-[#2563EB] disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#1D4ED8] text-slate-900 hover:bg-[#2563EB] disabled:opacity-50 transition-all"
             >
               <Import size={13} /> Xét duyệt nhà cung cấp
             </button>
           )}
           {s.status === 'IN_SYSTEM' && (
-            <span className="text-[11px] text-[#000000] flex items-center gap-1"><CheckCircle2 size={12} className="text-[#3B82F6]" />Đã có trong hệ thống</span>
+            <span className="text-[11px] text-slate-900 flex items-center gap-1"><CheckCircle2 size={12} className="text-[#3B82F6]" />Đã có trong hệ thống</span>
           )}
           {s.status === 'WORKED_BEFORE' && (
             <span className="text-[11px] text-black flex items-center gap-1"><CheckCircle2 size={12} />Đã từng hợp tác</span>
@@ -303,10 +303,10 @@ const SupplierCard = ({
           />
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h3 className="text-sm font-bold text-[#000000] truncate">{supplier.name}</h3>
+              <h3 className="text-sm font-bold text-slate-900 truncate">{supplier.name}</h3>
               <StatusBadge status={supplier.status} />
             </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[#000000]">
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-slate-900">
               {supplier.province && <span className="flex items-center gap-1"><MapPin size={10} />{supplier.province}</span>}
               {supplier.industry && <span className="flex items-center gap-1"><Building2 size={10} />{supplier.industry}</span>}
               {supplier.website && (
@@ -318,14 +318,14 @@ const SupplierCard = ({
           </div>
           {/* AI Score */}
           <div className="shrink-0 w-28">
-            <p className="text-[9px] font-semibold text-[#000000] uppercase tracking-wider mb-1">AI Score</p>
+            <p className="text-[9px] font-semibold text-slate-900 uppercase tracking-wider mb-1">AI Score</p>
             <ScoreBar score={supplier.aiScore} />
           </div>
         </div>
 
         {/* AI Summary — inline preview */}
         {supplier.aiSummary && (
-          <p className="mt-2.5 text-[11.5px] text-[#000000] leading-relaxed line-clamp-2 pl-6">
+          <p className="mt-2.5 text-[11.5px] text-slate-900 leading-relaxed line-clamp-2 pl-6">
             {supplier.aiSummary}
           </p>
         )}
@@ -337,15 +337,15 @@ const SupplierCard = ({
               <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-[rgba(59,130,246,0.1)] text-[#D99B89] border border-[#2563EB]/20">{r}</span>
             ))}
             {supplier.matchReasons.length > 3 && (
-              <span className="text-[10px] text-[#000000]">+{supplier.matchReasons.length - 3}</span>
+              <span className="text-[10px] text-slate-900">+{supplier.matchReasons.length - 3}</span>
             )}
           </div>
         )}
 
         {/* Contacts row */}
         <div className="mt-3 pl-6 flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
-          {supplier.phone && <span className="flex items-center gap-1 text-[#000000]"><Phone size={10} />{supplier.phone}</span>}
-          {supplier.email && <span className="flex items-center gap-1 text-[#000000]"><Mail size={10} />{supplier.email}</span>}
+          {supplier.phone && <span className="flex items-center gap-1 text-slate-900"><Phone size={10} />{supplier.phone}</span>}
+          {supplier.email && <span className="flex items-center gap-1 text-slate-900"><Mail size={10} />{supplier.email}</span>}
         </div>
 
         {/* Action bar */}
@@ -366,7 +366,7 @@ const SupplierCard = ({
             </button>
           )}
           {supplier.status === 'IN_SYSTEM' && (
-            <span className="ml-auto text-[10px] text-[#000000]">Đã có trong hệ thống</span>
+            <span className="ml-auto text-[10px] text-slate-900">Đã có trong hệ thống</span>
           )}
           {supplier.status === 'WORKED_BEFORE' && (
             <span className="ml-auto text-[10px] text-emerald-500">Đã từng hợp tác</span>
@@ -382,16 +382,16 @@ const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[];
   <div className="fixed inset-0 z-50 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div className="bg-[#F1F5F9] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-auto">
       <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0]">
-        <h3 className="font-bold text-[#000000]">So sánh Nhà cung cấp</h3>
-        <button onClick={onClose} className="text-[#000000] hover:text-[#000000] transition-colors"><X size={16} /></button>
+        <h3 className="font-bold text-slate-900">So sánh Nhà cung cấp</h3>
+        <button onClick={onClose} className="text-slate-900 hover:text-slate-900 transition-colors"><X size={16} /></button>
       </div>
       <div className="p-4 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr>
-              <td className="text-[10px] text-[#000000] uppercase font-semibold pr-4 pb-3 w-28">Tiêu chí</td>
+              <td className="text-[10px] text-slate-900 uppercase font-semibold pr-4 pb-3 w-28">Tiêu chí</td>
               {suppliers.map((s, i) => (
-                <th key={i} className="text-left pb-3 px-3 font-bold text-[#000000]">{s.name}</th>
+                <th key={i} className="text-left pb-3 px-3 font-bold text-slate-900">{s.name}</th>
               ))}
             </tr>
           </thead>
@@ -407,9 +407,9 @@ const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[];
               { label: 'Trạng thái', render: (s: DiscoveredSupplier) => <StatusBadge status={s.status} /> },
             ].map(row => (
               <tr key={row.label}>
-                <td className="text-[10px] text-[#000000] uppercase font-semibold py-2.5 pr-4">{row.label}</td>
+                <td className="text-[10px] text-slate-900 uppercase font-semibold py-2.5 pr-4">{row.label}</td>
                 {suppliers.map((s, i) => (
-                  <td key={i} className="py-2.5 px-3 text-[12px] text-[#000000]">{row.render(s)}</td>
+                  <td key={i} className="py-2.5 px-3 text-[12px] text-slate-900">{row.render(s)}</td>
                 ))}
               </tr>
             ))}
@@ -577,19 +577,19 @@ export default function SupplierDiscoveryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] text-[#000000]">
+    <div className="min-h-screen bg-[#FFFFFF] text-slate-900">
       <div className="max-w-5xl mx-auto px-4 py-8">
 
         {/* ── Page header ── */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-[#1D4ED8] flex items-center justify-center shadow-lg shadow-violet-500/30">
-              <Sparkles size={15} className="text-[#000000]" />
+              <Sparkles size={15} className="text-slate-900" />
             </div>
-            <h1 className="text-xl font-black text-[#0F172A]">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
+            <h1 className="text-xl font-black text-slate-900">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
             <span className="ml-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/30 uppercase tracking-wider">Beta</span>
           </div>
-          <p className="text-[12px] text-[#000000]">Tìm kiếm nhà cung cấp từ nguồn bên ngoài bằng AI · Gemini + Tavily Search</p>
+          <p className="text-[12px] text-slate-900">Tìm kiếm nhà cung cấp từ nguồn bên ngoài bằng AI · Gemini + Tavily Search</p>
         </div>
 
         {/* ── Search form ── */}
@@ -597,20 +597,20 @@ export default function SupplierDiscoveryPage() {
           {/* Main query */}
           <div className="flex gap-2 mb-3">
             <div className="relative flex-1">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" />
               <input
                 type="text"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
                 placeholder="VD: nhà cung cấp laptop văn phòng Hà Nội..."
-                className="w-full pl-9 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(240,246,252,0.1)] rounded-xl text-sm text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/50 transition-colors"
+                className="w-full pl-9 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(240,246,252,0.1)] rounded-xl text-sm text-slate-900 placeholder-[#000000] focus:outline-none focus:border-violet-500/50 transition-colors"
               />
             </div>
             <button
               onClick={handleSearch}
               disabled={loading || !query.trim()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-[#1D4ED8] text-[#000000] hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-violet-500/20"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-[#1D4ED8] text-slate-900 hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-violet-500/20"
             >
               {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
               Tìm kiếm AI
@@ -623,12 +623,12 @@ export default function SupplierDiscoveryPage() {
               value={location}
               onChange={e => setLocation(e.target.value)}
               placeholder="Khu vực..."
-              className="w-32 px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
+              className="w-32 px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-slate-900 placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
             />
             <select
               value={companySize}
               onChange={e => setCompanySize(e.target.value as '' | 'STARTUP' | 'SME' | 'ENTERPRISE')}
-              className="px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-[#000000] focus:outline-none focus:border-violet-500/40"
+              className="px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-slate-900 focus:outline-none focus:border-violet-500/40"
             >
               <option value="">Quy mô</option>
               <option value="STARTUP">Startup</option>
@@ -639,14 +639,14 @@ export default function SupplierDiscoveryPage() {
               <button
                 key={p.key}
                 onClick={() => togglePriority(p.key)}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${priorities.includes(p.key) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#000000] border-[#E2E8F0] hover:border-[rgba(240,246,252,0.2)]'}`}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${priorities.includes(p.key) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-slate-900 border-[#E2E8F0] hover:border-[rgba(240,246,252,0.2)]'}`}
               >
                 {p.icon}{p.label}
               </button>
             ))}
             <button
               onClick={() => setShowAdvanced(v => !v)}
-              className="flex items-center gap-1 text-[11px] text-[#000000] hover:text-[#000000] ml-auto"
+              className="flex items-center gap-1 text-[11px] text-slate-900 hover:text-slate-900 ml-auto"
             >
               <Filter size={11} />Nâng cao {showAdvanced ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
             </button>
@@ -656,22 +656,22 @@ export default function SupplierDiscoveryPage() {
           {showAdvanced && (
             <div className="mt-3 pt-3 border-t border-[rgba(240,246,252,0.06)] grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <p className="text-[10px] text-[#000000] uppercase font-semibold mb-2">Sản phẩm cụ thể</p>
+                <p className="text-[10px] text-slate-900 uppercase font-semibold mb-2">Sản phẩm cụ thể</p>
                 <input
                   value={products}
                   onChange={e => setProducts(e.target.value)}
                   placeholder="VD: laptop Dell, máy in HP..."
-                  className="w-full px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
+                  className="w-full px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-slate-900 placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
                 />
               </div>
               <div>
-                <p className="text-[10px] text-[#000000] uppercase font-semibold mb-2">Số kết quả (1-20)</p>
+                <p className="text-[10px] text-slate-900 uppercase font-semibold mb-2">Số kết quả (1-20)</p>
                 <input
                   type="number"
                   min={1} max={20}
                   value={limit}
                   onChange={e => setLimit(Math.min(20, Math.max(1, Number(e.target.value))))}
-                  className="w-24 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-[#000000] focus:outline-none focus:border-violet-500/40"
+                  className="w-24 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-slate-900 focus:outline-none focus:border-violet-500/40"
                 />
               </div>
               {categories.length > 0 && (
@@ -682,7 +682,7 @@ export default function SupplierDiscoveryPage() {
                       <button
                         key={c.id}
                         onClick={() => toggleCategory(c.name)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${selectedCategories.includes(c.name) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-[#000000] border-[#E2E8F0] hover:border-[rgba(240,246,252,0.2)]'}`}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${selectedCategories.includes(c.name) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-slate-900 border-[#E2E8F0] hover:border-[rgba(240,246,252,0.2)]'}`}
                       >
                         {c.name}
                       </button>
@@ -736,8 +736,8 @@ export default function SupplierDiscoveryPage() {
             {/* Results header */}
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-sm font-bold text-[#000000]">{results.length} nhà cung cấp tìm thấy</p>
-                {queryUsed && <p className="text-[10px] text-[#000000] mt-0.5">Query: &quot;{queryUsed}&quot;</p>}
+                <p className="text-sm font-bold text-slate-900">{results.length} nhà cung cấp tìm thấy</p>
+                {queryUsed && <p className="text-[10px] text-slate-900 mt-0.5">Query: &quot;{queryUsed}&quot;</p>}
               </div>
               <div className="flex items-center gap-2">
                 {selected.size >= 2 && (
@@ -750,7 +750,7 @@ export default function SupplierDiscoveryPage() {
                 )}
                 <button
                   onClick={handleExport}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[rgba(240,246,252,0.05)] text-[#000000] border border-[#E2E8F0] hover:border-[rgba(240,246,252,0.15)] transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[rgba(240,246,252,0.05)] text-slate-900 border border-[#E2E8F0] hover:border-[rgba(240,246,252,0.15)] transition-colors"
                 >
                   <Download size={11} />Export CSV
                 </button>
@@ -758,7 +758,7 @@ export default function SupplierDiscoveryPage() {
             </div>
 
             {results.length === 0 ? (
-              <div className="text-center py-16 text-[#000000]">
+              <div className="text-center py-16 text-slate-900">
                 <Search size={32} className="mx-auto mb-3 opacity-30" />
                 <p className="font-semibold">Không tìm thấy kết quả</p>
                 <p className="text-[12px] mt-1">Thử thay đổi từ khóa hoặc mở rộng tiêu chí tìm kiếm</p>
@@ -791,8 +791,8 @@ export default function SupplierDiscoveryPage() {
                 className="w-full flex items-center gap-2 p-4 text-left hover:bg-[rgba(240,246,252,0.03)] transition-colors"
               >
                 <MessageSquare size={14} className="text-violet-400" />
-                <span className="font-bold text-sm text-[#000000]">Hỏi AI về kết quả tìm kiếm</span>
-                {chatOpen ? <ChevronUp size={14} className="ml-auto text-[#000000]" /> : <ChevronDown size={14} className="ml-auto text-[#000000]" />}
+                <span className="font-bold text-sm text-slate-900">Hỏi AI về kết quả tìm kiếm</span>
+                {chatOpen ? <ChevronUp size={14} className="ml-auto text-slate-900" /> : <ChevronDown size={14} className="ml-auto text-slate-900" />}
               </button>
 
               {chatOpen && (
@@ -805,7 +805,7 @@ export default function SupplierDiscoveryPage() {
                           <button
                             key={q}
                             onClick={() => setChatInput(q)}
-                            className="block w-full text-left text-[11px] px-3 py-2 rounded-lg bg-[rgba(240,246,252,0.03)] border border-[rgba(240,246,252,0.06)] text-[#000000] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                            className="block w-full text-left text-[11px] px-3 py-2 rounded-lg bg-[rgba(240,246,252,0.03)] border border-[rgba(240,246,252,0.06)] text-slate-900 hover:border-violet-500/30 hover:text-violet-300 transition-colors"
                           >
                             {q}
                           </button>
@@ -814,14 +814,14 @@ export default function SupplierDiscoveryPage() {
                     )}
                     {chatMessages.map((m, i) => (
                       <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[80%] px-3 py-2 rounded-xl text-[12px] leading-relaxed ${m.role === 'user' ? 'bg-violet-500/20 text-violet-200' : 'bg-[rgba(240,246,252,0.05)] text-[#000000]'}`}>
+                        <div className={`max-w-[80%] px-3 py-2 rounded-xl text-[12px] leading-relaxed ${m.role === 'user' ? 'bg-violet-500/20 text-violet-200' : 'bg-[rgba(240,246,252,0.05)] text-slate-900'}`}>
                           {m.text}
                         </div>
                       </div>
                     ))}
                     {chatLoading && (
                       <div className="flex justify-start">
-                        <div className="px-3 py-2 rounded-xl bg-[rgba(240,246,252,0.05)] text-[#000000] text-[12px] flex items-center gap-2">
+                        <div className="px-3 py-2 rounded-xl bg-[rgba(240,246,252,0.05)] text-slate-900 text-[12px] flex items-center gap-2">
                           <Loader2 size={11} className="animate-spin" />AI đang phân tích...
                         </div>
                       </div>
@@ -835,7 +835,7 @@ export default function SupplierDiscoveryPage() {
                       onChange={e => setChatInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleAiChat()}
                       placeholder="Hỏi AI về nhà cung cấp trong kết quả..."
-                      className="flex-1 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-[#000000] placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
+                      className="flex-1 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-slate-900 placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
                     />
                     <button
                       onClick={handleAiChat}
@@ -853,16 +853,16 @@ export default function SupplierDiscoveryPage() {
 
         {/* Empty state */}
         {!results && !loading && !error && (
-          <div className="text-center py-20 text-[#000000]">
+          <div className="text-center py-20 text-slate-900">
             <Sparkles size={40} className="mx-auto mb-4 opacity-20" />
-            <p className="font-bold text-[#000000]">Nhập từ khóa để bắt đầu tìm kiếm</p>
+            <p className="font-bold text-slate-900">Nhập từ khóa để bắt đầu tìm kiếm</p>
             <p className="text-[12px] mt-1">AI sẽ tìm kiếm và phân tích nhà cung cấp từ nguồn dữ liệu bên ngoài</p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               {['nhà cung cấp laptop văn phòng Hà Nội', 'vật tư y tế TP.HCM', 'dịch vụ in ấn Đà Nẵng'].map(s => (
                 <button
                   key={s}
                   onClick={() => { setQuery(s); }}
-                  className="px-3 py-1.5 rounded-lg text-[11px] bg-[#F1F5F9] border border-[#E2E8F0] text-[#000000] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-[11px] bg-[#F1F5F9] border border-[#E2E8F0] text-slate-900 hover:border-violet-500/30 hover:text-violet-300 transition-colors"
                 >
                   {s}
                 </button>
