@@ -162,10 +162,10 @@ export default function SupplierPO() {
                             </div>
                         ) : !isConfirmed ? (
                             <>
-                                <button onClick={handleReject} className="px-6 py-3 border-2 border-rose-500/20 text-black hover:bg-rose-500/10 font-black uppercase tracking-widest text-[10px] rounded-xl transition-colors flex items-center gap-2">
+                                <button onClick={handleReject} className="btn-danger text-[10px] uppercase tracking-widest">
                                     <XCircle size={14}/> Từ chối PO
                                 </button>
-                                <button onClick={handleConfirm} className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-md shadow-emerald-500/20">
+                                <button onClick={handleConfirm} className="btn-success text-xs uppercase tracking-widest">
                                     <CheckCircle size={16}/> Xác nhận có thể thực hiện (Ack)
                                 </button>
                             </>
@@ -242,7 +242,7 @@ export default function SupplierPO() {
                                 <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2">Thêm Log Progress:</label>
                                 <div className="flex gap-2">
                                     <input type="text" className="w-full pl-4 pr-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#0F172A] transition-all" placeholder="Ví dụ: Lên chuyền sản xuất..." value={progressStatus} onChange={e => setProgressStatus(e.target.value)}/>
-                                    <button className="bg-[#2563EB] text-slate-900 p-2 rounded-xl hover:bg-[#1D4ED8] transition-colors"><Send size={16}/></button>
+                                    <button className="bg-[#2563EB] text-white p-2 rounded-xl hover:bg-[#1D4ED8] transition-colors"><Send size={16}/></button>
                                 </div>
                                 <p className="text-[9px] text-slate-900 mt-2 font-medium">Buyer sẽ nhận Notification khi bạn cập nhật Status này.</p>
                             </div>

@@ -205,12 +205,12 @@ export default function AdminSupplierDetailPage() {
 
                             {/* Action Buttons */}
                             {supplier.supplierTier === 'PENDING' && (
-                                <button onClick={() => handleAction('submit')} className="bg-blue-600 text-white px-4 py-3 rounded-xl font-bold text-sm">Gửi xét duyệt</button>
+                                <button onClick={() => handleAction('submit')} className="btn-primary text-sm">Gửi xét duyệt</button>
                             )}
                             {supplier.supplierTier === 'UNDER_REVIEW' && (
                                 <>
-                                    <button onClick={() => handleAction('approve')} className="bg-emerald-600 text-white px-4 py-3 rounded-xl font-bold text-sm">Duyệt</button>
-                                    <button onClick={() => handleAction('reject')} className="bg-red-600 text-white px-4 py-3 rounded-xl font-bold text-sm">Từ chối</button>
+                                    <button onClick={() => handleAction('approve')} className="btn-success text-sm">Duyệt</button>
+                                    <button onClick={() => handleAction('reject')} className="btn-danger text-sm">Từ chối</button>
                                 </>
                             )}
                         </div>

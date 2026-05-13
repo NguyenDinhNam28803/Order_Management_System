@@ -315,7 +315,7 @@ export default function InvoiceDetailPage() {
               <button
                 onClick={handleRunMatching}
                 disabled={processing}
-                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="btn-primary text-sm disabled:opacity-50"
               >
                 <RefreshCw size={16} className={processing ? 'animate-spin' : ''} />
                 {processing ? 'Đang xử lý...' : 'Chạy đối soát 3 bên'}
@@ -326,7 +326,7 @@ export default function InvoiceDetailPage() {
               <button
                 onClick={handlePay}
                 disabled={processing}
-                className="bg-emerald-500 hover:bg-emerald-600 text-slate-900 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="btn-success text-sm disabled:opacity-50"
               >
                 <CreditCard size={16} />
                 {processing ? 'Đang xử lý...' : 'Thanh toán ngay'}
@@ -356,7 +356,7 @@ export default function InvoiceDetailPage() {
             {invoice.supplier?.id && (
               <button
                 onClick={() => setShowContractModal(true)}
-                className="inline-flex items-center gap-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-black px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors"
+                className="btn-ai text-sm"
               >
                 <FileSignature size={16} />
                 Tạo hợp đồng

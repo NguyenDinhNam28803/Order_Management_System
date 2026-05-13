@@ -62,9 +62,9 @@ export default function AmendmentsPage() {
                                     Quản lý lịch sử thay đổi và điều khoản phát sinh của PO
                                 </p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => setView("create")}
-                                className="flex items-center gap-2 bg-[#2563EB] text-slate-900 px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all group"
+                                className="btn-primary text-xs uppercase tracking-[0.2em]"
                             >
                                 <Plus size={18} className="transition-transform group-hover:rotate-90" /> Tạo Amendment
                             </button>

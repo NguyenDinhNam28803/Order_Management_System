@@ -461,12 +461,15 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             });
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const normalizeInvoice = (i: any): Invoice => ({
-                ...i,
-                amount: convertPrismaDecimal(i.amount ?? i.totalAmount ?? i.total),
-                totalAmount: convertPrismaDecimal(i.totalAmount ?? i.amount ?? i.total),
-                vendor: i.vendor || i.supplierName || i.supplier?.name || 'N/A',
-            });
+            const normalizeInvoice = (i: any): Invoice => {
+                const canonical = convertPrismaDecimal(i.totalAmount ?? i.amount ?? i.total);
+                return {
+                    ...i,
+                    totalAmount: canonical,
+                    amount: canonical,
+                    vendor: i.vendor || i.supplierName || i.supplier?.name || 'N/A',
+                };
+            };
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const normalizePO = (p: any): PO => ({

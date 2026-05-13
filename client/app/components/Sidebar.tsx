@@ -305,7 +305,7 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                     </Link>
                     <button
                         onClick={logout}
-                        className="flex w-full items-center gap-2 px-2 py-1.5 text-[11px] font-bold text-slate-500 hover:text-red-400 hover:bg-red-500/8 rounded-lg transition-all duration-150"
+                        className="flex w-full items-center gap-2 px-2 py-1.5 text-[11px] font-bold text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-150"
                     >
                         <LogOut size={13} className="shrink-0" aria-hidden="true" />
                         <span>Đăng xuất</span>
