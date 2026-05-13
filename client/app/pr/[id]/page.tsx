@@ -46,9 +46,9 @@ export default function PRDetailPage() {
     }
   };
 
-  if (loading) return <div className="p-8 text-[#000000]">Loading...</div>;
+  if (loading) return <div className="p-8 text-slate-900">Loading...</div>;
   if (error) return <div className="p-8 text-black">Error: {error}</div>;
-  if (!pr) return <div className="p-8 text-[#000000]">PR not found</div>;
+  if (!pr) return <div className="p-8 text-slate-900">PR not found</div>;
 
   const getStatusDisplay = (status: string) => {
     switch (status) {
@@ -66,12 +66,12 @@ export default function PRDetailPage() {
         <div>
           <button 
             onClick={() => router.back()} 
-            className="flex items-center gap-2 text-xs font-bold text-[#000000] hover:text-[#2563EB] transition-colors mb-4 uppercase tracking-widest"
+            className="flex items-center gap-2 text-xs font-bold text-slate-900 hover:text-[#2563EB] transition-colors mb-4 uppercase tracking-widest"
           >
             <ArrowLeft size={14} /> Quay lại danh sách
           </button>
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-black text-[#0F172A] tracking-tight">Chi tiết Yêu cầu (PR)</h1>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Chi tiết Yêu cầu (PR)</h1>
             <span className={`status-pill ${getStatusDisplay(pr.status).class}`}>
               {getStatusDisplay(pr.status).label}
             </span>
@@ -100,15 +100,15 @@ export default function PRDetailPage() {
           <h3 className="section-title">Thông tin chung</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#000000]"><FileDigit size={12}/> Mã Yêu Cầu</div>
-              <p className="text-sm font-bold text-[#000000]">{pr.prNumber || pr.id.split('-')[0].toUpperCase()}</p>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900"><FileDigit size={12}/> Mã Yêu Cầu</div>
+              <p className="text-sm font-bold text-slate-900">{pr.prNumber || pr.id.split('-')[0].toUpperCase()}</p>
             </div>
             <div className="space-y-1">
               <div className="flex flex-col">
-                <span className="text-[#000000] text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-1">
+                <span className="text-slate-900 text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-1">
                   <Building2 size={10} /> BỘ PHẬN
                 </span>
-                <span className="font-bold text-[#000000] text-sm">
+                <span className="font-bold text-slate-900 text-sm">
                   {typeof pr.department === 'object' && pr.department?.name 
                     ? pr.department.name 
                     : typeof pr.department === 'string' 
@@ -120,12 +120,12 @@ export default function PRDetailPage() {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#000000]"><User size={12}/> Người Yêu Cầu</div>
-              <p className="text-sm font-bold text-[#000000]">{pr.requester?.fullName || "Chưa cập nhật"}</p>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900"><User size={12}/> Người Yêu Cầu</div>
+              <p className="text-sm font-bold text-slate-900">{pr.requester?.fullName || "Chưa cập nhật"}</p>
             </div>
             <div className="space-y-1 md:col-span-3">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#000000]">Mục Đích / Tiêu Đề</div>
-              <p className="text-base font-bold text-[#000000]">{pr.title || "Yêu cầu mua sắm vật tư"}</p>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900">Mục Đích / Tiêu Đề</div>
+              <p className="text-base font-bold text-slate-900">{pr.title || "Yêu cầu mua sắm vật tư"}</p>
             </div>
           </div>
         </div>
@@ -141,12 +141,12 @@ export default function PRDetailPage() {
            
            <div className="mt-8 space-y-3 pt-4 border-t border-[rgba(148,163,184,0.1)]">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-[#000000] font-bold flex items-center gap-1"><Calendar size={14}/> Ngày tạo:</span>
-                <span className="text-[#000000] font-semibold">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</span>
+                <span className="text-slate-900 font-bold flex items-center gap-1"><Calendar size={14}/> Ngày tạo:</span>
+                <span className="text-slate-900 font-semibold">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-[#000000] font-bold flex items-center gap-1"><FileText size={14}/> Số lượng SP:</span>
-                <span className="text-[#000000] font-semibold">{pr.items?.length || 0} mặt hàng</span>
+                <span className="text-slate-900 font-bold flex items-center gap-1"><FileText size={14}/> Số lượng SP:</span>
+                <span className="text-slate-900 font-semibold">{pr.items?.length || 0} mặt hàng</span>
               </div>
            </div>
         </div>
@@ -160,27 +160,27 @@ export default function PRDetailPage() {
           <table className="erp-table text-xs">
             <thead>
               <tr>
-                <th className="w-12 text-center text-[10px] font-black uppercase tracking-widest text-[#000000]">STT</th>
-                <th className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Sản phẩm / Dịch vụ</th>
-                <th className="text-right w-24 text-[10px] font-black uppercase tracking-widest text-[#000000]">Số lượng</th>
-                <th className="text-right w-40 text-[10px] font-black uppercase tracking-widest text-[#000000]">Đơn giá (Ước tính)</th>
-                <th className="text-right w-48 text-[10px] font-black uppercase tracking-widest text-[#000000]">Thành tiền</th>
+                <th className="w-12 text-center text-[10px] font-black uppercase tracking-widest text-slate-900">STT</th>
+                <th className="text-[10px] font-black uppercase tracking-widest text-slate-900">Sản phẩm / Dịch vụ</th>
+                <th className="text-right w-24 text-[10px] font-black uppercase tracking-widest text-slate-900">Số lượng</th>
+                <th className="text-right w-40 text-[10px] font-black uppercase tracking-widest text-slate-900">Đơn giá (Ước tính)</th>
+                <th className="text-right w-48 text-[10px] font-black uppercase tracking-widest text-slate-900">Thành tiền</th>
               </tr>
             </thead>
             <tbody>
               {pr.items && pr.items.length > 0 ? pr.items.map((item: PRItem, idx) => (
                 <tr key={item.id}>
-                  <td className="text-center font-bold text-[#000000]">{idx + 1}</td>
+                  <td className="text-center font-bold text-slate-900">{idx + 1}</td>
                   <td>
-                    <div className="font-bold text-[#000000]">{item.productName || "Sản phẩm Dịch vụ"}</div>
+                    <div className="font-bold text-slate-900">{item.productName || "Sản phẩm Dịch vụ"}</div>
                     {(item.description && item.description !== item.productName) && (
-                      <div className="text-[10px] text-[#000000] mt-1">{item.description}</div>
+                      <div className="text-[10px] text-slate-900 mt-1">{item.description}</div>
                     )}
                   </td>
                   <td className="text-right font-bold text-[#2563EB]">
-                    {item.qty} <span className="text-[9px] text-[#000000] ml-1 uppercase">{item.unit || "Cái"}</span>
+                    {item.qty} <span className="text-[9px] text-slate-900 ml-1 uppercase">{item.unit || "Cái"}</span>
                   </td>
-                  <td className="text-right font-semibold text-[#000000]">
+                  <td className="text-right font-semibold text-slate-900">
                     {item.estimatedPrice?.toLocaleString('vi-VN')} ₫
                   </td>
                   <td className="text-right font-black text-black">
@@ -189,7 +189,7 @@ export default function PRDetailPage() {
                 </tr>
               )) : (
                 <tr>
-                   <td colSpan={5} className="py-12 text-center text-[#000000] font-bold text-xs uppercase tracking-widest">
+                   <td colSpan={5} className="py-12 text-center text-slate-900 font-bold text-xs uppercase tracking-widest">
                       Không có mặt hàng nào được tìm thấy
                    </td>
                 </tr>

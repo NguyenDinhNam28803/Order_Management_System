@@ -4,10 +4,11 @@ import { useState, useEffect, useMemo } from "react";
 import { useProcurement, Product, ProductCategory } from "../../context/ProcurementContext";
 import { CreateProductDtoShort, CurrencyCode, ProductType } from "../../types/api-types";
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
-import { 
-    Plus, Search, Edit2, Trash2, 
+import {
+    Plus, Search, Edit2, Trash2,
     Box, ChevronDown, Loader2, Package, Tag, Info
 } from "lucide-react";
+import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import { formatVND } from "../../utils/formatUtils";
 
 export default function SupplierProductsPage() {
@@ -25,6 +26,7 @@ export default function SupplierProductsPage() {
 
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [confirmState, setConfirmState] = useState<{ open: boolean; title: string; message: string; onConfirm: () => void }>({ open: false, title: "", message: "", onConfirm: () => {} });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [form, setForm] = useState<Partial<Product>>({});
@@ -104,11 +106,17 @@ export default function SupplierProductsPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (confirm("Bạn có chắc chắn muốn ngừng kinh doanh sản phẩm này?")) {
-            const success = await removeProduct(id);
-            if (success) refreshData();
-        }
+    const handleDelete = (id: string) => {
+        setConfirmState({
+            open: true,
+            title: "Ngừng kinh doanh sản phẩm",
+            message: "Bạn có chắc chắn muốn ngừng kinh doanh sản phẩm này?",
+            onConfirm: async () => {
+                setConfirmState(s => ({ ...s, open: false }));
+                const success = await removeProduct(id);
+                if (success) refreshData();
+            }
+        });
     };
 
     const columns: ERPTableColumn<Product>[] = [
@@ -171,7 +179,7 @@ export default function SupplierProductsPage() {
             render: (row: Product) => (
                 <div className="flex gap-1">
                     <button 
-                        className="p-1.5 text-[#000000] hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg border border-transparent hover:border-[#2563EB]/20 transition-all"
+                        className="p-1.5 text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg border border-transparent hover:border-[#2563EB]/20 transition-all"
                         onClick={() => {
                             setEditingProduct(row);
                             setIsModalOpen(true);
@@ -193,14 +201,21 @@ export default function SupplierProductsPage() {
     ];
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+            <ConfirmDialog
+                open={confirmState.open}
+                title={confirmState.title}
+                message={confirmState.message}
+                onConfirm={confirmState.onConfirm}
+                onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
+            />
             <div className="mt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                 <div>
-                    <h1 className="text-4xl font-black text-[#0F172A] tracking-tight">Danh mục Sản phẩm</h1>
-                    <p className="text-sm text-[#64748B] mt-1 font-medium italic">Quản lý danh sách hàng hóa và dịch vụ bạn cung cấp cho hệ thống.</p>
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Danh mục Sản phẩm</h1>
+                    <p className="text-sm text-slate-900 mt-1 font-medium italic">Quản lý danh sách hàng hóa và dịch vụ bạn cung cấp cho hệ thống.</p>
                 </div>
                 <button 
-                    className="flex items-center gap-2 py-4 px-8 bg-[#2563EB] text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-xl shadow-[#2563EB]/20"
+                    className="flex items-center gap-2 py-4 px-8 bg-[#2563EB] text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-xl shadow-[#2563EB]/20"
                     onClick={() => {
                         setEditingProduct(null);
                         setIsModalOpen(true);
@@ -219,8 +234,8 @@ export default function SupplierProductsPage() {
                             <Box size={24} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-[#000000] uppercase tracking-widest leading-none mb-1">Tổng sản phẩm</p>
-                            <p className="text-2xl font-black text-[#0F172A] leading-none">{myProducts.length}</p>
+                            <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none mb-1">Tổng sản phẩm</p>
+                            <p className="text-2xl font-black text-slate-900 leading-none">{myProducts.length}</p>
                         </div>
                     </div>
                     <div className="bg-[#F1F5F9] p-6 rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4">
@@ -228,8 +243,8 @@ export default function SupplierProductsPage() {
                             <Box size={24} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-[#000000] uppercase tracking-widest leading-none mb-1">Đang kinh doanh</p>
-                            <p className="text-2xl font-black text-[#0F172A] leading-none">{myProducts.filter(p => p.isActive).length}</p>
+                            <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none mb-1">Đang kinh doanh</p>
+                            <p className="text-2xl font-black text-slate-900 leading-none">{myProducts.filter(p => p.isActive).length}</p>
                         </div>
                     </div>
                 </div>
@@ -238,16 +253,16 @@ export default function SupplierProductsPage() {
                     {/* Toolbar */}
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="relative flex-1 max-w-md group">
-                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#2563EB] transition-colors" />
+                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 group-focus-within:text-[#2563EB] transition-colors" />
                             <input 
-                                className="w-full pl-12 pr-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#0F172A] transition-all" 
+                                className="w-full pl-12 pr-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#0F172A] transition-all" 
                                 placeholder="Tìm theo tên hoặc mã SKU..."
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                             />
                         </div>
                         <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-black text-[#000000] uppercase tracking-widest mr-2 flex items-center gap-1">
+                            <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest mr-2 flex items-center gap-1">
                                 <Info size={12} /> Tự động đồng nhất với dữ liệu Backend
                             </span>
                         </div>
@@ -257,17 +272,17 @@ export default function SupplierProductsPage() {
                         <ERPTable columns={columns} data={filteredData} />
                         {filteredData.length === 0 && !loading && (
                             <div className="py-20 text-center">
-                                <div className="h-20 w-20 bg-[#F1F5F9] rounded-full flex items-center justify-center mx-auto mb-4 text-[#000000] border border-[rgba(148,163,184,0.1)]">
+                                <div className="h-20 w-20 bg-[#F1F5F9] rounded-full flex items-center justify-center mx-auto mb-4 text-slate-900 border border-[rgba(148,163,184,0.1)]">
                                     <Package size={40} />
                                 </div>
-                                <h3 className="text-lg font-bold text-[#000000]">Chưa có sản phẩm nào</h3>
-                                <p className="text-[#000000] text-sm">Hãy bắt đầu bằng cách thêm sản phẩm đầu tiên của bạn.</p>
+                                <h3 className="text-lg font-bold text-slate-900">Chưa có sản phẩm nào</h3>
+                                <p className="text-slate-900 text-sm">Hãy bắt đầu bằng cách thêm sản phẩm đầu tiên của bạn.</p>
                             </div>
                         )}
                         {loading && (
                             <div className="py-20 text-center flex flex-col items-center justify-center gap-4">
                                 <Loader2 size={40} className="animate-spin text-[#2563EB]" />
-                                <p className="text-[#000000] font-bold uppercase text-[10px] tracking-[0.2em]">Đang tải dữ liệu...</p>
+                                <p className="text-slate-900 font-bold uppercase text-[10px] tracking-[0.2em]">Đang tải dữ liệu...</p>
                             </div>
                         )}
                     </div>
@@ -281,16 +296,16 @@ export default function SupplierProductsPage() {
                         {/* Header */}
                         <div className="p-10 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex items-center justify-between">
                             <div>
-                                <h3 className="text-3xl font-black text-[#0F172A] tracking-tight">
+                                <h3 className="text-3xl font-black text-slate-900 tracking-tight">
                                     {editingProduct ? "CẬP NHẬT SẢN PHẨM" : "THÊM SẢN PHẨM MỚI"}
                                 </h3>
-                                <p className="text-xs font-bold text-[#000000] uppercase tracking-widest mt-1">Hồ sơ hàng hóa & dịch vụ</p>
+                                <p className="text-xs font-bold text-slate-900 uppercase tracking-widest mt-1">Hồ sơ hàng hóa & dịch vụ</p>
                             </div>
                             <button 
                                 onClick={() => setIsModalOpen(false)}
                                 className="h-12 w-12 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] flex items-center justify-center transition-all shadow-sm group"
                             >
-                                <Plus size={24} className="rotate-45 text-[#000000] group-hover:text-black transition-colors" />
+                                <Plus size={24} className="rotate-45 text-slate-900 group-hover:text-black transition-colors" />
                             </button>
                         </div>
                         
@@ -298,9 +313,9 @@ export default function SupplierProductsPage() {
                         <div className="p-10 space-y-6 max-h-[60vh] overflow-y-auto no-scrollbar">
                             <div className="grid grid-cols-2 gap-8">
                                 <div className="col-span-2">
-                                    <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Tên sản phẩm / Dịch vụ <span className="text-black">*</span></label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2.5 ml-1">Tên sản phẩm / Dịch vụ <span className="text-black">*</span></label>
                                     <input 
-                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-lg text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-lg text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
                                         value={form.name || ""} 
                                         onChange={e => setForm({ ...form, name: e.target.value })}
                                         placeholder="VD: Gói bảo trì máy chủ hàng tháng..." 
@@ -308,9 +323,9 @@ export default function SupplierProductsPage() {
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Mã SKU / Model <span className="text-black">*</span></label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2.5 ml-1">Mã SKU / Model <span className="text-black">*</span></label>
                                     <input 
-                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
                                         value={form.sku || ""} 
                                         onChange={e => setForm({ ...form, sku: e.target.value })}
                                         placeholder="VD: SVC-MAINT-2024" 
@@ -318,9 +333,9 @@ export default function SupplierProductsPage() {
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Đơn vị tính</label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2.5 ml-1">Đơn vị tính</label>
                                     <input 
-                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
                                         value={form.unit || "Cái"} 
                                         onChange={e => setForm({ ...form, unit: e.target.value })}
                                         placeholder="Cái, Giờ, Gói..." 
@@ -328,20 +343,20 @@ export default function SupplierProductsPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Giá tham khảo (VNĐ) <span className="text-black">*</span></label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2.5 ml-1">Giá tham khảo (VNĐ) <span className="text-black">*</span></label>
                                     <input 
                                         type="number" 
-                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-black text-[#2563EB] text-lg placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-black text-[#2563EB] text-lg placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" 
                                         value={form.unitPriceRef || 0} 
                                         onChange={e => setForm({ ...form, unitPriceRef: Number(e.target.value) })}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Danh mục hệ thống <span className="text-black">*</span></label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2.5 ml-1">Danh mục hệ thống <span className="text-black">*</span></label>
                                     <div className="relative">
                                         <select 
-                                            className="w-full pl-4 pr-10 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-[#000000] appearance-none cursor-pointer focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all"
+                                            className="w-full pl-4 pr-10 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-slate-900 appearance-none cursor-pointer focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all"
                                             value={form.categoryId || ""}
                                             onChange={e => setForm({ ...form, categoryId: e.target.value })}
                                         >
@@ -350,24 +365,24 @@ export default function SupplierProductsPage() {
                                                 <option key={cat.id} value={cat.id}>{cat.name}</option>
                                             ))}
                                         </select>
-                                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#000000] pointer-events-none" />
+                                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-900 pointer-events-none" />
                                     </div>
                                 </div>
 
                                 <div className="col-span-2">
-                                    <label className="block text-[10px] font-black uppercase text-[#000000] tracking-widest mb-2.5 ml-1">Mô tả chi tiết</label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2.5 ml-1">Mô tả chi tiết</label>
                                     <textarea 
-                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-medium text-[#000000] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all h-24 resize-none" 
+                                        className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl font-medium text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all h-24 resize-none" 
                                         value={form.description || ""} 
                                         onChange={e => setForm({ ...form, description: e.target.value })}
                                         placeholder="Nhập các đặc tính kỹ thuật, cam kết bảo hành..."
                                     />
                                 </div>
 
-                                <div className="col-span-2 flex items-center justify-between p-6 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] border-dashed">
+                                <div className="col-span-2 flex items-center justify-between p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] border-dashed">
                                     <div className="flex flex-col">
-                                        <span className="text-[11px] font-black uppercase text-[#000000] tracking-widest">Sẵn sàng kinh doanh</span>
-                                        <span className="text-[10px] text-[#000000] font-bold">Nếu tắt, sản phẩm sẽ không hiển thị khi khách hàng tìm kiếm</span>
+                                        <span className="text-[11px] font-black uppercase text-slate-900 tracking-widest">Sẵn sàng kinh doanh</span>
+                                        <span className="text-[10px] text-slate-900 font-bold">Nếu tắt, sản phẩm sẽ không hiển thị khi khách hàng tìm kiếm</span>
                                     </div>
                                     <button 
                                         onClick={() => setForm({...form, isActive: !form.isActive})}
@@ -387,14 +402,14 @@ export default function SupplierProductsPage() {
                                 </div>
                             )}
                             <button 
-                                className="px-10 py-4 font-black text-[#000000] uppercase tracking-widest border border-[rgba(148,163,184,0.1)] hover:bg-[#F1F5F9] hover:text-[#000000] rounded-2xl transition-all shadow-sm active:scale-95" 
+                                className="px-10 py-4 font-black text-slate-900 uppercase tracking-widest border border-[rgba(148,163,184,0.1)] hover:bg-[#F1F5F9] hover:text-slate-900 rounded-2xl transition-all shadow-sm active:scale-95" 
                                 onClick={() => setIsModalOpen(false)}
                                 disabled={loading}
                             >
                                 Đóng
                             </button>
                             <button 
-                                className="py-4 px-12 bg-[#2563EB] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 active:scale-95 disabled:opacity-50 hover:bg-[#1D4ED8] transition-all" 
+                                className="py-4 px-12 bg-[#2563EB] text-slate-900 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 active:scale-95 disabled:opacity-50 hover:bg-[#1D4ED8] transition-all" 
                                 onClick={handleSave} 
                                 disabled={loading}
                             >

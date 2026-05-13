@@ -55,9 +55,9 @@ export default function LoginPage() {
         <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-[#2563EB] selection:text-white">
             {/* Top Bar */}
             <div className="h-12 border-b border-[#E2E8F0] flex items-center justify-between px-6 bg-[#F1F5F9] z-50">
-                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#000000]">Sign In</div>
+                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">Sign In</div>
                 <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#94A3B8]">
-                    /Login — <span className="text-[#000000]">Editorial Split Layout</span>
+                    /Login — <span className="text-slate-900">Editorial Split Layout</span>
                 </div>
             </div>
 
@@ -94,7 +94,7 @@ export default function LoginPage() {
                     <div className="max-w-md w-full mx-auto">
                         <div className="mb-12">
                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#94A3B8] mb-4">Đăng nhập doanh nghiệp</p>
-                            <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#000000]">
+                            <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900">
                                 Chào mừng <span className="italic font-medium text-[#6B6658]">trở lại.</span>
                             </h2>
                         </div>
@@ -114,7 +114,7 @@ export default function LoginPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="lam@procuresmart.vn"
-                                    className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-6 py-4 text-[#000000] text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#E2E8F0]"
+                                    className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-6 py-4 text-slate-900 text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#E2E8F0]"
                                 />
                             </div>
 
@@ -126,7 +126,7 @@ export default function LoginPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••••••"
-                                    className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-6 py-4 text-[#000000] text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#E2E8F0]"
+                                    className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-6 py-4 text-slate-900 text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#E2E8F0]"
                                 />
                             </div>
 
@@ -139,10 +139,10 @@ export default function LoginPage() {
                             </button>
 
                             <div className="flex justify-between items-center pt-4">
-                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#94A3B8] hover:text-[#000000] transition-colors border-b border-transparent hover:border-[#000000]">
+                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#94A3B8] hover:text-slate-900 transition-colors border-b border-transparent hover:border-[#000000]">
                                     Quên mật khẩu?
                                 </button>
-                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#94A3B8] hover:text-[#000000] transition-colors border-b border-transparent hover:border-[#000000]">
+                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#94A3B8] hover:text-slate-900 transition-colors border-b border-transparent hover:border-[#000000]">
                                     Liên hệ quản trị
                                 </button>
                             </div>
@@ -159,7 +159,7 @@ export default function LoginPage() {
                                         className="p-3 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-left hover:border-[#000000] transition-all group flex flex-col gap-1"
                                     >
                                         <div className="text-[8px] font-black text-black uppercase tracking-widest">{u.role}</div>
-                                        <div className="text-[11px] font-bold text-[#000000] truncate">{u.name}</div>
+                                        <div className="text-[11px] font-bold text-slate-900 truncate">{u.name}</div>
                                     </button>
                                 ))}
                             </div>

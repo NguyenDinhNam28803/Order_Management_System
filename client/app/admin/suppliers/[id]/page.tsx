@@ -132,12 +132,12 @@ export default function AdminSupplierDetailPage() {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
             case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
             case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
-            default: return "bg-[#0F172A] text-white border-[rgba(148,163,184,0.1)]";
+            default: return "bg-[#0F172A] text-slate-900 border-[rgba(148,163,184,0.1)]";
         }
     };
 
     const getScoreColor = (score?: number) => {
-        if (!score) return "text-[#000000]";
+        if (!score) return "text-slate-900";
         if (score >= 90) return "text-black";
         if (score >= 70) return "text-yellow-400";
         return "text-black";
@@ -155,7 +155,7 @@ export default function AdminSupplierDetailPage() {
 
     if (!supplier) {
         return (
-            <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center text-[#000000]">
+            <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center text-slate-900">
                 <div className="text-center">
                     <AlertTriangle size={48} className="mx-auto mb-4 text-black" />
                     <p className="text-xl font-bold">Không tìm thấy nhà cung cấp</p>
@@ -165,13 +165,13 @@ export default function AdminSupplierDetailPage() {
     }
 
     return (
-        <main className="min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="min-h-screen bg-[#FFFFFF] text-slate-900">
             {/* Header */}
             <div className="bg-[#F1F5F9] border-b border-[rgba(148,163,184,0.1)]">
                 <div className="max-w-[1400px] mx-auto px-8 py-6">
                     <button 
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-[#000000] hover:text-[#000000] mb-4 transition-colors"
+                        className="flex items-center gap-2 text-slate-900 hover:text-slate-900 mb-4 transition-colors"
                     >
                         <ArrowLeft size={18} />
                         <span className="text-sm font-bold">Quay lại</span>
@@ -184,12 +184,12 @@ export default function AdminSupplierDetailPage() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-3 mb-1">
-                                    <h1 className="text-2xl font-black text-[#0F172A]">{supplier.name}</h1>
+                                    <h1 className="text-2xl font-black text-slate-900">{supplier.name}</h1>
                                     <span className={`px-3 py-1 rounded-full text-xs font-black uppercase border ${getTierColor(latestKPI?.tier)}`}>
                                         {latestKPI?.tier || "Chưa đánh giá"}
                                     </span>
                                 </div>
-                                <p className="text-[#000000] text-sm">{supplier.code} • {supplier.email}</p>
+                                <p className="text-slate-900 text-sm">{supplier.code} • {supplier.email}</p>
                             </div>
                         </div>
                         
@@ -233,7 +233,7 @@ export default function AdminSupplierDetailPage() {
                                 className={`flex items-center gap-2 py-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-all ${
                                     activeTab === tab.id
                                         ? "text-[#2563EB] border-[#2563EB]"
-                                        : "text-[#000000] border-transparent hover:text-[#000000]"
+                                        : "text-slate-900 border-transparent hover:text-slate-900"
                                 }`}
                             >
                                 <tab.icon size={16} />
@@ -253,77 +253,77 @@ export default function AdminSupplierDetailPage() {
                             <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <TrendingUp size={16} className="text-black" />
-                                    <span className="text-[#000000] text-xs font-bold uppercase">OTD Score</span>
+                                    <span className="text-slate-900 text-xs font-bold uppercase">OTD Score</span>
                                 </div>
                                 <p className={`text-3xl font-black ${getScoreColor(latestKPI?.otdScore)}`}>
                                     {latestKPI?.otdScore?.toFixed(1) || "--"}%
                                 </p>
-                                <p className="text-[#000000] text-xs mt-1">Giao hàng đúng hạn</p>
+                                <p className="text-slate-900 text-xs mt-1">Giao hàng đúng hạn</p>
                             </div>
                             
                             <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Package size={16} className="text-[#2563EB]" />
-                                    <span className="text-[#000000] text-xs font-bold uppercase">Quality Score</span>
+                                    <span className="text-slate-900 text-xs font-bold uppercase">Quality Score</span>
                                 </div>
                                 <p className={`text-3xl font-black ${getScoreColor(latestKPI?.qualityScore)}`}>
                                     {latestKPI?.qualityScore?.toFixed(1) || "--"}%
                                 </p>
-                                <p className="text-[#000000] text-xs mt-1">Chất lượng sản phẩm</p>
+                                <p className="text-slate-900 text-xs mt-1">Chất lượng sản phẩm</p>
                             </div>
                             
                             <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Award size={16} className="text-yellow-400" />
-                                    <span className="text-[#000000] text-xs font-bold uppercase">Price Score</span>
+                                    <span className="text-slate-900 text-xs font-bold uppercase">Price Score</span>
                                 </div>
                                 <p className={`text-3xl font-black ${getScoreColor(latestKPI?.priceScore)}`}>
                                     {latestKPI?.priceScore?.toFixed(1) || "--"}%
                                 </p>
-                                <p className="text-[#000000] text-xs mt-1">Cạnh tranh giá</p>
+                                <p className="text-slate-900 text-xs mt-1">Cạnh tranh giá</p>
                             </div>
                             
                             <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Star size={16} className="text-black" />
-                                    <span className="text-[#000000] text-xs font-bold uppercase">Manual Score</span>
+                                    <span className="text-slate-900 text-xs font-bold uppercase">Manual Score</span>
                                 </div>
                                 <p className={`text-3xl font-black ${getScoreColor(latestKPI?.manualScore)}`}>
                                     {latestKPI?.manualScore?.toFixed(1) || "--"}%
                                 </p>
-                                <p className="text-[#000000] text-xs mt-1">Đánh giá thủ công</p>
+                                <p className="text-slate-900 text-xs mt-1">Đánh giá thủ công</p>
                             </div>
                             
                             <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <CheckCircle size={16} className="text-black" />
-                                    <span className="text-[#000000] text-xs font-bold uppercase">Tổng PO</span>
+                                    <span className="text-slate-900 text-xs font-bold uppercase">Tổng PO</span>
                                 </div>
-                                <p className="text-3xl font-black text-[#0F172A]">
+                                <p className="text-3xl font-black text-slate-900">
                                     {latestKPI?.poCount || "0"}
                                 </p>
-                                <p className="text-[#000000] text-xs mt-1">6 tháng gần nhất</p>
+                                <p className="text-slate-900 text-xs mt-1">6 tháng gần nhất</p>
                             </div>
                             
                             <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <AlertTriangle size={16} className="text-black" />
-                                    <span className="text-[#000000] text-xs font-bold uppercase">Tranh chấp</span>
+                                    <span className="text-slate-900 text-xs font-bold uppercase">Tranh chấp</span>
                                 </div>
                                 <p className={`text-3xl font-black ${latestKPI?.disputeCount > 0 ? "text-black" : "text-black"}`}>
                                     {latestKPI?.disputeCount || "0"}
                                 </p>
-                                <p className="text-[#000000] text-xs mt-1">Số vụ khiếu nại</p>
+                                <p className="text-slate-900 text-xs mt-1">Số vụ khiếu nại</p>
                             </div>
                         </div>
 
                         {/* Overall Score */}
                         <div className="bg-gradient-to-br from-[#2563EB]/10 to-[#8B5CF6]/10 rounded-2xl p-8 border border-[#2563EB]/20">
-                            <p className="text-[#000000] text-xs font-bold uppercase tracking-wider mb-4">Overall Score</p>
+                            <p className="text-slate-900 text-xs font-bold uppercase tracking-wider mb-4">Overall Score</p>
                             <p className={`text-6xl font-black mb-4 ${getScoreColor(latestKPI?.overallScore)}`}>
                                 {latestKPI?.overallScore?.toFixed(1) || "--"}%
                             </p>
-                            <p className="text-[#000000] text-sm leading-relaxed">
+                            <p className="text-slate-900 text-sm leading-relaxed">
                                 {latestKPI?.notes || "Chưa có phân tích chi tiết. Vui lòng chạy đánh giá AI."}
                             </p>
                         </div>
@@ -335,7 +335,7 @@ export default function AdminSupplierDetailPage() {
                                     <TrendingUp size={18} className="text-black" />
                                     <h3 className="text-sm font-black text-black uppercase">Kế hoạch cải thiện (AI)</h3>
                                 </div>
-                                <p className="text-[#000000] text-sm leading-relaxed">{latestKPI.improvementPlan}</p>
+                                <p className="text-slate-900 text-sm leading-relaxed">{latestKPI.improvementPlan}</p>
                             </div>
                         )}
                     </div>
@@ -343,26 +343,26 @@ export default function AdminSupplierDetailPage() {
 
                 {activeTab === "kpi" && (
                     <div className="space-y-6">
-                        <h2 className="text-xl font-black text-[#0F172A] uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
+                        <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
                         
                         <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                             <table className="erp-table text-xs">
                                 <thead className="bg-[#FFFFFF]">
                                     <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-black text-[#000000] uppercase">Kỳ</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-[#000000] uppercase">Tier</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-[#000000] uppercase">Overall</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-[#000000] uppercase">OTD</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-[#000000] uppercase">Quality</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-[#000000] uppercase">Price</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-[#000000] uppercase">Manual</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-[#000000] uppercase">POs</th>
+                                        <th className="px-6 py-4 text-left text-xs font-black text-slate-900 uppercase">Kỳ</th>
+                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Tier</th>
+                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Overall</th>
+                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">OTD</th>
+                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Quality</th>
+                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Price</th>
+                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Manual</th>
+                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">POs</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {kpiHistory.map((kpi, idx) => (
                                         <tr key={idx} className="border-t border-[rgba(148,163,184,0.05)]">
-                                            <td className="px-6 py-4 text-sm font-bold text-[#000000]">
+                                            <td className="px-6 py-4 text-sm font-bold text-slate-900">
                                                 Q{kpi.periodQuarter} {kpi.periodYear}
                                             </td>
                                             <td className="px-6 py-4 text-center">
@@ -371,13 +371,13 @@ export default function AdminSupplierDetailPage() {
                                                 </span>
                                             </td>
                                             <td className={`px-6 py-4 text-center font-black ${getScoreColor(kpi.overallScore)}`}>
-                                                {kpi.overallScore != null ? kpi.overallScore.toFixed(1) + '%' : '--'}
+                                                {kpi.overallScore?.toFixed(1)}%
                                             </td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.otdScore != null ? kpi.otdScore.toFixed(1) + '%' : '--'}</td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.qualityScore != null ? kpi.qualityScore.toFixed(1) + '%' : '--'}</td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.priceScore != null ? kpi.priceScore.toFixed(1) + '%' : '--'}</td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.manualScore != null ? kpi.manualScore.toFixed(1) + '%' : '--'}</td>
-                                            <td className="px-6 py-4 text-center text-sm text-[#000000]">{kpi.poCount}</td>
+                                            <td className="px-6 py-4 text-center text-sm text-slate-900">{kpi.otdScore?.toFixed(1)}%</td>
+                                            <td className="px-6 py-4 text-center text-sm text-slate-900">{kpi.qualityScore?.toFixed(1)}%</td>
+                                            <td className="px-6 py-4 text-center text-sm text-slate-900">{kpi.priceScore?.toFixed(1)}%</td>
+                                            <td className="px-6 py-4 text-center text-sm text-slate-900">{kpi.manualScore?.toFixed(1)}%</td>
+                                            <td className="px-6 py-4 text-center text-sm text-slate-900">{kpi.poCount}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -388,7 +388,7 @@ export default function AdminSupplierDetailPage() {
 
                 {activeTab === "ratings" && (
                     <div className="space-y-6">
-                        <h2 className="text-xl font-black text-[#0F172A] uppercase tracking-tight">Tiêu chí đánh giá chi tiết</h2>
+                        <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Tiêu chí đánh giá chi tiết</h2>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Rating Criteria */}
@@ -433,8 +433,8 @@ export default function AdminSupplierDetailPage() {
                                 <div key={idx} className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex items-start justify-between mb-4">
                                         <div>
-                                            <h3 className="font-black text-[#000000] text-sm">{criteria.name}</h3>
-                                            <p className="text-[#000000] text-xs mt-1">{criteria.desc}</p>
+                                            <h3 className="font-black text-slate-900 text-sm">{criteria.name}</h3>
+                                            <p className="text-slate-900 text-xs mt-1">{criteria.desc}</p>
                                         </div>
                                         <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-xs font-bold">
                                             {criteria.weight}
@@ -464,7 +464,7 @@ export default function AdminSupplierDetailPage() {
 
                         {/* Buyer Rating Sub-criteria */}
                         <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
-                            <h3 className="text-sm font-black text-[#000000] uppercase mb-4">Chi tiết Buyer Ratings (Manual Score)</h3>
+                            <h3 className="text-sm font-black text-slate-900 uppercase mb-4">Chi tiết Buyer Ratings (Manual Score)</h3>
                             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                                 {[
                                     { name: "Payment Timeliness", icon: Calendar },
@@ -475,8 +475,8 @@ export default function AdminSupplierDetailPage() {
                                 ].map((item, idx) => (
                                     <div key={idx} className="bg-[#FFFFFF] rounded-xl p-4 text-center">
                                         <item.icon size={20} className="text-[#2563EB] mx-auto mb-2" />
-                                        <p className="text-[#000000] text-xs">{item.name}</p>
-                                        <p className="text-[#000000] font-bold text-sm mt-1">1-5 điểm</p>
+                                        <p className="text-slate-900 text-xs">{item.name}</p>
+                                        <p className="text-slate-900 font-bold text-sm mt-1">1-5 điểm</p>
                                     </div>
                                 ))}
                             </div>

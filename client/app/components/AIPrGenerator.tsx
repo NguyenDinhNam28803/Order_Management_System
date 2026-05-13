@@ -174,17 +174,17 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-linear-to-r from-[#2563EB] to-accent-violet flex items-center justify-center">
-              <Wand2 size={20} className="text-[#000000]" />
+              <Wand2 size={20} className="text-slate-900" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-text-primary">AI Tạo PR Draft</h2>
-              <p className="text-sm text-[#000000]">Mô tả nhu cầu, AI sẽ tạo PR cho bạn</p>
+              <p className="text-sm text-slate-900">Mô tả nhu cầu, AI sẽ tạo PR cho bạn</p>
             </div>
           </div>
           <button
             onClick={handleClose}
             disabled={isGenerating || isSubmitting}
-            className="w-8 h-8 rounded-lg hover:bg-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#000000] transition-colors disabled:opacity-50"
+            className="w-8 h-8 rounded-lg hover:bg-[rgba(148,163,184,0.1)] flex items-center justify-center text-slate-900 transition-colors disabled:opacity-50"
           >
             <X size={20} />
           </button>
@@ -197,32 +197,32 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
               <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
                 <CheckCircle2 size={32} className="text-green-400" />
               </div>
-              <h3 className="text-xl font-semibold text-[#000000] mb-2">Đã tạo PR thành công!</h3>
-              <p className="text-[#000000]">PR đang chờ duyệt...</p>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">Đã tạo PR thành công!</h3>
+              <p className="text-slate-900">PR đang chờ duyệt...</p>
             </div>
           ) : (
             <>
               {/* Input Section */}
               {!draft && (
                 <div className="space-y-4">
-                  <label className="block text-sm font-medium text-[#000000]">
+                  <label className="block text-sm font-medium text-slate-900">
                     Mô tả yêu cầu mua hàng của bạn
                   </label>
                   <textarea
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Ví dụ: Tôi cần mua 5 laptop Dell XPS 15 cho team dev mới, ngân sách khoảng 75 triệu, cần gấp trong tuần sau..."
-                    className="w-full h-32 p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] placeholder-[#000000] focus:outline-none focus:border-[#2563EB] resize-none"
+                    className="w-full h-32 p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-slate-900 placeholder-[#000000] focus:outline-none focus:border-[#2563EB] resize-none"
                     disabled={isGenerating}
                   />
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-[#000000]">
+                    <p className="text-xs text-slate-900">
                       AI sẽ tìm sản phẩm, ước tính giá và đề xuất supplier phù hợp
                     </p>
                     <button
                       onClick={handleGenerate}
                       disabled={!prompt.trim() || isGenerating}
-                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#8B5CF6] text-[#000000] rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#8B5CF6] text-slate-900 rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isGenerating ? (
                         <>
@@ -255,8 +255,8 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                   <div className="p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="font-semibold text-[#000000]">{draft.title}</h3>
-                        <p className="text-sm text-[#000000] mt-1">{draft.description}</p>
+                        <h3 className="font-semibold text-slate-900">{draft.title}</h3>
+                        <p className="text-sm text-slate-900 mt-1">{draft.description}</p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                         (draft.confidence || 0) > 0.8 
@@ -269,15 +269,15 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-4 text-sm">
-                      <span className="text-[#000000]">
-                        Ưu tiên: <span className="text-[#000000]">{getPriorityLabel(draft.priority || 1)}</span>
+                      <span className="text-slate-900">
+                        Ưu tiên: <span className="text-slate-900">{getPriorityLabel(draft.priority || 1)}</span>
                       </span>
-                      <span className="text-[#000000]">
-                        Cần trước: <span className="text-[#000000]">{draft.requiredDate || "Chưa xác định"}</span>
+                      <span className="text-slate-900">
+                        Cần trước: <span className="text-slate-900">{draft.requiredDate || "Chưa xác định"}</span>
                       </span>
                       {draft.suggestedCostCenterName && (
-                        <span className="text-[#000000]">
-                          Cost Center: <span className="text-[#000000]">{draft.suggestedCostCenterName}</span>
+                        <span className="text-slate-900">
+                          Cost Center: <span className="text-slate-900">{draft.suggestedCostCenterName}</span>
                         </span>
                       )}
                     </div>
@@ -285,25 +285,25 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
 
                   {/* Items Table */}
                   <div>
-                    <h4 className="text-sm font-medium text-[#000000] mb-3">Danh sách items ({draft.items?.length})</h4>
+                    <h4 className="text-sm font-medium text-slate-900 mb-3">Danh sách items ({draft.items?.length})</h4>
                     <div className="overflow-x-auto rounded-xl border border-[rgba(148,163,184,0.1)]">
                       <table className="erp-table text-xs m-0">
                         <thead className="bg-[#F1F5F9]">
                           <tr>
-                            <th className="px-4 py-3 text-left text-[#000000] font-medium">#</th>
-                            <th className="px-4 py-3 text-left text-[#000000] font-medium">Mô tả</th>
-                            <th className="px-4 py-3 text-left text-[#000000] font-medium">SL</th>
-                            <th className="px-4 py-3 text-left text-[#000000] font-medium">Đơn giá</th>
-                            <th className="px-4 py-3 text-left text-[#000000] font-medium">Thành tiền</th>
+                            <th className="px-4 py-3 text-left text-slate-900 font-medium">#</th>
+                            <th className="px-4 py-3 text-left text-slate-900 font-medium">Mô tả</th>
+                            <th className="px-4 py-3 text-left text-slate-900 font-medium">SL</th>
+                            <th className="px-4 py-3 text-left text-slate-900 font-medium">Đơn giá</th>
+                            <th className="px-4 py-3 text-left text-slate-900 font-medium">Thành tiền</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                           {draft.items?.map((item) => (
                             <tr key={item.lineNumber} className="hover:bg-[rgba(59,130,246,0.05)]">
-                              <td className="px-4 py-3 text-[#000000]">{item.lineNumber}</td>
+                              <td className="px-4 py-3 text-slate-900">{item.lineNumber}</td>
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-[#000000]">{item.productDesc}</span>
+                                  <span className="text-slate-900">{item.productDesc}</span>
                                   {item.productId ? (
                                     <span className="px-1.5 py-0.5 text-[10px] bg-green-500/20 text-green-400 rounded">DB</span>
                                   ) : (
@@ -311,15 +311,15 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                                   )}
                                 </div>
                                 {item.sku && (
-                                  <div className="text-xs text-[#000000]">SKU: {item.sku}</div>
+                                  <div className="text-xs text-slate-900">SKU: {item.sku}</div>
                                 )}
                                 {item.specNote && (
                                   <div className="text-xs text-[#2563EB]">{item.specNote}</div>
                                 )}
                               </td>
-                              <td className="px-4 py-3 text-[#000000]">{item.qty} {item.unit}</td>
-                              <td className="px-4 py-3 text-[#000000]">{formatCurrency(item.estimatedPrice, item.currency)}</td>
-                              <td className="px-4 py-3 text-[#000000] font-medium">
+                              <td className="px-4 py-3 text-slate-900">{item.qty} {item.unit}</td>
+                              <td className="px-4 py-3 text-slate-900">{formatCurrency(item.estimatedPrice, item.currency)}</td>
+                              <td className="px-4 py-3 text-slate-900 font-medium">
                                 {formatCurrency(item.qty * item.estimatedPrice, item.currency)}
                               </td>
                             </tr>
@@ -327,7 +327,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                         </tbody>
                         <tfoot className="bg-[#F1F5F9]">
                           <tr>
-                            <td colSpan={4} className="px-4 py-3 text-right text-[#000000] font-medium">Tổng ước tính:</td>
+                            <td colSpan={4} className="px-4 py-3 text-right text-slate-900 font-medium">Tổng ước tính:</td>
                             <td className="px-4 py-3 text-[#2563EB] font-bold">
                               {formatCurrency(draft.totalEstimate, draft.currency)}
                             </td>
@@ -339,7 +339,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
 
                   {/* Reasoning */}
                   <div className="p-3 bg-[#2563EB]/5 border border-[#2563EB]/10 rounded-lg">
-                    <p className="text-xs text-[#000000]">
+                    <p className="text-xs text-slate-900">
                       <span className="font-medium">Giải thích:</span> {draft.reasoning}
                     </p>
                   </div>
@@ -347,10 +347,10 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                   {/* Sources */}
                   {draft.sources?.length > 0 && (
                     <div>
-                      <h4 className="text-xs font-medium text-[#000000] mb-2">Dữ liệu tham khảo từ hệ thống:</h4>
+                      <h4 className="text-xs font-medium text-slate-900 mb-2">Dữ liệu tham khảo từ hệ thống:</h4>
                       <div className="flex flex-wrap gap-2">
                         {draft.sources.slice(0, 5).map((s, i) => (
-                          <span key={i} className="px-2 py-1 bg-[#F1F5F9] rounded text-xs text-[#000000]">
+                          <span key={i} className="px-2 py-1 bg-[#F1F5F9] rounded text-xs text-slate-900">
                             {s.table}: {s.name} ({Math.round(s.similarity * 100)}%)
                           </span>
                         ))}
@@ -369,7 +369,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
             <button
               onClick={() => setDraft(null)}
               disabled={isSubmitting}
-              className="px-4 py-2 text-[#000000] hover:text-[#000000] transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-slate-900 hover:text-slate-900 transition-colors disabled:opacity-50"
             >
               Tạo lại
             </button>
@@ -377,14 +377,14 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
               <button
                 onClick={handleClose}
                 disabled={isSubmitting}
-                className="px-6 py-2.5 text-[#000000] hover:text-[#000000] transition-colors disabled:opacity-50"
+                className="px-6 py-2.5 text-slate-900 hover:text-slate-900 transition-colors disabled:opacity-50"
               >
                 Hủy
               </button>
               <button
                 onClick={handleSubmitPr}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#2563EB] to-[#8B5CF6] text-[#000000] rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#2563EB] to-[#8B5CF6] text-slate-900 rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

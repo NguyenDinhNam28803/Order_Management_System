@@ -295,28 +295,28 @@ export default function SupplierDashboard() {
   // --- Components ---
 
   const renderSidebar = () => (
-    <div className="w-64 bg-[#F1F5F9] min-h-screen p-6 text-[#000000] flex flex-col gap-8 hidden lg:flex sticky top-0 border-r border-[rgba(148,163,184,0.1)]">
+    <div className="w-64 bg-[#F1F5F9] min-h-screen p-6 text-slate-900 flex flex-col gap-8 hidden lg:flex sticky top-0 border-r border-[rgba(148,163,184,0.1)]">
       <div className="flex items-center gap-3 px-2">
         <div className="bg-[#2563EB]/10 p-2 rounded-xl border border-[#2563EB]/20">
           <Building2 size={24} className="text-[#2563EB]" />
         </div>
         <div>
-          <h2 className="text-sm font-black uppercase tracking-widest leading-none text-[#000000]">ProcurePro</h2>
-          <span className="text-[10px] font-bold text-[#000000] uppercase tracking-tighter">Supplier Portal</span>
+          <h2 className="text-sm font-black uppercase tracking-widest leading-none text-slate-900">ProcurePro</h2>
+          <span className="text-[10px] font-bold text-slate-900 uppercase tracking-tighter">Supplier Portal</span>
         </div>
       </div>
 
       <nav className="flex flex-col gap-2">
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Pending"); }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:bg-[#0F172A] hover:text-white'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/20' : 'text-slate-900 hover:bg-[#0F172A] hover:text-slate-900'}`}
         >
           <LayoutDashboard size={20} />
           <span>Dashboard</span>
         </button>
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Quoted"); }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:bg-[#0F172A] hover:text-white'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/20' : 'text-slate-900 hover:bg-[#0F172A] hover:text-slate-900'}`}
         >
           <History size={20} />
           <span>Lịch sử báo giá</span>
@@ -326,12 +326,12 @@ export default function SupplierDashboard() {
       <div className="mt-auto">
         <div className="bg-[#FFFFFF] rounded-2xl p-4 border border-[rgba(148,163,184,0.1)]">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center font-black text-xs text-white">
+            <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center font-black text-xs text-slate-900">
               ABC
             </div>
             <div className="overflow-hidden">
-              <p className="text-[10px] font-black truncate text-[#000000]">{currentUser?.fullName || "Nhà cung cấp"}</p>
-              <p className="text-[8px] font-bold text-[#000000] uppercase">ID: {currentUser?.orgId || "N/A"}</p>
+              <p className="text-[10px] font-black truncate text-slate-900">{currentUser?.fullName || "Nhà cung cấp"}</p>
+              <p className="text-[8px] font-bold text-slate-900 uppercase">ID: {currentUser?.orgId || "N/A"}</p>
             </div>
           </div>
           <div className="px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-[10px] font-black uppercase tracking-wider text-center border border-[#2563EB]/20">Nhà cung cấp</div>
@@ -344,26 +344,26 @@ export default function SupplierDashboard() {
     <div className="animate-in fade-in duration-500">
       <header className="mb-8 lg:flex items-end justify-between">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-[#000000] mb-2 uppercase">YÊU CẦU BÁO GIÁ (RFQs)</h1>
-          <p className="text-[#000000] font-medium">Quản lý và phản hồi các yêu cầu báo giá từ đối tác.</p>
+          <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-2 uppercase">YÊU CẦU BÁO GIÁ (RFQs)</h1>
+          <p className="text-slate-900 font-medium">Quản lý và phản hồi các yêu cầu báo giá từ đối tác.</p>
         </div>
         <div className="flex gap-3 mt-4 lg:mt-0">
           <div className="flex bg-[#F1F5F9] p-1.5 rounded-xl border border-[rgba(148,163,184,0.1)]">
           <button 
             onClick={() => setActiveTab("Pending")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:text-[#000000]'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/20' : 'text-slate-900 hover:text-slate-900'}`}
           >
             Chưa xử lý
           </button>
           <button 
             onClick={() => setActiveTab("CatalogConfirmation")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:text-[#000000]'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/20' : 'text-slate-900 hover:text-slate-900'}`}
           >
             Xác nhận giá Catalog
           </button>
           <button 
             onClick={() => setActiveTab("Quoted")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-[#000000] hover:text-[#000000]'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/20' : 'text-slate-900 hover:text-slate-900'}`}
           >
             Đã báo giá
           </button>
@@ -374,7 +374,7 @@ export default function SupplierDashboard() {
       <div className="bg-[#F1F5F9] rounded-2xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
         <table className="erp-table text-xs text-left w-full" style={{ tableLayout: 'fixed' }}>
           <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
-            <tr className="text-[10px] font-black uppercase tracking-widest text-[#000000]">
+            <tr className="text-[10px] font-black uppercase tracking-widest text-slate-900">
               <th className="w-[18%] py-4 px-4">Mã RFQ</th>
               <th className="w-[35%] py-4 px-4">Dự án / Yêu cầu</th>
               <th className="w-[15%] py-4 px-4 text-center">Ngày nhận</th>
@@ -388,7 +388,7 @@ export default function SupplierDashboard() {
                 <td colSpan={5} className="py-20 text-center">
                   <div className="flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin"></div>
-                    <p className="font-black uppercase tracking-[0.2em] text-xs text-[#000000]">Đang tải danh sách RFQ...</p>
+                    <p className="font-black uppercase tracking-[0.2em] text-xs text-slate-900">Đang tải danh sách RFQ...</p>
                   </div>
                 </td>
               </tr>
@@ -398,19 +398,19 @@ export default function SupplierDashboard() {
               return (
                 <tr key={rfq.rfqId} className={`group hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.05)] ${isSimulation ? 'bg-[#2563EB]/5' : ''}`}>
                   <td className="py-4 px-4">
-                    <div className="font-black text-[#000000] text-xs truncate group-hover:text-[#2563EB] transition-colors">{rfq.rfqId}</div>
+                    <div className="font-black text-slate-900 text-xs truncate group-hover:text-[#2563EB] transition-colors">{rfq.rfqId}</div>
                     <div className="flex items-center gap-1 mt-1">
-                       {isSimulation && <span className="bg-[#2563EB] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
-                       {isApiData && <span className="bg-emerald-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">API</span>}
+                       {isSimulation && <span className="bg-[#2563EB] text-slate-900 text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">GIẢ LẬP</span>}
+                       {isApiData && <span className="bg-emerald-500 text-slate-900 text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">API</span>}
                     </div>
                   </td>
                   <td className="py-4 px-4">
-                    <div className="font-bold text-[#000000] text-xs truncate group-hover:text-[#F8FAFC] transition-colors" title={rfq.projectName}>{rfq.projectName}</div>
-                    <div className="text-[10px] text-[#000000] font-medium uppercase mt-1 truncate group-hover:text-[#F8FAFC]/60 transition-colors">
+                    <div className="font-bold text-slate-900 text-xs truncate group-hover:text-[#F8FAFC] transition-colors" title={rfq.projectName}>{rfq.projectName}</div>
+                    <div className="text-[10px] text-slate-900 font-medium uppercase mt-1 truncate group-hover:text-[#F8FAFC]/60 transition-colors">
                       {rfq.items.length} hạng mục • {rfq.items.slice(0, 2).map(i => i.name).join(", ")}{rfq.items.length > 2 ? "..." : ""}
                     </div>
                   </td>
-                  <td className="text-[#000000] text-xs py-4 px-4 text-center group-hover:text-[#F8FAFC] transition-colors">{rfq.createdAt}</td>
+                  <td className="text-slate-900 text-xs py-4 px-4 text-center group-hover:text-[#F8FAFC] transition-colors">{rfq.createdAt}</td>
                   <td className="py-4 px-4 text-center">
                     <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-black border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-black' : rfq.status === 'CatalogConfirmation' ? 'bg-[#2563EB]/10 text-[#3B82F6] border border-[#2563EB]/20 group-hover:bg-[#2563EB] group-hover:text-black' : 'bg-emerald-500/10 text-black border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-black'}`}>
                       {rfq.status === 'Pending' ? 'Chờ báo giá' : rfq.status === 'CatalogConfirmation' ? 'Xác nhận giá' : 'Đã báo giá'}
@@ -420,13 +420,13 @@ export default function SupplierDashboard() {
                     {rfq.status === 'Pending' || rfq.status === 'CatalogConfirmation' ? (
                       <button 
                         onClick={() => handleStartQuoting(rfq)}
-                        className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#2563EB] text-white border-[#2563EB] shadow-lg' : 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20 group-hover:border-[#2563EB]/50 group-hover:text-[#2563EB]'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#2563EB] text-slate-900 border-[#2563EB] shadow-lg' : 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20 group-hover:border-[#2563EB]/50 group-hover:text-[#2563EB]'}`}
                       >
                         Báo giá <ChevronRight size={14} />
                       </button>
                     ) : (
                       <div className="text-right">
-                        <div className="text-xs font-black text-[#000000] group-hover:text-[#F8FAFC] transition-colors">{(rfq.totalAmount || 0).toLocaleString()} ₫</div>
+                        <div className="text-xs font-black text-slate-900 group-hover:text-[#F8FAFC] transition-colors">{(rfq.totalAmount || 0).toLocaleString()} ₫</div>
                         <div className="text-[9px] font-bold text-black uppercase tracking-tighter group-hover:text-[#F8FAFC]/40 transition-colors">Đã gửi</div>
                       </div>
                     )}
@@ -437,8 +437,8 @@ export default function SupplierDashboard() {
               <tr>
                 <td colSpan={5} className="py-20 text-center">
                   <div className="flex flex-col items-center gap-3 opacity-30">
-                    <Inbox size={48} className="text-[#000000]" />
-                    <p className="font-black uppercase tracking-[0.2em] text-xs text-[#000000]">Không có yêu cầu nào</p>
+                    <Inbox size={48} className="text-slate-900" />
+                    <p className="font-black uppercase tracking-[0.2em] text-xs text-slate-900">Không có yêu cầu nào</p>
                   </div>
                 </td>
               </tr>
@@ -581,11 +581,11 @@ export default function SupplierDashboard() {
               </ul>
             </div>
 
-            <div className="erp-card !p-6 bg-erp-navy text-[#000000] border-none shadow-xl shadow-erp-navy/20 relative overflow-hidden group">
+            <div className="erp-card !p-6 bg-erp-navy text-slate-900 border-none shadow-xl shadow-erp-navy/20 relative overflow-hidden group">
               <div className="absolute -right-10 -bottom-10 opacity-5 group-hover:scale-110 transition-transform duration-700"><FileText size={160} /></div>
               <div className="relative z-10">
                 <h4 className="text-xs font-black uppercase tracking-widest text-erp-blue mb-2">Quy tắc Ứng xử</h4>
-                <p className="text-[11px] text-[#000000]/70 leading-relaxed">
+                <p className="text-[11px] text-slate-900/70 leading-relaxed">
                   Bằng việc gửi báo giá, bạn cam kết tính trung thực của thông tin và tuân thủ các quy định về chống tham nhũng của đối tác.
                 </p>
               </div>
@@ -603,9 +603,9 @@ export default function SupplierDashboard() {
       <div className="flex-1 min-w-0">
         <header className="h-16 bg-[#FFFFFF]/80 backdrop-blur-md border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between px-8 sticky top-0 z-30">
           <div className="flex items-center gap-4">
-            <span className="lg:hidden font-black text-[#000000]">ProcurePro</span>
+            <span className="lg:hidden font-black text-slate-900">ProcurePro</span>
             <div className="h-4 w-px bg-[rgba(148,163,184,0.1)] hidden lg:block" />
-            <div className="text-[10px] font-black uppercase tracking-widest text-[#000000]">
+            <div className="text-[10px] font-black uppercase tracking-widest text-slate-900">
                Supplier Dashboard <ChevronRight size={10} className="inline mx-1" /> {selectedRfq ? 'RFQ Detail' : 'Overview'}
             </div>
           </div>
@@ -613,11 +613,11 @@ export default function SupplierDashboard() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-black text-[#000000] leading-none mb-0.5">{currentUser?.fullName || "Nhà cung cấp"}</p>
+                <p className="text-[10px] font-black text-slate-900 leading-none mb-0.5">{currentUser?.fullName || "Nhà cung cấp"}</p>
                 <p className="text-[8px] font-bold text-black uppercase tracking-tighter">Trạng thái: Online</p>
               </div>
               <div className="w-8 h-8 rounded-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
-                <Building2 size={16} className="text-[#000000]" />
+                <Building2 size={16} className="text-slate-900" />
               </div>
             </div>
           </div>
@@ -631,9 +631,9 @@ export default function SupplierDashboard() {
       {/* Notifications */}
       {notification && (
         <div className={`fixed bottom-8 right-8 z-[100] animate-in slide-in-from-bottom-5 p-4 rounded-2xl shadow-2xl border flex items-center gap-3 min-w-[320px] ${
-          notification.type === 'success' ? 'bg-emerald-900 border-emerald-800 text-white' :
-          notification.type === 'error' ? 'bg-rose-900 border-rose-800 text-white' :
-          'bg-erp-navy border-slate-800 text-white'
+          notification.type === 'success' ? 'bg-emerald-900 border-emerald-800 text-slate-900' : 
+          notification.type === 'error' ? 'bg-rose-900 border-rose-800 text-slate-900' : 
+          'bg-erp-navy border-slate-800 text-slate-900'
         }`}>
           {notification.type === 'success' ? <CheckCircle className="text-black" /> : <AlertCircle className="text-black" />}
           <div>

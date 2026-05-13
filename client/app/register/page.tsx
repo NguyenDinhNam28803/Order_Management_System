@@ -59,10 +59,10 @@ export default function RegisterPage() {
             <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 relative z-10 items-center">
                 {/* Visual Section */}
                 <div className="hidden md:block pr-8 animate-in fade-in slide-in-from-left-12 duration-700">
-                    <div className="inline-flex items-center justify-center h-20 w-20 bg-emerald-600 rounded-xl shadow-2xl shadow-emerald-500/30 mb-8 border border-white/10">
-                        <CheckCircle2 size={40} className="text-[#000000]" />
+                    <div className="inline-flex items-center justify-center h-20 w-20 bg-emerald-600 rounded-3xl shadow-2xl shadow-emerald-500/30 mb-8 border border-white/10">
+                        <CheckCircle2 size={40} className="text-slate-900" />
                     </div>
-                    <h1 className="text-6xl font-black text-[#0F172A] tracking-tighter mb-4 uppercase leading-none">
+                    <h1 className="text-6xl font-black text-slate-900 tracking-tighter mb-4 uppercase leading-none">
                         Gia nhập<br /><span className="text-emerald-500">ProcurePro</span>
                     </h1>
                     <p className="text-black text-lg font-medium mb-12 max-w-md leading-relaxed">
@@ -71,20 +71,20 @@ export default function RegisterPage() {
 
                     <div className="space-y-6">
                         <div className="flex items-center gap-4 group">
-                            <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                            <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-slate-900 transition-all">
                                 <ShieldCheck size={20} />
                             </div>
                             <div>
-                                <h4 className="text-sm font-black text-[#000000] uppercase tracking-widest">Bảo mật đa lớp</h4>
+                                <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Bảo mật đa lớp</h4>
                                 <p className="text-xs text-black font-bold">Dữ liệu được mã hóa chuẩn Enterprise.</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-4 group">
-                            <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                            <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-slate-900 transition-all">
                                 <Zap size={20} />
                             </div>
                             <div>
-                                <h4 className="text-sm font-black text-[#000000] uppercase tracking-widest">Kết nối tức thì</h4>
+                                <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Kết nối tức thì</h4>
                                 <p className="text-xs text-black font-bold">Phê duyệt PR/PO chỉ trong tích tắc.</p>
                             </div>
                         </div>
@@ -97,7 +97,7 @@ export default function RegisterPage() {
                         <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
 
                         <div className="mb-8 text-center md:text-left">
-                            <h2 className="text-xl font-black text-[#0F172A] uppercase tracking-widest mb-2">Đăng ký tài khoản</h2>
+                            <h2 className="text-xl font-black text-slate-900 uppercase tracking-widest mb-2">Đăng ký tài khoản</h2>
                             <p className="text-black text-xs font-bold">Khởi tạo định danh công việc mới.</p>
                         </div>
 
@@ -120,7 +120,7 @@ export default function RegisterPage() {
                                         value={form.name}
                                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                                         placeholder="Nhập họ tên đầy đủ..."
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-white text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-400"
+                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
                                     />
                                 </div>
                             </div>
@@ -137,7 +137,7 @@ export default function RegisterPage() {
                                         value={form.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                                         placeholder="user@name.com"
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-white text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-400"
+                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
                                     />
                                 </div>
                             </div>
@@ -154,7 +154,7 @@ export default function RegisterPage() {
                                         value={form.password}
                                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                                         placeholder="••••••••"
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-white text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-400"
+                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
                                     />
                                 </div>
                             </div>
@@ -162,7 +162,7 @@ export default function RegisterPage() {
                             <div className="space-y-2">
                                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-black ml-1">Vai trò (Role)</label>
                                 <select
-                                    className="w-full bg-[#161c31] border border-white/5 rounded-2xl px-6 py-4 text-white text-sm outline-none focus:border-emerald-500/50 transition-all font-black appearance-none cursor-pointer"
+                                    className="w-full bg-[#161c31] border border-white/5 rounded-2xl px-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 transition-all font-black appearance-none cursor-pointer"
                                     value={form.role}
                                     onChange={(e) => setForm({ ...form, role: e.target.value })}
                                 >
@@ -175,7 +175,7 @@ export default function RegisterPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl shadow-xl shadow-emerald-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 relative group overflow-hidden mt-6"
+                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-900 font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl shadow-xl shadow-emerald-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 relative group overflow-hidden mt-6"
                             >
                                 {isLoading ? (
                                     <div className="h-5 w-5 border-3 border-white/20 border-t-white rounded-full animate-spin"></div>

@@ -211,7 +211,7 @@ export default function SmartSearch() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#000000] hover:text-[#000000] hover:border-[rgba(59,130,246,0.3)] transition-all text-sm"
+        className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-slate-900 hover:text-slate-900 hover:border-[rgba(59,130,246,0.3)] transition-all text-sm"
       >
         <Search size={16} />
         <span className="hidden md:inline">Tìm kiếm...</span>
@@ -240,10 +240,10 @@ export default function SmartSearch() {
             <Loader2 size={20} className="text-violet-400 animate-spin shrink-0" />
           ) : isAiMode ? (
             <div className="p-1.5 bg-gradient-to-br from-[#8B5CF6] to-[#2563EB] rounded-lg shrink-0">
-              <Sparkles size={16} className="text-[#000000]" />
+              <Sparkles size={16} className="text-slate-900" />
             </div>
           ) : (
-            <Search size={20} className="text-[#000000] shrink-0" />
+            <Search size={20} className="text-slate-900 shrink-0" />
           )}
           <input
             ref={inputRef}
@@ -251,14 +251,14 @@ export default function SmartSearch() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Tìm PR, PO, hóa đơn… hoặc hỏi tự nhiên bằng tiếng Việt"
-            className="flex-1 bg-transparent text-[#000000] placeholder-[#000000] text-[15px] outline-none"
+            className="flex-1 bg-transparent text-slate-900 placeholder-[#000000] text-[15px] outline-none"
           />
           {query && (
             <button onClick={() => setQuery("")} className="p-1 hover:bg-[rgba(148,163,184,0.1)] rounded shrink-0">
-              <X size={16} className="text-[#000000]" />
+              <X size={16} className="text-slate-900" />
             </button>
           )}
-          <kbd className="px-2 py-1 bg-[#FFFFFF] rounded text-xs text-[#000000] border border-[rgba(148,163,184,0.1)] shrink-0">ESC</kbd>
+          <kbd className="px-2 py-1 bg-[#FFFFFF] rounded text-xs text-slate-900 border border-[rgba(148,163,184,0.1)] shrink-0">ESC</kbd>
         </div>
 
         {/* AI mode banner */}
@@ -288,7 +288,7 @@ export default function SmartSearch() {
               <p className="text-[12px] font-semibold text-[#8B5CF6] mb-1 flex items-center gap-1">
                 <Sparkles size={11} /> AI trả lời
               </p>
-              <p className="text-[13px] text-[#000000] leading-relaxed whitespace-pre-wrap">{aiAnswer}</p>
+              <p className="text-[13px] text-slate-900 leading-relaxed whitespace-pre-wrap">{aiAnswer}</p>
               {aiSources.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                   {aiSources.slice(0, 4).map((s, i) => (
@@ -304,7 +304,7 @@ export default function SmartSearch() {
           {/* Result cards */}
           {results.length > 0 && (
             <div className="py-2">
-              <div className="px-4 py-1.5 text-[10px] font-bold text-[#000000] uppercase tracking-widest">
+              <div className="px-4 py-1.5 text-[10px] font-bold text-slate-900 uppercase tracking-widest">
                 {isAiMode ? "Dữ liệu liên quan" : `Kết quả (${results.length})`}
               </div>
               {results.map((result, idx) => (
@@ -323,7 +323,7 @@ export default function SmartSearch() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-semibold text-[#000000] truncate">{result.title}</span>
+                      <span className="text-[13px] font-semibold text-slate-900 truncate">{result.title}</span>
                       {result.status && (
                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full shrink-0 ${
                           result.status === "PENDING_APPROVAL" ? "bg-amber-500/20 text-black" :
@@ -334,10 +334,10 @@ export default function SmartSearch() {
                         </span>
                       )}
                     </div>
-                    <p className="text-[12px] text-[#000000] truncate">{result.subtitle}</p>
-                    <p className="text-[10px] text-[#000000] mt-0.5">{result.metadata}</p>
+                    <p className="text-[12px] text-slate-900 truncate">{result.subtitle}</p>
+                    <p className="text-[10px] text-slate-900 mt-0.5">{result.metadata}</p>
                   </div>
-                  <ArrowRight size={14} className="text-[#000000] shrink-0 mt-1" />
+                  <ArrowRight size={14} className="text-slate-900 shrink-0 mt-1" />
                 </button>
               ))}
             </div>
@@ -346,17 +346,17 @@ export default function SmartSearch() {
           {/* Empty: show suggestions */}
           {!query && !isLoading && (
             <div className="py-2">
-              <div className="px-4 py-1.5 text-[10px] font-bold text-[#000000] uppercase tracking-widest">Gợi ý AI</div>
+              <div className="px-4 py-1.5 text-[10px] font-bold text-slate-900 uppercase tracking-widest">Gợi ý AI</div>
               {SUGGESTIONS.map((s, i) => (
                 <button
                   key={i}
                   onClick={() => setQuery(s.text)}
                   className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[rgba(148,163,184,0.04)] transition-all text-left"
                 >
-                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#2563EB] text-[#000000] shrink-0">
+                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#2563EB] text-slate-900 shrink-0">
                     {s.icon}
                   </div>
-                  <span className="text-[13px] text-[#000000]">{s.text}</span>
+                  <span className="text-[13px] text-slate-900">{s.text}</span>
                   <span className="ml-auto text-[10px] text-[#8B5CF6] font-bold shrink-0">AI</span>
                 </button>
               ))}
@@ -366,15 +366,15 @@ export default function SmartSearch() {
           {/* No results */}
           {query && !isLoading && !error && !aiAnswer && results.length === 0 && (
             <div className="p-8 text-center">
-              <Search size={28} className="mx-auto mb-3 text-[#000000] opacity-40" />
-              <p className="text-[13px] text-[#000000]">Không tìm thấy kết quả cho &quot;{query}&quot;</p>
-              <p className="text-[11px] text-[#000000] mt-1">Thử đặt câu hỏi tự nhiên để AI tìm giúp bạn</p>
+              <Search size={28} className="mx-auto mb-3 text-slate-900 opacity-40" />
+              <p className="text-[13px] text-slate-900">Không tìm thấy kết quả cho &quot;{query}&quot;</p>
+              <p className="text-[11px] text-slate-900 mt-1">Thử đặt câu hỏi tự nhiên để AI tìm giúp bạn</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-2.5 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.08)] text-[11px] text-[#000000]">
+        <div className="flex items-center justify-between px-4 py-2.5 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.08)] text-[11px] text-slate-900">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 bg-[#F1F5F9] rounded border border-[rgba(148,163,184,0.1)]">↑↓</kbd> Chọn

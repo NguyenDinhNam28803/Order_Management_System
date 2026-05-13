@@ -16,8 +16,8 @@ export function CEODashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Strategic Overview */}
-      <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
           <Activity size={14} className="text-[#2563EB]" /> Tổng quan chiến lược
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -101,15 +101,15 @@ export function CEODashboard() {
           </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#000000]">Thời gian phê duyệt TB</span>
+              <span className="text-sm text-slate-900">Thời gian phê duyệt TB</span>
               <span className="font-bold text-black">1.8 ngày</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#000000]">Tỷ lệ phê duyệt</span>
+              <span className="text-sm text-slate-900">Tỷ lệ phê duyệt</span>
               <span className="font-bold text-[#3B82F6]">94.2%</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#000000]">Tỷ lệ từ chối</span>
+              <span className="text-sm text-slate-900">Tỷ lệ từ chối</span>
               <span className="font-bold text-black">5.8%</span>
             </div>
           </div>
@@ -125,14 +125,14 @@ export function CEODashboard() {
               <AlertTriangle size={16} className="text-black" />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-black">IT Department vượt 90% ngân sách</p>
-                <p className="text-xs text-[#000000]">Cần phê duyệt bổ sung ngân sách Q2</p>
+                <p className="text-xs text-slate-900">Cần phê duyệt bổ sung ngân sách Q2</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
               <Clock size={16} className="text-black" />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-black">12 PO chờ phê duyệt &gt; 3 ngày</p>
-                <p className="text-xs text-[#000000]">Có thể ảnh hưởng tiến độ dự án</p>
+                <p className="text-xs text-slate-900">Có thể ảnh hưởng tiến độ dự án</p>
               </div>
             </div>
           </div>
@@ -146,8 +146,8 @@ export function CEODashboard() {
 export function FinanceDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
           <Activity size={14} className="text-[#2563EB]" /> Kiểm soát tài chính
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -185,19 +185,19 @@ export function FinanceDashboard() {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-4 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)]">
-            <h4 className="text-sm font-semibold text-[#000000] mb-2">Tuần này</h4>
+            <h4 className="text-sm font-semibold text-slate-900 mb-2">Tuần này</h4>
             <p className="text-2xl font-bold text-black">2.4B ₫</p>
-            <p className="text-xs text-[#000000] mt-1">8 thanh toán</p>
+            <p className="text-xs text-slate-900 mt-1">8 thanh toán</p>
           </div>
           <div className="p-4 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)]">
-            <h4 className="text-sm font-semibold text-[#000000] mb-2">Tuần tới</h4>
+            <h4 className="text-sm font-semibold text-slate-900 mb-2">Tuần tới</h4>
             <p className="text-2xl font-bold text-[#3B82F6]">3.1B ₫</p>
-            <p className="text-xs text-[#000000] mt-1">12 thanh toán</p>
+            <p className="text-xs text-slate-900 mt-1">12 thanh toán</p>
           </div>
           <div className="p-4 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)]">
-            <h4 className="text-sm font-semibold text-[#000000] mb-2">Quá hạn</h4>
+            <h4 className="text-sm font-semibold text-slate-900 mb-2">Quá hạn</h4>
             <p className="text-2xl font-bold text-black">890M ₫</p>
-            <p className="text-xs text-[#000000] mt-1">Cần xử lý ngay</p>
+            <p className="text-xs text-slate-900 mt-1">Cần xử lý ngay</p>
           </div>
         </div>
       </div>
@@ -209,8 +209,8 @@ export function FinanceDashboard() {
 export function ProcurementDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
           <Activity size={14} className="text-[#2563EB]" /> Pipeline thu mua
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -265,7 +265,7 @@ export function ProcurementDashboard() {
                 >
                   {stage.count}
                 </div>
-                <span className="text-xs text-[#000000] mt-2">{stage.label}</span>
+                <span className="text-xs text-slate-900 mt-2">{stage.label}</span>
               </div>
               {idx < arr.length - 1 && (
                 <div className="flex-1 h-0.5 bg-[rgba(148,163,184,0.2)] mx-4" />
@@ -282,8 +282,8 @@ export function ProcurementDashboard() {
 export function StaffDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
           <Activity size={14} className="text-[#2563EB]" /> Tổng quan công việc
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -325,7 +325,7 @@ export function StaffDashboard() {
               className="p-4 bg-[#F1F5F9] hover:bg-[rgba(59,130,246,0.1)] border border-[rgba(148,163,184,0.1)] hover:border-[rgba(59,130,246,0.3)] rounded-xl transition-all text-left group"
             >
               <span className="text-2xl mb-2 block">{item.icon}</span>
-              <span className="text-sm font-semibold text-[#000000] group-hover:text-[#2563EB] transition-colors">
+              <span className="text-sm font-semibold text-slate-900 group-hover:text-[#2563EB] transition-colors">
                 {item.label}
               </span>
             </button>
@@ -340,8 +340,8 @@ export function StaffDashboard() {
 export function WarehouseDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+        <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
           <Activity size={14} className="text-[#2563EB]" /> Hoạt động kho
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -385,11 +385,11 @@ export function WarehouseDashboard() {
             { time: "16:00", po: "***", supplier: "BuildRight Co.", items: "Vật liệu xây dựng", status: "incoming" },
           ].map((delivery, idx) => (
             <div key={idx} className="flex items-center gap-4 p-3 bg-[#F1F5F9] rounded-lg border border-[rgba(148,163,184,0.05)]">
-              <div className="text-sm font-mono text-[#000000] w-16">{delivery.time}</div>
+              <div className="text-sm font-mono text-slate-900 w-16">{delivery.time}</div>
               <div className={`w-2 h-2 rounded-full ${delivery.status === "incoming" ? "bg-emerald-400" : "bg-amber-400"}`} />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-[#000000]">***</p>
-                <p className="text-xs text-[#000000]">{delivery.supplier} • {delivery.items}</p>
+                <p className="text-sm font-semibold text-slate-900">***</p>
+                <p className="text-xs text-slate-900">{delivery.supplier} • {delivery.items}</p>
               </div>
               <span className={`text-xs font-semibold px-2 py-1 rounded ${
                 delivery.status === "incoming" 
@@ -438,7 +438,7 @@ export default function RoleDashboard() {
                     role === "PROCUREMENT" ? "Procurement Pipeline" :
                     role === "WAREHOUSE" ? "Warehouse Operations" : "My Workspace"}
         </h1>
-        <p className="text-sm text-[#000000]">
+        <p className="text-sm text-slate-900">
           Xin chào {currentUser?.name || "User"}, đây là tổng quan dành cho {role}
         </p>
       </div>
