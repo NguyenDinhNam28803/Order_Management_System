@@ -48,7 +48,8 @@
       "Bash(Select-Object Name, PSIsContainer)",
       "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\" -Directory)",
       "Bash(Select-Object -ExpandProperty Name)",
-      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\\\\src\" -Directory)"
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\\\\src\" -Directory)",
+      "Bash(findstr '\"version\"')"
     ]
   }
 }

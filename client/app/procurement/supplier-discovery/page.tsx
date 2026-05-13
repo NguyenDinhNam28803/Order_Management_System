@@ -6,12 +6,13 @@ import {
   Search, Sparkles, X, ChevronDown, ChevronUp, Globe, Phone, Mail,
   MapPin, Star, CheckCircle2, Clock, Download, ArrowUpRight,
   Loader2, AlertCircle, Building2, Shield, Zap, DollarSign,
-  Send, MessageSquare, Import, Filter, RefreshCw, BadgeCheck,
+  Send, MessageSquare, ClipboardCheck, Filter, RefreshCw, BadgeCheck,
 } from "lucide-react";
 import {
   searchSuppliers, importSupplier, fetchDiscoveryCategories, enrichSupplier,
   DiscoveredSupplier, DiscoverSupplierDto, ProductCategory, SearchPriority,
 } from "../../services/supplierDiscoveryService";
+import { useProcurement } from "../../context/ProcurementContext";
 
 // ─── Status badge ───────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: DiscoveredSupplier['status'] }) => {
@@ -37,13 +38,14 @@ const ScoreBar = ({ score }: { score: number }) => {
 
 // ─── Supplier Detail Modal ───────────────────────────────────────────────────
 const SupplierDetailModal = ({
-  supplier, onClose, onImport, importing, onVetting,
+  supplier, onClose, onImport, importing, onVetting, vettingLoading,
 }: {
   supplier: DiscoveredSupplier;
   onClose: () => void;
   onImport: (s: DiscoveredSupplier) => void;
   importing: boolean;
-  onVetting: (name: string) => void;
+  onVetting: (s: DiscoveredSupplier) => void;
+  vettingLoading: boolean;
 }) => {
   const [enriched, setEnriched] = useState<Partial<DiscoveredSupplier> | null>(null);
   const [enriching, setEnriching] = useState(false);
@@ -258,20 +260,28 @@ const SupplierDetailModal = ({
           <button onClick={onClose} className="px-4 py-2 rounded-lg text-[12px] text-[#000000] hover:text-[#000000] border border-[#E2E8F0] hover:border-[rgba(240,246,252,0.15)] transition-all">
             Đóng
           </button>
-          {s.status === 'NEW' && (
+          <div className="flex items-center gap-3">
+            {s.status === 'IN_SYSTEM' && (
+              <span className="text-[11px] text-[#000000] flex items-center gap-1">
+                <CheckCircle2 size={12} className="text-[#3B82F6]" />Đã có trong hệ thống
+              </span>
+            )}
+            {s.status === 'WORKED_BEFORE' && (
+              <span className="text-[11px] text-black flex items-center gap-1">
+                <CheckCircle2 size={12} className="text-emerald-500" />Đã từng hợp tác
+              </span>
+            )}
             <button
-              onClick={() => onVetting(s.name)}
+              onClick={() => onVetting(s)}
+              disabled={vettingLoading}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#1D4ED8] text-white hover:bg-[#2563EB] disabled:opacity-50 transition-all"
             >
-              <Import size={13} /> Xét duyệt nhà cung cấp
+              {vettingLoading
+                ? <Loader2 size={13} className="animate-spin" />
+                : <ClipboardCheck size={13} />}
+              Xét duyệt nhà cung cấp
             </button>
-          )}
-          {s.status === 'IN_SYSTEM' && (
-            <span className="text-[11px] text-[#000000] flex items-center gap-1"><CheckCircle2 size={12} className="text-[#3B82F6]" />Đã có trong hệ thống</span>
-          )}
-          {s.status === 'WORKED_BEFORE' && (
-            <span className="text-[11px] text-black flex items-center gap-1"><CheckCircle2 size={12} />Đã từng hợp tác</span>
-          )}
+          </div>
         </div>
       </div>
     </div>
@@ -280,7 +290,7 @@ const SupplierDetailModal = ({
 
 // ─── Supplier Card ───────────────────────────────────────────────────────────
 const SupplierCard = ({
-  supplier, selected, onToggleSelect, onImport, importing, onViewDetail, onVetting,
+  supplier, selected, onToggleSelect, onImport, importing, onViewDetail, onVetting, vettingLoading,
 }: {
   supplier: DiscoveredSupplier;
   selected: boolean;
@@ -288,7 +298,8 @@ const SupplierCard = ({
   onImport: (s: DiscoveredSupplier) => void;
   importing: boolean;
   onViewDetail: (s: DiscoveredSupplier) => void;
-  onVetting: (name: string) => void;
+  onVetting: (s: DiscoveredSupplier) => void;
+  vettingLoading: boolean;
 }) => {
   return (
     <div className={`rounded-xl border transition-all duration-200 ${selected ? 'border-[#2563EB]/50 bg-[#2563EB]/5' : 'border-[#E2E8F0] bg-[#F1F5F9]'} hover:border-[rgba(240,246,252,0.15)]`}>
@@ -357,20 +368,28 @@ const SupplierCard = ({
             <Sparkles size={11} /> Chi tiết AI
           </button>
 
-          {supplier.status === 'NEW' && (
+          <div className="ml-auto flex items-center gap-2">
+            {supplier.status === 'IN_SYSTEM' && (
+              <span className="text-[10px] text-[#3B82F6] flex items-center gap-1">
+                <CheckCircle2 size={10} />Trong hệ thống
+              </span>
+            )}
+            {supplier.status === 'WORKED_BEFORE' && (
+              <span className="text-[10px] text-emerald-500 flex items-center gap-1">
+                <CheckCircle2 size={10} />Đã hợp tác
+              </span>
+            )}
             <button
-              onClick={() => onVetting(supplier.name)}
-              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30 hover:bg-[#2563EB]/25 transition-colors disabled:opacity-50"
+              onClick={() => onVetting(supplier)}
+              disabled={vettingLoading}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30 hover:bg-[#2563EB]/25 transition-colors disabled:opacity-50"
             >
-              <Import size={11} /> Xét duyệt nhà cung cấp
+              {vettingLoading
+                ? <Loader2 size={11} className="animate-spin" />
+                : <ClipboardCheck size={11} />}
+              Xét duyệt
             </button>
-          )}
-          {supplier.status === 'IN_SYSTEM' && (
-            <span className="ml-auto text-[10px] text-[#000000]">Đã có trong hệ thống</span>
-          )}
-          {supplier.status === 'WORKED_BEFORE' && (
-            <span className="ml-auto text-[10px] text-emerald-500">Đã từng hợp tác</span>
-          )}
+          </div>
         </div>
       </div>
     </div>
@@ -423,6 +442,7 @@ const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[];
 // ─── Main Page ───────────────────────────────────────────────────────────────
 export default function SupplierDiscoveryPage() {
   const router = useRouter();
+  const { apiFetch } = useProcurement();
   const [query, setQuery] = useState('');
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -443,6 +463,7 @@ export default function SupplierDiscoveryPage() {
   const [comparing, setComparing] = useState(false);
   const [importingIdx, setImportingIdx] = useState<number | null>(null);
   const [importedSet, setImportedSet] = useState<Set<number>>(new Set());
+  const [vettingName, setVettingName] = useState<string | null>(null);
 
   const [detailSupplier, setDetailSupplier] = useState<DiscoveredSupplier | null>(null);
 
@@ -572,8 +593,42 @@ export default function SupplierDiscoveryPage() {
     { key: 'EXPERIENCE', label: 'Kinh nghiệm', icon: <Star size={11} /> },
   ];
 
-  const handleVetting = (name: string) => {
-    router.push(`/procurement/supplier-vetting?name=${encodeURIComponent(name)}`);
+  const handleVetting = async (supplier: DiscoveredSupplier) => {
+    setVettingName(supplier.name);
+    try {
+      // Nếu đã có trong hệ thống → dùng UUID sẵn có, không cần import lại
+      let supplierId = supplier.existingOrgId;
+
+      if (!supplierId) {
+        // Supplier mới → import vào hệ thống để lấy UUID
+        const imported = await importSupplier({
+          name: supplier.name,
+          email: supplier.email,
+          phone: supplier.phone,
+          website: supplier.website,
+          address: supplier.address,
+          province: supplier.province,
+          industry: supplier.industry,
+          taxCode: supplier.taxCode,
+        });
+        supplierId = imported.id;
+      }
+
+      // Tạo vetting request với supplierId (apiFetch tự gắn Authorization header)
+      const res = await apiFetch('/supplier-vetting', {
+        method: 'POST',
+        body: JSON.stringify({ supplierId }),
+      });
+      if (!res.ok) throw new Error(`Tạo yêu cầu thất bại (${res.status})`);
+
+      const json = await res.json() as { data: { id: string } };
+      router.push(`/procurement/supplier-vetting/${json.data.id}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Không thể tạo yêu cầu xét duyệt';
+      alert(msg);
+    } finally {
+      setVettingName(null);
+    }
   };
 
   return (
@@ -779,6 +834,7 @@ export default function SupplierDiscoveryPage() {
                     importing={importingIdx === i}
                     onViewDetail={setDetailSupplier}
                     onVetting={handleVetting}
+                    vettingLoading={vettingName === s.name}
                   />
                 ))}
               </div>
@@ -881,7 +937,8 @@ export default function SupplierDiscoveryPage() {
             const idx = results?.indexOf(s) ?? -1;
             if (idx >= 0) handleImport(s, idx);
           }}
-          onVetting={(name) => handleVetting(name)}
+          onVetting={handleVetting}
+          vettingLoading={vettingName === detailSupplier?.name}
           importing={importingIdx !== null}
         />
       )}

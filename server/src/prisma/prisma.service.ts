@@ -18,6 +18,16 @@ const SOFT_DELETE_MODELS: Prisma.ModelName[] = [
   'RfqRequest',
 ];
 
+const READ_OPS = new Set([
+  'findUnique',
+  'findFirst',
+  'findMany',
+  'count',
+  'aggregate',
+  'findUniqueOrThrow',
+  'findFirstOrThrow',
+]);
+
 @Injectable()
 export class PrismaService
   extends PrismaClient
@@ -51,7 +61,7 @@ export class PrismaService
 
   async onModuleInit() {
     await this.$connect();
-    this.registerSoftDeleteMiddleware();
+    this.applySoftDeleteExtension();
   }
 
   async onModuleDestroy() {
@@ -59,42 +69,56 @@ export class PrismaService
   }
 
   // Automatically filters out soft-deleted records for all read operations.
-  // To intentionally include deleted records, pass { where: { deletedAt: { not: null } } }
-  // or use $queryRaw for admin/audit purposes.
-  private registerSoftDeleteMiddleware() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this as any).$use(
-      async (
-        params: Prisma.MiddlewareParams,
-        next: (params: Prisma.MiddlewareParams) => Promise<unknown>,
-      ) => {
-        if (
-          params.model &&
-          SOFT_DELETE_MODELS.includes(params.model as Prisma.ModelName)
-        ) {
-          const readOps = ['findUnique', 'findFirst', 'findMany', 'count', 'aggregate', 'findUniqueOrThrow', 'findFirstOrThrow'];
-          if (readOps.includes(params.action)) {
-            params.args = params.args ?? {};
-            params.args.where = params.args.where ?? {};
-            // Only inject if caller has not explicitly filtered deletedAt
-            if (params.args.where.deletedAt === undefined) {
-              params.args.where.deletedAt = null;
-            }
-          }
+  // To intentionally include deleted records, use $queryRaw for admin/audit purposes.
+  // Converts delete/deleteMany → soft delete (sets deletedAt) for protected models.
+  private applySoftDeleteExtension(): void {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias, @typescript-eslint/no-explicit-any
+    const self = this as any;
 
-          // Intercept delete → convert to soft delete
-          if (params.action === 'delete') {
-            params.action = 'update';
-            params.args.data = { deletedAt: new Date() };
-          }
-          if (params.action === 'deleteMany') {
-            params.action = 'updateMany';
-            params.args.data = params.args.data ?? {};
-            (params.args.data as Record<string, unknown>).deletedAt = new Date();
-          }
-        }
-        return next(params);
+    const extended = self.$extends({
+      query: {
+        $allModels: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          async $allOperations({ model, operation, args, query }: any) {
+            if (!(SOFT_DELETE_MODELS as string[]).includes(model)) {
+              return query(args);
+            }
+
+            // Inject deletedAt: null filter for all read operations
+            if (READ_OPS.has(operation)) {
+              const where = { ...(args.where ?? {}) };
+              if (where.deletedAt === undefined) {
+                where.deletedAt = null;
+              }
+              return query({ ...args, where });
+            }
+
+            // Convert delete → soft delete
+            if (operation === 'delete') {
+              const key: string = model[0].toLowerCase() + model.slice(1);
+              return (self[key] as any).update({
+                where: args.where,
+                data: { deletedAt: new Date() },
+              });
+            }
+
+            // Convert deleteMany → soft deleteMany
+            if (operation === 'deleteMany') {
+              const key: string = model[0].toLowerCase() + model.slice(1);
+              return (self[key] as any).updateMany({
+                where: args.where,
+                data: { ...(args.data ?? {}), deletedAt: new Date() },
+              });
+            }
+
+            return query(args);
+          },
+        },
       },
-    );
+    });
+
+    // Overlay the extended model delegates onto this instance.
+    // Extended delegates are own-enumerable properties on the client, so Object.assign copies them.
+    Object.assign(this, extended);
   }
 }
