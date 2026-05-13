@@ -239,7 +239,7 @@ export default function SupplierInvoice() {
                             </div>
                             <div className="flex justify-between items-center group">
                                 <span className="uppercase tracking-widest text-[10px] text-slate-900 flex items-center gap-2">Thuế SUẤT VAT <input type="number" className="w-12 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-2 py-1 text-center font-bold text-slate-900 focus:outline-none focus:border-[#2563EB]/30" value={vat} onChange={e => setVat(Number(e.target.value))}/> %</span>
-                                <span className="text-base text-slate-900 group-hover:text-slate-900 transition-colors">{vatAmount.toLocaleString()} ₫</span>
+                                <span className="text-base text-slate-900 group-hover:text-white transition-colors">{vatAmount.toLocaleString()} ₫</span>
                             </div>
                         </div>
 
@@ -254,7 +254,7 @@ export default function SupplierInvoice() {
                                  <div className="text-[10px] font-black uppercase text-slate-900 mt-2">Upload XML Hóa Đơn Phạt Phụ Lục</div>
                              </div>
 
-                             <button onClick={handleSubmit} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#2563EB]/20 transition-all">
+                             <button onClick={handleSubmit} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#2563EB]/20 transition-all">
                                  <Send size={16}/> Submit cho AP Khách hàng
                              </button>
                         </div>

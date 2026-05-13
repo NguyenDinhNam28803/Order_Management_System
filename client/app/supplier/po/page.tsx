@@ -223,7 +223,7 @@ export default function SupplierPO() {
 
                             <div className="space-y-6 relative ml-2 before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#2563EB]/20 before:to-transparent mb-6">
                                 <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                    <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-emerald-500 text-slate-900 shadow relative z-10 font-bold"><CheckCircle size={10} /></div>
+                                    <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-emerald-500 text-white shadow relative z-10 font-bold"><CheckCircle size={10} /></div>
                                     <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-[#FFFFFF] p-3 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] ml-4 font-medium text-xs text-slate-900">
                                         <div className="font-bold text-slate-900 text-[10px] uppercase tracking-widest mb-1">Hôm nay 10:00</div>
                                         Đã xác nhận PO. Nguyên vật liệu đang được chuẩn bị.
@@ -268,7 +268,7 @@ export default function SupplierPO() {
                                         Tải file lên
                                     </div>
                                 </div>
-                                <button onClick={handleShip} className="w-full mt-4 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 shadow-xl shadow-[#2563EB]/20 uppercase tracking-widest text-[10px] font-black rounded-xl transition-colors flex items-center gap-2 justify-center">
+                                <button onClick={handleShip} className="w-full mt-4 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-xl shadow-[#2563EB]/20 uppercase tracking-widest text-[10px] font-black rounded-xl transition-colors flex items-center gap-2 justify-center">
                                     <Truck size={14}/> Notify Shipped (Báo Giao)
                                 </button>
                             </div>
@@ -294,7 +294,7 @@ export default function SupplierPO() {
                     <span className="text-xs text-slate-900">Tổng PO: {pos.length} | PO của bạn: {supplierPOs.length}</span>
                     <button 
                         onClick={() => setShowAll(!showAll)} 
-                        className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl ${showAll ? 'bg-[#2563EB] text-slate-900' : 'bg-[#F1F5F9] text-slate-900 border border-[rgba(148,163,184,0.1)]'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl ${showAll ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)]'}`}
                     >
                         {showAll ? 'Chỉ hiện PO của tôi' : 'Hiện tất cả PO'}
                     </button>
@@ -317,7 +317,7 @@ export default function SupplierPO() {
                     />
                     <button 
                         onClick={handleCheckPO}
-                        className="px-4 py-2 bg-[#2563EB] text-slate-900 text-xs font-bold uppercase rounded-lg hover:bg-[#1D4ED8] transition-colors"
+                        className="px-4 py-2 bg-[#2563EB] text-white text-xs font-bold uppercase rounded-lg hover:bg-[#1D4ED8] transition-colors"
                     >
                         Kiểm tra
                     </button>
@@ -357,7 +357,7 @@ export default function SupplierPO() {
                             const moreItems = items.length > 1 ? `+${items.length - 1} sản phẩm khác` : '';
 
                             return (
-                                <tr key={p.id} className={`group hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.05)] ${p.supplierId === supplierId ? 'bg-[#2563EB]/5' : ''}`}>
+                                <tr key={p.id} className={`group hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.05)] ${p.supplierId === supplierId ? 'bg-[#2563EB]/5' : ''}`}>
                                     {/* PO Number */}
                                     <td className="py-4 px-4">
                                         <div className="font-bold text-slate-900 text-xs mb-1 truncate group-hover:text-[#F8FAFC] transition-colors">
@@ -473,7 +473,7 @@ export default function SupplierPO() {
                             </div>
                             <button 
                                 onClick={closeModal}
-                                className="p-2 hover:bg-[#0F172A] rounded-lg transition-colors"
+                                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
                             >
                                 <X size={20} className="text-slate-900"/>
                             </button>
@@ -560,7 +560,7 @@ export default function SupplierPO() {
                         <div className="flex justify-between items-center p-6 border-t border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] rounded-b-2xl">
                             <button 
                                 onClick={closeModal}
-                                className="px-4 py-2 text-slate-900 font-bold text-sm hover:bg-[#0F172A] rounded-lg transition-colors"
+                                className="px-4 py-2 text-slate-900 font-bold text-sm hover:bg-slate-100 rounded-lg transition-colors"
                             >
                                 Đóng
                             </button>
@@ -574,7 +574,7 @@ export default function SupplierPO() {
                                     <>
                                         <button 
                                             onClick={handleShipModal}
-                                            className="px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-[#2563EB]/20"
+                                            className="px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-[#2563EB]/20"
                                         >
                                             <Truck size={14}/> Báo Giao Hàng
                                         </button>
@@ -592,7 +592,7 @@ export default function SupplierPO() {
                                         </button>
                                         <button 
                                             onClick={handleConfirmModal}
-                                            className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-md shadow-emerald-500/20"
+                                            className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-white font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all shadow-md shadow-emerald-500/20"
                                         >
                                             <CheckCircle size={16}/> Xác nhận PO
                                         </button>

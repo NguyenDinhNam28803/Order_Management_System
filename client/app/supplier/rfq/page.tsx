@@ -360,7 +360,7 @@ export default function SupplierRFQ() {
                                 return (
                                     <tr 
                                         key={r.id} 
-                                        className="hover:bg-[#0F172A] border-b border-[rgba(148,163,184,0.05)] cursor-pointer group transition-all" 
+                                        className="hover:bg-slate-100 border-b border-[rgba(148,163,184,0.05)] cursor-pointer group transition-all" 
                                         onClick={() => { setSelectedRfqId(r.id); setViewState("DETAIL"); }}
                                     >
                                         <td className="px-6 py-8">

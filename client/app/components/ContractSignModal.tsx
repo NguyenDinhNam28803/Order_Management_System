@@ -251,7 +251,7 @@ export default function ContractSignModal({
                                     onChange={e => setAgreed(e.target.checked)}
                                     className="mt-0.5 w-4 h-4 rounded border-[rgba(148,163,184,0.3)] accent-emerald-500 cursor-pointer"
                                 />
-                                <span className="text-sm text-slate-900 group-hover:text-slate-900 transition-colors leading-relaxed">
+                                <span className="text-sm text-slate-900 group-hover:text-white transition-colors leading-relaxed">
                                     Tôi đã đọc, hiểu và đồng ý với tất cả các điều khoản hợp đồng
                                 </span>
                             </label>
@@ -379,14 +379,14 @@ export default function ContractSignModal({
                         <div className="flex gap-3 justify-end">
                             <button
                                 onClick={onClose}
-                                className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-[#0F172A] transition-all"
+                                className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-slate-100 transition-all"
                             >
                                 Hủy
                             </button>
                             <button
                                 onClick={enterVerify}
                                 disabled={!agreed}
-                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                                 <PenTool size={14} /> Tiếp tục ký
                             </button>
@@ -397,14 +397,14 @@ export default function ContractSignModal({
                         <div className="flex gap-3 justify-end">
                             <button
                                 onClick={onClose}
-                                className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-[#0F172A] transition-all"
+                                className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-slate-100 transition-all"
                             >
                                 Hủy
                             </button>
                             <button
                                 onClick={handleConfirm}
                                 disabled={!codeMatches}
-                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                                 <ShieldCheck size={14} /> Xác nhận ký
                             </button>
@@ -420,7 +420,7 @@ export default function ContractSignModal({
                     {step === "success" && (
                         <button
                             onClick={onClose}
-                            className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-black text-sm transition-all"
+                            className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all"
                         >
                             Hoàn tất
                         </button>

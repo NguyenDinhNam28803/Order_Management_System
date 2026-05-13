@@ -201,7 +201,7 @@ export default function ApprovalsPage() {
                                     <div className="w-px h-6 bg-[rgba(148,163,184,0.1)] mx-1"></div>
                                     <button 
                                         onClick={() => handleAction("APPROVE")}
-                                        className="flex items-center gap-2 px-4 py-1.5 bg-emerald-600 text-slate-900 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-emerald-700 transition-colors shadow-sm"
+                                        className="flex items-center gap-2 px-4 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-emerald-700 transition-colors shadow-sm"
                                     >
                                         <Check size={14} /> Duyệt ngay
                                     </button>
@@ -225,7 +225,7 @@ export default function ApprovalsPage() {
                                     {/* Header Info */}
                                     <div className="flex items-start justify-between">
                                         <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-2xl bg-[#2563EB] text-slate-900 flex items-center justify-center font-bold text-xl shadow-lg shadow-[#2563EB]/20">
+                                            <div className="h-12 w-12 rounded-2xl bg-[#2563EB] text-white flex items-center justify-center font-bold text-xl shadow-lg shadow-[#2563EB]/20">
                                                 {selectedPR.requester?.fullName?.charAt(0) || "R"}
                                             </div>
                                             <div>
@@ -341,7 +341,7 @@ export default function ApprovalsPage() {
                                             <div className="space-y-2">
                                                 <div className="group flex items-center justify-between p-3 rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 hover:bg-[#FFFFFF] transition-all cursor-pointer">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="h-8 w-8 bg-[#FFFFFF] text-[#2563EB] rounded-lg flex items-center justify-center border border-[rgba(148,163,184,0.1)] group-hover:bg-[#2563EB] group-hover:text-slate-900 transition-colors">
+                                                        <div className="h-8 w-8 bg-[#FFFFFF] text-[#2563EB] rounded-lg flex items-center justify-center border border-[rgba(148,163,184,0.1)] group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
                                                             <FileText size={14} />
                                                         </div>
                                                         <span className="text-xs font-bold text-slate-900">De_xuat_mua_sam.pdf</span>
@@ -350,7 +350,7 @@ export default function ApprovalsPage() {
                                                 </div>
                                                 <div className="group flex items-center justify-between p-3 rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 hover:bg-[#FFFFFF] transition-all cursor-pointer">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="h-8 w-8 bg-[#FFFFFF] text-[#2563EB] rounded-lg flex items-center justify-center border border-[rgba(148,163,184,0.1)] group-hover:bg-[#2563EB] group-hover:text-slate-900 transition-colors">
+                                                        <div className="h-8 w-8 bg-[#FFFFFF] text-[#2563EB] rounded-lg flex items-center justify-center border border-[rgba(148,163,184,0.1)] group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
                                                             <Calendar size={14} />
                                                         </div>
                                                         <span className="text-xs font-bold text-slate-900">Lich_su_bao_gia.xlsx</span>
@@ -374,7 +374,7 @@ export default function ApprovalsPage() {
                                             <button 
                                                 onClick={() => handleAction("APPROVE")}
                                                 disabled={isSubmitting}
-                                                className="flex-1 py-4 bg-[#2563EB] text-slate-900 rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                                                className="flex-1 py-4 bg-[#2563EB] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
                                             >
                                                 {isSubmitting ? <Loader2 className="animate-spin text-slate-900" /> : "Xác nhận Phê duyệt PR"}
                                             </button>

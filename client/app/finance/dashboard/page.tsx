@@ -40,10 +40,10 @@ export default function FinanceDashboard() {
                     <p className="text-sm font-bold text-slate-900">Hệ thống quản trị khoản phải trả & Đối soát 3 bên tự động tích hợp AI.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-slate-900 hover:bg-[#0F172A] transition-all shadow-sm">
+                    <button className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                         <Download size={14} /> Export Report
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-slate-900 rounded-xl text-xs font-bold hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20">
+                    <button className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-xl text-xs font-bold hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20">
                         <Activity size={14} /> System Health
                     </button>
                 </div>
@@ -132,13 +132,13 @@ export default function FinanceDashboard() {
                     <div className="flex items-center gap-4">
                         <div className="bg-[#FFFFFF] p-1 rounded-xl flex gap-1 border border-[rgba(148,163,184,0.1)]">
                             <button 
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/20' : 'text-slate-900 hover:text-slate-900'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
                                 onClick={() => setActiveTab("ALL")}
                             >
                                 Tất cả
                             </button>
                             <button 
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-slate-900 shadow-lg shadow-rose-500/20' : 'text-slate-900 hover:text-slate-900'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-white hover:text-white'}`}
                                 onClick={() => setActiveTab("EXCEPTION")}
                             >
                                 Exception <span className="bg-rose-500/20 text-black px-1.5 py-0.5 rounded-md text-[9px] border border-rose-500/20">{activeInvoices.filter((i) => i.status === 'EXCEPTION').length}</span>
@@ -177,7 +177,7 @@ export default function FinanceDashboard() {
                                 <tr key={inv.id} className="cursor-pointer group hover:bg-[#FFFFFF]/50 transition-colors" onClick={() => router.push(`/finance/matching?id=${inv.id}`)}>
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center font-bold text-[10px] group-hover:bg-[#2563EB] group-hover:text-slate-900 transition-colors duration-300 border border-[#2563EB]/20">
+                                            <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center font-bold text-[10px] group-hover:bg-[#2563EB] group-hover:text-white transition-colors duration-300 border border-[#2563EB]/20">
                                                 ID
                                             </div>
                                             <span className="font-bold text-slate-900 tracking-tight">INV-***</span>
@@ -210,7 +210,7 @@ export default function FinanceDashboard() {
                                             <button className="h-8 w-8 rounded-lg border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 flex items-center justify-center transition-all bg-[#FFFFFF] shadow-sm">
                                                 <MoreHorizontal size={14} />
                                             </button>
-                                            <button className="flex items-center gap-1 px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-[11px] font-bold hover:bg-[#2563EB] hover:text-slate-900 transition-all shadow-sm border border-[#2563EB]/20">
+                                            <button className="flex items-center gap-1 px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-[11px] font-bold hover:bg-[#2563EB] hover:text-white transition-all shadow-sm border border-[#2563EB]/20">
                                                 Audit <ArrowRight size={12}/>
                                             </button>
                                         </div>
@@ -225,7 +225,7 @@ export default function FinanceDashboard() {
                     <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Showing {displayedInvoices.length} of {activeInvoices.length} invoices in queue</p>
                     <div className="flex gap-1">
                          {[1, 2, 3].map(i => (
-                             <button key={i} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === 1 ? 'bg-[#2563EB] border-[#2563EB] text-slate-900 shadow-sm' : 'border-transparent text-slate-900 hover:text-slate-900'}`}>{i}</button>
+                             <button key={i} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === 1 ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm' : 'border-transparent text-white hover:text-white'}`}>{i}</button>
                          ))}
                     </div>
                 </div>

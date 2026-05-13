@@ -53,7 +53,7 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="pt-8 flex justify-end">
-                                <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-8 py-3 rounded-xl font-bold shadow-lg shadow-[#2563EB]/20 transition-colors">
+                                <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-[#2563EB]/20 transition-colors">
                                     <Save size={18} /> Lưu thay đổi
                                 </button>
                             </div>

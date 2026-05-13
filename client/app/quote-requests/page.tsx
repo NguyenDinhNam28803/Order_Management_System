@@ -65,7 +65,7 @@ export default function QuoteRequestPage() {
                 </div>
                 <Link 
                     href="/quote-requests/create"
-                    className="flex items-center gap-2 bg-[#2563EB] text-slate-900 px-5 py-2.5 rounded-xl font-bold hover:bg-[#1D4ED8] transition-all shadow-lg active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-5 py-2.5 rounded-xl font-bold hover:bg-[#1D4ED8] transition-all shadow-lg active:scale-95"
                 >
                     <Plus size={20} />
                     Tạo yêu cầu báo giá mới
@@ -90,7 +90,7 @@ export default function QuoteRequestPage() {
                 <div className="flex items-center gap-2">
                     <button 
                         onClick={() => setStatusFilter("ALL")}
-                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === 'ALL' ? 'bg-[#2563EB] text-slate-900' : 'bg-[#FFFFFF] text-slate-900 hover:bg-[#0F172A]'}`}
+                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === 'ALL' ? 'bg-[#2563EB] text-white' : 'bg-[#FFFFFF] text-white hover:bg-slate-100'}`}
                     >
                         Tất cả
                     </button>
@@ -100,7 +100,7 @@ export default function QuoteRequestPage() {
                             <button 
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
-                                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === status ? 'bg-[#2563EB] text-slate-900' : 'bg-[#FFFFFF] text-slate-900 hover:bg-[#0F172A]'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === status ? 'bg-[#2563EB] text-white' : 'bg-[#FFFFFF] text-white hover:bg-slate-100'}`}
                             >
                                 {label}
                             </button>
@@ -184,7 +184,7 @@ export default function QuoteRequestPage() {
                                         </div>
                                     )}
                                 </div>
-                                <button className="p-2 text-slate-900 hover:bg-[#0F172A] rounded-lg">
+                                <button className="p-2 text-slate-900 hover:bg-slate-100 rounded-lg">
                                     <MoreVertical size={20} />
                                 </button>
                             </div>
@@ -227,7 +227,7 @@ export default function QuoteRequestPage() {
                                         </div>
                                         <button 
                                             onClick={() => handleConvertToPR(selectedQR)}
-                                            className="w-full flex items-center justify-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-slate-900 py-3.5 rounded-xl font-black shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
+                                            className="w-full flex items-center justify-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-xl font-black shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
                                         >
                                             <ArrowRight size={20} />
                                             Tạo PR từ báo giá này

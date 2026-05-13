@@ -43,7 +43,7 @@ export default function DisputesPage() {
                     <h1 className="text-2xl font-black tracking-tight text-slate-900">Khiếu nại & Tranh chấp</h1>
                     <p className="text-slate-900 text-sm">Xử lý các vấn đề phát sinh về chất lượng hàng hóa, thanh toán hoặc dịch vụ</p>
                 </div>
-                <button className="flex items-center gap-2 bg-rose-500 text-slate-900 px-4 py-2 rounded-xl hover:bg-rose-600 transition-all shadow-lg shadow-rose-500/20 font-black uppercase tracking-wider text-[11px]">
+                <button className="flex items-center gap-2 bg-rose-500 text-white px-4 py-2 rounded-xl hover:bg-rose-600 transition-all shadow-lg shadow-rose-500/20 font-black uppercase tracking-wider text-[11px]">
                     <AlertTriangle size={18} /> Tạo khiếu nại mới
                 </button>
             </div>
@@ -89,7 +89,7 @@ export default function DisputesPage() {
                                 <div className="flex items-center gap-3">
                                     <span className="font-black text-black">#{d.disputeNumber}</span>
                                     {getStatusBadge(d.status)}
-                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-black uppercase ${d.priority === 'HIGH' ? 'bg-rose-500 text-slate-900' : 'bg-[#FFFFFF] text-slate-900 border border-[rgba(148,163,184,0.1)]'}`}>
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-black uppercase ${d.priority === 'HIGH' ? 'bg-rose-500 text-white' : 'bg-[#FFFFFF] text-white border border-[rgba(148,163,184,0.1)]'}`}>
                                         {d.priority}
                                     </span>
                                 </div>

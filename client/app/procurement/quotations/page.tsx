@@ -221,7 +221,7 @@ export default function QuotationManagementPage() {
                 <div className="flex items-center gap-1">
                     <button
                         onClick={() => setSelectedRFQ(row)}
-                        className="inline-flex items-center gap-1 bg-[#2563EB] text-slate-900 px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider hover:bg-[#1D4ED8] transition-all"
+                        className="inline-flex items-center gap-1 bg-[#2563EB] text-white px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider hover:bg-[#1D4ED8] transition-all"
                     >
                         <Eye size={12} /> Xem
                     </button>
@@ -344,7 +344,7 @@ export default function QuotationManagementPage() {
                     {row.status === 'SUBMITTED' && (
                         <button
                             onClick={() => setAwardModal(row)}
-                            className="inline-flex items-center gap-2 bg-emerald-600 text-slate-900 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+                            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
                         >
                             <Award size={14} /> Trao thầu
                         </button>
@@ -388,7 +388,7 @@ export default function QuotationManagementPage() {
                     {selectedRFQ ? (
                         <button
                             onClick={() => setSelectedRFQ(null)}
-                            className="inline-flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#0F172A] transition-all shadow-sm"
+                            className="inline-flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm"
                         >
                             <ArrowLeft size={16} /> Quay lại danh sách RFQ
                         </button>
@@ -408,7 +408,7 @@ export default function QuotationManagementPage() {
                             </div>
                         </div>
                     )}
-                    <button className="h-14 w-14 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-xl shadow-[#2563EB]/5 hover:bg-[#0F172A] transition-all shrink-0">
+                    <button className="h-14 w-14 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-xl shadow-[#2563EB]/5 hover:bg-slate-100 transition-all shrink-0">
                         <ListFilter size={20} className="text-[#2563EB]" />
                     </button>
                 </div>
@@ -443,7 +443,7 @@ export default function QuotationManagementPage() {
             {awardModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/80 backdrop-blur-sm animate-in fade-in duration-300">
                     <div className="bg-[#F1F5F9] rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
-                        <div className="bg-emerald-600 px-8 py-6 text-slate-900 flex justify-between items-center">
+                        <div className="bg-emerald-600 px-8 py-6 text-white flex justify-between items-center">
                             <div>
                                 <h3 className="text-xl font-black uppercase tracking-tight">Trao thầu</h3>
                                 <p className="text-emerald-100 text-xs font-bold uppercase mt-1 tracking-widest">Xác nhận chọn nhà cung cấp</p>
@@ -489,7 +489,7 @@ export default function QuotationManagementPage() {
                                 <button onClick={() => setAwardModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#0F172A] text-[#F8FAFC] font-black text-xs uppercase tracking-widest hover:bg-[#FFFFFF] hover:text-black transition-all border border-[rgba(148,163,184,0.1)]">Hủy bỏ</button>
                                 <button
                                     onClick={() => handleAward(awardModal)}
-                                    className="flex-1 px-6 py-4 rounded-2xl bg-emerald-600 text-slate-900 font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
+                                    className="flex-1 px-6 py-4 rounded-2xl bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
                                 >
                                     Xác nhận trao thầu
                                 </button>
@@ -564,10 +564,10 @@ export default function QuotationManagementPage() {
                                                                 </div>
                                                             </div>
                                                             <div className={`px-4 py-2 rounded-xl font-black text-sm border ${viewQuotation.aiAnalysis.recommendation === 'ACCEPT'
-                                                                    ? 'bg-emerald-500 text-slate-900 border-emerald-500' :
+                                                                    ? 'bg-emerald-500 text-white border-emerald-500' :
                                                                     viewQuotation.aiAnalysis.recommendation === 'REJECT'
-                                                                        ? 'bg-rose-500 text-slate-900 border-rose-500' :
-                                                                        'bg-amber-500 text-black border-amber-500'
+                                                                        ? 'bg-rose-500 text-white border-rose-500' :
+                                                                        'bg-amber-500 text-white border-amber-500'
                                                                 }`}>
                                                                 {viewQuotation.aiAnalysis.recommendation === 'ACCEPT' && 'CHẤP NHẬN'}
                                                                 {viewQuotation.aiAnalysis.recommendation === 'REJECT' && 'TỪ CHỐI'}
@@ -678,7 +678,7 @@ export default function QuotationManagementPage() {
                                                     setNewMsg('');
                                                     const qas = await fetchQAThreadsBySupplier(viewQuotation.rfqId, viewQuotation.supplierId);
                                                     setQaThreadsList(qas || []);
-                                                }} className="bg-[#2563EB] text-slate-900 px-5 rounded-xl font-black text-xs uppercase hover:bg-[#1D4ED8] transition-all">Gửi</button>
+                                                }} className="bg-[#2563EB] text-white px-5 rounded-xl font-black text-xs uppercase hover:bg-[#1D4ED8] transition-all">Gửi</button>
                                             </div>
                                         </div>
                                     )}
@@ -724,7 +724,7 @@ export default function QuotationManagementPage() {
                                                     setNewPrice(''); setCounterOfferNote('');
                                                     const cos = await fetchCounterOffersByQuotation(viewQuotation.id);
                                                     setCounterOffersList(cos || []);
-                                                }} className="w-full py-3 bg-emerald-600 text-slate-900 rounded-xl font-black text-xs uppercase hover:bg-emerald-700 transition-all shadow-lg active:scale-95">Gửi Đề xuất Đàm phán</button>
+                                                }} className="w-full py-3 bg-emerald-600 text-white rounded-xl font-black text-xs uppercase hover:bg-emerald-700 transition-all shadow-lg active:scale-95">Gửi Đề xuất Đàm phán</button>
                                             </div>
                                         </div>
                                     )}
@@ -777,7 +777,7 @@ export default function QuotationManagementPage() {
                                         setViewQuotation(null);
                                         setAwardModal(viewQuotation);
                                     }}
-                                    className="px-6 py-3 rounded-xl bg-emerald-600 text-slate-900 font-black text-xs uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+                                    className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-black text-xs uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
                                 >
                                     <Award size={16} /> Trao thầu
                                 </button>

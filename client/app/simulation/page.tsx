@@ -691,13 +691,13 @@ export default function SimulationPage() {
                 <div className="flex bg-[#F1F5F9] p-1 rounded-2xl border border-[rgba(148,163,184,0.1)]">
                     <button 
                         onClick={() => { setActiveWorkflow("CATALOG"); handleReset(); }}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#2563EB] text-slate-900 shadow-lg" : "text-slate-900 hover:text-slate-900"}`}
+                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#2563EB] text-white shadow-lg" : "text-white hover:text-white"}`}
                     >
                         Workflow 1: Catalog
                     </button>
                     <button 
                         onClick={() => { setActiveWorkflow("NON_CATALOG"); handleReset(); }}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "NON_CATALOG" ? "bg-purple-600 text-slate-900 shadow-lg" : "text-slate-900 hover:text-slate-900"}`}
+                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "NON_CATALOG" ? "bg-purple-600 text-white shadow-lg" : "text-white hover:text-white"}`}
                     >
                         Workflow 2: Non-Catalog
                     </button>
@@ -734,9 +734,9 @@ export default function SimulationPage() {
                                     {/* Step Header */}
                                     <div className="p-4 flex items-start gap-3">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                                            isActive ? "bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/20" : 
+                                            isActive ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20" : 
                                             isCompleted ? "bg-emerald-500/20 text-black border border-emerald-500/30" : 
-                                            "bg-[#FFFFFF] text-slate-900 border border-[rgba(148,163,184,0.1)]"
+                                            "bg-[#FFFFFF] text-white border border-[rgba(148,163,184,0.1)]"
                                         }`}>
                                             {isCompleted ? <CheckCircle size={18} /> : step.icon}
                                         </div>
@@ -858,10 +858,10 @@ export default function SimulationPage() {
                                 disabled={currentStep === steps.length}
                                 className={`group relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all duration-300 active:scale-95 ${
                                     currentStep === steps.length 
-                                    ? "bg-[#F1F5F9] text-slate-900 cursor-not-allowed border border-[rgba(148,163,184,0.1)]" 
+                                    ? "bg-[#F1F5F9] text-white cursor-not-allowed border border-[rgba(148,163,184,0.1)]" 
                                     : activeWorkflow === "CATALOG" 
-                                    ? "bg-[#2563EB] text-slate-900 shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 hover:scale-105" 
-                                    : "bg-purple-600 text-slate-900 shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105"
+                                    ? "bg-[#2563EB] text-white shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 hover:scale-105" 
+                                    : "bg-purple-600 text-white shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105"
                                 }`}
                             >
                                 {currentStep === steps.length ? "Hoàn tất quy trình" : "Thực hiện bước này"}

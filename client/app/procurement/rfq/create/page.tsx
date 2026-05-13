@@ -446,7 +446,7 @@ export default function CreateRFQPage() {
                                                     key={i} 
                                                     type="button"
                                                     onClick={() => addVendor(v)}
-                                                    className="w-full text-left p-4 hover:bg-[#0F172A] flex items-center justify-between group"
+                                                    className="w-full text-left p-4 hover:bg-slate-100 flex items-center justify-between group"
                                                 >
                                                     <div>
                                                         <div className="text-sm font-black text-slate-900 group-hover:text-white transition-colors">{v.name}</div>
@@ -472,7 +472,7 @@ export default function CreateRFQPage() {
                                                     createdAt: new Date().toISOString(),
                                                     updatedAt: new Date().toISOString()
                                                 })}
-                                                className="w-full text-left p-4 hover:bg-[#0F172A] flex items-center gap-3"
+                                                className="w-full text-left p-4 hover:bg-slate-100 flex items-center gap-3"
                                             >
                                                 <Plus size={16} className="text-[#2563EB]" />
                                                 <span className="text-sm font-bold text-slate-900 group-hover:text-white transition-colors">Thêm &quot;<strong className="group-hover:text-white transition-colors">{vendorSearch}</strong>&quot; như nhà cung cấp mới</span>
@@ -716,7 +716,7 @@ export default function CreateRFQPage() {
                                         <div key={i} className="h-10 w-10 rounded-full border-4 border-[#F1F5F9] bg-[#FFFFFF] flex items-center justify-center text-[10px] font-black text-slate-900">{v.name.substring(0,1)}</div>
                                     ))}
                                     {selectedVendors.length > 3 && (
-                                        <div className="h-10 w-10 rounded-full border-4 border-[#F1F5F9] bg-[#2563EB] text-slate-900 flex items-center justify-center text-[10px] font-black">+{selectedVendors.length - 3}</div>
+                                        <div className="h-10 w-10 rounded-full border-4 border-[#F1F5F9] bg-[#2563EB] text-white flex items-center justify-center text-[10px] font-black">+{selectedVendors.length - 3}</div>
                                     )}
                                 </div>
                                 <div className="text-xs text-slate-900 font-medium">Báo giá sẽ được gửi qua Email & Hệ thống Portal.</div>
@@ -724,7 +724,7 @@ export default function CreateRFQPage() {
                             <button 
                                 type="submit" 
                                 disabled={isSubmitting || selectedVendors.length === 0}
-                                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isSubmitting ? "Đang xử lý..." : "PHÁT HÀNH RFQ"}
                                 <Send size={16} />

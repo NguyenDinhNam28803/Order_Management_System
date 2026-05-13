@@ -215,7 +215,7 @@ export default function SupplierProductsPage() {
                     <p className="text-sm text-slate-900 mt-1 font-medium italic">Quản lý danh sách hàng hóa và dịch vụ bạn cung cấp cho hệ thống.</p>
                 </div>
                 <button 
-                    className="flex items-center gap-2 py-4 px-8 bg-[#2563EB] text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-xl shadow-[#2563EB]/20"
+                    className="flex items-center gap-2 py-4 px-8 bg-[#2563EB] text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-xl shadow-[#2563EB]/20"
                     onClick={() => {
                         setEditingProduct(null);
                         setIsModalOpen(true);
@@ -303,7 +303,7 @@ export default function SupplierProductsPage() {
                             </div>
                             <button 
                                 onClick={() => setIsModalOpen(false)}
-                                className="h-12 w-12 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] flex items-center justify-center transition-all shadow-sm group"
+                                className="h-12 w-12 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 flex items-center justify-center transition-all shadow-sm group"
                             >
                                 <Plus size={24} className="rotate-45 text-slate-900 group-hover:text-black transition-colors" />
                             </button>
@@ -409,7 +409,7 @@ export default function SupplierProductsPage() {
                                 Đóng
                             </button>
                             <button 
-                                className="py-4 px-12 bg-[#2563EB] text-slate-900 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 active:scale-95 disabled:opacity-50 hover:bg-[#1D4ED8] transition-all" 
+                                className="py-4 px-12 bg-[#2563EB] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 active:scale-95 disabled:opacity-50 hover:bg-[#1D4ED8] transition-all" 
                                 onClick={handleSave} 
                                 disabled={loading}
                             >

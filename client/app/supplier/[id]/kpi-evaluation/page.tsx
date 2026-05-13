@@ -192,7 +192,7 @@ export default function SupplierKPIPage() {
         <div className="flex items-center gap-4 mb-8">
           <Link 
             href={`/supplier`}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-slate-900 hover:bg-[#0F172A] transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-slate-900 hover:bg-slate-100 transition-all"
           >
             <ArrowLeft size={18} />
             <span className="text-sm font-semibold">Quay lại Portal</span>
@@ -221,7 +221,7 @@ export default function SupplierKPIPage() {
             <button
               onClick={handleEvaluate}
               disabled={evaluating}
-              className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl bg-[#2563EB] text-slate-900 font-bold hover:bg-[#1D4ED8] disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl bg-[#2563EB] text-white font-bold hover:bg-[#1D4ED8] disabled:opacity-50 transition-all"
             >
               {evaluating ? (
                 <RefreshCcw size={18} className="animate-spin" />
@@ -441,7 +441,7 @@ export default function SupplierKPIPage() {
               
               <Link
                 href={`/procurement/suppliers/${supplierId}`}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#F1F5F9] text-slate-900 font-bold hover:bg-[#0F172A] hover:text-slate-900 transition-all border border-[rgba(148,163,184,0.1)]"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#F1F5F9] text-slate-900 font-bold hover:bg-slate-100 hover:text-slate-900 transition-all border border-[rgba(148,163,184,0.1)]"
               >
                 <Award size={18} />
                 Xem hồ sơ NCC

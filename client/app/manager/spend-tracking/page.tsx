@@ -259,7 +259,7 @@ export default function SpendTrackingPage() {
                             <button
                                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                 disabled={currentPage === 1}
-                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                             >
                                 <ChevronDown size={12} className="rotate-90" /> Trước
                             </button>
@@ -270,8 +270,8 @@ export default function SpendTrackingPage() {
                                         onClick={() => setCurrentPage(page)}
                                         className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
                                             currentPage === page
-                                                ? 'bg-[#2563EB] text-slate-900'
-                                                : 'bg-[#F1F5F9] text-slate-900 hover:text-slate-900 hover:bg-[#0F172A]'
+                                                ? 'bg-[#2563EB] text-white'
+                                                : 'bg-[#F1F5F9] text-white hover:text-white hover:bg-slate-100'
                                         }`}
                                     >
                                         {page}
@@ -281,7 +281,7 @@ export default function SpendTrackingPage() {
                             <button
                                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                             >
                                 Sau <ChevronDown size={12} className="-rotate-90" />
                             </button>

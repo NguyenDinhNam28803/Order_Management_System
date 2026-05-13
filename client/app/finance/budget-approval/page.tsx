@@ -228,14 +228,14 @@ export default function FinanceBudgetApprovalPage() {
                                 <div className="flex items-center gap-3 pt-6 border-t border-[rgba(148,163,184,0.1)]">
                                     <button
                                         onClick={() => { setSelectedRequest(req); setActionType("APPROVE"); }}
-                                        className="flex-1 max-w-40 ml-auto py-2.5 px-4 bg-emerald-500/10 hover:bg-emerald-500 text-black hover:text-slate-900 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn border border-emerald-500/20"
+                                        className="flex-1 max-w-40 ml-auto py-2.5 px-4 bg-emerald-500/10 hover:bg-emerald-500 text-black hover:text-white rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn border border-emerald-500/20"
                                     >
                                         <Check size={18} className="group-hover/btn:scale-110 transition-transform" />
                                         DUYỆT
                                     </button>
                                     <button
                                         onClick={() => { setSelectedRequest(req); setActionType("REJECT"); }}
-                                        className="py-2.5 px-4 bg-rose-500/10 hover:bg-rose-500 text-black hover:text-slate-900 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn border border-rose-500/20"
+                                        className="py-2.5 px-4 bg-rose-500/10 hover:bg-rose-500 text-black hover:text-white rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn border border-rose-500/20"
                                     >
                                         <X size={18} className="group-hover/btn:scale-110 transition-transform" />
                                         TỪ CHỐI
@@ -297,7 +297,7 @@ export default function FinanceBudgetApprovalPage() {
                                 <button 
                                     onClick={handleAction}
                                     disabled={isSubmitting || (actionType === "REJECT" && !rejectReason.trim())}
-                                    className={`flex-2 py-4 font-black rounded-2xl text-slate-900 shadow-lg transition-all ${
+                                    className={`flex-2 py-4 font-black rounded-2xl text-white shadow-lg transition-all ${
                                         actionType === "APPROVE" 
                                             ? "bg-emerald-500 hover:bg-emerald-600 hover:-translate-y-0.5" 
                                             : "bg-rose-500 hover:bg-rose-600 disabled:bg-rose-400 hover:-translate-y-0.5"

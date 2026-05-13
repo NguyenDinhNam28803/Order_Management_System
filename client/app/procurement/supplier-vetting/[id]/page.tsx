@@ -157,10 +157,10 @@ function CheckRow({
             />
           </div>
           <div className="flex gap-2">
-            <button disabled={saving} onClick={() => save("PASSED")} className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-emerald-500 disabled:opacity-50">
+            <button disabled={saving} onClick={() => save("PASSED")} className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">
               {saving ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}Passed
             </button>
-            <button disabled={saving} onClick={() => save("FAILED")} className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-red-500 disabled:opacity-50">
+            <button disabled={saving} onClick={() => save("FAILED")} className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-500 disabled:opacity-50">
               {saving ? <Loader2 size={12} className="animate-spin" /> : <XCircle size={12} />}Failed
             </button>
             <button disabled={saving} onClick={() => save("SKIPPED")} className="flex items-center gap-1.5 rounded-lg border border-[rgba(240,246,252,0.08)] px-3 py-1.5 text-xs text-slate-900 hover:text-slate-900">
@@ -199,7 +199,7 @@ function ApproveModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: 
           <button
             disabled={loading}
             onClick={async () => { setLoading(true); await onConfirm(tier, notes); setLoading(false); }}
-            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-emerald-500 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
           >
             {loading && <Loader2 size={14} className="animate-spin" />}<ThumbsUp size={14} />Phê duyệt
           </button>
@@ -226,7 +226,7 @@ function RejectModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: (
           <button
             disabled={loading || !reason.trim()}
             onClick={async () => { setLoading(true); await onConfirm(reason); setLoading(false); }}
-            className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-red-500 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50"
           >
             {loading && <Loader2 size={14} className="animate-spin" />}<ThumbsDown size={14} />Từ chối
           </button>
@@ -363,7 +363,7 @@ export default function SupplierVettingDetailPage() {
               <button
                 disabled={submitting}
                 onClick={submit}
-                className="flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-[#2563EB] disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2563EB] disabled:opacity-50"
               >
                 {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 Nộp phê duyệt
@@ -371,10 +371,10 @@ export default function SupplierVettingDetailPage() {
             )}
             {canApprove && (
               <>
-                <button onClick={() => setShowApprove(true)} className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-emerald-500">
+                <button onClick={() => setShowApprove(true)} className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
                   <ThumbsUp size={14} />Phê duyệt
                 </button>
-                <button onClick={() => setShowReject(true)} className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-red-500">
+                <button onClick={() => setShowReject(true)} className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500">
                   <ThumbsDown size={14} />Từ chối
                 </button>
               </>

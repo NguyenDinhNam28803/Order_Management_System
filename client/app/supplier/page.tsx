@@ -747,7 +747,7 @@ export default function SupplierPortalPage() {
               <button
                 onClick={handleEvaluateKPI}
                 disabled={kpiLoading || !supplierId}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
               >
                 {kpiLoading ? (
                   <>
@@ -764,7 +764,7 @@ export default function SupplierPortalPage() {
 
               <Link
                 href={`/supplier/${supplierId}/kpi-evaluation`}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-[#0F172A] transition-all"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-100 transition-all"
               >
                 <Target size={16} />
                 Xem chi tiết đánh giá
@@ -811,13 +811,13 @@ export default function SupplierPortalPage() {
               <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Liên kết nhanh</h2>
             </div>
             <div className="space-y-2">
-              <Link href="/procurement/contracts" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-[#0F172A] transition-all group">
+              <Link href="/procurement/contracts" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-slate-100 transition-all group">
                 <ShieldCheck size={16} className="text-slate-900 group-hover:text-[#2563EB]" />
-                <span className="text-sm text-slate-900 group-hover:text-slate-900">Hợp đồng & Ký kết</span>
+                <span className="text-sm text-slate-900 group-hover:text-white">Hợp đồng & Ký kết</span>
               </Link>
-              <Link href="/help" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-[#0F172A] transition-all group">
+              <Link href="/help" className="flex items-center gap-3 p-3 rounded-xl bg-[#FFFFFF] hover:bg-slate-100 transition-all group">
                 <AlertCircle size={16} className="text-slate-900 group-hover:text-[#2563EB]" />
-                <span className="text-sm text-slate-900 group-hover:text-slate-900">Trung tâm trợ giúp</span>
+                <span className="text-sm text-slate-900 group-hover:text-white">Trung tâm trợ giúp</span>
               </Link>
             </div>
           </div>

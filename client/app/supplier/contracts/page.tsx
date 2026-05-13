@@ -183,7 +183,7 @@ export default function SupplierContractsPage() {
                     >
                         <Bell size={20} />
                         {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-rose-500 text-slate-900 text-[10px] font-black flex items-center justify-center">
+                            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center">
                                 {unreadCount}
                             </span>
                         )}
@@ -272,7 +272,7 @@ export default function SupplierContractsPage() {
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                             {filteredContracts.length > 0 ? filteredContracts.map((c) => (
-                                <tr key={c.id} className="hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.05)] group">
+                                <tr key={c.id} className="hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.05)] group">
                                     <td className="px-6 py-4">
                                         <span className="font-bold text-[#2563EB] group-hover:scale-105 transition-transform inline-block">#{c.contractNumber}</span>
                                     </td>
@@ -311,7 +311,7 @@ export default function SupplierContractsPage() {
                                             {c.status === ContractStatus.PENDING_APPROVAL && (
                                                 <button
                                                     onClick={() => openSignModal(c)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 font-bold text-xs border border-[#2563EB]/30 transition-all shadow-lg shadow-[#2563EB]/20"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs border border-[#2563EB]/30 transition-all shadow-lg shadow-[#2563EB]/20"
                                                     title="Phê duyệt hợp đồng"
                                                 >
                                                     <PenTool size={14} />
@@ -381,7 +381,7 @@ export default function SupplierContractsPage() {
                             </div>
                             <button
                                 onClick={() => setIsDetailModalOpen(false)}
-                                className="p-2 hover:bg-[#0F172A] rounded-lg transition-colors"
+                                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
                             >
                                 <X size={20} className="text-slate-900" />
                             </button>
@@ -453,7 +453,7 @@ export default function SupplierContractsPage() {
                                             setIsDetailModalOpen(false);
                                             setSignTarget(selectedContract);
                                         }}
-                                        className="flex-1 px-4 py-3 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 font-bold text-sm transition-all shadow-lg shadow-[#2563EB]/20 flex items-center justify-center gap-2"
+                                        className="flex-1 px-4 py-3 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-sm transition-all shadow-lg shadow-[#2563EB]/20 flex items-center justify-center gap-2"
                                     >
                                         <PenTool size={16} />
                                         Ký hợp đồng
@@ -489,7 +489,7 @@ export default function SupplierContractsPage() {
                                 </button>
                                 <button
                                     onClick={() => setIsNotificationModalOpen(false)}
-                                    className="p-2 hover:bg-[#0F172A] rounded-lg transition-colors"
+                                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
                                 >
                                     <X size={18} className="text-slate-900" />
                                 </button>

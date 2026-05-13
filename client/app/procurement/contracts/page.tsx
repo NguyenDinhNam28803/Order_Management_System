@@ -205,8 +205,8 @@ export default function ContractsPage() {
                             key={k}
                             onClick={() => setStatus(k)}
                             className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${statusFilter === k
-                                ? "bg-[#2563EB] text-slate-900 shadow"
-                                : "text-slate-900 hover:text-slate-900"
+                                ? "bg-[#2563EB] text-white shadow"
+                                : "text-white hover:text-white"
                                 }`}
                         >
                             {l}

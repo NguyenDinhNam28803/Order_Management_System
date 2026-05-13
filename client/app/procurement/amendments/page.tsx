@@ -163,7 +163,7 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
                 </button>
                 <button 
                     onClick={() => onSave({ ...formData, id: `am-${Date.now()}`, amendmentNumber, createdAt: new Date().toISOString() })}
-                    className="flex items-center gap-3 bg-[#2563EB] text-slate-900 px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all"
+                    className="flex items-center gap-3 bg-[#2563EB] text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all"
                 >
                     <Save size={18} /> Gửi Amendment
                 </button>
@@ -176,7 +176,7 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
                         <p className="text-xs text-slate-900 font-bold uppercase tracking-widest uppercase">Amendment #{amendmentNumber}</p>
                     </div>
                     <div className="p-4 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-inner flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-2xl bg-[#2563EB] flex items-center justify-center text-slate-900"><FileText size={20} /></div>
+                        <div className="w-10 h-10 rounded-2xl bg-[#2563EB] flex items-center justify-center text-white"><FileText size={20} /></div>
                         <div className="text-right">
                              <p className="text-[10px] font-black text-slate-900 uppercase leading-none mb-1">Hiện đang chỉnh sửa:</p>
                              <p className="text-base font-black text-[#2563EB] tracking-tighter">PO-2026-001</p>
@@ -226,7 +226,7 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
                                 <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-4">GIÁ TRỊ CŨ (ORIGINAL)</p>
                                 <p className="text-xl font-bold text-slate-900 line-through leading-none">{formData.originalValue}</p>
                             </div>
-                            <div className="bg-emerald-500 p-8 rounded-3xl text-slate-900 shadow-xl shadow-emerald-500/20 relative group overflow-hidden">
+                            <div className="bg-emerald-500 p-8 rounded-3xl text-white shadow-xl shadow-emerald-500/20 relative group overflow-hidden">
                                 <div className="absolute right-0 top-0 h-full w-full bg-gradient-to-br from-emerald-400/0 to-emerald-400/50 -translate-x-full group-hover:translate-x-0 transition-transform duration-700"></div>
                                 <div className="relative z-10">
                                     <p className="text-[10px] font-black uppercase tracking-widest mb-4 text-emerald-100">GIÁ TRỊ MỚI (NEW VERSION)</p>
@@ -304,7 +304,7 @@ function AmendmentHistoryTimeline({ poNumber, history, onClose, getBadgeColor }:
                 </div>
 
                 <div className="p-10 border-t border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
-                    <button onClick={onClose} className="w-full bg-[#2563EB] text-slate-900 py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:bg-[#1D4ED8] transition-all">ĐÓNG PANEL</button>
+                    <button onClick={onClose} className="w-full bg-[#2563EB] text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:bg-[#1D4ED8] transition-all">ĐÓNG PANEL</button>
                 </div>
             </div>
         </div>

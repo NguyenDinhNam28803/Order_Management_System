@@ -269,8 +269,8 @@ export default function InvoicesPage() {
               onClick={() => setFilterStatus(s)}
               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors ${
                 filterStatus === s
-                  ? "bg-[#2563EB] text-slate-900"
-                  : "bg-[#F1F5F9] text-slate-900 hover:text-slate-900 hover:bg-[#F1F5F9]/80"
+                  ? "bg-[#2563EB] text-white"
+                  : "bg-[#F1F5F9] text-white hover:text-white hover:bg-[#F1F5F9]/80"
               }`}
             >
               {s === "ALL" ? "Tất cả" : STATUS_MAP[s]?.label ?? s}

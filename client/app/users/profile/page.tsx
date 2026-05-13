@@ -121,7 +121,7 @@ export default function UserProfilePage() {
                         <Lock size={16} />
                         <span className="hidden sm:inline">Đổi mật khẩu</span>
                     </button>
-                    <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#2563EB]/20 transition-all">
+                    <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#2563EB]/20 transition-all">
                         <Edit size={16} />
                         <span className="hidden sm:inline">Chỉnh sửa</span>
                     </button>

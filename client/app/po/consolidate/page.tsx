@@ -665,7 +665,7 @@ export default function POConsolidatePage() {
                               type="button"
                               onClick={() => pickAiSupplier(s)}
                               disabled={!!selectedSupplier}
-                              className="flex items-center gap-1 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 text-[10px] font-black uppercase rounded-lg transition-all shrink-0"
+                              className="flex items-center gap-1 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[10px] font-black uppercase rounded-lg transition-all shrink-0"
                             >
                               <BadgeCheck size={12} /> Chọn
                             </button>

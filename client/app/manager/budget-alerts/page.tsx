@@ -107,7 +107,7 @@ export default function BudgetAlertsPage() {
                                         onClick={() => handleApprove(alert.id)}
                                         disabled={loadingId === alert.id}
                                         className={`px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transform hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${
-                                            severity === 'EXCEEDED' ? 'bg-white text-rose-600' : 'bg-[#2563EB] text-slate-900'
+                                            severity === 'EXCEEDED' ? 'bg-white text-rose-600' : 'bg-[#2563EB] text-white'
                                         }`}
                                     >
                                         {loadingId === alert.id ? <Loader2 size={16} className="animate-spin" /> : "PHÊ DUYỆT VƯỢT MỨC"}

@@ -126,7 +126,7 @@ export default function POManagementPage() {
                     </div>
                     <button
                         onClick={() => setView("create")}
-                        className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-[#2563EB]/20 transition-all"
+                        className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-[#2563EB]/20 transition-all"
                     >
                         <Plus size={16} /> Tạo PO mới
                     </button>
@@ -167,8 +167,8 @@ export default function POManagementPage() {
                                 onClick={() => setActiveStatus(tab.key)}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${
                                     activeStatus === tab.key
-                                        ? "bg-[#2563EB] text-slate-900 shadow-md shadow-[#2563EB]/20"
-                                        : "text-slate-900 hover:text-slate-900"
+                                        ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20"
+                                        : "text-white hover:text-white"
                                 }`}
                             >
                                 {tab.label}
@@ -378,12 +378,12 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                     </button>
                     <div className="flex gap-3">
                         <button
-                            className="px-5 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-wider hover:bg-[#0F172A] transition-all"
+                            className="px-5 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-wider hover:bg-slate-100 transition-all"
                         >
                             Lưu nháp
                         </button>
                         <button
-                            className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-wider shadow-lg shadow-[#2563EB]/20 transition-all"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl font-black text-[10px] uppercase tracking-wider shadow-lg shadow-[#2563EB]/20 transition-all"
                         >
                             <Send size={14} /> Phát hành PO
                         </button>
@@ -740,7 +740,7 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                         <button className="py-2.5 border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-wider hover:bg-[#F1F5F9] transition-all">
                             Gửi lại thông báo
                         </button>
-                        <button className="py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-wider shadow-lg shadow-[#2563EB]/10 transition-all flex items-center justify-center gap-2">
+                        <button className="py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl font-black text-[10px] uppercase tracking-wider shadow-lg shadow-[#2563EB]/10 transition-all flex items-center justify-center gap-2">
                             <Download size={13} /> In đơn hàng
                         </button>
                     </div>
