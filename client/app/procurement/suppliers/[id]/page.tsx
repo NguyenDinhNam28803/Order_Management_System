@@ -297,7 +297,7 @@ export default function ProcurementSupplierDetailPage() {
                             <button
                                 onClick={handleEvaluate}
                                 disabled={evaluating}
-                                className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-6 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50"
+                                className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-6 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-50"
                             >
                                 {evaluating ? (
                                     <Loader2 size={18} className="animate-spin" />

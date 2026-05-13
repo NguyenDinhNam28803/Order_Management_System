@@ -159,13 +159,13 @@ export default function PRPage() {
                             <div className="flex gap-1">
                                 <button
                                     onClick={() => handleAction(row.id, 'APPROVE')}
-                                    className="p-1 rounded bg-emerald-500/10 text-black hover:bg-emerald-500 hover:text-slate-900 border border-emerald-500/20 transition-all"
+                                    className="p-1 rounded bg-emerald-500/10 text-black hover:bg-emerald-500 hover:text-white border border-emerald-500/20 transition-all"
                                 >
                                     <Check size={14} />
                                 </button>
                                 <button
                                     onClick={() => handleAction(row.id, 'REJECT')}
-                                    className="p-1 rounded bg-rose-500/10 text-black hover:bg-rose-500 hover:text-slate-900 border border-rose-500/20 transition-all"
+                                    className="p-1 rounded bg-rose-500/10 text-black hover:bg-rose-500 hover:text-white border border-rose-500/20 transition-all"
                                 >
                                     <X size={14} />
                                 </button>
@@ -188,7 +188,7 @@ export default function PRPage() {
                                         </button>
                                         <button
                                             onClick={() => submitPR(row.id)}
-                                            className="py-1 px-2 text-[10px] bg-[#2563EB] text-slate-900 rounded font-bold uppercase tracking-wider hover:bg-[#1D4ED8] transition-all flex items-center gap-1"
+                                            className="py-1 px-2 text-[10px] bg-[#2563EB] text-white rounded font-bold uppercase tracking-wider hover:bg-[#1D4ED8] transition-all flex items-center gap-1"
                                         >
                                             <Send size={12} />
                                         </button>
@@ -217,7 +217,7 @@ export default function PRPage() {
                     <p className="text-sm font-medium text-slate-900 mt-1">Quản lý và theo dõi tiến độ phê duyệt định mức mua sắm tập trung.</p>
                 </div>
                 {currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN" && (
-                    <Link href="/pr/create" className="py-3 px-6 bg-[#2563EB] text-slate-900 rounded-xl font-black uppercase tracking-wider text-xs shadow-lg shadow-[#2563EB]/20 hover:bg-[#1D4ED8] transition-all flex flex-col items-center">
+                    <Link href="/pr/create" className="py-3 px-6 bg-[#2563EB] text-white rounded-xl font-black uppercase tracking-wider text-xs shadow-lg shadow-[#2563EB]/20 hover:bg-[#1D4ED8] transition-all flex flex-col items-center">
                         <div className="flex items-center gap-2">
                             <Plus size={18} />
                             <span className="text-sm font-semibold">Tạo yêu cầu mới</span>
@@ -236,8 +236,8 @@ export default function PRPage() {
                                     key={filter}
                                     onClick={() => setActiveTab(filter)}
                                     className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === filter
-                                            ? "bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/20"
-                                            : "text-slate-900 hover:text-slate-900 hover:bg-[#FFFFFF]"
+                                            ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
+                                            : "text-white hover:text-white hover:bg-[#FFFFFF]"
                                         }`}
                                 >
                                     {filter}

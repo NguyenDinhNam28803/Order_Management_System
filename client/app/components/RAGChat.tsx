@@ -550,7 +550,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                             <button 
                                 type="submit"
                                 disabled={isLoading || !searchQuery.trim()}
-                                className="w-10 h-10 bg-[#2563EB] text-slate-900 rounded-xl flex items-center justify-center hover:bg-[#1D4ED8] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="w-10 h-10 bg-[#2563EB] text-white rounded-xl flex items-center justify-center hover:bg-[#1D4ED8] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
                             </button>

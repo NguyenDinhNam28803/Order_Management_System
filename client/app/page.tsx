@@ -117,7 +117,7 @@ export default function Dashboard() {
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-4 py-2.5 bg-[#2563EB] text-slate-900 rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
+                                className="px-4 py-2.5 bg-[#2563EB] text-white rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
                             >
                                 + Tạo PR
                                 <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
@@ -125,7 +125,7 @@ export default function Dashboard() {
                             
                             {isSimDropdownOpen && (
                                 <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
@@ -135,7 +135,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
                                     >
                                         <div className="p-3 bg-emerald-500/10 text-black rounded-xl"><Zap size={18} /></div>
                                         <div>
@@ -146,7 +146,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors w-full text-left"
                                     >
                                         <div className="p-3 bg-purple-500/10 text-black rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
@@ -300,7 +300,7 @@ export default function Dashboard() {
                                                              {pr.status === "DRAFT" && (
                                                                  <Link href={`/pr/edit/${pr.id}`} className="p-1.5 text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg border border-transparent hover:border-[#2563EB]/20 transition-all"><Edit3 size={14} /></Link>
                                                              )}
-                                                             <button disabled={loadingMyPrs} onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="p-1.5 text-slate-900 hover:text-slate-900 hover:bg-[#0F172A] rounded-lg border border-transparent hover:border-[rgba(148,163,184,0.2)] transition-all">
+                                                             <button disabled={loadingMyPrs} onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="p-1.5 text-slate-900 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-transparent hover:border-[rgba(148,163,184,0.2)] transition-all">
                                                                  <Eye size={14} />
                                                              </button>
                                                          </div>
@@ -510,13 +510,13 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-slate-900 transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-100 hover:text-slate-900 transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-4 py-2.5 bg-[#2563EB] text-slate-900 rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
+                                className="px-4 py-2.5 bg-[#2563EB] text-white rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
                             >
                                 + Tạo PR
                                 <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
@@ -524,7 +524,7 @@ export default function Dashboard() {
                             
                             {isSimDropdownOpen && (
                                 <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
@@ -534,7 +534,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
                                     >
                                         <div className="p-3 bg-emerald-500/10 text-black rounded-xl"><Zap size={18} /></div>
                                         <div>
@@ -545,7 +545,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors w-full text-left"
                                     >
                                         <div className="p-3 bg-purple-500/10 text-black rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
@@ -691,7 +691,7 @@ export default function Dashboard() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900" size={14} />
                             <input type="text" placeholder="Tìm kiếm chứng từ..." className="pl-10 pr-6 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-medium w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 transition-all text-slate-900 placeholder:text-slate-900"/>
                         </div>
-                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-[#0F172A] transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Lọc <ChevronDown size={14} />
                         </button>
                         <button className="flex items-center gap-2 px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-md shadow-[#2563EB]/20">
@@ -853,7 +853,7 @@ export default function Dashboard() {
                                                         <div className="flex flex-col">
                                                             <div className="flex items-center gap-2">
                                                                 <span className="text-[11px] font-black text-slate-900 tracking-tight">{pr.prNumber}</span>
-                                                                {isSimulation && <span className="bg-[#2563EB] text-slate-900 text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse shadow-sm ring-2 ring-[#2563EB]/20">GIẢ LẬP</span>}
+                                                                {isSimulation && <span className="bg-[#2563EB] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse shadow-sm ring-2 ring-[#2563EB]/20">GIẢ LẬP</span>}
                                                             </div>
                                                             <span className="text-[9px] font-bold text-slate-900 uppercase mt-1">{formatDate(pr.createdAt)}</span>
                                                         </div>
@@ -864,7 +864,7 @@ export default function Dashboard() {
                                                                 <FileText size={14} />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-[11px] font-black text-slate-900 leading-tight group-hover:text-slate-900 transition-colors">{pr.title}</span>
+                                                                <span className="text-[11px] font-black text-slate-900 leading-tight group-hover:text-white transition-colors">{pr.title}</span>
                                                                 <span className="text-[9px] text-slate-900 font-bold mt-1 uppercase tracking-tight">{typeof pr.department === 'object' ? pr.department?.name : (pr.department || "Phòng ban")}</span>
                                                             </div>
                                                         </div>
@@ -886,14 +886,14 @@ export default function Dashboard() {
                                                         {pr.type === "CATALOG" ? (
                                                             <button 
                                                                 onClick={() => setConfirmModal(pr)}
-                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#1D4ED8] text-slate-900 text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#8F442B] transition-all shadow-sm"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#1D4ED8] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#8F442B] transition-all shadow-sm"
                                                             >
                                                                 Xác nhận giá
                                                             </button>
                                                         ) : (
                                                             <Link 
                                                                 href={`/procurement/rfq/create?prId=${pr.id}`} 
-                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-slate-900 text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all shadow-sm"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all shadow-sm"
                                                             >
                                                                 Lấy Báo Giá
                                                             </Link>
@@ -916,7 +916,7 @@ export default function Dashboard() {
                                             <button
                                                 onClick={() => setCurrentPrPage(p => Math.max(1, p - 1))}
                                                 disabled={currentPrPage === 1}
-                                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                                             >
                                                 <ChevronDown size={12} className="rotate-90" /> Trước
                                             </button>
@@ -927,8 +927,8 @@ export default function Dashboard() {
                                                         onClick={() => setCurrentPrPage(page)}
                                                         className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
                                                             currentPrPage === page
-                                                                ? 'bg-[#2563EB] text-slate-900'
-                                                                : 'bg-[#F1F5F9] text-slate-900 hover:text-slate-900 hover:bg-[#0F172A]'
+                                                                ? 'bg-[#2563EB] text-white'
+                                                                : 'bg-[#F1F5F9] text-white hover:text-white hover:bg-slate-100'
                                                         }`}
                                                     >
                                                         {page}
@@ -938,7 +938,7 @@ export default function Dashboard() {
                                             <button
                                                 onClick={() => setCurrentPrPage(p => Math.min(totalPrPages, p + 1))}
                                                 disabled={currentPrPage === totalPrPages}
-                                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                                             >
                                                 Sau <ChevronDown size={12} className="-rotate-90" />
                                             </button>
@@ -1021,7 +1021,7 @@ export default function Dashboard() {
                                                     <td className="text-right pl-2 pr-6">
                                                         <Link 
                                                             href={`/po/${po.id}`}
-                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-slate-900 text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all"
+                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all"
                                                         >
                                                             Chi tiết
                                                         </Link>
@@ -1065,13 +1065,13 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs hover:bg-[#0F172A] hover:text-slate-900 transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-100 hover:text-slate-900 transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
                             <button 
                                 onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                                className="px-4 py-2.5 bg-[#2563EB] text-slate-900 rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
+                                className="px-4 py-2.5 bg-[#2563EB] text-white rounded-xl font-bold text-xs hover:bg-[#1D4ED8] transition-all flex items-center gap-2"
                             >
                                 + Tạo PR
                                 <ChevronDown size={14} className={`transition-transform ${isSimDropdownOpen ? 'rotate-180' : ''}`} />
@@ -1079,7 +1079,7 @@ export default function Dashboard() {
                             
                             {isSimDropdownOpen && (
                                 <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
@@ -1089,7 +1089,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
                                     >
                                         <div className="p-3 bg-emerald-500/10 text-black rounded-xl"><Zap size={18} /></div>
                                         <div>
@@ -1100,7 +1100,7 @@ export default function Dashboard() {
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-[#0F172A] transition-colors w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors w-full text-left"
                                     >
                                         <div className="p-3 bg-purple-500/10 text-black rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
@@ -1153,7 +1153,7 @@ export default function Dashboard() {
                         <div className="text-lg font-black text-slate-900 mb-2">Tạo yêu cầu mua hàng</div>
                         <button 
                             onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
-                            className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-900 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+                            className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
                         >
                             + Tạo PR Ngay
                         </button>
@@ -1407,13 +1407,13 @@ export default function Dashboard() {
                                 className="pl-11 pr-6 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-xs font-bold w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-[#FFFFFF] transition-all text-slate-900 placeholder:text-slate-900"
                             />
                         </div>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-[#0F172A] transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Lọc theo Cấp độ <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-[#0F172A] transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Lọc theo Phân loại <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-[#0F172A] transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Khoảng giá <ChevronDown size={14} />
                         </button>
                         <Link href="/approvals" className="ml-2 text-[9px] font-black uppercase text-[#2563EB] hover:underline bg-[#2563EB]/10 px-4 py-2.5 rounded-2xl border border-[#2563EB]/20 transition-all">
@@ -1480,13 +1480,13 @@ export default function Dashboard() {
                                                     <button onClick={() => setSelectedPRDetails(pr)} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-xl transition-all shadow-sm" title="Xem chi tiết">
                                                         <Eye size={14} />
                                                     </button>
-                                                    <button onClick={() => handleQuickApprove(pr.workflowId)} disabled={isSubmitting} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-emerald-500 hover:text-slate-900 rounded-xl transition-all shadow-sm disabled:opacity-50" title="Duyệt nhanh">
+                                                    <button onClick={() => handleQuickApprove(pr.workflowId)} disabled={isSubmitting} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-emerald-500 hover:text-white rounded-xl transition-all shadow-sm disabled:opacity-50" title="Duyệt nhanh">
                                                         <CheckCircle size={14} />
                                                     </button>
-                                                    <button className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-rose-500 hover:text-slate-900 rounded-xl transition-all shadow-sm" title="Từ chối nhanh">
+                                                    <button className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-rose-500 hover:text-white rounded-xl transition-all shadow-sm" title="Từ chối nhanh">
                                                         <XCircle size={14} />
                                                     </button>
-                                                    <button className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-amber-500 hover:text-slate-900 rounded-xl transition-all shadow-sm" title="Yêu cầu chỉnh sửa">
+                                                    <button className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-amber-500 hover:text-white rounded-xl transition-all shadow-sm" title="Yêu cầu chỉnh sửa">
                                                         <RotateCcw size={14} />
                                                     </button>
                                                 </div>
@@ -1569,7 +1569,7 @@ export default function Dashboard() {
                                             <td className="font-semibold text-slate-900">ProcurePro Corp</td>
                                             <td className="text-right text-slate-900 font-bold">{formatDate(rfq.createdAt)}</td>
                                             <td className="text-right px-8 whitespace-nowrap">
-                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-[#2563EB] text-slate-900 text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-[#1D4ED8] transition-all">Báo giá</Link>
+                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-[#2563EB] text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-[#1D4ED8] transition-all">Báo giá</Link>
                                             </td>
                                         </tr>
                                     )) : (
@@ -1590,11 +1590,11 @@ export default function Dashboard() {
                                  <Zap size={100} />
                              </div>
                              <div className="relative z-10 space-y-6">
-                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-colors cursor-pointer">
+                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 transition-colors cursor-pointer">
                                      <h4 className="text-xs font-black uppercase tracking-widest text-black mb-2">Cập nhật Chính sách Thanh toán</h4>
                                      <p className="text-[11px] text-slate-900 leading-relaxed font-medium">Hệ thống ProcurePro sẽ rút ngắn thời hạn thanh toán từ 45 ngày xuống còn 30 ngày cho các đối tác Gold.</p>
                                  </div>
-                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-colors cursor-pointer">
+                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 transition-colors cursor-pointer">
                                      <h4 className="text-xs font-black uppercase tracking-widest text-black mb-2">Bảo trì Hệ thống B2B</h4>
                                      <p className="text-[11px] text-slate-900 leading-relaxed font-medium">Hệ thống sẽ bảo trì từ 2h00 đến 4h00 sáng Chủ Nhật tới. Vui lòng hoàn tất báo giá trước thời gian này.</p>
                                  </div>
@@ -1719,12 +1719,12 @@ export default function Dashboard() {
                                         <button
                                             onClick={() => handleQuickApprove((selectedPRDetails as PR & { workflowId: string }).workflowId)}
                                             disabled={isSubmitting}
-                                            className="w-full h-14 bg-emerald-500 text-slate-900 rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-emerald-500/20 flex flex-col items-center justify-center hover:bg-emerald-600 transition-all"
+                                            className="w-full h-14 bg-emerald-500 text-white rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-emerald-500/20 flex flex-col items-center justify-center hover:bg-emerald-600 transition-all"
                                         >
                                             {isSubmitting ? <Loader2 className="animate-spin" /> : <><span>Phê duyệt nhanh</span><span className="text-[8px] opacity-60">Duyệt ngay trên Dashboard</span></>}
                                         </button>
                                     )}
-                                    <button onClick={() => setSelectedPRDetails(null)} className="w-full h-12 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[10px] font-black uppercase text-slate-900 hover:bg-[#0F172A] transition-all">Đóng</button>
+                                    <button onClick={() => setSelectedPRDetails(null)} className="w-full h-12 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[10px] font-black uppercase text-slate-900 hover:bg-slate-100 transition-all">Đóng</button>
                                 </div>
                             </div>
                         </div>

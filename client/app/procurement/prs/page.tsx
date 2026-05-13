@@ -132,7 +132,7 @@ export default function ProcurementControlPage() {
                 <div className="flex flex-col max-w-xs">
                     <span className="text-sm font-black text-slate-900 truncate">{row.title}</span>
                     <div className="flex items-center gap-2 mt-1">
-                        <div className="h-5 w-5 rounded-full bg-[#2563EB] flex items-center justify-center text-[8px] font-black text-slate-900 shrink-0">
+                        <div className="h-5 w-5 rounded-full bg-[#2563EB] flex items-center justify-center text-[8px] font-black text-white shrink-0">
                             {(row.requester?.fullName || row.requester?.name || "U").substring(0,1)}
                         </div>
                         <span className="text-[10px] text-slate-900 font-bold">{row.requester?.fullName || row.requester?.name || "N/A"}</span>
@@ -184,13 +184,13 @@ export default function ProcurementControlPage() {
                     {row.status === 'APPROVED' && row.type === 'CATALOG' && (
                         <button 
                             onClick={() => setConfirmModal(row)}
-                            className="inline-flex items-center gap-2 bg-[#2563EB] text-slate-900 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20 active:scale-95"
+                            className="inline-flex items-center gap-2 bg-[#2563EB] text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20 active:scale-95"
                         >
                             Xác nhận giá NCC <ArrowRight size={14} />
                         </button>
                     )}
                     {row.status === 'APPROVED' && row.type !== 'CATALOG' && (
-                        <Link href="/sourcing" className="inline-flex items-center gap-2 bg-emerald-500 text-slate-900 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
+                        <Link href="/sourcing" className="inline-flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
                             Lấy báo giá <ArrowRight size={14} />
                         </Link>
                     )}
@@ -289,7 +289,7 @@ export default function ProcurementControlPage() {
                     <div className="bg-[#F1F5F9] rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-[rgba(148,163,184,0.1)]">
                         <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                             <div className="flex items-center gap-4">
-                                <div className="bg-[#2563EB] p-3 rounded-2xl text-slate-900 shadow-lg shadow-[#2563EB]/20">
+                                <div className="bg-[#2563EB] p-3 rounded-2xl text-white shadow-lg shadow-[#2563EB]/20">
                                     <CheckCircle size={24} />
                                 </div>
                                 <div>
@@ -347,7 +347,7 @@ export default function ProcurementControlPage() {
                                 <button onClick={() => setConfirmModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#FFFFFF] text-slate-900 font-black text-xs uppercase tracking-widest hover:text-slate-900 border border-[rgba(148,163,184,0.1)] transition-all">Hủy bỏ</button>
                                 <button 
                                     onClick={() => handleConfirmCatalog(confirmModal)}
-                                    className="flex-1 px-6 py-4 rounded-2xl bg-[#2563EB] text-slate-900 font-black text-xs uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-xl shadow-[#2563EB]/20 active:scale-95"
+                                    className="flex-1 px-6 py-4 rounded-2xl bg-[#2563EB] text-white font-black text-xs uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-xl shadow-[#2563EB]/20 active:scale-95"
                                 >
                                     Gửi xác nhận
                                 </button>

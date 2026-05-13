@@ -173,7 +173,7 @@ export default function BudgetPlanningPage() {
 
                 <button
                     onClick={() => setShowModal(true)}
-                    className="flex items-center gap-2 bg-[#2563EB] text-slate-900 px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm Phân Bổ
                 </button>
@@ -251,7 +251,7 @@ export default function BudgetPlanningPage() {
                                             {alloc.status === 'DRAFT' && (
                                                 <button 
                                                     onClick={(e) => { e.stopPropagation(); submitAllocation(alloc.id); }}
-                                                    className="p-3 bg-[#2563EB] text-slate-900 rounded-xl hover:bg-[#1D4ED8] hover:scale-105 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-[#2563EB]/20"
+                                                    className="p-3 bg-[#2563EB] text-white rounded-xl hover:bg-[#1D4ED8] hover:scale-105 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-[#2563EB]/20"
                                                 >
                                                     GỬI DUYỆT
                                                 </button>
@@ -385,7 +385,7 @@ export default function BudgetPlanningPage() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="flex-[2] py-4 rounded-[20px] bg-[#2563EB] text-slate-900 font-black uppercase tracking-widest text-xs shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
+                                    className="flex-[2] py-4 rounded-[20px] bg-[#2563EB] text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
                                 >
                                     {isSubmitting ? (
                                         <Loader2 size={20} className="animate-spin" />

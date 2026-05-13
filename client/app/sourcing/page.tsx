@@ -116,11 +116,11 @@ export default function SourcingPage() {
                     </p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#0F172A] transition-all">
+                    <button className="flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all">
                         <Filter size={16} /> Bộ lọc nâng cao
                     </button>
                     <Link href="/sourcing/rfq-create">
-                        <button className="flex items-center gap-2 bg-[#2563EB] text-slate-900 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all">
+                        <button className="flex items-center gap-2 bg-[#2563EB] text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all">
                             <PlusIcon size={16} /> Tạo RFQ thủ công
                         </button>
                     </Link>
@@ -212,7 +212,7 @@ export default function SourcingPage() {
                                                     notify(`Đã mời ${supplier.name} báo giá`, "success");
                                                 }
                                             }}
-                                            className="flex-1 bg-[#2563EB] text-slate-900 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20"
+                                            className="flex-1 bg-[#2563EB] text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20"
                                         >
                                             Mời báo giá
                                         </button>
@@ -258,7 +258,7 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
                                 <button 
                                     onClick={() => onAction(pr.id)}
                                     className={`inline-flex items-center gap-2 px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${
-                                        type === 'CATALOG' ? 'bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/20' : 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 hover:bg-[#10B981] hover:text-slate-900'
+                                        type === 'CATALOG' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 hover:bg-[#10B981] hover:text-white'
                                     }`}
                                     disabled={isProcessing}
                                 >
@@ -288,7 +288,7 @@ function TabButton({ active, onClick, label, count }: { active: boolean, onClick
                 active ? "bg-[#F1F5F9] text-[#2563EB] shadow-lg shadow-[#2563EB]/5" : "text-slate-900 hover:text-slate-900"
             }`}
         >
-            {label} {count !== undefined && <span className={`px-2 py-0.5 rounded-full text-[9px] ${active ? "bg-[#2563EB] text-slate-900" : "bg-[#FFFFFF] text-slate-900 border border-[rgba(148,163,184,0.1)]"}`}>{count}</span>}
+            {label} {count !== undefined && <span className={`px-2 py-0.5 rounded-full text-[9px] ${active ? "bg-[#2563EB] text-white" : "bg-[#FFFFFF] text-white border border-[rgba(148,163,184,0.1)]"}`}>{count}</span>}
         </button>
     );
 }
@@ -326,8 +326,8 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                {qr.status === 'SUBMITTED' && <button onClick={() => handleStartProcessing(qr)} className="bg-[#2563EB] text-slate-900 px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-[#2563EB]/20">Tiếp nhận</button>}
-                                {qr.status === 'PROCESSING' && <button onClick={() => handleOpenEdit(qr)} className="bg-amber-500 text-slate-900 px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-amber-500/20">Nhập giá</button>}
+                                {qr.status === 'SUBMITTED' && <button onClick={() => handleStartProcessing(qr)} className="bg-[#2563EB] text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-[#2563EB]/20">Tiếp nhận</button>}
+                                {qr.status === 'PROCESSING' && <button onClick={() => handleOpenEdit(qr)} className="bg-amber-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-amber-500/20">Nhập giá</button>}
                             </div>
                         </div>
                     ))}
@@ -355,7 +355,7 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
                             </div>
                         ))}
                     </div>
-                    <button onClick={handleComplete} className="mt-8 bg-emerald-500 hover:bg-emerald-600 text-slate-900 w-full py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-emerald-500/20 transition-all active:scale-[0.98]">Gửi báo giá hoàn tất</button>
+                    <button onClick={handleComplete} className="mt-8 bg-emerald-500 hover:bg-emerald-600 text-white w-full py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-emerald-500/20 transition-all active:scale-[0.98]">Gửi báo giá hoàn tất</button>
                 </div>
             )}
         </div>
@@ -368,7 +368,7 @@ function POManagement({ pos }: { pos: PO[] | null }) {
             {(pos || []).map((po) => (
                 <div key={po.id} className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-[32px] p-6 flex justify-between items-center group hover:border-[#2563EB]/20 transition-all shadow-lg shadow-[#2563EB]/5">
                     <div className="flex gap-6 items-center">
-                        <div className="w-16 h-16 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center font-black text-slate-900 text-lg group-hover:bg-[#2563EB] group-hover:text-slate-900 transition-all shadow-inner">***</div>
+                        <div className="w-16 h-16 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center font-black text-white text-lg group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-inner">***</div>
                         <div>
                             <h4 className="font-black text-slate-900 text-base uppercase tracking-tight">{po.vendor}</h4>
                             <span className="text-[11px] font-black text-[#2563EB] uppercase tracking-[0.1em]">{(po.total || 0).toLocaleString()} ₫ | {getStatusLabel(po.status)}</span>

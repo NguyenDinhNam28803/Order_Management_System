@@ -50,7 +50,7 @@ export default function AuditLogsPage() {
             
             <div className="flex justify-between items-center mb-10">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-[#2563EB] text-slate-900 rounded-xl shadow-lg shadow-[#2563EB]/20">
+                    <div className="p-3 bg-[#2563EB] text-white rounded-xl shadow-lg shadow-[#2563EB]/20">
                         <Shield size={24} />
                     </div>
                     <div>
@@ -60,7 +60,7 @@ export default function AuditLogsPage() {
                 </div>
                 <button 
                     onClick={() => refetch()}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl hover:bg-[#0F172A] text-slate-900 transition-all shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl hover:bg-slate-100 text-slate-900 transition-all shadow-sm"
                 >
                     <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} /> Làm mới dữ liệu
                 </button>

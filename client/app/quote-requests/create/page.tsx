@@ -65,7 +65,7 @@ export default function CreateQuoteRequestPage() {
     return (
         <div className="p-6 max-w-5xl mx-auto space-y-6">
             <header className="flex items-center gap-4">
-                <Link href="/quote-requests" className="p-2.5 bg-[#F1F5F9] rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-colors text-slate-900">
+                <Link href="/quote-requests" className="p-2.5 bg-[#F1F5F9] rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 transition-colors text-slate-900">
                     <ArrowLeft size={20} />
                 </Link>
                 <div>
@@ -144,7 +144,7 @@ export default function CreateQuoteRequestPage() {
                                 </h3>
                                 <button 
                                     onClick={addItem}
-                                    className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-[#2563EB]/10 text-[#2563EB] px-3 py-1.5 rounded-lg hover:bg-[#2563EB] hover:text-slate-900 transition-all shadow-sm"
+                                    className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-[#2563EB]/10 text-[#2563EB] px-3 py-1.5 rounded-lg hover:bg-[#2563EB] hover:text-white transition-all shadow-sm"
                                 >
                                     <Plus size={14} /> Thêm dòng
                                 </button>
@@ -209,7 +209,7 @@ export default function CreateQuoteRequestPage() {
                             <button 
                                 onClick={() => handleAction(true)}
                                 disabled={!isValid}
-                                className={`w-full flex items-center justify-center gap-3 bg-[#2563EB] text-slate-900 font-black py-4 rounded-xl shadow-xl transition-all active:scale-95 ${!isValid ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#1D4ED8]'}`}
+                                className={`w-full flex items-center justify-center gap-3 bg-[#2563EB] text-white font-black py-4 rounded-xl shadow-xl transition-all active:scale-95 ${!isValid ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#1D4ED8]'}`}
                             >
                                 <Send size={20} />
                                 Gửi đi ngay

@@ -735,7 +735,7 @@ export default function InvoiceDetailPage() {
               <button
                 onClick={handleCreateContract}
                 disabled={creatingContract}
-                className="flex-1 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-slate-900 font-bold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {creatingContract ? (
                   <>

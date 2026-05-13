@@ -63,7 +63,7 @@ const BudgetAllocationCard = ({
         >
             <div className="flex items-start justify-between gap-3 mb-6">
                 <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-2xl transition-all ${isSelected ? "bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/30" : "bg-[#F1F5F9] text-slate-900 group-hover:text-[#2563EB]"}`}>
+                    <div className={`p-3 rounded-2xl transition-all ${isSelected ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30" : "bg-[#F1F5F9] text-white group-hover:text-[#2563EB]"}`}>
                         <Wallet size={16} />
                     </div>
                     <div>
@@ -512,9 +512,9 @@ export default function CreatePRPage() {
                    </p>
                 </div>
                 <div className="flex gap-4">
-                    <button className="px-5 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#0F172A] transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
+                    <button className="px-5 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
                     <button 
-                        className="px-6 py-2.5 bg-[#2563EB] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2" 
+                        className="px-6 py-2.5 bg-[#2563EB] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2" 
                         onClick={handleSubmit} 
                         disabled={isSubmitting}
                     >
@@ -530,8 +530,8 @@ export default function CreatePRPage() {
                     onClick={() => setActiveTab('ai')}
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
                         activeTab === 'ai'
-                            ? 'bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/30'
-                            : 'bg-[#F1F5F9] text-slate-900 border border-[rgba(148,163,184,0.1)] hover:text-slate-900'
+                            ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
+                            : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)] hover:text-white'
                     }`}
                 >
                     <Bot size={16} />
@@ -544,8 +544,8 @@ export default function CreatePRPage() {
                     onClick={() => setActiveTab('manual')}
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
                         activeTab === 'manual'
-                            ? 'bg-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/30'
-                            : 'bg-[#F1F5F9] text-slate-900 border border-[rgba(148,163,184,0.1)] hover:text-slate-900'
+                            ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
+                            : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)] hover:text-white'
                     }`}
                 >
                     <PenTool size={16} />
@@ -588,8 +588,8 @@ export default function CreatePRPage() {
                                             </div>
                                             <div className={`max-w-[80%] p-4 rounded-2xl text-sm ${
                                                 msg.role === 'user' 
-                                                    ? 'bg-[#2563EB] text-slate-900' 
-                                                    : 'bg-[#F1F5F9] text-slate-900 border border-[rgba(148,163,184,0.1)]'
+                                                    ? 'bg-[#2563EB] text-white' 
+                                                    : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)]'
                                             }`}>
                                                 {msg.content}
                                             </div>
@@ -628,7 +628,7 @@ export default function CreatePRPage() {
                                     <button
                                         onClick={handleGenerateDraft}
                                         disabled={isGenerating || !aiPrompt.trim()}
-                                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#2563EB] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#2563EB] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isGenerating ? (
                                             <><Loader2 className="animate-spin" size={16} /> Đang tạo...</>
@@ -949,7 +949,7 @@ export default function CreatePRPage() {
                                 </div>
                                 
                                 <button
-                                    className="w-full py-3 mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 text-xs font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-[#2563EB]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 group/btn"
+                                    className="w-full py-3 mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-[#2563EB]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 group/btn"
                                     onClick={handleSubmit}
                                     disabled={isSubmitting}
                                 >
@@ -1015,7 +1015,7 @@ export default function CreatePRPage() {
                         {submissionStatus !== 'loading' && (
                             <button 
                                 onClick={() => setSubmissionStatus('idle')} 
-                                className="w-full mt-6 py-4 bg-[#FFFFFF] text-slate-900 font-black text-[10px] uppercase tracking-widest rounded-2xl border border-[rgba(148,163,184,0.1)] hover:bg-[#0F172A] transition-all"
+                                className="w-full mt-6 py-4 bg-[#FFFFFF] text-slate-900 font-black text-[10px] uppercase tracking-widest rounded-2xl border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 transition-all"
                             >
                                 Quay lại chỉnh sửa
                             </button>

@@ -125,9 +125,9 @@ export default function RFQCreatePage() {
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    <button onClick={() => router.back()} className="px-6 py-3 font-black text-slate-900 hover:text-slate-900 hover:bg-[#0F172A] rounded-xl text-xs uppercase tracking-widest transition-colors">Hủy bỏ</button>
+                    <button onClick={() => router.back()} className="px-6 py-3 font-black text-slate-900 hover:text-slate-900 hover:bg-slate-100 rounded-xl text-xs uppercase tracking-widest transition-colors">Hủy bỏ</button>
                     <button 
-                        className="flex items-center gap-3 bg-[#2563EB] text-slate-900 py-4 px-8 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/30 hover:scale-105 active:scale-95 transition-all" 
+                        className="flex items-center gap-3 bg-[#2563EB] text-white py-4 px-8 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/30 hover:scale-105 active:scale-95 transition-all" 
                         onClick={handleSubmit} 
                         disabled={isSubmitting}
                     >
@@ -287,7 +287,7 @@ export default function RFQCreatePage() {
                                                 <div className="text-[10px] text-slate-900 font-bold uppercase tracking-tighter">SKU: {item.sku || "N/A"}</div>
                                             </td>
                                             <td className="px-4 py-5">
-                                                <div className="text-[10px] font-black text-slate-900 bg-[#2563EB] px-2 py-0.5 rounded-full inline-block uppercase tracking-widest">
+                                                <div className="text-[10px] font-black text-white bg-[#2563EB] px-2 py-0.5 rounded-full inline-block uppercase tracking-widest">
                                                     SP
                                                 </div>
                                             </td>
@@ -353,7 +353,7 @@ export default function RFQCreatePage() {
                                             <span className="text-[8px] font-black text-slate-900 uppercase tracking-widest mb-0.5">Est. Value</span>
                                             <span className="text-xs font-black text-[#2563EB]">{(pr.totalEstimate || 0).toLocaleString()} ₫</span>
                                         </div>
-                                        <div className="w-8 h-8 rounded-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-slate-900 group-hover:bg-emerald-500 group-hover:text-slate-900 group-hover:border-emerald-500 transition-all shadow-sm">
+                                        <div className="w-8 h-8 rounded-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-white group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500 transition-all shadow-sm">
                                             <Plus size={16} />
                                         </div>
                                     </div>

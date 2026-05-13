@@ -137,7 +137,7 @@ export default function DeliveryTrackingPage() {
                             className="pl-10 pr-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-xs text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB] w-72"
                         />
                     </div>
-                    <button className="flex items-center gap-2 px-6 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-900 hover:bg-[#0F172A] transition-all shadow-sm">
+                    <button className="flex items-center gap-2 px-6 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                         <Filter size={14} /> Bộ lọc
                     </button>
                     <div className="flex items-center gap-2 px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-[11px] font-black uppercase tracking-widest text-black">
@@ -291,7 +291,7 @@ export default function DeliveryTrackingPage() {
                                 </div>
                                 <button 
                                     onClick={() => setEditingDelivery(selectedPO)}
-                                    className="w-full bg-[#2563EB] text-slate-900 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-[#1D4ED8] transition-all"
+                                    className="w-full bg-[#2563EB] text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-[#1D4ED8] transition-all"
                                 >
                                     Cập nhật tracking
                                 </button>
@@ -317,7 +317,7 @@ export default function DeliveryTrackingPage() {
 function TimelineStep({ label, time, active, done, icon, details }: { label: string, time: string, active: boolean, done: boolean, icon: React.ReactNode, details?: string }) {
     return (
         <div className="relative flex items-start gap-4 z-10">
-            <div className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center shrink-0 ${done ? 'bg-emerald-500 border-emerald-500 text-slate-900' : active ? 'bg-[#2563EB] border-[#2563EB] text-slate-900' : 'bg-[#FFFFFF] border-[rgba(148,163,184,0.2)] text-slate-900'}`}>
+            <div className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center shrink-0 ${done ? 'bg-emerald-500 border-emerald-500 text-white' : active ? 'bg-[#2563EB] border-[#2563EB] text-white' : 'bg-[#FFFFFF] border-[rgba(148,163,184,0.2)] text-white'}`}>
                 {icon}
             </div>
             <div className="flex flex-col pt-1">
@@ -420,7 +420,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: { delivery: Delivery
 
                 <div className="p-6 border-t border-[rgba(148,163,184,0.1)] flex justify-end gap-3">
                     <button onClick={onClose} className="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-slate-900 hover:text-slate-900 transition-all">Hủy</button>
-                    <button onClick={() => onSave(formData)} className="bg-[#2563EB] text-slate-900 px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1D4ED8] transition-all">Lưu</button>
+                    <button onClick={() => onSave(formData)} className="bg-[#2563EB] text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1D4ED8] transition-all">Lưu</button>
                 </div>
             </div>
         </div>

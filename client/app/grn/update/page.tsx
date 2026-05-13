@@ -282,8 +282,8 @@ export default function GrnUpdatePage() {
               <React.Fragment key={step.label}>
                 <div className="flex flex-col items-center flex-shrink-0">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${
-                    step.done ? "bg-emerald-500 border-emerald-500 text-slate-900"
-                    : step.active ? "bg-sky-600 border-sky-600 text-slate-900"
+                    step.done ? "bg-emerald-500 border-emerald-500 text-white"
+                    : step.active ? "bg-sky-600 border-sky-600 text-white"
                     : "bg-white border-gray-200 text-black"
                   }`}>
                     {step.done ? "✓" : i + 1}

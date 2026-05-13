@@ -138,7 +138,7 @@ export default function UsersPage() {
                 </div>
                 <button 
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-slate-900 px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <UserPlus size={18} /> Thêm nhân sự mới
                 </button>
@@ -246,7 +246,7 @@ export default function UsersPage() {
                                 <tr key={user.id || i} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-[rgba(148,163,184,0.1)]">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
-                                            <div className={`h-12 w-12 rounded-2xl ${user.isActive === false ? 'bg-[#000000]' : 'bg-[#2563EB]'} flex items-center justify-center font-black text-slate-900 shadow-lg shadow-[#2563EB]/10 text-xs`}>
+                                            <div className={`h-12 w-12 rounded-2xl ${user.isActive === false ? 'bg-[#000000]' : 'bg-[#2563EB]'} flex items-center justify-center font-black text-white shadow-lg shadow-[#2563EB]/10 text-xs`}>
                                                 {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="h-full w-full rounded-2xl object-cover" /> : (user.fullName || user.name || "??").substring(0,2).toUpperCase()}
                                             </div>
                                             <div>
@@ -435,13 +435,13 @@ export default function UsersPage() {
                                     <button 
                                         type="button"
                                         onClick={() => setShowModal(false)}
-                                        className="flex-1 px-8 py-4 bg-[#FFFFFF] rounded-3xl font-black text-slate-900 uppercase tracking-widest hover:bg-[#0F172A] transition-colors"
+                                        className="flex-1 px-8 py-4 bg-[#FFFFFF] rounded-3xl font-black text-slate-900 uppercase tracking-widest hover:bg-slate-100 transition-colors"
                                     >
                                         Bỏ qua
                                     </button>
                                     <button 
                                         type="submit"
-                                        className="flex-1 px-8 py-4 bg-[#2563EB] text-slate-900 rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-all"
+                                        className="flex-1 px-8 py-4 bg-[#2563EB] text-white rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-all"
                                     >
                                         {editingUser ? "Lưu cập nhật" : "Tạo tài khoản"}
                                     </button>

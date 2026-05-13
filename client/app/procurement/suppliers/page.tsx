@@ -282,7 +282,7 @@ export default function ProcurementSuppliersPage() {
                                         className={`px-6 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                                             selectedTier === tier
                                                 ? "bg-[#2563EB] text-black shadow-lg shadow-[#2563EB]/20"
-                                                : "text-slate-900 hover:bg-[#F1F5F9]"
+                                                : "text-white hover:bg-[#F1F5F9]"
                                         }`}
                                     >
                                         {tier === "ALL" ? "Tất cả" : tier}
@@ -396,7 +396,7 @@ export default function ProcurementSuppliersPage() {
                                             <p className="text-slate-900">Tính: (Số PO đúng hạn / Tổng PO) × 100</p>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#0F172A] hover:text-[#F8FAFC] transition-colors">
+                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-slate-100 hover:text-[#F8FAFC] transition-colors">
                                             <TrendingUp size={14} className="text-black mx-auto mb-1" />
                                             <p className="text-[10px] text-slate-900">OTD</p>
                                             <p className="text-xs font-bold text-slate-900">
@@ -416,7 +416,7 @@ export default function ProcurementSuppliersPage() {
                                             </ul>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#0F172A] hover:text-[#F8FAFC] transition-colors">
+                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-slate-100 hover:text-[#F8FAFC] transition-colors">
                                             <Award size={14} className="text-[#2563EB] mx-auto mb-1" />
                                             <p className="text-[10px] text-slate-900">Chất lượng</p>
                                             <p className="text-xs font-bold text-slate-900">
@@ -436,7 +436,7 @@ export default function ProcurementSuppliersPage() {
                                             </ul>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#0F172A] hover:text-[#F8FAFC] transition-colors">
+                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-slate-100 hover:text-[#F8FAFC] transition-colors">
                                             <Star size={14} className="text-yellow-400 mx-auto mb-1" />
                                             <p className="text-[10px] text-slate-900">Giá</p>
                                             <p className="text-xs font-bold text-slate-900">
@@ -458,7 +458,7 @@ export default function ProcurementSuppliersPage() {
                                             </ul>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-[#0F172A] hover:text-[#F8FAFC] transition-colors">
+                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-slate-100 hover:text-[#F8FAFC] transition-colors">
                                             <BarChart3 size={14} className="text-black mx-auto mb-1" />
                                             <p className="text-[10px] text-slate-900">Thủ công</p>
                                             <p className="text-xs font-bold text-slate-900">
@@ -480,14 +480,14 @@ export default function ProcurementSuppliersPage() {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => router.push(`/procurement/suppliers/${supplier.id}`)}
-                                        className="flex-1 bg-[#FFFFFF] hover:bg-[#0F172A] text-slate-900 hover:text-[#F8FAFC] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
+                                        className="flex-1 bg-[#FFFFFF] hover:bg-slate-100 text-slate-900 hover:text-[#F8FAFC] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
                                     >
                                         <Eye size={14} />
                                         Xem chi tiết
                                     </button>
                                     <button
                                         onClick={() => router.push(`/supplier/${supplier.id}/kpi-evaluation`)}
-                                        className="flex-1 bg-[#F1F5F9] hover:bg-[#0F172A] text-slate-900 hover:text-[#F8FAFC] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
+                                        className="flex-1 bg-[#F1F5F9] hover:bg-slate-100 text-slate-900 hover:text-[#F8FAFC] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
                                     >
                                         <BarChart3 size={14} />
                                         KPI
@@ -495,7 +495,7 @@ export default function ProcurementSuppliersPage() {
                                     <button
                                         onClick={() => handleEvaluate(supplier.id)}
                                         disabled={evaluatingId === supplier.id}
-                                        className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                        className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                     >
                                         {evaluatingId === supplier.id ? (
                                             <Loader2 size={14} className="animate-spin" />

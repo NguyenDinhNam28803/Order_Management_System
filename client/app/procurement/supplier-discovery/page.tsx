@@ -261,7 +261,7 @@ const SupplierDetailModal = ({
           {s.status === 'NEW' && (
             <button
               onClick={() => onVetting(s.name)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#1D4ED8] text-slate-900 hover:bg-[#2563EB] disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#1D4ED8] text-white hover:bg-[#2563EB] disabled:opacity-50 transition-all"
             >
               <Import size={13} /> Xét duyệt nhà cung cấp
             </button>

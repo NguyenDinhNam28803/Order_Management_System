@@ -49,12 +49,12 @@ export default function MatchingPage() {
                                     <br />
                                     Thực tế nhập kho (GRN) chỉ ghi nhận: <span className="font-black underline">42 Thùng</span>.
                                     <br /><br />
-                                    <span className="bg-red-600 text-slate-900 px-2 py-0.5 rounded text-[9px] font-black uppercase">Chặn thanh toán</span>: Hệ thống đã tự động khóa thanh toán cho đơn hàng này.
+                                    <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[9px] font-black uppercase">Chặn thanh toán</span>: Hệ thống đã tự động khóa thanh toán cho đơn hàng này.
                                 </p>
                             </div>
                             <button
                                 onClick={() => setDisputeResolved(true)}
-                                className="bg-white text-red-600 border border-red-200 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-slate-900 transition-all shadow-sm"
+                                className="bg-white text-red-600 border border-red-200 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm"
                             >
                                 Giải quyết tranh chấp (Admin)
                             </button>

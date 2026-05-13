@@ -75,7 +75,7 @@ export default function POPage() {
                         </div>
                         <div className="flex gap-2">
                             <button className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-900" title="Download"><DownloadCloud size={16}/></button>
-                            <button onClick={() => setShowPreview(false)} className="p-2 bg-slate-700 hover:bg-red-500 rounded-lg text-slate-900"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+                            <button onClick={() => setShowPreview(false)} className="p-2 bg-slate-700 hover:bg-red-500 rounded-lg text-white"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
                         </div>
                     </div>
                     
@@ -470,7 +470,7 @@ export default function POPage() {
                                         {po.status === "SHIPPED" && (
                                             <button
                                                 onClick={() => router.push("/warehouse/dashboard")}
-                                                className="bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-slate-900 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-1 transition-all"
+                                                className="bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-1 transition-all"
                                             >
                                                 Nhập kho <ArrowRight size={12} />
                                             </button>

@@ -96,8 +96,8 @@ export default function BudgetAllocationPage() {
                 onClick={() => setSelectedQuarter(q)}
                 className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                   selectedQuarter === q 
-                    ? "bg-[#2563EB] text-slate-900 shadow-md shadow-[#2563EB]/20" 
-                    : "text-slate-900 hover:bg-[#0F172A]"
+                    ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20" 
+                    : "text-white hover:bg-slate-100"
                 }`}
               >
                 Quý {q}
@@ -107,7 +107,7 @@ export default function BudgetAllocationPage() {
           
           <button 
             onClick={() => setShowDistributeModal(true)}
-            className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-[#2563EB]/20 transition-all active:scale-95"
+            className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-[#2563EB]/20 transition-all active:scale-95"
           >
             <Zap size={18} />
             Phân bổ 20/80
@@ -182,7 +182,7 @@ export default function BudgetAllocationPage() {
                 className="pl-10 pr-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 text-slate-900 placeholder:text-slate-900"
               />
             </div>
-            <button className="p-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-slate-900 hover:bg-[#0F172A] transition-colors">
+            <button className="p-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-slate-900 hover:bg-slate-100 transition-colors">
               <Filter size={18} />
             </button>
           </div>
@@ -274,9 +274,9 @@ export default function BudgetAllocationPage() {
         <div className="p-4 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] flex items-center justify-between">
           <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">Hiển thị {activeAllocations.length} phòng ban</p>
           <div className="flex items-center gap-1">
-            <button className="px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9] text-xs font-black hover:bg-[#0F172A] transition-colors uppercase text-slate-900">Trước</button>
-            <button className="px-3 py-1 rounded-lg bg-[#2563EB] text-slate-900 text-xs font-black shadow-md shadow-[#2563EB]/20 uppercase">1</button>
-            <button className="px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9] text-xs font-black hover:bg-[#0F172A] transition-colors uppercase text-slate-900">Sau</button>
+            <button className="px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9] text-xs font-black hover:bg-slate-100 transition-colors uppercase text-slate-900">Trước</button>
+            <button className="px-3 py-1 rounded-lg bg-[#2563EB] text-white text-xs font-black shadow-md shadow-[#2563EB]/20 uppercase">1</button>
+            <button className="px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9] text-xs font-black hover:bg-slate-100 transition-colors uppercase text-slate-900">Sau</button>
           </div>
         </div>
       </div>
@@ -284,7 +284,7 @@ export default function BudgetAllocationPage() {
       {/* Warning Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         <div className="bg-amber-500/10 border border-amber-500/20 p-6 rounded-[2rem] flex items-start gap-4">
-          <div className="p-3 bg-amber-500 rounded-2xl text-slate-900 shadow-lg shadow-amber-500/20">
+          <div className="p-3 bg-amber-500 rounded-2xl text-white shadow-lg shadow-amber-500/20">
             <AlertCircle size={24} />
           </div>
           <div>
@@ -302,7 +302,7 @@ export default function BudgetAllocationPage() {
             <h3 className="font-black text-xl mb-1">Quyết toán tài chính?</h3>
             <p className="text-slate-900 text-sm font-medium max-w-xs">Tự động kết chuyển số dư thừa vào quỹ dự phòng khi kết thúc chu kỳ quý.</p>
           </div>
-          <button className="relative z-10 bg-[#2563EB] text-slate-900 px-6 py-3 rounded-2xl font-black text-sm shadow-xl shadow-[#2563EB]/20 hover:scale-105 transition-transform active:scale-95 uppercase tracking-wider">
+          <button className="relative z-10 bg-[#2563EB] text-white px-6 py-3 rounded-2xl font-black text-sm shadow-xl shadow-[#2563EB]/20 hover:scale-105 transition-transform active:scale-95 uppercase tracking-wider">
             Thực hiện quyết toán
           </button>
         </div>
@@ -314,7 +314,7 @@ export default function BudgetAllocationPage() {
           <div className="bg-[#F1F5F9] rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-[rgba(148,163,184,0.1)]">
             <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#FFFFFF]">
               <div className="flex items-center gap-4">
-                <div className="bg-[#2563EB] p-3 rounded-2xl text-slate-900 shadow-lg shadow-[#2563EB]/20">
+                <div className="bg-[#2563EB] p-3 rounded-2xl text-white shadow-lg shadow-[#2563EB]/20">
                   <Zap size={24} />
                 </div>
                 <div>
@@ -322,7 +322,7 @@ export default function BudgetAllocationPage() {
                   <p className="text-slate-900 font-bold text-sm uppercase tracking-wider">Quy tắc 20% Dự phòng / 80% Quý (20% mỗi quý)</p>
                 </div>
               </div>
-              <button onClick={() => setShowDistributeModal(false)} className="p-2 hover:bg-[#0F172A] rounded-full transition-colors text-slate-900">
+              <button onClick={() => setShowDistributeModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-900">
                 <X size={24} />
               </button>
             </div>
@@ -331,7 +331,7 @@ export default function BudgetAllocationPage() {
               <div className="space-y-4">
                 <p className="text-sm font-bold text-slate-900 mb-4 px-2 italic">⚠️ Chọn Trung tâm chi phí (Cost Center) để thực hiện tính toán và phân bổ tự động cho cả năm {selectedYear}:</p>
                 {costCenters.map(cc => (
-                  <div key={cc.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] hover:bg-[#0F172A] border border-[rgba(148,163,184,0.1)] rounded-3xl transition-all group">
+                  <div key={cc.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] hover:bg-slate-100 border border-[rgba(148,163,184,0.1)] rounded-3xl transition-all group">
                     <div>
                       <p className="font-black text-slate-900 group-hover:text-white transition-colors">{cc.name}</p>
                       <div className="flex items-center gap-3 mt-1">
@@ -343,7 +343,7 @@ export default function BudgetAllocationPage() {
                     <button 
                       disabled={loading}
                       onClick={() => handleDistribute(cc.id)}
-                      className="px-6 py-2.5 bg-[#F1F5F9] border-2 border-[rgba(148,163,184,0.1)] hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-slate-900 rounded-2xl font-black text-sm transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-slate-900"
+                      className="px-6 py-2.5 bg-[#F1F5F9] border-2 border-[rgba(148,163,184,0.1)] hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-white rounded-2xl font-black text-sm transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-slate-900"
                     >
                       {loading ? <Loader2 size={18} className="animate-spin" /> : "PHÂN BỔ NGAY"}
                     </button>
