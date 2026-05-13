@@ -156,9 +156,9 @@ export default function DeliveryTrackingPage() {
                             <span className="text-xs text-slate-900">{filteredDeliveries.length} đơn hàng</span>
                         </div>
                         <div className="overflow-x-auto">
-                            <table className="w-full text-xs">
+                            <table className="erp-table text-xs">
                                 <thead>
-                                    <tr className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] text-[9px] font-black text-slate-900 uppercase tracking-widest">
+                                    <tr className="border-b border-[rgba(148,163,184,0.1)]">
                                         <th className="px-6 py-4 text-left">Mã PO / Nhà cung cấp</th>
                                         <th className="px-6 py-4 text-left">Giá trị</th>
                                         <th className="px-6 py-4 text-left">Vận chuyển</th>

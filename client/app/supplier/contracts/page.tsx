@@ -260,14 +260,14 @@ export default function SupplierContractsPage() {
             <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
-                        <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
+                        <thead className="border-b border-[rgba(148,163,184,0.1)]">
                             <tr>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Số hợp đồng</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Tiêu đề / Khách hàng</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Giá trị</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Thời hạn</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Trạng thái</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-right">Thao tác</th>
+                                <th className="px-6 py-4">Số hợp đồng</th>
+                                <th className="px-6 py-4">Tiêu đề / Khách hàng</th>
+                                <th className="px-6 py-4 text-center">Giá trị</th>
+                                <th className="px-6 py-4">Thời hạn</th>
+                                <th className="px-6 py-4">Trạng thái</th>
+                                <th className="px-6 py-4 text-right">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">

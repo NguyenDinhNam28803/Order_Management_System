@@ -147,10 +147,10 @@ export default function CreateGRN() {
                             <table className="erp-table text-xs m-0">
                                 <thead>
                                     <tr>
-                                        <th className="text-[10px] font-black uppercase tracking-widest text-slate-900">Mã PO</th>
-                                        <th className="text-[10px] font-black uppercase tracking-widest text-slate-900">Nhà cung cấp</th>
-                                        <th className="text-center text-[10px] font-black uppercase tracking-widest text-slate-900">Số mặt hàng</th>
-                                        <th className="text-[10px] font-black uppercase tracking-widest text-slate-900">Ngày tạo</th>
+                                        <th className="">Mã PO</th>
+                                        <th className="">Nhà cung cấp</th>
+                                        <th className="text-center">Số mặt hàng</th>
+                                        <th className="">Ngày tạo</th>
                                         <th></th>
                                     </tr>
                                 </thead>

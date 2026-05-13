@@ -258,13 +258,13 @@ export default function PoConfirmPage() {
             <h2 className="font-semibold text-gray-800">Chi tiết đơn hàng</h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+            <table className="erp-table text-xs">
+              <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wide">Mặt hàng</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-black uppercase tracking-wide w-24">SL</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-black uppercase tracking-wide w-36">Đơn giá</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-black uppercase tracking-wide w-36">Thành tiền</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold">Mặt hàng</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold w-24">SL</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold w-36">Đơn giá</th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold w-36">Thành tiền</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">

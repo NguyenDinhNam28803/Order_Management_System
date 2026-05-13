@@ -675,16 +675,16 @@ export default function ProcurementSupplierDetailPage() {
                         
                         <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                             <table className="erp-table text-xs">
-                                <thead className="bg-[#FFFFFF]">
+                                <thead>
                                     <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-black text-slate-900 uppercase">Kỳ</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Tier</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Overall</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">OTD</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Quality</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Price</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Manual</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">POs</th>
+                                        <th className="px-6 py-4 text-left text-xs">Kỳ</th>
+                                        <th className="px-6 py-4 text-center text-xs">Tier</th>
+                                        <th className="px-6 py-4 text-center text-xs">Overall</th>
+                                        <th className="px-6 py-4 text-center text-xs">OTD</th>
+                                        <th className="px-6 py-4 text-center text-xs">Quality</th>
+                                        <th className="px-6 py-4 text-center text-xs">Price</th>
+                                        <th className="px-6 py-4 text-center text-xs">Manual</th>
+                                        <th className="px-6 py-4 text-center text-xs">POs</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -761,13 +761,13 @@ export default function ProcurementSupplierDetailPage() {
                         
                         <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                             <table className="erp-table text-xs">
-                                <thead className="bg-[#FFFFFF]">
+                                <thead>
                                     <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-black text-slate-900 uppercase">PO Number</th>
-                                        <th className="px-6 py-4 text-left text-xs font-black text-slate-900 uppercase">Ngày tạo</th>
-                                        <th className="px-6 py-4 text-right text-xs font-black text-slate-900 uppercase">Tổng tiền</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Trạng thái</th>
-                                        <th className="px-6 py-4 text-center text-xs font-black text-slate-900 uppercase">Items</th>
+                                        <th className="px-6 py-4 text-left text-xs">PO Number</th>
+                                        <th className="px-6 py-4 text-left text-xs">Ngày tạo</th>
+                                        <th className="px-6 py-4 text-right text-xs">Tổng tiền</th>
+                                        <th className="px-6 py-4 text-center text-xs">Trạng thái</th>
+                                        <th className="px-6 py-4 text-center text-xs">Items</th>
                                     </tr>
                                 </thead>
                                 <tbody>

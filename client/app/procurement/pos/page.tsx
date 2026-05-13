@@ -206,11 +206,11 @@ export default function POManagementPage() {
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
+                            <table className="erp-table text-xs">
                                 <thead>
-                                    <tr className="border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF]">
+                                    <tr className="border-b border-[rgba(148,163,184,0.08)]">
                                         {["Mã PO", "Nhà cung cấp", "Liên kết PR → RFQ", "Trạng thái", "Tổng tiền", "Escrow", ""].map((h, i) => (
-                                            <th key={i} className={`px-5 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 ${i >= 5 ? "text-right" : "text-left"}`}>
+                                            <th key={i} className={`px-5 py-4 ${i >= 5 ? "text-right" : "text-left"}`}>
                                                 {h}
                                             </th>
                                         ))}
@@ -476,13 +476,13 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                             </div>
 
                             <div className="rounded-xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
-                                <table className="w-full text-xs">
+                                <table className="erp-table text-xs">
                                     <thead>
-                                        <tr className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.08)]">
-                                            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-900">Tên sản phẩm</th>
-                                            <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-slate-900 w-24">Số lượng</th>
-                                            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-900 w-36">Đơn giá (₫)</th>
-                                            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-900 w-36">Thành tiền</th>
+                                        <tr className="border-b border-[rgba(148,163,184,0.08)]">
+                                            <th className="px-4 py-3 text-left">Tên sản phẩm</th>
+                                            <th className="px-4 py-3 text-center w-24">Số lượng</th>
+                                            <th className="px-4 py-3 text-right w-36">Đơn giá (₫)</th>
+                                            <th className="px-4 py-3 text-right w-36">Thành tiền</th>
                                             <th className="w-10" />
                                         </tr>
                                     </thead>
@@ -517,7 +517,7 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                                                     />
                                                 </td>
                                                 <td className="px-4 py-2 text-right font-black text-[#2563EB] tabular-nums">
-                                                    {item.total.toLocaleString()} ₫
+                                                    {Number(item.total ?? 0).toLocaleString()} ₫
                                                 </td>
                                                 <td className="px-2 py-2">
                                                     <button
@@ -659,13 +659,13 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                             </div>
                         ) : items.length > 0 ? (
                             <div className="rounded-xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
-                                <table className="w-full text-xs">
-                                    <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.08)]">
+                                <table className="erp-table text-xs">
+                                    <thead className="border-b border-[rgba(148,163,184,0.08)]">
                                         <tr>
-                                            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-900">Mô tả / Sản phẩm</th>
-                                            <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-slate-900 w-14">SL</th>
-                                            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-900 w-28">Đơn giá</th>
-                                            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-900 w-28">Thành tiền</th>
+                                            <th className="px-4 py-3 text-left">Mô tả / Sản phẩm</th>
+                                            <th className="px-4 py-3 text-center w-14">SL</th>
+                                            <th className="px-4 py-3 text-right w-28">Đơn giá</th>
+                                            <th className="px-4 py-3 text-right w-28">Thành tiền</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">

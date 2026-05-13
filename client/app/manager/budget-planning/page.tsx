@@ -204,13 +204,13 @@ export default function BudgetPlanningPage() {
             <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5">
                 <table className="erp-table text-xs">
                     <thead>
-                        <tr className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Chu kỳ ngân sách</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Cost Center</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Số tiền</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Trạng thái</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Ngày tạo</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Thao tác</th>
+                        <tr className="border-b border-[rgba(148,163,184,0.1)]">
+                            <th className="px-6 py-4">Chu kỳ ngân sách</th>
+                            <th className="px-6 py-4">Cost Center</th>
+                            <th className="px-6 py-4">Số tiền</th>
+                            <th className="px-6 py-4 text-center">Trạng thái</th>
+                            <th className="px-6 py-4 text-center">Ngày tạo</th>
+                            <th className="px-6 py-4 text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">

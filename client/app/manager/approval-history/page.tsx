@@ -60,13 +60,13 @@ export default function ApprovalHistoryPage() {
             <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5 mb-8">
                 <table className="erp-table text-xs">
                     <thead>
-                        <tr className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Loại</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Mã chứng từ</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Tiêu đề</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Quyết định</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Ngày duyệt</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Ghi chú</th>
+                        <tr className="border-b border-[rgba(148,163,184,0.1)]">
+                            <th className="px-6 py-4">Loại</th>
+                            <th className="px-6 py-4">Mã chứng từ</th>
+                            <th className="px-6 py-4">Tiêu đề</th>
+                            <th className="px-6 py-4">Quyết định</th>
+                            <th className="px-6 py-4 text-center">Ngày duyệt</th>
+                            <th className="px-6 py-4">Ghi chú</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
@@ -103,7 +103,7 @@ export default function ApprovalHistoryPage() {
                                     </div>
                                 </td>
                                 <td className="px-6 py-5 text-[11px] font-bold text-slate-900 text-center whitespace-nowrap">
-                                    {new Date(item.createdAt!).toLocaleDateString("vi-VN")} {new Date(item.createdAt!).toLocaleTimeString("vi-VN", { hour: '2-digit', minute: '2-digit' })}
+                                    {item.createdAt ? new Date(item.createdAt).toLocaleDateString("vi-VN") + ' ' + new Date(item.createdAt).toLocaleTimeString("vi-VN", { hour: '2-digit', minute: '2-digit' }) : '—'}
                                 </td>
                                 <td className="px-6 py-5 text-xs text-slate-900 font-medium italic">
                                     {item.status === 'APPROVED' ? 'Hồ sơ đã được phê duyệt thành công' : 'Hồ sơ đã bị từ chối'}

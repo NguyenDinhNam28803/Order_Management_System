@@ -183,7 +183,7 @@ export default function SupplierInvoice() {
                                             <tr>
                                                 <th>Sản phẩm / Diễn giải</th>
                                                 <th className="text-right">Kho thực nhận</th>
-                                                <th className="text-right w-32 border-l-2 border-emerald-500/20 px-4 bg-emerald-500/10 text-black">SL Lên Hóa Đơn</th>
+                                                <th className="text-right w-32 border-l-2 border-emerald-500/20 px-4 bg-emerald-500/10">SL Lên Hóa Đơn</th>
                                                 <th className="text-right w-40">Thành tiền nháp</th>
                                             </tr>
                                         </thead>

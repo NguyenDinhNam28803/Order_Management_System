@@ -271,12 +271,12 @@ export default function RFQCreatePage() {
                         <div className="overflow-x-auto -mx-8">
                             <table className="erp-table text-xs">
                                 <thead>
-                                    <tr className="bg-[#FFFFFF]">
-                                        <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-slate-900 border-b border-[rgba(148,163,184,0.1)]">Sản phẩm</th>
-                                        <th className="px-4 py-5 text-left text-[10px] font-black uppercase tracking-widest text-slate-900 border-b border-[rgba(148,163,184,0.1)]">Nguồn gốc</th>
-                                        <th className="px-4 py-5 text-center text-[10px] font-black uppercase tracking-widest text-slate-900 border-b border-[rgba(148,163,184,0.1)] w-24">SL</th>
-                                        <th className="px-4 py-5 text-right text-[10px] font-black uppercase tracking-widest text-slate-900 border-b border-[rgba(148,163,184,0.1)] w-36">Est. Total</th>
-                                        <th className="px-8 py-5 text-center text-[10px] font-black uppercase tracking-widest text-slate-900 border-b border-[rgba(148,163,184,0.1)] w-12"></th>
+                                    <tr>
+                                        <th className="px-8 py-5 text-left border-b border-[rgba(148,163,184,0.1)]">Sản phẩm</th>
+                                        <th className="px-4 py-5 text-left border-b border-[rgba(148,163,184,0.1)]">Nguồn gốc</th>
+                                        <th className="px-4 py-5 text-center border-b border-[rgba(148,163,184,0.1)] w-24">SL</th>
+                                        <th className="px-4 py-5 text-right border-b border-[rgba(148,163,184,0.1)] w-36">Est. Total</th>
+                                        <th className="px-8 py-5 text-center border-b border-[rgba(148,163,184,0.1)] w-12"></th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">

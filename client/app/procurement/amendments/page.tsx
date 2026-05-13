@@ -74,7 +74,7 @@ export default function AmendmentsPage() {
                             <div className="overflow-x-auto">
                                 <table className="erp-table text-xs">
                                     <thead>
-                                        <tr className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] text-[9px] font-black text-slate-900 uppercase tracking-widest">
+                                        <tr className="border-b border-[rgba(148,163,184,0.1)]">
                                             <th className="px-8 py-5">Mã PO</th>
                                             <th className="px-8 py-5">Amendment #</th>
                                             <th className="px-8 py-5">Loại thay đổi</th>
@@ -105,7 +105,7 @@ export default function AmendmentsPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-8 text-[11px] font-bold text-slate-900">
-                                                    {new Date(am.createdAt).toLocaleString()}
+                                                    {am.createdAt ? new Date(am.createdAt).toLocaleString('vi-VN') : '—'}
                                                 </td>
                                                 <td className="px-8 py-8 text-right">
                                                     <button 
@@ -281,7 +281,7 @@ function AmendmentHistoryTimeline({ poNumber, history, onClose, getBadgeColor }:
                                               <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase border ${getBadgeColor(am.changeType)}`}>
                                                   {am.changeType}
                                               </span>
-                                              <span className="text-[10px] font-bold text-slate-900">{new Date(am.createdAt).toLocaleString()}</span>
+                                              <span className="text-[10px] font-bold text-slate-900">{am.createdAt ? new Date(am.createdAt).toLocaleString('vi-VN') : '—'}</span>
                                          </div>
                                          <div className="flex items-center gap-4 mb-4">
                                               <span className="text-xs font-bold text-slate-900 line-through">{am.originalValue}</span>

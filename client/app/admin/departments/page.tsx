@@ -125,12 +125,12 @@ export default function DepartmentsPage() {
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
                         <thead>
-                            <tr className="bg-[#FFFFFF]">
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-left">Mã & Tên Phòng ban</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-left">Trưởng bộ phận</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Trạng thái</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Nhân sự</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Thao tác</th>
+                            <tr>
+                                <th className="px-6 py-4 text-left">Mã & Tên Phòng ban</th>
+                                <th className="px-6 py-4 text-left">Trưởng bộ phận</th>
+                                <th className="px-6 py-4 text-center">Trạng thái</th>
+                                <th className="px-6 py-4 text-center">Nhân sự</th>
+                                <th className="px-6 py-4 text-center">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">

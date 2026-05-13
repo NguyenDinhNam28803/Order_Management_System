@@ -172,11 +172,11 @@ export default function PODetailPage() {
           <table className="erp-table text-xs">
             <thead>
               <tr>
-                <th className="w-12 text-center text-[10px] font-black uppercase tracking-widest text-slate-900">STT</th>
-                <th className="text-[10px] font-black uppercase tracking-widest text-slate-900">Sản phẩm / Dịch vụ</th>
-                <th className="text-right w-24 text-[10px] font-black uppercase tracking-widest text-slate-900">Số lượng</th>
-                <th className="text-right w-40 text-[10px] font-black uppercase tracking-widest text-slate-900">Đơn giá</th>
-                <th className="text-right w-48 text-[10px] font-black uppercase tracking-widest text-slate-900">Tổng cộng</th>
+                <th className="w-12 text-center">STT</th>
+                <th className="">Sản phẩm / Dịch vụ</th>
+                <th className="text-right w-24">Số lượng</th>
+                <th className="text-right w-40">Đơn giá</th>
+                <th className="text-right w-48">Tổng cộng</th>
               </tr>
             </thead>
             <tbody>
