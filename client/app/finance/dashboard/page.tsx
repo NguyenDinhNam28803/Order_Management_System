@@ -161,7 +161,7 @@ export default function FinanceDashboard() {
 
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
-                        <thead className="bg-[#FFFFFF] text-[10px] font-black uppercase tracking-widest text-slate-900">
+                        <thead>
                             <tr className="border-b border-[rgba(148,163,184,0.1)]">
                                 <th className="px-6 py-4 text-left">Mã định danh INV</th>
                                 <th className="text-left">Đối tác cung ứng</th>
@@ -188,8 +188,8 @@ export default function FinanceDashboard() {
                                         <div className="text-[10px] text-slate-900 font-medium uppercase tracking-tighter">Verified Partner</div>
                                     </td>
                                     <td className=" text-[#2563EB] text-[11px] font-bold">PO-***</td>
-                                    <td className="text-right font-bold text-slate-900 text-sm">{formatVND(inv.amount)} ₫</td>
-                                    <td className="text-slate-900 text-[11px] font-semibold">{inv.createdAt}</td>
+                                    <td className="text-right font-bold text-slate-900 text-sm">{formatVND(inv.amount ?? inv.totalAmount ?? 0)} ₫</td>
+                                    <td className="text-slate-900 text-[11px] font-semibold">{inv.createdAt ? new Date(inv.createdAt).toLocaleDateString('vi-VN') : '—'}</td>
                                     <td className="text-center">
                                         {inv.status === "PENDING" ? (
                                             <div className="flex justify-center">

@@ -276,7 +276,7 @@ export default function ApprovalsPage() {
                                             <div className="overflow-hidden border border-[rgba(148,163,184,0.1)] rounded-xl">
                                                 <table className="erp-table text-xs">
                                                     <thead>
-                                                        <tr className="bg-[#FFFFFF] text-slate-900 font-bold border-b border-[rgba(148,163,184,0.1)] uppercase tracking-tighter">
+                                                        <tr className="font-bold border-b border-[rgba(148,163,184,0.1)] tracking-tighter">
                                                             <th className="px-5 py-4">Mô tả</th>
                                                             <th className="px-5 py-4 text-center">Số lượng</th>
                                                             <th className="px-5 py-4 text-right">Đơn giá</th>

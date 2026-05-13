@@ -191,12 +191,12 @@ export default function BudgetAllocationPage() {
         <div className="overflow-x-auto">
           <table className="erp-table text-xs">
             <thead>
-              <tr className="bg-[#FFFFFF]">
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Trung tâm chi phí (CC)</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Hạn mức Quý</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Tiến độ sử dụng</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Còn lại</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-right">Trạng thái</th>
+              <tr>
+                <th className="px-6 py-4">Trung tâm chi phí (CC)</th>
+                <th className="px-6 py-4">Hạn mức Quý</th>
+                <th className="px-6 py-4 text-center">Tiến độ sử dụng</th>
+                <th className="px-6 py-4">Còn lại</th>
+                <th className="px-6 py-4 text-right">Trạng thái</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">

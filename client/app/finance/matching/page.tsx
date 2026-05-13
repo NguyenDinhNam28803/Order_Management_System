@@ -104,8 +104,8 @@ export default function FinanceMatching() {
                     <div className="bg-[#F1F5F9]">
                         <table className="erp-table text-xs m-0 w-full table-fixed">
                             <thead>
-                                <tr className="bg-[#FFFFFF]">
-                                    <th className="w-[20%] font-black uppercase tracking-widest text-[9px] text-slate-900">Hàng Hóa/Thông Số</th>
+                                <tr>
+                                    <th className="w-[20%]">Hàng Hóa/Thông Số</th>
                                     <th className="w-[25%] bg-[#2563EB]/10 border-r border-l border-[#2563EB]/20 text-center"><span className="text-[12px] font-black text-[#2563EB]">1. PO (Lệnh Đặt Hàng)</span></th>
                                     <th className="w-[25%] bg-amber-500/10 border-r border-amber-500/20 text-center"><span className="text-[12px] font-black text-black">2. GRN (Kho Thực Nhận)</span></th>
                                     <th className="w-[30%] bg-purple-500/10 border-purple-500/20 text-center"><span className="text-[12px] font-black text-black">3. INVOICE (NCC Đòi Tiền)</span></th>

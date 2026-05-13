@@ -115,23 +115,23 @@ export default function RFQClosedLoopSimulation() {
                     {/* Danh sách Sản phẩm chờ mua */}
                     <section>
                         <h2 style={{ fontSize: '18px', marginBottom: '15px' }}>Step 1: Danh sách sản phẩm chờ khởi tạo RFQ</h2>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-                            <thead style={{ backgroundColor: '#000000' }}>
+                        <table className="erp-table text-xs">
+                            <thead>
                                 <tr>
-                                    <th style={{ padding: '15px', textAlign: 'left', fontSize: '13px', color: '#000000' }}>Tên mặt hàng</th>
-                                    <th style={{ padding: '15px', textAlign: 'left', fontSize: '13px', color: '#000000' }}>Phân loại</th>
-                                    <th style={{ padding: '15px', textAlign: 'right', fontSize: '13px', color: '#000000' }}>Hành động</th>
+                                    <th>Tên mặt hàng</th>
+                                    <th>Phân loại</th>
+                                    <th className="text-right">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {mockProducts.map(p => (
-                                    <tr key={p.id} style={{ borderBottom: '1px solid #000000' }}>
-                                        <td style={{ padding: '15px', fontWeight: 'bold' }}>{p.name}</td>
-                                        <td style={{ padding: '15px', color: '#000000' }}>{p.category}</td>
-                                        <td style={{ padding: '15px', textAlign: 'right' }}>
-                                            <button 
+                                    <tr key={p.id}>
+                                        <td className="font-bold">{p.name}</td>
+                                        <td>{p.category}</td>
+                                        <td className="text-right">
+                                            <button
                                                 onClick={() => handleCreateRFQ(p)}
-                                                style={{ backgroundColor: '#1D4ED8', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}
+                                                className="btn-primary"
                                             >
                                                 Tạo RFQ
                                             </button>

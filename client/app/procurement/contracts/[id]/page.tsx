@@ -204,13 +204,13 @@ export default function ContractDetailPage() {
                             <h2 className="text-xs font-black uppercase tracking-widest text-slate-900">Lộ trình thanh toán</h2>
                         </div>
                         {contract.milestones && contract.milestones.length > 0 ? (
-                            <table className="w-full text-sm">
+                            <table className="erp-table text-xs">
                                 <thead>
-                                    <tr className="bg-[#FFFFFF]">
-                                        <th className="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-900">Giai đoạn</th>
-                                        <th className="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-900">Ngày dự kiến</th>
-                                        <th className="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-900">Trạng thái</th>
-                                        <th className="px-6 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-900">Số tiền</th>
+                                    <tr>
+                                        <th className="px-6 py-3 text-left">Giai đoạn</th>
+                                        <th className="px-6 py-3 text-left">Ngày dự kiến</th>
+                                        <th className="px-6 py-3 text-left">Trạng thái</th>
+                                        <th className="px-6 py-3 text-right">Số tiền</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">

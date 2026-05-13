@@ -196,13 +196,13 @@ export default function SpendTrackingPage() {
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs whitespace-nowrap">
                         <thead>
-                            <tr className="bg-[#FFFFFF]">
-                                <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-slate-900">Cost Center</th>
-                                <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-slate-900">Phân bổ</th>
-                                <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-slate-900 text-right">Cam kết</th>
-                                <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-slate-900 text-right">Thực chi</th>
-                                <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Tiến độ</th>
-                                <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-slate-900 text-right">Còn lại</th>
+                            <tr>
+                                <th className="py-4 px-6">Cost Center</th>
+                                <th className="py-4 px-6">Phân bổ</th>
+                                <th className="py-4 px-6 text-right">Cam kết</th>
+                                <th className="py-4 px-6 text-right">Thực chi</th>
+                                <th className="py-4 px-6 text-center">Tiến độ</th>
+                                <th className="py-4 px-6 text-right">Còn lại</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">

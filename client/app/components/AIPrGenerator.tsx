@@ -288,13 +288,13 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                     <h4 className="text-sm font-medium text-slate-900 mb-3">Danh sách items ({draft.items?.length})</h4>
                     <div className="overflow-x-auto rounded-xl border border-[rgba(148,163,184,0.1)]">
                       <table className="erp-table text-xs m-0">
-                        <thead className="bg-[#F1F5F9]">
+                        <thead>
                           <tr>
-                            <th className="px-4 py-3 text-left text-slate-900 font-medium">#</th>
-                            <th className="px-4 py-3 text-left text-slate-900 font-medium">Mô tả</th>
-                            <th className="px-4 py-3 text-left text-slate-900 font-medium">SL</th>
-                            <th className="px-4 py-3 text-left text-slate-900 font-medium">Đơn giá</th>
-                            <th className="px-4 py-3 text-left text-slate-900 font-medium">Thành tiền</th>
+                            <th className="px-4 py-3 text-left font-medium">#</th>
+                            <th className="px-4 py-3 text-left font-medium">Mô tả</th>
+                            <th className="px-4 py-3 text-left font-medium">SL</th>
+                            <th className="px-4 py-3 text-left font-medium">Đơn giá</th>
+                            <th className="px-4 py-3 text-left font-medium">Thành tiền</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">

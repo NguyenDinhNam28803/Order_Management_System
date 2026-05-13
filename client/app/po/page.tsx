@@ -113,9 +113,9 @@ export default function POPage() {
                                 </div>
                             </div>
 
-                            <table className="w-full text-sm mb-12">
+                            <table className="erp-table text-xs">
                                 <thead>
-                                    <tr className="bg-slate-100 text-brand-primary">
+                                    <tr className="text-brand-primary">
                                         <th className="py-3 px-4 text-left font-bold border-b border-slate-300">Description</th>
                                         <th className="py-3 px-4 text-center font-bold border-b border-slate-300">Qty</th>
                                         <th className="py-3 px-4 text-right font-bold border-b border-slate-300">Unit Price</th>
@@ -127,8 +127,8 @@ export default function POPage() {
                                         <tr key={i} className="border-b border-slate-100">
                                             <td className="py-3 px-4">{item.description || item.productName || item.productDesc}</td>
                                             <td className="py-3 px-4 text-center ">{item.qty}</td>
-                                            <td className="py-3 px-4 text-right ">{item.estimatedPrice.toLocaleString()}</td>
-                                            <td className="py-3 px-4 text-right  font-bold">{(Number(item.qty || 0) * item.estimatedPrice).toLocaleString()}</td>
+                                            <td className="py-3 px-4 text-right ">{Number(item.estimatedPrice ?? 0).toLocaleString()}</td>
+                                            <td className="py-3 px-4 text-right  font-bold">{(Number(item.qty || 0) * Number(item.estimatedPrice ?? 0)).toLocaleString()}</td>
                                         </tr>
                                     ))}
                                     {(!relatedPR?.items) && (
@@ -334,8 +334,8 @@ export default function POPage() {
                                         <tr key={idx} className="border-b border-slate-50">
                                             <td className="font-bold text-brand-primary">{item.description || item.productName}</td>
                                             <td className="text-center font-black">{item.qty || 0}</td>
-                                            <td className="text-right  text-black">{item.estimatedPrice.toLocaleString()}</td>
-                                            <td className="text-right  font-black text-erp-blue">{(Number(item.qty || 0) * item.estimatedPrice).toLocaleString()} ₫</td>
+                                            <td className="text-right  text-black">{Number(item.estimatedPrice ?? 0).toLocaleString()}</td>
+                                            <td className="text-right  font-black text-erp-blue">{(Number(item.qty || 0) * Number(item.estimatedPrice ?? 0)).toLocaleString()} ₫</td>
                                             <td><input type="text" className="erp-input py-1! text-[10px]! w-full bg-slate-50 font-medium" placeholder="Ghi chú item..." /></td>
                                         </tr>
                                     ))}

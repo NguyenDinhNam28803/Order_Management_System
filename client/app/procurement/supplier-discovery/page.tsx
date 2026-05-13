@@ -386,12 +386,12 @@ const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[];
         <button onClick={onClose} className="text-slate-900 hover:text-slate-900 transition-colors"><X size={16} /></button>
       </div>
       <div className="p-4 overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="erp-table text-xs">
           <thead>
             <tr>
               <td className="text-[10px] text-slate-900 uppercase font-semibold pr-4 pb-3 w-28">Tiêu chí</td>
               {suppliers.map((s, i) => (
-                <th key={i} className="text-left pb-3 px-3 font-bold text-slate-900">{s.name}</th>
+                <th key={i} className="text-left pb-3 px-3 font-bold">{s.name}</th>
               ))}
             </tr>
           </thead>

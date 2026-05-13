@@ -115,7 +115,7 @@ export default function SupplierManagementPage() {
                 <div className="overflow-x-auto">
                     <table className="erp-table">
                         <thead>
-                            <tr className="bg-[#FFFFFF]">
+                            <tr>
                                 <th className="px-8 py-5">Nhà cung cấp</th>
                                 <th className="px-6 py-5">Lĩnh vực</th>
                                 <th className="px-6 py-5">Liên hệ</th>

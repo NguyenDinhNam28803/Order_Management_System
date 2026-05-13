@@ -222,7 +222,7 @@ export default function UsersPage() {
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
                         <thead>
-                            <tr className="bg-[#FFFFFF]">
+                            <tr>
                                 <th>Họ tên & Email</th>
                                 <th>Phòng ban & Chức danh</th>
                                 <th>Vai trò Hệ thống</th>

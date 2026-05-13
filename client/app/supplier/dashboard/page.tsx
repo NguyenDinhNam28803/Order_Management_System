@@ -373,8 +373,8 @@ export default function SupplierDashboard() {
 
       <div className="bg-[#F1F5F9] rounded-2xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
         <table className="erp-table text-xs text-left w-full" style={{ tableLayout: 'fixed' }}>
-          <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
-            <tr className="text-[10px] font-black uppercase tracking-widest text-slate-900">
+          <thead className="border-b border-[rgba(148,163,184,0.1)]">
+            <tr>
               <th className="w-[18%] py-4 px-4">Mã RFQ</th>
               <th className="w-[35%] py-4 px-4">Dự án / Yêu cầu</th>
               <th className="w-[15%] py-4 px-4 text-center">Ngày nhận</th>
@@ -490,7 +490,7 @@ export default function SupplierDashboard() {
               <div className="overflow-x-auto">
                 <table className="erp-table">
                   <thead>
-                    <tr className="bg-slate-50/50">
+                    <tr>
                       <th className="py-4">Mô tả sản phẩm</th>
                       <th className="text-center w-24">Số lượng</th>
                       <th className="w-48">Đơn giá (VNĐ)</th>
@@ -532,7 +532,7 @@ export default function SupplierDashboard() {
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="bg-slate-50 font-black">
+                    <tr className="bg-slate-50">
                       <td colSpan={2} className="text-right py-6 uppercase tracking-widest text-black text-[10px]">Thành tiền (Draft):</td>
                       <td className="text-left py-6 pl-4 text-erp-blue text-xl font-black ">
                         {totalValue.toLocaleString()} ₫

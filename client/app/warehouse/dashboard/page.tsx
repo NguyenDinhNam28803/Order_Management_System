@@ -91,7 +91,7 @@ export default function WarehouseDashboard() {
                     </div>
                     <div className="flex-1 overflow-auto bg-[#F1F5F9] max-h-[400px]">
                         <table className="erp-table text-xs m-0 !border-none w-full" style={{ tableLayout: 'fixed' }}>
-                            <thead className="sticky top-0 bg-[#FFFFFF] shadow-sm z-10">
+                            <thead className="sticky top-0 shadow-sm z-10">
                                 <tr>
                                     <th className="w-[20%]">PO</th>
                                     <th className="w-[25%]">Nhà cung cấp</th>
@@ -137,7 +137,7 @@ export default function WarehouseDashboard() {
                     </div>
                     <div className="flex-1 overflow-auto bg-[#F1F5F9] max-h-[400px]">
                         <table className="erp-table text-xs m-0 !border-none w-full" style={{ tableLayout: 'fixed' }}>
-                            <thead className="sticky top-0 bg-[#FFFFFF] shadow-sm z-10">
+                            <thead className="sticky top-0 shadow-sm z-10">
                                 <tr>
                                     <th className="w-[18%]">Mã GRN</th>
                                     <th className="w-[25%]">Liên kết PO</th>

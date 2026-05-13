@@ -55,14 +55,14 @@ export default function POApprovalsPage() {
             <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5">
                 <table className="erp-table text-xs">
                     <thead>
-                        <tr className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Mã PO</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Nhà cung cấp</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Liên kết PR</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Tổng tiền</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">% Ngân sách</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900">Ngày tạo</th>
-                            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Thao tác</th>
+                        <tr className="border-b border-[rgba(148,163,184,0.1)]">
+                            <th className="px-6 py-4">Mã PO</th>
+                            <th className="px-6 py-4">Nhà cung cấp</th>
+                            <th className="px-6 py-4">Liên kết PR</th>
+                            <th className="px-6 py-4">Tổng tiền</th>
+                            <th className="px-6 py-4">% Ngân sách</th>
+                            <th className="px-6 py-4">Ngày tạo</th>
+                            <th className="px-6 py-4 text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">

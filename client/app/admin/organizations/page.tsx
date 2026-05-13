@@ -105,7 +105,7 @@ export default function OrganizationsPage() {
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
                         <thead>
-                            <tr className="bg-[#FFFFFF]">
+                            <tr>
                                 <th>Mã & Tên Tổ chức</th>
                                 <th>Địa chỉ trụ sở</th>
                                 <th>Mã số thuế</th>

@@ -258,7 +258,7 @@ export default function Dashboard() {
                              <div className="overflow-x-auto">
                                  <table className="erp-table text-xs text-left">
                                      <thead>
-                                         <tr className="bg-[#FFFFFF] text-[9px] font-black text-slate-900 border-b border-[rgba(148,163,184,0.1)] uppercase tracking-widest">
+                                         <tr className="border-b border-[rgba(148,163,184,0.1)]">
                                              <th className="px-8 py-5">Số PR</th>
                                              <th className="px-8 py-5">Tiêu đề (Lý do)</th>
                                              <th className="px-8 py-5">Ngày tạo</th>
@@ -645,7 +645,7 @@ export default function Dashboard() {
                         <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <table className="erp-table text-xs">
                                 <thead>
-                                    <tr className="bg-[#FFFFFF]">
+                                    <tr>
                                         <th className="px-8">Cost Center / Đơn vị</th>
                                         <th>Chu kỳ</th>
                                         <th className="text-right">Số tiền yêu cầu</th>
@@ -704,7 +704,7 @@ export default function Dashboard() {
                     <div className="overflow-x-auto">
                         <table className="erp-table text-xs whitespace-nowrap">
                             <thead>
-                                <tr className="bg-[#FFFFFF]">
+                                <tr>
                                     <th className="w-10 px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#2563EB] bg-[#F1F5F9]"/></th>
                                     <th>Mã Chứng Từ</th>
                                     <th>Phân loại</th>
@@ -835,7 +835,7 @@ export default function Dashboard() {
                             <div className="overflow-x-auto">
                                 <table className="erp-table text-xs whitespace-nowrap">
                                     <thead>
-                                        <tr className="bg-[#FFFFFF]">
+                                        <tr>
                                             <th>MÃ PR</th>
                                             <th>PHÒNG BAN</th>
                                             <th>DEADLINE</th>
@@ -959,7 +959,7 @@ export default function Dashboard() {
                             <div className="overflow-x-auto">
                                 <table className="erp-table text-xs whitespace-nowrap">
                                     <thead>
-                                        <tr className="bg-[#FFFFFF]">
+                                        <tr>
                                             <th>MÃ PO</th>
                                             <th>NHÀ CUNG CẤP</th>
                                             <th>TRẠNG THÁI</th>
@@ -1427,17 +1427,17 @@ export default function Dashboard() {
                         <table className="erp-table text-xs whitespace-nowrap">
                             <thead>
                                 <tr>
-                                    <th className="w-10 px-8 text-center bg-[#FFFFFF]">
+                                    <th className="w-10 px-8 text-center">
                                         <input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#2563EB] bg-[#F1F5F9]" />
                                     </th>
-                                    <th className="bg-[#FFFFFF]">Số phiếu</th>
-                                    <th className="bg-[#FFFFFF]">Ngày tạo</th>
-                                    <th className="text-center bg-[#FFFFFF]">Cấp độ</th>
-                                    <th className="bg-[#FFFFFF]">Người tạo</th>
-                                    <th className="text-center bg-[#FFFFFF]">Phân loại</th>
-                                    <th className="w-[20%] bg-[#FFFFFF]">Tiêu đề</th>
-                                    <th className="text-right bg-[#FFFFFF]">Tổng giá trị</th>
-                                    <th className="text-right px-8 bg-[#FFFFFF]">Thao tác</th>
+                                    <th className="">Số phiếu</th>
+                                    <th className="">Ngày tạo</th>
+                                    <th className="text-center">Cấp độ</th>
+                                    <th className="">Người tạo</th>
+                                    <th className="text-center">Phân loại</th>
+                                    <th className="w-[20%]">Tiêu đề</th>
+                                    <th className="text-right">Tổng giá trị</th>
+                                    <th className="text-right px-8">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1555,7 +1555,7 @@ export default function Dashboard() {
                         <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <table className="erp-table text-xs">
                                 <thead>
-                                    <tr className="bg-[#FFFFFF]">
+                                    <tr>
                                         <th className="px-8">Mã RFQ</th>
                                         <th>Bên mua</th>
                                         <th className="text-right">Thời hạn</th>
@@ -1618,7 +1618,7 @@ export default function Dashboard() {
             <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
                 <table className="erp-table text-xs">
                     <thead>
-                        <tr className="bg-[#FFFFFF]"><th>Mã PR</th><th>Phòng ban</th><th className="text-right">Giá trị</th><th className="text-right">Thao tác</th></tr>
+                        <tr><th>Mã PR</th><th>Phòng ban</th><th className="text-right">Giá trị</th><th className="text-right">Thao tác</th></tr>
                     </thead>
                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                         {(prs || []).slice(0, 5).map(pr => (
@@ -1683,8 +1683,8 @@ export default function Dashboard() {
                                     <h3 className="text-[10px] font-black text-slate-900 uppercase">Danh sách hàng hóa</h3>
                                     <div className="border border-[rgba(148,163,184,0.1)] rounded-2xl overflow-hidden">
                                         <table className="erp-table text-xs text-left">
-                                            <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
-                                                <tr><th className="p-4 uppercase font-black text-slate-900">Sản phẩm</th><th className="p-4 text-center">SL</th><th className="p-4 text-right">Giá</th></tr>
+                                            <thead className="border-b border-[rgba(148,163,184,0.1)]">
+                                                <tr><th className="p-4">Sản phẩm</th><th className="p-4 text-center">SL</th><th className="p-4 text-right">Giá</th></tr>
                                             </thead>
                                             <tbody>
                                                 {selectedPRDetails.items?.map((item, idx) => (

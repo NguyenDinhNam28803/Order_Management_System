@@ -17,9 +17,9 @@ export const AuditLogDetailModal: React.FC<AuditLogDetailModalProps> = ({ data, 
                         <p><strong>Năm tài chính:</strong> {data.fiscalYear}</p>
                         <p><strong>Tổng ngân sách:</strong> {data.totalBudget?.toLocaleString('vi-VN')} VND</p>
                     </div>
-                    <table className="w-full text-xs border-collapse">
+                    <table className="erp-table text-xs">
                         <thead>
-                            <tr className="bg-[#F1F5F9]">
+                            <tr>
                                 <th className="p-2 border">Ghi chú</th>
                                 <th className="p-2 border">Ngân sách</th>
                             </tr>

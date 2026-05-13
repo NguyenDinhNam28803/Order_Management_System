@@ -430,10 +430,10 @@ export default function InvoiceDetailPage() {
                   <table className="erp-table text-xs">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left py-3 px-4 text-xs font-bold text-text-secondary uppercase">PO Item ID</th>
-                        <th className="text-center py-3 px-4 text-xs font-bold text-text-secondary uppercase">Số lượng</th>
-                        <th className="text-center py-3 px-4 text-xs font-bold text-text-secondary uppercase">Đơn giá</th>
-                        <th className="text-right py-3 px-4 text-xs font-bold text-text-secondary uppercase">Chênh lệch</th>
+                        <th className="text-left py-3 px-4 text-xs font-bold text-text-secondary">PO Item ID</th>
+                        <th className="text-center py-3 px-4 text-xs font-bold text-text-secondary">Số lượng</th>
+                        <th className="text-center py-3 px-4 text-xs font-bold text-text-secondary">Đơn giá</th>
+                        <th className="text-right py-3 px-4 text-xs font-bold text-text-secondary">Chênh lệch</th>
                       </tr>
                     </thead>
                     <tbody>

@@ -231,11 +231,11 @@ export default function ContractsPage() {
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="erp-table text-xs">
                             <thead>
-                                <tr className="border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF]">
+                                <tr className="border-b border-[rgba(148,163,184,0.08)]">
                                     {["Số hợp đồng", "Tiêu đề / Đối tác", "Giá trị", "Thời hạn", "Trạng thái", ""].map((h, i) => (
-                                        <th key={i} className={`px-5 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 ${i >= 5 ? "text-right" : "text-left"}`}>
+                                        <th key={i} className={`px-5 py-4 ${i >= 5 ? "text-right" : "text-left"}`}>
                                             {h}
                                         </th>
                                     ))}

@@ -232,7 +232,7 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
         <div className="overflow-x-auto">
             <table className="erp-table text-xs">
                 <thead>
-                    <tr className="bg-[#FFFFFF] text-[10px] font-black uppercase tracking-widest text-slate-900 border-b border-[rgba(148,163,184,0.1)]">
+                    <tr className="border-b border-[rgba(148,163,184,0.1)]">
                         <th className="px-6 py-4">Thông tin PR</th>
                         <th className="px-6 py-4 text-center">Bộ phận</th>
                         <th className="px-6 py-4 text-right">Giá trị (Est.)</th>

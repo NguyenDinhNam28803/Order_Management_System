@@ -200,7 +200,7 @@ export default function SupplierPO() {
                                         <div><strong className="text-slate-900">DATE:</strong> {po.createdAt}</div>
                                     </div>
                                     <table className="erp-table text-xs font-sans mb-8">
-                                        <thead><tr className="bg-[#FFFFFF]"><th className="p-2 text-left text-slate-900">Item</th><th className="p-2 text-center text-slate-900">Qty</th><th className="p-2 text-right text-slate-900">Price</th></tr></thead>
+                                        <thead><tr><th className="p-2 text-left">Item</th><th className="p-2 text-center">Qty</th><th className="p-2 text-right">Price</th></tr></thead>
                                         <tbody>
                                             {po.items?.map((i) => (
                                                 <tr key={i.id} className="border-b border-[rgba(148,163,184,0.1)]"><td className="p-2 text-slate-900">{i.description || 'N/A'}</td><td className="p-2 text-center text-slate-900">{i.qty}</td><td className="p-2 text-right text-slate-900">{(i.unitPrice || i.estimatedPrice || 0).toLocaleString()} ₫</td></tr>
@@ -336,8 +336,8 @@ export default function SupplierPO() {
 
             <div className="bg-[#F1F5F9] rounded-3xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
                 <table className="erp-table text-xs w-full" style={{ tableLayout: 'fixed' }}>
-                    <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
-                        <tr className="text-[10px] font-black uppercase tracking-widest text-slate-900">
+                    <thead className="border-b border-[rgba(148,163,184,0.1)]">
+                        <tr>
                             <th className="py-4 px-4 text-left w-[18%]">Số PO</th>
                             <th className="py-4 px-4 text-left w-[35%]">Sản phẩm / Mô tả</th>
                             <th className="py-4 px-4 text-center w-[12%]">SL / Tổng tiền</th>
@@ -508,8 +508,8 @@ export default function SupplierPO() {
                                     </span>
                                 </div>
                                 <table className="erp-table text-sm">
-                                    <thead className="bg-[#F1F5F9]">
-                                        <tr className="text-slate-900">
+                                    <thead>
+                                        <tr>
                                             <th className="p-3 text-left font-bold">Sản phẩm</th>
                                             <th className="p-3 text-center font-bold">Số lượng</th>
                                             <th className="p-3 text-center font-bold">Đơn vị</th>

@@ -150,7 +150,7 @@ export default function FinanceInvoicesPage() {
                 <div className="overflow-x-auto">
                     <table className="erp-table">
                         <thead>
-                            <tr className="bg-[#FFFFFF]">
+                            <tr>
                                 <th className="px-6 py-4 text-left">Số hóa đơn</th>
                                 <th className="px-6 py-4 text-left">Nhà cung cấp</th>
                                 <th className="px-6 py-4 text-left">PO liên quan</th>

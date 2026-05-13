@@ -170,8 +170,8 @@ export default function SupplierRFQ() {
                             
                             <div className="p-0">
                                 <table className="erp-table text-xs w-full" style={{ tableLayout: 'fixed' }}>
-                                    <thead className="bg-[#FFFFFF]">
-                                        <tr className="text-[#0F172A] uppercase tracking-widest text-[9px] font-black italic">
+                                    <thead>
+                                        <tr className="text-[#0F172A] italic">
                                             <th className="px-4 py-4 w-[35%]">Hạng mục hàng hóa / SKU</th>
                                             <th className="text-center w-[10%]">SL</th>
                                             <th className="text-right w-[25%]">Đơn giá đề xuất (VNĐ)</th>
@@ -214,7 +214,7 @@ export default function SupplierRFQ() {
                                                 </tr>
                                             );
                                         })}
-                                        <tr className="bg-[#FFFFFF]">
+                                        <tr>
                                             <td colSpan={2} className="px-4 py-6 text-right">
                                                  <div className="text-[10px] font-black text-[#4A4A45] uppercase tracking-[0.2em] mb-1">DỰ TOÁN TOTAL</div>
                                                  <div className="text-xs font-bold text-[#2563EB] italic">* Chưa bao gồm các loại thuế phí</div>
@@ -342,8 +342,8 @@ export default function SupplierRFQ() {
             <div className="erp-card bg-[#F1F5F9] p-0! overflow-hidden shadow-2xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] rounded-[40px]">
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs whitespace-nowrap">
-                        <thead className="bg-[#FFFFFF]">
-                            <tr className="text-[#4A4A45] uppercase tracking-widest text-[9px] font-black italic">
+                        <thead>
+                            <tr className="text-[#4A4A45] italic">
                                 <th className="px-6 py-6 w-[140px]">ID Giao dịch</th>
                                 <th className="w-[180px]">Khách hàng</th>
                                 <th className="w-[280px] max-w-[280px]">Thông tin hạng mục</th>

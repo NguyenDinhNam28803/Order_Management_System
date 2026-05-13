@@ -844,7 +844,7 @@ export default function CreatePRPage() {
                             <div className="overflow-hidden rounded-3xl border border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                                 <table className="erp-table text-xs m-0">
                                     <thead>
-                                        <tr className="bg-[#F1F5F9] text-[9px] font-black text-slate-900 border-b border-[rgba(148,163,184,0.1)] uppercase tracking-[0.1em]">
+                                        <tr className="border-b border-[rgba(148,163,184,0.1)] tracking-[0.1em]">
                                             <th className="px-8 py-5">Sản phẩm / Mô tả</th>
                                             <th className="px-8 py-5 text-center">Số lượng</th>
                                             <th className="px-8 py-5 text-right">Đơn giá tham chiếu</th>

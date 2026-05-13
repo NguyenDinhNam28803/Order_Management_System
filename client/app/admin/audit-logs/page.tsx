@@ -95,14 +95,14 @@ export default function AuditLogsPage() {
             <div className="bg-[#F1F5F9] rounded-2xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
-                        <thead className="bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] text-slate-900 text-xs uppercase tracking-wider">
+                        <thead className="border-b border-[rgba(148,163,184,0.1)] tracking-wider">
                             <tr>
-                                <th className="px-6 py-4 font-black">Thời gian</th>
-                                <th className="px-6 py-4 font-black">Người thực hiện</th>
-                                <th className="px-6 py-4 font-black">Hành động</th>
-                                <th className="px-6 py-4 font-black">Đối tượng</th>
-                                <th className="px-6 py-4 font-black">Mã ID</th>
-                                <th className="px-6 py-4 font-black text-right">Chi tiết</th>
+                                <th className="px-6 py-4">Thời gian</th>
+                                <th className="px-6 py-4">Người thực hiện</th>
+                                <th className="px-6 py-4">Hành động</th>
+                                <th className="px-6 py-4">Đối tượng</th>
+                                <th className="px-6 py-4">Mã ID</th>
+                                <th className="px-6 py-4 text-right">Chi tiết</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)] text-sm">

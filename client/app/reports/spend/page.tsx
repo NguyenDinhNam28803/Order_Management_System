@@ -136,12 +136,12 @@ export default function SpendReportPage() {
                     </h3>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-xs">
-                        <thead className="bg-[#F1F5F9]">
+                    <table className="erp-table text-xs">
+                        <thead>
                             <tr className="border-b border-[rgba(148,163,184,0.1)]">
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-900 text-left">Tên nhà cung cấp</th>
-                                <th className="text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Tần suất Giao dịch (PO)</th>
-                                <th className="text-[10px] font-black uppercase tracking-widest text-slate-900 text-right pr-12">Tổng Tiền Thanh Toán</th>
+                                <th className="px-8 py-5 text-left">Tên nhà cung cấp</th>
+                                <th className="text-center">Tần suất Giao dịch (PO)</th>
+                                <th className="text-right pr-12">Tổng Tiền Thanh Toán</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
