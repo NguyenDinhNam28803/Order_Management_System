@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
+import ConfirmDialog from "@/app/components/shared/ConfirmDialog";
 import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
 import { Organization } from "@/app/types/api-types";
 import Link from "next/link";
@@ -55,37 +56,37 @@ function AiInvoiceModal({ onClose, onCreated }: { onClose: () => void; onCreated
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm p-4">
       <div className="w-full max-w-lg rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-base font-bold text-[#000000]"><Sparkles size={16} className="text-black" />Nhập hoá đơn bằng AI</h2>
-          <button onClick={onClose}><X size={16} className="text-[#000000] hover:text-[#000000]" /></button>
+          <h2 className="flex items-center gap-2 text-base font-bold text-slate-900"><Sparkles size={16} className="text-black" />Nhập hoá đơn bằng AI</h2>
+          <button onClick={onClose}><X size={16} className="text-slate-900 hover:text-slate-900" /></button>
         </div>
-        <p className="mb-4 text-xs text-[#000000]">Dán nội dung hoá đơn từ email, Zalo, hoặc ghi chú qua điện thoại. AI sẽ tự trích xuất số liệu và tạo hoá đơn DRAFT để bạn kiểm tra lại.</p>
+        <p className="mb-4 text-xs text-slate-900">Dán nội dung hoá đơn từ email, Zalo, hoặc ghi chú qua điện thoại. AI sẽ tự trích xuất số liệu và tạo hoá đơn DRAFT để bạn kiểm tra lại.</p>
         {err && <div className="mb-3 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-2 text-xs text-red-400">{err}</div>}
         {result ? (
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-black space-y-1">
             <p className="font-bold">✓ Hoá đơn đã tạo: {result.invoiceNumber}</p>
             <p>Tổng tiền: {result.totalAmount?.toLocaleString("vi-VN")} VND</p>
-            <p className="text-xs text-[#000000]">Độ tin cậy AI: {((result.aiConfidence ?? 0) * 100).toFixed(0)}% · {result.message}</p>
+            <p className="text-xs text-slate-900">Độ tin cậy AI: {((result.aiConfidence ?? 0) * 100).toFixed(0)}% · {result.message}</p>
             <button onClick={onClose} className="mt-2 text-xs text-[#3B82F6] hover:underline">Đóng</button>
           </div>
         ) : (
           <div className="space-y-3">
             <div>
-              <label className="mb-1 block text-xs text-[#000000]">Nội dung hoá đơn *</label>
-              <textarea rows={6} value={rawText} onChange={e => setRawText(e.target.value)} placeholder={"Ví dụ:\nHoá đơn số: HD-2026-055\nNgày: 24/04/2026\nPO: PO-2026-012\nThành tiền: 15,000,000 VND\nThuế 10%: 1,500,000 VND\nTổng cộng: 16,500,000 VND"} className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-xs text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-purple-500/50 resize-none" />
+              <label className="mb-1 block text-xs text-slate-900">Nội dung hoá đơn *</label>
+              <textarea rows={6} value={rawText} onChange={e => setRawText(e.target.value)} placeholder={"Ví dụ:\nHoá đơn số: HD-2026-055\nNgày: 24/04/2026\nPO: PO-2026-012\nThành tiền: 15,000,000 VND\nThuế 10%: 1,500,000 VND\nTổng cộng: 16,500,000 VND"} className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-xs text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-purple-500/50 resize-none" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs text-[#000000]">Supplier ID *</label>
-                <input value={supplierId} onChange={e => setSupplierId(e.target.value)} placeholder="UUID nhà cung cấp" className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-xs text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-purple-500/50" />
+                <label className="mb-1 block text-xs text-slate-900">Supplier ID *</label>
+                <input value={supplierId} onChange={e => setSupplierId(e.target.value)} placeholder="UUID nhà cung cấp" className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-xs text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-purple-500/50" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-[#000000]">Org ID *</label>
-                <input value={orgId} onChange={e => setOrgId(e.target.value)} placeholder="UUID tổ chức" className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-xs text-[#000000] placeholder:text-[#000000] focus:outline-none focus:border-purple-500/50" />
+                <label className="mb-1 block text-xs text-slate-900">Org ID *</label>
+                <input value={orgId} onChange={e => setOrgId(e.target.value)} placeholder="UUID tổ chức" className="w-full rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] px-3 py-2 text-xs text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-purple-500/50" />
               </div>
             </div>
             <div className="flex justify-end gap-3 pt-1">
-              <button onClick={onClose} className="px-4 py-2 text-xs text-[#000000] hover:text-[#000000]">Huỷ</button>
-              <button disabled={loading} onClick={submit} className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-xs font-semibold text-[#000000] hover:bg-purple-500 disabled:opacity-50">
+              <button onClick={onClose} className="px-4 py-2 text-xs text-slate-900 hover:text-slate-900">Huỷ</button>
+              <button disabled={loading} onClick={submit} className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-xs font-semibold text-slate-900 hover:bg-purple-500 disabled:opacity-50">
                 {loading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}Phân tích & Tạo
               </button>
             </div>
@@ -117,6 +118,7 @@ export default function InvoicesPage() {
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showAiModal, setShowAiModal] = useState(false);
+  const [confirmState, setConfirmState] = useState<{ open: boolean; title: string; message: string; onConfirm: () => void }>({ open: false, title: "", message: "", onConfirm: () => {} });
 
   useEffect(() => {
     const load = async () => {
@@ -149,17 +151,24 @@ export default function InvoicesPage() {
     exception:(invoices as InvoiceWithDetails[] ?? []).filter((i: InvoiceWithDetails) => i.status === "EXCEPTION_REVIEW").length,
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc muốn xóa hóa đơn này?")) return;
-    setDeletingId(id);
-    try {
-      await removeInvoice(id);
-      await fetchInvoices();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Không xóa được hóa đơn");
-    } finally {
-      setDeletingId(null);
-    }
+  const handleDelete = (id: string) => {
+    setConfirmState({
+      open: true,
+      title: "Xóa hóa đơn",
+      message: "Bạn có chắc muốn xóa hóa đơn này?",
+      onConfirm: async () => {
+        setConfirmState(s => ({ ...s, open: false }));
+        setDeletingId(id);
+        try {
+          await removeInvoice(id);
+          await fetchInvoices();
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Không xóa được hóa đơn");
+        } finally {
+          setDeletingId(null);
+        }
+      }
+    });
   };
 
   if (loading) {
@@ -172,6 +181,13 @@ export default function InvoicesPage() {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
+      <ConfirmDialog
+        open={confirmState.open}
+        title={confirmState.title}
+        message={confirmState.message}
+        onConfirm={confirmState.onConfirm}
+        onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
+      />
       {showAiModal && (
         <AiInvoiceModal
           onClose={() => setShowAiModal(false)}
@@ -181,8 +197,8 @@ export default function InvoicesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-black text-[#000000] tracking-tight">Quản lý Hóa đơn</h1>
-          <p className="text-xs text-[#000000] mt-0.5">Theo dõi và xử lý tất cả hóa đơn nhà cung cấp</p>
+          <h1 className="text-xl font-black text-slate-900 tracking-tight">Quản lý Hóa đơn</h1>
+          <p className="text-xs text-slate-900 mt-0.5">Theo dõi và xử lý tất cả hóa đơn nhà cung cấp</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -223,7 +239,7 @@ export default function InvoicesPage() {
               <Icon size={18} className={color} />
             </div>
             <div>
-              <p className="text-xs text-[#000000] font-semibold">{label}</p>
+              <p className="text-xs text-slate-900 font-semibold">{label}</p>
               <p className={`text-2xl font-black ${color}`}>{value}</p>
             </div>
           </div>
@@ -234,7 +250,7 @@ export default function InvoicesPage() {
       <div className="erp-card flex flex-col sm:flex-row items-start sm:items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 w-full sm:max-w-xs">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" />
           <input
             type="text"
             placeholder="Tìm số hóa đơn, PO, nhà cung cấp..."
@@ -246,15 +262,15 @@ export default function InvoicesPage() {
 
         {/* Status Filter */}
         <div className="flex items-center gap-2 flex-wrap">
-          <Filter size={14} className="text-[#000000] shrink-0" />
+          <Filter size={14} className="text-slate-900 shrink-0" />
           {["ALL", "DRAFT", "RECEIVED", "PENDING_MATCH", "MATCHED", "APPROVED", "PAID", "EXCEPTION_REVIEW"].map((s) => (
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors ${
                 filterStatus === s
-                  ? "bg-[#2563EB] text-[#000000]"
-                  : "bg-[#F1F5F9] text-[#000000] hover:text-[#000000] hover:bg-[#F1F5F9]/80"
+                  ? "bg-[#2563EB] text-slate-900"
+                  : "bg-[#F1F5F9] text-slate-900 hover:text-slate-900 hover:bg-[#F1F5F9]/80"
               }`}
             >
               {s === "ALL" ? "Tất cả" : STATUS_MAP[s]?.label ?? s}
@@ -282,7 +298,7 @@ export default function InvoicesPage() {
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-16 text-[#000000]">
+                  <td colSpan={8} className="text-center py-16 text-slate-900">
                     <TrendingUp size={32} className="mx-auto mb-3 opacity-30" />
                     <p className="font-semibold">Không tìm thấy hóa đơn nào</p>
                     <p className="text-xs mt-1 opacity-60">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
@@ -297,22 +313,22 @@ export default function InvoicesPage() {
                         <div className="w-7 h-7 rounded-lg bg-[#2563EB]/10 flex items-center justify-center shrink-0">
                           <FileText size={12} className="text-[#3B82F6]" />
                         </div>
-                        <span className="font-bold text-[#000000]">{inv.invoiceNumber ?? "—"}</span>
+                        <span className="font-bold text-slate-900">{inv.invoiceNumber ?? "—"}</span>
                       </div>
                     </td>
-                    <td className="font-mono text-[#000000]">{inv.po?.poNumber ?? "—"}</td>
-                    <td className="text-[#000000]">{inv.supplier?.name ?? inv.supplierName ?? "—"}</td>
-                    <td className="text-right font-bold text-[#000000]">
+                    <td className="font-mono text-slate-900">{inv.po?.poNumber ?? "—"}</td>
+                    <td className="text-slate-900">{inv.supplier?.name ?? inv.supplierName ?? "—"}</td>
+                    <td className="text-right font-bold text-slate-900">
                       {inv.totalAmount != null
                         ? Number(inv.totalAmount).toLocaleString("vi-VN")
                         : "—"}
                     </td>
-                    <td className="text-[#000000] text-xs">
+                    <td className="text-slate-900 text-xs">
                       {inv.invoiceDate
                         ? new Date(inv.invoiceDate).toLocaleDateString("vi-VN")
                         : "—"}
                     </td>
-                    <td className="text-[#000000] text-xs">
+                    <td className="text-slate-900 text-xs">
                       {inv.dueDate
                         ? new Date(inv.dueDate).toLocaleDateString("vi-VN")
                         : "—"}
@@ -324,7 +340,7 @@ export default function InvoicesPage() {
                       <div className="flex items-center justify-center gap-1">
                         <Link
                           href={`/invoices/${inv.id}`}
-                          className="p-1.5 rounded-lg hover:bg-[#2563EB]/10 text-[#000000] hover:text-[#3B82F6] transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-[#2563EB]/10 text-slate-900 hover:text-[#3B82F6] transition-colors"
                           title="Xem chi tiết"
                         >
                           <Eye size={14} />
@@ -333,7 +349,7 @@ export default function InvoicesPage() {
                           <>
                             <Link
                               href={`/invoices/${inv.id}?edit=1`}
-                              className="p-1.5 rounded-lg hover:bg-amber-500/10 text-[#000000] hover:text-black transition-colors"
+                              className="p-1.5 rounded-lg hover:bg-amber-500/10 text-slate-900 hover:text-black transition-colors"
                               title="Chỉnh sửa"
                             >
                               <Pencil size={14} />
@@ -341,7 +357,7 @@ export default function InvoicesPage() {
                             <button
                               onClick={() => handleDelete(inv.id)}
                               disabled={deletingId === inv.id}
-                              className="p-1.5 rounded-lg hover:bg-rose-500/10 text-[#000000] hover:text-black transition-colors disabled:opacity-40"
+                              className="p-1.5 rounded-lg hover:bg-rose-500/10 text-slate-900 hover:text-black transition-colors disabled:opacity-40"
                               title="Xóa"
                             >
                               {deletingId === inv.id
@@ -360,9 +376,9 @@ export default function InvoicesPage() {
         </div>
         {filtered.length > 0 && (
           <div className="px-4 py-3 border-t border-[rgba(148,163,184,0.1)] flex items-center justify-between">
-            <p className="text-xs text-[#000000]">
-              Hiển thị <span className="text-[#000000] font-bold">{filtered.length}</span>
-              {" "}/ <span className="text-[#000000] font-bold">{(invoices ?? []).length}</span> hóa đơn
+            <p className="text-xs text-slate-900">
+              Hiển thị <span className="text-slate-900 font-bold">{filtered.length}</span>
+              {" "}/ <span className="text-slate-900 font-bold">{(invoices ?? []).length}</span> hóa đơn
             </p>
           </div>
         )}

@@ -55,8 +55,8 @@ export const AuditLogDetailModal: React.FC<AuditLogDetailModalProps> = ({ data, 
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div className="bg-[#FFFFFF] w-full max-w-2xl rounded-2xl shadow-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                 <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
-                    <h2 className="text-xl font-black text-[#000000]">Chi tiết thay đổi</h2>
-                    <button onClick={onClose} className="text-[#000000] hover:text-[#2563EB]">Đóng</button>
+                    <h2 className="text-xl font-black text-slate-900">Chi tiết thay đổi</h2>
+                    <button onClick={onClose} className="text-slate-900 hover:text-[#2563EB]">Đóng</button>
                 </div>
                 <div className="p-6 max-h-[60vh] overflow-y-auto">
                     {renderContent()}

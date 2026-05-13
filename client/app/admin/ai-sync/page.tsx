@@ -54,7 +54,7 @@ const SYNC_ENTITIES = [
 const ACTIVITY_LOG = [
     { time: "10:42", action: "Global Sync hoàn thành",   detail: "12,450 embeddings đã cập nhật", icon: CheckCircle2, color: "text-black" },
     { time: "08:15", action: "Partial Sync — products",   detail: "4,230 vectors đã upsert",       icon: Layers,       color: "text-[#3B82F6]"   },
-    { time: "Hôm qua", action: "Scheduled Sync",          detail: "Auto-sync chạy thành công",     icon: Clock,        color: "text-[#000000]"  },
+    { time: "Hôm qua", action: "Scheduled Sync",          detail: "Auto-sync chạy thành công",     icon: Clock,        color: "text-slate-900"  },
 ];
 
 interface ParsedEmail {
@@ -142,14 +142,14 @@ export default function AISyncPage() {
                 <div>
                     <div className="flex items-center gap-2 mb-2">
                         <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center shadow-lg shadow-violet-500/30">
-                            <Brain size={16} className="text-[#000000]" />
+                            <Brain size={16} className="text-slate-900" />
                         </div>
                         <span className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-400 bg-violet-400/10 border border-violet-400/20 px-2 py-0.5 rounded-md">
                             RAG · Vector DB
                         </span>
                     </div>
-                    <h1 className="text-2xl font-black text-[#000000] tracking-tight">Huấn luyện & Đồng bộ AI</h1>
-                    <p className="text-[12px] text-[#000000] mt-1 font-medium">
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">Huấn luyện & Đồng bộ AI</h1>
+                    <p className="text-[12px] text-slate-900 mt-1 font-medium">
                         Kết nối Vector Database cho Trợ lý Mua hàng Thông minh ProcureSmart
                     </p>
                 </div>
@@ -157,7 +157,7 @@ export default function AISyncPage() {
                 <button
                     onClick={handleGlobalSync}
                     disabled={isGlobalSyncing}
-                    className="relative flex items-center gap-2.5 bg-gradient-to-r from-[#2563EB] to-[#6366F1] text-[#000000] px-6 py-3 rounded-xl font-bold text-[12px] shadow-xl shadow-[#2563EB]/25 hover:shadow-[#2563EB]/45 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
+                    className="relative flex items-center gap-2.5 bg-gradient-to-r from-[#2563EB] to-[#6366F1] text-slate-900 px-6 py-3 rounded-xl font-bold text-[12px] shadow-xl shadow-[#2563EB]/25 hover:shadow-[#2563EB]/45 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
                 >
                     {isGlobalSyncing && (
                         <div className="absolute inset-0 bg-white/10 transition-all duration-300" style={{ width: `${globalProgress}%` }} />
@@ -182,9 +182,9 @@ export default function AISyncPage() {
                             <s.icon size={18} />
                         </div>
                         <div className="min-w-0">
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-[#000000] truncate">{s.label}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-900 truncate">{s.label}</p>
                             <p className={`text-[17px] font-black leading-tight num-display ${s.color}`}>{s.value}</p>
-                            <p className="text-[9px] text-[#000000] mt-0.5 truncate">{s.sub}</p>
+                            <p className="text-[9px] text-slate-900 mt-0.5 truncate">{s.sub}</p>
                         </div>
                     </div>
                 ))}
@@ -195,10 +195,10 @@ export default function AISyncPage() {
                 {/* Entity Sync Cards */}
                 <div className="xl:col-span-2 erp-card p-6">
                     <div className="flex items-center justify-between mb-5">
-                        <h2 className="text-[11px] font-black text-[#000000] uppercase tracking-widest">
+                        <h2 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">
                             Đồng bộ từng phần — Partial Ingestion
                         </h2>
-                        <span className="text-[9px] text-[#000000] bg-[#FFFFFF] border border-[#E2E8F0] px-2 py-0.5 rounded-md">
+                        <span className="text-[9px] text-slate-900 bg-[#FFFFFF] border border-[#E2E8F0] px-2 py-0.5 rounded-md">
                             4 nguồn dữ liệu
                         </span>
                     </div>
@@ -220,8 +220,8 @@ export default function AISyncPage() {
                                             <Icon size={20} />
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-[12px] font-bold text-[#000000] truncate">{entity.name}</p>
-                                            <p className="text-[10px] text-[#000000] truncate max-w-[140px]">{entity.desc}</p>
+                                            <p className="text-[12px] font-bold text-slate-900 truncate">{entity.name}</p>
+                                            <p className="text-[10px] text-slate-900 truncate max-w-[140px]">{entity.desc}</p>
                                             <p className={`text-[9px] font-bold mt-0.5 num-display ${entity.color}`}>{entity.count} vectors</p>
                                         </div>
                                     </div>
@@ -255,8 +255,8 @@ export default function AISyncPage() {
                 {/* Activity Log */}
                 <div className="erp-card p-5 flex flex-col">
                     <div className="flex items-center gap-2 mb-4">
-                        <Activity size={14} className="text-[#000000]" />
-                        <h2 className="text-[11px] font-black text-[#000000] uppercase tracking-widest">Hoạt động gần đây</h2>
+                        <Activity size={14} className="text-slate-900" />
+                        <h2 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Hoạt động gần đây</h2>
                     </div>
                     <div className="space-y-3 flex-1">
                         {ACTIVITY_LOG.map((log, i) => (
@@ -265,10 +265,10 @@ export default function AISyncPage() {
                                     <log.icon size={13} className={log.color} />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-[11px] font-semibold text-[#000000] leading-snug">{log.action}</p>
-                                    <p className="text-[9px] text-[#000000] mt-0.5">{log.detail}</p>
+                                    <p className="text-[11px] font-semibold text-slate-900 leading-snug">{log.action}</p>
+                                    <p className="text-[9px] text-slate-900 mt-0.5">{log.detail}</p>
                                 </div>
-                                <span className="text-[9px] text-[#000000] shrink-0 mt-0.5">{log.time}</span>
+                                <span className="text-[9px] text-slate-900 shrink-0 mt-0.5">{log.time}</span>
                             </div>
                         ))}
                     </div>
@@ -280,7 +280,7 @@ export default function AISyncPage() {
                             { label: "Redis Queue",          ok: true },
                         ].map((s, i) => (
                             <div key={i} className="flex items-center justify-between">
-                                <span className="text-[11px] text-[#000000]">{s.label}</span>
+                                <span className="text-[11px] text-slate-900">{s.label}</span>
                                 <div className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wide ${s.ok ? "text-black" : "text-black"}`}>
                                     <span className={`status-dot ${s.ok ? "status-dot-active" : "status-dot-error"}`} />
                                     {s.ok ? "Online" : "Offline"}
@@ -299,8 +299,8 @@ export default function AISyncPage() {
                             <Mail size={16} className="text-[#2563EB]" />
                         </div>
                         <div>
-                            <h2 className="text-[13px] font-black text-[#000000]">Email RAG Ingestion</h2>
-                            <p className="text-[10px] text-[#000000]">Đọc email Gmail qua IMAP · Nhúng vào Vector DB</p>
+                            <h2 className="text-[13px] font-black text-slate-900">Email RAG Ingestion</h2>
+                            <p className="text-[10px] text-slate-900">Đọc email Gmail qua IMAP · Nhúng vào Vector DB</p>
                         </div>
                     </div>
                     <span className="text-[9px] font-bold text-[#2563EB] bg-[#2563EB]/10 border border-[#2563EB]/20 px-2 py-0.5 rounded-md uppercase tracking-widest">
@@ -311,21 +311,21 @@ export default function AISyncPage() {
                 {/* Controls */}
                 <div className="flex flex-wrap items-center gap-3 mb-5">
                     <div className="flex items-center gap-2 bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg px-3 py-2">
-                        <span className="text-[11px] text-[#000000]">Số email:</span>
+                        <span className="text-[11px] text-slate-900">Số email:</span>
                         <input
                             type="number"
                             min={5}
                             max={200}
                             value={emailLimit}
                             onChange={e => setEmailLimit(Number(e.target.value))}
-                            className="w-14 bg-transparent text-[#000000] text-[12px] font-bold outline-none text-center"
+                            className="w-14 bg-transparent text-slate-900 text-[12px] font-bold outline-none text-center"
                         />
                     </div>
 
                     <button
                         onClick={handleFetchEmails}
                         disabled={emailsLoading}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#FFFFFF] border border-[rgba(240,246,252,0.1)] hover:border-[#2563EB]/40 text-[#000000] rounded-lg text-[11px] font-bold transition-all disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#FFFFFF] border border-[rgba(240,246,252,0.1)] hover:border-[#2563EB]/40 text-slate-900 rounded-lg text-[11px] font-bold transition-all disabled:opacity-50"
                     >
                         {emailsLoading
                             ? <><RefreshCw size={13} className="animate-spin" /> Đang tải…</>
@@ -335,7 +335,7 @@ export default function AISyncPage() {
                     <button
                         onClick={handleIngestEmails}
                         disabled={emailIngestStatus === "loading"}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#2563EB] to-[#6366F1] text-[#000000] rounded-lg text-[11px] font-bold transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-lg shadow-[#2563EB]/20"
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#2563EB] to-[#6366F1] text-slate-900 rounded-lg text-[11px] font-bold transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-lg shadow-[#2563EB]/20"
                     >
                         {emailIngestStatus === "loading"
                             ? <><RefreshCw size={13} className="animate-spin" /> Đang ingest…</>
@@ -367,7 +367,7 @@ export default function AISyncPage() {
                     <div>
                         <button
                             onClick={() => setShowEmails(v => !v)}
-                            className="flex items-center gap-2 text-[11px] font-bold text-[#000000] hover:text-[#000000] mb-3 transition-colors"
+                            className="flex items-center gap-2 text-[11px] font-bold text-slate-900 hover:text-slate-900 mb-3 transition-colors"
                         >
                             {showEmails ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
                             {emails.length} email đã tải
@@ -381,11 +381,11 @@ export default function AISyncPage() {
                                             <Mail size={13} className="text-[#2563EB]" />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <p className="text-[12px] font-semibold text-[#000000] truncate">{email.subject || "(Không có tiêu đề)"}</p>
-                                            <p className="text-[10px] text-[#000000] truncate">Từ: {email.from}</p>
-                                            <p className="text-[10px] text-[#000000] mt-0.5 line-clamp-1">{email.body?.slice(0, 100)}…</p>
+                                            <p className="text-[12px] font-semibold text-slate-900 truncate">{email.subject || "(Không có tiêu đề)"}</p>
+                                            <p className="text-[10px] text-slate-900 truncate">Từ: {email.from}</p>
+                                            <p className="text-[10px] text-slate-900 mt-0.5 line-clamp-1">{email.body?.slice(0, 100)}…</p>
                                         </div>
-                                        <span className="text-[9px] text-[#000000] shrink-0 mt-0.5">
+                                        <span className="text-[9px] text-slate-900 shrink-0 mt-0.5">
                                             {email.date ? new Date(email.date).toLocaleDateString("vi-VN") : ""}
                                         </span>
                                     </div>
@@ -397,7 +397,7 @@ export default function AISyncPage() {
 
                 {/* Info hint */}
                 <div className="mt-4 p-3 bg-[#2563EB]/5 border border-[#2563EB]/10 rounded-xl">
-                    <p className="text-[10px] text-[#000000] leading-relaxed">
+                    <p className="text-[10px] text-slate-900 leading-relaxed">
                         <span className="text-[#2563EB] font-bold">Cách hoạt động:</span> Email từ Gmail INBOX được đọc qua IMAP,
                         nhúng thành vector bằng FPT AI Embedding (768 dim), lưu vào PostgreSQL pgvector.
                         AI Assistant sau đó có thể tìm kiếm và trả lời câu hỏi dựa trên nội dung email.

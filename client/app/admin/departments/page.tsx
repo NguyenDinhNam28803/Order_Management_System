@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Building2, Plus, Edit2, Trash2, Users, Search } from "lucide-react";
 import { useProcurement, Department, User } from "../../context/ProcurementContext";
 import { Organization, CreateDepartmentPayload, UpdateDepartmentPayload } from "@/app/types/api-types";
+import ConfirmDialog from "../../components/shared/ConfirmDialog";
 
 export default function DepartmentsPage() {
     const { departments, users, addDept, updateDept, removeDept, organizations, currentUser } = useProcurement();
@@ -19,6 +20,7 @@ export default function DepartmentsPage() {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filterOrgId, setFilterOrgId] = useState("");
+    const [confirmState, setConfirmState] = useState<{ open: boolean; title: string; message: string; onConfirm: () => void }>({ open: false, title: "", message: "", onConfirm: () => {} });
 
     const filteredDepartments = departments?.filter((dept: Department) => {
         const matchesSearch =
@@ -71,14 +73,21 @@ export default function DepartmentsPage() {
 
     return (
         <div className="animate-in fade-in duration-500">
+            <ConfirmDialog
+                open={confirmState.open}
+                title={confirmState.title}
+                message={confirmState.message}
+                onConfirm={confirmState.onConfirm}
+                onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
+            />
             <div className="flex justify-between items-end mb-10">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight uppercase">Quản lý Phòng ban</h1>
-                    <p className="text-sm text-[#000000] mt-1 font-medium italic">THIẾT LẬP CƠ CẤU TỔ CHỨC VÀ NGÂN SÁCH PHÒNG BAN</p>
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Quản lý Phòng ban</h1>
+                    <p className="text-sm text-slate-900 mt-1 font-medium italic">THIẾT LẬP CƠ CẤU TỔ CHỨC VÀ NGÂN SÁCH PHÒNG BAN</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-slate-900 px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm phòng ban
                 </button>
@@ -87,14 +96,14 @@ export default function DepartmentsPage() {
             <div className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                        <div className="text-[10px] font-black text-[#000000] uppercase tracking-widest border-r border-[rgba(148,163,184,0.1)] pr-4">Cơ cấu Tổ chức (Structure)</div>
+                        <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest border-r border-[rgba(148,163,184,0.1)] pr-4">Cơ cấu Tổ chức (Structure)</div>
                         <div className="text-[10px] font-black text-[#2563EB] bg-[#2563EB]/10 px-3 py-1 rounded-full border border-[#2563EB]/20">{filteredDepartments?.length || 0} Phòng ban</div>
                     </div>
                     <div className="flex items-center gap-3">
                         <select
                             value={filterOrgId}
                             onChange={(e) => setFilterOrgId(e.target.value)}
-                            className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-[#000000] focus:ring-2 focus:ring-[#2563EB]/20 py-2 px-4 outline-none"
+                            className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-[#2563EB]/20 py-2 px-4 outline-none"
                         >
                             <option value="">Tất cả tổ chức</option>
                             {organizations?.map((org: Organization) => (
@@ -102,13 +111,13 @@ export default function DepartmentsPage() {
                             ))}
                         </select>
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#000000]" size={14} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" size={14} />
                             <input
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Tìm kiếm phòng ban..."
-                                className="pl-10 pr-4 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-[#000000] placeholder:text-[#000000] focus:ring-2 focus:ring-[#2563EB]/20 w-64 outline-none"
+                                className="pl-10 pr-4 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB]/20 w-64 outline-none"
                             />
                         </div>
                     </div>
@@ -117,11 +126,11 @@ export default function DepartmentsPage() {
                     <table className="erp-table text-xs">
                         <thead>
                             <tr className="bg-[#FFFFFF]">
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#000000] text-left">Mã & Tên Phòng ban</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#000000] text-left">Trưởng bộ phận</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#000000] text-center">Trạng thái</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#000000] text-center">Nhân sự</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#000000] text-center">Thao tác</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-left">Mã & Tên Phòng ban</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-left">Trưởng bộ phận</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Trạng thái</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Nhân sự</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
@@ -133,8 +142,8 @@ export default function DepartmentsPage() {
                                                 <Building2 size={20} />
                                             </div>
                                             <div>
-                                                <div className="text-sm font-black text-[#000000] leading-tight">{dept.name}</div>
-                                                <div className="text-[10px] text-[#000000] font-bold flex items-center gap-1.5 mt-1 tracking-tight">
+                                                <div className="text-sm font-black text-slate-900 leading-tight">{dept.name}</div>
+                                                <div className="text-[10px] text-slate-900 font-bold flex items-center gap-1.5 mt-1 tracking-tight">
                                                     ID: {dept.code} • {dept.organization?.name}
                                                 </div>
                                             </div>
@@ -145,7 +154,7 @@ export default function DepartmentsPage() {
                                             <div className="h-6 w-6 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[8px] font-black text-[#2563EB]">
                                                 {dept.head?.fullName?.substring(0, 2).toUpperCase() || "NA"}
                                             </div>
-                                            <span className="font-bold text-[#000000]">{dept.head?.fullName || "Chưa chỉ định"}</span>
+                                            <span className="font-bold text-slate-900">{dept.head?.fullName || "Chưa chỉ định"}</span>
                                         </div>
                                     </td>
                                     <td className="p-5 text-center font-bold text-black uppercase tracking-widest text-[10px]">Đang hoạt động</td>
@@ -159,17 +168,19 @@ export default function DepartmentsPage() {
                                         <div className="flex justify-center gap-3">
                                             <button
                                                 onClick={() => handleOpenModal(dept)}
-                                                className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
+                                                className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Edit2 size={14} />
                                             </button>
                                             <button
-                                                onClick={() => {
-                                                    if(confirm("Bạn có chắc chắn muốn xóa phòng ban này?")) {
-                                                        removeDept(dept.id);
-                                                    }
-                                                }}
-                                                className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-black hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
+                                                onClick={() => setConfirmState({
+                                                    open: true,
+                                                    title: "Xóa phòng ban",
+                                                    message: "Bạn có chắc chắn muốn xóa phòng ban này?",
+                                                    onConfirm: () => { removeDept(dept.id); setConfirmState(s => ({ ...s, open: false })); }
+                                                })}
+                                                className="h-9 w-9 flex items-center justify-center bg-white border border-slate-200 text-slate-500 hover:text-red-500 hover:border-red-200 rounded-xl transition-all shadow-sm"
+                                                aria-label="Xóa phòng ban"
                                             >
                                                 <Trash2 size={14} />
                                             </button>
@@ -187,10 +198,10 @@ export default function DepartmentsPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
                     <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
                         <div className="p-10">
-                            <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
+                            <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 {editingDept ? "Cập nhật Phòng ban" : "Thêm Phòng ban mới"}
                             </h2>
-                            <p className="text-xs text-[#000000] font-bold uppercase tracking-widest mb-10">CẤU CƠ TỔ CHỨC HỆ THỐNG</p>
+                            <p className="text-xs text-slate-900 font-bold uppercase tracking-widest mb-10">CẤU CƠ TỔ CHỨC HỆ THỐNG</p>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="form-grid">
@@ -244,7 +255,7 @@ export default function DepartmentsPage() {
                                                 placeholder="0"
                                                 className="erp-input pr-12 font-bold text-[#2563EB]"
                                             />
-                                            <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#000000]">VND</span>
+                                            <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-900">VND</span>
                                         </div>
                                     </div>
 

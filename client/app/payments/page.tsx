@@ -59,7 +59,7 @@ export default function PaymentsPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             {error && (
                 <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
                     {error}
@@ -69,8 +69,8 @@ export default function PaymentsPage() {
             <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
                 <div className="lg:col-span-2 space-y-8">
                     <div>
-                        <h1 className="text-2xl font-black text-[#000000] tracking-tight mb-2">Hóa đơn & Thanh toán</h1>
-                        <p className="text-sm text-[#000000]">Thanh toán các đơn hàng đã được đối soát hoàn tất.</p>
+                        <h1 className="text-2xl font-black text-slate-900 tracking-tight mb-2">Hóa đơn & Thanh toán</h1>
+                        <p className="text-sm text-slate-900">Thanh toán các đơn hàng đã được đối soát hoàn tất.</p>
                     </div>
 
                     <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-sm overflow-hidden">
@@ -97,7 +97,7 @@ export default function PaymentsPage() {
                                                         </span>
                                                     </td>
                                                     <td className="flex items-center gap-2">
-                                                        <button disabled={isCompleted} className={`${!isCompleted ? 'bg-erp-navy text-[#000000] hover:bg-erp-navy/90' : 'text-slate-300 bg-slate-100'} px-4 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 disabled:cursor-not-allowed`}>
+                                                        <button disabled={isCompleted} className={`${!isCompleted ? 'bg-erp-navy text-slate-900 hover:bg-erp-navy/90' : 'text-slate-300 bg-slate-100'} px-4 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 disabled:cursor-not-allowed`}>
                                                             {isCompleted ? 'Đã thanh toán' : 'Thanh toán'} <ArrowRight size={12} />
                                                         </button>
                                                         {payment.status === 'PENDING' && (
@@ -120,39 +120,39 @@ export default function PaymentsPage() {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-[#F1F5F9] rounded-3xl p-8 text-[#000000] shadow-2xl relative overflow-hidden border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-3xl p-8 text-slate-900 shadow-2xl relative overflow-hidden border border-[rgba(148,163,184,0.1)]">
                         <div className="absolute -top-10 -right-10 h-40 w-40 bg-[#2563EB]/5 rounded-full blur-2xl font-black"></div>
-                        <h3 className="text-xs font-black uppercase text-[#000000] mb-8 tracking-widest">Ví tổng thanh toán</h3>
-                        <div className="text-4xl font-black mb-1 text-[#000000]">{formatCurrency(totalAmount)}</div>
+                        <h3 className="text-xs font-black uppercase text-slate-900 mb-8 tracking-widest">Ví tổng thanh toán</h3>
+                        <div className="text-4xl font-black mb-1 text-slate-900">{formatCurrency(totalAmount)}</div>
                         <p className="text-[10px] text-black font-bold mb-8 italic">● Hệ thống đã sẵn sàng giải ngân</p>
 
                         <div className="space-y-4 pt-8 border-t border-[rgba(148,163,184,0.1)]">
                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-[#000000]">Giao dịch trong hệ thống:</span>
-                                <span className="font-bold text-[#000000]">{payments.length} đơn</span>
+                                <span className="text-slate-900">Giao dịch trong hệ thống:</span>
+                                <span className="font-bold text-slate-900">{payments.length} đơn</span>
                             </div>
                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-[#000000]">Tổng chi:</span>
-                                <span className="font-bold text-[#000000]">{formatCurrency(totalAmount)}</span>
+                                <span className="text-slate-900">Tổng chi:</span>
+                                <span className="font-bold text-slate-900">{formatCurrency(totalAmount)}</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-6 shadow-sm">
-                        <h4 className="text-[10px] font-black uppercase text-[#000000] mb-4">Lịch sử giao dịch gần đây</h4>
+                        <h4 className="text-[10px] font-black uppercase text-slate-900 mb-4">Lịch sử giao dịch gần đây</h4>
                         <div className="space-y-4">
                             {payments.filter(p => p.status === 'COMPLETED').slice(0, 3).map(payment => (
                                 <div key={payment.id} className="flex items-center gap-3">
                                     <div className="h-8 w-8 rounded-full bg-emerald-500/10 text-black flex items-center justify-center border border-emerald-500/20"><ShieldCheck size={16} /></div>
                                     <div className="flex-1">
-                                        <div className="text-[10px] font-bold text-[#000000]">Thanh toán {payment.id}</div>
-                                                                                <div className="text-[9px] text-[#000000]">{new Date(payment.paymentDate || payment.createdAt).toLocaleDateString('vi-VN')} - Thành công</div>
+                                        <div className="text-[10px] font-bold text-slate-900">Thanh toán {payment.id}</div>
+                                                                                <div className="text-[9px] text-slate-900">{new Date(payment.paymentDate || payment.createdAt).toLocaleDateString('vi-VN')} - Thành công</div>
                                     </div>
-                                    <div className="text-[10px] font-black text-[#000000]">-{formatCurrency(payment.amount)}</div>
+                                    <div className="text-[10px] font-black text-slate-900">-{formatCurrency(payment.amount)}</div>
                                 </div>
                             ))}
                         </div>
-                        <button className="w-full mt-6 text-[10px] font-black text-[#000000] uppercase tracking-widest flex items-center justify-center gap-2 hover:text-[#000000] transition-colors">
+                        <button className="w-full mt-6 text-[10px] font-black text-slate-900 uppercase tracking-widest flex items-center justify-center gap-2 hover:text-slate-900 transition-colors">
                             <History size={14} /> Xem tất cả lịch sử
                         </button>
                     </div>

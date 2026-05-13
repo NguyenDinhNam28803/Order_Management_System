@@ -955,3 +955,113 @@ select.erp-input {
 }
 .form-input::placeholder { color: #94A3B8; font-weight: 400; }
 .form-select option { background: #FFFFFF; color: #0F172A; }
+
+/* ── Reduced Motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Focus Visible (keyboard nav accessibility) ──────────────── */
+:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Dark Mode ───────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background:           #0F172A;
+    --background-secondary: #1E293B;
+    --background-elevated:  #1E293B;
+    --foreground:           #F1F5F9;
+    --foreground-secondary: #94A3B8;
+    --card:                 #1E293B;
+    --card-foreground:      #F1F5F9;
+    --border:               #334155;
+    --input:                #1E293B;
+    --muted:                #64748B;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  .erp-card, .glass-card {
+    background: #1E293B;
+    border-color: #334155;
+    color: #F1F5F9;
+  }
+
+  .erp-table thead { background: #1E293B; }
+  .erp-table th { background: #1E293B; color: #94A3B8; border-bottom-color: #334155; }
+  .erp-table tbody tr:nth-child(even) td { background: #1E293B; }
+  .erp-table tbody tr:nth-child(odd) td  { background: #0F172A; }
+  .erp-table td { color: #E2E8F0; border-bottom-color: #1E293B; }
+  .erp-table tbody tr:hover td { background: #1D3461 !important; }
+
+  .erp-input, .glass-input, .form-input, .form-select {
+    background: #1E293B;
+    border-color: #334155;
+    color: #F1F5F9;
+  }
+  .erp-input:focus, .glass-input:focus { border-color: #3B82F6; }
+
+  .btn-secondary {
+    background: #1E293B;
+    border-color: #475569;
+    color: #CBD5E1;
+  }
+  .btn-secondary:hover { background: #334155; }
+
+  .ref-tag, .source-pill {
+    background: #1E293B;
+    border-color: #334155;
+    color: #93C5FD;
+  }
+}
+
+/* ── Async Button Loading State ──────────────────────────────── */
+.btn-loading {
+  position: relative;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* ── Skip to content (accessibility) ────────────────────────── */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 99999;
+  padding: 0.5rem 1rem;
+  background: #2563EB;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0 0 0.5rem 0.5rem;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-to-content:focus { top: 0; }

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import {
@@ -6,7 +6,7 @@ import {
     FileCheck, ShieldAlert, Users, Settings, LogOut,
     FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers,
     ShieldCheck, MessageSquare, History, FileText,
-    Bell, Command, Star, Zap, Brain, PlusCircle, GitMerge, Sparkles, UserCheck
+    Bell, Command, Star, Zap, Brain, PlusCircle, GitMerge, Sparkles, UserCheck, X
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -153,131 +153,165 @@ const navigation: NavGroup[] = [
     },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+    isOpen?: boolean;
+    onClose?: () => void;
+}
+
+export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
     const pathname = usePathname() || "/";
     const { currentUser, logout } = useProcurement();
 
     const roleKey = currentUser?.role || "GUEST";
-    const roleInfo = roleMapping[roleKey] || { label: "Khách", class: "role-finance", dot: "#000000" };
+    const roleInfo = roleMapping[roleKey] || { label: "Khách", class: "role-finance", dot: "#94A3B8" };
 
     const initials = (currentUser?.fullName || currentUser?.name || "GU")
         .split(" ").slice(-2).map((w: string) => w[0]?.toUpperCase() || "").join("").slice(0, 2) || "GU";
 
     return (
-        <aside className="sidebar-dark fixed left-0 top-0 z-50 h-screen w-[180px] flex flex-col overflow-hidden">
+        <>
+            {/* Mobile backdrop */}
+            {onClose && (
+                <div
+                    className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 md:hidden ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+                    onClick={onClose}
+                    aria-hidden="true"
+                />
+            )}
 
-            {/* ── Logo ── */}
-            <div className="flex h-14 items-center gap-2.5 px-3.5 border-b border-white/8 shrink-0">
-                <div className="relative h-7 w-7 rounded-lg bg-[#1E293B] border-2 border-[#2563EB] flex items-center justify-center shrink-0">
-                    <span className="text-white text-[9px] font-black tracking-tight select-none">PS</span>
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0F172A] status-dot-active" />
+            <aside
+                className={`sidebar-dark fixed left-0 top-0 z-50 h-screen w-[180px] flex flex-col overflow-hidden transition-transform duration-300 ease-in-out
+                    ${isOpen ? "translate-x-0" : "-translate-x-full"}
+                    md:translate-x-0`}
+                aria-label="Navigation principale"
+            >
+                {/* ── Logo ── */}
+                <div className="flex h-14 items-center gap-2.5 px-3.5 border-b border-white/8 shrink-0">
+                    <div className="relative h-7 w-7 rounded-lg bg-[#1E293B] border-2 border-[#2563EB] flex items-center justify-center shrink-0">
+                        <span className="text-white text-[9px] font-black tracking-tight select-none">PS</span>
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0F172A] status-dot-active" />
+                    </div>
+                    <div className="flex flex-col min-w-0 flex-1">
+                        <span className="text-[12.5px] font-black tracking-tight text-white whitespace-nowrap leading-none">
+                            PROCURE<span className="text-[#2563EB]">SMART</span>
+                        </span>
+                        <span className="text-[8.5px] font-semibold text-slate-500 tracking-widest uppercase leading-tight">ERP Platform</span>
+                    </div>
+                    {/* Mobile close button */}
+                    {onClose && (
+                        <button
+                            onClick={onClose}
+                            className="md:hidden p-1 rounded-lg text-slate-500 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+                            aria-label="Đóng menu"
+                        >
+                            <X size={14} />
+                        </button>
+                    )}
                 </div>
-                <div className="flex flex-col min-w-0">
-                    <span className="text-[12.5px] font-black tracking-tight text-white whitespace-nowrap leading-none">
-                        PROCURE<span className="text-[#2563EB]">SMART</span>
-                    </span>
-                    <span className="text-[8.5px] font-semibold text-slate-500 tracking-widest uppercase leading-tight">ERP Platform</span>
-                </div>
-            </div>
 
-            {/* ── Nav ── */}
-            <nav className="mt-2.5 px-2 space-y-2.5 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-36">
-                {navigation.map((group) => {
-                    const userRole = currentUser?.role;
-                    const groupVisible = !userRole || group.roles.includes(userRole);
-                    if (!groupVisible && userRole !== "PLATFORM_ADMIN") return null;
+                {/* ── Nav ── */}
+                <nav className="mt-2.5 px-2 space-y-2.5 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-36" aria-label="Menu chính">
+                    {navigation.map((group) => {
+                        const userRole = currentUser?.role;
+                        const groupVisible = !userRole || group.roles.includes(userRole);
+                        if (!groupVisible && userRole !== "PLATFORM_ADMIN") return null;
 
-                    const visibleItems = group.items.filter(item => !userRole || item.roles.includes(userRole));
-                    if (visibleItems.length === 0) return null;
+                        const visibleItems = group.items.filter(item => !userRole || item.roles.includes(userRole));
+                        if (visibleItems.length === 0) return null;
 
-                    return (
-                        <div key={group.group}>
-                            <div className="nav-group-label mb-1 px-1.5">
-                                <span
-                                    className="nav-group-dot"
-                                    style={{ background: group.dot }}
-                                />
-                                <span style={{ color: group.dot, opacity: 0.6 }}>{group.group}</span>
+                        return (
+                            <div key={group.group}>
+                                <div className="nav-group-label mb-1 px-1.5">
+                                    <span
+                                        className="nav-group-dot"
+                                        style={{ background: group.dot }}
+                                    />
+                                    <span style={{ color: group.dot, opacity: 0.6 }}>{group.group}</span>
+                                </div>
+                                <div className="space-y-0.5">
+                                    {visibleItems.map((item) => {
+                                        const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(`${item.path}/`));
+                                        return (
+                                            <Link
+                                                key={item.name}
+                                                href={item.path}
+                                                onClick={onClose}
+                                                className={`sidebar-item relative ${isActive ? "active" : ""}`}
+                                                aria-current={isActive ? "page" : undefined}
+                                            >
+                                                <item.icon
+                                                    size={14}
+                                                    className={`shrink-0 transition-colors ${isActive ? "text-[#2563EB]" : "text-slate-500"}`}
+                                                    aria-hidden="true"
+                                                />
+                                                <span className="whitespace-nowrap font-medium text-[12px] truncate leading-snug">
+                                                    {item.name}
+                                                </span>
+                                                {isActive ? (
+                                                    <ChevronRight size={11} className="ml-auto text-[#2563EB] shrink-0" aria-hidden="true" />
+                                                ) : null}
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                            <div className="space-y-0.5">
-                                {visibleItems.map((item) => {
-                                    const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(`${item.path}/`));
-                                    return (
-                                        <Link
-                                            key={item.name}
-                                            href={item.path}
-                                            className={`sidebar-item relative ${isActive ? "active" : ""}`}
-                                        >
-                                            <item.icon
-                                                size={14}
-                                                className={`shrink-0 transition-colors ${isActive ? "text-[#2563EB]" : "text-slate-500"}`}
-                                            />
-                                            <span className="whitespace-nowrap font-medium text-[12px] truncate leading-snug">
-                                                {item.name}
-                                            </span>
-                                            {isActive ? (
-                                                <ChevronRight size={11} className="ml-auto text-[#2563EB] shrink-0" />
-                                            ) : null}
-                                        </Link>
-                                    );
-                                })}
-                            </div>
+                        );
+                    })}
+                </nav>
+
+                {/* ── Quick Stats ── */}
+                <div className="px-2.5 py-2 border-t border-white/6 bg-white/4">
+                    <div className="grid grid-cols-3 gap-1 text-center">
+                        <div className="p-1.5 bg-white/6 rounded-md border border-white/6">
+                            <p className="text-[8px] text-slate-500 font-semibold uppercase tracking-wide">Chờ</p>
+                            <p className="text-[13px] font-bold text-white num-display leading-tight">—</p>
                         </div>
-                    );
-                })}
-            </nav>
-
-            {/* ── Quick Stats ── */}
-            <div className="px-2.5 py-2 border-t border-white/6 bg-white/4">
-                <div className="grid grid-cols-3 gap-1 text-center">
-                    <div className="p-1.5 bg-white/6 rounded-md border border-white/6">
-                        <p className="text-[8px] text-slate-500 font-semibold uppercase tracking-wide">Chờ</p>
-                        <p className="text-[13px] font-black text-white num-display leading-tight">—</p>
-                    </div>
-                    <div className="p-1.5 bg-white/6 rounded-md border border-white/6">
-                        <p className="text-[8px] text-slate-500 font-semibold uppercase tracking-wide">Online</p>
-                        <p className="text-[13px] font-black text-white num-display leading-tight">24</p>
-                    </div>
-                    <div className="p-1.5 bg-white/6 rounded-md border border-white/6">
-                        <p className="text-[8px] text-slate-500 font-semibold uppercase tracking-wide">AI</p>
-                        <p className="text-[13px] font-black text-violet-400 num-display leading-tight flex items-center justify-center gap-0.5">
-                            <span className="status-dot status-dot-active" />
-                        </p>
+                        <div className="p-1.5 bg-white/6 rounded-md border border-white/6">
+                            <p className="text-[8px] text-slate-500 font-semibold uppercase tracking-wide">Online</p>
+                            <p className="text-[13px] font-bold text-white num-display leading-tight">24</p>
+                        </div>
+                        <div className="p-1.5 bg-white/6 rounded-md border border-white/6">
+                            <p className="text-[8px] text-slate-500 font-semibold uppercase tracking-wide">AI</p>
+                            <p className="text-[13px] font-bold text-violet-400 num-display leading-tight flex items-center justify-center gap-0.5">
+                                <span className="status-dot status-dot-active" />
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* ── User Footer ── */}
-            <div className="border-t border-white/6 bg-[#0F172A] p-2 space-y-0.5">
-                <Link
-                    href="/users/profile"
-                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/6 rounded-lg transition-all duration-150 group cursor-pointer"
-                >
-                    <div
-                        className="h-7 w-7 rounded-lg flex items-center justify-center font-black text-white text-[10px] shrink-0 shadow-md"
-                        style={{ background: `linear-gradient(135deg, ${roleInfo.dot}99 0%, ${roleInfo.dot} 100%)` }}
+                {/* ── User Footer ── */}
+                <div className="border-t border-white/6 bg-[#0F172A] p-2 space-y-0.5">
+                    <Link
+                        href="/users/profile"
+                        onClick={onClose}
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/6 rounded-lg transition-all duration-150 group cursor-pointer"
                     >
-                        {initials}
-                    </div>
-                    <div className="flex flex-col overflow-hidden min-w-0 flex-1">
-                        <span className="text-[11px] font-bold truncate text-slate-200 leading-tight group-hover:text-white transition-colors">
-                            {currentUser?.name || currentUser?.fullName || "Guest"}
-                        </span>
-                        <span className={`role-badge mt-0.5 w-fit ${roleInfo.class}`}>
-                            {roleInfo.label}
-                        </span>
-                    </div>
-                    <ChevronRight size={11} className="text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
-                </Link>
-                <button
-                    onClick={logout}
-                    className="flex w-full items-center gap-2 px-2 py-1.5 text-[11px] font-bold text-slate-500 hover:text-red-400 hover:bg-red-500/8 rounded-lg transition-all duration-150"
-                >
-                    <LogOut size={13} className="shrink-0" />
-                    <span>Đăng xuất</span>
-                </button>
-            </div>
-        </aside>
+                        <div
+                            className="h-7 w-7 rounded-lg flex items-center justify-center font-bold text-white text-[10px] shrink-0 shadow-md"
+                            style={{ background: `linear-gradient(135deg, ${roleInfo.dot}99 0%, ${roleInfo.dot} 100%)` }}
+                            aria-hidden="true"
+                        >
+                            {initials}
+                        </div>
+                        <div className="flex flex-col overflow-hidden min-w-0 flex-1">
+                            <span className="text-[11px] font-bold truncate text-slate-200 leading-tight group-hover:text-white transition-colors">
+                                {currentUser?.name || currentUser?.fullName || "Guest"}
+                            </span>
+                            <span className={`role-badge mt-0.5 w-fit ${roleInfo.class}`}>
+                                {roleInfo.label}
+                            </span>
+                        </div>
+                        <ChevronRight size={11} className="text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" aria-hidden="true" />
+                    </Link>
+                    <button
+                        onClick={logout}
+                        className="flex w-full items-center gap-2 px-2 py-1.5 text-[11px] font-bold text-slate-500 hover:text-red-400 hover:bg-red-500/8 rounded-lg transition-all duration-150"
+                    >
+                        <LogOut size={13} className="shrink-0" aria-hidden="true" />
+                        <span>Đăng xuất</span>
+                    </button>
+                </div>
+            </aside>
+        </>
     );
 }
-

@@ -50,12 +50,12 @@ export default function AIReportPage() {
             {/* Banner Thông báo */}
             <div className="bg-linear-to-r from-amber-500 to-orange-500 p-4 rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-between mb-8 animate-in slide-in-from-top-4">
                 <div className="flex items-center gap-3">
-                    <div className="bg-white/20 p-2 rounded-lg text-[#000000]">
+                    <div className="bg-white/20 p-2 rounded-lg text-slate-900">
                         <Info size={24} />
                     </div>
                     <div>
-                        <div className="text-[#000000] font-black uppercase tracking-widest text-[10px] mb-0.5">Yêu cầu xác nhận</div>
-                        <div className="text-[#000000] font-bold text-sm">AI đã phân tích xong 3 báo giá &mdash; Vui lòng xem xét và xác nhận lựa chọn trước ngày 16/03/2026.</div>
+                        <div className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-0.5">Yêu cầu xác nhận</div>
+                        <div className="text-slate-900 font-bold text-sm">AI đã phân tích xong 3 báo giá &mdash; Vui lòng xem xét và xác nhận lựa chọn trước ngày 16/03/2026.</div>
                     </div>
                 </div>
             </div>
@@ -205,7 +205,7 @@ export default function AIReportPage() {
                             onClick={handleConfirm}
                             disabled={selection === 'Other' && overrideReason.trim().length < 10}
                             className={`w-full py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all ${
-                                (selection === 'Other' && overrideReason.trim().length < 10) ? 'bg-slate-300 text-black cursor-not-allowed shadow-none' : 'bg-erp-navy text-[#000000] hover:bg-slate-800 shadow-xl shadow-erp-navy/20'
+                                (selection === 'Other' && overrideReason.trim().length < 10) ? 'bg-slate-300 text-black cursor-not-allowed shadow-none' : 'bg-erp-navy text-slate-900 hover:bg-slate-800 shadow-xl shadow-erp-navy/20'
                             }`}
                         >
                             <Send size={16} /> Xác nhận lựa chọn

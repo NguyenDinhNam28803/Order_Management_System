@@ -34,8 +34,8 @@ function StatusBadge({ status }: { status: string }) {
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
     return (
         <div className="flex items-center justify-between py-2.5 border-b border-[rgba(148,163,184,0.06)] last:border-0">
-            <span className="text-[11px] font-black uppercase tracking-widest text-[#000000]">{label}</span>
-            <span className="text-sm font-bold text-[#000000] text-right">{value}</span>
+            <span className="text-[11px] font-black uppercase tracking-widest text-slate-900">{label}</span>
+            <span className="text-sm font-bold text-slate-900 text-right">{value}</span>
         </div>
     );
 }
@@ -61,9 +61,9 @@ export default function ContractDetailPage() {
     if (!contract) {
         return (
             <div className="p-6 flex items-center justify-center min-h-[50vh]">
-                <div className="text-center text-[#000000]">
+                <div className="text-center text-slate-900">
                     <FileText size={40} className="mx-auto mb-3 opacity-20" />
-                    <p className="font-bold text-[#000000]">Đang tải hợp đồng...</p>
+                    <p className="font-bold text-slate-900">Đang tải hợp đồng...</p>
                 </div>
             </div>
         );
@@ -100,12 +100,12 @@ export default function ContractDetailPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
 
             {/* ── Back ── */}
             <button
                 onClick={() => router.back()}
-                className="flex items-center gap-2 text-[#000000] hover:text-[#000000] transition-colors text-sm font-medium mb-6"
+                className="flex items-center gap-2 text-slate-900 hover:text-slate-900 transition-colors text-sm font-medium mb-6"
             >
                 <ChevronLeft size={18} /> Quay lại danh sách
             </button>
@@ -118,12 +118,12 @@ export default function ContractDetailPage() {
                             <FileText size={22} className="text-[#2563EB]" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-1">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-1">
                                 MÃ HỢP ĐỒNG — <span className="font-mono text-[#2563EB]">#{contract.contractNumber}</span>
                             </p>
-                            <h1 className="text-xl font-black text-[#000000] leading-snug">{contract.title}</h1>
+                            <h1 className="text-xl font-black text-slate-900 leading-snug">{contract.title}</h1>
                             {contract.description && (
-                                <p className="text-sm text-[#000000] mt-1">{contract.description}</p>
+                                <p className="text-sm text-slate-900 mt-1">{contract.description}</p>
                             )}
                         </div>
                     </div>
@@ -145,7 +145,7 @@ export default function ContractDetailPage() {
                         <button
                             onClick={handleSubmit}
                             disabled={saving}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-[#000000] font-black text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-900 font-black text-xs uppercase tracking-wider transition-all disabled:opacity-50"
                         >
                             <Send size={13} />
                             {saving ? "Đang gửi..." : "Gửi phê duyệt"}
@@ -154,7 +154,7 @@ export default function ContractDetailPage() {
                     {canSign && (
                         <button
                             onClick={() => setSignTarget(contract)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-[#000000] font-black text-xs uppercase tracking-wider transition-all"
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-black text-xs uppercase tracking-wider transition-all"
                         >
                             <PenTool size={13} /> Ký hợp đồng
                         </button>
@@ -186,7 +186,7 @@ export default function ContractDetailPage() {
 
                     {/* General info */}
                     <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
-                        <h2 className="text-xs font-black uppercase tracking-widest text-[#000000] mb-4 flex items-center gap-2">
+                        <h2 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
                             <Building2 size={13} /> Thông tin chung
                         </h2>
                         <InfoRow label="Nhà cung cấp"    value={contract.supplier?.name || "—"} />
@@ -200,24 +200,24 @@ export default function ContractDetailPage() {
                     {/* Milestones */}
                     <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.08)] flex items-center gap-2">
-                            <Banknote size={14} className="text-[#000000]" />
-                            <h2 className="text-xs font-black uppercase tracking-widest text-[#000000]">Lộ trình thanh toán</h2>
+                            <Banknote size={14} className="text-slate-900" />
+                            <h2 className="text-xs font-black uppercase tracking-widest text-slate-900">Lộ trình thanh toán</h2>
                         </div>
                         {contract.milestones && contract.milestones.length > 0 ? (
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="bg-[#FFFFFF]">
-                                        <th className="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-[#000000]">Giai đoạn</th>
-                                        <th className="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-[#000000]">Ngày dự kiến</th>
-                                        <th className="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-[#000000]">Trạng thái</th>
-                                        <th className="px-6 py-3 text-right text-[10px] font-black uppercase tracking-widest text-[#000000]">Số tiền</th>
+                                        <th className="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-900">Giai đoạn</th>
+                                        <th className="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-900">Ngày dự kiến</th>
+                                        <th className="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-900">Trạng thái</th>
+                                        <th className="px-6 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-900">Số tiền</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
                                     {contract.milestones.map(m => (
                                         <tr key={m.id} className="hover:bg-[#FFFFFF]/40 transition-colors">
-                                            <td className="px-6 py-3 font-medium text-[#000000]">{m.title}</td>
-                                            <td className="px-6 py-3 text-[#000000]">
+                                            <td className="px-6 py-3 font-medium text-slate-900">{m.title}</td>
+                                            <td className="px-6 py-3 text-slate-900">
                                                 <div className="flex items-center gap-1">
                                                     <Calendar size={12} />
                                                     {new Date(m.dueDate).toLocaleDateString("vi-VN")}
@@ -231,7 +231,7 @@ export default function ContractDetailPage() {
                                                     {m.status === "COMPLETED" ? "Hoàn thành" : m.status === "IN_PROGRESS" ? "Đang thực hiện" : "Chờ"}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-3 text-right font-black text-[#000000] tabular-nums">
+                                            <td className="px-6 py-3 text-right font-black text-slate-900 tabular-nums">
                                                 {m.amount ? new Intl.NumberFormat("vi-VN").format(m.amount) : "—"}
                                             </td>
                                         </tr>
@@ -239,7 +239,7 @@ export default function ContractDetailPage() {
                                 </tbody>
                             </table>
                         ) : (
-                            <div className="px-6 py-8 text-center text-[#000000] italic text-sm">
+                            <div className="px-6 py-8 text-center text-slate-900 italic text-sm">
                                 Thanh toán 100% khi nghiệm thu
                             </div>
                         )}
@@ -250,14 +250,14 @@ export default function ContractDetailPage() {
                         <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6 space-y-4">
                             {contract.terms && (
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-2">Điều khoản hợp đồng</p>
-                                    <p className="text-sm text-[#000000] leading-relaxed whitespace-pre-wrap">{contract.terms}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-2">Điều khoản hợp đồng</p>
+                                    <p className="text-sm text-slate-900 leading-relaxed whitespace-pre-wrap">{contract.terms}</p>
                                 </div>
                             )}
                             {contract.notes && (
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-2">Ghi chú</p>
-                                    <p className="text-sm text-[#000000] leading-relaxed whitespace-pre-wrap">{contract.notes}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-2">Ghi chú</p>
+                                    <p className="text-sm text-slate-900 leading-relaxed whitespace-pre-wrap">{contract.notes}</p>
                                 </div>
                             )}
                         </div>
@@ -269,14 +269,14 @@ export default function ContractDetailPage() {
 
                     {/* Contract value */}
                     <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-[#000000] mb-3">Tổng giá trị hợp đồng</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-3">Tổng giá trị hợp đồng</p>
                         <p className="text-3xl font-black text-[#2563EB] tabular-nums">
                             {Number(contract.totalValue || 0).toLocaleString("vi-VN")}
                         </p>
-                        <p className="text-sm text-[#000000] mt-1">{contract.currency}</p>
+                        <p className="text-sm text-slate-900 mt-1">{contract.currency}</p>
 
                         {contract.startDate && contract.endDate && (
-                            <div className="mt-4 pt-4 border-t border-[rgba(148,163,184,0.08)] flex items-center gap-2 text-xs text-[#000000]">
+                            <div className="mt-4 pt-4 border-t border-[rgba(148,163,184,0.08)] flex items-center gap-2 text-xs text-slate-900">
                                 <Calendar size={12} />
                                 <span>{new Date(contract.startDate).toLocaleDateString("vi-VN")}</span>
                                 <ChevronRight size={12} />
@@ -288,8 +288,8 @@ export default function ContractDetailPage() {
                     {/* Signature status */}
                     <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
                         <div className="flex items-center gap-2 mb-4">
-                            <ShieldCheck size={14} className="text-[#000000]" />
-                            <p className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Trạng thái ký số</p>
+                            <ShieldCheck size={14} className="text-slate-900" />
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Trạng thái ký số</p>
                         </div>
 
                         <div className="space-y-4">
@@ -298,16 +298,16 @@ export default function ContractDetailPage() {
                                 <div className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${contract.buyerSignedAt ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]"}`}>
                                     {contract.buyerSignedAt
                                         ? <CheckCircle2 size={14} className="text-black" />
-                                        : <Clock size={14} className="text-[#000000]" />}
+                                        : <Clock size={14} className="text-slate-900" />}
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Bên Mua (Buyer)</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Bên Mua (Buyer)</p>
                                     {contract.buyerSignedAt ? (
                                         <p className="text-xs text-black font-medium mt-0.5">
                                             Đã ký: {new Date(contract.buyerSignedAt).toLocaleString("vi-VN")}
                                         </p>
                                     ) : (
-                                        <p className="text-xs text-[#000000] italic mt-0.5">Chưa ký</p>
+                                        <p className="text-xs text-slate-900 italic mt-0.5">Chưa ký</p>
                                     )}
                                 </div>
                             </div>
@@ -317,16 +317,16 @@ export default function ContractDetailPage() {
                                 <div className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${contract.supplierSignedAt ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]"}`}>
                                     {contract.supplierSignedAt
                                         ? <CheckCircle2 size={14} className="text-black" />
-                                        : <Clock size={14} className="text-[#000000]" />}
+                                        : <Clock size={14} className="text-slate-900" />}
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Bên Bán (Supplier)</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Bên Bán (Supplier)</p>
                                     {contract.supplierSignedAt ? (
                                         <p className="text-xs text-black font-medium mt-0.5">
                                             Đã ký: {new Date(contract.supplierSignedAt).toLocaleString("vi-VN")}
                                         </p>
                                     ) : (
-                                        <p className="text-xs text-[#000000] italic mt-0.5">Chưa ký</p>
+                                        <p className="text-xs text-slate-900 italic mt-0.5">Chưa ký</p>
                                     )}
                                 </div>
                             </div>
@@ -336,7 +336,7 @@ export default function ContractDetailPage() {
                         {canSign && (
                             <button
                                 onClick={() => setSignTarget(contract)}
-                                className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-[#000000] font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20"
+                                className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20"
                             >
                                 <PenTool size={13} /> Ký xác nhận ngay
                             </button>
@@ -358,8 +358,8 @@ export default function ContractDetailPage() {
 
                         {isDraft && (
                             <div className="mt-4 flex items-start gap-2 p-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.08)] rounded-xl">
-                                <AlertCircle size={14} className="text-[#000000] shrink-0 mt-0.5" />
-                                <p className="text-xs text-[#000000]">Gửi hợp đồng để phê duyệt trước khi ký.</p>
+                                <AlertCircle size={14} className="text-slate-900 shrink-0 mt-0.5" />
+                                <p className="text-xs text-slate-900">Gửi hợp đồng để phê duyệt trước khi ký.</p>
                             </div>
                         )}
 
@@ -374,13 +374,13 @@ export default function ContractDetailPage() {
                     {/* User info */}
                     <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
                         <div className="flex items-center gap-2 mb-3">
-                            <User size={13} className="text-[#000000]" />
-                            <p className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Người tạo</p>
+                            <User size={13} className="text-slate-900" />
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Người tạo</p>
                         </div>
-                        <p className="text-sm text-[#000000] font-medium">
+                        <p className="text-sm text-slate-900 font-medium">
                             {currentUser?.fullName || currentUser?.name || currentUser?.email || "—"}
                         </p>
-                        <p className="text-xs text-[#000000] mt-1">
+                        <p className="text-xs text-slate-900 mt-1">
                             {contract.createdAt ? new Date(contract.createdAt).toLocaleDateString("vi-VN") : ""}
                         </p>
                     </div>
@@ -397,26 +397,26 @@ export default function ContractDetailPage() {
                                 <Ban size={18} />
                             </div>
                             <div>
-                                <h3 className="font-black text-[#000000] mb-0.5">Chấm dứt hợp đồng</h3>
-                                <p className="text-xs text-[#000000] font-mono">#{contract.contractNumber}</p>
+                                <h3 className="font-black text-slate-900 mb-0.5">Chấm dứt hợp đồng</h3>
+                                <p className="text-xs text-slate-900 font-mono">#{contract.contractNumber}</p>
                             </div>
                         </div>
                         <div className="mb-5">
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-[#000000] mb-2">Lý do chấm dứt *</label>
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-900 mb-2">Lý do chấm dứt *</label>
                             <textarea
                                 rows={3}
                                 placeholder="Nhập lý do chấm dứt hợp đồng..."
-                                className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.12)] rounded-xl text-sm text-[#000000] placeholder:text-[#000000] outline-none focus:border-[#2563EB]/50 resize-none transition-all"
+                                className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.12)] rounded-xl text-sm text-slate-900 placeholder:text-slate-900 outline-none focus:border-[#2563EB]/50 resize-none transition-all"
                                 value={terminateReason}
                                 onChange={e => setTerminateReason(e.target.value)}
                             />
                         </div>
                         <div className="flex gap-3 justify-end">
-                            <button onClick={() => setShowTerminate(false)} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-[#000000] font-bold text-sm hover:bg-[#0F172A] transition-all">Hủy</button>
+                            <button onClick={() => setShowTerminate(false)} className="px-5 py-2 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-[#0F172A] transition-all">Hủy</button>
                             <button
                                 onClick={handleTerminate}
                                 disabled={saving || !terminateReason.trim()}
-                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-[#000000] font-black text-sm transition-all disabled:opacity-50 flex items-center gap-2"
+                                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-slate-900 font-black text-sm transition-all disabled:opacity-50 flex items-center gap-2"
                             >
                                 <Ban size={14} />
                                 {saving ? "Đang xử lý..." : "Xác nhận chấm dứt"}

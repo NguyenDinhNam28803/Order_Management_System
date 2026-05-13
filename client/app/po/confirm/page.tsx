@@ -199,7 +199,7 @@ export default function PoConfirmPage() {
               <ChevronRight className="w-3 h-3 text-teal-300" />
               <span className="text-teal-200 text-xs font-semibold">{po.poNumber}</span>
             </div>
-            <h1 className="text-[#000000] text-xl font-bold">Xác nhận nhận đơn hàng</h1>
+            <h1 className="text-slate-900 text-xl font-bold">Xác nhận nhận đơn hàng</h1>
           </div>
 
           <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm border-b border-gray-100">
@@ -315,7 +315,7 @@ export default function PoConfirmPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed text-[#000000] font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
+              className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
             >
               {submitting ? (
                 <><Loader2 className="w-4 h-4 animate-spin" />Đang xác nhận...</>

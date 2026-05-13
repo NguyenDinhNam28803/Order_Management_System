@@ -59,17 +59,17 @@ export default function SpendReportPage() {
     }));
 
     return (
-        <main className="animate-in fade-in duration-500 bg-[#FFFFFF] min-h-screen text-[#000000]">
+        <main className="animate-in fade-in duration-500 bg-[#FFFFFF] min-h-screen text-slate-900">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 mt-4 px-6 md:px-8 pt-6">
                 <div>
                     <h1 className="text-3xl font-black tracking-tight uppercase">Báo cáo Phân tích Chi phí (Spend Analytics)</h1>
-                    <p className="text-sm font-bold text-[#000000] mt-1">DỮ LIỆU ĐƯỢC TỔNG HỢP THEO GIỜ TỪ HỆ THỐNG GIAO DỊCH LÕI</p>
+                    <p className="text-sm font-bold text-slate-900 mt-1">DỮ LIỆU ĐƯỢC TỔNG HỢP THEO GIỜ TỪ HỆ THỐNG GIAO DỊCH LÕI</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-6 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[11px] font-black uppercase tracking-widest text-[#000000] hover:bg-[#0F172A] transition-all shadow-sm">
+                    <button className="flex items-center gap-2 px-6 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-900 hover:bg-[#0F172A] transition-all shadow-sm">
                         <Filter size={14} /> Bộ lọc
                     </button>
-                    <button className="flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-[#000000] rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20">
+                    <button className="flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-slate-900 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20">
                         <Download size={14} /> Xuất PDF
                     </button>
                 </div>
@@ -139,19 +139,19 @@ export default function SpendReportPage() {
                     <table className="w-full text-xs">
                         <thead className="bg-[#F1F5F9]">
                             <tr className="border-b border-[rgba(148,163,184,0.1)]">
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#000000] text-left">Tên nhà cung cấp</th>
-                                <th className="text-[10px] font-black uppercase tracking-widest text-[#000000] text-center">Tần suất Giao dịch (PO)</th>
-                                <th className="text-[10px] font-black uppercase tracking-widest text-[#000000] text-right pr-12">Tổng Tiền Thanh Toán</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-900 text-left">Tên nhà cung cấp</th>
+                                <th className="text-[10px] font-black uppercase tracking-widest text-slate-900 text-center">Tần suất Giao dịch (PO)</th>
+                                <th className="text-[10px] font-black uppercase tracking-widest text-slate-900 text-right pr-12">Tổng Tiền Thanh Toán</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                             {spendBySupplier.map((s, idx) => (
                                 <tr key={idx} className="hover:bg-[#FFFFFF] transition-colors cursor-pointer group">
                                     <td className="px-8 py-4">
-                                        <div className="font-bold text-[#000000]">{s.supplierName}</div>
+                                        <div className="font-bold text-slate-900">{s.supplierName}</div>
                                         {idx < 3 && <div className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-1">Core Partner</div>}
                                     </td>
-                                    <td className="text-center font-bold text-[#000000] group-hover:text-[#000000] transition-colors">
+                                    <td className="text-center font-bold text-slate-900 group-hover:text-slate-900 transition-colors">
                                         {s.poCount}
                                     </td>
                                     <td className="text-right pr-12 text-[#2563EB] font-black text-sm">

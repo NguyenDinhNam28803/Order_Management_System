@@ -108,7 +108,7 @@ export default function BudgetHeatmap() {
             <div className="p-4 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] flex items-center gap-4 justify-center">
                 <div className="flex items-center gap-2">
                     <Info size={14} className="text-[#2563EB]" />
-                    <span className="text-[10px] font-black text-[#000000] uppercase tracking-widest leading-none mt-0.5 whitespace-nowrap">Hover on a cell to see exact consumption and threshold warnings</span>
+                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none mt-0.5 whitespace-nowrap">Hover on a cell to see exact consumption and threshold warnings</span>
                 </div>
             </div>
         </div>

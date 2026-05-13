@@ -227,7 +227,7 @@ export default function ShopPage() {
                                 <Image src="/laptop.png" alt="Shop Banner" fill style={{ objectFit: 'cover' }} className="opacity-60" />
                                 <div className="absolute inset-0 bg-linear-to-r from-black/60 to-transparent flex flex-col justify-center px-12">
                                     <span className="text-secondary font-bold text-sm uppercase tracking-widest mb-2">Up To 30% Offer</span>
-                                    <h2 className="text-4xl font-black text-[#000000] leading-tight">New Accessories <br />Collection</h2>
+                                    <h2 className="text-4xl font-black text-slate-900 leading-tight">New Accessories <br />Collection</h2>
                                     <div className="flex gap-2 mt-6">
                                         <div className="w-8 h-1.5 bg-secondary rounded-full"></div>
                                         <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
@@ -245,13 +245,13 @@ export default function ShopPage() {
                                     <div className="flex items-center bg-gray-100 rounded-lg p-1">
                                         <button
                                             onClick={() => setViewMode("grid")}
-                                            className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-primary text-[#000000] shadow-md" : "text-black hover:text-primary"}`}
+                                            className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-primary text-slate-900 shadow-md" : "text-black hover:text-primary"}`}
                                         >
                                             <LayoutGrid size={18} />
                                         </button>
                                         <button
                                             onClick={() => setViewMode("list")}
-                                            className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-primary text-[#000000] shadow-md" : "text-black hover:text-primary"}`}
+                                            className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-primary text-slate-900 shadow-md" : "text-black hover:text-primary"}`}
                                         >
                                             <List size={18} />
                                         </button>
@@ -332,7 +332,7 @@ export default function ShopPage() {
             </div>
 
             {/* Footer */}
-            <footer className="bg-primary text-[#000000] py-20 mt-20">
+            <footer className="bg-primary text-slate-900 py-20 mt-20">
                 <div className="container-custom grid grid-cols-4 gap-12">
                     <div className="space-y-8">
                         <h2 className="text-3xl font-black italic text-secondary">e-Shopi</h2>
@@ -362,7 +362,7 @@ export default function ShopPage() {
                         <h3 className="text-xl font-bold border-b border-white/10 pb-4 inline-block pr-12">Newsletter</h3>
                         <p className="text-sm text-black">Subscribe for early access to our latest offers and new product launches.</p>
                         <div className="flex bg-white/5 p-1.5 rounded-full overflow-hidden border border-white/10">
-                            <input type="text" placeholder="Your Email Address" className="bg-transparent px-6 py-2 outline-none text-sm text-[#000000] w-full" />
+                            <input type="text" placeholder="Your Email Address" className="bg-transparent px-6 py-2 outline-none text-sm text-slate-900 w-full" />
                             <button className="bg-secondary text-primary px-8 py-2 rounded-full font-bold hover:bg-orange-500 transition-colors">Join</button>
                         </div>
                     </div>

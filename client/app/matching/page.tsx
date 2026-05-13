@@ -21,11 +21,11 @@ export default function MatchingPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-[#000000] tracking-tight">Đối soát 3 bên (3-Way Match)</h1>
-                    <p className="text-sm text-[#000000] mt-1">Hệ thống tự động đối chiếu dữ liệu giữa PO, Nhập kho và Hóa đơn.</p>
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Đối soát 3 bên (3-Way Match)</h1>
+                    <p className="text-sm text-slate-900 mt-1">Hệ thống tự động đối chiếu dữ liệu giữa PO, Nhập kho và Hóa đơn.</p>
                 </div>
             </div>
 
@@ -49,12 +49,12 @@ export default function MatchingPage() {
                                     <br />
                                     Thực tế nhập kho (GRN) chỉ ghi nhận: <span className="font-black underline">42 Thùng</span>.
                                     <br /><br />
-                                    <span className="bg-red-600 text-[#000000] px-2 py-0.5 rounded text-[9px] font-black uppercase">Chặn thanh toán</span>: Hệ thống đã tự động khóa thanh toán cho đơn hàng này.
+                                    <span className="bg-red-600 text-slate-900 px-2 py-0.5 rounded text-[9px] font-black uppercase">Chặn thanh toán</span>: Hệ thống đã tự động khóa thanh toán cho đơn hàng này.
                                 </p>
                             </div>
                             <button
                                 onClick={() => setDisputeResolved(true)}
-                                className="bg-white text-red-600 border border-red-200 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-[#000000] transition-all shadow-sm"
+                                className="bg-white text-red-600 border border-red-200 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-slate-900 transition-all shadow-sm"
                             >
                                 Giải quyết tranh chấp (Admin)
                             </button>

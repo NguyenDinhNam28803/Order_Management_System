@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useEffect, useState } from 'react';
+import ConfirmDialog from '@/app/components/shared/ConfirmDialog';
 import { useParams } from 'next/navigation';
 import { useProcurement, Invoice } from '@/app/context/ProcurementContext';
 import { Contract } from '@/app/types/api-types';
@@ -85,6 +86,7 @@ export default function InvoiceDetailPage() {
     endDate: '',
   });
   const [creatingContract, setCreatingContract] = useState(false);
+  const [confirmState, setConfirmState] = useState<{ open: boolean; title: string; message: string; onConfirm: () => void }>({ open: false, title: "", message: "", onConfirm: () => {} });
 
   const handleCreateContract = async () => {
     if (!contractForm.title.trim()) {
@@ -150,25 +152,30 @@ export default function InvoiceDetailPage() {
     }
   };
 
-  const handlePay = async () => {
-    if (window.confirm('Confirm payment for this invoice?')) {
-      try {
-        setProcessing(true);
-        const success = await payInvoice(invoiceId);
-        if (success) {
-          notify('Payment scheduled successfully', 'success');
-          // Fetch updated invoice after payment
-          const data = await fetchInvoiceById(invoiceId);
-          const invoiceData = Array.isArray(data) ? data[0] : data;
-          setInvoice(invoiceData as InvoiceWithMatching);
+  const handlePay = () => {
+    setConfirmState({
+      open: true,
+      title: "Xác nhận thanh toán",
+      message: "Xác nhận thanh toán hóa đơn này?",
+      onConfirm: async () => {
+        setConfirmState(s => ({ ...s, open: false }));
+        try {
+          setProcessing(true);
+          const success = await payInvoice(invoiceId);
+          if (success) {
+            notify('Payment scheduled successfully', 'success');
+            const data = await fetchInvoiceById(invoiceId);
+            const invoiceData = Array.isArray(data) ? data[0] : data;
+            setInvoice(invoiceData as InvoiceWithMatching);
+          }
+          router.push('/finance/invoices');
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Failed to process payment');
+        } finally {
+          setProcessing(false);
         }
-        router.push('/finance/invoices');
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to process payment');
-      } finally {
-        setProcessing(false);
       }
-    }
+    });
   };
 
   const getStatusIcon = (status: string) => {
@@ -249,7 +256,14 @@ export default function InvoiceDetailPage() {
   );
 
   return (
-    <div className="min-h-screen bg-bg-primary">      
+    <div className="min-h-screen bg-bg-primary">
+      <ConfirmDialog
+        open={confirmState.open}
+        title={confirmState.title}
+        message={confirmState.message}
+        onConfirm={confirmState.onConfirm}
+        onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
+      />
       <div className="p-6 max-w-7xl mx-auto">
         {/* Breadcrumb & Back */}
         <div className="mb-6">
@@ -301,7 +315,7 @@ export default function InvoiceDetailPage() {
               <button
                 onClick={handleRunMatching}
                 disabled={processing}
-                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-[#000000] px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-slate-900 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <RefreshCw size={16} className={processing ? 'animate-spin' : ''} />
                 {processing ? 'Đang xử lý...' : 'Chạy đối soát 3 bên'}
@@ -312,7 +326,7 @@ export default function InvoiceDetailPage() {
               <button
                 onClick={handlePay}
                 disabled={processing}
-                className="bg-emerald-500 hover:bg-emerald-600 text-[#000000] px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="bg-emerald-500 hover:bg-emerald-600 text-slate-900 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <CreditCard size={16} />
                 {processing ? 'Đang xử lý...' : 'Thanh toán ngay'}
@@ -721,7 +735,7 @@ export default function InvoiceDetailPage() {
               <button
                 onClick={handleCreateContract}
                 disabled={creatingContract}
-                className="flex-1 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-[#000000] font-bold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-slate-900 font-bold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {creatingContract ? (
                   <>

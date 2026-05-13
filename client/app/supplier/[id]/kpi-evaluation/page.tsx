@@ -172,12 +172,12 @@ export default function SupplierKPIPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#FFFFFF] text-[#000000] p-6">
+      <main className="min-h-screen bg-[#FFFFFF] text-slate-900 p-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-[#000000] font-bold uppercase tracking-widest">Đang tải dữ liệu KPI...</p>
+              <p className="text-slate-900 font-bold uppercase tracking-widest">Đang tải dữ liệu KPI...</p>
             </div>
           </div>
         </div>
@@ -186,20 +186,20 @@ export default function SupplierKPIPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#FFFFFF] text-[#000000] p-6">
+    <main className="min-h-screen bg-[#FFFFFF] text-slate-900 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link 
             href={`/supplier`}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#000000] hover:bg-[#0F172A] transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-slate-900 hover:bg-[#0F172A] transition-all"
           >
             <ArrowLeft size={18} />
             <span className="text-sm font-semibold">Quay lại Portal</span>
           </Link>
           <div className="flex-1">
-            <h1 className="text-2xl font-black text-[#000000] uppercase tracking-tight">Đánh Giá Hiệu Suất Nhà Cung Cấp</h1>
-            <p className="text-sm text-[#000000] mt-1">Phân tích chi tiết KPI và xếp hạng nhà cung cấp</p>
+            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Đánh Giá Hiệu Suất Nhà Cung Cấp</h1>
+            <p className="text-sm text-slate-900 mt-1">Phân tích chi tiết KPI và xếp hạng nhà cung cấp</p>
           </div>
         </div>
 
@@ -216,12 +216,12 @@ export default function SupplierKPIPage() {
             <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-[#2563EB]/10 mb-6">
               <BarChart3 size={40} className="text-[#2563EB]" />
             </div>
-            <h2 className="text-xl font-bold text-[#000000] mb-3">Chưa có dữ liệu đánh giá</h2>
-            <p className="text-[#000000] mb-6 max-w-md mx-auto">Nhà cung cấp này chưa được đánh giá KPI. Hãy chạy đánh giá để phân tích hiệu suất.</p>
+            <h2 className="text-xl font-bold text-slate-900 mb-3">Chưa có dữ liệu đánh giá</h2>
+            <p className="text-slate-900 mb-6 max-w-md mx-auto">Nhà cung cấp này chưa được đánh giá KPI. Hãy chạy đánh giá để phân tích hiệu suất.</p>
             <button
               onClick={handleEvaluate}
               disabled={evaluating}
-              className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl bg-[#2563EB] text-[#000000] font-bold hover:bg-[#1D4ED8] disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl bg-[#2563EB] text-slate-900 font-bold hover:bg-[#1D4ED8] disabled:opacity-50 transition-all"
             >
               {evaluating ? (
                 <RefreshCcw size={18} className="animate-spin" />
@@ -237,29 +237,29 @@ export default function SupplierKPIPage() {
             <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] mb-6">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
-                  <Award size={24} className="text-[#000000]" />
+                  <Award size={24} className="text-slate-900" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-[#000000]">KPI Đánh Giá Nhà Cung Cấp</h2>
-                  <p className="text-sm text-[#000000]">Đánh giá hiệu suất theo quý</p>
+                  <h2 className="text-xl font-bold text-slate-900">KPI Đánh Giá Nhà Cung Cấp</h2>
+                  <p className="text-sm text-slate-900">Đánh giá hiệu suất theo quý</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-[rgba(148,163,184,0.1)]">
                 <div>
-                  <p className="text-xs text-[#000000] uppercase tracking-wider mb-1">Kỳ đánh giá</p>
-                  <p className="text-lg font-semibold text-[#000000]">Q{kpiData.kpiScore.periodQuarter}/{kpiData.kpiScore.periodYear}</p>
+                  <p className="text-xs text-slate-900 uppercase tracking-wider mb-1">Kỳ đánh giá</p>
+                  <p className="text-lg font-semibold text-slate-900">Q{kpiData.kpiScore.periodQuarter}/{kpiData.kpiScore.periodYear}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[#000000] uppercase tracking-wider mb-1">Ngày tính toán</p>
-                  <p className="text-lg font-semibold text-[#000000]">{new Date(kpiData.kpiScore.calculatedAt).toLocaleDateString('vi-VN')}</p>
+                  <p className="text-xs text-slate-900 uppercase tracking-wider mb-1">Ngày tính toán</p>
+                  <p className="text-lg font-semibold text-slate-900">{new Date(kpiData.kpiScore.calculatedAt).toLocaleDateString('vi-VN')}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[#000000] uppercase tracking-wider mb-1">Số PO</p>
-                  <p className="text-lg font-semibold text-[#000000]">{kpiData.kpiScore.poCount}</p>
+                  <p className="text-xs text-slate-900 uppercase tracking-wider mb-1">Số PO</p>
+                  <p className="text-lg font-semibold text-slate-900">{kpiData.kpiScore.poCount}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[#000000] uppercase tracking-wider mb-1">Số khiếu nại</p>
-                  <p className="text-lg font-semibold text-[#000000]">{kpiData.kpiScore.disputeCount}</p>
+                  <p className="text-xs text-slate-900 uppercase tracking-wider mb-1">Số khiếu nại</p>
+                  <p className="text-lg font-semibold text-slate-900">{kpiData.kpiScore.disputeCount}</p>
                 </div>
               </div>
             </div>
@@ -268,18 +268,18 @@ export default function SupplierKPIPage() {
             <div className="bg-[#F1F5F9] rounded-2xl p-8 border border-[rgba(148,163,184,0.1)] mb-6">
               <div className="text-center">
                 <div className="inline-flex items-center gap-2 mb-4">
-                  <Target size={18} className="text-[#000000]" />
-                  <span className="text-sm font-black text-[#000000] uppercase tracking-widest">Điểm Hiệu Suất Tổng Thể</span>
+                  <Target size={18} className="text-slate-900" />
+                  <span className="text-sm font-black text-slate-900 uppercase tracking-widest">Điểm Hiệu Suất Tổng Thể</span>
                 </div>
                 
                 <div className={`inline-flex items-center justify-center h-32 w-32 rounded-full bg-gradient-to-br ${tierColors[kpiData.kpiScore.tier as keyof typeof tierColors] || tierColors.PENDING} border-4 mb-4`}>
                   <span className="text-5xl font-black">{kpiData.aiInsights?.overallScore || kpiData.kpiScore.manualScore}</span>
                 </div>
                 
-                <p className="text-sm text-[#000000] mb-4">Trên thang điểm 100</p>
+                <p className="text-sm text-slate-900 mb-4">Trên thang điểm 100</p>
                 
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
-                  <span className="text-sm text-[#000000]">Xếp hạng:</span>
+                  <span className="text-sm text-slate-900">Xếp hạng:</span>
                   <span className={`text-sm font-bold ${
                     tierColors[kpiData.kpiScore.tier as keyof typeof tierColors]?.split(' ').pop() || 'text-black'
                   }`}>
@@ -288,7 +288,7 @@ export default function SupplierKPIPage() {
                 </div>
                 
                 {kpiData.aiInsights?.tierRecommendation && kpiData.kpiScore.tier !== kpiData.aiInsights?.tierRecommendation && (
-                  <p className="text-xs text-[#000000] mt-3">
+                  <p className="text-xs text-slate-900 mt-3">
                     Đề xuất: <span className="text-black font-semibold">{tierLabels[kpiData.aiInsights.tierRecommendation as keyof typeof tierLabels] || kpiData.aiInsights.tierRecommendation}</span>
                   </p>
                 )}
@@ -298,8 +298,8 @@ export default function SupplierKPIPage() {
             {/* 6 KPI Metrics Grid */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-4">
-                <BarChart3 size={18} className="text-[#000000]" />
-                <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">6 Chỉ Số Hiệu Suất Chi Tiết</h2>
+                <BarChart3 size={18} className="text-slate-900" />
+                <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">6 Chỉ Số Hiệu Suất Chi Tiết</h2>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -315,7 +315,7 @@ export default function SupplierKPIPage() {
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
                         {metricIcons[item.key]}
-                        <h3 className="font-semibold text-[#000000] text-sm">{item.label}</h3>
+                        <h3 className="font-semibold text-slate-900 text-sm">{item.label}</h3>
                       </div>
                     </div>
                     
@@ -332,7 +332,7 @@ export default function SupplierKPIPage() {
                     </div>
                     
                     <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-[#000000]">{item.value}%</span>
+                      <span className="text-2xl font-bold text-slate-900">{item.value}%</span>
                       <span className={`text-xs font-semibold px-2 py-1 rounded ${
                         (item.value || 0) >= 90 ? 'bg-emerald-400/10 text-black' :
                         (item.value || 0) >= 70 ? 'bg-[#2563EB]/10 text-[#2563EB]' :
@@ -355,22 +355,22 @@ export default function SupplierKPIPage() {
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Zap size={18} className="text-black" />
-                  <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Phân Tích AI</h2>
+                  <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Phân Tích AI</h2>
                 </div>
                 
                 <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
-                  <p className="text-[#000000] leading-relaxed mb-6">{kpiData.aiInsights.analysis}</p>
+                  <p className="text-slate-900 leading-relaxed mb-6">{kpiData.aiInsights.analysis}</p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Pros */}
                     <div>
                       <div className="flex items-center gap-2 mb-3">
                         <ThumbsUp size={16} className="text-black" />
-                        <h3 className="text-sm font-bold text-[#000000]">Ưu điểm</h3>
+                        <h3 className="text-sm font-bold text-slate-900">Ưu điểm</h3>
                       </div>
                       <ul className="space-y-2">
                         {kpiData.aiInsights.pros?.map((pro, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-sm text-[#000000]">
+                          <li key={idx} className="flex items-start gap-2 text-sm text-slate-900">
                             <CheckCircle size={14} className="text-black mt-0.5 flex-shrink-0" />
                             <span>{pro}</span>
                           </li>
@@ -382,11 +382,11 @@ export default function SupplierKPIPage() {
                     <div>
                       <div className="flex items-center gap-2 mb-3">
                         <ThumbsDown size={16} className="text-black" />
-                        <h3 className="text-sm font-bold text-[#000000]">Điểm cần cải thiện</h3>
+                        <h3 className="text-sm font-bold text-slate-900">Điểm cần cải thiện</h3>
                       </div>
                       <ul className="space-y-2">
                         {kpiData.aiInsights.cons?.map((con, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-sm text-[#000000]">
+                          <li key={idx} className="flex items-start gap-2 text-sm text-slate-900">
                             <AlertCircle size={14} className="text-black mt-0.5 flex-shrink-0" />
                             <span>{con}</span>
                           </li>
@@ -402,11 +402,11 @@ export default function SupplierKPIPage() {
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-4">
                 <Lightbulb size={18} className="text-black" />
-                <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Kế Hoạch Cải Thiện</h2>
+                <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Kế Hoạch Cải Thiện</h2>
               </div>
               
               <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
-                <p className="text-[#000000] leading-relaxed">{kpiData.aiInsights?.improvementPlan || kpiData.kpiScore.improvementPlan}</p>
+                <p className="text-slate-900 leading-relaxed">{kpiData.aiInsights?.improvementPlan || kpiData.kpiScore.improvementPlan}</p>
               </div>
             </div>
 
@@ -415,11 +415,11 @@ export default function SupplierKPIPage() {
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-4">
                   <FileText size={18} className="text-black" />
-                  <h2 className="text-sm font-black text-[#000000] uppercase tracking-widest">Ghi Chú Đánh Giá</h2>
+                  <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Ghi Chú Đánh Giá</h2>
                 </div>
                 
                 <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
-                  <p className="text-[#000000] leading-relaxed">{kpiData.kpiScore.notes}</p>
+                  <p className="text-slate-900 leading-relaxed">{kpiData.kpiScore.notes}</p>
                 </div>
               </div>
             )}
@@ -441,7 +441,7 @@ export default function SupplierKPIPage() {
               
               <Link
                 href={`/procurement/suppliers/${supplierId}`}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#F1F5F9] text-[#000000] font-bold hover:bg-[#0F172A] hover:text-[#000000] transition-all border border-[rgba(148,163,184,0.1)]"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#F1F5F9] text-slate-900 font-bold hover:bg-[#0F172A] hover:text-slate-900 transition-all border border-[rgba(148,163,184,0.1)]"
               >
                 <Award size={18} />
                 Xem hồ sơ NCC

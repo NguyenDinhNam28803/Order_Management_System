@@ -23,13 +23,13 @@ export default function WarehouseQCAnalysis() {
   };
 
   return (
-    <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+    <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={() => router.push("/warehouse/dashboard")}
-            className="flex items-center gap-2 text-[#6b7280] hover:text-[#000000] transition-colors"
+            className="flex items-center gap-2 text-[#6b7280] hover:text-slate-900 transition-colors"
           >
             <ArrowLeft size={20} />
             <span className="text-sm font-medium">Quay lại Dashboard</span>
@@ -37,11 +37,11 @@ export default function WarehouseQCAnalysis() {
         </div>
         <div className="lg:flex items-end justify-between">
           <div>
-            <h1 className="text-4xl font-black tracking-tight text-[#000000] mb-2 uppercase flex items-center gap-3">
+            <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-2 uppercase flex items-center gap-3">
               <TrendingUp size={36} className="text-[#2563EB]" />
               Phân Tích Tỷ Lệ Lỗi
             </h1>
-            <p className="text-[#000000] font-medium">
+            <p className="text-slate-900 font-medium">
               Phát hiện các xu hướng bất thường trong tỷ lệ lỗi sản phẩm nhập kho qua 365 ngày.
             </p>
           </div>
@@ -81,7 +81,7 @@ export default function WarehouseQCAnalysis() {
       {/* Additional Info Cards */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
         <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
-          <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] mb-3">
+          <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Ngưỡng Cảnh Báo
           </h3>
           <div className="space-y-2 text-sm">
@@ -101,7 +101,7 @@ export default function WarehouseQCAnalysis() {
         </div>
 
         <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
-          <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] mb-3">
+          <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Pattern Nguy Hiểm
           </h3>
           <ul className="space-y-2 text-sm text-[#6b7280]">
@@ -121,7 +121,7 @@ export default function WarehouseQCAnalysis() {
         </div>
 
         <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
-          <h3 className="text-sm font-black uppercase tracking-widest text-[#000000] mb-3">
+          <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Hành Động Đề Xuất
           </h3>
           <ul className="space-y-2 text-sm text-[#6b7280]">

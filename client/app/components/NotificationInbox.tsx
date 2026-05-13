@@ -217,8 +217,8 @@ export default function NotificationInbox() {
         onClick={() => setIsOpen(!isOpen)}
         className={`relative flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${
           isOpen
-            ? "bg-[#2563EB] border-[#2563EB] text-[#000000] shadow-lg shadow-[#2563EB]/20"
-            : "bg-[#FFFFFF] border-[#E2E8F0] text-[#000000] hover:text-[#000000] hover:border-[rgba(240,246,252,0.18)]"
+            ? "bg-[#2563EB] border-[#2563EB] text-slate-900 shadow-lg shadow-[#2563EB]/20"
+            : "bg-[#FFFFFF] border-[#E2E8F0] text-slate-900 hover:text-slate-900 hover:border-[rgba(240,246,252,0.18)]"
         }`}
       >
         <Bell size={14} className={unreadCount > 0 ? "animate-pulse" : ""} />
@@ -279,17 +279,17 @@ export default function NotificationInbox() {
             {isLoading ? (
               <div className="p-16 text-center">
                 <div className="w-8 h-8 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                <p className="text-[11px] text-[#000000] font-medium tracking-widest uppercase">Đang đồng bộ dữ liệu...</p>
+                <p className="text-[11px] text-slate-900 font-medium tracking-widest uppercase">Đang đồng bộ dữ liệu...</p>
               </div>
             ) : mergedItems.length > 0 ? (
               mergedItems.map((item) => <NotificationItem key={item.id} item={item} />)
             ) : (
               <div className="py-20 px-10 text-center">
                 <div className="w-16 h-16 bg-[#FFFFFF] rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[rgba(240,246,252,0.05)] shadow-xl">
-                  <Archive size={24} className="text-[#000000]" />
+                  <Archive size={24} className="text-slate-900" />
                 </div>
-                <h4 className="text-[12px] font-black text-[#000000] uppercase tracking-widest">Hộp thư sạch sẽ</h4>
-                <p className="text-[10px] text-[#000000] mt-2 font-medium">Tuyệt vời! Bạn không bỏ lỡ thông báo nào.</p>
+                <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-widest">Hộp thư sạch sẽ</h4>
+                <p className="text-[10px] text-slate-900 mt-2 font-medium">Tuyệt vời! Bạn không bỏ lỡ thông báo nào.</p>
               </div>
             )}
           </div>
@@ -326,7 +326,7 @@ const NotificationItem = ({ item }: { item: any }) => {
 
   const typeLabelColorClass = cfg
     ? cfg.colorClass
-    : isPending ? 'text-[#2563EB]' : 'text-[#000000]';
+    : isPending ? 'text-[#2563EB]' : 'text-slate-900';
 
   return (
     <div className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-all relative group overflow-hidden ${!isPending ? 'opacity-60 grayscale-[0.5]' : ''}`}>

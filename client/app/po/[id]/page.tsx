@@ -85,12 +85,12 @@ export default function PODetailPage() {
         <div>
           <button 
             onClick={() => router.back()} 
-            className="flex items-center gap-2 text-xs font-bold text-[#000000] hover:text-[#2563EB] transition-colors mb-4 uppercase tracking-widest"
+            className="flex items-center gap-2 text-xs font-bold text-slate-900 hover:text-[#2563EB] transition-colors mb-4 uppercase tracking-widest"
           >
             <ArrowLeft size={14} /> Quay lại danh sách
           </button>
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-black text-[#000000] tracking-tight">Chi tiết Đơn hàng (PO)</h1>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Chi tiết Đơn hàng (PO)</h1>
             <span className={`status-pill ${getStatusDisplay(po.status).class}`}>
               {getStatusDisplay(po.status).label}
             </span>
@@ -133,22 +133,22 @@ export default function PODetailPage() {
           <h3 className="section-title">Thông tin Đơn hàng</h3>
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#000000]"><FileDigit size={12}/> Mã PO</div>
-              <p className="text-sm font-bold text-[#000000]">{po.poNumber || po.id.split('-').pop()}</p>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900"><FileDigit size={12}/> Mã PO</div>
+              <p className="text-sm font-bold text-slate-900">{po.poNumber || po.id.split('-').pop()}</p>
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#000000]"><Building2 size={12}/> Nhà Cung Cấp</div>
-              <p className="text-sm font-bold text-[#000000]">{po.supplier?.name || "N/A"}</p>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900"><Building2 size={12}/> Nhà Cung Cấp</div>
+              <p className="text-sm font-bold text-slate-900">{po.supplier?.name || "N/A"}</p>
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#000000]">PR Tham Chiếu</div>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900">PR Tham Chiếu</div>
               <p className="text-sm font-bold text-[#2563EB] cursor-pointer hover:underline" onClick={() => router.push(`/pr/${po.prId}`)}>
                 {po.pr?.prNumber || (po.prId ? `PR-${po.prId.substring(0, 8)}...` : 'N/A')}
               </p>
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#000000]"><Calendar size={12}/> Ngày Tạo</div>
-              <p className="text-sm font-bold text-[#000000]">{po.createdAt ? new Date(po.createdAt).toLocaleDateString('vi-VN') : 'N/A'}</p>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900"><Calendar size={12}/> Ngày Tạo</div>
+              <p className="text-sm font-bold text-slate-900">{po.createdAt ? new Date(po.createdAt).toLocaleDateString('vi-VN') : 'N/A'}</p>
             </div>
           </div>
         </div>
@@ -157,7 +157,7 @@ export default function PODetailPage() {
            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#2563EB]/5 rounded-full blur-2xl"></div>
            <div>
               <h3 className="section-title">Tổng Mua Tiêu Chuẩn</h3>
-              <div className="text-4xl font-black text-[#000000] mt-2 tracking-tight">
+              <div className="text-4xl font-black text-slate-900 mt-2 tracking-tight">
                   {po.totalAmount?.toLocaleString('vi-VN')} <span className="text-xl text-[#2563EB]">VND</span>
               </div>
            </div>
@@ -172,20 +172,20 @@ export default function PODetailPage() {
           <table className="erp-table text-xs">
             <thead>
               <tr>
-                <th className="w-12 text-center text-[10px] font-black uppercase tracking-widest text-[#000000]">STT</th>
-                <th className="text-[10px] font-black uppercase tracking-widest text-[#000000]">Sản phẩm / Dịch vụ</th>
-                <th className="text-right w-24 text-[10px] font-black uppercase tracking-widest text-[#000000]">Số lượng</th>
-                <th className="text-right w-40 text-[10px] font-black uppercase tracking-widest text-[#000000]">Đơn giá</th>
-                <th className="text-right w-48 text-[10px] font-black uppercase tracking-widest text-[#000000]">Tổng cộng</th>
+                <th className="w-12 text-center text-[10px] font-black uppercase tracking-widest text-slate-900">STT</th>
+                <th className="text-[10px] font-black uppercase tracking-widest text-slate-900">Sản phẩm / Dịch vụ</th>
+                <th className="text-right w-24 text-[10px] font-black uppercase tracking-widest text-slate-900">Số lượng</th>
+                <th className="text-right w-40 text-[10px] font-black uppercase tracking-widest text-slate-900">Đơn giá</th>
+                <th className="text-right w-48 text-[10px] font-black uppercase tracking-widest text-slate-900">Tổng cộng</th>
               </tr>
             </thead>
             <tbody>
               {po.items && po.items.length > 0 ? po.items.map((item: ExtendedPOItem, idx: number) => (
                 <tr key={item.id}>
-                  <td className="text-center font-bold text-[#000000]">{idx + 1}</td>
-                  <td className="font-bold text-[#000000]">{item.description || "N/A"}</td>
+                  <td className="text-center font-bold text-slate-900">{idx + 1}</td>
+                  <td className="font-bold text-slate-900">{item.description || "N/A"}</td>
                   <td className="text-right font-bold text-[#2563EB]">{item.qty}</td>
-                  <td className="text-right font-semibold text-[#000000]">
+                  <td className="text-right font-semibold text-slate-900">
                     {item.unitPrice?.toLocaleString('vi-VN')} ₫
                   </td>
                   <td className="text-right font-black text-black">
@@ -194,7 +194,7 @@ export default function PODetailPage() {
                 </tr>
               )) : (
                 <tr>
-                   <td colSpan={5} className="py-12 text-center text-[#000000] font-bold text-xs uppercase tracking-widest">
+                   <td colSpan={5} className="py-12 text-center text-slate-900 font-bold text-xs uppercase tracking-widest">
                       Không có mặt hàng nào
                    </td>
                 </tr>

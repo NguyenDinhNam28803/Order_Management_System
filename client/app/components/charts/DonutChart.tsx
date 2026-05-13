@@ -60,7 +60,7 @@ export default function DonutChart({
   return (
     <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
       {title && (
-        <h3 className="text-sm font-bold text-[#000000] mb-4 uppercase tracking-wider">
+        <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wider">
           {title}
         </h3>
       )}
@@ -79,24 +79,24 @@ export default function DonutChart({
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {centerValue && (
-              <span className="text-lg font-bold text-[#000000]">{centerValue}</span>
+              <span className="text-lg font-bold text-slate-900">{centerValue}</span>
             )}
             {centerLabel && (
-              <span className="text-[10px] text-[#000000] uppercase">{centerLabel}</span>
+              <span className="text-[10px] text-slate-900 uppercase">{centerLabel}</span>
             )}
           </div>
         </div>
         <div className="flex-1 space-y-2 min-w-0">
           {!hasData ? (
-            <div className="text-xs text-[#000000] italic">Không có dữ liệu</div>
+            <div className="text-xs text-slate-900 italic">Không có dữ liệu</div>
           ) : (
             segments.map((seg, idx) => (
               <div key={idx} className="flex items-center justify-between text-xs gap-4">
                 <div className="flex items-center gap-2 min-w-0">
                   <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: seg.color }} />
-                  <span className="text-[#000000] truncate">{seg.label}</span>
+                  <span className="text-slate-900 truncate">{seg.label}</span>
                 </div>
-                <span className="text-[#000000] font-medium flex-shrink-0">
+                <span className="text-slate-900 font-medium flex-shrink-0">
                   {total > 0 ? ((seg.value / total) * 100).toFixed(1) : 0}%
                 </span>
               </div>

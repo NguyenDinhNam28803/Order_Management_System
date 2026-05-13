@@ -107,17 +107,17 @@ export default function NotificationTemplatePreview({
             <Icon size={20} />
           </div>
           <div>
-            <h3 className="font-medium text-[#000000]">{config.name}</h3>
-            <p className="text-sm text-[#000000]">{config.description}</p>
+            <h3 className="font-medium text-slate-900">{config.name}</h3>
+            <p className="text-sm text-slate-900">{config.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {recipientEmail && (
-            <span className="text-sm text-[#000000] mr-2">
+            <span className="text-sm text-slate-900 mr-2">
               Gửi đến: {recipientEmail}
             </span>
           )}
-          {isExpanded ? <ChevronUp size={20} className="text-[#000000]" /> : <ChevronDown size={20} className="text-[#000000]" />}
+          {isExpanded ? <ChevronUp size={20} className="text-slate-900" /> : <ChevronDown size={20} className="text-slate-900" />}
         </div>
       </div>
 
@@ -129,7 +129,7 @@ export default function NotificationTemplatePreview({
             <button
               onClick={(e) => { e.stopPropagation(); loadServerPreview(); }}
               disabled={isLoading}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#000000] bg-[#FFFFFF] border border-[rgba(148,163,184,0.2)] rounded-lg hover:bg-[#2563EB]/10 hover:text-[#000000] hover:border-[#2563EB]/50 disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-900 bg-[#FFFFFF] border border-[rgba(148,163,184,0.2)] rounded-lg hover:bg-[#2563EB]/10 hover:text-slate-900 hover:border-[#2563EB]/50 disabled:opacity-50 transition-all"
             >
               {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
               {showServerPreview ? 'Ẩn xem trước' : 'Xem trước từ server'}
@@ -138,7 +138,7 @@ export default function NotificationTemplatePreview({
             {onSend && (
               <button
                 onClick={(e) => { e.stopPropagation(); onSend(); }}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#000000] bg-gradient-to-r from-[#2563EB] to-[#3B82F6] rounded-lg hover:shadow-lg hover:shadow-[#2563EB]/30 transition-all"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-900 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] rounded-lg hover:shadow-lg hover:shadow-[#2563EB]/30 transition-all"
               >
                 <Send size={14} />
                 Gửi email
@@ -163,8 +163,8 @@ export default function NotificationTemplatePreview({
             <div className="bg-[#1A1A1A] rounded-lg border border-[rgba(148,163,184,0.1)] overflow-hidden">
               {/* Email Subject */}
               <div className="px-4 py-3 border-b border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
-                <span className="text-sm text-[#000000]">Subject: </span>
-                <span className="text-sm font-medium text-[#000000]">{displayPreview.subject}</span>
+                <span className="text-sm text-slate-900">Subject: </span>
+                <span className="text-sm font-medium text-slate-900">{displayPreview.subject}</span>
               </div>
               
               {/* Email Body */}
@@ -177,7 +177,7 @@ export default function NotificationTemplatePreview({
 
           {/* Data Preview */}
           <div className="px-4 py-3 border-t border-[rgba(148,163,184,0.1)]">
-            <h4 className="text-sm font-medium text-[#000000] mb-2">Dữ liệu template:</h4>
+            <h4 className="text-sm font-medium text-slate-900 mb-2">Dữ liệu template:</h4>
             <pre className="text-xs text-[#3B82F6] bg-[#FFFFFF] p-3 rounded-lg overflow-x-auto border border-[rgba(148,163,184,0.1)]">
               {JSON.stringify(data, null, 2)}
             </pre>

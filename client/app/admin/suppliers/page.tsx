@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useProcurement, Organization } from "../../context/ProcurementContext";
 import { CreateOrganizationPayload } from "@/app/types/api-types";
+import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import { 
     Truck, Plus, Search, 
     Trash2, CheckCircle2, XCircle, Star, 
@@ -24,6 +25,7 @@ export interface Supplier {
 export default function SupplierManagementPage() {
     const { currentUser, notify, organizations, addOrganization, removeOrganization, refreshData } = useProcurement();
     const [searchTerm, setSearchTerm] = useState("");
+    const [confirmState, setConfirmState] = useState<{ open: boolean; title: string; message: string; onConfirm: () => void }>({ open: false, title: "", message: "", onConfirm: () => {} });
     
     React.useEffect(() => {
         refreshData();
@@ -74,17 +76,24 @@ export default function SupplierManagementPage() {
 
     return (
         <div className="animate-in fade-in duration-500">
+            <ConfirmDialog
+                open={confirmState.open}
+                title={confirmState.title}
+                message={confirmState.message}
+                onConfirm={confirmState.onConfirm}
+                onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
+            />
             <div className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
                 <div>
-                    <h1 className="text-4xl font-black text-[#000000] tracking-tighter uppercase mb-2">Quản lý Nhà cung cấp</h1>
-                    <p className="text-[#000000] font-bold text-sm tracking-tight flex items-center gap-2">
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">Quản lý Nhà cung cấp</h1>
+                    <p className="text-slate-900 font-bold text-sm tracking-tight flex items-center gap-2">
                         <Truck size={14} className="text-[#2563EB]" /> 
                         Danh mục đối tác và nhà cung ứng chiến lược của hệ thống
                     </p>
                 </div>
                 <button 
                     onClick={() => setIsAddModalOpen(true)}
-                    className="flex items-center gap-2 bg-[#2563EB] text-[#000000] px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-slate-900 px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm nhà cung cấp
                 </button>
@@ -93,7 +102,7 @@ export default function SupplierManagementPage() {
             <div className="erp-card p-0! overflow-hidden bg-[#F1F5F9] shadow-sm border border-[rgba(148,163,184,0.1)]">
                 <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between gap-6 bg-[#FFFFFF]">
                     <div className="relative flex-1 max-w-md group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#000000] group-focus-within:text-[#2563EB] transition-colors" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 group-focus-within:text-[#2563EB] transition-colors" size={18} />
                         <input 
                             className="erp-input pl-12" 
                             placeholder="Tìm theo tên, mã hoặc lĩnh vực..." 
@@ -120,28 +129,28 @@ export default function SupplierManagementPage() {
                                 <tr key={s.id} className="hover:bg-[#FFFFFF]/50 transition-all group">
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-[#000000] shadow-lg shadow-black/20 transition-transform group-hover:scale-110 ${s.isActive !== false ? 'bg-[#2563EB]' : 'bg-[#000000]'}`}>
+                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-slate-900 shadow-lg shadow-black/20 transition-transform group-hover:scale-110 ${s.isActive !== false ? 'bg-[#2563EB]' : 'bg-[#000000]'}`}>
                                                 {s.name.substring(0,2).toUpperCase()}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="font-black text-[#000000] leading-none mb-1 group-hover:text-[#2563EB] transition-colors">{s.name}</span>
+                                                <span className="font-black text-slate-900 leading-none mb-1 group-hover:text-[#2563EB] transition-colors">{s.name}</span>
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] font-black text-[#000000] uppercase tracking-tighter bg-[#FFFFFF] px-1.5 py-0.5 rounded border border-[rgba(148,163,184,0.1)]">{s.code}</span>
-                                                    {s.website && <Globe size={10} className="text-[#000000]" />}
+                                                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-tighter bg-[#FFFFFF] px-1.5 py-0.5 rounded border border-[rgba(148,163,184,0.1)]">{s.code}</span>
+                                                    {s.website && <Globe size={10} className="text-slate-900" />}
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-6">
-                                        <span className="text-xs font-black text-[#000000] uppercase tracking-tight">{s.industry || "General"}</span>
+                                        <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{s.industry || "General"}</span>
                                     </td>
                                     <td className="px-6 py-6 font-medium">
                                         <div className="flex flex-col gap-1">
-                                            <div className="flex items-center gap-2 text-xs text-[#000000]">
-                                                <Mail size={12} className="text-[#000000]" /> {s.email || "N/A"}
+                                            <div className="flex items-center gap-2 text-xs text-slate-900">
+                                                <Mail size={12} className="text-slate-900" /> {s.email || "N/A"}
                                             </div>
-                                            <div className="flex items-center gap-2 text-xs text-[#000000]">
-                                                <Phone size={12} className="text-[#000000]" /> {s.phone || "N/A"}
+                                            <div className="flex items-center gap-2 text-xs text-slate-900">
+                                                <Phone size={12} className="text-slate-900" /> {s.phone || "N/A"}
                                             </div>
                                         </div>
                                     </td>
@@ -161,12 +170,16 @@ export default function SupplierManagementPage() {
                                         </div>
                                     </td>
                                     <td className="px-8 py-6 text-right">
-                                        <div className="flex justify-end gap-2 text-[#000000]">
-                                            <button 
-                                                onClick={() => {
-                                                    if(confirm("Xác nhận xóa đối tác này?")) removeOrganization(s.id);
-                                                }}
-                                                className="p-2 border border-[rgba(148,163,184,0.1)] rounded-lg hover:bg-red-500/10 hover:border-red-500/30 transition-colors text-[#000000] hover:text-red-400"
+                                        <div className="flex justify-end gap-2 text-slate-900">
+                                            <button
+                                                onClick={() => setConfirmState({
+                                                    open: true,
+                                                    title: "Xóa nhà cung cấp",
+                                                    message: "Xác nhận xóa đối tác này?",
+                                                    onConfirm: () => { removeOrganization(s.id); setConfirmState(st => ({ ...st, open: false })); }
+                                                })}
+                                                className="p-2 border border-slate-200 rounded-lg hover:bg-red-50 hover:border-red-200 transition-colors text-slate-500 hover:text-red-500"
+                                                aria-label="Xóa nhà cung cấp"
                                             >
                                                 <Trash2 size={18} />
                                             </button>
@@ -185,10 +198,10 @@ export default function SupplierManagementPage() {
                     <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsAddModalOpen(false)} />
                     <div className="relative bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         <div className="p-10">
-                            <h2 className="text-2xl font-black text-[#000000] uppercase mb-2 tracking-tight">
+                            <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 Thêm nhà cung cấp mới
                             </h2>
-                            <p className="text-xs text-[#000000] font-bold uppercase tracking-widest mb-10">QUẢN LÝ NHÀ CUNG CẤP</p>
+                            <p className="text-xs text-slate-900 font-bold uppercase tracking-widest mb-10">QUẢN LÝ NHÀ CUNG CẤP</p>
                             
                             <div className="form-grid mb-8">
                                 <div className="form-group col-span-2">

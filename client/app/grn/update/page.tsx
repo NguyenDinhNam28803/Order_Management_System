@@ -225,7 +225,7 @@ export default function GrnUpdatePage() {
               <ChevronRight className="w-3 h-3 text-sky-300" />
               <span className="text-sky-200 text-xs font-semibold">{grn.po.poNumber}</span>
             </div>
-            <h1 className="text-[#000000] text-xl font-bold">Thông tin giao hàng</h1>
+            <h1 className="text-slate-900 text-xl font-bold">Thông tin giao hàng</h1>
           </div>
 
           <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-3 gap-4 text-sm border-b border-gray-100">
@@ -282,8 +282,8 @@ export default function GrnUpdatePage() {
               <React.Fragment key={step.label}>
                 <div className="flex flex-col items-center flex-shrink-0">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${
-                    step.done ? "bg-emerald-500 border-emerald-500 text-[#000000]"
-                    : step.active ? "bg-sky-600 border-sky-600 text-[#000000]"
+                    step.done ? "bg-emerald-500 border-emerald-500 text-slate-900"
+                    : step.active ? "bg-sky-600 border-sky-600 text-slate-900"
                     : "bg-white border-gray-200 text-black"
                   }`}>
                     {step.done ? "✓" : i + 1}
@@ -372,7 +372,7 @@ export default function GrnUpdatePage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-sky-600 to-[#1D4ED8] hover:from-sky-700 hover:to-[#8F442B] disabled:opacity-50 disabled:cursor-not-allowed text-[#000000] font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
+              className="w-full bg-gradient-to-r from-sky-600 to-[#1D4ED8] hover:from-sky-700 hover:to-[#8F442B] disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 font-semibold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
             >
               {submitting ? (
                 <><Loader2 className="w-4 h-4 animate-spin" />Đang cập nhật...</>

@@ -37,7 +37,7 @@ export default function GRNPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-[#000000]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-brand-primary tracking-tight">Nhập kho & Kiểm định (GRN)</h1>
@@ -72,9 +72,9 @@ export default function GRNPage() {
                         </div>
 
                         <div className="erp-card !p-0 overflow-hidden">
-                            <div className="p-6 bg-erp-navy text-[#000000] flex justify-between items-center">
+                            <div className="p-6 bg-erp-navy text-slate-900 flex justify-between items-center">
                                 <h3 className="text-xs font-black uppercase tracking-widest">Kiểm đếm SL thực tế</h3>
-                                <Package size={18} className="text-[#000000]/40" />
+                                <Package size={18} className="text-slate-900/40" />
                             </div>
                             <table className="erp-table">
                                 <thead>
@@ -140,7 +140,7 @@ export default function GRNPage() {
                                     <div className="h-40 rounded-2xl overflow-hidden shadow-inner relative group border border-slate-100">
                                         <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=400&auto=format&fit=crop" className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                                            <span className="text-[#000000] text-[9px] font-black uppercase">Ảnh 01: Thùng hàng bị móp</span>
+                                            <span className="text-slate-900 text-[9px] font-black uppercase">Ảnh 01: Thùng hàng bị móp</span>
                                         </div>
                                     </div>
                                 </div>
@@ -171,7 +171,7 @@ export default function GRNPage() {
                                         </button>
                                     </div>
 
-                                    <div className="p-5 bg-erp-navy rounded-2xl text-[#000000] relative overflow-hidden">
+                                    <div className="p-5 bg-erp-navy rounded-2xl text-slate-900 relative overflow-hidden">
                                         <div className="absolute -right-6 -bottom-6 opacity-10">
                                             <Star size={120} fill="currentColor" />
                                         </div>

@@ -45,7 +45,7 @@ export default function GlobalAISearch() {
                 title="AI Assistant (Ctrl+K)"
                 className="ai-ring-btn fixed bottom-6 right-5 z-50 w-13 h-13 rounded-full
                            bg-gradient-to-br from-[#6366F1] via-[#8B5CF6] to-[#A855F7]
-                           text-[#000000] shadow-2xl shadow-violet-500/40
+                           text-slate-900 shadow-2xl shadow-violet-500/40
                            hover:shadow-violet-500/60 hover:scale-110
                            active:scale-95
                            transition-all duration-300
@@ -72,16 +72,16 @@ export default function GlobalAISearch() {
                         <div className="flex items-center justify-between mb-5">
                             <div className="flex items-center gap-2.5">
                                 <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center shadow-lg shadow-violet-500/30">
-                                    <Brain size={16} className="text-[#000000]" />
+                                    <Brain size={16} className="text-slate-900" />
                                 </div>
                                 <div>
-                                    <h2 className="text-[13px] font-black text-[#000000] leading-none">AI Assistant</h2>
-                                    <p className="text-[9px] text-[#000000] font-semibold uppercase tracking-widest mt-0.5">ProcureSmart Intelligence</p>
+                                    <h2 className="text-[13px] font-black text-slate-900 leading-none">AI Assistant</h2>
+                                    <p className="text-[9px] text-slate-900 font-semibold uppercase tracking-widest mt-0.5">ProcureSmart Intelligence</p>
                                 </div>
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="h-7 w-7 flex items-center justify-center rounded-lg bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-[#000000] hover:text-[#000000] hover:border-[rgba(148,163,184,0.25)] transition-all"
+                                className="h-7 w-7 flex items-center justify-center rounded-lg bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-slate-900 hover:border-[rgba(148,163,184,0.25)] transition-all"
                             >
                                 <X size={14} />
                             </button>
@@ -98,11 +98,11 @@ export default function GlobalAISearch() {
                                            transition-all group text-left"
                             >
                                 <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#6366F1] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-[#2563EB]/25">
-                                    <MessageSquare size={20} className="text-[#000000]" />
+                                    <MessageSquare size={20} className="text-slate-900" />
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-[12px] font-bold text-[#000000] leading-tight">Hỏi đáp AI</div>
-                                    <div className="text-[10px] text-[#000000] mt-0.5 leading-snug">Tìm kiếm dữ liệu ERP</div>
+                                    <div className="text-[12px] font-bold text-slate-900 leading-tight">Hỏi đáp AI</div>
+                                    <div className="text-[10px] text-slate-900 mt-0.5 leading-snug">Tìm kiếm dữ liệu ERP</div>
                                 </div>
                             </button>
 
@@ -115,11 +115,11 @@ export default function GlobalAISearch() {
                                            transition-all group text-left"
                             >
                                 <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#10B981] to-[#2563EB] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-emerald-500/25">
-                                    <FilePlus size={20} className="text-[#000000]" />
+                                    <FilePlus size={20} className="text-slate-900" />
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-[12px] font-bold text-[#000000] leading-tight">Tạo PR</div>
-                                    <div className="text-[10px] text-[#000000] mt-0.5 leading-snug">AI soạn PR Draft</div>
+                                    <div className="text-[12px] font-bold text-slate-900 leading-tight">Tạo PR</div>
+                                    <div className="text-[10px] text-slate-900 mt-0.5 leading-snug">AI soạn PR Draft</div>
                                 </div>
                             </button>
                         </div>
@@ -127,9 +127,9 @@ export default function GlobalAISearch() {
                         {/* Footer hint */}
                         <div className="flex items-center justify-center gap-1.5">
                             <span className="kbd">Ctrl</span>
-                            <span className="text-[9px] text-[#000000]">+</span>
+                            <span className="text-[9px] text-slate-900">+</span>
                             <span className="kbd">K</span>
-                            <span className="text-[10px] text-[#000000] ml-1">để mở / đóng nhanh</span>
+                            <span className="text-[10px] text-slate-900 ml-1">để mở / đóng nhanh</span>
                         </div>
                     </div>
                 </div>

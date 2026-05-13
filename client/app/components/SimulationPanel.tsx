@@ -43,7 +43,7 @@ export default function SimulationPanel() {
         <div className="fixed top-24 right-8 z-[100] w-80 animate-in slide-in-from-right duration-500">
             <div className={`overflow-hidden rounded-[32px] border shadow-2xl backdrop-blur-2xl ${isCatalog ? 'bg-erp-blue/10 border-erp-blue/20' : 'bg-purple-600/10 border-purple-600/20'}`}>
                 {/* Header */}
-                <div className={`p-5 flex items-center justify-between ${isCatalog ? 'bg-erp-blue text-[#000000]' : 'bg-purple-600 text-[#000000]'}`}>
+                <div className={`p-5 flex items-center justify-between ${isCatalog ? 'bg-erp-blue text-slate-900' : 'bg-purple-600 text-slate-900'}`}>
                     <div className="flex items-center gap-3">
                         <Zap size={18} className="animate-pulse" />
                         <div>
@@ -61,9 +61,9 @@ export default function SimulationPanel() {
                     <div className="flex justify-between items-end">
                         <div className="space-y-1">
                             <div className="text-[10px] font-black uppercase tracking-widest text-black">Bước {step} của {currentSteps.length}</div>
-                            <div className="text-sm font-black text-[#000000] italic uppercase tracking-tighter">{stepLabel}</div>
+                            <div className="text-sm font-black text-slate-900 italic uppercase tracking-tighter">{stepLabel}</div>
                         </div>
-                        <div className="text-2xl font-black text-[#000000]/10">0{step}</div>
+                        <div className="text-2xl font-black text-slate-900/10">0{step}</div>
                     </div>
 
                     {/* Progress Bar */}
@@ -77,7 +77,7 @@ export default function SimulationPanel() {
                     {/* Controls */}
                     <button 
                         onClick={nextSimulationStep}
-                        className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-[#000000] font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all ${isCatalog ? 'bg-erp-blue shadow-erp-blue/20' : 'bg-purple-600 shadow-purple-600/20'}`}
+                        className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-slate-900 font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all ${isCatalog ? 'bg-erp-blue shadow-erp-blue/20' : 'bg-purple-600 shadow-purple-600/20'}`}
                     >
                         Bước tiếp theo
                         <ChevronRight size={16} />
@@ -85,7 +85,7 @@ export default function SimulationPanel() {
 
                     <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
                         <p className="text-[10px] text-black font-medium leading-relaxed">
-                            <span className="text-[#000000] font-bold">INFO:</span> Bạn có thể switch role tài khoản để thấy dữ liệu tương ứng tại mỗi bước.
+                            <span className="text-slate-900 font-bold">INFO:</span> Bạn có thể switch role tài khoản để thấy dữ liệu tương ứng tại mỗi bước.
                         </p>
                     </div>
                 </div>
