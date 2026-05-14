@@ -97,7 +97,9 @@ export class InvoiceModuleService {
           await tx.budgetAllocation.update({
             where: { id: budget.id },
             data: {
-              committedAmount: { decrement: Math.min(totalAmountNum, committed) },
+              committedAmount: {
+                decrement: Math.min(totalAmountNum, committed),
+              },
               spentAmount: { increment: totalAmount },
             },
           });

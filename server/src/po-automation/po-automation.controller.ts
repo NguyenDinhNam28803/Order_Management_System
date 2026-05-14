@@ -2,7 +2,6 @@ import { Controller, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { POAutomationService } from './po-automation.service';
-import { ProcessAutomationDto } from './dto/process-automation.dto';
 
 @ApiTags('PO Automation')
 @Controller('po-automation')

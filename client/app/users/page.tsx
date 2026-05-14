@@ -435,13 +435,13 @@ export default function UsersPage() {
                                     <button 
                                         type="button"
                                         onClick={() => setShowModal(false)}
-                                        className="flex-1 px-8 py-4 bg-[#FFFFFF] rounded-3xl font-black text-slate-900 uppercase tracking-widest hover:bg-slate-100 transition-colors"
+                                        className="flex-1 px-8 py-4 bg-[#FFFFFF] rounded-lg font-black text-slate-900 uppercase tracking-widest hover:bg-slate-100 transition-colors"
                                     >
                                         Bỏ qua
                                     </button>
                                     <button 
                                         type="submit"
-                                        className="flex-1 px-8 py-4 bg-[#2563EB] text-white rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-all"
+                                        className="flex-1 px-8 py-4 bg-[#2563EB] text-white rounded-lg font-black uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-all"
                                     >
                                         {editingUser ? "Lưu cập nhật" : "Tạo tài khoản"}
                                     </button>

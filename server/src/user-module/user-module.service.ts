@@ -33,10 +33,8 @@ export class UserModuleService {
     const user = await this.userRepository.create(createUserModuleDto);
     // await this.cacheManager.del('user:all');
 
-    // 3. Tạo một Setup Token đơn giản (Trong thực tế nên lưu vào DB với thời hạn)
-    const setupToken = Buffer.from(`${user.id}:${Date.now()}`).toString(
-      'base64',
-    );
+    // 3. Tạo Setup Token bảo mật bằng crypto.randomBytes (không predictable)
+    const setupToken = randomBytes(32).toString('hex');
 
     // 4. Gửi email chào mừng (KHÔNG gửi mật khẩu)
     await this.notificationService.sendNotification({

@@ -258,7 +258,10 @@ export class ApprovalModuleService {
         'REJECTED',
         comment,
       ).catch((err: Error) =>
-        this.logger.error(`notifyRequesterOnResult (REJECTED) failed: ${err.message}`, err.stack),
+        this.logger.error(
+          `notifyRequesterOnResult (REJECTED) failed: ${err.message}`,
+          err.stack,
+        ),
       );
       this.emitApprovalEvent(currentStep, 'REJECTED', user.orgId);
       return { status: 'REJECTED', message: 'Tài liệu đã bị từ chối.' };
@@ -287,7 +290,10 @@ export class ApprovalModuleService {
         currentStep.documentId,
         'APPROVED',
       ).catch((err: Error) =>
-        this.logger.error(`notifyRequesterOnResult (APPROVED) failed: ${err.message}`, err.stack),
+        this.logger.error(
+          `notifyRequesterOnResult (APPROVED) failed: ${err.message}`,
+          err.stack,
+        ),
       );
       this.emitApprovalEvent(currentStep, 'APPROVED', user.orgId);
       return {
@@ -309,7 +315,10 @@ export class ApprovalModuleService {
         docAmount,
         currentStep.documentType,
       ).catch((err: Error) =>
-        this.logger.error(`notifyApprover (next step) failed for approver ${nextStep.approverId}: ${err.message}`, err.stack),
+        this.logger.error(
+          `notifyApprover (next step) failed for approver ${nextStep.approverId}: ${err.message}`,
+          err.stack,
+        ),
       );
       return {
         status: 'PARTIALLY_APPROVED',
@@ -569,7 +578,10 @@ export class ApprovalModuleService {
         });
 
         // Khi được duyệt → thông báo cả hai bên cần ký
-        if (actionStatus === 'APPROVED' || actionStatus === 'PENDING_APPROVAL') {
+        if (
+          actionStatus === 'APPROVED' ||
+          actionStatus === 'PENDING_APPROVAL'
+        ) {
           void this.notifyContractSigningParties(id);
         }
         break;
@@ -577,13 +589,14 @@ export class ApprovalModuleService {
     }
 
     if (actionStatus === 'APPROVED') {
-      this.automationService.handleDocumentApproved(type, id).catch(
-        (err: Error) =>
+      this.automationService
+        .handleDocumentApproved(type, id)
+        .catch((err: Error) =>
           this.logger.error(
             `handleDocumentApproved failed for ${type} ${id}: ${err.message}`,
             err.stack,
           ),
-      );
+        );
     }
   }
 
@@ -915,7 +928,9 @@ export class ApprovalModuleService {
   }
 
   /** Gửi email yêu cầu ký cho cả bên mua lẫn nhà cung cấp */
-  private async notifyContractSigningParties(contractId: string): Promise<void> {
+  private async notifyContractSigningParties(
+    contractId: string,
+  ): Promise<void> {
     try {
       const contract = await this.prisma.contract.findUnique({
         where: { id: contractId },
@@ -923,7 +938,8 @@ export class ApprovalModuleService {
       });
       if (!contract) return;
 
-      const frontendUrl = process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn';
+      const frontendUrl =
+        process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn';
       const baseData = {
         contractNumber: contract.contractNumber,
         contractTitle: contract.title,
@@ -937,7 +953,7 @@ export class ApprovalModuleService {
       const buyerUsers = await this.prisma.user.findMany({
         where: {
           orgId: contract.orgId,
-          role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as any },
+          role: { in: [UserRole.PROCUREMENT, UserRole.DIRECTOR, UserRole.CEO] },
           isActive: true,
         },
         select: { email: true, fullName: true },
@@ -945,25 +961,27 @@ export class ApprovalModuleService {
 
       for (const u of buyerUsers) {
         if (!u.email) continue;
-        void this.notificationService.sendDirectEmail(
-          u.email,
-          `[OMS] Hợp đồng ${contract.contractNumber} cần chữ ký của bạn`,
-          'CONTRACT_SIGN_REQUEST',
-          {
-            ...baseData,
-            recipientName: u.fullName ?? u.email,
-            partnerName: contract.supplierOrg?.name ?? 'Nhà cung cấp',
-            signingLink: `${frontendUrl}/procurement/contracts/${contractId}`,
-            role: 'buyer',
-          },
-        ).catch(() => {});
+        void this.notificationService
+          .sendDirectEmail(
+            u.email,
+            `[OMS] Hợp đồng ${contract.contractNumber} cần chữ ký của bạn`,
+            'CONTRACT_SIGN_REQUEST',
+            {
+              ...baseData,
+              recipientName: u.fullName ?? u.email,
+              partnerName: contract.supplierOrg?.name ?? 'Nhà cung cấp',
+              signingLink: `${frontendUrl}/procurement/contracts/${contractId}`,
+              role: 'buyer',
+            },
+          )
+          .catch(() => {});
       }
 
       // ── Thông báo nhà cung cấp (SUPPLIER role trong supplier org) ──
       const supplierUsers = await this.prisma.user.findMany({
         where: {
           orgId: contract.supplierId,
-          role: 'SUPPLIER' as any,
+          role: UserRole.SUPPLIER,
           isActive: true,
         },
         select: { email: true, fullName: true },
@@ -971,18 +989,20 @@ export class ApprovalModuleService {
 
       for (const u of supplierUsers) {
         if (!u.email) continue;
-        void this.notificationService.sendDirectEmail(
-          u.email,
-          `[OMS] Hợp đồng ${contract.contractNumber} cần chữ ký của bạn`,
-          'CONTRACT_SIGN_REQUEST',
-          {
-            ...baseData,
-            recipientName: u.fullName ?? u.email,
-            partnerName: contract.buyerOrg?.name ?? 'Bên mua',
-            signingLink: `${frontendUrl}/supplier/contracts`,
-            role: 'supplier',
-          },
-        ).catch(() => {});
+        void this.notificationService
+          .sendDirectEmail(
+            u.email,
+            `[OMS] Hợp đồng ${contract.contractNumber} cần chữ ký của bạn`,
+            'CONTRACT_SIGN_REQUEST',
+            {
+              ...baseData,
+              recipientName: u.fullName ?? u.email,
+              partnerName: contract.buyerOrg?.name ?? 'Bên mua',
+              signingLink: `${frontendUrl}/supplier/contracts`,
+              role: 'supplier',
+            },
+          )
+          .catch(() => {});
       }
 
       this.logger.log(

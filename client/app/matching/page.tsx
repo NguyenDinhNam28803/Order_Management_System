@@ -38,7 +38,7 @@ export default function MatchingPage() {
                 <div className="space-y-8 animate-in fade-in slide-in-from-top duration-500">
                     {/* --- Alert Banner --- */}
                     {!disputeResolved && (
-                        <div className="bg-red-50 border border-red-100 rounded-3xl p-8 flex items-start gap-6 animate-pulse shadow-sm shadow-red-100">
+                        <div className="bg-red-50 border border-red-100 rounded-xl p-8 flex items-start gap-6 animate-pulse shadow-sm shadow-red-100">
                             <div className="h-14 w-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center shrink-0">
                                 <ShieldAlert size={30} />
                             </div>

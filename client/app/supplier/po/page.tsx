@@ -361,10 +361,10 @@ export default function SupplierPO() {
                                     {/* PO Number */}
                                     <td className="py-4 px-4">
                                         <div className="font-bold text-slate-900 text-xs mb-1 truncate group-hover:text-[#F8FAFC] transition-colors">
-                                            Đơn hàng
+                                            {p.poNumber || `PO-${p.id?.slice(0, 8).toUpperCase()}`}
                                         </div>
                                         <div className="text-[9px] font-bold text-slate-900 uppercase tracking-wider truncate group-hover:text-[#2563EB] transition-colors">
-                                            {"ProcurePro"}
+                                            {p.vendor || "ProcurePro"}
                                         </div>
                                     </td>
 

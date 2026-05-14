@@ -59,15 +59,15 @@ export class InvoiceModuleController {
   ) {
     const skip = (Number(page) - 1) * Number(limit);
     const take = Number(limit);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment
+
     const data = await this.invoiceModuleService.findPaginated(
       req.user.orgId,
       skip,
       take,
     );
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const total = await this.invoiceModuleService.count(req.user.orgId);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     return { data, total, page: Number(page), limit: Number(limit) };
   }
 

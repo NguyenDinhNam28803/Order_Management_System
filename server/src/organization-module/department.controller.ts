@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Query,
   Request,
 } from '@nestjs/common';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';

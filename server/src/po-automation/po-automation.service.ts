@@ -1,7 +1,6 @@
 ﻿import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../notification-module/email.service';
-import { ProcessAutomationDto } from './dto/process-automation.dto';
 
 interface AutomationConfig {
   contractThreshold: number;
@@ -23,9 +22,7 @@ export class POAutomationService {
     private readonly emailService: EmailService,
   ) {}
 
-  async updateConfig(
-    config: Partial<AutomationConfig>,
-  ): Promise<AutomationConfig> {
+  updateConfig(config: Partial<AutomationConfig>): AutomationConfig {
     this.config = { ...this.config, ...config };
     this.logger.log(`Config updated: ${JSON.stringify(this.config)}`);
     return this.config;
@@ -211,7 +208,7 @@ export class POAutomationService {
         return false;
       }
 
-      const { subject, body, html } = this.generateContractEmailContent(
+      const { subject, body } = this.generateContractEmailContent(
         contract,
         po,
         totalAmount,
@@ -234,7 +231,7 @@ export class POAutomationService {
   private generateContractEmailContent(
     contract: any,
     po: any,
-    totalAmount: number,
+    _totalAmount: number,
   ) {
     const subject = `New Contract ${contract.contractNumber} - Value ${Number(contract.value || 0).toLocaleString('vi-VN')} VND`;
 

@@ -84,7 +84,7 @@ export default function OrganizationsPage() {
                 </button>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest border-r border-[rgba(148,163,184,0.1)] pr-4">Entity Directory</div>

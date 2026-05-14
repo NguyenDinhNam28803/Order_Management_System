@@ -181,7 +181,7 @@ export default function NotificationAdminPage() {
       {/* Template Categories */}
       <div className="space-y-6">
         {templateCategories.map((category, idx) => (
-          <div key={category.title} className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden animate-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${idx * 100}ms` }}>
+          <div key={category.title} className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden animate-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${idx * 100}ms` }}>
             <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
               <div className="flex items-center justify-between">
                 <div>
@@ -214,7 +214,7 @@ export default function NotificationAdminPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-gradient-to-br from-[#2563EB]/10 to-[#3B82F6]/5 rounded-4xl p-8 border border-[#2563EB]/20">
+      <div className="bg-gradient-to-br from-[#2563EB]/10 to-[#3B82F6]/5 rounded-xl p-8 border border-[#2563EB]/20">
         <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
           <Mail className="w-5 h-5 text-[#2563EB]" />
           Hướng dẫn sử dụng

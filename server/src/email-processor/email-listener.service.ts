@@ -19,7 +19,10 @@ export class EmailListenerService {
       imap: {
         user: this.configService.get<string>('EMAIL_USER')!,
         password: this.configService.get<string>('EMAIL_PASS')!,
-        host: this.configService.get<string>('EMAIL_IMAP_HOST', 'imap.gmail.com'),
+        host: this.configService.get<string>(
+          'EMAIL_IMAP_HOST',
+          'imap.gmail.com',
+        ),
         port: 993,
         tls: true,
         tlsOptions: { rejectUnauthorized: false },
@@ -29,8 +32,8 @@ export class EmailListenerService {
   }
 
   // Sử dụng IDLE thay vì Cron
-  async onModuleInit() {
-    this.startIdling();
+  onModuleInit() {
+    void this.startIdling();
   }
 
   private async startIdling() {
@@ -40,39 +43,46 @@ export class EmailListenerService {
 
       this.logger.log('EmailListener: Đang lắng nghe real-time (IMAP IDLE)...');
 
-      // @ts-ignore
-      connection.imap.idle((err) => {
+      (connection.imap as any).idle((err: Error | null) => {
         if (err) {
           this.logger.error('IDLE Error:', err);
-          setTimeout(() => this.startIdling(), 5000);
+          setTimeout(() => {
+            void this.startIdling();
+          }, 5000);
         }
       });
 
-      // @ts-ignore
-      connection.imap.on('mail', async () => {
+      (connection.imap as any).on('mail', () => {
         this.logger.log('Email mới phát hiện, bắt đầu xử lý...');
-        await this.processNewEmails(connection);
+        void this.processNewEmails(connection);
       });
-
     } catch (error) {
       this.logger.error('Không thể kết nối IMAP:', error);
-      setTimeout(() => this.startIdling(), 10000);
+      setTimeout(() => {
+        void this.startIdling();
+      }, 10000);
     }
   }
 
   private async processNewEmails(connection: imapSimple.ImapSimple) {
     // Logic tương tự như handleCron cũ để đọc UNSEEN và gọi emailProcessor
-    const messages = await connection.search(['UNSEEN'], { bodies: ['HEADER', 'TEXT'], markSeen: true });
-    
+    const messages = await connection.search(['UNSEEN'], {
+      bodies: ['HEADER', 'TEXT'],
+      markSeen: true,
+    });
+
     for (const message of messages) {
       const headerPart = message.parts.find((p: any) => p.which === 'HEADER');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const header: Record<string, string[]> = headerPart?.body ?? {};
-      
+
       const emailData = {
         from: String(header.from?.[0] ?? ''),
         subject: String(header.subject?.[0] ?? '(no subject)'),
         body: '...', // Trích xuất logic body tương tự như file cũ
-        messageId: String(header['message-id']?.[0] ?? 'uid-' + message.attributes.uid),
+        messageId: String(
+          header['message-id']?.[0] ?? 'uid-' + message.attributes.uid,
+        ),
       };
 
       const filterResult = await this.emailFilter.filter(emailData);

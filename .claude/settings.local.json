@@ -50,7 +50,13 @@
       "Bash(Select-Object -ExpandProperty Name)",
       "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\\\\src\" -Directory)",
       "Bash(findstr '\"version\"')",
-      "Bash(Sort-Object)"
+      "Bash(Sort-Object)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\" -Recurse -Filter \"*.vue\")",
+      "Bash(Select-Object FullName)",
+      "Bash(Head -50)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\" -Force)",
+      "PowerShell(npm run *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\\\\src\" -Recurse -Directory)"
     ]
   }
 }

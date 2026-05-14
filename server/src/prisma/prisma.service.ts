@@ -72,13 +72,12 @@ export class PrismaService
   // To intentionally include deleted records, use $queryRaw for admin/audit purposes.
   // Converts delete/deleteMany → soft delete (sets deletedAt) for protected models.
   private applySoftDeleteExtension(): void {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias, @typescript-eslint/no-explicit-any
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/require-await */
     const self = this as any;
 
     const extended = self.$extends({
       query: {
         $allModels: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           async $allOperations({ model, operation, args, query }: any) {
             if (!(SOFT_DELETE_MODELS as string[]).includes(model)) {
               return query(args);
@@ -96,7 +95,7 @@ export class PrismaService
             // Convert delete → soft delete
             if (operation === 'delete') {
               const key: string = model[0].toLowerCase() + model.slice(1);
-              return (self[key] as any).update({
+              return self[key].update({
                 where: args.where,
                 data: { deletedAt: new Date() },
               });
@@ -105,7 +104,7 @@ export class PrismaService
             // Convert deleteMany → soft deleteMany
             if (operation === 'deleteMany') {
               const key: string = model[0].toLowerCase() + model.slice(1);
-              return (self[key] as any).updateMany({
+              return self[key].updateMany({
                 where: args.where,
                 data: { ...(args.data ?? {}), deletedAt: new Date() },
               });
@@ -120,5 +119,6 @@ export class PrismaService
     // Overlay the extended model delegates onto this instance.
     // Extended delegates are own-enumerable properties on the client, so Object.assign copies them.
     Object.assign(this, extended);
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/require-await */
   }
 }

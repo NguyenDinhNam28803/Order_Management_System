@@ -337,7 +337,7 @@ export default function ProductAdminPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-8">
-                <div className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                     {/* Toolbar */}
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="flex gap-1 p-1 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl w-fit">
@@ -380,13 +380,13 @@ export default function ProductAdminPage() {
 
                 {/* Stats Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-[#F1F5F9] p-8 rounded-4xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
                         <div className="flex-1">
                             <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-1">Mục sản phẩm</div>
                             <div className="text-3xl font-black text-slate-900">{products.length}</div>
                         </div>
                     </div>
-                    <div className="bg-[#F1F5F9] p-8 rounded-4xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
                         <div className="flex-1">
                             <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-1">Danh mục cấp 1</div>
                             <div className="text-3xl font-black text-slate-900">{categories.length}</div>

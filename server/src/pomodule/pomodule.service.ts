@@ -81,8 +81,11 @@ export class PomoduleService {
 
       if (updated.count === 0) {
         // PR không tồn tại hoặc không còn ở trạng thái APPROVED
-        const pr = await tx.purchaseRequisition.findUnique({ where: { id: prId } });
-        if (!pr) throw new NotFoundException('Không tìm thấy yêu cầu mua sắm (PR)');
+        const pr = await tx.purchaseRequisition.findUnique({
+          where: { id: prId },
+        });
+        if (!pr)
+          throw new NotFoundException('Không tìm thấy yêu cầu mua sắm (PR)');
         throw new BadRequestException(
           `Không thể tạo PO: PR đang ở trạng thái ${pr.status}. Chỉ PR đã APPROVED mới được phép.`,
         );

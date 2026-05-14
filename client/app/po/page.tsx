@@ -411,7 +411,7 @@ export default function POPage() {
                 </div>
             </div>
             
-            <div className="bg-bg-secondary p-4 rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8 flex justify-between items-center">
+            <div className="bg-bg-secondary p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8 flex justify-between items-center">
                 <div className="flex-1 flex gap-3 max-w-xl">
                     <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                         <Search size={20} className="text-[#2563EB]" />

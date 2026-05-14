@@ -252,7 +252,7 @@ export default function FinanceBudgetApprovalPage() {
                 <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
                     <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={() => !isSubmitting && setActionType(null)} />
                     
-                    <div className="relative w-full max-w-lg bg-[#F1F5F9] rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
+                    <div className="relative w-full max-w-lg bg-[#F1F5F9] rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
                         <div className={`p-8 pb-10 ${actionType === "APPROVE" ? "bg-emerald-500/10" : "bg-rose-500/10"}`}>
                             <div className="w-16 h-16 rounded-xl bg-[#F1F5F9] shadow-sm flex items-center justify-center mb-6 border border-[rgba(148,163,184,0.1)]">
                                 {actionType === "APPROVE" ? (
