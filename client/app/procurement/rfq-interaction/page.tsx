@@ -14,7 +14,7 @@ export default function RFQInteractionPage() {
                 <p className="text-black font-medium">Demo quy trình tự động lọc & so sánh giá cho Bộ phận Thu mua</p>
             </div>
 
-            <div className="bg-white p-12 rounded-[40px] border border-slate-100 shadow-inner">
+            <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-inner">
                 <RFQInteraction rfqId={rfqId} />
             </div>
 

@@ -264,7 +264,7 @@ export default function ProcurementSupplierDetailPage() {
                     
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="h-16 w-16 bg-[#2563EB]/10 rounded-2xl flex items-center justify-center border border-[#2563EB]/20">
+                            <div className="h-16 w-16 bg-[#2563EB]/10 rounded-xl flex items-center justify-center border border-[#2563EB]/20">
                                 <Building2 size={32} className="text-[#2563EB]" />
                             </div>
                             <div>
@@ -344,7 +344,7 @@ export default function ProcurementSupplierDetailPage() {
                         {/* KPI Overview Cards with Progress Bars */}
                         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* OTD Score */}
-                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-emerald-500/10 rounded-lg">
@@ -378,7 +378,7 @@ export default function ProcurementSupplierDetailPage() {
                             </div>
                             
                             {/* Quality Score */}
-                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-[#2563EB]/10 rounded-lg">
@@ -417,7 +417,7 @@ export default function ProcurementSupplierDetailPage() {
                             </div>
                             
                             {/* Price Score */}
-                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-yellow-500/10 rounded-lg">
@@ -456,7 +456,7 @@ export default function ProcurementSupplierDetailPage() {
                             </div>
                             
                             {/* Manual Score */}
-                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-purple-500/10 rounded-lg">
@@ -498,7 +498,7 @@ export default function ProcurementSupplierDetailPage() {
                         </div>
 
                         {/* Overall Score Card */}
-                        <div className="bg-gradient-to-br from-[#2563EB]/10 via-[#8B5CF6]/10 to-[#EC4899]/10 rounded-2xl p-8 border border-[#2563EB]/20 relative">
+                        <div className="bg-gradient-to-br from-[#2563EB]/10 via-[#8B5CF6]/10 to-[#EC4899]/10 rounded-[10px] p-8 border border-[#2563EB]/20 relative">
                             <div className="absolute top-0 right-0 p-4 opacity-10">
                                 <Sparkles size={80} className="text-[#2563EB]" />
                             </div>
@@ -609,7 +609,7 @@ export default function ProcurementSupplierDetailPage() {
 
                         {/* AI Analysis & Improvement Plan */}
                         {latestKPI?.improvementPlan && (
-                            <div className="lg:col-span-3 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-amber-500/5 border border-amber-500/20 rounded-2xl p-6">
+                            <div className="lg:col-span-3 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-amber-500/5 border border-amber-500/20 rounded-[10px] p-6">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="p-2 bg-amber-500/10 rounded-xl">
                                         <Zap size={20} className="text-black" />
@@ -673,7 +673,7 @@ export default function ProcurementSupplierDetailPage() {
                     <div className="space-y-6">
                         <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
                         
-                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr>
@@ -713,7 +713,7 @@ export default function ProcurementSupplierDetailPage() {
                         </div>
 
                         {!kpiHistory.length && (
-                            <div className="text-center py-12 bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                            <div className="text-center py-12 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                 <BarChart3 size={48} className="text-slate-900 mx-auto mb-4" />
                                 <p className="text-slate-900 font-bold">Chưa có dữ liệu đánh giá</p>
                                 <p className="text-slate-900 text-sm mt-2">Chạy đánh giá AI để tạo báo cáo KPI</p>
@@ -759,7 +759,7 @@ export default function ProcurementSupplierDetailPage() {
                             </Tooltip>
                         </div>
                         
-                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr>
@@ -797,7 +797,7 @@ export default function ProcurementSupplierDetailPage() {
                         </div>
 
                         {supplierPOs.length === 0 && (
-                            <div className="text-center py-12 bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                            <div className="text-center py-12 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                 <ShoppingBag size={48} className="text-slate-900 mx-auto mb-4" />
                                 <p className="text-slate-900 font-bold">Chưa có PO nào</p>
                                 <p className="text-slate-900 text-sm mt-2">Bạn chưa tạo PO nào với nhà cung cấp này</p>
@@ -810,7 +810,7 @@ export default function ProcurementSupplierDetailPage() {
             {/* Manual Review Modal */}
             {showReviewModal && (
                 <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] max-w-lg w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-[rgba(148,163,184,0.1)]">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">

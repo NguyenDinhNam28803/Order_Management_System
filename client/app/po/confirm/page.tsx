@@ -192,7 +192,7 @@ export default function PoConfirmPage() {
       <div className="max-w-3xl mx-auto space-y-5">
 
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="bg-gradient-to-r from-teal-700 to-cyan-700 px-6 py-5">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-teal-200 text-xs font-semibold tracking-widest uppercase">Đơn mua hàng</span>
@@ -252,7 +252,7 @@ export default function PoConfirmPage() {
         </div>
 
         {/* Items table */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
             <Package className="w-4 h-4 text-teal-600" />
             <h2 className="font-semibold text-gray-800">Chi tiết đơn hàng</h2>
@@ -291,7 +291,7 @@ export default function PoConfirmPage() {
         </div>
 
         {/* Confirm form */}
-        <form onSubmit={handleConfirm} className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <form onSubmit={handleConfirm} className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
             <FileText className="w-4 h-4 text-teal-600" />
             <h2 className="font-semibold text-gray-800">Xác nhận đơn hàng</h2>

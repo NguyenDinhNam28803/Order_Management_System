@@ -74,7 +74,7 @@ const SupplierDetailModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#F1F5F9] rounded-2xl border border-[rgba(240,246,252,0.1)] shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#F1F5F9] rounded-xl border border-[rgba(240,246,252,0.1)] shadow-2xl overflow-hidden">
 
         {/* Header */}
         <div className="flex items-start justify-between p-5 border-b border-[#E2E8F0] bg-[#FFFFFF] shrink-0">
@@ -383,7 +383,7 @@ const SupplierCard = ({
 // ─── Compare Panel ───────────────────────────────────────────────────────────
 const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[]; onClose: () => void }) => (
   <div className="fixed inset-0 z-50 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div className="bg-[#F1F5F9] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-auto">
+    <div className="bg-[#F1F5F9] border border-[rgba(240,246,252,0.1)] rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-auto">
       <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0]">
         <h3 className="font-bold text-slate-900">So sánh Nhà cung cấp</h3>
         <button onClick={onClose} className="text-slate-900 hover:text-slate-900 transition-colors"><X size={16} /></button>
@@ -632,7 +632,7 @@ export default function SupplierDiscoveryPage() {
         </div>
 
         {/* ── Search form ── */}
-        <div className="bg-[#F1F5F9] border border-[#E2E8F0] rounded-2xl p-4 mb-5">
+        <div className="bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl p-4 mb-5">
           {/* Main query */}
           <div className="flex gap-2 mb-3">
             <div className="relative flex-1">
@@ -825,7 +825,7 @@ export default function SupplierDiscoveryPage() {
             )}
 
             {/* ── AI Chat ── */}
-            <div className="mt-8 bg-[#F1F5F9] border border-[#E2E8F0] rounded-2xl overflow-hidden">
+            <div className="mt-8 bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl overflow-hidden">
               <button
                 onClick={() => setChatOpen(v => !v)}
                 className="w-full flex items-center gap-2 p-4 text-left hover:bg-[rgba(240,246,252,0.03)] transition-colors"

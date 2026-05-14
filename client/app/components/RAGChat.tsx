@@ -342,7 +342,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                 <Sparkles size={14} />
                                 <span className="text-[10px] font-black uppercase tracking-widest">Tóm tắt từ AI</span>
                             </div>
-                            <div className="bg-[#F1F5F9] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl">
+                            <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl">
                                 <div className="text-sm text-slate-900 leading-relaxed font-medium whitespace-pre-wrap">
                                     {formatAnswer(aiResponse?.data?.answer?.summary)}
                                 </div>
@@ -358,7 +358,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                     </div>
                                     <div className="space-y-3">
                                         {(aiResponse.data.answer.data as Array<Record<string, any>>).map((item, idx) => (
-                                            <div key={idx} className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                                            <div key={idx} className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                                                 {/* Header with status if available */}
                                                 {!!(item.status || (item.details as any)?.["Đánh giá nhà cung cấp"]) && (
                                                     <div className="px-4 py-3 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
@@ -483,15 +483,15 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
 
                         {/* Stats Cards */}
                         <div className="grid grid-cols-3 gap-4 mb-8">
-                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-2xl p-4 text-center">
+                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-xl p-4 text-center">
                                 <div className="text-2xl font-bold text-[#F59E0B] mb-1">{pendingPRCount}</div>
                                 <div className="text-xs text-slate-900">PR chờ duyệt</div>
                             </div>
-                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-2xl p-4 text-center">
+                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-xl p-4 text-center">
                                 <div className="text-2xl font-bold text-[#EF4444] mb-1">{overdueInvoiceCount}</div>
                                 <div className="text-xs text-slate-900">Hóa đơn quá hạn</div>
                             </div>
-                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-2xl p-4 text-center">
+                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-xl p-4 text-center">
                                 <div className="text-2xl font-bold text-[#10B981] mb-1">{budgetRemainingPercent}%</div>
                                 <div className="text-xs text-slate-900">Ngân sách còn lại</div>
                             </div>
@@ -542,7 +542,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                         <div className="flex items-center gap-2">
                             <div className="flex gap-1">
                                 {["Ctrl", "K"].map((key) => (
-                                    <kbd key={key} className="px-2 py-1 bg-[#1E293B] border border-[#334155] rounded text-[10px] font-medium text-slate-900">
+                                    <kbd key={key} className="px-2 py-1 bg-[#1E293B] border border-[#334155] rounded text-[10px] font-medium text-[#F8FAFC]">
                                         {key}
                                     </kbd>
                                 ))}

@@ -232,7 +232,7 @@ export default function SmartSearch() {
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-2xl overflow-hidden animate-fade-in">
+      <div className="relative w-full max-w-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-2xl overflow-hidden animate-fade-in">
 
         {/* Input row */}
         <div className="flex items-center gap-3 p-4 border-b border-[rgba(148,163,184,0.1)]">

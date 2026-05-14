@@ -229,10 +229,10 @@ export default function ProcurementControlPage() {
                 </div>
 
                 {/* Filter Bar */}
-                <div className="bg-[#F1F5F9] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5">
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 flex gap-3">
-                            <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                            <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                                 <Search size={20} className="text-[#2563EB]" />
                             </div>
                             <div className="relative flex-1">
@@ -241,7 +241,7 @@ export default function ProcurementControlPage() {
                                     placeholder="Tìm kiếm theo mã PR, tiêu đề hoặc người yêu cầu..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                    className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                 />
                             </div>
                         </div>
@@ -251,7 +251,7 @@ export default function ProcurementControlPage() {
                                 <select
                                     value={statusFilter}
                                     onChange={(e) => setStatusFilter(e.target.value)}
-                                    className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                                    className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
                                 >
                                     <option value="ALL">Tất cả trạng thái</option>
                                     <option value="PENDING">Chờ xử lý</option>
@@ -263,7 +263,7 @@ export default function ProcurementControlPage() {
                             <select
                                 value={deptFilter}
                                 onChange={(e) => setDeptFilter(e.target.value)}
-                                className="h-14 px-6 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all cursor-pointer min-w-[180px]"
+                                className="h-14 px-6 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all cursor-pointer min-w-[180px]"
                             >
                                 <option value="ALL">Tất cả bộ phận</option>
                                 {departments.map(dept => (
@@ -275,7 +275,7 @@ export default function ProcurementControlPage() {
                 </div>
 
                 {/* Table */}
-                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                     <ERPTable
                         data={filteredPRs}
                         columns={columns}
@@ -286,7 +286,7 @@ export default function ProcurementControlPage() {
             {/* Confirm Modal */}
             {confirmModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-[#F1F5F9] rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-[rgba(148,163,184,0.1)]">
                         <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                             <div className="flex items-center gap-4">
                                 <div className="bg-[#2563EB] p-3 rounded-2xl text-white shadow-lg shadow-[#2563EB]/20">
@@ -299,7 +299,7 @@ export default function ProcurementControlPage() {
                             </div>
                         </div>
                         <div className="p-8 space-y-6">
-                            <div className="bg-[#FFFFFF] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#FFFFFF] p-6 rounded-xl border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex justify-between items-center mb-4">
                                     <span className="text-slate-900 font-bold text-sm">Nhà cung cấp:</span>
                                     <span className="text-[#2563EB] font-black uppercase tracking-tight">
@@ -344,7 +344,7 @@ export default function ProcurementControlPage() {
                             </div>
 
                             <div className="flex gap-4 pt-4">
-                                <button onClick={() => setConfirmModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#FFFFFF] text-slate-900 font-black text-xs uppercase tracking-widest hover:text-slate-900 border border-[rgba(148,163,184,0.1)] transition-all">Hủy bỏ</button>
+                                <button onClick={() => setConfirmModal(null)} className="flex-1 px-6 py-4 rounded-xl bg-[#FFFFFF] text-slate-900 font-black text-xs uppercase tracking-widest hover:text-slate-900 border border-[rgba(148,163,184,0.1)] transition-all">Hủy bỏ</button>
                                 <button 
                                     onClick={() => handleConfirmCatalog(confirmModal)}
                                     className="flex-1 px-6 py-4 rounded-2xl bg-[#2563EB] text-white font-black text-xs uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-xl shadow-[#2563EB]/20 active:scale-95"

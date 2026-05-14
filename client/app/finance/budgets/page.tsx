@@ -160,7 +160,7 @@ export default function FinanceBudgetsPage() {
             {/* Success Toast */}
             {saveSuccess && (
                 <div className="fixed top-10 left-1/2 -translate-x-1/2 z-100 animate-in slide-in-from-top-10 duration-500">
-                    <div className="bg-white rounded-3xl shadow-2xl shadow-erp-navy/20 border border-slate-100 p-6 pr-10 flex items-center gap-5">
+                    <div className="bg-white rounded-xl shadow-2xl shadow-erp-navy/20 border border-slate-100 p-6 pr-10 flex items-center gap-5">
                         <div className="h-14 w-14 rounded-2xl bg-green-500 flex items-center justify-center text-white shadow-lg shadow-green-200">
                             <CheckCircle2 size={32} className="animate-bounce" />
                         </div>
@@ -178,7 +178,7 @@ export default function FinanceBudgetsPage() {
                     <button 
                         onClick={() => setActiveTab('dashboard')}
                         className={`flex items-center gap-2 px-6 py-2.5 rounded-[18px] text-xs font-black uppercase tracking-wider transition-all ${
-                            activeTab === 'dashboard' ? 'bg-erp-navy text-slate-900 shadow-lg shadow-erp-navy/20' : 'text-black hover:text-brand-primary'
+                            activeTab === 'dashboard' ? 'bg-erp-navy text-white shadow-lg shadow-erp-navy/20' : 'text-black hover:text-brand-primary'
                         }`}
                     >
                         <LayoutDashboard size={14} /> Tổng quan
@@ -186,7 +186,7 @@ export default function FinanceBudgetsPage() {
                     <button 
                         onClick={() => setActiveTab('tools')}
                         className={`flex items-center gap-2 px-6 py-2.5 rounded-[18px] text-xs font-black uppercase tracking-wider transition-all ${
-                            activeTab === 'tools' ? 'bg-erp-navy text-slate-900 shadow-lg shadow-erp-navy/20' : 'text-black hover:text-brand-primary'
+                            activeTab === 'tools' ? 'bg-erp-navy text-white shadow-lg shadow-erp-navy/20' : 'text-black hover:text-brand-primary'
                         }`}
                     >
                         <PlusCircle size={14} /> Phân bổ định biên
@@ -258,7 +258,7 @@ export default function FinanceBudgetsPage() {
                     </div>
 
                     {/* Main Monitoring Table */}
-                    <div className="bg-white rounded-[40px] shadow-xl shadow-erp-navy/5 border border-slate-100 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
                         <div className="p-8 border-b border-slate-50 flex justify-between items-center">
                             <h2 className="text-sm font-black text-brand-primary uppercase tracking-widest flex items-center gap-3">
                                 <Filter size={18} className="text-erp-blue" /> Giám sát sử dụng Ngân sách
@@ -322,7 +322,7 @@ export default function FinanceBudgetsPage() {
                 /* ALLOCATION TOOL VIEW (STUCTURED CARD) */
                 <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in slide-in-from-right-4 duration-500">
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white rounded-[40px] p-10 shadow-xl shadow-erp-navy/5 border border-slate-50">
+                        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#E2E8F0]">
                             {/* Department / Year selectors inside the tool */}
                             <div className="flex justify-between items-start mb-12">
                                 <div>
@@ -404,9 +404,9 @@ export default function FinanceBudgetsPage() {
                     </div>
 
                     <div className="space-y-6">
-                        <div className="bg-erp-navy rounded-[40px] p-8 text-slate-900 shadow-2xl shadow-erp-navy/30">
+                        <div className="bg-erp-navy rounded-[10px] p-6 text-white shadow-sm border border-[#E2E8F0]">
                             <h3 className="text-xl font-black uppercase tracking-tighter mb-4">Lưu cấu hình</h3>
-                            <p className="text-xs text-black font-medium leading-relaxed mb-10">
+                            <p className="text-xs text-white/80 font-medium leading-relaxed mb-10">
                                 Hệ thống sẽ chốt số liệu cho năm tài chính {selectedYear}. Định mức của từng quý sẽ được dùng làm căn cứ phê duyệt PR.
                             </p>
                             
@@ -416,7 +416,7 @@ export default function FinanceBudgetsPage() {
                                 className={`w-full py-5 rounded-3xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all ${
                                     isValid && selectedCCId 
                                     ? 'bg-white text-brand-primary hover:scale-[1.02] shadow-xl' 
-                                    : 'bg-white/10 text-slate-900/30'
+                                    : 'bg-white/10 text-white/30'
                                 }`}
                             >
                                 {isSaving ? <RefreshCcw className="animate-spin" /> : (saveSuccess ? "Xác nhận thành công" : "Lưu phân bổ ngay")}

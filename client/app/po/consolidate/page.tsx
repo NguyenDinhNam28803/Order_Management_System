@@ -288,7 +288,7 @@ export default function POConsolidatePage() {
     const s = result.consolidationSummary;
     return (
       <div className="p-6 flex items-center justify-center min-h-[60vh]">
-        <div className="erp-card max-w-lg w-full text-center animate-fade-in">
+        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 max-w-lg w-full text-center animate-fade-in">
           <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-5">
             <CheckCircle2 size={28} className="text-black" />
           </div>
@@ -371,7 +371,7 @@ export default function POConsolidatePage() {
             {error.includes('hợp đồng') && (
               <a
                 href="/contracts/create"
-                className="block mt-1.5 text-[11px] font-black text-rose-300 underline underline-offset-2 hover:text-slate-900 transition-colors"
+                className="block mt-1.5 text-[11px] font-black text-rose-600 underline underline-offset-2 hover:text-rose-800 transition-colors"
               >
                 → Tạo hợp đồng khung ngay
               </a>
@@ -388,7 +388,7 @@ export default function POConsolidatePage() {
         <div className="xl:col-span-3 space-y-4">
 
           {/* Step 1 — Chọn PR */}
-          <div className="erp-card">
+          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <span className="step-badge">1</span>
@@ -462,7 +462,7 @@ export default function POConsolidatePage() {
           </div>
 
           {/* Step 2 — Chế độ gộp */}
-          <div className="erp-card">
+          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
               <span className="step-badge">2</span>
               Chế độ gộp item
@@ -495,7 +495,7 @@ export default function POConsolidatePage() {
           </div>
 
           {/* Step 3 — Thông tin PO */}
-          <div className="erp-card">
+          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-4">
               <span className="step-badge">3</span>
               Thông tin đơn hàng
@@ -504,8 +504,8 @@ export default function POConsolidatePage() {
             {/* Flow note */}
             <div className="flex items-start gap-3 p-3.5 rounded-xl bg-amber-500/8 border border-amber-500/20 mb-5 text-xs">
               <Info size={14} className="text-black shrink-0 mt-0.5" />
-              <span className="text-amber-300/80 leading-relaxed">
-                <strong className="text-amber-300">Lưu ý quy trình:</strong> Tính năng này tạo PO trực tiếp (bypass RFQ) — phù hợp khi đã có khung hợp đồng hoặc nhà cung cấp ưu tiên. Nếu chưa có báo giá, nên tạo RFQ trước để đảm bảo tính cạnh tranh.
+              <span className="text-amber-800 leading-relaxed">
+                <strong className="text-amber-900">Lưu ý quy trình:</strong> Tính năng này tạo PO trực tiếp (bypass RFQ) — phù hợp khi đã có khung hợp đồng hoặc nhà cung cấp ưu tiên. Nếu chưa có báo giá, nên tạo RFQ trước để đảm bảo tính cạnh tranh.
               </span>
             </div>
 
@@ -733,7 +733,7 @@ export default function POConsolidatePage() {
 
         {/* RIGHT 2 cols — Preview sticky */}
         <div className="xl:col-span-2">
-          <div className="erp-card sticky top-20">
+          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 sticky top-20">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-4">
               <GitMerge size={15} className="text-[#3B82F6]" />
               Xem trước kết quả gộp

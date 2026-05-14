@@ -253,17 +253,17 @@ export default function ProcurementSuppliersPage() {
                 </div>
 
                 {/* Filters */}
-                <div className="bg-[#F1F5F9] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 flex gap-3">
-                            <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                            <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                                 <Search size={20} className="text-[#2563EB]" />
                             </div>
                             <div className="relative flex-1">
                                 <input
                                     type="text"
                                     placeholder="Tìm kiếm nhà cung cấp..."
-                                    className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                    className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -271,10 +271,10 @@ export default function ProcurementSuppliersPage() {
                         </div>
                         
                         <div className="flex items-center gap-3">
-                            <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                            <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                                 <Filter size={18} className="text-[#2563EB]" />
                             </div>
-                            <div className="flex bg-[#FFFFFF] p-1 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-sm">
+                            <div className="flex bg-[#FFFFFF] p-1 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm">
                                 {["ALL", "GOLD", "SILVER", "BRONZE"].map((tier) => (
                                     <button
                                         key={tier}
@@ -303,7 +303,7 @@ export default function ProcurementSuppliersPage() {
                         {sortedSuppliers.map((supplier) => (
                             <div
                                 key={supplier.id}
-                                className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-6 hover:border-[#2563EB]/30 transition-all group"
+                                className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] p-6 hover:border-[#2563EB]/30 transition-all group"
                             >
                                 {/* Header */}
                                 <div className="flex items-start justify-between mb-4">

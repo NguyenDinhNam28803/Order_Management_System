@@ -318,7 +318,7 @@ export default function CreateRFQPage() {
     if (isSuccess) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#FFFFFF]">
-                <div className="bg-[#F1F5F9] p-12 rounded-[40px] shadow-2xl text-center max-w-md animate-in zoom-in duration-500 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#F1F5F9] p-8 rounded-xl shadow-2xl text-center max-w-md animate-in zoom-in duration-500 border border-[rgba(148,163,184,0.1)]">
                     <div className="w-24 h-24 bg-emerald-500/10 text-black rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
                         <CheckCircle2 size={48} />
                     </div>
@@ -334,7 +334,7 @@ export default function CreateRFQPage() {
             <div className="p-8">
                 <header className="flex items-center justify-between mb-10 max-w-[1600px] mx-auto">
                     <div className="flex items-center gap-6">
-                        <button onClick={() => router.back()} className="h-14 w-14 bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-slate-900 hover:text-slate-900 hover:border-[#2563EB]/30 transition-all shadow-xl shadow-black/20 active:scale-95">
+                        <button onClick={() => router.back()} className="h-14 w-14 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-slate-900 hover:text-slate-900 hover:border-[#2563EB]/30 transition-all shadow-xl shadow-black/20 active:scale-95">
                             <ChevronLeft size={24} />
                         </button>
                         <div>
@@ -361,7 +361,7 @@ export default function CreateRFQPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Left side: PR Info Summary */}
                 <div className="lg:col-span-1 space-y-8">
-                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-black/20 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-black/20 overflow-hidden">
                         <div className="bg-[#FFFFFF] p-8 text-slate-900 border-b border-[rgba(148,163,184,0.1)]">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="h-10 w-10 bg-[#2563EB]/10 rounded-xl flex items-center justify-center border border-[#2563EB]/20">
@@ -403,7 +403,7 @@ export default function CreateRFQPage() {
                         </div>
                     </div>
 
-                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-[32px] p-8 flex items-start gap-4">
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-8 flex items-start gap-4">
                         <div className="h-10 w-10 bg-amber-500/10 text-black rounded-xl flex items-center justify-center shrink-0 border border-amber-500/20">
                             <Info size={20} />
                         </div>
@@ -416,7 +416,7 @@ export default function CreateRFQPage() {
 
                 {/* Right side: RFQ Formulation Form */}
                 <div className="lg:col-span-2">
-                    <form onSubmit={handleSubmit} className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-10 space-y-10">
+                    <form onSubmit={handleSubmit} className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6 space-y-10">
                         {/* Vendor Section */}
                         <div className="space-y-6">
                             <div className="flex items-center justify-between">
@@ -434,12 +434,12 @@ export default function CreateRFQPage() {
                                 <input 
                                     type="text" 
                                     placeholder="Tìm kiếm nhà cung cấp từ kho dữ liệu hoặc nhập tên mới..."
-                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-14 pr-6 py-5 h-16 text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB] transition-all"
+                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-14 pr-6 py-5 h-16 text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB] transition-all"
                                     value={vendorSearch}
                                     onChange={(e) => setVendorSearch(e.target.value)}
                                 />
                                 {vendorSearch && (
-                                    <div className="absolute top-18 left-0 w-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-2xl rounded-2xl z-20 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                                    <div className="absolute top-18 left-0 w-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-2xl rounded-xl z-20 overflow-hidden animate-in fade-in slide-in-from-top-2">
                                         {filteredVendors.length > 0 ? (
                                             filteredVendors.map((v, i) => (
                                                 <button 
@@ -624,7 +624,7 @@ export default function CreateRFQPage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {selectedVendors.map((v, i) => (
-                                    <div key={i} className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] p-4 rounded-2xl flex items-center justify-between group">
+                                    <div key={i} className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] p-4 rounded-xl flex items-center justify-between group">
                                         <div className="flex items-center gap-4">
                                             <div className="h-10 w-10 bg-[#F1F5F9] rounded-xl shadow-sm flex items-center justify-center text-[#2563EB] font-black text-[10px] border border-[rgba(148,163,184,0.1)]">
                                                 {v.name.substring(0,2).toUpperCase()}
@@ -702,7 +702,7 @@ export default function CreateRFQPage() {
                             </div>
                             <textarea 
                                 placeholder="Ghi chú thêm cho nhà cung cấp về chất lượng, hình thức thanh toán, thời gian giao hàng mong muốn..."
-                                className="w-full min-h-[150px] rounded-3xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] p-6 text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB] resize-none"
+                                className="w-full min-h-[150px] rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] p-6 text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB] resize-none"
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
                             ></textarea>

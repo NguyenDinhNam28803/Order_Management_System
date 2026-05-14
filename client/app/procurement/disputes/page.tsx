@@ -48,16 +48,16 @@ export default function DisputesPage() {
                 </button>
             </div>
 
-            <div className="bg-[#F1F5F9] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 flex flex-wrap gap-4 items-center mb-8">
+            <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 flex flex-wrap gap-4 items-center mb-8">
                 <div className="flex-1 min-w-[300px] flex gap-3">
-                    <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                    <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                         <Search size={20} className="text-[#2563EB]" />
                     </div>
                     <div className="relative flex-1">
                         <input 
                             type="text" 
                             placeholder="Tìm theo mã khiếu nại, nội dung..." 
-                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-sm font-bold"
+                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-sm font-bold"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -67,7 +67,7 @@ export default function DisputesPage() {
                     <div className="relative">
                         <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
                         <select 
-                            className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-slate-900 text-sm font-bold focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                            className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-slate-900 text-sm font-bold focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                         >
@@ -83,7 +83,7 @@ export default function DisputesPage() {
 
             <div className="grid grid-cols-1 gap-4">
                 {filteredDisputes.length > 0 ? filteredDisputes.map((d) => (
-                    <div key={d.id} className="bg-[#F1F5F9] p-5 rounded-2xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] hover:border-rose-500/20 transition-all group relative">
+                    <div key={d.id} className="bg-[#F1F5F9] p-5 rounded-xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] hover:border-rose-500/20 transition-all group relative">
                         <div className="flex justify-between items-start mb-3">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-3">
@@ -136,7 +136,7 @@ export default function DisputesPage() {
                         </div>
                     </div>
                 )) : (
-                    <div className="bg-[#F1F5F9] p-12 rounded-2xl border border-dashed border-[rgba(148,163,184,0.1)] text-center space-y-3">
+                    <div className="bg-[#F1F5F9] p-12 rounded-xl border border-dashed border-[rgba(148,163,184,0.1)] text-center space-y-3">
                         <div className="w-16 h-16 bg-[#FFFFFF] rounded-full flex items-center justify-center mx-auto text-slate-900 border border-[rgba(148,163,184,0.1)]">
                             <MessageSquare size={32} />
                         </div>

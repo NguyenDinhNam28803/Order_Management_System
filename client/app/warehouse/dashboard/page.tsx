@@ -83,7 +83,7 @@ export default function WarehouseDashboard() {
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {/* Sắp giao hàng (7.1) */}
-                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
                         <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                             <Truck size={16} /> Lịch Giao Hàng (7 Ngày Tới)
@@ -129,7 +129,7 @@ export default function WarehouseDashboard() {
                 </div>
 
                 {/* GRN Cần Xử Lý (Draft) (7.1) */}
-                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
                         <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                             <Info size={16} /> Phiếu GRN Đang Draft (Cần Xử Lý)

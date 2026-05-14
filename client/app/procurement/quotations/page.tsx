@@ -388,27 +388,27 @@ export default function QuotationManagementPage() {
                     {selectedRFQ ? (
                         <button
                             onClick={() => setSelectedRFQ(null)}
-                            className="inline-flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm"
+                            className="inline-flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 px-6 py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm"
                         >
                             <ArrowLeft size={16} /> Quay lại danh sách RFQ
                         </button>
                     ) : (
                         <div className="flex gap-3 grow md:w-80">
-                            <div className="h-14 w-14 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                            <div className="h-14 w-14 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                                 <Search size={20} className="text-[#2563EB]" />
                             </div>
                             <div className="relative flex-1">
                                 <input
                                     type="text"
                                     placeholder="Tìm kiếm RFQ..."
-                                    className="w-full h-14 pl-6 pr-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                    className="w-full h-14 pl-6 pr-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
                         </div>
                     )}
-                    <button className="h-14 w-14 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-xl shadow-[#2563EB]/5 hover:bg-slate-100 transition-all shrink-0">
+                    <button className="h-14 w-14 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-xl shadow-[#2563EB]/5 hover:bg-slate-100 transition-all shrink-0">
                         <ListFilter size={20} className="text-[#2563EB]" />
                     </button>
                 </div>
@@ -418,7 +418,7 @@ export default function QuotationManagementPage() {
             {selectedRFQ && rfqStats.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     {rfqStats.map((stat) => (
-                        <div key={stat.label} className="bg-[#F1F5F9] p-6 rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 flex items-center gap-4 group hover:border-[#2563EB]/20 transition-all">
+                        <div key={stat.label} className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 flex items-center gap-4 group hover:border-[#2563EB]/20 transition-all">
                             <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                                 <stat.icon size={24} />
                             </div>
@@ -433,7 +433,7 @@ export default function QuotationManagementPage() {
 
             {/* Analyzing Indicator */}
             {analyzingRFQ && (
-                <div className="bg-[#2563EB]/10 border border-[#2563EB]/20 rounded-2xl p-4 mb-6 flex items-center gap-3">
+                <div className="bg-[#2563EB]/10 border border-[#2563EB]/20 rounded-xl p-4 mb-6 flex items-center gap-3">
                     <Sparkles size={20} className="text-[#2563EB] animate-pulse" />
                     <span className="text-sm font-bold text-slate-900">AI đang phân tích các báo giá...</span>
                 </div>
@@ -442,7 +442,7 @@ export default function QuotationManagementPage() {
             {/* Award Modal */}
             {awardModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/80 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
                         <div className="bg-emerald-600 px-8 py-6 text-white flex justify-between items-center">
                             <div>
                                 <h3 className="text-xl font-black uppercase tracking-tight">Trao thầu</h3>
@@ -451,7 +451,7 @@ export default function QuotationManagementPage() {
                             <button onClick={() => setAwardModal(null)} className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all font-black text-slate-900">×</button>
                         </div>
                         <div className="p-8 space-y-6">
-                            <div className="bg-[#FFFFFF] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#FFFFFF] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-4 mb-4">
                                     <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-black">
                                         <Award size={24} />
@@ -486,7 +486,7 @@ export default function QuotationManagementPage() {
                             </div>
 
                             <div className="flex gap-4 pt-4">
-                                <button onClick={() => setAwardModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#0F172A] text-[#F8FAFC] font-black text-xs uppercase tracking-widest hover:bg-[#FFFFFF] hover:text-black transition-all border border-[rgba(148,163,184,0.1)]">Hủy bỏ</button>
+                                <button onClick={() => setAwardModal(null)} className="flex-1 px-6 py-4 rounded-xl bg-[#0F172A] text-[#F8FAFC] font-black text-xs uppercase tracking-widest hover:bg-[#FFFFFF] hover:text-black transition-all border border-[rgba(148,163,184,0.1)]">Hủy bỏ</button>
                                 <button
                                     onClick={() => handleAward(awardModal)}
                                     className="flex-1 px-6 py-4 rounded-2xl bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
@@ -502,12 +502,12 @@ export default function QuotationManagementPage() {
             {/* View Quotation Detail Modal - Redesigned */}
             {viewQuotation && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/90 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#FFFFFF] rounded-3xl w-full max-w-4xl shadow-2xl shadow-black/50 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.2)] overflow-y-auto">
+                    <div className="bg-[#FFFFFF] rounded-xl w-full max-w-4xl shadow-2xl shadow-black/50 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.2)] overflow-y-auto">
 
                         {/* Header */}
                         <div className="bg-gradient-to-r from-[#0F172A] to-[#F1F5F9] px-8 py-5 flex justify-between items-center border-b border-[rgba(148,163,184,0.1)] shrink-0">
                             <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-2xl bg-[#2563EB]/10 flex items-center justify-center border border-[#2563EB]/20">
+                                <div className="h-12 w-12 rounded-xl bg-[#2563EB]/10 flex items-center justify-center border border-[#2563EB]/20">
                                     <Building2 size={24} className="text-[#2563EB]" />
                                 </div>
                                 <div>
@@ -517,8 +517,8 @@ export default function QuotationManagementPage() {
                             </div>
                             <div className="flex items-center gap-3">
                                 <StatusPill status={viewQuotation.status} />
-                                <button onClick={() => setViewQuotation(null)} className="h-10 w-10 rounded-xl bg-[#0F172A] border border-[rgba(148,163,184,0.2)] flex items-center justify-center hover:bg-[#F1F5F9] transition-all">
-                                    <X size={18} className="text-slate-900" />
+                                <button onClick={() => setViewQuotation(null)} className="h-10 w-10 rounded-xl bg-[#0F172A] border border-[rgba(148,163,184,0.2)] flex items-center justify-center hover:bg-[#F1F5F9] transition-all text-[#F8FAFC] hover:text-slate-900">
+                                    <X size={18} className="text-inherit" />
                                 </button>
                             </div>
                         </div>
@@ -537,7 +537,7 @@ export default function QuotationManagementPage() {
                                         viewQuotation.aiAnalysis ? (
                                             <>
                                                 {/* AI Score Card */}
-                                                <div className="mb-6 rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.15)]">
+                                                <div className="mb-6 rounded-xl overflow-hidden border border-[rgba(148,163,184,0.15)]">
                                                     <div className={`px-6 py-4 ${viewQuotation.aiAnalysis.recommendation === 'ACCEPT' ? 'bg-emerald-500/10' :
                                                             viewQuotation.aiAnalysis.recommendation === 'REJECT' ? 'bg-rose-500/10' :
                                                                 'bg-amber-500/10'
@@ -649,7 +649,7 @@ export default function QuotationManagementPage() {
                                         <div className="flex flex-col h-full">
                                             <div className="flex-1 overflow-y-auto space-y-4 mb-4">
                                                 {qaThreadsList.map((qa, idx) => (
-                                                    <div key={idx} className="bg-[#F1F5F9] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                                    <div key={idx} className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                                                         <div className="flex gap-2">
                                                             <div className="h-8 w-8 bg-[#2563EB]/10 rounded-xl flex items-center justify-center text-[#2563EB] shrink-0 font-black text-xs">Q</div>
                                                             <div className="flex-1">
@@ -696,7 +696,7 @@ export default function QuotationManagementPage() {
                                             </div>
                                             <div className="flex-1 overflow-y-auto space-y-4 mb-4">
                                                 {counterOffersList.map((co, idx) => (
-                                                    <div key={idx} className="bg-[#F1F5F9] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                                    <div key={idx} className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
                                                         <div className="flex justify-between items-center mb-3">
                                                             <div className="text-[10px] uppercase font-black text-slate-900">BẠN ĐỀ XUẤT</div>
                                                             <StatusPill status={co.status} />
@@ -707,7 +707,7 @@ export default function QuotationManagementPage() {
                                                 ))}
                                                 {counterOffersList.length === 0 && <p className="text-center text-slate-900 p-4 text-xs font-bold uppercase">Chưa có đề xuất đàm phán</p>}
                                             </div>
-                                            <div className="mt-auto bg-[#F1F5F9] p-4 rounded-2xl border border-[rgba(148,163,184,0.2)]">
+                                            <div className="mt-auto bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.2)]">
                                                 <div className="grid grid-cols-2 gap-4 mb-3">
                                                     <div>
                                                         <label className="text-[10px] font-black uppercase text-slate-900 block mb-1">Mức giá đề xuất</label>
@@ -788,7 +788,7 @@ export default function QuotationManagementPage() {
             )}
 
             {/* Table */}
-                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                         {selectedRFQ ? (
                             // Show quotations for selected RFQ
                             loading ? (

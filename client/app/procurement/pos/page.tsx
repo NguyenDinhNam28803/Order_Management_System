@@ -44,7 +44,7 @@ function StatCard({ icon: Icon, label, value, sub, color }: {
     icon: React.ElementType; label: string; value: string | number; sub?: string; color: string;
 }) {
     return (
-        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-5 flex items-center gap-4">
+        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] p-5 flex items-center gap-4">
             <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${color}`}>
                 <Icon size={20} />
             </div>
@@ -168,7 +168,7 @@ export default function POManagementPage() {
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${
                                     activeStatus === tab.key
                                         ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20"
-                                        : "text-white hover:text-white"
+                                        : "text-slate-600 hover:text-slate-900"
                                 }`}
                             >
                                 {tab.label}
@@ -189,10 +189,10 @@ export default function POManagementPage() {
                 </div>
 
                 {/* ── Table ── */}
-                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
                     {filtered.length === 0 ? (
                         <div className="py-24 flex flex-col items-center gap-4 text-slate-900">
-                            <div className="w-14 h-14 rounded-2xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                            <div className="w-14 h-14 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
                                 <ShoppingBag size={24} />
                             </div>
                             <div className="text-center">
@@ -391,7 +391,7 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                 </div>
 
                 {/* Form card */}
-                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
                     <div className="px-7 py-5 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB]">
                             <ShoppingBag size={17} />
@@ -715,7 +715,7 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                             : "bg-[#FFFFFF] border-[rgba(148,163,184,0.08)]"
                     }`}>
                         <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                            (data as POMockData).escrowLocked ? "bg-amber-500/20 text-black" : "bg-[#0F172A] text-slate-900"
+                            (data as POMockData).escrowLocked ? "bg-amber-500/20 text-black" : "bg-[#0F172A] text-white"
                         }`}>
                             <ShieldCheck size={17} />
                         </div>

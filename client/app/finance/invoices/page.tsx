@@ -107,15 +107,15 @@ export default function FinanceInvoicesPage() {
             </div>
 
             {/* Filter Bar */}
-            <div className="bg-[#F1F5F9] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
+            <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1 flex gap-3">
-                        <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                        <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                             <Search size={20} className="text-[#2563EB]" />
                         </div>
                         <div className="relative flex-1">
                             <input
-                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                 placeholder="Tìm theo số hóa đơn, nhà cung cấp, PO..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -126,7 +126,7 @@ export default function FinanceInvoicesPage() {
                         <div className="relative">
                             <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
                             <select
-                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                             >
@@ -146,7 +146,7 @@ export default function FinanceInvoicesPage() {
             </div>
 
             {/* Invoices Table */}
-            <div className="erp-card p-0! overflow-hidden bg-[#F1F5F9] shadow-sm border border-[rgba(148,163,184,0.1)]">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
                 <div className="overflow-x-auto">
                     <table className="erp-table">
                         <thead>

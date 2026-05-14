@@ -120,7 +120,7 @@ export default function FinanceDashboard() {
             </div>
 
             {/* Invoices Interface */}
-            <div className="bg-[#F1F5F9] rounded-[40px] overflow-hidden border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
+            <div className="bg-white rounded-xl overflow-hidden border border-[#E2E8F0] shadow-sm">
                 <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#F1F5F9]">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-[#FFFFFF] text-[#2563EB] rounded-xl border border-[rgba(148,163,184,0.1)]">
@@ -132,13 +132,13 @@ export default function FinanceDashboard() {
                     <div className="flex items-center gap-4">
                         <div className="bg-[#FFFFFF] p-1 rounded-xl flex gap-1 border border-[rgba(148,163,184,0.1)]">
                             <button 
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:text-slate-900'}`}
                                 onClick={() => setActiveTab("ALL")}
                             >
                                 Tất cả
                             </button>
                             <button 
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-white hover:text-white'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-slate-600 hover:text-slate-900'}`}
                                 onClick={() => setActiveTab("EXCEPTION")}
                             >
                                 Exception <span className="bg-rose-500/20 text-black px-1.5 py-0.5 rounded-md text-[9px] border border-rose-500/20">{activeInvoices.filter((i) => i.status === 'EXCEPTION').length}</span>
@@ -225,7 +225,7 @@ export default function FinanceDashboard() {
                     <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Showing {displayedInvoices.length} of {activeInvoices.length} invoices in queue</p>
                     <div className="flex gap-1">
                          {[1, 2, 3].map(i => (
-                             <button key={i} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === 1 ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm' : 'border-transparent text-white hover:text-white'}`}>{i}</button>
+                             <button key={i} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === 1 ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm' : 'border-slate-200 bg-white text-slate-600 hover:text-slate-900'}`}>{i}</button>
                          ))}
                     </div>
                 </div>
@@ -245,7 +245,7 @@ function MetricCard({ icon, label, value, unit, color, onClick, subValue }: any)
     return (
         <div 
             onClick={onClick}
-            className={`bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-3xl p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#2563EB]/30 ${onClick ? 'cursor-pointer' : ''}`}
+            className={`bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#2563EB]/30 ${onClick ? 'cursor-pointer' : ''}`}
         >
             <div className="flex justify-between items-start mb-6">
                 <div className={`p-3 rounded-[18px] shadow-sm transition-transform group-hover:scale-110 duration-500 border ${colorStyles[color]}`}>

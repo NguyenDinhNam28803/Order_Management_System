@@ -101,7 +101,7 @@ interface ActivityItem {
 const StatCard = ({ title, value, subtitle, icon: Icon, color, trend, onClick }: StatCardProps) => (
   <div 
     onClick={onClick}
-    className={`bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[${color}]/30 transition-all group ${onClick ? 'cursor-pointer' : ''}`}
+    className={`bg-[#F1F5F9] rounded-xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[${color}]/30 transition-all group ${onClick ? 'cursor-pointer' : ''}`}
   >
     <div className="flex items-start justify-between mb-3">
       <div className={`h-10 w-10 rounded-xl ${color.replace("text", "bg")}/10 flex items-center justify-center border border-${color.replace("[", "").replace("]", "")}/20`}>
@@ -432,7 +432,7 @@ export default function SupplierPortalPage() {
         {/* Left Column - Quick Actions & Recent RFQs */}
         <div className="lg:col-span-2 space-y-6">
           {/* Quick Actions */}
-          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={18} className="text-[#2563EB]" />
               <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Thao tác nhanh</h2>
@@ -472,7 +472,7 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent RFQs */}
-          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Inbox size={18} className="text-[#2563EB]" />
@@ -520,7 +520,7 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent Purchase Orders */}
-          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <ShoppingCart size={18} className="text-black" />
@@ -576,7 +576,7 @@ export default function SupplierPortalPage() {
         {/* Right Column - Activity & Performance */}
         <div className="space-y-6">
           {/* Performance Card */}
-          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
               <Award size={18} className="text-black" />
               <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Hiệu suất</h2>
@@ -773,7 +773,7 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
               <Clock size={18} className="text-slate-900" />
               <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Hoạt động gần đây</h2>
@@ -805,7 +805,7 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
             <div className="flex items-center gap-2 mb-4">
               <Target size={18} className="text-slate-900" />
               <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Liên kết nhanh</h2>

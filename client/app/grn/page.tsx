@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Truck, Package, Camera, CheckCircle2, AlertTriangle, ArrowRight, TrendingUp, Clock, Star, Inbox } from "lucide-react";
@@ -64,14 +64,14 @@ export default function GRNPage() {
             </div>
 
             {!activePO ? (
-                <div className="erp-card bg-slate-50 border-dashed py-32 text-center text-black">
+                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 bg-slate-50 border-dashed py-32 text-center text-black">
                     <Truck size={48} className="mx-auto mb-4 opacity-10" />
                     <p className="text-xs font-black uppercase tracking-widest">Không có Đơn hàng (PO) nào đang chờ nhập kho</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in fade-in duration-500">
                     <div className="space-y-6">
-                        <div className="erp-card">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
                             <div className="flex items-center gap-3 mb-8">
                                 <div className="p-3 bg-[#F9EFEC] rounded-xl"><Truck size={24} className="text-erp-blue" /></div>
                                 <div>
@@ -80,7 +80,7 @@ export default function GRNPage() {
                                 </div>
                             </div>
 
-                            <div className="p-5 bg-[#F9EFEC]/50 border border-[#F3DDD6] rounded-2xl flex justify-between items-center">
+                            <div className="p-5 bg-[#F9EFEC]/50 border border-[#F3DDD6] rounded-xl flex justify-between items-center">
                                 <div className="space-y-1">
                                     <span className="block text-[9px] font-black uppercase text-[#3B82F6]">Trạng thái định vị (GPS)</span>
                                     <span className="text-xs text-blue-800 font-black">Xưởng sản xuất - Cổng số 4</span>
@@ -89,10 +89,10 @@ export default function GRNPage() {
                             </div>
                         </div>
 
-                        <div className="erp-card !p-0 overflow-hidden">
-                            <div className="p-6 bg-erp-navy text-slate-900 flex justify-between items-center">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
+                            <div className="p-6 bg-erp-navy text-white flex justify-between items-center">
                                 <h3 className="text-xs font-black uppercase tracking-widest">Kiểm đếm SL thực tế</h3>
-                                <Package size={18} className="text-slate-900/40" />
+                                <Package size={18} className="text-white/40" />
                             </div>
                             <table className="erp-table">
                                 <thead>
@@ -147,7 +147,7 @@ export default function GRNPage() {
                     </div>
 
                     <div className="space-y-8">
-                        <div className="erp-card">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
                             <h3 className="text-sm font-black uppercase tracking-widest text-brand-primary mb-8 flex items-center gap-2">
                                 <CheckCircle2 size={18} className="text-emerald-500" /> Kiểm định chất lượng (QC)
                             </h3>
@@ -168,10 +168,10 @@ export default function GRNPage() {
                                         <Camera size={40} className="group-hover:scale-110 transition-transform" />
                                         <span className="text-[10px] mt-4 font-black uppercase tracking-widest">Chụp ảnh</span>
                                     </div>
-                                    <div className="h-40 rounded-2xl overflow-hidden shadow-inner relative group border border-slate-100">
+                                    <div className="h-40 rounded-xl overflow-hidden shadow-inner relative group border border-slate-100">
                                         <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=400&auto=format&fit=crop" className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" alt="QC evidence" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                                            <span className="text-slate-900 text-[9px] font-black uppercase">Ảnh 01: Thùng hàng bị móp</span>
+                                            <span className="text-white text-[9px] font-black uppercase">Ảnh 01: Thùng hàng bị móp</span>
                                         </div>
                                     </div>
                                 </div>
@@ -186,7 +186,7 @@ export default function GRNPage() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <button
                                             onClick={() => setDeliveryStatus("ON_TIME")}
-                                            className={`py-4 border-2 rounded-2xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "ON_TIME" ? "border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200" : "border-slate-100 bg-white text-black"}`}
+                                            className={`py-4 border-2 rounded-xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "ON_TIME" ? "border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200" : "border-slate-100 bg-white text-black"}`}
                                         >
                                             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
                                                 <CheckCircle2 size={16} /> Giao đúng hạn
@@ -194,7 +194,7 @@ export default function GRNPage() {
                                         </button>
                                         <button
                                             onClick={() => setDeliveryStatus("LATE")}
-                                            className={`py-4 border-2 rounded-2xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "LATE" ? "border-amber-500 bg-amber-50 text-amber-700 ring-2 ring-amber-200" : "border-slate-100 bg-white text-black"}`}
+                                            className={`py-4 border-2 rounded-xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "LATE" ? "border-amber-500 bg-amber-50 text-amber-700 ring-2 ring-amber-200" : "border-slate-100 bg-white text-black"}`}
                                         >
                                             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
                                                 <Clock size={16} /> Giao trễ
@@ -202,17 +202,17 @@ export default function GRNPage() {
                                         </button>
                                     </div>
 
-                                    <div className="p-5 bg-erp-navy rounded-2xl text-slate-900 relative overflow-hidden">
+                                    <div className="p-5 bg-erp-navy rounded-xl text-white relative overflow-hidden">
                                         <div className="absolute -right-6 -bottom-6 opacity-10">
                                             <Star size={120} fill="currentColor" />
                                         </div>
                                         <div className="relative z-10">
-                                            <div className="text-[10px] font-black uppercase text-black tracking-widest mb-1">
+                                            <div className="text-[10px] font-black uppercase text-white/80 tracking-widest mb-1">
                                                 Điểm đánh giá hệ thống
                                             </div>
                                             <div className="flex items-end gap-3">
                                                 <span className="text-4xl font-black leading-none">{finalKpiScore}</span>
-                                                <span className="text-xs font-bold text-black mb-1">/ 100 pt</span>
+                                                <span className="text-xs font-bold text-white/80 mb-1">/ 100 pt</span>
                                             </div>
 
                                             <div className="mt-4 space-y-2">

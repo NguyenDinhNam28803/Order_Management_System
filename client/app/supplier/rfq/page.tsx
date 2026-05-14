@@ -123,7 +123,7 @@ export default function SupplierRFQ() {
                 <div className="grid grid-cols-1 xl:grid-cols-10 gap-10">
                     {/* Cột trái: Thông tin RFQ (3/10) */}
                     <div className="xl:col-span-3 space-y-8">
-                        <div className="erp-card bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                             <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#0F172A]">
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] !text-white flex items-center gap-3">
                                     <FileText size={16} className="text-[#2563EB]" /> Thông tin PR tham chiếu
@@ -154,7 +154,7 @@ export default function SupplierRFQ() {
 
                     {/* Cột phải: Form Báo giá (7/10) */}
                     <div className="xl:col-span-7 space-y-8">
-                        <div className="erp-card bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                             <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#0F172A] flex items-center justify-between">
                                 <h3 className="text-xs font-black uppercase tracking-[0.2em] !text-white flex items-center gap-4">
                                     <div className="h-8 w-8 bg-[#2563EB]/10 text-[#2563EB] rounded-xl flex items-center justify-center border border-[#2563EB]/20">
@@ -278,7 +278,7 @@ export default function SupplierRFQ() {
 
                         {/* Banner xác nhận submission hoặc thông báo hết hạn */}
                         {activeRFQ.deadline && new Date(activeRFQ.deadline) < new Date() ? (
-                            <div className="erp-card bg-gradient-to-r from-rose-900/80 to-rose-800/80 border-rose-500/20 shadow-2xl shadow-rose-500/10 p-8 flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+                            <div className="bg-gradient-to-r from-rose-900/80 to-rose-800/80 border border-rose-500/20 shadow-2xl shadow-rose-500/10 p-8 flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
                                 <div className="absolute -left-10 top-0 opacity-10">
                                     <AlertCircle size={180}/>
                                 </div>
@@ -292,7 +292,7 @@ export default function SupplierRFQ() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="erp-card bg-gradient-to-r from-emerald-900 to-emerald-800 border-none shadow-2xl shadow-emerald-500/10 p-10 flex flex-col md:flex-row justify-between items-center relative overflow-hidden group">
+                            <div className="bg-gradient-to-r from-emerald-900 to-emerald-800 border-none shadow-2xl shadow-emerald-500/10 p-10 flex flex-col md:flex-row justify-between items-center relative overflow-hidden group">
                                 <div className="absolute -left-10 top-0 opacity-10 group-hover:scale-125 transition-transform duration-1000">
                                     <Send size={200}/>
                                 </div>
@@ -328,18 +328,18 @@ export default function SupplierRFQ() {
                     </p>
                 </div>
                 <div className="flex gap-4">
-                     <div className="p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-xl">
+                     <div className="p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-xl">
                           <div className="text-[9px] font-black text-[#4A4A45] uppercase tracking-[0.2em] mb-1">RFQ Chờ báo giá</div>
                           <div className="text-2xl font-black text-[#0F172A]">{openRfqs.length}</div>
                      </div>
-                     <div className="p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl shadow-xl">
+                     <div className="p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-xl">
                           <div className="text-[9px] font-black text-[#4A4A45] uppercase tracking-[0.2em] mb-1">Tổng RFQ</div>
                           <div className="text-2xl font-black text-[#2563EB]">{myRfqs.length}</div>
                      </div>
                 </div>
             </div>
 
-            <div className="erp-card bg-[#F1F5F9] p-0! overflow-hidden shadow-2xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] rounded-[40px]">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs whitespace-nowrap">
                         <thead>

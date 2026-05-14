@@ -688,16 +688,16 @@ export default function SimulationPage() {
                     </div>
                 </div>
 
-                <div className="flex bg-[#F1F5F9] p-1 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                <div className="flex bg-[#F1F5F9] p-1 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <button 
                         onClick={() => { setActiveWorkflow("CATALOG"); handleReset(); }}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#2563EB] text-white shadow-lg" : "text-white hover:text-white"}`}
+                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#2563EB] text-white shadow-lg" : "text-slate-600 hover:text-slate-900"}`}
                     >
                         Workflow 1: Catalog
                     </button>
                     <button 
                         onClick={() => { setActiveWorkflow("NON_CATALOG"); handleReset(); }}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "NON_CATALOG" ? "bg-purple-600 text-white shadow-lg" : "text-white hover:text-white"}`}
+                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "NON_CATALOG" ? "bg-purple-600 text-white shadow-lg" : "text-slate-600 hover:text-slate-900"}`}
                     >
                         Workflow 2: Non-Catalog
                     </button>
@@ -826,7 +826,7 @@ export default function SimulationPage() {
                 </div>
 
                 <div className="lg:col-span-5">
-                    <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-[32px] p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden sticky top-6">
+                    <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden sticky top-6">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#2563EB]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
@@ -872,7 +872,7 @@ export default function SimulationPage() {
                             {activeWorkflow === "NON_CATALOG" && currentStep === 4 && (
                                 <div className="mt-10 grid grid-cols-3 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     {quotations.map(q => (
-                                        <div key={q.id} className="p-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-left hover:border-[#2563EB]/30 transition-all">
+                                        <div key={q.id} className="p-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-left hover:border-[#2563EB]/30 transition-all">
                                             <div className="flex justify-between items-start mb-2">
                                                 <span className="text-[10px] font-black text-slate-900">{q.supplier}</span>
                                                 <span className="text-black text-[10px] font-black">{q.aiScore}%</span>
@@ -891,7 +891,7 @@ export default function SimulationPage() {
 
                 <div className="lg:col-span-3 space-y-4">
                     {/* Entities */}
-                    <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl p-5">
+                    <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-5">
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 mb-4 flex items-center gap-2">
                             <BarChart3 size={14} /> Đối tượng dữ liệu
                         </h3>
@@ -1012,7 +1012,7 @@ export default function SimulationPage() {
             </main>
 
             {activeWorkflow === "NON_CATALOG" && currentStep >= 4 && (
-                <div className="fixed bottom-12 right-12 w-80 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-3xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="fixed bottom-12 right-12 w-80 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="p-2 bg-purple-600 rounded-xl"><Bot size={18} className="text-slate-900" /></div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">AI Analyst</span>

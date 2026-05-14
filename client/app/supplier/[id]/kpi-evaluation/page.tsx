@@ -212,7 +212,7 @@ export default function SupplierKPIPage() {
         )}
 
         {!kpiData ? (
-          <div className="bg-[#F1F5F9] rounded-2xl p-12 border border-[rgba(148,163,184,0.1)] text-center">
+          <div className="bg-[#F1F5F9] rounded-xl p-12 border border-[rgba(148,163,184,0.1)] text-center">
             <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-[#2563EB]/10 mb-6">
               <BarChart3 size={40} className="text-[#2563EB]" />
             </div>
@@ -234,7 +234,7 @@ export default function SupplierKPIPage() {
         ) : (
           <>
             {/* Supplier Info Card */}
-            <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] mb-6">
+            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] mb-6">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
                   <Award size={24} className="text-slate-900" />
@@ -265,7 +265,7 @@ export default function SupplierKPIPage() {
             </div>
 
             {/* Overall Score Card */}
-            <div className="bg-[#F1F5F9] rounded-2xl p-8 border border-[rgba(148,163,184,0.1)] mb-6">
+            <div className="bg-[#F1F5F9] rounded-xl p-8 border border-[rgba(148,163,184,0.1)] mb-6">
               <div className="text-center">
                 <div className="inline-flex items-center gap-2 mb-4">
                   <Target size={18} className="text-slate-900" />
@@ -358,7 +358,7 @@ export default function SupplierKPIPage() {
                   <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Phân Tích AI</h2>
                 </div>
                 
-                <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                   <p className="text-slate-900 leading-relaxed mb-6">{kpiData.aiInsights.analysis}</p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -405,7 +405,7 @@ export default function SupplierKPIPage() {
                 <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Kế Hoạch Cải Thiện</h2>
               </div>
               
-              <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+              <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                 <p className="text-slate-900 leading-relaxed">{kpiData.aiInsights?.improvementPlan || kpiData.kpiScore.improvementPlan}</p>
               </div>
             </div>
@@ -418,7 +418,7 @@ export default function SupplierKPIPage() {
                   <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Ghi Chú Đánh Giá</h2>
                 </div>
                 
-                <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                   <p className="text-slate-900 leading-relaxed">{kpiData.kpiScore.notes}</p>
                 </div>
               </div>

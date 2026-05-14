@@ -125,7 +125,7 @@ export default function SupplierProductsPage() {
             key: "name",
             render: (row: Product) => (
                 <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-black group-hover:scale-110 transition-transform">
+                    <div className="h-12 w-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-black group-hover:scale-110 transition-transform">
                         <Package size={20} />
                     </div>
                     <div>
@@ -229,8 +229,8 @@ export default function SupplierProductsPage() {
             <div className="grid grid-cols-1 gap-8">
                 {/* Stats cards for supplier */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="bg-[#F1F5F9] p-6 rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center border border-[#2563EB]/20">
+                    <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-xl bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center border border-[#2563EB]/20">
                             <Box size={24} />
                         </div>
                         <div>
@@ -238,7 +238,7 @@ export default function SupplierProductsPage() {
                             <p className="text-2xl font-black text-slate-900 leading-none">{myProducts.length}</p>
                         </div>
                     </div>
-                    <div className="bg-[#F1F5F9] p-6 rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4">
+                    <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4">
                         <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 text-black flex items-center justify-center border border-emerald-500/20">
                             <Box size={24} />
                         </div>
@@ -249,13 +249,13 @@ export default function SupplierProductsPage() {
                     </div>
                 </div>
 
-                <div className="bg-[#F1F5F9] rounded-[2.5rem] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                     {/* Toolbar */}
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="relative flex-1 max-w-md group">
                             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 group-focus-within:text-[#2563EB] transition-colors" />
                             <input 
-                                className="w-full pl-12 pr-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#0F172A] transition-all" 
+                                className="w-full pl-12 pr-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl font-bold text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#FFFFFF] transition-all"
                                 placeholder="Tìm theo tên hoặc mã SKU..."
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
@@ -303,7 +303,7 @@ export default function SupplierProductsPage() {
                             </div>
                             <button 
                                 onClick={() => setIsModalOpen(false)}
-                                className="h-12 w-12 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 flex items-center justify-center transition-all shadow-sm group"
+                                className="h-12 w-12 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 flex items-center justify-center transition-all shadow-sm group"
                             >
                                 <Plus size={24} className="rotate-45 text-slate-900 group-hover:text-black transition-colors" />
                             </button>
@@ -379,7 +379,7 @@ export default function SupplierProductsPage() {
                                     />
                                 </div>
 
-                                <div className="col-span-2 flex items-center justify-between p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] border-dashed">
+                                <div className="col-span-2 flex items-center justify-between p-6 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] border-dashed">
                                     <div className="flex flex-col">
                                         <span className="text-[11px] font-black uppercase text-slate-900 tracking-widest">Sẵn sàng kinh doanh</span>
                                         <span className="text-[10px] text-slate-900 font-bold">Nếu tắt, sản phẩm sẽ không hiển thị khi khách hàng tìm kiếm</span>
@@ -402,7 +402,7 @@ export default function SupplierProductsPage() {
                                 </div>
                             )}
                             <button 
-                                className="px-10 py-4 font-black text-slate-900 uppercase tracking-widest border border-[rgba(148,163,184,0.1)] hover:bg-[#F1F5F9] hover:text-slate-900 rounded-2xl transition-all shadow-sm active:scale-95" 
+                                className="px-10 py-4 font-black text-slate-900 uppercase tracking-widest border border-[rgba(148,163,184,0.1)] hover:bg-[#F1F5F9] hover:text-slate-900 rounded-xl transition-all shadow-sm active:scale-95" 
                                 onClick={() => setIsModalOpen(false)}
                                 disabled={loading}
                             >

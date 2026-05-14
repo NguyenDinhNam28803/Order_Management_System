@@ -98,7 +98,7 @@ export default function UserProfilePage() {
         return (
             <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF]">
                 <div className="max-w-2xl mx-auto mt-20">
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-12 text-center shadow-xl">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] p-12 text-center shadow-xl">
                         <UserCircle className="mx-auto h-16 w-16 text-slate-900 mb-4" />
                         <h2 className="text-xl font-black text-slate-900 mb-2">Không tìm thấy thông tin</h2>
                         <p className="text-slate-900">{error || "Không tìm thấy thông tin người dùng"}</p>
@@ -132,7 +132,7 @@ export default function UserProfilePage() {
                 {/* Left Column - Main Info */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Thông tin cá nhân */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.1)]">
                             <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
                                 <UserCircle className="h-4 w-4 text-[#2563EB]" />
@@ -238,7 +238,7 @@ export default function UserProfilePage() {
                     </div>
 
                     {/* Thông tin tổ chức */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.1)]">
                             <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
                                 <Building2 className="h-4 w-4 text-[#2563EB]" />
@@ -301,7 +301,7 @@ export default function UserProfilePage() {
                 {/* Right Column - Role & Quick Actions */}
                 <div className="space-y-6">
                     {/* Vai trò */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.1)]">
                             <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
                                 <Shield className="h-4 w-4 text-[#2563EB]" />
@@ -330,7 +330,7 @@ export default function UserProfilePage() {
                     </div>
 
                     {/* Quick Actions */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.1)]">
                             <h2 className="text-sm font-black uppercase tracking-wider text-slate-900">Thao tác nhanh</h2>
                         </div>

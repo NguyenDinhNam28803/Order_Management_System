@@ -126,7 +126,7 @@ export default function PODetailPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2 erp-card space-y-6 relative overflow-hidden">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 space-y-6 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
             <FileText size={160} />
           </div>
@@ -153,7 +153,7 @@ export default function PODetailPage() {
           </div>
         </div>
 
-        <div className="erp-card flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 flex flex-col justify-between relative overflow-hidden">
            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#2563EB]/5 rounded-full blur-2xl"></div>
            <div>
               <h3 className="section-title">Tổng Mua Tiêu Chuẩn</h3>
@@ -164,7 +164,7 @@ export default function PODetailPage() {
         </div>
       </div>
 
-      <div className="erp-card p-0 overflow-hidden">
+      <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
         <div className="p-5 border-b border-[rgba(148,163,184,0.1)]">
           <h3 className="section-title m-0">Chi tiết sản phẩm</h3>
         </div>

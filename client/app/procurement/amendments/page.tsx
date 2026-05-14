@@ -70,7 +70,7 @@ export default function AmendmentsPage() {
                             </button>
                         </div>
 
-                        <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                             <div className="overflow-x-auto">
                                 <table className="erp-table text-xs">
                                     <thead>
@@ -169,13 +169,13 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
                 </button>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-10 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex items-center justify-between">
                     <div>
                         <h2 className="text-2xl font-black text-slate-900 uppercase leading-none mb-2">TẠO ĐIỀU CHỈNH ĐƠN HÀNG</h2>
                         <p className="text-xs text-slate-900 font-bold uppercase tracking-widest uppercase">Amendment #{amendmentNumber}</p>
                     </div>
-                    <div className="p-4 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-inner flex items-center gap-4">
+                    <div className="p-4 bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-inner flex items-center gap-4">
                         <div className="w-10 h-10 rounded-2xl bg-[#2563EB] flex items-center justify-center text-white"><FileText size={20} /></div>
                         <div className="text-right">
                              <p className="text-[10px] font-black text-slate-900 uppercase leading-none mb-1">Hiện đang chỉnh sửa:</p>
@@ -189,7 +189,7 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
                         <div className="space-y-3">
                             <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">Loại thay đổi *</label>
                             <select 
-                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl px-6 py-5 text-sm font-bold text-slate-900 outline-none focus:bg-[#F1F5F9] focus:border-[#2563EB]/30 transition-all"
+                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-6 py-5 text-sm font-bold text-slate-900 outline-none focus:bg-[#F1F5F9] focus:border-[#2563EB]/30 transition-all"
                                 value={formData.changeType}
                                 onChange={(e) => setFormData({ ...formData, changeType: e.target.value as AmendmentMock["changeType"] })}
                             >
@@ -206,7 +206,7 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
                                 <MessageSquare className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-900" size={18} />
                                 <input 
                                     type="text" 
-                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl px-6 py-5 text-sm font-bold text-slate-900 outline-none focus:bg-[#F1F5F9] focus:border-[#2563EB]/30 transition-all pr-16 placeholder:text-slate-900"
+                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-6 py-5 text-sm font-bold text-slate-900 outline-none focus:bg-[#F1F5F9] focus:border-[#2563EB]/30 transition-all pr-16 placeholder:text-slate-900"
                                     placeholder="Lý do chi tiết..."
                                     value={formData.reason}
                                     onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
@@ -216,17 +216,17 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
                     </div>
 
                     {/* Comparison Panel */}
-                    <div className="bg-[#FFFFFF] p-10 rounded-[32px] border border-[rgba(148,163,184,0.1)] space-y-6">
+                    <div className="bg-[#FFFFFF] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] space-y-6">
                         <div className="flex items-center gap-4 mb-4">
                             <Split className="text-[#2563EB]" size={20} />
                             <h3 className="text-xs font-black text-slate-900 uppercase tracking-[0.2em]">BẢNG SO SÁNH THAY ĐỔI</h3>
                         </div>
                         <div className="grid md:grid-cols-2 gap-10 items-center">
-                            <div className="bg-[#F1F5F9] p-8 rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-sm">
+                            <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm">
                                 <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-4">GIÁ TRỊ CŨ (ORIGINAL)</p>
                                 <p className="text-xl font-bold text-slate-900 line-through leading-none">{formData.originalValue}</p>
                             </div>
-                            <div className="bg-emerald-500 p-8 rounded-3xl text-white shadow-xl shadow-emerald-500/20 relative group overflow-hidden">
+                            <div className="bg-emerald-500 p-8 rounded-xl text-white shadow-xl shadow-emerald-500/20 relative group overflow-hidden">
                                 <div className="absolute right-0 top-0 h-full w-full bg-gradient-to-br from-emerald-400/0 to-emerald-400/50 -translate-x-full group-hover:translate-x-0 transition-transform duration-700"></div>
                                 <div className="relative z-10">
                                     <p className="text-[10px] font-black uppercase tracking-widest mb-4 text-emerald-100">GIÁ TRỊ MỚI (NEW VERSION)</p>
@@ -273,7 +273,7 @@ function AmendmentHistoryTimeline({ poNumber, history, onClose, getBadgeColor }:
                              <div className="absolute left-[19px] top-4 bottom-4 w-1 bg-[rgba(148,163,184,0.1)] rounded-full" />
                              {history.map((am, idx: number) => (
                                  <div key={am.id} className="relative flex items-start gap-8 z-10">
-                                     <div className="w-10 h-10 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-xl flex items-center justify-center text-slate-900 shrink-0 font-black text-xs">
+                                     <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-xl flex items-center justify-center text-slate-900 shrink-0 font-black text-xs">
                                          {am.amendmentNumber}
                                      </div>
                                      <div className="flex-1 bg-[#FFFFFF] p-6 rounded-[28px] border border-[rgba(148,163,184,0.1)]">

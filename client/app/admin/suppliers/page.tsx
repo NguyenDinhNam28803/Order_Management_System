@@ -93,13 +93,13 @@ export default function SupplierManagementPage() {
                 </div>
                 <button 
                     onClick={() => setIsAddModalOpen(true)}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm nhà cung cấp
                 </button>
             </div>
 
-            <div className="erp-card p-0! overflow-hidden bg-[#F1F5F9] shadow-sm border border-[rgba(148,163,184,0.1)]">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
                 <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between gap-6 bg-[#FFFFFF]">
                     <div className="relative flex-1 max-w-md group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 group-focus-within:text-[#2563EB] transition-colors" size={18} />
@@ -205,12 +205,12 @@ export default function SupplierManagementPage() {
             {isAddModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsAddModalOpen(false)} />
-                    <div className="relative bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
-                        <div className="p-10">
+                    <div className="relative bg-white border border-[#E2E8F0] rounded-xl w-full max-w-xl overflow-hidden shadow-sm animate-in zoom-in-95 duration-300">
+                        <div className="p-6">
                             <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 Thêm nhà cung cấp mới
                             </h2>
-                            <p className="text-xs text-slate-900 font-bold uppercase tracking-widest mb-10">QUẢN LÝ NHÀ CUNG CẤP</p>
+                            <p className="text-xs text-slate-900 font-bold uppercase tracking-widest mb-6">QUẢN LÝ NHÀ CUNG CẤP</p>
                             
                             <div className="form-grid mb-8">
                                 <div className="form-group col-span-2">

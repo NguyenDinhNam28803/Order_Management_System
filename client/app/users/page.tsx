@@ -138,13 +138,13 @@ export default function UsersPage() {
                 </div>
                 <button 
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <UserPlus size={18} /> Thêm nhân sự mới
                 </button>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest border-r border-[rgba(148,163,184,0.1)] pr-4">Danh mục nhân sự (Directory)</div>
@@ -324,8 +324,8 @@ export default function UsersPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
-                        <div className="p-10">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-6">
                             <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 {editingUser ? "Cập nhật hồ sơ Nhân sự" : "Tạo tài khoản nhân viên mới"}
                             </h2>
@@ -342,7 +342,7 @@ export default function UsersPage() {
                                             type="text" 
                                             placeholder="VD: Nguyễn Văn A"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-slate-900 text-slate-900 ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-slate-900 text-slate-900 ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -354,7 +354,7 @@ export default function UsersPage() {
                                             type="email" 
                                             placeholder="email@company.com"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-slate-900 text-slate-900 ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-slate-900 text-slate-900 ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
@@ -366,7 +366,7 @@ export default function UsersPage() {
                                             required
                                             value={formData.role}
                                             onChange={(e) => setFormData({...formData, role: e.target.value as UserRole})}
-                                            className="w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all text-slate-900"
+                                            className="w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all text-slate-900"
                                         >
                                             <option value={UserRole.REQUESTER}>REQUESTER (Người yêu cầu)</option>
                                             <option value={UserRole.DEPT_APPROVER}>DEPT_APPROVER (Trưởng bộ phận)</option>
@@ -383,7 +383,7 @@ export default function UsersPage() {
                                         <select 
                                             value={formData.deptId}
                                             onChange={(e) => setFormData({...formData, deptId: e.target.value})}
-                                            className="w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all text-slate-900"
+                                            className="w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all text-slate-900"
                                         >
                                             <option value="">Chưa phân bổ</option>
                                             {departments?.map((d: Department) => (
@@ -402,7 +402,7 @@ export default function UsersPage() {
                                             type="text" 
                                             placeholder="VD: Senior Developer"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-slate-900 text-slate-900 ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-slate-900 text-slate-900 ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -413,12 +413,12 @@ export default function UsersPage() {
                                             type="text" 
                                             placeholder="VD: EMP001"
                                             disabled={!!editingUser}
-                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-2xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-slate-900 text-slate-900 ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-[#FFFFFF] border-2 border-[rgba(148,163,184,0.1)] rounded-xl px-5 py-3 text-sm font-bold focus:border-[#2563EB]/20 focus:bg-[#FFFFFF] outline-none transition-all placeholder:text-slate-900 text-slate-900 ${editingUser ? 'opacity-60 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="flex items-center justify-between p-6 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                     <div>
                                         <div className="text-xs font-black text-slate-900 uppercase tracking-tight">Trạng thái tài khoản</div>
                                         <div className="text-[10px] text-slate-900 font-bold uppercase mt-1">Khóa hoặc kích hoạt quyền truy nhập hệ thống</div>

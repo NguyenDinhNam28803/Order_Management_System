@@ -54,7 +54,7 @@ function AiInvoiceModal({ onClose, onCreated }: { onClose: () => void; onCreated
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
+      <div className="w-full max-w-lg rounded-xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-base font-bold text-slate-900"><Sparkles size={16} className="text-black" />Nhập hoá đơn bằng AI</h2>
           <button onClick={onClose}><X size={16} className="text-slate-900 hover:text-slate-900" /></button>
@@ -234,7 +234,7 @@ export default function InvoicesPage() {
           { label: "Đã thanh toán",   value: stats.paid,      icon: CheckCircle2,  color: "text-black",bg: "bg-emerald-500/10" },
           { label: "Cần xem xét",     value: stats.exception, icon: AlertTriangle, color: "text-black",   bg: "bg-rose-500/10" },
         ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="erp-card flex items-center gap-4">
+          <div key={label} className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 flex items-center gap-4">
             <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
               <Icon size={18} className={color} />
             </div>
@@ -247,7 +247,7 @@ export default function InvoicesPage() {
       </div>
 
       {/* Filters */}
-      <div className="erp-card flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 flex flex-col sm:flex-row items-start sm:items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 w-full sm:max-w-xs">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" />
@@ -270,7 +270,7 @@ export default function InvoicesPage() {
               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors ${
                 filterStatus === s
                   ? "bg-[#2563EB] text-white"
-                  : "bg-[#F1F5F9] text-white hover:text-white hover:bg-[#F1F5F9]/80"
+                  : "bg-[#F1F5F9] text-slate-600 hover:text-slate-900 hover:bg-slate-200"
               }`}
             >
               {s === "ALL" ? "Tất cả" : STATUS_MAP[s]?.label ?? s}
@@ -280,7 +280,7 @@ export default function InvoicesPage() {
       </div>
 
       {/* Table */}
-      <div className="erp-card table-card">
+      <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="erp-table">
             <thead>

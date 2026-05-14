@@ -27,7 +27,7 @@ export default function SimpleBarChart({
   const max = maxValue || Math.max(...data.map((d) => d.value), 1);
 
   return (
-    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
       {title && (
         <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wider">
           {title}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Sparkles, Star, AlertCircle, Info } from "lucide-react";
@@ -47,7 +47,7 @@ export default function SupplierSuggestionWidget({ items }: { items: PRItem[] })
   if (items.length === 0) return null;
 
   return (
-    <div className="erp-card shadow-sm border border-slate-200 mt-6">
+    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 border border-slate-200 mt-6">
       <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary mb-4 flex items-center gap-2 border-b border-slate-100 pb-4">
         <Sparkles size={16} className="text-amber-500" /> AI Gợi ý Nhà cung cấp
       </h3>

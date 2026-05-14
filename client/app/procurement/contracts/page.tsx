@@ -206,7 +206,7 @@ export default function ContractsPage() {
                             onClick={() => setStatus(k)}
                             className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${statusFilter === k
                                 ? "bg-[#2563EB] text-white shadow"
-                                : "text-white hover:text-white"
+                                : "text-slate-600 hover:text-slate-900"
                                 }`}
                         >
                             {l}
@@ -216,7 +216,7 @@ export default function ContractsPage() {
             </div>
 
             {/* ── Table ── */}
-            <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
                 {filtered.length === 0 ? (
                     <div className="py-24 flex flex-col items-center gap-4 text-slate-900">
                         <FileText size={40} className="opacity-20" />
@@ -413,11 +413,11 @@ export default function ContractsPage() {
             {(modal === "create" || modal === "edit") && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-2xl bg-[#F1F5F9] rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] max-h-[90vh] flex flex-col pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-2xl bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] max-h-[90vh] flex flex-col pointer-events-auto animate-in zoom-in-95 duration-200">
                         {/* Header */}
                         <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-[2rem] flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-11 h-11 rounded-2xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB]">
+                                <div className="w-11 h-11 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB]">
                                     <FileText size={20} />
                                 </div>
                                 <div>
@@ -542,7 +542,7 @@ export default function ContractsPage() {
             {modal === "delete" && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-[2rem] border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-xl border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-6">
                             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <Trash2 size={18} />
@@ -574,7 +574,7 @@ export default function ContractsPage() {
             {modal === "approve" && approveTarget && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-[2rem] border border-amber-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-xl border border-amber-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <ShieldCheck size={18} />
@@ -618,7 +618,7 @@ export default function ContractsPage() {
             {modal === "terminate" && terminateTarget && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
                     <div className="absolute inset-0 bg-[#FFFFFF]/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
-                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-[2rem] border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-xl border border-rose-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <Ban size={18} />

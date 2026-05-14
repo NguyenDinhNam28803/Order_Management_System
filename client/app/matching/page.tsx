@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { ShieldAlert, CheckCircle2, XCircle, ArrowRight, Lock, FileCheck, Info } from "lucide-react";
@@ -30,7 +30,7 @@ export default function MatchingPage() {
             </div>
 
             {!activePO ? (
-                <div className="erp-card bg-slate-50 border-dashed py-32 text-center text-black">
+                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 bg-slate-50 border-dashed py-32 text-center text-black">
                     <FileCheck size={48} className="mx-auto mb-4 opacity-10" />
                     <p className="text-xs font-black uppercase tracking-widest">Không có đơn hàng nào cần đối soát tại thời điểm này</p>
                 </div>
@@ -54,14 +54,14 @@ export default function MatchingPage() {
                             </div>
                             <button
                                 onClick={() => setDisputeResolved(true)}
-                                className="bg-white text-red-600 border border-red-200 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                                className="bg-white text-red-600 border border-red-200 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm"
                             >
                                 Giải quyết tranh chấp (Admin)
                             </button>
                         </div>
                     )}
 
-                    <div className="erp-card p-0! overflow-hidden">
+                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
                         <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
                             <div>
                                 <h3 className="text-sm font-black uppercase tracking-widest text-brand-primary">Kết quả đối soát: {activePO.id}</h3>
@@ -103,7 +103,7 @@ export default function MatchingPage() {
 
                     <div className="flex justify-between items-center">
                         <div className="flex gap-4">
-                            <div className="erp-card !p-4 border-dashed bg-slate-50/50 flex items-center gap-3">
+                            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 !p-4 border-dashed bg-slate-50/50 flex items-center gap-3">
                                 <Lock size={16} className="text-black" />
                                 <span className="text-[10px] font-black uppercase text-black tracking-widest">Ngân sách đang khóa: <span className="text-brand-primary">{(activePO.total ?? activePO.totalAmount ?? 0).toLocaleString()} ₫</span></span>
                             </div>

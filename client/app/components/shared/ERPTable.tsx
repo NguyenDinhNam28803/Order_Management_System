@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { ChevronsUpDown, ChevronUp, ChevronDown, Inbox } from "lucide-react";
@@ -99,7 +99,7 @@ export default function ERPTable<T extends object>({
                         <tr>
                             <td colSpan={columns.length} className="text-center py-16 bg-white">
                                 <div className="flex flex-col items-center gap-3 text-slate-400">
-                                    <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+                                    <div className="h-14 w-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
                                         <Inbox size={22} className="text-slate-300" />
                                     </div>
                                     <div>

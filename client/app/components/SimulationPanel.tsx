@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { useProcurement } from "../context/ProcurementContext";
@@ -41,7 +41,7 @@ export default function SimulationPanel() {
 
     return (
         <div className="fixed top-24 right-8 z-[100] w-80 animate-in slide-in-from-right duration-500">
-            <div className={`overflow-hidden rounded-[32px] border shadow-2xl backdrop-blur-2xl ${isCatalog ? 'bg-erp-blue/10 border-erp-blue/20' : 'bg-purple-600/10 border-purple-600/20'}`}>
+            <div className={`overflow-hidden rounded-xl border shadow-2xl backdrop-blur-2xl ${isCatalog ? 'bg-erp-blue/10 border-erp-blue/20' : 'bg-purple-600/10 border-purple-600/20'}`}>
                 {/* Header */}
                 <div className={`p-5 flex items-center justify-between ${isCatalog ? 'bg-erp-blue text-white' : 'bg-purple-600 text-white'}`}>
                     <div className="flex items-center gap-3">
@@ -83,7 +83,7 @@ export default function SimulationPanel() {
                         <ChevronRight size={16} />
                     </button>
 
-                    <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
+                    <div className="p-4 bg-white/5 border border-white/5 rounded-xl">
                         <p className="text-[10px] text-black font-medium leading-relaxed">
                             <span className="text-slate-900 font-bold">INFO:</span> Bạn có thể switch role tài khoản để thấy dữ liệu tương ứng tại mỗi bước.
                         </p>

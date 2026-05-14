@@ -218,7 +218,7 @@ export default function NotificationInbox() {
         className={`relative flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${
           isOpen
             ? "bg-[#2563EB] border-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
-            : "bg-[#FFFFFF] border-[#E2E8F0] text-white hover:text-white hover:border-[rgba(240,246,252,0.18)]"
+            : "bg-[#FFFFFF] border-[#E2E8F0] text-slate-600 hover:text-slate-900 hover:border-slate-300"
         }`}
       >
         <Bell size={14} className={unreadCount > 0 ? "animate-pulse" : ""} />
@@ -230,7 +230,7 @@ export default function NotificationInbox() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-[420px] bg-[#F1F5F9] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl shadow-black/80 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="absolute right-0 mt-3 w-[420px] bg-[#F1F5F9] border border-[rgba(240,246,252,0.1)] rounded-xl shadow-2xl shadow-black/80 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
           {/* Header */}
           <div className="p-4 bg-[#111827] border-b border-white/5 shadow-xl relative overflow-hidden">
             {/* Background decoration */}
@@ -285,7 +285,7 @@ export default function NotificationInbox() {
               mergedItems.map((item) => <NotificationItem key={item.id} item={item} />)
             ) : (
               <div className="py-20 px-10 text-center">
-                <div className="w-16 h-16 bg-[#FFFFFF] rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[rgba(240,246,252,0.05)] shadow-xl">
+                <div className="w-16 h-16 bg-[#FFFFFF] rounded-xl flex items-center justify-center mx-auto mb-6 border border-[rgba(240,246,252,0.05)] shadow-xl">
                   <Archive size={24} className="text-slate-900" />
                 </div>
                 <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-widest">Hộp thư sạch sẽ</h4>

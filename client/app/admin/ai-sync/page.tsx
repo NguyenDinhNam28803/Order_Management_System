@@ -177,7 +177,7 @@ export default function AISyncPage() {
                     { label: "Lần sync cuối",     value: "2 giờ trước",  icon: Clock,    color: "text-black",   bg: "bg-amber-400/10",   sub: "Auto · 06:00 AM" },
                     { label: "Query Speed",       value: "45 ms",        icon: Zap,      color: "text-violet-400",  bg: "bg-violet-400/10",  sub: "avg p95: 82 ms" },
                 ].map((s, i) => (
-                    <div key={i} className="erp-card flex items-center gap-3 p-4">
+                    <div key={i} className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 flex items-center gap-3 p-4">
                         <div className={`h-10 w-10 flex items-center justify-center rounded-xl ${s.bg} ${s.color} shrink-0`}>
                             <s.icon size={18} />
                         </div>
@@ -193,7 +193,7 @@ export default function AISyncPage() {
             {/* ── Main Grid: Sync entities + Activity ── */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
                 {/* Entity Sync Cards */}
-                <div className="xl:col-span-2 erp-card p-6">
+                <div className="xl:col-span-2 bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">
                             Đồng bộ từng phần — Partial Ingestion
@@ -253,7 +253,7 @@ export default function AISyncPage() {
                 </div>
 
                 {/* Activity Log */}
-                <div className="erp-card p-5 flex flex-col">
+                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 p-5 flex flex-col">
                     <div className="flex items-center gap-2 mb-4">
                         <Activity size={14} className="text-slate-900" />
                         <h2 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Hoạt động gần đây</h2>
@@ -292,7 +292,7 @@ export default function AISyncPage() {
             </div>
 
             {/* ── Email RAG Panel ── */}
-            <div className="erp-card p-6">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
                 <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">
                         <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#2563EB]/20 to-[#6366F1]/20 border border-[#2563EB]/20 flex items-center justify-center shrink-0">

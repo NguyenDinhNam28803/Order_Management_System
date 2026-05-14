@@ -268,7 +268,7 @@ function RfqQuotePageContent() {
       <div className="max-w-3xl mx-auto space-y-5">
 
         {/* Header card */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="bg-gradient-to-r from-[#8F442B] to-indigo-700 px-6 py-5">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-[#E6BCB0] text-xs font-semibold tracking-widest uppercase">Mời báo giá</span>
@@ -341,7 +341,7 @@ function RfqQuotePageContent() {
         <form onSubmit={handleSubmit} className="space-y-5">
 
           {/* Items table */}
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
               <Package className="w-4 h-4 text-[#1D4ED8]" />
               <h2 className="font-semibold text-gray-800">Danh sách hàng hóa cần báo giá</h2>
@@ -439,7 +439,7 @@ function RfqQuotePageContent() {
           </div>
 
           {/* Terms */}
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
               <FileText className="w-4 h-4 text-[#1D4ED8]" />
               <h2 className="font-semibold text-gray-800">Điều khoản & Thông tin giao hàng</h2>

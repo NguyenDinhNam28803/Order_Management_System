@@ -226,7 +226,7 @@ export default function PRPage() {
                 )}
             </header>
 
-            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden mx-6">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden mx-6">
                 <div className="p-5 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <div className="text-xs font-black text-slate-900 uppercase tracking-widest px-2">Bộ lọc nhanh</div>
@@ -237,7 +237,7 @@ export default function PRPage() {
                                     onClick={() => setActiveTab(filter)}
                                     className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === filter
                                             ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
-                                            : "text-white hover:text-white hover:bg-[#FFFFFF]"
+                                            : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
                                         }`}
                                 >
                                     {filter}
@@ -248,7 +248,7 @@ export default function PRPage() {
                 </div>
                 {displayData.length === 0 ? (
                     <div className="p-20 text-center flex flex-col items-center justify-center space-y-4">
-                        <div className="h-16 w-16 rounded-2xl bg-[#FFFFFF] flex items-center justify-center text-slate-900 border border-[rgba(148,163,184,0.1)]">
+                        <div className="h-16 w-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-slate-900 border border-[rgba(148,163,184,0.1)]">
                             <FileText size={28} />
                         </div>
                         <div>

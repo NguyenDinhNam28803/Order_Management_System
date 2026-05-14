@@ -87,7 +87,7 @@ export default function DepartmentsPage() {
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm phòng ban
                 </button>
@@ -147,7 +147,7 @@ export default function DepartmentsPage() {
                                 <tr key={dept.id} className="hover:bg-[#FFFFFF]/30 transition-colors">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-2xl bg-[#FFFFFF] flex items-center justify-center font-black text-[#2563EB] shadow-sm transition-transform hover:rotate-12 border border-[rgba(148,163,184,0.1)]">
+                                            <div className="h-12 w-12 rounded-xl bg-[#FFFFFF] flex items-center justify-center font-black text-[#2563EB] shadow-sm transition-transform hover:rotate-12 border border-[rgba(148,163,184,0.1)]">
                                                 <Building2 size={20} />
                                             </div>
                                             <div>
@@ -209,8 +209,8 @@ export default function DepartmentsPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
-                        <div className="p-10">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-6">
                             <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 {editingDept ? "Cập nhật Phòng ban" : "Thêm Phòng ban mới"}
                             </h2>

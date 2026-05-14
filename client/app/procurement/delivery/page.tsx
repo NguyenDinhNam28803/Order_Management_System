@@ -134,10 +134,10 @@ export default function DeliveryTrackingPage() {
                             placeholder="Tìm PO, nhà cung cấp..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 pr-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-xs text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB] w-72"
+                            className="pl-10 pr-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB] w-72"
                         />
                     </div>
-                    <button className="flex items-center gap-2 px-6 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
+                    <button className="flex items-center gap-2 px-6 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                         <Filter size={14} /> Bộ lọc
                     </button>
                     <div className="flex items-center gap-2 px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-[11px] font-black uppercase tracking-widest text-black">
@@ -150,7 +150,7 @@ export default function DeliveryTrackingPage() {
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 px-6 md:px-8 pb-12">
                 {/* Left List */}
                 <div className="xl:col-span-8 space-y-6">
-                    <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl overflow-hidden">
+                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
                         <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                             <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">Danh sách PO - Theo dõi giao hàng</h3>
                             <span className="text-xs text-slate-900">{filteredDeliveries.length} đơn hàng</span>
@@ -214,7 +214,7 @@ export default function DeliveryTrackingPage() {
                                                     del.status === "PARTIAL" ? "bg-amber-500/10 border-amber-500/20 text-black" :
                                                     del.status === "IN_TRANSIT" ? "bg-[#2563EB]/10 border-[#2563EB]/20 text-[#3B82F6]" :
                                                     del.status === "SHIPPED" ? "bg-violet-500/10 border-violet-500/20 text-violet-400" :
-                                                    "bg-[#0F172A] border-[rgba(148,163,184,0.1)] text-slate-900"
+                                                    "bg-[#0F172A] border-[rgba(148,163,184,0.1)] text-white"
                                                 }`}>
                                                     {del.status === "DELIVERED" && <CheckCircle size={12} />}
                                                     {del.status === "ORDERED" && <Clock size={12} />}
@@ -248,9 +248,9 @@ export default function DeliveryTrackingPage() {
                 {/* Right Timeline */}
                 <div className="xl:col-span-4">
                     {selectedPO ? (
-                        <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-8 sticky top-6">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 sticky top-6">
                             <div className="mb-8 flex flex-col items-center text-center">
-                                <div className="w-20 h-20 rounded-2xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#2563EB] mb-4">
+                                <div className="w-20 h-20 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#2563EB] mb-4">
                                     <Package size={32} />
                                 </div>
                                 <h3 className="text-xl font-black text-slate-900 uppercase leading-tight mb-2">Chi tiết giao hàng</h3>
@@ -282,7 +282,7 @@ export default function DeliveryTrackingPage() {
                             </div>
 
                             <div className="mt-6 pt-6 border-t border-[rgba(148,163,184,0.1)]">
-                                <div className="flex justify-between items-center bg-[#FFFFFF] p-4 rounded-2xl border border-[rgba(148,163,184,0.1)] mb-4">
+                                <div className="flex justify-between items-center bg-[#FFFFFF] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] mb-4">
                                     <div>
                                         <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-1">Dự kiến giao</p>
                                         <p className="font-black text-slate-900">{selectedPO.estimatedArrival || "--"}</p>
@@ -298,7 +298,7 @@ export default function DeliveryTrackingPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-[#F1F5F9] rounded-[32px] border border-dashed border-[rgba(148,163,184,0.2)] p-12 text-center">
+                        <div className="bg-white rounded-xl border border-dashed border-[#E2E8F0] p-8 text-center">
                             <Box size={40} className="text-slate-900 mx-auto mb-4" />
                             <p className="text-xs font-black text-slate-900 uppercase tracking-widest">Chọn PO để xem chi tiết giao hàng</p>
                         </div>
@@ -349,7 +349,7 @@ function UpdateTrackingModal({ delivery, onClose, onSave }: { delivery: Delivery
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={onClose}></div>
-            <div className="bg-[#F1F5F9] rounded-[32px] w-full max-w-lg relative z-10 shadow-2xl overflow-hidden border border-[rgba(148,163,184,0.1)]">
+            <div className="bg-white rounded-xl w-full max-w-lg relative z-10 shadow-sm overflow-hidden border border-[#E2E8F0]">
                 <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                     <div>
                         <h3 className="text-lg font-black text-slate-900 uppercase">Cập nhật Tracking</h3>

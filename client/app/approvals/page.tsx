@@ -176,7 +176,7 @@ export default function ApprovalsPage() {
                             ))
                         ) : (
                             <div className="p-8 text-center mt-20">
-                                <div className="w-16 h-16 bg-[#F1F5F9] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[rgba(148,163,184,0.1)]">
+                                <div className="w-16 h-16 bg-[#F1F5F9] rounded-xl flex items-center justify-center mx-auto mb-4 border border-[rgba(148,163,184,0.1)]">
                                     <Archive size={24} className="text-slate-900" />
                                 </div>
                                 <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest">Không có thư mới</h3>
@@ -243,7 +243,7 @@ export default function ApprovalsPage() {
                                     </div>
 
                                     {/* Content Card */}
-                                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-sm overflow-hidden">
+                                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm overflow-hidden">
                                         <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex justify-between items-center">
                                             <div className="flex items-center gap-4">
                                                 <div className="flex flex-col">
@@ -301,7 +301,7 @@ export default function ApprovalsPage() {
                                     {/* Action Center - Bottom Detail Panel */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {/* Budget Analytics Heatmap - Mini */}
-                                        <div className="bg-[#F1F5F9] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-sm overflow-hidden relative">
+                                        <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm overflow-hidden relative">
                                             <div className="absolute top-0 left-0 w-1 h-full bg-[#2563EB]"></div>
                                             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
                                                 <TrendingDown size={14} className="text-[#2563EB]" /> Phân tích tác động Ngân sách
@@ -334,7 +334,7 @@ export default function ApprovalsPage() {
                                         </div>
 
                                         {/* Workflow & Documents */}
-                                        <div className="bg-[#F1F5F9] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-sm">
+                                        <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm">
                                             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
                                                 <AttachmentIcon size={14} className="text-[#2563EB]" /> Tài liệu đính kèm
                                             </h3>
@@ -362,7 +362,7 @@ export default function ApprovalsPage() {
                                     </div>
 
                                     {/* Action Memo Box */}
-                                    <div className="bg-[#F1F5F9] p-8 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-lg ring-4 ring-[#2563EB]/5">
+                                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-lg ring-4 ring-[#2563EB]/5">
                                         <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Nội dung chỉ thị phê duyệt</h3>
                                         <textarea 
                                             value={memo}
@@ -392,7 +392,7 @@ export default function ApprovalsPage() {
                         </>
                     ) : (
                         <div className="flex-1 flex flex-col items-center justify-center p-20 text-center">
-                            <div className="w-24 h-24 bg-[#F1F5F9] rounded-3xl flex items-center justify-center shadow-2xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
+                            <div className="w-24 h-24 bg-[#F1F5F9] rounded-xl flex items-center justify-center shadow-2xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
                                 <Inbox size={48} className="text-slate-900" />
                             </div>
                             <h2 className="mt-8 text-xl font-bold text-slate-900 uppercase tracking-widest">Chọn một yêu cầu để kiểm định</h2>
@@ -405,7 +405,7 @@ export default function ApprovalsPage() {
             {/* Success Overlay */}
             {isSuccess && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#FFFFFF]/80 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] p-10 rounded-[32px] text-center shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-200 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] p-6 rounded-xl text-center shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-200 border border-[rgba(148,163,184,0.1)]">
                         <div className="w-20 h-20 bg-emerald-500/10 text-black rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
                             <CheckCircle2 size={40} />
                         </div>

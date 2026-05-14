@@ -113,7 +113,7 @@ export default function RFQCreatePage() {
                 <div className="flex items-center gap-6">
                     <button 
                         onClick={() => router.back()}
-                        className="w-12 h-12 flex items-center justify-center rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 transition-all shadow-sm"
+                        className="w-12 h-12 flex items-center justify-center rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 transition-all shadow-sm"
                     >
                         <ArrowLeft size={20} />
                     </button>
@@ -140,7 +140,7 @@ export default function RFQCreatePage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* RFQ Configuration */}
                 <div className="lg:col-span-2 space-y-8">
-                    <div className="erp-card !p-8 shadow-sm border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
+                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 !p-8 border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
                         <div className="flex justify-between items-center mb-8 border-b border-[rgba(148,163,184,0.1)] pb-6">
                             <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                                 <div className="p-2 bg-amber-500/10 rounded-xl">
@@ -254,7 +254,7 @@ export default function RFQCreatePage() {
                         </div>
                     </div>
 
-                    <div className="erp-card !p-8 shadow-sm border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
+                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 !p-8 border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
                         <div className="flex justify-between items-center mb-8 border-b border-[rgba(148,163,184,0.1)] pb-6">
                             <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                                 <div className="p-2 bg-indigo-500/10 rounded-xl">
@@ -324,7 +324,7 @@ export default function RFQCreatePage() {
 
                 {/* Approved PRs List */}
                 <div className="space-y-6">
-                    <div className="erp-card !p-8 shadow-xl border-t-4 border-t-emerald-500 bg-[#F1F5F9]">
+                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 !p-8 shadow-xl border-t-4 border-t-emerald-500 bg-[#F1F5F9]">
                         <div className="flex justify-between items-center mb-6 border-b border-[rgba(148,163,184,0.1)] pb-4">
                             <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                                 <CheckCircle2 size={16} className="text-emerald-500" /> PR Sẵn dùng để báo giá
@@ -338,7 +338,7 @@ export default function RFQCreatePage() {
                             {approvedPRs.map((pr: PR) => (
                                 <div 
                                     key={pr.id} 
-                                    className="p-4 rounded-3xl border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group cursor-pointer bg-[#FFFFFF]/30"
+                                    className="p-4 rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group cursor-pointer bg-[#FFFFFF]/30"
                                     onClick={() => addPRItems(pr.id)}
                                 >
                                     <div className="flex justify-between items-start mb-2">
@@ -362,7 +362,7 @@ export default function RFQCreatePage() {
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-[#F1F5F9] to-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-[40px] p-10 text-slate-900 relative overflow-hidden shadow-2xl shadow-black/40 group hover:border-[#2563EB]/30 transition-all duration-500">
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-6 text-slate-900 relative overflow-hidden shadow-sm group hover:border-[#2563EB]/30 transition-all duration-500">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#2563EB]/5 rounded-full -mr-32 -mt-32 blur-3xl transition-all group-hover:bg-[#2563EB]/10" />
                         <div className="relative z-10">
                             <div className="flex justify-between items-center border-b border-[rgba(148,163,184,0.1)] pb-6 mb-8">
@@ -370,17 +370,17 @@ export default function RFQCreatePage() {
                                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Tóm tắt RFQ</span>
                                     <span className="text-xs font-bold text-slate-900">Manual Generation Center</span>
                                 </div>
-                                <div className="p-3 bg-[#2563EB]/10 rounded-2xl text-[#2563EB] border border-[#2563EB]/20">
+                                <div className="p-3 bg-[#2563EB]/10 rounded-xl text-[#2563EB] border border-[#2563EB]/20">
                                     <ShoppingBag size={20} />
                                 </div>
                             </div>
                             
                             <div className="space-y-6">
-                                <div className="flex justify-between items-center bg-[#FFFFFF]/50 p-4 rounded-2xl border border-[rgba(148,163,184,0.05)]">
+                                <div className="flex justify-between items-center bg-[#FFFFFF]/50 p-4 rounded-xl border border-[rgba(148,163,184,0.05)]">
                                     <span className="text-slate-900 font-bold text-xs">Số PR kết hợp</span>
                                     <span className="font-black uppercase tracking-widest text-slate-900 bg-[#F1F5F9] px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)]">{Array.from(new Set(form.items.map((i) => i.prId))).length} PRs</span>
                                 </div>
-                                <div className="flex justify-between items-center bg-[#FFFFFF]/50 p-4 rounded-2xl border border-[rgba(148,163,184,0.05)]">
+                                <div className="flex justify-between items-center bg-[#FFFFFF]/50 p-4 rounded-xl border border-[rgba(148,163,184,0.05)]">
                                     <span className="text-slate-900 font-bold text-xs">Tổng số dòng hàng</span>
                                     <span className="font-black uppercase tracking-widest text-slate-900 bg-[#F1F5F9] px-3 py-1 rounded-lg border border-[rgba(148,163,184,0.1)]">{form.items.length} Lines</span>
                                 </div>

@@ -108,7 +108,7 @@ function CreateModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
         <h2 className="mb-4 text-lg font-bold text-slate-900">Tạo yêu cầu xét duyệt NCC</h2>
         {error && (
           <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-2 text-sm text-red-400">{error}</div>
@@ -210,7 +210,7 @@ export default function SupplierVettingListPage() {
       {/* Filters */}
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <div className="flex-1 min-w-[300px] flex gap-3">
-          <div className="h-14 w-14 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+          <div className="h-14 w-14 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
             <Search size={20} className="text-[#2563EB]" />
           </div>
           <div className="relative flex-1">
@@ -218,7 +218,7 @@ export default function SupplierVettingListPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Tìm nhà cung cấp..."
-              className="w-full h-14 pl-6 pr-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+              className="w-full h-14 pl-6 pr-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
             />
           </div>
         </div>
@@ -228,7 +228,7 @@ export default function SupplierVettingListPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="h-14 pl-12 pr-10 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+              className="h-14 pl-12 pr-10 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
             >
               <option value="ALL">Tất cả trạng thái</option>
               {Object.keys(STATUS_CONFIG).map((s) => (

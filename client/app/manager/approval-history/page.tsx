@@ -17,7 +17,7 @@ export default function ApprovalHistoryPage() {
                 </div>
                 
                 <div className="flex gap-4 mt-6 lg:mt-0">
-                    <div className="flex bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-1 shadow-sm">
+                    <div className="flex bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] p-1 shadow-sm">
                         <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white bg-[#2563EB] rounded-xl transition-all shadow-sm">Hôm nay</button>
                         <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-900 hover:text-slate-900 transition-all">Tuần này</button>
                         <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-900 hover:text-slate-900 transition-all">Tháng này</button>
@@ -26,12 +26,12 @@ export default function ApprovalHistoryPage() {
             </header>
 
             {/* Filter Bar */}
-            <div className="bg-[#F1F5F9] p-6 rounded-[32px] border border-[rgba(148,163,184,0.1)] mb-8 shadow-2xl shadow-[#2563EB]/5 flex flex-wrap gap-6 items-end">
+            <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] mb-8 shadow-2xl shadow-[#2563EB]/5 flex flex-wrap gap-6 items-end">
                 <div className="flex-1 min-w-[200px]">
                     <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] mb-3 leading-none">Loại chứng từ</label>
                     <div className="relative">
                         <FolderTree size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
-                        <select className="w-full h-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-12 pr-10 text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer">
+                        <select className="w-full h-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-12 pr-10 text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer">
                             <option value="ALL">Tất cả chứng từ</option>
                             <option value="PURCHASE_REQUISITION">Yêu cầu mua hàng (PR)</option>
                             <option value="PURCHASE_ORDER">Đơn đặt hàng (PO)</option>
@@ -43,7 +43,7 @@ export default function ApprovalHistoryPage() {
                     <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] mb-3 leading-none">Quyết định</label>
                     <div className="relative">
                         <CheckCircle size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
-                        <select className="w-full h-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl pl-12 pr-10 text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer">
+                        <select className="w-full h-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-12 pr-10 text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer">
                             <option value="ALL">Tất cả trạng thái</option>
                             <option value="APPROVED">Đã phê duyệt</option>
                             <option value="REJECTED">Đã từ chối</option>
@@ -51,13 +51,13 @@ export default function ApprovalHistoryPage() {
                     </div>
                 </div>
 
-                <button className="bg-[#2563EB] text-black h-14 flex items-center justify-center px-10 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 cursor-pointer hover:bg-[#1D4ED8] transition-all active:scale-95 border-none">
+                <button className="bg-[#2563EB] text-black h-14 flex items-center justify-center px-10 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 cursor-pointer hover:bg-[#1D4ED8] transition-all active:scale-95 border-none">
                     Áp dụng bộ lọc
                 </button>
             </div>
 
             {/* History Table */}
-            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5 mb-8">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5 mb-8">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr className="border-b border-[rgba(148,163,184,0.1)]">

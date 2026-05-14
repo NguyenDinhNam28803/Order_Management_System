@@ -111,7 +111,7 @@ export default function ContractDetailPage() {
             </button>
 
             {/* ── Header card ── */}
-            <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6 mb-6">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] p-6 mb-6">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div className="flex items-start gap-4">
                         <div className="w-12 h-12 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center flex-shrink-0">
@@ -185,7 +185,7 @@ export default function ContractDetailPage() {
                 <div className="lg:col-span-2 space-y-6">
 
                     {/* General info */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] p-6">
                         <h2 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
                             <Building2 size={13} /> Thông tin chung
                         </h2>
@@ -198,7 +198,7 @@ export default function ContractDetailPage() {
                     </div>
 
                     {/* Milestones */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
                         <div className="px-6 py-4 border-b border-[rgba(148,163,184,0.08)] flex items-center gap-2">
                             <Banknote size={14} className="text-slate-900" />
                             <h2 className="text-xs font-black uppercase tracking-widest text-slate-900">Lộ trình thanh toán</h2>
@@ -247,7 +247,7 @@ export default function ContractDetailPage() {
 
                     {/* Terms & Notes */}
                     {(contract.terms || contract.notes) && (
-                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6 space-y-4">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] p-6 space-y-4">
                             {contract.terms && (
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-2">Điều khoản hợp đồng</p>
@@ -268,7 +268,7 @@ export default function ContractDetailPage() {
                 <div className="space-y-6">
 
                     {/* Contract value */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] p-6">
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-3">Tổng giá trị hợp đồng</p>
                         <p className="text-3xl font-black text-[#2563EB] tabular-nums">
                             {Number(contract.totalValue || 0).toLocaleString("vi-VN")}
@@ -286,7 +286,7 @@ export default function ContractDetailPage() {
                     </div>
 
                     {/* Signature status */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] p-6">
                         <div className="flex items-center gap-2 mb-4">
                             <ShieldCheck size={14} className="text-slate-900" />
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Trạng thái ký số</p>
@@ -346,7 +346,7 @@ export default function ContractDetailPage() {
                         {!canSign && isPending && (
                             <div className="mt-4 flex items-start gap-2 p-3 bg-amber-500/5 border border-amber-500/15 rounded-xl">
                                 <AlertCircle size={14} className="text-black shrink-0 mt-0.5" />
-                                <p className="text-xs text-amber-200/70">
+                                <p className="text-xs text-amber-700">
                                     {isBuyer && contract.buyerSignedAt
                                         ? "Bạn đã ký. Đang chờ nhà cung cấp ký."
                                         : !isBuyer && contract.supplierSignedAt
@@ -366,13 +366,13 @@ export default function ContractDetailPage() {
                         {isTerminated && (
                             <div className="mt-4 flex items-start gap-2 p-3 bg-rose-500/5 border border-rose-500/15 rounded-xl">
                                 <Ban size={14} className="text-black shrink-0 mt-0.5" />
-                                <p className="text-xs text-rose-200/70">Hợp đồng đã chấm dứt.</p>
+                                <p className="text-xs text-rose-600">Hợp đồng đã chấm dứt.</p>
                             </div>
                         )}
                     </div>
 
                     {/* User info */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-6">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.08)] p-6">
                         <div className="flex items-center gap-2 mb-3">
                             <User size={13} className="text-slate-900" />
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Người tạo</p>
@@ -391,7 +391,7 @@ export default function ContractDetailPage() {
             {showTerminate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={() => setShowTerminate(false)} />
-                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-2xl border border-rose-500/20 shadow-2xl p-6">
+                    <div className="relative w-full max-w-md bg-[#F1F5F9] rounded-xl border border-rose-500/20 shadow-2xl p-6">
                         <div className="flex items-start gap-4 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
                                 <Ban size={18} />

@@ -319,7 +319,7 @@ export default function ProductAdminPage() {
                 </div>
                 <div className="flex gap-4">
                     <button 
-                        className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                        className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                         onClick={() => {
                             if (activeTab === "Sản phẩm") {
                                 setEditingProduct(null);
@@ -340,15 +340,15 @@ export default function ProductAdminPage() {
                 <div className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                     {/* Toolbar */}
                     <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="flex gap-1 p-1 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl w-fit">
+                        <div className="flex gap-1 p-1 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl w-fit">
                             {["Sản phẩm", "Danh mục"].map(tab => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                                         activeTab === tab 
-                                        ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20" 
-                                        : "text-white hover:text-[#2563EB] hover:bg-[#2563EB]/10"
+                                        ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
+                                        : "text-slate-600 hover:text-[#2563EB] hover:bg-[#2563EB]/10"
                                     }`}
                                 >
                                     {tab}
@@ -398,8 +398,8 @@ export default function ProductAdminPage() {
             {/* Product Modal */}
             {isProductModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4">
-                    <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
-                        <div className="p-10">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-6">
                             <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 {editingProduct ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới"}
                             </h2>
@@ -487,7 +487,7 @@ export default function ProductAdminPage() {
                                         </select>
                                     </div>
 
-                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-widest">Kích hoạt sản phẩm</span>
                                             <span className="text-[9px] text-slate-900 font-bold">Cho phép sử dụng sản phẩm này trong các yêu cầu mua hàng</span>
@@ -527,8 +527,8 @@ export default function ProductAdminPage() {
             {/* Product/Category Creation Form Modal */}
             {isCategoryModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4">
-                    <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
-                        <div className="p-10">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-6">
                             <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 {editingCategory ? "Cập nhật Danh mục" : "Thêm Danh mục mới"}
                             </h2>
@@ -579,7 +579,7 @@ export default function ProductAdminPage() {
                                         />
                                     </div>
 
-                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-widest">Kích hoạt</span>
                                             <span className="text-[9px] text-slate-900 font-bold">Trạng thái hoạt động của dữ liệu</span>

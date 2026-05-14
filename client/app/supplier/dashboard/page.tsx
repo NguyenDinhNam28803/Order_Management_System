@@ -309,14 +309,14 @@ export default function SupplierDashboard() {
       <nav className="flex flex-col gap-2">
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Pending"); }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:bg-slate-100 hover:text-white'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'}`}
         >
           <LayoutDashboard size={20} />
           <span>Dashboard</span>
         </button>
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Quoted"); }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:bg-slate-100 hover:text-white'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'}`}
         >
           <History size={20} />
           <span>Lịch sử báo giá</span>
@@ -324,7 +324,7 @@ export default function SupplierDashboard() {
       </nav>
 
       <div className="mt-auto">
-        <div className="bg-[#FFFFFF] rounded-2xl p-4 border border-[rgba(148,163,184,0.1)]">
+        <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center font-black text-xs text-white">
               ABC
@@ -351,19 +351,19 @@ export default function SupplierDashboard() {
           <div className="flex bg-[#F1F5F9] p-1.5 rounded-xl border border-[rgba(148,163,184,0.1)]">
           <button 
             onClick={() => setActiveTab("Pending")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:text-slate-900'}`}
           >
             Chưa xử lý
           </button>
           <button 
             onClick={() => setActiveTab("CatalogConfirmation")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:text-slate-900'}`}
           >
             Xác nhận giá Catalog
           </button>
           <button 
             onClick={() => setActiveTab("Quoted")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:text-slate-900'}`}
           >
             Đã báo giá
           </button>
@@ -371,7 +371,7 @@ export default function SupplierDashboard() {
         </div>
       </header>
 
-      <div className="bg-[#F1F5F9] rounded-2xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
+      <div className="bg-[#F1F5F9] rounded-xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
         <table className="erp-table text-xs text-left w-full" style={{ tableLayout: 'fixed' }}>
           <thead className="border-b border-[rgba(148,163,184,0.1)]">
             <tr>
@@ -405,12 +405,12 @@ export default function SupplierDashboard() {
                     </div>
                   </td>
                   <td className="py-4 px-4">
-                    <div className="font-bold text-slate-900 text-xs truncate group-hover:text-[#F8FAFC] transition-colors" title={rfq.projectName}>{rfq.projectName}</div>
-                    <div className="text-[10px] text-slate-900 font-medium uppercase mt-1 truncate group-hover:text-[#F8FAFC]/60 transition-colors">
+                    <div className="font-bold text-slate-900 text-xs truncate group-hover:text-[#1D4ED8] transition-colors" title={rfq.projectName}>{rfq.projectName}</div>
+                    <div className="text-[10px] text-slate-500 font-medium uppercase mt-1 truncate group-hover:text-slate-600 transition-colors">
                       {rfq.items.length} hạng mục • {rfq.items.slice(0, 2).map(i => i.name).join(", ")}{rfq.items.length > 2 ? "..." : ""}
                     </div>
                   </td>
-                  <td className="text-slate-900 text-xs py-4 px-4 text-center group-hover:text-[#F8FAFC] transition-colors">{rfq.createdAt}</td>
+                  <td className="text-slate-600 text-xs py-4 px-4 text-center group-hover:text-slate-900 transition-colors">{rfq.createdAt}</td>
                   <td className="py-4 px-4 text-center">
                     <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-black border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-black' : rfq.status === 'CatalogConfirmation' ? 'bg-[#2563EB]/10 text-[#3B82F6] border border-[#2563EB]/20 group-hover:bg-[#2563EB] group-hover:text-black' : 'bg-emerald-500/10 text-black border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-black'}`}>
                       {rfq.status === 'Pending' ? 'Chờ báo giá' : rfq.status === 'CatalogConfirmation' ? 'Xác nhận giá' : 'Đã báo giá'}
@@ -484,7 +484,7 @@ export default function SupplierDashboard() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Main Form */}
           <div className="xl:col-span-2 space-y-6">
-            <div className="erp-card shadow-sm border border-slate-200">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 border border-slate-200">
               <h3 className="section-title"><Package size={16} /> Danh sách mặt hàng cần báo giá</h3>
               
               <div className="overflow-x-auto">
@@ -563,7 +563,7 @@ export default function SupplierDashboard() {
 
           {/* Sidebar Info */}
           <div className="space-y-6">
-            <div className="erp-card bg-slate-50 border-slate-200">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 bg-slate-50 border-slate-200">
               <h3 className="section-title"><AlertCircle size={14} /> Điểm cần lưu ý</h3>
               <ul className="space-y-4">
                 <li className="flex gap-3">
@@ -581,11 +581,11 @@ export default function SupplierDashboard() {
               </ul>
             </div>
 
-            <div className="erp-card !p-6 bg-erp-navy text-slate-900 border-none shadow-xl shadow-erp-navy/20 relative overflow-hidden group">
+            <div className="bg-erp-navy text-white border-none shadow-xl shadow-erp-navy/20 relative overflow-hidden group">
               <div className="absolute -right-10 -bottom-10 opacity-5 group-hover:scale-110 transition-transform duration-700"><FileText size={160} /></div>
               <div className="relative z-10">
                 <h4 className="text-xs font-black uppercase tracking-widest text-erp-blue mb-2">Quy tắc Ứng xử</h4>
-                <p className="text-[11px] text-slate-900/70 leading-relaxed">
+                <p className="text-[11px] text-white/70 leading-relaxed">
                   Bằng việc gửi báo giá, bạn cam kết tính trung thực của thông tin và tuân thủ các quy định về chống tham nhũng của đối tác.
                 </p>
               </div>
@@ -630,12 +630,12 @@ export default function SupplierDashboard() {
 
       {/* Notifications */}
       {notification && (
-        <div className={`fixed bottom-8 right-8 z-[100] animate-in slide-in-from-bottom-5 p-4 rounded-2xl shadow-2xl border flex items-center gap-3 min-w-[320px] ${
-          notification.type === 'success' ? 'bg-emerald-900 border-emerald-800 text-slate-900' : 
-          notification.type === 'error' ? 'bg-rose-900 border-rose-800 text-slate-900' : 
-          'bg-erp-navy border-slate-800 text-slate-900'
+        <div className={`fixed bottom-8 right-8 z-[100] animate-in slide-in-from-bottom-5 p-4 rounded-[10px] shadow-2xl border flex items-center gap-3 min-w-[320px] ${
+          notification.type === 'success' ? 'bg-emerald-900 border-emerald-800 text-white' :
+          notification.type === 'error' ? 'bg-rose-900 border-rose-800 text-white' :
+          'bg-erp-navy border-slate-800 text-white'
         }`}>
-          {notification.type === 'success' ? <CheckCircle className="text-black" /> : <AlertCircle className="text-black" />}
+          {notification.type === 'success' ? <CheckCircle className="text-white" /> : <AlertCircle className="text-white" />}
           <div>
             <div className="text-xs font-black uppercase tracking-widest">{notification.type === 'success' ? 'Thành công' : 'Thông báo'}</div>
             <div className="text-[11px] opacity-80 font-medium">{notification.message}</div>

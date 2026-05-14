@@ -80,7 +80,7 @@ export default function WarehouseQCAnalysis() {
 
       {/* Additional Info Cards */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
           <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Ngưỡng Cảnh Báo
           </h3>
@@ -100,7 +100,7 @@ export default function WarehouseQCAnalysis() {
           </div>
         </div>
 
-        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
           <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Pattern Nguy Hiểm
           </h3>
@@ -120,7 +120,7 @@ export default function WarehouseQCAnalysis() {
           </ul>
         </div>
 
-        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
           <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Hành Động Đề Xuất
           </h3>

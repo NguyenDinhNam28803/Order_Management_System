@@ -180,7 +180,7 @@ function ApproveModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: 
   const [loading, setLoading] = useState(false);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
         <h2 className="mb-4 text-lg font-bold text-slate-900">Phê duyệt nhà cung cấp</h2>
         <div className="mb-4">
           <label className="mb-1 block text-xs text-slate-900">Xếp hạng (Tier)</label>
@@ -215,7 +215,7 @@ function RejectModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: (
   const [loading, setLoading] = useState(false);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
         <h2 className="mb-4 text-lg font-bold text-slate-900">Từ chối nhà cung cấp</h2>
         <div className="mb-4">
           <label className="mb-1 block text-xs text-slate-900">Lý do từ chối *</label>

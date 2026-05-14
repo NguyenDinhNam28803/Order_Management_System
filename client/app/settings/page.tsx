@@ -25,7 +25,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="md:col-span-3 space-y-8">
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-8 shadow-xl shadow-[#2563EB]/5">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] p-8 shadow-xl shadow-[#2563EB]/5">
                         <h3 className="text-sm font-black uppercase text-slate-900 mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4">Tham số nghiệp vụ Thu mua</h3>
                         <div className="max-w-xl space-y-6">
                             <div className="grid grid-cols-2 gap-8">
