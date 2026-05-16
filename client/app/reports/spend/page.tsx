@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     BarChart3, CreditCard, Filter, Download, DollarSign, Users, Layers
 } from "lucide-react";
@@ -15,14 +15,21 @@ export default function SpendReportPage() {
     const [spendBySupplier, setSpendBySupplier] = useState<SpendBySupplier[]>([]);
     const [spendByCategory, setSpendByCategory] = useState<SpendByCategory[]>([]);
 
+    const fetchSpendOverviewRef = useRef(fetchSpendOverview);
+    const fetchSpendBySupplierRef = useRef(fetchSpendBySupplier);
+    const fetchSpendByCategoryRef = useRef(fetchSpendByCategory);
+    fetchSpendOverviewRef.current = fetchSpendOverview;
+    fetchSpendBySupplierRef.current = fetchSpendBySupplier;
+    fetchSpendByCategoryRef.current = fetchSpendByCategory;
+
     useEffect(() => {
         async function fetchReports() {
             setLoading(true);
             try {
                 const [overviewData, supplierData, categoryData] = await Promise.all([
-                    fetchSpendOverview().catch(() => null),
-                    fetchSpendBySupplier().catch(() => []),
-                    fetchSpendByCategory().catch(() => []),
+                    fetchSpendOverviewRef.current().catch(() => null),
+                    fetchSpendBySupplierRef.current().catch(() => []),
+                    fetchSpendByCategoryRef.current().catch(() => []),
                 ]);
                 if (overviewData) setOverview(overviewData);
                 setSpendBySupplier(supplierData ?? []);
@@ -34,7 +41,6 @@ export default function SpendReportPage() {
             }
         }
         fetchReports();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (loading) {

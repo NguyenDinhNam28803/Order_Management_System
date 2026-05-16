@@ -21,6 +21,7 @@ import { AwardRfqDto } from './dto/award-rfq.dto';
 import { RolesGuard, Roles } from '../common/roles.guard';
 import { UserRole, RfqStatus } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Request for Quotation (RFQ)')
 @Controller('request-for-quotations')
@@ -31,16 +32,6 @@ export class RfqmoduleController {
 
   // ============ RFQ Endpoints ============
 
-  // Tạo Ai phân tích nhà cung cấp
-  // @Post('/ai-suggest')
-  // @ApiOperation({
-  //   summary: 'Tạo yêu cầu gợi ý',
-  //   description: 'Tạo một yêu cầu gợi ý mới từ một đơn hàng mua sắm',
-  // })
-  // async getAiSuggest(@Body() rfqId: string) {
-  //   return this.rfqService.suggestSuppliersWithAi(rfqId);
-  // }
-
   /**
    * Tạo một yêu cầu báo giá (Request for Quotation - RFQ) mới
    * @param createRfqDto Dữ liệu tạo yêu cầu báo giá
@@ -48,6 +39,7 @@ export class RfqmoduleController {
    * @returns RFQ vừa tạo
    */
   @Post()
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Tạo yêu cầu báo giá mới',
@@ -120,6 +112,7 @@ export class RfqmoduleController {
    * @returns RFQ sau khi cập nhật trạng thái
    */
   @Put(':id/status')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Cập nhật trạng thái RFQ',
@@ -138,6 +131,7 @@ export class RfqmoduleController {
    * @returns Kết quả xóa
    */
   @Delete(':id')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Xóa yêu cầu báo giá',
@@ -154,6 +148,7 @@ export class RfqmoduleController {
    * @param id ID của báo giá cần phân tích
    */
   @Post('quotations/:id/analyze')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({
     summary: 'Dùng AI phân tích và chấm điểm báo giá',
     description:
@@ -170,6 +165,7 @@ export class RfqmoduleController {
    * @returns Báo giá vừa tạo
    */
   @Post(':rfqId/quotations')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Roles(UserRole.SUPPLIER, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Gửi báo giá cho RFQ',
@@ -212,6 +208,7 @@ export class RfqmoduleController {
    * Gửi chính thức một báo giá (thay đổi trạng thái từ nháp sang đã gửi)
    */
   @Put('quotations/:id/submit')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Roles(UserRole.SUPPLIER, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Gửi báo giá',
@@ -225,13 +222,13 @@ export class RfqmoduleController {
    * Chuyên viên mua sắm xem xét báo giá
    */
   @Put('quotations/:id/review')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Xem xét báo giá',
     description: 'Xem xét một báo giá cụ thể',
   })
-  async reviewQuotation(@Param('id') id: string, @Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  async reviewQuotation(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
     return this.rfqService.reviewQuotation(id, req.user.sub);
   }
 
@@ -239,13 +236,13 @@ export class RfqmoduleController {
    * Chấp nhận một báo giá và có thể tiến tới tạo đơn hàng (PO)
    */
   @Put('quotations/:id/accept')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Chấp nhận báo giá',
     description: 'Chấp nhận một báo giá cụ thể',
   })
-  async acceptQuotation(@Param('id') id: string, @Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  async acceptQuotation(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
     return this.rfqService.acceptQuotation(id, req.user.sub);
   }
 
@@ -253,13 +250,13 @@ export class RfqmoduleController {
    * Từ chối một báo giá từ nhà cung cấp
    */
   @Put('quotations/:id/reject')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Từ chối báo giá',
     description: 'Từ chối một báo giá cụ thể',
   })
-  async rejectQuotation(@Param('id') id: string, @Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  async rejectQuotation(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
     return this.rfqService.rejectQuotation(id, req.user.sub);
   }
 
@@ -270,12 +267,12 @@ export class RfqmoduleController {
    * @returns Báo giá với điểm AI mới
    */
   @Put('quotations/:id/ai-score')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Cập nhật điểm AI của báo giá',
     description: 'Cập nhật điểm AI cho một báo giá cụ thể',
   })
-  async updateQuotationAiScore(@Param('id') id: string, @Body() body: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  async updateQuotationAiScore(@Param('id') id: string, @Body() body: { aiScore: number }) {
     return this.rfqService.updateQuotationAiScore(id, body.aiScore);
   }
 
@@ -289,6 +286,7 @@ export class RfqmoduleController {
    * @returns Luồng Q&A vừa tạo
    */
   @Post(':rfqId/qa-threads')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Tạo chủ đề Q&A cho RFQ',
     description: 'Tạo một chủ đề Q&A mới cho một yêu cầu báo giá cụ thể',
@@ -296,13 +294,12 @@ export class RfqmoduleController {
   async createQaThread(
     @Param('rfqId') rfqId: string,
     @Body() createQaThreadDto: CreateQaThreadDto,
-    @Request() req: any,
+    @Request() req: { user: JwtPayload },
   ) {
     return this.rfqService.createQaThread(
       rfqId,
       createQaThreadDto.supplierId,
       createQaThreadDto.question,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       req.user.sub,
       createQaThreadDto.isPublic,
     );
@@ -345,16 +342,16 @@ export class RfqmoduleController {
    * @returns Luồng Q&A sau khi có câu trả lời
    */
   @Put('qa-threads/:id/answer')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Trả lời chủ đề Q&A',
     description: 'Trả lời một chủ đề Q&A cụ thể',
   })
   async answerQaThread(
     @Param('id') id: string,
-    @Body() body: any,
-    @Request() req: any,
+    @Body() body: { answer: string },
+    @Request() req: { user: JwtPayload },
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.rfqService.answerQaThread(id, body.answer, req.user.sub);
   }
 
@@ -395,9 +392,9 @@ export class RfqmoduleController {
    * @returns Kết quả mời
    */
   @Post(':rfqId/suppliers/invite')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({ summary: 'Mời nhà cung cấp tham gia RFQ' })
-  async inviteSuppliers(@Param('rfqId') rfqId: string, @Body() body: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  async inviteSuppliers(@Param('rfqId') rfqId: string, @Body() body: { supplierIds: string[] }) {
     return this.rfqService.inviteSuppliers(rfqId, body.supplierIds);
   }
 
@@ -408,6 +405,7 @@ export class RfqmoduleController {
    * @returns Kết quả loại bỏ
    */
   @Delete(':rfqId/suppliers/:supplierId')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Loại bỏ nhà cung cấp khỏi RFQ' })
   async removeSupplier(
     @Param('rfqId') rfqId: string,
@@ -424,6 +422,7 @@ export class RfqmoduleController {
    * @returns Danh sách nhà cung cấp đã thêm
    */
   @Post(':id/search-and-add-suppliers')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({
     summary: 'AI tìm kiếm và thêm nhà cung cấp',
     description: 'Sử dụng AI để tìm nhà cung cấp và tự động thêm vào RFQ',
@@ -431,21 +430,6 @@ export class RfqmoduleController {
   async searchAndAddSuppliers(@Param('id') id: string) {
     return await this.rfqService.searchAndAddSuppliers(id);
   }
-
-  /**
-   * Yêu cầu AI gợi ý các nhà cung cấp phù hợp cho RFQ hiện tại.
-   * AI sẽ quét database để tìm các nhà cung cấp có ngành nghề và uy tín phù hợp nhất.
-   * @param id ID của RFQ
-   * @returns Danh sách gợi ý từ AI
-   */
-  // @Get(':id/ai-suggest-suppliers')
-  // @ApiOperation({
-  //   summary: 'AI gợi ý nhà cung cấp cho RFQ',
-  //   description: 'Sử dụng AI để tìm các nhà cung cấp phù hợp nhất từ database',
-  // })
-  // async aiSuggestSuppliers(@Param('id') id: string) {
-  //   return this.rfqService.suggestSuppliersWithAi(id);
-  // }
 
   // ============ Counter Offer Endpoints ============
 
@@ -457,6 +441,7 @@ export class RfqmoduleController {
    * @returns Đề xuất phản hồi vừa tạo
    */
   @Post('quotations/:quotationId/counter-offers')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Tạo đề xuất phản hồi cho báo giá',
     description: 'Tạo một đề xuất phản hồi mới cho một báo giá cụ thể',
@@ -464,11 +449,10 @@ export class RfqmoduleController {
   async createCounterOffer(
     @Param('quotationId') quotationId: string,
     @Body() createCounterOfferDto: CreateCounterOfferDto,
-    @Request() req: any,
+    @Request() req: { user: JwtPayload },
   ) {
     return this.rfqService.createCounterOffer(
       quotationId,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       req.user.sub,
       createCounterOfferDto,
     );
@@ -510,17 +494,16 @@ export class RfqmoduleController {
    * @returns Đề xuất phản hồi sau khi được xử lý
    */
   @Put('counter-offers/:id/respond')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Phản hồi đề xuất phản hồi',
     description: 'Phản hồi một đề xuất phản hồi cụ thể',
   })
-  async respondCounterOffer(@Param('id') id: string, @Body() body: any) {
+  async respondCounterOffer(@Param('id') id: string, @Body() body: { response: string; status?: string }) {
     return this.rfqService.respondCounterOffer(
       id,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       body.response,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      body.status || 'ACCEPTED',
+      body.status ?? 'ACCEPTED',
     );
   }
 
@@ -534,6 +517,7 @@ export class RfqmoduleController {
    * @returns RFQ sau khi trao thầu
    */
   @Put(':rfqId/award')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({
     summary: 'Trao thầu cho nhà cung cấp',
     description: 'Chọn nhà cung cấp thắng thầu cho một yêu cầu báo giá cụ thể',
@@ -541,12 +525,11 @@ export class RfqmoduleController {
   async awardQuotation(
     @Param('rfqId') rfqId: string,
     @Body() body: AwardRfqDto,
-    @Request() req: any,
+    @Request() req: { user: JwtPayload },
   ) {
     return this.rfqService.awardQuotation(
       rfqId,
       body.quotationId,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       req.user.sub,
     );
   }

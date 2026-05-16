@@ -25,22 +25,17 @@ export class RagQueryService {
     const queryVector = await this.embedding.embed(question);
     const vectorStr = `[${queryVector.join(',')}]`;
 
-    // Dùng $queryRawUnsafe thay vì $queryRaw
-    const chunks = await this.prisma.$queryRawUnsafe<any[]>(
-      `
-    SELECT
-      content,
-      source_table,
-      source_id,
-      metadata,
-      1 - (embedding <=> $1::vector) AS similarity
-    FROM document_embeddings
-    ORDER BY embedding <=> $1::vector
-    LIMIT $2
-    `,
-      vectorStr,
-      topK,
-    );
+    const chunks = await this.prisma.$queryRaw<any[]>`
+      SELECT
+        content,
+        source_table,
+        source_id,
+        metadata,
+        1 - (embedding <=> ${vectorStr}::vector) AS similarity
+      FROM document_embeddings
+      ORDER BY embedding <=> ${vectorStr}::vector
+      LIMIT ${topK}
+    `;
 
     if (!chunks.length) {
       return {
