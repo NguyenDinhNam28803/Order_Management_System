@@ -75,8 +75,15 @@ export class PrmoduleController {
     description:
       'Trả về danh sách tất cả yêu cầu mua hàng của tổ chức hiện tại',
   })
-  async findAll(@Request() req: { user: JwtPayload }) {
-    return this.prService.findAll(req.user);
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.prService.findAll(req.user, {
+      page: +page,
+      limit: Math.min(+limit, 100),
+    });
   }
 
   /**

@@ -78,9 +78,15 @@ export class InvoiceModuleController {
    */
   @Get()
   @ApiOperation({ summary: 'Lấy tất cả hóa đơn' })
-  findAll(@Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return this.invoiceModuleService.findAll(req.user.orgId);
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: any,
+  ) {
+    return this.invoiceModuleService.findAll(req.user.orgId, {
+      page: +page,
+      limit: Math.min(+limit, 100),
+    });
   }
 
   /**
