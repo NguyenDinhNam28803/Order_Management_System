@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
     Building2, Lock, CreditCard, ArrowUpRight,
     ArrowDownRight, Activity, Zap, FileText, ShoppingCart, Eye, Plus, Trash2,
@@ -614,8 +615,8 @@ export default function Dashboard() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            {deptSpending.length > 0 ? deptSpending.map((dept, idx) => (
-                                <div key={idx} className="flex items-center justify-between">
+                            {deptSpending.length > 0 ? deptSpending.map((dept) => (
+                                <div key={dept.name} className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="h-2 w-2 rounded-full" style={{ backgroundColor: dept.color }}></div>
                                         <span className="text-xs font-bold text-slate-900">{dept.name}</span>
@@ -1463,7 +1464,7 @@ export default function Dashboard() {
                                             <td>
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-7 h-7 rounded-full bg-[#0F172A] flex items-center justify-center overflow-hidden border border-[rgba(148,163,184,0.1)]">
-                                                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(requesterName)}&background=random`} alt="avatar" />
+                                                        <Image src={`https://ui-avatars.com/api/?name=${encodeURIComponent(requesterName)}&background=random`} alt="avatar" width={28} height={28} unoptimized />
                                                     </div>
                                                     <span className="font-bold text-slate-900 truncate max-w-[120px]">{requesterName}</span>
                                                 </div>
@@ -1687,8 +1688,8 @@ export default function Dashboard() {
                                                 <tr><th className="p-4">Sản phẩm</th><th className="p-4 text-center">SL</th><th className="p-4 text-right">Giá</th></tr>
                                             </thead>
                                             <tbody>
-                                                {selectedPRDetails.items?.map((item, idx) => (
-                                                    <tr key={idx} className="border-b border-[rgba(148,163,184,0.1)]">
+                                                {selectedPRDetails.items?.map((item) => (
+                                                    <tr key={item.id} className="border-b border-[rgba(148,163,184,0.1)]">
                                                         <td className="p-4 font-black text-slate-900">{item.productName || item.description}</td>
                                                         <td className="p-4 text-center text-slate-900">{item.qty} {item.unit}</td>
                                                         <td className="p-4 text-right font-black text-slate-900">{formatVND((item.qty || 0) * (item.estimatedPrice || 0))} ₫</td>

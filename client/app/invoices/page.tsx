@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ConfirmDialog from "@/app/components/shared/ConfirmDialog";
 import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
 import { Organization } from "@/app/types/api-types";
@@ -120,10 +120,13 @@ export default function InvoicesPage() {
   const [showAiModal, setShowAiModal] = useState(false);
   const [confirmState, setConfirmState] = useState<{ open: boolean; title: string; message: string; onConfirm: () => void }>({ open: false, title: "", message: "", onConfirm: () => {} });
 
+  const fetchInvoicesRef = useRef(fetchInvoices);
+  fetchInvoicesRef.current = fetchInvoices;
+
   useEffect(() => {
     const load = async () => {
       try {
-        await fetchInvoices();
+        await fetchInvoicesRef.current();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Không tải được hóa đơn");
       } finally {
@@ -131,7 +134,6 @@ export default function InvoicesPage() {
       }
     };
     load();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = (invoices as InvoiceWithDetails[] ?? []).filter((inv: InvoiceWithDetails) => {

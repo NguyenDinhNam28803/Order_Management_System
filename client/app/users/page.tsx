@@ -247,7 +247,7 @@ export default function UsersPage() {
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
                                             <div className={`h-12 w-12 rounded-2xl ${user.isActive === false ? 'bg-[#000000]' : 'bg-[#2563EB]'} flex items-center justify-center font-black text-white shadow-lg shadow-[#2563EB]/10 text-xs`}>
-                                                {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="h-full w-full rounded-2xl object-cover" /> : (user.fullName || user.name || "??").substring(0,2).toUpperCase()}
+                                                {user.avatarUrl ? <Image src={user.avatarUrl} alt="" width={48} height={48} className="h-full w-full rounded-2xl object-cover" unoptimized /> : (user.fullName || user.name || "??").substring(0,2).toUpperCase()}
                                             </div>
                                             <div>
                                                 <div className="text-sm font-black text-slate-900 leading-tight">{user.fullName || user.name}</div>
