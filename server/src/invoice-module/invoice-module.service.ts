@@ -550,13 +550,23 @@ export class InvoiceModuleService {
     };
   }
 
-  async findAll(orgId: string) {
-    const invoices = await this.prisma.supplierInvoice.findMany({
-      where: { orgId },
-      include: { po: true, supplier: true, items: true },
-    });
+  async findAll(
+    orgId: string,
+    { page, limit }: { page: number; limit: number } = { page: 1, limit: 20 },
+  ) {
+    const skip = (page - 1) * limit;
+    const [invoices, total] = await Promise.all([
+      this.prisma.supplierInvoice.findMany({
+        where: { orgId },
+        include: { po: true, supplier: true, items: true },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.supplierInvoice.count({ where: { orgId } }),
+    ]);
     // Serialize Decimal to number
-    return invoices.map((inv) => ({
+    const data = invoices.map((inv) => ({
       ...inv,
       subtotal: Number(inv.subtotal),
       taxRate: inv.taxRate ? Number(inv.taxRate) : null,
@@ -568,6 +578,7 @@ export class InvoiceModuleService {
         total: Number(item.total),
       })),
     }));
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async findPaginated(orgId: string, skip: number, take: number) {

@@ -199,8 +199,15 @@ export class PomoduleController {
     summary: 'Lấy tất cả đơn hàng cho tổ chức',
     description: 'Trả về danh sách tất cả đơn hàng cho tổ chức hiện tại',
   })
-  findAll(@Request() req: { user: JwtPayload }) {
-    return this.poService.findAll(req.user.orgId);
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.poService.findAll(req.user.orgId, {
+      page: +page,
+      limit: Math.min(+limit, 100),
+    });
   }
 
   @Get('all')
