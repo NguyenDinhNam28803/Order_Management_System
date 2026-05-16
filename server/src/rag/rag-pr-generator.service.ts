@@ -39,21 +39,18 @@ export class RagPrGeneratorService {
       const vectorStr = `[${queryVector.join(',')}]`;
 
       // Query products, categories, suppliers from vector DB
-      const chunks = await this.prisma.$queryRawUnsafe<any[]>(
-        `
-        SELECT 
+      const chunks = await this.prisma.$queryRaw<any[]>`
+        SELECT
           content,
           source_table,
           source_id,
           metadata,
-          1 - (embedding <=> $1::vector) AS similarity
+          1 - (embedding <=> ${vectorStr}::vector) AS similarity
         FROM document_embeddings
         WHERE source_table IN ('products', 'product_categories', 'organizations', 'pr_items')
-        ORDER BY embedding <=> $1::vector
+        ORDER BY embedding <=> ${vectorStr}::vector
         LIMIT 20
-      `,
-        vectorStr,
-      );
+      `;
 
       // ALWAYS search products directly from DB - this is the PRIMARY source
       let dbProducts: any[] = [];

@@ -233,7 +233,11 @@ export class ContractModuleService {
 
       if (buyerJustSigned) {
         const supplierUsers = await this.prisma.user.findMany({
-          where: { orgId: contract.supplierId, role: 'SUPPLIER' as any, isActive: true },
+          where: {
+            orgId: contract.supplierId,
+            role: 'SUPPLIER' as 'SUPPLIER',
+            isActive: true,
+          },
           select: { email: true, fullName: true },
         });
 
@@ -268,7 +272,11 @@ export class ContractModuleService {
         }
       } else {
         const buyerUsers = await this.prisma.user.findMany({
-          where: { orgId: contract.orgId, role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as any }, isActive: true },
+          where: {
+            orgId: contract.orgId,
+            role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as ('PROCUREMENT' | 'DIRECTOR' | 'CEO')[] },
+            isActive: true,
+          },
           select: { email: true, fullName: true },
         });
         for (const u of buyerUsers) {
@@ -385,48 +393,51 @@ export class ContractModuleService {
 
       const orgIds = [...new Set(expiringContracts.map((c) => c.orgId))];
 
-      for (const orgId of orgIds) {
-        const procurementUsers = await this.prisma.user.findMany({
-          where: {
-            orgId,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            role: { in: ['PROCUREMENT', 'ADMIN'] as any },
-            isActive: true,
-          },
-        });
+      // Batch-load all procurement users for all orgs in a single query (avoid N+1)
+      const allProcurementUsers = await this.prisma.user.findMany({
+        where: {
+          orgId: { in: orgIds },
+          role: { in: ['PROCUREMENT', 'ADMIN'] as ('PROCUREMENT' | 'ADMIN')[] },
+          isActive: true,
+        },
+      });
+      const usersByOrg = new Map<string, typeof allProcurementUsers>();
+      for (const u of allProcurementUsers) {
+        const list = usersByOrg.get(u.orgId) ?? [];
+        list.push(u);
+        usersByOrg.set(u.orgId, list);
+      }
 
-        const orgContracts = expiringContracts.filter((c) => c.orgId === orgId);
+      for (const contract of expiringContracts) {
+        const daysLeft = Math.ceil(
+          (contract.endDate!.getTime() - now.getTime()) /
+            (1000 * 60 * 60 * 24),
+        );
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const supplierName =
+          (contract.supplierOrg as any)?.name ?? 'Nhà cung cấp';
+        const procurementUsers = usersByOrg.get(contract.orgId) ?? [];
 
-        for (const contract of orgContracts) {
-          const daysLeft = Math.ceil(
-            (contract.endDate!.getTime() - now.getTime()) /
-              (1000 * 60 * 60 * 24),
-          );
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const supplierName =
-            (contract.supplierOrg as any)?.name ?? 'Nhà cung cấp';
-
-          for (const user of procurementUsers) {
-            if (!user.email) continue;
-            await this.notificationService
-              .sendDirectEmail(
-                user.email,
-                `[Cảnh báo] Hợp đồng ${contract.contractNumber} sắp hết hạn`,
-                'CONTRACT_EXPIRY_WARNING',
-                {
-                  name: user.fullName || user.email,
-                  contractCode: contract.contractNumber,
-                  contractTitle: contract.title,
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                  supplierName,
-                  expiryDate: contract.endDate,
-                  daysLeft,
-                  loginUrl:
-                    process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn/',
-                },
-              )
-              .catch(() => {});
-          }
+        for (const user of procurementUsers) {
+          if (!user.email) continue;
+          await this.notificationService
+            .sendDirectEmail(
+              user.email,
+              `[Cảnh báo] Hợp đồng ${contract.contractNumber} sắp hết hạn`,
+              'CONTRACT_EXPIRY_WARNING',
+              {
+                name: user.fullName || user.email,
+                contractCode: contract.contractNumber,
+                contractTitle: contract.title,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                supplierName,
+                expiryDate: contract.endDate,
+                daysLeft,
+                loginUrl:
+                  process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn/',
+              },
+            )
+            .catch(() => {});
         }
       }
 

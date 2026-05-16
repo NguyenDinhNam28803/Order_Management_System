@@ -99,7 +99,7 @@ function getIconContainerClass(eventType?: EmailEventType, isPending?: boolean):
   return `${cfg.bgClass} ${cfg.borderClass}`;
 }
 
-export default function NotificationInbox() {
+function NotificationInbox() {
   const { currentUser, apiFetch, refreshData, prs, myPrs, approvals } = useProcurement();
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState<'PENDING' | 'ALL' | 'APPROVED'>('PENDING');
@@ -318,6 +318,24 @@ export default function NotificationInbox() {
       )}
     </div>
   );
+}
+
+export default React.memo(NotificationInbox);
+
+// ── Notification Item type ────────────────────────────────────────────────
+interface MergedNotificationItem {
+  id: string;
+  eventType: EmailEventType | undefined;
+  type: string;
+  title: string;
+  content: string;
+  requester: string;
+  amount: string | null;
+  status: string;
+  deadline: string;
+  referenceId: string | null | undefined;
+  isNotification: boolean;
+  isStatusUpdate?: boolean;
 }
 
 // ── Notification Item ──────────────────────────────────────────────────────

@@ -2,8 +2,22 @@
 
 import React, { useState } from "react";
 
+interface DistributionItem {
+    notes?: string;
+    allocatedAmount?: number;
+}
+
+interface AuditLogData {
+    distribution?: DistributionItem[];
+    fiscalYear?: number;
+    totalBudget?: number;
+    reservedAmount?: number;
+    currentCommitted?: number;
+    [key: string]: unknown;
+}
+
 interface AuditLogDetailModalProps {
-    data: any;
+    data: AuditLogData;
     onClose: () => void;
 }
 
@@ -25,7 +39,7 @@ export const AuditLogDetailModal: React.FC<AuditLogDetailModalProps> = ({ data, 
                             </tr>
                         </thead>
                         <tbody>
-                            {data.distribution.map((item: any, i: number) => (
+                            {data.distribution.map((item: DistributionItem, i: number) => (
                                 <tr key={i}>
                                     <td className="p-2 border">{item.notes}</td>
                                     <td className="p-2 border">{Number(item.allocatedAmount).toLocaleString('vi-VN')}</td>
