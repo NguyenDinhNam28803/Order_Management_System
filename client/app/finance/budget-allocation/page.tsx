@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { z } from "zod";
 import { 
   Building, 
   DollarSign, 
@@ -23,13 +24,20 @@ import {
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
 
+const distributeSchema = z.object({
+  costCenterId: z.string().min(1, "Vui lòng chọn trung tâm chi phí"),
+  fiscalYear: z.number().int().min(2020, "Năm tài chính không hợp lệ").max(2100, "Năm tài chính không hợp lệ"),
+});
+
+type DistributeFormErrors = Partial<Record<keyof z.infer<typeof distributeSchema> | "general", string>>;
+
 export default function BudgetAllocationPage() {
-  const { 
-    costCenters, 
-    budgetAllocations, 
-    budgetPeriods, 
-    distributeAnnualBudget, 
-    refreshData 
+  const {
+    costCenters,
+    budgetAllocations,
+    budgetPeriods,
+    distributeAnnualBudget,
+    refreshData
   } = useProcurement();
 
   const [selectedQuarter, setSelectedQuarter] = useState(1);
@@ -37,6 +45,7 @@ export default function BudgetAllocationPage() {
   const [showDistributeModal, setShowDistributeModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [distributeErrors, setDistributeErrors] = useState<DistributeFormErrors>({});
 
   // Filter allocations based on selected quarter and year
   const activeAllocations = useMemo(() => {
@@ -68,8 +77,19 @@ export default function BudgetAllocationPage() {
   const utilization = totalQuota > 0 ? (totalSpent + totalCommitted) / totalQuota : 0;
 
   const handleDistribute = async (ccId: string) => {
+    const parsed = distributeSchema.safeParse({ costCenterId: ccId, fiscalYear: selectedYear });
+    if (!parsed.success) {
+      const errors: DistributeFormErrors = {};
+      for (const issue of parsed.error.issues) {
+        const field = issue.path[0] as keyof DistributeFormErrors;
+        if (!errors[field]) errors[field] = issue.message;
+      }
+      setDistributeErrors(errors);
+      return;
+    }
+    setDistributeErrors({});
     setLoading(true);
-    await distributeAnnualBudget(ccId, selectedYear);
+    await distributeAnnualBudget(parsed.data.costCenterId, parsed.data.fiscalYear);
     setShowDistributeModal(false);
     setLoading(false);
   };
@@ -352,10 +372,13 @@ export default function BudgetAllocationPage() {
               </div>
             </div>
             
-            <div className="p-8 bg-[#FFFFFF] flex items-center justify-end gap-3 border-t border-[rgba(148,163,184,0.1)]">
-              <button 
-                onClick={() => setShowDistributeModal(false)}
-                className="px-8 py-3 text-sm font-black text-slate-900 hover:text-slate-900 transition-colors uppercase tracking-widest"
+            <div className="p-8 bg-[#FFFFFF] flex items-center justify-between gap-3 border-t border-[rgba(148,163,184,0.1)]">
+              {distributeErrors.general && (
+                <p className="text-sm text-red-500 font-bold">{distributeErrors.general}</p>
+              )}
+              <button
+                onClick={() => { setShowDistributeModal(false); setDistributeErrors({}); }}
+                className="ml-auto px-8 py-3 text-sm font-black text-slate-900 hover:text-slate-900 transition-colors uppercase tracking-widest"
               >
                 Đóng
               </button>
