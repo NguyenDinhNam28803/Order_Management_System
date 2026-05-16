@@ -1148,7 +1148,7 @@ export class BudgetModuleService {
       where: {
         orgId,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        role: { in: ['FINANCE', 'ADMIN'] as any },
+        role: { in: ['FINANCE', 'ADMIN'] as ('FINANCE' | 'ADMIN')[] },
         isActive: true,
       },
     });
