@@ -24,10 +24,12 @@ import {
 import { UserModule } from './entities/user-module.entity';
 import { CreateUserDelegationDto } from './dto/user-delegation.dto';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('User Module')
 @Controller('users')
 @ApiBearerAuth('JWT-auth')
+@Throttle({ default: { limit: 30, ttl: 60000 } })
 export class UserModuleController {
   constructor(private readonly userModuleService: UserModuleService) {}
 
@@ -42,8 +44,7 @@ export class UserModuleController {
       'Trả về thông tin chi tiết của người dùng hiện tại dựa trên JWT đã xác thực',
   })
   @ApiResponse({ status: 200, type: UserModule })
-  getProfile(@Request() req) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  getProfile(@Request() req: { user: JwtPayload }) {
     return this.userModuleService.findOne(req.user.sub);
   }
 

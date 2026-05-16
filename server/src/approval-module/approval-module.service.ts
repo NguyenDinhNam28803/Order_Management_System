@@ -6,6 +6,7 @@ import {
   Inject,
   forwardRef,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { AutomationService } from '../common/automation/automation.service';
 import { EventsGateway } from '../gateway/events.gateway';
@@ -40,6 +41,7 @@ export class ApprovalModuleService {
     private readonly auditService: AuditModuleService,
     private readonly notificationService: NotificationModuleService,
     private readonly eventsGateway: EventsGateway,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -628,7 +630,7 @@ export class ApprovalModuleService {
       if (!approver.email) return;
 
       const frontendUrl =
-        process.env.FRONTEND_URL ?? 'http://procuresmart.io.vn/';
+        this.configService.get<string>('FRONTEND_URL') ?? 'http://procuresmart.io.vn/';
 
       if (docType === DocumentType.PURCHASE_REQUISITION) {
         await this.notificationService.sendDirectEmail(
@@ -692,7 +694,7 @@ export class ApprovalModuleService {
       if (!approver?.email) return;
 
       const frontendUrl =
-        process.env.FRONTEND_URL ?? 'http://procuresmart.io.vn/';
+        this.configService.get<string>('FRONTEND_URL') ?? 'http://procuresmart.io.vn/';
 
       if (docType === DocumentType.PURCHASE_REQUISITION) {
         const pr = await this.prisma.purchaseRequisition.findUnique({
@@ -788,7 +790,7 @@ export class ApprovalModuleService {
           docId,
           status: result === 'APPROVED' ? 'Đã phê duyệt' : 'Bị từ chối',
           comment: comment ?? '',
-          detailLink: `${process.env.FRONTEND_URL ?? ''}/pr`,
+          detailLink: `${this.configService.get<string>('FRONTEND_URL') ?? ''}/pr`,
         },
       );
     } catch (err: any) {
@@ -939,7 +941,7 @@ export class ApprovalModuleService {
       if (!contract) return;
 
       const frontendUrl =
-        process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn';
+        this.configService.get<string>('FRONTEND_URL') ?? 'http://procuresmart.io.vn';
       const baseData = {
         contractNumber: contract.contractNumber,
         contractTitle: contract.title,
