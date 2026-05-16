@@ -147,7 +147,7 @@ export class PaymentModuleService {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         orgId: payment.supplierId,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        role: 'SUPPLIER' as any,
+        role: 'SUPPLIER' as 'SUPPLIER',
         isActive: true,
       },
       include: { organization: true },

@@ -218,8 +218,7 @@ export class GrnmoduleService {
     const supplierUser = await this.prisma.user.findFirst({
       where: {
         orgId: supplierOrgId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        role: 'SUPPLIER' as any,
+        role: 'SUPPLIER' as 'SUPPLIER',
         isActive: true,
       },
       include: { organization: true },
@@ -268,8 +267,7 @@ export class GrnmoduleService {
     const financeUsers = await this.prisma.user.findMany({
       where: {
         orgId: fullGrn.orgId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        role: { in: ['FINANCE', 'ADMIN'] as any },
+        role: { in: ['FINANCE', 'ADMIN'] as ('FINANCE' | 'ADMIN')[] },
         isActive: true,
       },
     });

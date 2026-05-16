@@ -24,39 +24,39 @@ export class SupplierKpiTaskService {
       where: { companyType: { in: ['BUYER', 'BOTH'] }, isActive: true },
     });
 
-    for (const buyer of buyers) {
-      // 2. Tìm tất cả các nhà cung cấp đã có giao dịch (PO) với Buyer này trong 6 tháng qua
-      const sixMonthsAgo = new Date();
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    const buyerIds = buyers.map((b) => b.id);
 
-      const activeSuppliers = await this.prisma.purchaseOrder.findMany({
-        where: {
-          orgId: buyer.id,
-          createdAt: { gte: sixMonthsAgo },
-        },
-        distinct: ['supplierId'],
-        select: { supplierId: true },
-      });
+    // 2. Tìm tất cả các cặp Buyer-Supplier trong 6 tháng qua — 1 query thay vì N queries
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-      this.logger.log(
-        `Found ${activeSuppliers.length} active suppliers for buyer: ${buyer.name}`,
-      );
+    const activePairs = await this.prisma.purchaseOrder.findMany({
+      where: {
+        orgId: { in: buyerIds },
+        createdAt: { gte: sixMonthsAgo },
+      },
+      distinct: ['orgId', 'supplierId'],
+      select: { orgId: true, supplierId: true },
+    });
 
-      // 3. Chạy đánh giá cho từng cặp Buyer - Supplier
-      for (const item of activeSuppliers) {
-        try {
-          await this.kpiService.evaluateSupplierPerformance(
-            item.supplierId,
-            buyer.id,
-          );
-          this.logger.log(
-            `Successfully evaluated KPI for supplier: ${item.supplierId} under buyer: ${buyer.id}`,
-          );
-        } catch {
-          this.logger.error(
-            `Failed to evaluate KPI for supplier ${item.supplierId}`,
-          );
-        }
+    const buyerMap = new Map(buyers.map((b) => [b.id, b]));
+    this.logger.log(`Found ${activePairs.length} active buyer-supplier pairs`);
+
+    // 3. Chạy đánh giá cho từng cặp Buyer - Supplier
+    for (const pair of activePairs) {
+      const buyer = buyerMap.get(pair.orgId);
+      try {
+        await this.kpiService.evaluateSupplierPerformance(
+          pair.supplierId,
+          pair.orgId,
+        );
+        this.logger.log(
+          `Successfully evaluated KPI for supplier: ${pair.supplierId} under buyer: ${buyer?.name ?? pair.orgId}`,
+        );
+      } catch {
+        this.logger.error(
+          `Failed to evaluate KPI for supplier ${pair.supplierId}`,
+        );
       }
     }
 
