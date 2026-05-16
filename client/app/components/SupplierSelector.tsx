@@ -206,7 +206,7 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
       console.warn("Failed to fetch KPI for supplier:", supplierId);
     }
     return null;
-  }, [apiFetch, currentUser?.orgId]);
+  }, [apiFetch, currentUser]);
 
   // Load suppliers from organizations
   useEffect(() => {
@@ -223,7 +223,7 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
       );
 
       // Map to Supplier interface
-      let mappedSuppliers = supplierOrgs.map(mapOrganizationToSupplier);
+      const mappedSuppliers = supplierOrgs.map(mapOrganizationToSupplier);
 
       // If no suppliers found in API, fallback to empty array
       if (mappedSuppliers.length === 0) {

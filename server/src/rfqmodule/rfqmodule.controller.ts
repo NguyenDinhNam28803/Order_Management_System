@@ -235,7 +235,10 @@ export class RfqmoduleController {
     summary: 'Xem xét báo giá',
     description: 'Xem xét một báo giá cụ thể',
   })
-  async reviewQuotation(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
+  async reviewQuotation(
+    @Param('id') id: string,
+    @Request() req: { user: JwtPayload },
+  ) {
     return this.rfqService.reviewQuotation(id, req.user.sub);
   }
 
@@ -249,7 +252,10 @@ export class RfqmoduleController {
     summary: 'Chấp nhận báo giá',
     description: 'Chấp nhận một báo giá cụ thể',
   })
-  async acceptQuotation(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
+  async acceptQuotation(
+    @Param('id') id: string,
+    @Request() req: { user: JwtPayload },
+  ) {
     return this.rfqService.acceptQuotation(id, req.user.sub);
   }
 
@@ -263,7 +269,10 @@ export class RfqmoduleController {
     summary: 'Từ chối báo giá',
     description: 'Từ chối một báo giá cụ thể',
   })
-  async rejectQuotation(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
+  async rejectQuotation(
+    @Param('id') id: string,
+    @Request() req: { user: JwtPayload },
+  ) {
     return this.rfqService.rejectQuotation(id, req.user.sub);
   }
 
@@ -279,7 +288,10 @@ export class RfqmoduleController {
     summary: 'Cập nhật điểm AI của báo giá',
     description: 'Cập nhật điểm AI cho một báo giá cụ thể',
   })
-  async updateQuotationAiScore(@Param('id') id: string, @Body() body: { aiScore: number }) {
+  async updateQuotationAiScore(
+    @Param('id') id: string,
+    @Body() body: { aiScore: number },
+  ) {
     return this.rfqService.updateQuotationAiScore(id, body.aiScore);
   }
 
@@ -401,7 +413,10 @@ export class RfqmoduleController {
   @Post(':rfqId/suppliers/invite')
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({ summary: 'Mời nhà cung cấp tham gia RFQ' })
-  async inviteSuppliers(@Param('rfqId') rfqId: string, @Body() body: { supplierIds: string[] }) {
+  async inviteSuppliers(
+    @Param('rfqId') rfqId: string,
+    @Body() body: { supplierIds: string[] },
+  ) {
     return this.rfqService.inviteSuppliers(rfqId, body.supplierIds);
   }
 
@@ -506,7 +521,10 @@ export class RfqmoduleController {
     summary: 'Phản hồi đề xuất phản hồi',
     description: 'Phản hồi một đề xuất phản hồi cụ thể',
   })
-  async respondCounterOffer(@Param('id') id: string, @Body() body: { response: string; status?: string }) {
+  async respondCounterOffer(
+    @Param('id') id: string,
+    @Body() body: { response: string; status?: 'ACCEPTED' | 'REJECTED' },
+  ) {
     return this.rfqService.respondCounterOffer(
       id,
       body.response,

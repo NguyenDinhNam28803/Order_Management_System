@@ -38,7 +38,7 @@ export {
 };
 
 export interface Notification {
-    id: number; message: string; type: 'success' | 'error' | 'info' | 'warning'; role?: string;
+    id: number; message: string; type: 'success' | 'error' | 'info' | 'warning'; role?: string; title?: string;
 }
 
 // ── PO Consolidation ──────────────────────────────────────────────────────────
@@ -477,7 +477,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 total: convertPrismaDecimal(p.total ?? p.totalAmount),
                 totalAmount: convertPrismaDecimal(p.totalAmount ?? p.total),
                 vendor: p.vendor || p.supplierName || p.supplier?.name || p.supplierId || 'N/A',
-                items: p.items?.map((item: any) => ({
+                items: p.items?.map((item: Record<string, unknown>) => ({
                     ...item,
                     qty: convertPrismaDecimal(item.qty ?? item.quantity),
                     quantity: convertPrismaDecimal(item.quantity ?? item.qty),
@@ -1270,7 +1270,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 ...q,
                 totalPrice: convertPrismaDecimal(q.totalPrice ?? q.total ?? q.amount),
                 leadTimeDays: q.leadTimeDays ?? q.leadTime ?? null,
-                items: Array.isArray(q.items) ? q.items.map((i: any) => ({
+                items: Array.isArray(q.items) ? q.items.map((i: Record<string, unknown>) => ({
                     ...i,
                     unitPrice: convertPrismaDecimal(i.unitPrice ?? i.price),
                     totalPrice: convertPrismaDecimal(i.totalPrice ?? i.total),

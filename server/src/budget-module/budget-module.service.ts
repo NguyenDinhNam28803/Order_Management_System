@@ -1147,8 +1147,8 @@ export class BudgetModuleService {
     const financeUsers = await this.prisma.user.findMany({
       where: {
         orgId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        role: { in: ['FINANCE', 'ADMIN'] as ('FINANCE' | 'ADMIN')[] },
+
+        role: { in: ['FINANCE', 'PLATFORM_ADMIN'] as ('FINANCE' | 'PLATFORM_ADMIN')[] },
         isActive: true,
       },
     });

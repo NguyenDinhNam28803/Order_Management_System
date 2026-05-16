@@ -48,7 +48,7 @@ function AiInvoiceModal({ onClose, onCreated }: { onClose: () => void; onCreated
       if (!res.ok) throw new Error(data.message || "Lỗi không xác định");
       setResult(data);
       onCreated();
-    } catch (e: any) { setErr(e.message); }
+    } catch (e: unknown) { setErr(e instanceof Error ? e.message : String(e)); }
     finally { setLoading(false); }
   };
 

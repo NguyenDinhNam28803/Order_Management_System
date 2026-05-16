@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import ContractSignModal from "../../../components/ContractSignModal";
+import { Contract } from "../../../types/api-types";
 
 // Trang này xử lý ký hợp đồng từ email (không cần login)
 export default function ExternalContractSignPage({ params }: { params: { id: string } }) {
@@ -10,7 +11,7 @@ export default function ExternalContractSignPage({ params }: { params: { id: str
     const token = searchParams.get("token");
     
     // Giả định là nhà cung cấp ký (để ký hợp đồng qua magic link)
-    const [contract, setContract] = useState<any>(null);
+    const [contract, setContract] = useState<Contract | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

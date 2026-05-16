@@ -46,7 +46,7 @@ export default function AuditLogsPage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            {selectedLog && <AuditLogDetailModal data={selectedLog.newValue} onClose={() => setSelectedLog(null)} />}
+            {selectedLog && <AuditLogDetailModal data={selectedLog.newValue ?? {}} onClose={() => setSelectedLog(null)} />}
             
             <div className="flex justify-between items-center mb-10">
                 <div className="flex items-center gap-3">

@@ -15,7 +15,7 @@ import { ConsolidatePRsDto } from './dto/consolidate-prs.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
-import { UserRole } from '@prisma/client';
+import { UserRole, PoStatus } from '@prisma/client';
 import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { Throttle } from '@nestjs/throttler';
 
@@ -44,7 +44,10 @@ export class PomoduleController {
     summary: 'Tạo đơn hàng mới từ báo giá đã được chấp nhận',
     description: 'Tạo một đơn hàng mới từ một báo giá đã được chấp nhận',
   })
-  create(@Body() createPoDto: CreatePoDto, @Request() req: { user: JwtPayload }) {
+  create(
+    @Body() createPoDto: CreatePoDto,
+    @Request() req: { user: JwtPayload },
+  ) {
     return this.poService.create(createPoDto, req.user);
   }
 
@@ -253,7 +256,7 @@ export class PomoduleController {
     summary: 'Cập nhật trạng thái đơn hàng',
     description: 'Cập nhật trạng thái của một đơn hàng cụ thể',
   })
-  updateStatus(@Param('id') id: string, @Body() body: { status: string }) {
+  updateStatus(@Param('id') id: string, @Body() body: { status: PoStatus }) {
     return this.poService.updateStatus(id, body.status);
   }
 }

@@ -249,7 +249,7 @@ export class ContractModuleService {
         const supplierUsers = await this.prisma.user.findMany({
           where: {
             orgId: contract.supplierId,
-            role: 'SUPPLIER' as 'SUPPLIER',
+            role: 'SUPPLIER' as const,
             isActive: true,
           },
           select: { email: true, fullName: true },
@@ -295,7 +295,13 @@ export class ContractModuleService {
         const buyerUsers = await this.prisma.user.findMany({
           where: {
             orgId: contract.orgId,
-            role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as ('PROCUREMENT' | 'DIRECTOR' | 'CEO')[] },
+            role: {
+              in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as (
+                | 'PROCUREMENT'
+                | 'DIRECTOR'
+                | 'CEO'
+              )[],
+            },
             isActive: true,
           },
           select: { email: true, fullName: true },
@@ -422,7 +428,7 @@ export class ContractModuleService {
       const allProcurementUsers = await this.prisma.user.findMany({
         where: {
           orgId: { in: orgIds },
-          role: { in: ['PROCUREMENT', 'ADMIN'] as ('PROCUREMENT' | 'ADMIN')[] },
+          role: { in: ['PROCUREMENT', 'PLATFORM_ADMIN'] as ('PROCUREMENT' | 'PLATFORM_ADMIN')[] },
           isActive: true,
         },
       });
@@ -438,7 +444,8 @@ export class ContractModuleService {
         const daysLeft = Math.ceil(
           (contract.endDate!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
         );
-        const supplierName = (contract.supplierOrg as { name?: string })?.name ?? 'Nhà cung cấp';
+        const supplierName =
+          (contract.supplierOrg as { name?: string })?.name ?? 'Nhà cung cấp';
 
         for (const user of procurementUsers) {
           if (!user.email) continue;
@@ -454,7 +461,8 @@ export class ContractModuleService {
                 supplierName,
                 expiryDate: contract.endDate,
                 daysLeft,
-                loginUrl: process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn/',
+                loginUrl:
+                  process.env['FRONTEND_URL'] ?? 'http://procuresmart.io.vn/',
               },
             )
             .catch(() => {});

@@ -367,7 +367,7 @@ const NotificationItem = ({ item }: { item: MergedNotificationItem }) => {
               {getTypeLabel()}
             </span>
             <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
-              {new Date(item.deadline).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+              {item.deadline ? new Date(item.deadline).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
             </span>
           </div>
 

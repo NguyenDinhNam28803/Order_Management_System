@@ -94,12 +94,12 @@ export default function SupplierDashboard() {
       try {
         const rfqs = await fetchMySupplierRFQs();
         // Map API response to dashboard RFQ format
-        const mappedRfqs = rfqs.map((r: any) => ({
+        const mappedRfqs = rfqs.map((r) => ({
           rfqId: r.rfqNumber || r.id.substring(0, 8),
           projectName: r.title || `Yêu cầu báo giá #${r.rfqNumber || r.id.substring(0, 8)}`,
           status: r.status === "SENT" ? "Pending" : (r.status === "QUOTATION_RECEIVED" ? "Quoted" : "Pending"),
           createdAt: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : "Vừa xong",
-          items: r.items?.map((item: any) => ({
+          items: r.items?.map((item) => ({
             id: item.id || "ITM-" + Math.random().toString(36).substring(7),
             name: item.productName || item.productDesc || "Sản phẩm",
             quantity: item.qty || 1
