@@ -129,17 +129,6 @@ export class EmailRagService {
       }
 
       this.logger.log(`Fetched ${emails.length} emails from INBOX`);
-      console.log(`[EmailRAG] AI lấy được ${emails.length} email từ INBOX:`);
-      emails.forEach((email, index) => {
-        console.log(`  [${index + 1}] messageId: ${email.messageId}`);
-        console.log(`       from   : ${email.from}`);
-        console.log(`       to     : ${email.to}`);
-        console.log(`       subject: ${email.subject}`);
-        console.log(`       date   : ${email.date.toLocaleString('vi-VN')}`);
-        console.log(
-          `       body   : ${email.body.slice(0, 150)}${email.body.length > 150 ? '...' : ''}`,
-        );
-      });
       return emails;
     } catch (error: any) {
       this.logger.error(`IMAP fetch failed: ${error.message}`);

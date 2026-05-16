@@ -316,6 +316,11 @@ export class RfqmoduleService {
     return this.repository.findAll(user.orgId);
   }
 
+  async findPaginated(user: any, skip: number, take: number) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.repository.findPaginated(user.orgId, skip, take);
+  }
+
   async findOne(id: string) {
     const rfq = await this.repository.findOne(id);
     if (!rfq) {
