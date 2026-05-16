@@ -282,7 +282,7 @@ export default function NotificationInbox() {
                 <p className="text-[11px] text-slate-900 font-medium tracking-widest uppercase">Đang đồng bộ dữ liệu...</p>
               </div>
             ) : mergedItems.length > 0 ? (
-              mergedItems.map((item) => <NotificationItem key={item.id} item={item} />)
+              (mergedItems as MergedNotificationItem[]).map((item) => <NotificationItem key={item.id} item={item} />)
             ) : (
               <div className="py-20 px-10 text-center">
                 <div className="w-16 h-16 bg-[#FFFFFF] rounded-xl flex items-center justify-center mx-auto mb-6 border border-[rgba(240,246,252,0.05)] shadow-xl">
@@ -307,8 +307,22 @@ export default function NotificationInbox() {
 }
 
 // ── Notification Item ──────────────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const NotificationItem = ({ item }: { item: any }) => {
+interface MergedNotificationItem {
+  id: string;
+  eventType: EmailEventType | undefined;
+  type: string;
+  title: string;
+  content: string;
+  requester: string;
+  amount: string | null;
+  status: string;
+  deadline: string | undefined;
+  referenceId: string | null | undefined;
+  isNotification: boolean;
+  isStatusUpdate?: boolean;
+}
+
+const NotificationItem = ({ item }: { item: MergedNotificationItem }) => {
   const isPending = item.status === 'PENDING';
   const eventType = item.eventType as EmailEventType | undefined;
   const cfg = eventType ? EVENT_DISPLAY_CONFIG[eventType] : null;

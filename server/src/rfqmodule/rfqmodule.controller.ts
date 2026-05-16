@@ -8,6 +8,7 @@ import {
   Request,
   Put,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { RfqmoduleService } from './rfqmodule.service';
 import { CreateRfqDto } from './dto/create-rfq.dto';
@@ -57,6 +58,18 @@ export class RfqmoduleController {
     @Request() req: { user: JwtPayload },
   ) {
     return this.rfqService.create(createRfqDto, req.user);
+  }
+
+  @Get('paginated')
+  @ApiOperation({ summary: 'Lấy RFQ có phân trang' })
+  async findPaginated(
+    @Request() req: { user: JwtPayload },
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+  ) {
+    const take = Math.min(Number(limit), 100);
+    const skip = (Number(page) - 1) * take;
+    return this.rfqService.findPaginated(req.user, skip, take);
   }
 
   /**
