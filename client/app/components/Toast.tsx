@@ -127,7 +127,7 @@ const MAX_VISIBLE = 3;
 export const ToastContainer: React.FC = () => {
     const { notifications, removeNotification } = useToast();
 
-    let currentUser: any = null;
+    let currentUser: { role?: string } | null = null;
     try {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const proc = useProcurement();

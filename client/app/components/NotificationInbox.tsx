@@ -13,6 +13,21 @@ import { getStatusLabel, formatVND } from "../utils/formatUtils";
 import { EmailEventType, EVENT_DISPLAY_CONFIG } from "../types/notification-types";
 import { useSocketIO, NotificationPayload as SocketNotification } from "../hooks/useSocketIO";
 
+interface MergedNotificationItem {
+  id: string;
+  eventType: EmailEventType | undefined;
+  type: string;
+  title: string;
+  content: string;
+  requester: string;
+  amount: string | null;
+  status: string;
+  deadline: string | undefined;
+  referenceId: string | null | undefined;
+  isNotification: boolean;
+  isStatusUpdate?: boolean;
+}
+
 // ── Utility to strip HTML tags ─────────────────────────────────────────────
 function stripHtml(html: string) {
   if (!html) return "";
@@ -88,8 +103,7 @@ export default function NotificationInbox() {
   const { currentUser, apiFetch, refreshData, prs, myPrs, approvals } = useProcurement();
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState<'PENDING' | 'ALL' | 'APPROVED'>('PENDING');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<SocketNotification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -282,7 +296,7 @@ export default function NotificationInbox() {
                 <p className="text-[11px] text-slate-900 font-medium tracking-widest uppercase">Đang đồng bộ dữ liệu...</p>
               </div>
             ) : mergedItems.length > 0 ? (
-              mergedItems.map((item) => <NotificationItem key={item.id} item={item} />)
+              mergedItems.map((item) => <NotificationItem key={item.id} item={item as MergedNotificationItem} />)
             ) : (
               <div className="py-20 px-10 text-center">
                 <div className="w-16 h-16 bg-[#FFFFFF] rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[rgba(240,246,252,0.05)] shadow-xl">
@@ -307,8 +321,7 @@ export default function NotificationInbox() {
 }
 
 // ── Notification Item ──────────────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const NotificationItem = ({ item }: { item: any }) => {
+const NotificationItem = ({ item }: { item: MergedNotificationItem }) => {
   const isPending = item.status === 'PENDING';
   const eventType = item.eventType as EmailEventType | undefined;
   const cfg = eventType ? EVENT_DISPLAY_CONFIG[eventType] : null;

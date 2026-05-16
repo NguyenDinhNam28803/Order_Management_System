@@ -234,8 +234,17 @@ export default function FinanceDashboard() {
     )
 }
 
-function MetricCard({ icon, label, value, unit, color, onClick, subValue }: any) {
-    const colorStyles: any = {
+interface MetricCardProps {
+    icon: React.ReactNode;
+    label: string;
+    value: React.ReactNode;
+    unit?: string;
+    color: 'indigo' | 'rose' | 'amber' | 'emerald';
+    onClick?: () => void;
+    subValue?: React.ReactNode;
+}
+function MetricCard({ icon, label, value, unit, color, onClick, subValue }: MetricCardProps) {
+    const colorStyles: Record<string, string> = {
         indigo: "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20",
         rose: "bg-rose-500/10 text-black border-rose-500/20",
         amber: "bg-amber-500/10 text-black border-amber-500/20",

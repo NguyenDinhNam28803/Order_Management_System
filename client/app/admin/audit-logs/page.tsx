@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useAuditLogs } from "../../hooks/useAuditLogs";
 import { AuditLogDetailModal } from "../../components/AuditLogDetailModal";
+import type { AuditLog } from "../../types/api-types";
 import { 
     History, Search, Filter, Calendar, Shield, ExternalLink, RefreshCw 
 } from "lucide-react";
@@ -10,7 +11,7 @@ import {
 export default function AuditLogsPage() {
     const [page, setPage] = useState(1);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [selectedLog, setSelectedLog] = useState<any | null>(null);
+    const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
     const { data: result, isLoading, refetch } = useAuditLogs(page);
     
     // Safety check: ensure auditLogs is always an array
@@ -25,7 +26,7 @@ export default function AuditLogsPage() {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const filteredLogs = auditLogs.filter((log: any) => {
+    const filteredLogs = auditLogs.filter((log: AuditLog) => {
         const matchSearch = log.action?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           log.entityId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           log.user?.fullName?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -42,7 +43,7 @@ export default function AuditLogsPage() {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const entityTypes = Array.from(new Set(auditLogs.map((l: any) => l.entityType)));
+    const entityTypes = Array.from(new Set(auditLogs.map((l: AuditLog) => l.entityType)));
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
@@ -107,7 +108,7 @@ export default function AuditLogsPage() {
                         </thead>
                         <tbody className="divide-y divide-[rgba(148,163,184,0.1)] text-sm">
                             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                            {filteredLogs.length > 0 ? filteredLogs.map((log: any) => (
+                            {filteredLogs.length > 0 ? filteredLogs.map((log: AuditLog) => (
                                 <tr key={log.id} className="hover:bg-[#FFFFFF]/30 transition-colors group">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-2 text-slate-900">

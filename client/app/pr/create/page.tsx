@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
+import { z } from "zod";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
 import { formatVND, convertPrismaDecimal } from "../../utils/formatUtils";
@@ -228,6 +229,23 @@ interface PRForm {
     items: PRItem[];
 }
 
+const prFormSchema = z.object({
+    title: z.string().min(3, "Tiêu đề phải có ít nhất 3 ký tự").max(200, "Tiêu đề không vượt quá 200 ký tự"),
+    costCenterId: z.string().min(1, "Vui lòng chọn trung tâm chi phí"),
+    items: z.array(z.object({
+        productDesc: z.string().min(1, "Tên sản phẩm không được trống"),
+        qty: z.number().min(1, "Số lượng phải lớn hơn 0"),
+        estimatedPrice: z.number().min(0, "Đơn giá không được âm"),
+    })).min(1, "Phải có ít nhất 1 sản phẩm"),
+    requiredDate: z.string().optional().refine(
+        (d) => !d || new Date(d) > new Date(),
+        "Ngày cần hàng phải ở tương lai"
+    ),
+    priority: z.number().min(1).max(5),
+});
+
+type PRFormErrors = Partial<Record<keyof z.infer<typeof prFormSchema> | 'general', string>>;
+
 const isValidUuid = (id: string | undefined): boolean => {
     if (!id) return false;
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -454,10 +472,30 @@ export default function CreatePRPage() {
 
     const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState("");
+    const [fieldErrors, setFieldErrors] = useState<PRFormErrors>({});
 
     const handleSubmit = async () => {
-        if (!form.title || form.items.length === 0 || !form.costCenterId) {
-            setErrorMessage("Vui lòng nhập đầy đủ tiêu đề, trung tâm chi phí và ít nhất 1 sản phẩm.");
+        setFieldErrors({});
+        const parsed = prFormSchema.safeParse({
+            title: form.title,
+            costCenterId: form.costCenterId,
+            items: form.items.map(i => ({
+                productDesc: i.productDesc,
+                qty: Number(i.qty),
+                estimatedPrice: Number(convertPrismaDecimal(i.estimatedPrice) ?? 0),
+            })),
+            requiredDate: form.requiredDate || undefined,
+            priority: Number(form.priority),
+        });
+
+        if (!parsed.success) {
+            const errors: PRFormErrors = {};
+            for (const issue of parsed.error.issues) {
+                const field = issue.path[0] as keyof PRFormErrors;
+                if (!errors[field]) errors[field] = issue.message;
+            }
+            setFieldErrors(errors);
+            setErrorMessage(parsed.error.issues[0]?.message ?? "Dữ liệu không hợp lệ");
             setSubmissionStatus('error');
             return;
         }
@@ -734,7 +772,7 @@ export default function CreatePRPage() {
                                     value={form.title} 
                                     onChange={e => setForm({ ...form, title: e.target.value })} 
                                 />
-                                {submissionStatus === 'error' && !form.title && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">Tiêu đề không được để trống</span>}
+                                {fieldErrors.title && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">{fieldErrors.title}</span>}
                             </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -752,6 +790,7 @@ export default function CreatePRPage() {
                                             ))}
                                         </select>
                                         <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-900 pointer-events-none" size={16} />
+                                    {fieldErrors.costCenterId && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">{fieldErrors.costCenterId}</span>}
                                     </div>
                                 </div>
                                 <div className="space-y-3">
@@ -855,7 +894,11 @@ export default function CreatePRPage() {
                                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
                                         {form.items.length === 0 ? (
                                             <tr>
-                                                <td colSpan={5} className="py-20 text-center text-[10px] font-black text-slate-900 uppercase tracking-widest italic">Chưa có sản phẩm nào được chọn</td>
+                                                <td colSpan={5} className="py-20 text-center text-[10px] font-black uppercase tracking-widest italic">
+                                                    <span className={fieldErrors.items ? 'text-rose-500' : 'text-slate-900'}>
+                                                        {fieldErrors.items ?? 'Chưa có sản phẩm nào được chọn'}
+                                                    </span>
+                                                </td>
                                             </tr>
                                         ) : (
                                             form.items.map((item, i) => (

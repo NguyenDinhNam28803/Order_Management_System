@@ -199,7 +199,7 @@ export default function PoConfirmPage() {
               <ChevronRight className="w-3 h-3 text-teal-300" />
               <span className="text-teal-200 text-xs font-semibold">{po.poNumber}</span>
             </div>
-            <h1 className="text-slate-900 text-xl font-bold">Xác nhận nhận đơn hàng</h1>
+            <h1 className="text-white text-xl font-bold">Xác nhận nhận đơn hàng</h1>
           </div>
 
           <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm border-b border-gray-100">
