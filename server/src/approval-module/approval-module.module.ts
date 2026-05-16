@@ -1,4 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ApprovalModuleService } from './approval-module.service';
 import { ApprovalModuleController } from './approval-module.controller';
 import { PrismaModule } from '../prisma/prisma.module';
@@ -11,6 +12,7 @@ import { GatewayModule } from '../gateway/gateway.module';
 
 @Module({
   imports: [
+    ConfigModule,
     PrismaModule,
     forwardRef(() => BudgetModuleModule),
     AutomationModule,
