@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
 import { UserRole } from '@prisma/client';
 import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Purchase Order (PO)')
 @Controller('purchase-orders')
@@ -38,12 +39,12 @@ export class PomoduleController {
    * @returns Đơn đặt hàng vừa tạo
    */
   @Post()
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Tạo đơn hàng mới từ báo giá đã được chấp nhận',
     description: 'Tạo một đơn hàng mới từ một báo giá đã được chấp nhận',
   })
-  create(@Body() createPoDto: CreatePoDto, @Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  create(@Body() createPoDto: CreatePoDto, @Request() req: { user: JwtPayload }) {
     return this.poService.create(createPoDto, req.user);
   }
 
@@ -53,6 +54,7 @@ export class PomoduleController {
    * @returns Đơn hàng sau khi đã được đặt lại trạng thái
    */
   @Post(':id/reset')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Reset trạng thái đơn hàng về DRAFT',
     description:
@@ -68,6 +70,7 @@ export class PomoduleController {
    * @returns Đơn hàng sau khi đã được xác nhận
    */
   @Post(':id/acknowledge')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Nhà cung cấp xác nhận đơn hàng (ACK)',
     description:
@@ -84,6 +87,7 @@ export class PomoduleController {
    * @returns Đơn hàng sau khi đã được xác nhận
    */
   @Post(':id/confirm')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Xác nhận đơn hàng',
     description: 'Xác nhận đơn hàng, chuyển trạng thái sang CONFIRMED',
@@ -98,6 +102,7 @@ export class PomoduleController {
    * @returns Đơn hàng sau khi đã được cập nhật trạng thái
    */
   @Post(':id/reject')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Từ chối đơn hàng',
     description: 'Từ chối đơn hàng, chuyển trạng thái sang REJECTED',
@@ -113,6 +118,7 @@ export class PomoduleController {
    * @returns Đơn hàng sau khi gửi duyệt
    */
   @Post('create-from-pr')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   async createFromPr(
     @Body() body: { prId: string; supplierId: string },
     @Request() req: { user: JwtPayload },
@@ -126,6 +132,7 @@ export class PomoduleController {
    * Items giống nhau (cùng SKU hoặc cùng category) sẽ được cộng qty lại.
    */
   @Post('consolidate')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Gộp nhiều PR thành 1 PO (PO Consolidation)',
@@ -143,6 +150,7 @@ export class PomoduleController {
   }
 
   @Post(':id/submit')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Gửi đơn hàng phê duyệt',
     description: 'Kích hoạt luồng duyệt cho đơn hàng',
@@ -191,8 +199,7 @@ export class PomoduleController {
     summary: 'Lấy tất cả đơn hàng cho tổ chức',
     description: 'Trả về danh sách tất cả đơn hàng cho tổ chức hiện tại',
   })
-  findAll(@Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  findAll(@Request() req: { user: JwtPayload }) {
     return this.poService.findAll(req.user.orgId);
   }
 
@@ -234,12 +241,12 @@ export class PomoduleController {
    * @returns Đơn đặt hàng sau khi cập nhật trạng thái
    */
   @Put(':id/status')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   @ApiOperation({
     summary: 'Cập nhật trạng thái đơn hàng',
     description: 'Cập nhật trạng thái của một đơn hàng cụ thể',
   })
-  updateStatus(@Param('id') id: string, @Body() body: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  updateStatus(@Param('id') id: string, @Body() body: { status: string }) {
     return this.poService.updateStatus(id, body.status);
   }
 }

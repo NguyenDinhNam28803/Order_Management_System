@@ -105,8 +105,7 @@ export function previewTemplate(
 }
 
 function generateSubject(eventType: EmailEventType, data: TemplateData): string {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const d = data as Record<string, any>;
+  const d = data as Record<string, unknown>;
   
   switch (eventType) {
     case 'RFQ_MAGIC_LINK':
@@ -126,9 +125,13 @@ function generateSubject(eventType: EmailEventType, data: TemplateData): string 
   }
 }
 
+function toLocale(val: unknown): string {
+  if (typeof val === 'number') return val.toLocaleString('vi-VN');
+  return '0';
+}
+
 function generatePreviewHtml(eventType: EmailEventType, data: TemplateData): string {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const d = data as Record<string, any>;
+  const d = data as Record<string, unknown>;
   
   // Basic preview styling
   const baseStyles = `
@@ -173,7 +176,7 @@ function generatePreviewHtml(eventType: EmailEventType, data: TemplateData): str
           <table class="info-table">
             <tr><th>Tiêu đề</th><td>${d.prTitle || ''}</td></tr>
             <tr><th>Người yêu cầu</th><td>${d.requesterName || ''}</td></tr>
-            <tr><th>Tổng tiền</th><td>${d.totalAmount?.toLocaleString('vi-VN') || 0} VNĐ</td></tr>
+            <tr><th>Tổng tiền</th><td>${toLocale(d.totalAmount)} VNĐ</td></tr>
           </table>
           <a href="${d.approveLink || '#'}" class="button" style="background: #10B981;">Phê Duyệt</a>
           <a href="${d.rejectLink || '#'}" class="button" style="background: #EF4444;">Từ Chối</a>
@@ -190,7 +193,7 @@ function generatePreviewHtml(eventType: EmailEventType, data: TemplateData): str
           <p>Xin chào <strong>${d.supplierName || ''}</strong>,</p>
           <p>Vui lòng xác nhận đơn hàng <strong>${d.poCode || ''}</strong>.</p>
           <table class="info-table">
-            <tr><th>Tổng tiền</th><td>${d.totalAmount?.toLocaleString('vi-VN') || 0} VNĐ</td></tr>
+            <tr><th>Tổng tiền</th><td>${toLocale(d.totalAmount)} VNĐ</td></tr>
             <tr><th>Ngày giao</th><td>${d.deliveryDate || 'N/A'}</td></tr>
           </table>
           <a href="${d.confirmLink || '#'}" class="button">Xác Nhận PO</a>
@@ -222,7 +225,7 @@ function generatePreviewHtml(eventType: EmailEventType, data: TemplateData): str
           <p>Vui lòng nộp hóa đơn cho đơn hàng <strong>${d.poCode || ''}</strong>.</p>
           <table class="info-table">
             <tr><th>GRN</th><td>${d.grnCode || ''}</td></tr>
-            <tr><th>Số tiền</th><td>${d.grnAmount?.toLocaleString('vi-VN') || 0} VNĐ</td></tr>
+            <tr><th>Số tiền</th><td>${toLocale(d.grnAmount)} VNĐ</td></tr>
           </table>
           <a href="${d.submitLink || '#'}" class="button">Nộp Hóa Đơn</a>
         </div>
@@ -237,7 +240,7 @@ function generatePreviewHtml(eventType: EmailEventType, data: TemplateData): str
         <div class="body">
           <p>Thanh toán <strong>${d.paymentCode || ''}</strong> đã được xử lý thành công.</p>
           <table class="info-table">
-            <tr><th>Số tiền</th><td><strong style="font-size: 18px; color: #10B981;">${d.totalWithVat?.toLocaleString('vi-VN') || 0} VNĐ</strong></td></tr>
+            <tr><th>Số tiền</th><td><strong style="font-size: 18px; color: #10B981;">${toLocale(d.totalWithVat)} VNĐ</strong></td></tr>
             <tr><th>Mã giao dịch</th><td>${d.bankRef || ''}</td></tr>
             <tr><th>Thời gian</th><td>${d.paidAt || 'N/A'}</td></tr>
           </table>
