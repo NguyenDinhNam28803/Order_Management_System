@@ -14,12 +14,12 @@ export class CreateRfqDto {
   @ApiProperty({ example: '325f187a-c1f6-4a4e-8692-234b6e50334a' })
   @IsUUID('4')
   @IsNotEmpty()
-  prId: string;
+  prId!: string;
 
   @ApiProperty({ example: 'Request for Laptops' })
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title!: string;
 
   @ApiPropertyOptional({ example: 'Need high quality laptops' })
   @IsString()
@@ -31,7 +31,7 @@ export class CreateRfqDto {
   @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
-  deadline: Date;
+  deadline!: Date;
 
   @ApiPropertyOptional({ example: 3 })
   @IsNumber()
@@ -44,5 +44,5 @@ export class CreateRfqDto {
   })
   @IsArray()
   @IsUUID('4', { each: true })
-  supplierIds: string[];
+  supplierIds!: string[];
 }

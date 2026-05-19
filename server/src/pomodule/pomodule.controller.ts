@@ -7,19 +7,28 @@ import {
   UseGuards,
   Request,
   Put,
+  Query,
 } from '@nestjs/common';
 import { PomoduleService } from './pomodule.service';
 import { CreatePoDto } from './dto/create-po.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ConsolidatePRsDto } from './dto/consolidate-prs.dto';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
-import { UserRole } from '@prisma/client';
+import { UserRole, PoStatus } from '@prisma/client';
+import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Purchase Order (PO)')
 @Controller('purchase-orders')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+@Roles(
+  UserRole.PROCUREMENT,
+  UserRole.FINANCE,
+  UserRole.PLATFORM_ADMIN,
+  UserRole.SUPPLIER,
+)
 export class PomoduleController {
   constructor(private readonly poService: PomoduleService) {}
 
@@ -30,12 +39,15 @@ export class PomoduleController {
    * @returns Đơn đặt hàng vừa tạo
    */
   @Post()
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Tạo đơn hàng mới từ báo giá đã được chấp nhận',
     description: 'Tạo một đơn hàng mới từ một báo giá đã được chấp nhận',
   })
-  create(@Body() createPoDto: CreatePoDto, @Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  create(
+    @Body() createPoDto: CreatePoDto,
+    @Request() req: { user: JwtPayload },
+  ) {
     return this.poService.create(createPoDto, req.user);
   }
 
@@ -45,6 +57,7 @@ export class PomoduleController {
    * @returns Đơn hàng sau khi đã được đặt lại trạng thái
    */
   @Post(':id/reset')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Reset trạng thái đơn hàng về DRAFT',
     description:
@@ -55,11 +68,29 @@ export class PomoduleController {
   }
 
   /**
+   * Nhà cung cấp xác nhận đơn hàng (ACK)
+   * @param id ID của đơn hàng cần xác nhận
+   * @returns Đơn hàng sau khi đã được xác nhận
+   */
+  @Post(':id/acknowledge')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @ApiOperation({
+    summary: 'Nhà cung cấp xác nhận đơn hàng (ACK)',
+    description:
+      'Nhà cung cấp xác nhận đồng ý thực hiện đơn hàng, chuyển trạng thái sang ACKNOWLEDGED',
+  })
+  @Roles(UserRole.SUPPLIER, UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
+  acknowledgePo(@Param('id') id: string) {
+    return this.poService.confirmPo(id);
+  }
+
+  /**
    * Xác nhận đơn hàng, chuyển trạng thái sang CONFIRMED
    * @param id ID của đơn hàng cần xác nhận
    * @returns Đơn hàng sau khi đã được xác nhận
    */
   @Post(':id/confirm')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Xác nhận đơn hàng',
     description: 'Xác nhận đơn hàng, chuyển trạng thái sang CONFIRMED',
@@ -74,6 +105,7 @@ export class PomoduleController {
    * @returns Đơn hàng sau khi đã được cập nhật trạng thái
    */
   @Post(':id/reject')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Từ chối đơn hàng',
     description: 'Từ chối đơn hàng, chuyển trạng thái sang REJECTED',
@@ -88,7 +120,40 @@ export class PomoduleController {
    * @param req Thông tin người dùng thực hiện yêu cầu
    * @returns Đơn hàng sau khi gửi duyệt
    */
+  @Post('create-from-pr')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
+  async createFromPr(
+    @Body() body: { prId: string; supplierId: string },
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.poService.createFromPr(body.prId, body.supplierId, req.user);
+  }
+
+  /**
+   * POST /purchase-orders/consolidate
+   * Gộp nhiều PR đã duyệt thành 1 PO duy nhất.
+   * Items giống nhau (cùng SKU hoặc cùng category) sẽ được cộng qty lại.
+   */
+  @Post('consolidate')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({
+    summary: 'Gộp nhiều PR thành 1 PO (PO Consolidation)',
+    description:
+      'Nhận danh sách PR đã APPROVED, nhóm các item giống nhau lại ' +
+      '(theo SKU hoặc Category), tính qty tổng và tạo 1 PO duy nhất gửi cho NCC. ' +
+      'Tiết kiệm chi phí mua sắm nhờ số lượng lớn hơn và giảm số lần giao dịch.',
+  })
+  @ApiBody({ type: ConsolidatePRsDto })
+  consolidatePRs(
+    @Body() dto: ConsolidatePRsDto,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.poService.consolidatePRsIntoPO(dto, req.user);
+  }
+
   @Post(':id/submit')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Gửi đơn hàng phê duyệt',
     description: 'Kích hoạt luồng duyệt cho đơn hàng',
@@ -97,19 +162,72 @@ export class PomoduleController {
     return this.poService.submit(id);
   }
 
+  @Get('supplier/:supplierId')
+  @ApiOperation({
+    summary: 'Lấy danh sách PO cho nhà cung cấp',
+    description: 'Trả về danh sách tất cả đơn hàng của một nhà cung cấp cụ thể',
+  })
+  @Roles(UserRole.SUPPLIER, UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
+  findBySupplier(@Param('supplierId') supplierId: string) {
+    return this.poService.findBySupplier(supplierId);
+  }
+
+  @Get('paginated')
+  @ApiOperation({ summary: 'Lấy PO có phân trang' })
+  async findPaginated(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: { user: JwtPayload },
+  ) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+    const data = await this.poService.findPaginated(req.user.orgId, skip, take);
+    const total = await this.poService.count(req.user.orgId);
+    return { data, total, page: Number(page), limit: Number(limit) };
+  }
+
   /**
    * Lấy danh sách tất cả các đơn đặt hàng của tổ chức hiện tại
-   * @param req Thông tin người dùng để xác định tổ chức
-   * @returns Danh sách các đơn đặt hàng
    */
   @Get()
+  @Roles(
+    UserRole.SUPPLIER,
+    UserRole.PROCUREMENT,
+    UserRole.PLATFORM_ADMIN,
+    UserRole.DEPT_APPROVER,
+    UserRole.FINANCE,
+    UserRole.WAREHOUSE,
+  )
   @ApiOperation({
     summary: 'Lấy tất cả đơn hàng cho tổ chức',
     description: 'Trả về danh sách tất cả đơn hàng cho tổ chức hiện tại',
   })
-  findAll(@Request() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return this.poService.findAll(req.user.orgId);
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.poService.findAll(req.user.orgId, {
+      page: +page,
+      limit: Math.min(+limit, 100),
+    });
+  }
+
+  @Get('all')
+  @Roles(
+    UserRole.SUPPLIER,
+    UserRole.PROCUREMENT,
+    UserRole.PLATFORM_ADMIN,
+    UserRole.FINANCE,
+    UserRole.DEPT_APPROVER,
+    UserRole.WAREHOUSE,
+  )
+  @ApiOperation({
+    summary: 'Lấy tất cả đơn hàng',
+    description: 'Trả về danh sách tất cả đơn hàng',
+  })
+  getAll() {
+    return this.poService.getAll();
   }
 
   /**
@@ -133,12 +251,12 @@ export class PomoduleController {
    * @returns Đơn đặt hàng sau khi cập nhật trạng thái
    */
   @Put(':id/status')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   @ApiOperation({
     summary: 'Cập nhật trạng thái đơn hàng',
     description: 'Cập nhật trạng thái của một đơn hàng cụ thể',
   })
-  updateStatus(@Param('id') id: string, @Body() body: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  updateStatus(@Param('id') id: string, @Body() body: { status: PoStatus }) {
     return this.poService.updateStatus(id, body.status);
   }
 }

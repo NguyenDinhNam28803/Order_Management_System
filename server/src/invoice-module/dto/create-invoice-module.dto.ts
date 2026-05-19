@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsArray,
   IsDate,
   IsEnum,
   IsNotEmpty,
@@ -8,9 +9,37 @@ import {
   IsString,
   IsUUID,
   IsUrl,
+  ValidateNested,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { InvoiceStatus, CurrencyCode } from '@prisma/client';
+
+export class CreateInvoiceItemDto {
+  @ApiProperty()
+  @IsUUID('4')
+  @IsNotEmpty()
+  poItemId: string;
+
+  @ApiPropertyOptional()
+  @IsUUID('4')
+  @IsOptional()
+  grnItemId?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  qty: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  unitPrice: number;
+}
 
 export class CreateInvoiceModuleDto {
   @ApiProperty({ example: '325f187a-c1f6-4a4e-8692-234b6e50334a' })
@@ -98,4 +127,11 @@ export class CreateInvoiceModuleDto {
   @IsString()
   @IsOptional()
   notes?: string;
+
+  @ApiProperty({ type: [CreateInvoiceItemDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateInvoiceItemDto)
+  @IsOptional()
+  items?: CreateInvoiceItemDto[];
 }

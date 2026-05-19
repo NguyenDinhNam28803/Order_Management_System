@@ -1,0 +1,537 @@
+﻿"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
+import { useProcurement, Contract } from "../../context/ProcurementContext";
+import { useContractNotifications } from "../../hooks/useWebSocket";
+import {
+    FileText,
+    Eye,
+    CheckCircle2,
+    Clock,
+    XCircle,
+    Search,
+    Filter,
+    ShieldCheck,
+    AlertCircle,
+    Calendar,
+    DollarSign,
+    Building2,
+    Bell,
+    PenTool,
+    X,
+    CheckCircle,
+    Signature,
+    RefreshCw
+} from "lucide-react";
+import { ContractStatus } from "../../types/api-types";
+import ContractSignModal from "../../components/ContractSignModal";
+
+const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; icon: React.ReactNode }> = {
+    ACTIVE: {
+        label: "Đang hiệu lực",
+        bg: "bg-emerald-500/10",
+        text: "text-black",
+        border: "border-emerald-500/30",
+        icon: <CheckCircle2 size={12}/>
+    },
+    PENDING_APPROVAL: {
+        label: "Chờ duyệt",
+        bg: "bg-[#2563EB]/10",
+        text: "text-[#3B82F6]",
+        border: "border-[#2563EB]/30",
+        icon: <Signature size={12}/>
+    },
+    DRAFT: {
+        label: "Bản nháp",
+        bg: "bg-slate-500/10",
+        text: "text-black",
+        border: "border-slate-500/30",
+        icon: <FileText size={12}/>
+    },
+    EXPIRED: {
+        label: "Hết hạn",
+        bg: "bg-orange-500/10",
+        text: "text-black",
+        border: "border-orange-500/30",
+        icon: <AlertCircle size={12}/>
+    },
+    TERMINATED: {
+        label: "Đã chấm dứt",
+        bg: "bg-rose-500/10",
+        text: "text-black",
+        border: "border-rose-500/30",
+        icon: <XCircle size={12}/>
+    }
+};
+
+// Notification type
+interface ContractNotification {
+    id: string;
+    contractId: string;
+    title: string;
+    message: string;
+    type: "info" | "warning" | "success" | "error";
+    read: boolean;
+    createdAt: string;
+}
+
+export default function SupplierContractsPage() {
+    const { currentUser, contracts, loadingMyPrs, fetchContractsBySupplier, signContract, notify } = useProcurement();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState<string>("ALL");
+    const [supplierContracts, setSupplierContracts] = useState<Contract[]>([]);
+    const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
+    const [signTarget, setSignTarget] = useState<Contract | null>(null);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+    const [notifications, setNotifications] = useState<ContractNotification[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    const supplierId = currentUser?.orgId || currentUser?.id || "";
+
+    const loadContracts = useCallback(async () => {
+        if (supplierId) {
+            const data = await fetchContractsBySupplier(supplierId);
+            if (data) {
+                setSupplierContracts(data);
+            }
+        }
+    }, [supplierId, fetchContractsBySupplier]);
+
+    // Load supplier contracts
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadContracts();
+    }, [loadContracts]);
+
+
+    // WebSocket for real-time notifications
+    const handleNotification = useCallback((data: unknown) => {
+        const notification = data as ContractNotification;
+        setNotifications(prev => [notification, ...prev]);
+        setUnreadCount(prev => prev + 1);
+        notify(notification.message, notification.type);
+    }, [notify]);
+
+    const { status: wsStatus, isConnected } = useContractNotifications(supplierId, handleNotification);
+
+    // Filter contracts
+    const filteredContracts = supplierContracts.filter(c => {
+        const matchSearch = c.contractNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          c.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          c.supplier?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchStatus = statusFilter === "ALL" || c.status === statusFilter;
+        return matchSearch && matchStatus;
+    });
+
+    const getStatusBadge = (status: ContractStatus) => {
+        const config = STATUS_CONFIG[status] || STATUS_CONFIG.DRAFT;
+        return (
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${config.bg} ${config.text} ${config.border}`}>
+                {config.icon}
+                {config.label}
+            </span>
+        );
+    };
+
+    const openSignModal = (contract: Contract) => {
+        setSignTarget(contract);
+    };
+
+    const openDetailModal = (contract: Contract) => {
+        setSelectedContract(contract);
+        setIsDetailModalOpen(true);
+    };
+
+    const markAllAsRead = () => {
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+        setUnreadCount(0);
+    };
+
+    const getNotificationIcon = (type: string) => {
+        switch (type) {
+            case "success": return <CheckCircle2 size={16} className="text-black" />;
+            case "warning": return <AlertCircle size={16} className="text-black" />;
+            case "error": return <XCircle size={16} className="text-black" />;
+            default: return <Bell size={16} className="text-[#3B82F6]" />;
+        }
+    };
+
+    return (
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF]">
+            {/* Header */}
+            <div className="mt-4 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">Quản lý Hợp đồng</h1>
+                    <p className="text-sm text-slate-900 mt-1">Xem và ký các hợp đồng thu mua từ khách hàng</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    {/* WebSocket Status */}
+                    <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold border ${
+                        isConnected
+                            ? "bg-emerald-500/10 text-black border-emerald-500/30"
+                            : "bg-rose-500/10 text-black border-rose-500/30"
+                    }`}>
+                        <div className={`h-2 w-2 rounded-full ${isConnected ? "bg-emerald-400 animate-pulse" : "bg-rose-400"}`} />
+                        {isConnected ? "Realtime" : "Offline"}
+                    </div>
+
+                    {/* Notification Bell */}
+                    <button
+                        onClick={() => setIsNotificationModalOpen(true)}
+                        className="relative inline-flex items-center justify-center h-10 w-10 rounded-xl bg-[#F1F5F9] text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 border border-[rgba(148,163,184,0.1)] transition-all"
+                    >
+                        <Bell size={20} />
+                        {unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center">
+                                {unreadCount}
+                            </span>
+                        )}
+                    </button>
+
+                    <button
+                        onClick={loadContracts}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F1F5F9] text-slate-900 hover:text-slate-900 border border-[rgba(148,163,184,0.1)] font-bold transition-all"
+                    >
+                        <RefreshCw size={18} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                {[
+                    { label: "Tổng hợp đồng", value: supplierContracts.length, icon: FileText, color: "text-[#3B82F6]", bg: "bg-[#2563EB]/10" },
+                    { label: "Đang hiệu lực", value: supplierContracts.filter(c => c.status === "ACTIVE").length, icon: CheckCircle2, color: "text-black", bg: "bg-emerald-500/10" },
+                    { label: "Chờ duyệt", value: supplierContracts.filter(c => c.status === "PENDING_APPROVAL").length, icon: Signature, color: "text-[#3B82F6]", bg: "bg-[#2563EB]/10" },
+                    { label: "Sắp hết hạn", value: supplierContracts.filter(c => c.status === "EXPIRED").length, icon: AlertCircle, color: "text-black", bg: "bg-orange-500/10" }
+                ].map((stat, idx) => (
+                    <div key={idx} className="bg-[#F1F5F9] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                        <div className="flex items-center gap-3">
+                            <div className={`h-10 w-10 rounded-lg ${stat.bg} flex items-center justify-center`}>
+                                <stat.icon className={stat.color} size={20} />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900">{stat.label}</p>
+                                <p className="text-xl font-black text-slate-900">{stat.value}</p>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Filters */}
+            <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-6">
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1 flex gap-3">
+                        <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                            <Search size={20} className="text-[#2563EB]" />
+                        </div>
+                        <div className="relative flex-1">
+                            <input
+                                type="text"
+                                placeholder="Tìm theo số hợp đồng, tiêu đề, khách hàng..."
+                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="flex gap-3">
+                        <div className="relative">
+                            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
+                            <select
+                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                            >
+                                <option value="ALL">Tất cả trạng thái</option>
+                                <option value="ACTIVE">Đang hiệu lực</option>
+                                <option value="DRAFT">Bản nháp</option>
+                                <option value="EXPIRED">Đã hết hạn</option>
+                                <option value="TERMINATED">Đã chấm dứt</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Table */}
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="erp-table text-xs">
+                        <thead className="border-b border-[rgba(148,163,184,0.1)]">
+                            <tr>
+                                <th className="px-6 py-4">Số hợp đồng</th>
+                                <th className="px-6 py-4">Tiêu đề / Khách hàng</th>
+                                <th className="px-6 py-4 text-center">Giá trị</th>
+                                <th className="px-6 py-4">Thời hạn</th>
+                                <th className="px-6 py-4">Trạng thái</th>
+                                <th className="px-6 py-4 text-right">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                            {filteredContracts.length > 0 ? filteredContracts.map((c) => (
+                                <tr key={c.id} className="hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.05)] group">
+                                    <td className="px-6 py-4">
+                                        <span className="font-bold text-[#2563EB] group-hover:scale-105 transition-transform inline-block">#{c.contractNumber}</span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="font-bold text-slate-900 group-hover:text-[#F8FAFC] transition-colors">{c.title}</div>
+                                        <div className="flex items-center gap-1 text-xs text-slate-900 mt-1 group-hover:text-[#F8FAFC]/60 transition-colors">
+                                            <Building2 size={12} />
+                                            {c.organization?.name || "N/A"}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        <div className="font-bold text-slate-900 group-hover:text-[#F8FAFC] transition-colors">
+                                            {new Intl.NumberFormat('vi-VN').format(c.totalValue || 0)} {c.currency || 'VND'}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-2 text-sm text-slate-900 group-hover:text-[#F8FAFC] transition-colors">
+                                            <Calendar size={14} className="text-slate-900 group-hover:text-[#2563EB]" />
+                                            <div>
+                                                <div className="text-slate-900 group-hover:text-[#F8FAFC] transition-colors">{new Date(c.startDate).toLocaleDateString('vi-VN')}</div>
+                                                <div className="text-slate-900 text-xs group-hover:text-[#F8FAFC]/40 transition-colors">- {new Date(c.endDate).toLocaleDateString('vi-VN')}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">{getStatusBadge(c.status)}</td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button
+                                                onClick={() => openDetailModal(c)}
+                                                className="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-[#FFFFFF] text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all"
+                                                title="Xem chi tiết"
+                                            >
+                                                <Eye size={18} />
+                                            </button>
+
+                                            {c.status === ContractStatus.PENDING_APPROVAL && (
+                                                <button
+                                                    onClick={() => openSignModal(c)}
+                                                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs border border-[#2563EB]/30 transition-all shadow-lg shadow-[#2563EB]/20"
+                                                    title="Phê duyệt hợp đồng"
+                                                >
+                                                    <PenTool size={14} />
+                                                    Phê duyệt
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-16 text-center">
+                                        {loadingMyPrs ? (
+                                            <div className="flex items-center justify-center gap-2 text-slate-900">
+                                                <Clock size={18} className="animate-spin" />
+                                                <span>Đang tải dữ liệu...</span>
+                                            </div>
+                                        ) : (
+                                            <div className="text-slate-900">
+                                                <FileText className="mx-auto h-12 w-12 mb-3 opacity-30" />
+                                                <p className="font-medium">Không tìm thấy hợp đồng nào</p>
+                                                <p className="text-sm mt-1">Thử điều chỉnh bộ lọc hoặc tìm kiếm với từ khóa khác</p>
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Digital Signing Modal */}
+            <ContractSignModal
+                contract={signTarget}
+                isBuyer={false}
+                signerName={currentUser?.fullName || currentUser?.name || currentUser?.email || ""}
+                onClose={() => setSignTarget(null)}
+                onConfirm={async (id, isBuyer) => {
+                    const ok = await signContract(id, isBuyer);
+                    if (ok) {
+                        loadContracts();
+                        const newNotification: ContractNotification = {
+                            id: Date.now().toString(),
+                            contractId: id,
+                            title: "Ký hợp đồng thành công",
+                            message: `Bạn đã ký hợp đồng thành công`,
+                            type: "success",
+                            read: false,
+                            createdAt: new Date().toISOString(),
+                        };
+                        setNotifications(prev => [newNotification, ...prev]);
+                    }
+                    return ok;
+                }}
+            />
+
+            {/* Contract Detail Modal */}
+            {isDetailModalOpen && selectedContract && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/90 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        {/* Header */}
+                        <div className="sticky top-0 flex justify-between items-center p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#F1F5F9] z-10">
+                            <div>
+                                <h2 className="text-xl font-black text-slate-900">Chi tiết hợp đồng</h2>
+                                <p className="text-sm text-slate-900 mt-1">#{selectedContract.contractNumber}</p>
+                            </div>
+                            <button
+                                onClick={() => setIsDetailModalOpen(false)}
+                                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                            >
+                                <X size={20} className="text-slate-900" />
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6 space-y-6">
+                            {/* Status */}
+                            <div className="flex items-center justify-between p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
+                                <span className="text-sm font-bold text-slate-900">Trạng thái</span>
+                                {getStatusBadge(selectedContract.status)}
+                            </div>
+
+                            {/* Info Grid */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
+                                    <span className="text-[10px] font-black uppercase text-slate-900 block mb-1">Tiêu đề</span>
+                                    <p className="font-bold text-slate-900">{selectedContract.title}</p>
+                                </div>
+                                <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
+                                    <span className="text-[10px] font-black uppercase text-slate-900 block mb-1">Khách hàng</span>
+                                    <p className="font-bold text-slate-900">{selectedContract.organization?.name || "N/A"}</p>
+                                </div>
+                                <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
+                                    <span className="text-[10px] font-black uppercase text-slate-900 block mb-1">Giá trị</span>
+                                    <p className="font-bold text-black">{new Intl.NumberFormat('vi-VN').format(selectedContract.totalValue || 0)} {selectedContract.currency}</p>
+                                </div>
+                                <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
+                                    <span className="text-[10px] font-black uppercase text-slate-900 block mb-1">Ngày tạo</span>
+                                    <p className="font-bold text-slate-900">{new Date(selectedContract.createdAt || new Date().toISOString()).toLocaleDateString('vi-VN')}</p>
+                                </div>
+                            </div>
+
+                            {/* Date Range */}
+                            <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
+                                <span className="text-[10px] font-black uppercase text-slate-900 block mb-3">Thời hạn hợp đồng</span>
+                                <div className="flex items-center gap-4">
+                                    <div className="flex-1 p-3 rounded-lg bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
+                                        <span className="text-xs text-slate-900 block">Ngày bắt đầu</span>
+                                        <span className="font-bold text-slate-900">{new Date(selectedContract.startDate).toLocaleDateString('vi-VN')}</span>
+                                    </div>
+                                    <div className="text-slate-900">→</div>
+                                    <div className="flex-1 p-3 rounded-lg bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
+                                        <span className="text-xs text-slate-900 block">Ngày kết thúc</span>
+                                        <span className="font-bold text-slate-900">{new Date(selectedContract.endDate).toLocaleDateString('vi-VN')}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Description */}
+                            {selectedContract.description && (
+                                <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)]">
+                                    <span className="text-[10px] font-black uppercase text-slate-900 block mb-2">Mô tả</span>
+                                    <p className="text-sm text-slate-900">{selectedContract.description}</p>
+                                </div>
+                            )}
+
+                            {/* Actions */}
+                            <div className="flex gap-3 pt-4 border-t border-[rgba(148,163,184,0.1)]">
+                                <button
+                                    onClick={() => setIsDetailModalOpen(false)}
+                                    className="flex-1 px-4 py-3 rounded-xl bg-[#FFFFFF] text-slate-900 font-bold text-sm hover:text-slate-900 transition-all border border-[rgba(148,163,184,0.1)]"
+                                >
+                                    Đóng
+                                </button>
+                                {selectedContract.status === ContractStatus.PENDING_APPROVAL && (
+                                    <button
+                                        onClick={() => {
+                                            setIsDetailModalOpen(false);
+                                            setSignTarget(selectedContract);
+                                        }}
+                                        className="flex-1 px-4 py-3 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-sm transition-all shadow-lg shadow-[#2563EB]/20 flex items-center justify-center gap-2"
+                                    >
+                                        <PenTool size={16} />
+                                        Ký hợp đồng
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Notifications Modal */}
+            {isNotificationModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/90 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-4 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
+                            <div className="flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-[#3B82F6]">
+                                    <Bell size={16} />
+                                </div>
+                                <div>
+                                    <h2 className="font-black text-slate-900">Thông báo</h2>
+                                    <p className="text-xs text-slate-900">{unreadCount} chưa đọc</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={markAllAsRead}
+                                    className="text-xs font-bold text-slate-900 hover:text-slate-900 transition-colors"
+                                >
+                                    Đánh dấu đã đọc
+                                </button>
+                                <button
+                                    onClick={() => setIsNotificationModalOpen(false)}
+                                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                                >
+                                    <X size={18} className="text-slate-900" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Notification List */}
+                        <div className="overflow-y-auto max-h-[60vh]">
+                            {notifications.length > 0 ? (
+                                notifications.map((notification) => (
+                                    <div
+                                        key={notification.id}
+                                        className={`p-4 border-b border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF]/50 transition-colors ${!notification.read ? 'bg-[#2563EB]/5' : ''}`}
+                                    >
+                                        <div className="flex items-start gap-3">
+                                            {getNotificationIcon(notification.type)}
+                                            <div className="flex-1 min-w-0">
+                                                <p className={`text-sm font-bold ${!notification.read ? 'text-slate-900' : 'text-slate-900'}`}>
+                                                    {notification.title}
+                                                </p>
+                                                <p className="text-xs text-slate-900 mt-1">{notification.message}</p>
+                                                <p className="text-[10px] text-slate-900 mt-2">
+                                                    {new Date(notification.createdAt).toLocaleString('vi-VN')}
+                                                </p>
+                                            </div>
+                                            {!notification.read && (
+                                                <div className="h-2 w-2 rounded-full bg-[#3B82F6] shrink-0 mt-1.5" />
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="p-8 text-center">
+                                    <Bell size={40} className="mx-auto text-slate-900 opacity-30 mb-3" />
+                                    <p className="text-sm text-slate-900">Chưa có thông báo nào</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </main>
+    );
+}
+

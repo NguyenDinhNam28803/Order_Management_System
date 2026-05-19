@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Lock, Mail, User, ShieldCheck, ArrowRight, CheckCircle2, Zap } from "lucide-react";
@@ -11,7 +11,7 @@ export default function RegisterPage() {
     const router = useRouter();
 
     const [form, setForm] = useState({
-        fullName: "",
+        name: "",
         email: "",
         password: "",
         role: "REQUESTER"
@@ -35,7 +35,7 @@ export default function RegisterPage() {
         setIsLoading(true);
         setError("");
 
-        if (!form.fullName || !form.email || !form.password) {
+        if (!form.name || !form.email || !form.password) {
             setError("Vui lòng điền đầy đủ các trường bắt buộc.");
             setIsLoading(false);
             return;
@@ -53,19 +53,19 @@ export default function RegisterPage() {
     return (
         <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center p-6 relative overflow-hidden">
             {/* Background Decorations */}
-            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full"></div>
+            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#1D4ED8]/10 blur-[120px] rounded-full"></div>
             <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-600/10 blur-[120px] rounded-full"></div>
 
             <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 relative z-10 items-center">
                 {/* Visual Section */}
                 <div className="hidden md:block pr-8 animate-in fade-in slide-in-from-left-12 duration-700">
                     <div className="inline-flex items-center justify-center h-20 w-20 bg-emerald-600 rounded-3xl shadow-2xl shadow-emerald-500/30 mb-8 border border-white/10">
-                        <CheckCircle2 size={40} className="text-white" />
+                        <CheckCircle2 size={40} className="text-slate-900" />
                     </div>
-                    <h1 className="text-6xl font-black text-white tracking-tighter mb-4 uppercase leading-none">
+                    <h1 className="text-6xl font-black text-slate-900 tracking-tighter mb-4 uppercase leading-none">
                         Gia nhập<br /><span className="text-emerald-500">ProcurePro</span>
                     </h1>
-                    <p className="text-slate-400 text-lg font-medium mb-12 max-w-md leading-relaxed">
+                    <p className="text-black text-lg font-medium mb-12 max-w-md leading-relaxed">
                         Khởi tạo tài khoản doanh nghiệp để bắt đầu tối ưu hóa quy trình mua sắm của bạn ngay hôm nay.
                     </p>
 
@@ -75,8 +75,8 @@ export default function RegisterPage() {
                                 <ShieldCheck size={20} />
                             </div>
                             <div>
-                                <h4 className="text-sm font-black text-white uppercase tracking-widest">Bảo mật đa lớp</h4>
-                                <p className="text-xs text-slate-500 font-bold">Dữ liệu được mã hóa chuẩn Enterprise.</p>
+                                <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Bảo mật đa lớp</h4>
+                                <p className="text-xs text-black font-bold">Dữ liệu được mã hóa chuẩn Enterprise.</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-4 group">
@@ -84,8 +84,8 @@ export default function RegisterPage() {
                                 <Zap size={20} />
                             </div>
                             <div>
-                                <h4 className="text-sm font-black text-white uppercase tracking-widest">Kết nối tức thì</h4>
-                                <p className="text-xs text-slate-500 font-bold">Phê duyệt PR/PO chỉ trong tích tắc.</p>
+                                <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Kết nối tức thì</h4>
+                                <p className="text-xs text-black font-bold">Phê duyệt PR/PO chỉ trong tích tắc.</p>
                             </div>
                         </div>
                     </div>
@@ -93,12 +93,12 @@ export default function RegisterPage() {
 
                 {/* Register Form Section */}
                 <div className="w-full max-w-md mx-auto animate-in fade-in slide-in-from-right-12 duration-700">
-                    <div className="bg-[#0f1525] border border-white/10 rounded-[40px] p-10 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                    <div className="bg-[#0f1525] border border-white/10 rounded-xl p-6 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
 
                         <div className="mb-8 text-center md:text-left">
-                            <h2 className="text-xl font-black text-white uppercase tracking-widest mb-2">Đăng ký tài khoản</h2>
-                            <p className="text-slate-500 text-xs font-bold">Khởi tạo định danh công việc mới.</p>
+                            <h2 className="text-xl font-black text-slate-900 uppercase tracking-widest mb-2">Đăng ký tài khoản</h2>
+                            <p className="text-black text-xs font-bold">Khởi tạo định danh công việc mới.</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-5">
@@ -109,26 +109,26 @@ export default function RegisterPage() {
                             )}
 
                             <div className="space-y-2">
-                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Họ và Tên</label>
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-black ml-1">Họ và Tên</label>
                                 <div className="relative group">
-                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-slate-500 group-focus-within:text-emerald-500 transition-colors">
+                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-black group-focus-within:text-emerald-500 transition-colors">
                                         <User size={18} />
                                     </div>
                                     <input
                                         type="text"
                                         required
-                                        value={form.fullName}
-                                        onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                                        value={form.name}
+                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
                                         placeholder="Nhập họ tên đầy đủ..."
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-white text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700 font-black"
+                                        className="w-full bg-[#161c31] border border-white/5 rounded-xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Email Công sở</label>
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-black ml-1">Email Công sở</label>
                                 <div className="relative group">
-                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-slate-500 group-focus-within:text-emerald-500 transition-colors">
+                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-black group-focus-within:text-emerald-500 transition-colors">
                                         <Mail size={18} />
                                     </div>
                                     <input
@@ -137,15 +137,15 @@ export default function RegisterPage() {
                                         value={form.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                                         placeholder="user@name.com"
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-white text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700 font-black"
+                                        className="w-full bg-[#161c31] border border-white/5 rounded-xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Mật khẩu</label>
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-black ml-1">Mật khẩu</label>
                                 <div className="relative group">
-                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-slate-500 group-focus-within:text-emerald-500 transition-colors">
+                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-black group-focus-within:text-emerald-500 transition-colors">
                                         <Lock size={18} />
                                     </div>
                                     <input
@@ -154,15 +154,15 @@ export default function RegisterPage() {
                                         value={form.password}
                                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                                         placeholder="••••••••"
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-white text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700 font-black"
+                                        className="w-full bg-[#161c31] border border-white/5 rounded-xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Vai trò (Role)</label>
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-black ml-1">Vai trò (Role)</label>
                                 <select
-                                    className="w-full bg-[#161c31] border border-white/5 rounded-2xl px-6 py-4 text-white text-sm outline-none focus:border-emerald-500/50 transition-all font-black appearance-none cursor-pointer"
+                                    className="w-full bg-[#161c31] border border-white/5 rounded-xl px-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 transition-all font-black appearance-none cursor-pointer"
                                     value={form.role}
                                     onChange={(e) => setForm({ ...form, role: e.target.value })}
                                 >
@@ -190,7 +190,7 @@ export default function RegisterPage() {
 
                         <div className="mt-8 text-center border-t border-white/5 pt-6">
                             <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Đã có tài khoản? </span>
-                            <Link href="/login" className="text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:text-emerald-400 transition-colors ml-1 underline underline-offset-4 decoration-emerald-500/50 transition-all">Đăng nhập</Link>
+                            <Link href="/login" className="text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:text-black ml-1 underline underline-offset-4 decoration-emerald-500/50 transition-all">Đăng nhập</Link>
                         </div>
                     </div>
                 </div>
@@ -202,3 +202,4 @@ export default function RegisterPage() {
         </div>
     );
 }
+

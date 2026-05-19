@@ -1,77 +1,49 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { ReportModuleService } from './report-module.service';
-import { CreateReportModuleDto } from './dto/create-report-module.dto';
-import { UpdateReportModuleDto } from './dto/update-report-module.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Report Management')
+@ApiBearerAuth('JWT-auth')
 @Controller('reports')
+@UseGuards(JwtAuthGuard)
 export class ReportModuleController {
   constructor(private readonly reportModuleService: ReportModuleService) {}
 
   /**
-   * Tạo một báo cáo mới trong hệ thống
-   * @param createReportModuleDto Dữ liệu tạo báo cáo
-   * @returns Báo cáo vừa tạo
+   * Lấy tổng quan về các hoạt động mua hàng
    */
-  @Post()
-  @ApiOperation({ summary: 'Tạo báo cáo mới' })
-  create(@Body() createReportModuleDto: CreateReportModuleDto) {
-    return this.reportModuleService.create(createReportModuleDto);
+  @Get('overview')
+  @ApiOperation({ summary: 'Lấy tổng quan hoạt động mua hàng' })
+  getOverview(@Request() req: { user: JwtPayload }) {
+    return this.reportModuleService.getProcurementOverview(req.user.orgId);
   }
 
   /**
-   * Lấy danh sách tất cả các báo cáo hiện có
-   * @returns Danh sách báo cáo
+   * Thống kê chi tiêu theo nhà cung cấp
    */
-  @Get()
-  @ApiOperation({ summary: 'Lấy tất cả báo cáo' })
-  findAll() {
-    return this.reportModuleService.findAll();
+  @Get('spend-by-supplier')
+  @ApiOperation({ summary: 'Thống kê chi tiêu theo nhà cung cấp' })
+  getSpendBySupplier(@Request() req: { user: JwtPayload }) {
+    return this.reportModuleService.getSpendBySupplier(req.user.orgId);
   }
 
   /**
-   * Lấy thông tin chi tiết của một báo cáo cụ thể theo ID
-   * @param id ID của báo cáo
-   * @returns Chi tiết báo cáo
+   * Thống kê chi tiêu theo danh mục
    */
-  @Get(':id')
-  @ApiOperation({ summary: 'Lấy chi tiết báo cáo theo ID' })
-  findOne(@Param('id') id: string) {
-    return this.reportModuleService.findOne(+id);
+  @Get('spend-by-category')
+  @ApiOperation({ summary: 'Thống kê chi tiêu theo danh mục sản phẩm' })
+  getSpendByCategory(@Request() req: { user: JwtPayload }) {
+    return this.reportModuleService.getSpendByCategory(req.user.orgId);
   }
 
   /**
-   * Cập nhật thông tin của một báo cáo theo ID
-   * @param id ID của báo cáo
-   * @param updateReportModuleDto Dữ liệu cập nhật
-   * @returns Báo cáo sau khi cập nhật
+   * Lấy lịch sử chi tiêu
    */
-  @Patch(':id')
-  @ApiOperation({ summary: 'Cập nhật báo cáo theo ID' })
-  update(
-    @Param('id') id: string,
-    @Body() updateReportModuleDto: UpdateReportModuleDto,
-  ) {
-    return this.reportModuleService.update(+id, updateReportModuleDto);
-  }
-
-  /**
-   * Xóa một báo cáo khỏi hệ thống theo ID
-   * @param id ID của báo cáo cần xóa
-   * @returns Kết quả xóa
-   */
-  @Delete(':id')
-  @ApiOperation({ summary: 'Xóa báo cáo theo ID' })
-  remove(@Param('id') id: string) {
-    return this.reportModuleService.remove(+id);
+  @Get('spend-history')
+  @ApiOperation({ summary: 'Lấy lịch sử chi tiêu theo thời gian' })
+  getSpendHistory(@Request() req: { user: JwtPayload }) {
+    return this.reportModuleService.getSpendHistory(req.user.orgId);
   }
 }

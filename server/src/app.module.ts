@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { CacheModule } from '@nestjs/cache-manager';
-import * as redisStore from 'cache-manager-ioredis-yet';
+import { ScheduleModule } from '@nestjs/schedule';
+// import * as redisStore from 'cache-manager-ioredis-yet';
 import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -29,10 +30,17 @@ import { BudgetModuleModule } from './budget-module/budget-module.module';
 import { AuditModuleModule } from './audit-module/audit-module.module';
 import { SystemConfigModuleModule } from './system-config-module/system-config-module.module';
 import { AiServiceModule } from './ai-service/ai-service.module';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { CostCenterModuleModule } from './cost-center-module/cost-center-module.module';
 import { OrganizationModuleModule } from './organization-module/organization-module.module';
 import { AutomationModule } from './common/automation/automation.module';
+import { RagModule } from './rag/rag.module';
+import { EmailProcessorModule } from './email-processor/email-processor.module';
+import { SupplierDiscoveryModule } from './supplier-discovery/supplier-discovery.module';
+import { SupplierVettingModule } from './supplier-vetting-module/supplier-vetting-module.module';
+import { QualityModule } from './quality-module/quality.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -51,21 +59,22 @@ import { AutomationModule } from './common/automation/automation.module';
         },
       }),
     }),
-    CacheModule.registerAsync({
+    CacheModule.register({
       isGlobal: true,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        store: redisStore,
-        host: configService.get<string>('REDIS_HOST', 'localhost'),
-        port: configService.get<number>('REDIS_PORT', 6379),
-        password: configService.get<string>('REDIS_PASSWORD'),
-      }),
+      ttl: 600,
+      max: 1000,
     }),
+    ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([
       {
+        name: 'global',
         ttl: 60000,
-        limit: 100,
+        limit: 200,
+      },
+      {
+        name: 'auth',
+        ttl: 60000,
+        limit: 10,
       },
     ]),
     JwtModule.registerAsync({
@@ -108,15 +117,21 @@ import { AutomationModule } from './common/automation/automation.module';
     CostCenterModuleModule,
     OrganizationModuleModule,
     AutomationModule,
+    RagModule,
+    EmailProcessorModule,
+    SupplierDiscoveryModule,
+    SupplierVettingModule,
+    QualityModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     HashPasswordService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

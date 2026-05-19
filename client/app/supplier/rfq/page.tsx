@@ -1,44 +1,62 @@
-"use client";
+﻿"use client";
 
-import React, { useState } from "react";
-import DashboardHeader from "../../components/DashboardHeader";
-import { Inbox, FileText, UploadCloud, Send, MessageSquare, ChevronDown, CheckCircle, Info } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Inbox, FileText, UploadCloud, Send, ChevronDown, CheckCircle, AlertCircle } from "lucide-react";
 
-import { useProcurement } from "../../context/ProcurementContext";
+import { useProcurement, RFQ, PR, PRItem } from "../../context/ProcurementContext";
+import type { CreateQuoteDto } from "../../types/api-types";
 
 export default function SupplierRFQ() {
-    const { currentUser, rfqs, prs, createQuote, notify } = useProcurement();
+    const { currentUser, prs, createQuote, notify, fetchMySupplierRFQs, submitQuotation } = useProcurement();
     const [viewState, setViewState] = useState<"LIST" | "DETAIL">("LIST");
     const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
+    const [myRfqs, setMyRfqs] = useState<RFQ[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadRFQs = async () => {
+            setLoading(true);
+            try {
+                const rfqs = await fetchMySupplierRFQs();
+                setMyRfqs(rfqs);
+            } catch (error) {
+                console.error("Error fetching RFQs:", error);
+                notify("Có lỗi khi tải danh sách RFQ", "error");
+            } finally {
+                setLoading(false);
+            }
+        };
+        if (currentUser?.orgId) {
+            loadRFQs();
+        }
+    }, [fetchMySupplierRFQs, currentUser?.orgId]);
     
-    // Filter RFQs for this supplier and status is SENT (Initial)
-    const openRfqs = rfqs.filter((r: any) => 
-        (r.status === "SENT" || r.status === "OPEN") && 
-        (r.vendor?.toLowerCase().includes(currentUser?.name?.toLowerCase() || "") || 
-         r.vendor?.toLowerCase().includes(currentUser?.fullName?.toLowerCase() || "") ||
-         currentUser?.role === "PLATFORM_ADMIN")
+    // Filter RFQs with status SENT or OPEN for display
+    const openRfqs = myRfqs.filter((r: RFQ) =>
+        r.status == "SENT" || r.status == "OPEN" || r.status == "PENDING"
     );
     
-    const activeRFQRaw = selectedRfqId ? rfqs.find((r: any) => r.id === selectedRfqId) : (openRfqs.length > 0 ? openRfqs[0] : null);
-    const relatedPR = activeRFQRaw ? prs.find((p: any) => p.id === activeRFQRaw.prId || p.prNumber === activeRFQRaw.prId) : null;
+    const activeRFQRaw = selectedRfqId ? myRfqs.find((r: RFQ) => r.id === selectedRfqId) : (openRfqs.length > 0 ? openRfqs[0] : null);
+    const relatedPR = activeRFQRaw ? prs.find((p: PR) => p.id === activeRFQRaw.prId || p.prNumber === activeRFQRaw.prId) : null;
     const activeRFQ = activeRFQRaw ? { 
         ...activeRFQRaw, 
         items: relatedPR?.items && relatedPR.items.length > 0 ? relatedPR.items : (activeRFQRaw.items || []) 
-    } : null;
+    } as RFQ : null;
 
     const [prices, setPrices] = useState<Record<string, string>>({});
     const [leadTime, setLeadTime] = useState("");
     const [paymentTerms, setPaymentTerms] = useState("Net 30");
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!activeRFQ) return;
         
         let total = 0;
         const pricesObj: Record<string, number> = {};
-        activeRFQ.items.forEach((item: any) => {
+        (activeRFQ.items || []).forEach((item: PRItem) => {
+            if (!item.id) return;
             const val = Number(prices[item.id]) || 0;
             pricesObj[item.id] = val;
-            total += val * item.qty;
+            total += val * (item.qty || 0);
         });
 
         createQuote(activeRFQ.id, {
@@ -47,225 +65,237 @@ export default function SupplierRFQ() {
             currency: "VND"
         });
         
-        notify(`Báo giá cho RFQ ${activeRFQ.id} đã được gửi thành công!`, "success");
         setViewState("LIST");
     };
 
+    if (loading) {
+        return (
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+                <div className="mt-8 flex flex-col items-center justify-center min-h-[400px]">
+                    <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <div className="text-black font-bold uppercase tracking-widest">Đang tải danh sách RFQ...</div>
+                </div>
+            </main>
+        );
+    }
+
     if (viewState === "DETAIL" && activeRFQ) {
         return (
-            <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300 bg-slate-50 min-h-screen">
-                <DashboardHeader breadcrumbs={["Bàn làm việc B2B", "Chi tiết RFQ"]} />
-                
-                <div className="mt-8 mb-6 flex justify-between items-end">
+        <main className="animate-in fade-in duration-700 p-8 min-h-screen bg-[#FFFFFF] text-slate-900">
+                <div className="mt-12 mb-10 flex justify-between items-end">
                     <div>
-                        <div className="flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                            <span className="bg-red-500 text-white px-2 py-1 rounded">Sắp hết hạn</span> Hạn nộp: {new Date().toLocaleDateString()}
+                        <div className="flex items-center gap-3 mb-4 text-[10px] font-black uppercase tracking-[0.2em]">
+                            <span className={`px-4 py-1.5 rounded-xl border font-black uppercase tracking-[0.15em] ${
+                                activeRFQ.deadline && new Date(activeRFQ.deadline) < new Date() 
+                                    ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' 
+                                    : 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20'
+                            }`}>
+                                {activeRFQ.deadline && new Date(activeRFQ.deadline) < new Date() ? 'HẾT HẠN' : activeRFQ.status}
+                            </span>
+                            <span className="text-[#4A4A45] font-bold">Hạn nộp: {activeRFQ.deadline ? new Date(activeRFQ.deadline).toLocaleDateString('vi-VN') : 'Không giới hạn'}</span>
                         </div>
-                        <h1 className="text-3xl font-black text-erp-navy tracking-tight">{activeRFQ.id} - Phụ kiện tự động hóa</h1>
-                        <p className="text-sm font-bold text-slate-500 mt-1">Từ: Cửa hàng trung tâm</p>
-                    </div>
-                    <div className="text-right">
-                        <div className="text-[10px] font-black uppercase text-erp-blue tracking-widest bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 shadow-sm inline-flex items-center gap-2">
-                            <Inbox size={14}/> RFQ
-                        </div>
+                        <h1 className="text-4xl font-black text-[#0F172A] tracking-tighter uppercase mb-2">
+                             {activeRFQ.rfqNumber || "RFQ-***"}
+                        </h1>
+                        <p className="text-2xl font-black text-[#2563EB] tracking-tight leading-tight">{activeRFQ.title || activeRFQ.pr?.title || "Yêu cầu báo giá chính thức"}</p>
+                        <p className="text-sm font-bold text-[#4A4A45] mt-3 flex items-center gap-2">
+                             <span className="h-1 w-4 bg-[#2563EB] rounded-full"></span>
+                             Từ: <span className="text-[#0F172A]">{activeRFQ.pr && activeRFQ.pr.department ? (typeof activeRFQ.pr.department === 'object' ? activeRFQ.pr.department.name : activeRFQ.pr.department) : "ProcurePro Network"}</span>
+                        </p>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    {/* Cột trái: Thông tin RFQ & Q&A */}
-                    <div className="space-y-6">
-                        {/* NEW: THÔNG TIN PR THAM CHIẾU PANEL */}
-                        <div className="erp-card shadow-sm border border-slate-200 bg-white overflow-hidden">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
-                                <FileText size={14} className="text-erp-blue" /> Thông tin PR tham chiếu
-                            </h3>
-                            <div className="space-y-3">
-                                <div className="flex justify-between">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Mã PR</span>
-                                    <span className="text-xs font-black text-erp-navy">{relatedPR?.prNumber || "N/A"}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Người yêu cầu</span>
-                                    <span className="text-xs font-bold text-slate-700">
-                                        {typeof relatedPR?.requester === 'object' ? relatedPR.requester.fullName : (relatedPR?.requester || "Buyer Admin")}
+                <div className="grid grid-cols-1 xl:grid-cols-10 gap-10">
+                    {/* Cột trái: Thông tin RFQ (3/10) */}
+                    <div className="xl:col-span-3 space-y-8">
+                        <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                            <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#0F172A]">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] !text-white flex items-center gap-3">
+                                    <FileText size={16} className="text-[#2563EB]" /> Thông tin PR tham chiếu
+                                </h3>
+                            </div>
+                            <div className="p-6 space-y-5">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black text-[#4A4A45] uppercase tracking-widest">Người liên hệ</span>
+                                    <span className="text-xs font-black text-[#0F172A]">
+                                        {activeRFQ.pr?.requester?.fullName || activeRFQ.pr?.requester?.name || activeRFQ.createdBy?.fullName || activeRFQ.createdBy?.name || "N/A"}
                                     </span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Phòng ban</span>
-                                    <span className="text-xs font-bold text-slate-700">
-                                        {relatedPR ? (typeof relatedPR.department === 'string' ? relatedPR.department : relatedPR.department?.name) || "Bộ phận hạ tầng" : "N/A"}
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black text-[#4A4A45] uppercase tracking-widest">Đơn vị yêu cầu</span>
+                                    <span className="text-xs font-black text-[#0F172A]">
+                                        {activeRFQ.pr?.department ? (typeof activeRFQ.pr.department === 'object' ? activeRFQ.pr.department.name : activeRFQ.pr.department) : "N/A"}
                                     </span>
                                 </div>
-                                <div className="pt-2 mt-2 border-t border-slate-50">
-                                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Mục đích mua sắm</div>
-                                    <p className="text-xs font-medium text-slate-600 italic">"{activeRFQ?.title || relatedPR?.title || "Mua sắm trang thiết bị định kỳ"}"</p>
+                                <div className="pt-4 border-t border-[rgba(148,163,184,0.1)]">
+                                    <div className="text-[9px] font-black text-[#4A4A45] uppercase tracking-widest mb-2 leading-none">Mô tả tóm tắt lý do mua</div>
+                                    <p className="text-[11px] font-bold text-[#0F172A] italic leading-relaxed bg-[#FFFFFF] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                        &quot;{activeRFQ.description || activeRFQ.pr?.title || activeRFQ.title || "Yêu cầu phục vụ sản xuất"}&quot;
+                                    </p>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div className="erp-card shadow-sm border border-slate-200">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 border-b border-slate-100 pb-2">
-                                Yêu cầu kỹ thuật & File đính kèm
-                            </h3>
-                            <p className="text-sm text-slate-600 mb-6 leading-relaxed font-medium">
-                                {activeRFQ?.attachments && activeRFQ.attachments.length > 0 
-                                    ? "Vui lòng xem các tài liệu đính kèm bên dưới để biết chi tiết yêu cầu kỹ thuật."
-                                    : "Xin vui lòng báo giá cho các mã sản phẩm yêu cầu bên dưới."}
-                            </p>
-                            
-                            <div className="space-y-3">
-                                {activeRFQ?.attachments?.map((file: any, index: number) => (
-                                    <div key={index} className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center cursor-pointer hover:bg-slate-100 group transition-all">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-white text-erp-navy rounded shadow-sm group-hover:bg-erp-blue group-hover:text-white transition-colors duration-500"><FileText size={16}/></div>
-                                            <div className="text-xs font-bold text-slate-700">{file.name}</div>
-                                        </div>
-                                        <div className="text-[10px] font-black uppercase text-erp-blue">Tải xuống</div>
-                                    </div>
-                                ))}
-                                
-                                {(!activeRFQ?.attachments || activeRFQ.attachments.length === 0) && (
-                                    <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 text-center">
-                                        <div className="text-[10px] font-black uppercase text-slate-300">Không có file đính kèm</div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="erp-card shadow-sm border border-slate-200 flex flex-col h-[300px]">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-erp-navy mb-4 border-b border-slate-100 pb-2 flex items-center justify-between">
-                                Q&A Thread 
-                                <span className="bg-slate-100 px-2 py-0.5 rounded text-[10px] text-slate-400">Trực tuyến</span>
-                            </h3>
-                            <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                                {activeRFQ?.messages?.map((msg: any, index: number) => (
-                                    <div key={index} className={`p-3 rounded-xl border text-xs font-medium ${
-                                        msg.senderRole === 'SUPPLIER' 
-                                            ? 'bg-slate-50 rounded-tr-none border-slate-200 ml-8 text-slate-600' 
-                                            : 'bg-blue-50 rounded-tl-none border-blue-200 mr-8 text-erp-navy'
-                                    }`}>
-                                        <div className={`font-bold text-[9px] uppercase mb-1 ${
-                                            msg.senderRole === 'SUPPLIER' ? 'text-slate-400' : 'text-erp-blue'
-                                        }`}>{msg.sender}</div>
-                                        {msg.text}
-                                    </div>
-                                ))}
-                                
-                                {(!activeRFQ?.messages || activeRFQ.messages.length === 0) && (
-                                    <div className="flex flex-col items-center justify-center h-full opacity-20">
-                                        <div className="w-12 h-12 rounded-full border-2 border-dashed border-slate-400 flex items-center justify-center mb-2">
-                                            <Info size={20} />
-                                        </div>
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Chưa có thảo luận</span>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Cột phải: Form Báo giá */}
-                    <div className="xl:col-span-2 space-y-6">
-                        <div className="erp-card shadow-sm border border-slate-200 bg-white">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy mb-6 flex items-center gap-2">
-                                <FileText size={16}/> Bảng báo giá (Quotation Form)
-                            </h3>
-                            
-                            <table className="erp-table text-xs m-0 border border-slate-200 shadow-sm rounded-xl mb-6">
-                                <thead className="bg-slate-50">
-                                    <tr>
-                                        <th>Hạng mục hàng hóa</th>
-                                        <th className="text-center w-20">SL</th>
-                                        <th className="w-48 text-right">Đơn giá (VNĐ)</th>
-                                        <th className="w-1/4">Ghi chú SP đề xuất</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {activeRFQ.items.map((item: any, idx: number) => {
-                                        const itemId = item.id || `item-${idx}`;
-                                        const itemName = item.item_name || item.description || "N/A";
-                                        const itemCode = item.item_code || "SKU-ANY";
-                                        const quantity = item.quantity || item.qty || 0;
-                                        const unit = item.unit || "UNIT";
-
-                                        return (
-                                            <tr key={itemId} className="border-b border-slate-100 hover:bg-slate-50 group">
-                                                <td className="px-6 py-4">
-                                                    <div className="font-black text-slate-700">{itemName}</div>
-                                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Mã: {itemCode}</div>
-                                                </td>
-                                                <td className="text-center font-mono font-black border-x border-slate-50">
-                                                    <div className="text-erp-navy">{quantity}</div>
-                                                    <div className="text-[9px] text-slate-400 uppercase tracking-widest">{unit}</div>
-                                                </td>
-                                                <td className="text-right p-4 bg-emerald-50/20">
-                                                    <input 
-                                                        type="number" 
-                                                        className="erp-input w-full text-right font-mono text-emerald-600 font-black focus:border-emerald-500 bg-white shadow-sm" 
-                                                        placeholder="Nhập giá..."
-                                                        value={prices[itemId] || ""}  
-                                                        onChange={e => setPrices({...prices, [itemId]: e.target.value})}
-                                                    />
-                                                </td>
-                                                <td className="p-4">
-                                                    <input type="text" className="erp-input w-full text-[10px] bg-slate-50 group-hover:bg-white border-transparent focus:border-slate-200" placeholder="Model, xuất sứ, VAT..." />
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                    <tr className="bg-slate-100/50">
-                                        <td colSpan={2} className="text-right font-black text-slate-500 uppercase tracking-widest py-4">Tổng tiền nháp:</td>
-                                        <td className="text-right font-black font-mono text-erp-navy text-lg py-4">
-                                            {(() => {
-                                                const total = activeRFQ.items.reduce((sum: number, item: any) => {
-                                                    const itemId = item.id;
-                                                    const priceVal = Number(prices[itemId]) || 0;
-                                                    const quantity = item.quantity || item.qty || 0;
-                                                    return sum + (priceVal * quantity);
-                                                }, 0);
-                                                return total.toLocaleString();
-                                            })()} ₫
-                                        </td>
-                                        <td className="text-[9px] font-bold text-slate-400 italic text-right px-4">
-                                            * Các trường Đơn giá và Ghi chú là có thể chỉnh sửa.
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Thủ tục Thanh toán</label>
-                                    <select className="erp-input w-full bg-white" value={paymentTerms} onChange={e => setPaymentTerms(e.target.value)}>
-                                        <option value="Net 30">Net 30 (Chấp nhận)</option>
-                                        <option value="Net 45">Net 45 (Lợi thế cạnh tranh)</option>
-                                        <option value="Advanced 100%">Trả trước 100% (Mất điểm hệ thống)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Lead time (Ngày giao hàng)</label>
-                                    <input type="number" className="erp-input w-full bg-white font-mono" placeholder="Vd: 14" value={leadTime} onChange={e => setLeadTime(e.target.value)} />
+                    {/* Cột phải: Form Báo giá (7/10) */}
+                    <div className="xl:col-span-7 space-y-8">
+                        <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                            <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#0F172A] flex items-center justify-between">
+                                <h3 className="text-xs font-black uppercase tracking-[0.2em] !text-white flex items-center gap-4">
+                                    <div className="h-8 w-8 bg-[#2563EB]/10 text-[#2563EB] rounded-xl flex items-center justify-center border border-[#2563EB]/20">
+                                        <FileText size={18}/>
+                                    </div>
+                                    Bảng chào giá kỹ thuật & Thương mại (Quotation)
+                                </h3>
+                                <div className="flex -space-x-2">
+                                     <div className="h-6 w-6 rounded-full bg-emerald-500 border-2 border-[#0F172A]"></div>
+                                     <div className="h-6 w-6 rounded-full bg-[#2563EB] border-2 border-[#0F172A]"></div>
                                 </div>
                             </div>
                             
-                            <div className="mt-6 border-2 border-dashed border-emerald-200 rounded-xl p-8 text-center hover:bg-emerald-50 cursor-pointer group transition-colors">
-                                <UploadCloud size={32} className="mx-auto text-emerald-400 group-hover:text-emerald-500 mb-2 transition-colors" />
-                                <div className="text-sm font-bold text-emerald-800">Upload Báo giá chính thức (Bản Scan dấu mộc)</div>
-                                <div className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest mt-1">Bắt buộc File PDF (Max 25MB)</div>
+                            <div className="p-0">
+                                <table className="erp-table text-xs w-full" style={{ tableLayout: 'fixed' }}>
+                                    <thead>
+                                        <tr className="text-[#0F172A] italic">
+                                            <th className="px-4 py-4 w-[35%]">Hạng mục hàng hóa / SKU</th>
+                                            <th className="text-center w-[10%]">SL</th>
+                                            <th className="text-right w-[25%]">Đơn giá đề xuất (VNĐ)</th>
+                                            <th className="px-4 w-[30%]">Thông số kỹ thuật đề xuất</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
+                                        {(activeRFQ.items || []).map((item, idx: number) => {
+                                            const itemId = item.id || `item-${idx}`;
+                                            const itemName = item.productName || item.description || "N/A";
+                                            const itemCode = item.sku || "SKU-ANY";
+                                            const quantity = item.qty || 0;
+                                            const unit = item.unit || "Cái";
+
+                                            return (
+                                                <tr key={itemId} className="hover:bg-[#FFFFFF]/50 group transition-all">
+                                                    <td className="px-4 py-4">
+                                                        <div className="font-black text-[#0F172A] text-xs mb-1 uppercase tracking-tight truncate" title={itemName}>{itemName}</div>
+                                                        <div className="text-[9px] font-bold text-[#4A4A45] uppercase tracking-widest truncate">VN-SKU: <span className="text-[#2563EB]">{itemCode}</span></div>
+                                                    </td>
+                                                    <td className="text-center font-black py-4">
+                                                        <div className="text-lg text-[#0F172A]">{quantity}</div>
+                                                        <div className="text-[9px] text-[#4A4A45] uppercase tracking-widest leading-none mt-1">{unit}</div>
+                                                    </td>
+                                                    <td className="px-4 py-4 bg-[#2563EB]/5">
+                                                        <div className="relative group/input">
+                                                            <input 
+                                                                type="text" 
+                                                                className="erp-input w-full text-right bg-[#FFFFFF] border-[rgba(148,163,184,0.2)] text-[#2563EB] font-black text-sm focus:border-[#2563EB] transition-all pr-10 h-10" 
+                                                                placeholder="0..."
+                                                                value={prices[itemId] || ""}  
+                                                                onChange={e => setPrices({...prices, [itemId]: e.target.value})}
+                                                            />
+                                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-[#4A4A45] uppercase tracking-widest">đ</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 py-4">
+                                                        <input type="text" className="erp-input w-full text-[10px] bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] focus:border-[#2563EB] text-[#0F172A] placeholder:text-[#4A4A45] h-10 font-medium" placeholder="Vd: Model 2026, Bảo hành 24th..." />
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                        <tr>
+                                            <td colSpan={2} className="px-4 py-6 text-right">
+                                                 <div className="text-[10px] font-black text-[#4A4A45] uppercase tracking-[0.2em] mb-1">DỰ TOÁN TOTAL</div>
+                                                 <div className="text-xs font-bold text-[#2563EB] italic">* Chưa bao gồm các loại thuế phí</div>
+                                            </td>
+                                            <td className="px-4 py-6 bg-[#2563EB]/10 text-right">
+                                                <div className="text-2xl font-black text-[#0F172A] tracking-tighter">
+                                                    {(() => {
+                                                        const total = (activeRFQ.items || []).reduce((sum: number, item: PRItem) => {
+                                                            const itemId = item.id;
+                                                            if (!itemId) return sum;
+                                                            const priceVal = Number(prices[itemId]) || 0;
+                                                            const quantity = item.qty || 0;
+                                                            return sum + (priceVal * quantity);
+                                                        }, 0);
+                                                        return total.toLocaleString();
+                                                    })()} ₫
+                                                </div>
+                                                <div className="text-[9px] font-black text-[#2563EB] uppercase tracking-[0.2em] mt-2">Tổng giá trị báo hàng</div>
+                                            </td>
+                                            <td className="px-4 py-6">
+                                                <div className="leading-relaxed text-[10px] font-bold text-[#0F172A] italic text-right opacity-90">
+                                                    Dữ liệu sẽ được lưu nháp tự động.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-[#1A1D26]/50 border-t border-[rgba(148,163,184,0.1)]">
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase text-[#F1F5F9]/60 tracking-[0.2em] mb-3 leading-none">Thủ tục Thanh toán thương thảo</label>
+                                    <div className="relative group">
+                                        <select className="erp-input w-full bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] text-[#0F172A] font-bold h-14" value={paymentTerms} onChange={e => setPaymentTerms(e.target.value)}>
+                                            <option value="Net 30">Net 30 (Kỳ hạn 30 ngày)</option>
+                                            <option value="Net 45">Net 45 (Kỳ hạn 45 ngày - Ưu tiên)</option>
+                                            <option value="Advanced 100%">Trả trước 100% (Phí hệ thống)</option>
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#0F172A]">
+                                            <ChevronDown size={18} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase text-[#F1F5F9]/60 tracking-[0.2em] mb-3 leading-none">Lead time - Thời gian cung ứng (Ngày)</label>
+                                    <div className="relative">
+                                        <input type="number" className="erp-input w-full bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] text-[#2563EB] font-black h-14" placeholder="Vd: 14" value={leadTime} onChange={e => setLeadTime(e.target.value)} />
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#4A4A45] uppercase">Day(s)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="mx-8 mb-8 border-2 border-dashed border-[#2563EB]/20 rounded-xl p-10 text-center hover:bg-[#2563EB]/5 hover:border-[#2563EB]/40 cursor-pointer group transition-all duration-500 bg-[#FFFFFF]/50">
+                                <div className="h-16 w-16 bg-[#2563EB]/10 text-[#2563EB] rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                                     <UploadCloud size={32} />
+                                </div>
+                                <div className="text-base font-black text-[#0F172A] tracking-tight mb-2">Upload Báo giá chính thức (Bản Scan có dấu mộc)</div>
+                                <p className="text-[11px] font-bold text-[#4A4A45] uppercase tracking-[0.2em]">Bắt buộc định dạng PDF (.pdf) • Tối đa 50MB</p>
                             </div>
                         </div>
 
-                        {/* Action Submit */}
-                        <div className="erp-card shadow-lg bg-emerald-900 border-2 border-emerald-800 text-white flex justify-between items-center overflow-hidden relative">
-                            <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-10"><Send size={150}/></div>
-                            <div className="relative z-10">
-                                <h3 className="text-sm font-black uppercase tracking-widest mb-1 flex items-center gap-2"><CheckCircle size={16}/> Cam kết Submission</h3>
-                                <p className="text-[10px] font-bold text-emerald-300 max-w-sm">Tôi xác nhận báo giá tuân thủ quy định Anti-bribery & Code of Conduct của hệ thống ProcurePro.</p>
+                        {/* Banner xác nhận submission hoặc thông báo hết hạn */}
+                        {activeRFQ.deadline && new Date(activeRFQ.deadline) < new Date() ? (
+                            <div className="bg-gradient-to-r from-rose-900/80 to-rose-800/80 border border-rose-500/20 shadow-2xl shadow-rose-500/10 p-8 flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+                                <div className="absolute -left-10 top-0 opacity-10">
+                                    <AlertCircle size={180}/>
+                                </div>
+                                <div className="relative z-10 text-center md:text-left">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-500/20 text-rose-300 rounded-full text-[10px] font-black uppercase tracking-[0.15em] mb-3">
+                                        <AlertCircle size={12}/> RFQ ĐÃ HẾT HẠN
+                                    </div>
+                                    <p className="text-xs font-bold text-rose-200/80 tracking-tight">
+                                        Thời hạn nộp báo giá đã kết thúc vào {new Date(activeRFQ.deadline).toLocaleDateString('vi-VN')} {new Date(activeRFQ.deadline).toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="relative z-10 flex gap-4">
-                                <button className="px-6 py-3 border border-emerald-700 hover:bg-emerald-800 text-emerald-100 font-black uppercase tracking-widest text-[10px] rounded-xl transition-colors">Lưu DRAFT</button>
-                                <button onClick={handleSubmit} className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 shadow-xl shadow-emerald-500/20 font-black uppercase tracking-widest text-xs rounded-xl flex items-center gap-2 transition-all">Submit Báo Giá</button>
+                        ) : (
+                            <div className="bg-gradient-to-r from-emerald-900 to-emerald-800 border-none shadow-2xl shadow-emerald-500/10 p-10 flex flex-col md:flex-row justify-between items-center relative overflow-hidden group">
+                                <div className="absolute -left-10 top-0 opacity-10 group-hover:scale-125 transition-transform duration-1000">
+                                    <Send size={200}/>
+                                </div>
+                                <div className="relative z-10 text-center md:text-left mb-6 md:mb-0">
+                                    <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                                         <CheckCircle size={14}/> Cam kết bảo mật thông tin
+                                    </div>
+                                    <h3 className="text-xl font-black text-[#F1F5F9] uppercase tracking-tight mb-2">XÁC NHẬN NỘP HỒ SƠ THẦU</h3>
+                                    <p className="text-[11px] font-bold text-emerald-300/80 max-w-sm tracking-tight leading-relaxed">Tôi cam kết các thông tin báo giá là chính xác và tuân thủ quy tắc ứng xử B2B của hệ thống ProcurePro.</p>
+                                </div>
+                                <div className="relative z-10 flex gap-4 w-full md:w-auto">
+                                    <button className="flex-1 px-5 h-10 border border-emerald-700/50 hover:bg-emerald-800 text-emerald-100 font-black uppercase tracking-[0.15em] text-[10px] rounded-xl transition-colors">Lưu nháp</button>
+                                    <button onClick={handleSubmit} className="flex-1 px-6 h-10 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 shadow-lg shadow-emerald-500/20 font-black uppercase tracking-[0.15em] text-xs rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 group/btn">
+                                         GỬI BÁO GIÁ <Send size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </main>
@@ -273,10 +303,25 @@ export default function SupplierRFQ() {
     }
 
     return (
-        <main className="pt-16 px-8 pb-12">
-            <DashboardHeader breadcrumbs={["Nhà cung cấp", "Danh sách Yêu cầu báo giá"]} />
-            <div className="mt-8 mb-8">
-                <h1 className="text-3xl font-black text-erp-navy tracking-tight">Thư mời (RFQ) cần báo giá</h1>
+        <main className="animate-in fade-in duration-700 pt-16 px-12 pb-20 bg-[#FFFFFF] min-h-screen text-[#0F172A]">
+            <div className="mt-16 mb-12 flex justify-between items-end">
+                <div>
+                    <h1 className="text-5xl font-black text-[#0F172A] tracking-tighter uppercase mb-4 leading-none">THƯ MỜI THẦU (RFQ)</h1>
+                    <p className="text-sm font-bold text-[#4A4A45] tracking-tight uppercase flex items-center gap-3">
+                         <span className="h-0.5 w-10 bg-[#2563EB] rounded-full"></span>
+                         Danh sách các yêu cầu báo giá từ <span className="text-[#2563EB]">ProcurePro Network</span>
+                    </p>
+                </div>
+                <div className="flex gap-4">
+                     <div className="p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-xl">
+                          <div className="text-[9px] font-black text-[#4A4A45] uppercase tracking-[0.2em] mb-1">RFQ Chờ báo giá</div>
+                          <div className="text-2xl font-black text-[#0F172A]">{openRfqs.length}</div>
+                     </div>
+                     <div className="p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-xl">
+                          <div className="text-[9px] font-black text-[#4A4A45] uppercase tracking-[0.2em] mb-1">Tổng RFQ</div>
+                          <div className="text-2xl font-black text-[#2563EB]">{myRfqs.length}</div>
+                     </div>
+                </div>
             </div>
 
             <div className="erp-card !p-0 overflow-hidden shadow-sm border border-slate-200">
@@ -326,18 +371,12 @@ export default function SupplierRFQ() {
                                         </button>
                                     </td>
                                 </tr>
-                            );
-                        })}
-                        {openRfqs.length === 0 && (
-                            <tr>
-                                <td colSpan={6} className="text-center py-12 text-slate-400 font-bold uppercase tracking-widest">
-                                    Chưa có thư mời thầu (RFQ) nào.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     );
 }
+

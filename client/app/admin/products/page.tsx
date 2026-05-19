@@ -1,76 +1,183 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useProcurement, Product, ProductCategory } from "../../context/ProcurementContext";
-import DashboardHeader from "../../components/DashboardHeader";
-import ERPTable from "../../components/shared/ERPTable";
-import { 
-    Plus, Search, Edit2, Trash2, Filter, 
-    Package, Layers, Tag} from "lucide-react";
+import { CreateProductDtoShort, CreateCategoryDto, CurrencyCode, ProductType } from "../../types/api-types";
+import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
+import {
+    Plus, Search, Edit2, Trash2,
+    Layers, ChevronDown, Loader2 } from "lucide-react";
+import ConfirmDialog from "../../components/shared/ConfirmDialog";
 
 export default function ProductAdminPage() {
-    const { apiFetch } = useProcurement();
-    const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<ProductCategory[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { 
+        products, 
+        categories,
+        organizations,
+        refreshData,
+        addProduct, 
+        updateProduct, 
+        removeProduct,
+        addCategory,
+        updateCategory,
+        removeCategory,
+        notify,
+        currentUser
+    } = useProcurement();
+
+    useEffect(() => {
+        setLoading(true);
+        refreshData().finally(() => setLoading(false));
+    }, [refreshData]);
+    
+    const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const [activeTab, setActiveTab] = useState("Sản phẩm"); // "Sản phẩm" or "Danh mục"
+    const [activeTab, setActiveTab] = useState("Sản phẩm");
+    const [confirmState, setConfirmState] = useState<{ open: boolean; title: string; message: string; onConfirm: () => void }>({ open: false, title: "", message: "", onConfirm: () => {} }); 
 
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [editingCategory, setEditingCategory] = useState<ProductCategory | null>(null);
+
+    const [productForm, setProductForm] = useState<Partial<Product>>({});
+    const [categoryForm, setCategoryForm] = useState<Partial<ProductCategory>>({});
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (editingProduct) {
+            setProductForm({ ...editingProduct });
+        } else {
+            setProductForm({
+                name: "",
+                sku: "",
+                unitPriceRef: 0,
+                unit: "Cái",
+                currency: CurrencyCode.VND,
+                type: ProductType.CATALOG,
+                categoryId: categories[0]?.id || "",
+                orgId: organizations[0]?.id || "",
+                isActive: true
+            });
+        }
+    }, [editingProduct, categories, organizations]);
 
-    const fetchData = async () => {
+    useEffect(() => {
+        if (editingCategory) {
+            setCategoryForm({ ...editingCategory });
+        } else {
+            setCategoryForm({
+                name: "",
+                code: "",
+                description: "",
+                isActive: true,
+                orgId: currentUser?.orgId || organizations[0]?.id || ""
+            });
+        }
+    }, [editingCategory, organizations]);
+
+    const handleSaveProduct = async () => {
+        if (!productForm.name || !productForm.sku || !productForm.categoryId || !productForm.orgId) {
+            notify("Vui lòng điền đầy đủ thông tin", "warning");
+            return;
+        }
+
         setLoading(true);
         try {
-            const [prodRes, catRes] = await Promise.all([
-                apiFetch('/products'),
-                apiFetch('/products/categories')
-            ]);
-            
-            if (prodRes.ok) {
-                const data = await prodRes.json();
-                setProducts(data.data || []);
+            let success = false;
+            // Strict casting to Payload interface
+            const payload: CreateProductDtoShort = {
+                name: productForm.name || "",
+                sku: productForm.sku || "",
+                unitPriceRef: Number(productForm.unitPriceRef) || 0,
+                unit: productForm.unit || "Cái",
+                currency: productForm.currency || CurrencyCode.VND,
+                type: productForm.type || ProductType.CATALOG,
+                categoryId: productForm.categoryId || undefined,
+                orgId: productForm.orgId || undefined,
+                isActive: productForm.isActive ?? true,
+                description: productForm.description || "",
+                attributes: productForm.attributes || {}
+            };
+
+            if (editingProduct) {
+                success = await updateProduct(editingProduct.id, payload);
+            } else {
+                success = await addProduct(payload);
             }
             
-            if (catRes.ok) {
-                const data = await catRes.json();
-                setCategories(data.data || []);
+            if (success) {
+                setIsProductModalOpen(false);
+                setEditingProduct(null);
             }
-        } catch (error) {
-            console.error("Failed to fetch products/categories", error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDeleteProduct = async (id: string) => {
-        if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) return;
+    const handleSaveCategory = async () => {
+        if (!categoryForm.name || !categoryForm.code || !categoryForm.orgId) {
+            notify("Vui lòng điền đầy đủ thông tin", "warning");
+            return;
+        }
+
+        setLoading(true);
         try {
-            const res = await apiFetch(`/products/${id}`, { method: 'DELETE' });
-            if (res.ok) {
-                setProducts(products.filter(p => p.id !== id));
+            let success = false;
+            // Strict casting to Payload interface
+            const payload: CreateCategoryDto = {
+                name: categoryForm.name || "",
+                code: categoryForm.code || "",
+                description: categoryForm.description || "",
+                orgId: categoryForm.orgId || undefined,
+                isActive: categoryForm.isActive ?? true
+            };
+
+            if (editingCategory) {
+                success = await updateCategory(editingCategory.id, payload);
+            } else {
+                success = await addCategory(payload);
             }
-        } catch (error) {
-            console.error("Delete failed", error);
+            
+            if (success) {
+                setIsCategoryModalOpen(false);
+                setEditingCategory(null);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
-    const productColumns = [
+    const handleDeleteProduct = (id: string) => {
+        setConfirmState({
+            open: true,
+            title: "Xóa sản phẩm",
+            message: "Bạn có chắc chắn muốn xóa sản phẩm này?",
+            onConfirm: async () => { await removeProduct(id); setConfirmState(s => ({ ...s, open: false })); }
+        });
+    };
+
+    const handleDeleteCategory = (id: string) => {
+        setConfirmState({
+            open: true,
+            title: "Xóa danh mục",
+            message: "Bạn có chắc chắn muốn xóa danh mục này?",
+            onConfirm: async () => { await removeCategory(id); setConfirmState(s => ({ ...s, open: false })); }
+        });
+    };
+
+    const productColumns: ERPTableColumn<Product>[] = [
         { 
             label: "Sản phẩm", 
             key: "name",
             render: (row: Product) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200 uppercase font-black text-[10px]">
+                    <div className="h-10 w-10 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-slate-900 border border-[rgba(148,163,184,0.1)] uppercase font-black text-[10px]">
                         {row.name.substring(0,2)}
                     </div>
                     <div>
-                        <div className="font-bold text-erp-navy leading-tight">{row.name}</div>
-                        <div className="text-[10px] text-slate-400 font-mono tracking-tighter uppercase">{row.sku}</div>
+                        <div className="font-bold text-slate-900 leading-tight">{row.name}</div>
+                        <div className="text-[10px] text-slate-900 tracking-tighter uppercase">{row.sku}</div>
                     </div>
                 </div>
             )
@@ -79,21 +186,26 @@ export default function ProductAdminPage() {
             label: "Danh mục",
             key: "category",
             render: (row: Product) => (
-                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-200">
-                    {row.category?.name || "N/A"}
-                </span>
+                <div className="flex flex-col gap-1">
+                    <span className="px-3 py-1 rounded-full bg-[#FFFFFF] text-slate-900 text-[10px] font-black uppercase tracking-widest border border-[rgba(148,163,184,0.1)] w-fit">
+                        {row.category?.name || "N/A"}
+                    </span>
+                    <span className={`text-[9px] font-bold uppercase tracking-tight ${row.type === ProductType.CATALOG ? 'text-emerald-500' : 'text-amber-500'}`}>
+                        {row.type === ProductType.CATALOG ? '● Catalog (Tiêu chuẩn)' : '○ Non-catalog (Phi tiêu chuẩn)'}
+                    </span>
+                </div>
             )
         },
         {
             label: "Đơn vị",
             key: "unit",
-            render: (row: Product) => <span className="text-xs font-bold text-slate-500 uppercase">{row.unit || "PCS"}</span>
+            render: (row: Product) => <span className="text-xs font-bold text-slate-900 uppercase">{row.unit || "PCS"}</span>
         },
         {
             label: "Giá tham khảo",
             key: "unitPriceRef",
             render: (row: Product) => (
-                <div className="font-mono font-black text-erp-navy text-sm">
+                <div className="font-black text-slate-900 text-sm">
                     {Number(row.unitPriceRef || 0).toLocaleString()} ₫
                 </div>
             )
@@ -102,67 +214,80 @@ export default function ProductAdminPage() {
             label: "Trạng thái",
             key: "isActive",
             render: (row: Product) => (
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${
-                    row.isActive ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-red-50 text-red-600 border border-red-100"
-                }`}>
-                    <div className={`h-1.5 w-1.5 rounded-full ${row.isActive ? "bg-emerald-500" : "bg-red-500"}`} />
-                    {row.isActive ? "Đang bán" : "Ngừng bán"}
-                </span>
+                <div className="min-w-[90px]">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider ${
+                        row.isActive ? "bg-emerald-500/10 text-black border border-emerald-500/20" : "bg-rose-500/10 text-black border border-rose-500/20"
+                    }`}>
+                        <div className={`h-1.5 w-1.5 rounded-full ${row.isActive ? "bg-emerald-500" : "bg-rose-500"}`} />
+                        {row.isActive ? "Đang bán" : "Ngừng bán"}
+                    </span>
+                </div>
             )
         },
         {
             label: "Thao tác",
-            key: "actions",
             render: (row: Product) => (
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                     <button 
-                        className="p-2 text-slate-400 hover:text-erp-blue hover:bg-erp-blue/5 rounded-lg transition-all"
+                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
                         onClick={() => {
                             setEditingProduct(row);
                             setIsProductModalOpen(true);
                         }}
                     >
-                        <Edit2 size={16} />
+                        <Edit2 size={14} />
                     </button>
                     <button 
-                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-black hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
                         onClick={() => handleDeleteProduct(row.id)}
                     >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                     </button>
                 </div>
             )
         }
     ];
 
-    const categoryColumns = [
+    const categoryColumns: ERPTableColumn<ProductCategory>[] = [
         {
             label: "Mã",
             key: "code",
-            render: (row: ProductCategory) => <span className="font-mono text-xs font-bold text-erp-navy">{row.code}</span>
+            render: (row: ProductCategory) => <span className=" text-xs font-bold text-slate-900">{row.code}</span>
         },
         {
             label: "Tên danh mục",
             key: "name",
             render: (row: ProductCategory) => (
                 <div className="flex items-center gap-2">
-                    <Layers size={14} className="text-slate-400" />
-                    <span className="font-bold text-slate-700">{row.name}</span>
+                    <Layers size={14} className="text-slate-900" />
+                    <span className="font-bold text-slate-900">{row.name}</span>
                 </div>
             )
         },
         {
             label: "Mô tả",
             key: "description",
-            render: (row: ProductCategory) => <span className="text-xs text-slate-500 italic">{row.description || "-"}</span>
+            render: (row: ProductCategory) => <span className="text-xs text-black italic">{row.description || "-"}</span>
         },
         {
             label: "Thao tác",
-            key: "actions",
             render: (row: ProductCategory) => (
                 <div className="flex gap-2">
-                    <button className="p-2 text-slate-400 hover:text-erp-blue hover:bg-erp-blue/5 rounded-lg transition-all"><Edit2 size={16}/></button>
-                    <button className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16}/></button>
+                    <button 
+                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
+                        onClick={() => {
+                            setEditingCategory(row);
+                            setIsCategoryModalOpen(true);
+                        }}
+                    >
+                        <Edit2 size={14}/>
+                    </button>
+                    <button 
+                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-black hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
+                        onClick={() => handleDeleteCategory(row.id)}
+                    >
+                        <Trash2 size={14}/>
+                    </button>
                 </div>
             )
         }
@@ -173,42 +298,57 @@ export default function ProductAdminPage() {
         p.sku?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const filteredCategories = categories.filter(c =>
+        c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.code.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
-        <main className="pt-16 px-8 pb-12 animate-in fade-in duration-500">
-            <DashboardHeader breadcrumbs={["Hệ thống", "Danh mục sản phẩm"]} />
-            
+        <div className="animate-in fade-in duration-500">
+            <ConfirmDialog
+                open={confirmState.open}
+                title={confirmState.title}
+                message={confirmState.message}
+                onConfirm={confirmState.onConfirm}
+                onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
+            />
             <div className="mt-8 flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight uppercase">Quản lý danh mục & sản phẩm</h1>
-                    <p className="text-sm text-slate-500 mt-1 font-bold">CẬP NHẬT DANH MỤC HÀNG HÓA VÀ BẢNG GIÁ THAM KHẢO</p>
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Quản lý kho hàng & Danh mục</h1>
+                    <p className="text-sm text-slate-900 mt-1 font-bold">DỮ LIỆU SẢN PHẨM SOURCE TỪ HỆ THỐNG TRUNG TÂM</p>
                 </div>
                 <div className="flex gap-4">
                     <button 
-                        className="btn-primary flex items-center gap-2 py-4 px-8 shadow-xl shadow-erp-navy/20"
+                        className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                         onClick={() => {
-                            setEditingProduct(null);
-                            setIsProductModalOpen(true);
+                            if (activeTab === "Sản phẩm") {
+                                setEditingProduct(null);
+                                setIsProductModalOpen(true);
+                            } else {
+                                setEditingCategory(null);
+                                setIsCategoryModalOpen(true);
+                            }
                         }}
                     >
-                        <Plus size={20} />
-                        <span className="text-sm font-black uppercase">Thêm sản phẩm mới</span>
+                        <Plus size={18} />
+                        {activeTab === "Sản phẩm" ? "Thêm sản phẩm" : "Thêm danh mục"}
                     </button>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 gap-8">
-                <div className="bg-white rounded-4xl border border-slate-100 shadow-2xl shadow-erp-navy/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                     {/* Toolbar */}
-                    <div className="p-6 border-b border-slate-50 bg-slate-50/30 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="flex gap-1 p-1 bg-white border border-slate-200 rounded-2xl w-fit">
+                    <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="flex gap-1 p-1 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl w-fit">
                             {["Sản phẩm", "Danh mục"].map(tab => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                                         activeTab === tab 
-                                        ? "bg-erp-navy text-white shadow-lg" 
-                                        : "text-slate-400 hover:text-erp-navy hover:bg-slate-50"
+                                        ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
+                                        : "text-white hover:text-[#2563EB] hover:bg-[#2563EB]/10"
                                     }`}
                                 >
                                     {tab}
@@ -218,132 +358,264 @@ export default function ProductAdminPage() {
 
                         <div className="flex items-center gap-4 flex-1 max-w-md">
                             <div className="relative flex-1 group">
-                                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-erp-blue transition-colors" />
+                                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 group-focus-within:text-[#2563EB] transition-colors" />
                                 <input 
-                                    className="erp-input w-full pl-12 font-bold focus:border-erp-blue" 
+                                    className="erp-input w-full pl-12 font-bold focus:border-[#2563EB] bg-[#FFFFFF] text-slate-900" 
                                     placeholder={`Tìm kiếm ${activeTab.toLowerCase()}...`}
                                     value={searchTerm}
                                     onChange={e => setSearchTerm(e.target.value)}
                                 />
                             </div>
-                            <button className="h-12 w-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:border-erp-blue hover:text-erp-blue transition-all">
-                                <Filter size={20} />
-                            </button>
                         </div>
                     </div>
 
-                    {loading ? (
-                        <div className="p-40 text-center flex flex-col items-center gap-4">
-                            <div className="h-12 w-12 border-4 border-slate-100 border-t-erp-blue rounded-full animate-spin" />
-                            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Đang tải dữ liệu...</span>
-                        </div>
-                    ) : (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            {activeTab === "Sản phẩm" ? (
-                                <ERPTable columns={productColumns} data={filteredProducts} />
-                            ) : (
-                                <ERPTable columns={categoryColumns} data={categories} />
-                            )}
-                        </div>
-                    )}
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-100">
+                        {activeTab === "Sản phẩm" ? (
+                            <ERPTable columns={productColumns} data={filteredProducts} />
+                        ) : (
+                            <ERPTable columns={categoryColumns} data={filteredCategories} />
+                        )}
+                    </div>
                 </div>
 
-                {/* Stats Summary Area */}
+                {/* Stats Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white p-8 rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all">
-                        <div className="h-16 w-16 rounded-3xl bg-blue-50 flex items-center justify-center text-erp-blue group-hover:bg-erp-blue group-hover:text-white transition-all">
-                            <Package size={32} />
-                        </div>
-                        <div>
-                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tổng sản phẩm</div>
-                            <div className="text-3xl font-black text-erp-navy">{products.length}</div>
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
+                        <div className="flex-1">
+                            <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-1">Mục sản phẩm</div>
+                            <div className="text-3xl font-black text-slate-900">{products.length}</div>
                         </div>
                     </div>
-                    
-                    <div className="bg-white p-8 rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all">
-                        <div className="h-16 w-16 rounded-3xl bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-all">
-                            <Layers size={32} />
-                        </div>
-                        <div>
-                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ngành hàng</div>
-                            <div className="text-3xl font-black text-erp-navy">{categories.length}</div>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-8 rounded-4xl border border-slate-100 shadow-xl shadow-erp-navy/5 flex items-center gap-6 group hover:border-erp-blue/30 transition-all">
-                        <div className="h-16 w-16 rounded-3xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
-                            <Tag size={32} />
-                        </div>
-                        <div>
-                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Mã SKU duy nhất</div>
-                            <div className="text-3xl font-black text-erp-navy">{products.filter(p => p.sku).length}</div>
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
+                        <div className="flex-1">
+                            <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-1">Danh mục cấp 1</div>
+                            <div className="text-3xl font-black text-slate-900">{categories.length}</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Simple Mock Modal for Product Creation/Edit */}
+            {/* Product Modal */}
             {isProductModalOpen && (
-                <div className="fixed inset-0 z-100 flex items-center justify-center bg-erp-navy/60 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in duration-300">
-                        <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                            <h3 className="text-2xl font-black text-erp-navy uppercase tracking-tight">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-6">
+                            <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 {editingProduct ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới"}
-                            </h3>
-                            <button 
-                                onClick={() => setIsProductModalOpen(false)}
-                                className="h-10 w-10 rounded-full hover:bg-slate-200 flex items-center justify-center transition-colors"
-                            >
-                                <Plus size={24} className="rotate-45 text-slate-400" />
-                            </button>
-                        </div>
-                        
-                        <div className="p-8 space-y-6">
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="col-span-2">
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Tên sản phẩm</label>
-                                    <input className="erp-input w-full font-bold" defaultValue={editingProduct?.name} placeholder="VD: Bút bi Thiên Long..." />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Mã SKU</label>
-                                    <input className="erp-input w-full font-mono font-bold" defaultValue={editingProduct?.sku} placeholder="VD: VN_OFFICE-1001" />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Giá tham khảo (VNĐ)</label>
-                                    <input type="number" className="erp-input w-full font-black text-erp-blue" defaultValue={editingProduct?.unitPriceRef} />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Danh mục</label>
-                                    <select className="erp-input w-full font-bold">
-                                        <option value="">-- Chọn danh mục --</option>
-                                        {categories.map(cat => (
-                                            <option key={cat.id} value={cat.id} selected={editingProduct?.categoryId === cat.id}>{cat.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                            </h2>
+                            <p className="text-xs text-slate-900 font-bold uppercase tracking-widest mb-10">QUẢN LÝ KHO HÀNG</p>
 
-                        <div className="p-8 bg-slate-50 border-t border-slate-100 flex justify-end gap-4">
-                            <button 
-                                className="px-8 py-3 font-black text-slate-500 uppercase tracking-widest text-xs hover:bg-white rounded-xl transition-all"
-                                onClick={() => setIsProductModalOpen(false)}
-                            >
-                                Hủy bỏ
-                            </button>
-                            <button 
-                                className="btn-primary py-4 px-12 shadow-xl shadow-erp-navy/30"
-                                onClick={() => {
-                                    alert("Đã lưu thông tin sản phẩm (Demo)");
-                                    setIsProductModalOpen(false);
-                                }}
-                            >
-                                {editingProduct ? "Cập nhật" : "Lưu sản phẩm"}
-                            </button>
+                            <form onSubmit={(e) => { e.preventDefault(); handleSaveProduct(); }} className="space-y-6">
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="col-span-2">
+                                        <label className="erp-label">Tên sản phẩm</label>
+                                        <input 
+                                            className="erp-input w-full" 
+                                            value={productForm.name || ""} 
+                                            onChange={e => setProductForm({ ...productForm, name: e.target.value })}
+                                            placeholder="VD: Server Dell R740..." 
+                                        />
+                                    </div>
+                                    
+                                    <div className="form-group">
+                                        <label className="erp-label">Mã SKU</label>
+                                        <input 
+                                            className="erp-input w-full" 
+                                            value={productForm.sku || ""} 
+                                            onChange={e => setProductForm({ ...productForm, sku: e.target.value })}
+                                            placeholder="DELL-R740-01" 
+                                        />
+                                    </div>
+                                    
+                                    <div className="form-group">
+                                        <label className="erp-label">Đơn vị tính</label>
+                                        <input 
+                                            className="erp-input w-full" 
+                                            value={productForm.unit || "Cái"} 
+                                            onChange={e => setProductForm({ ...productForm, unit: e.target.value })}
+                                            placeholder="Cái, Bộ, Lô..." 
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="erp-label">Giá tham khảo (VNĐ)</label>
+                                        <input 
+                                            type="number" 
+                                            className="erp-input w-full text-[#2563EB]" 
+                                            value={productForm.unitPriceRef || 0} 
+                                            onChange={e => setProductForm({ ...productForm, unitPriceRef: Number(e.target.value) })}
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="erp-label">Loại sản phẩm</label>
+                                        <select 
+                                            className="erp-input w-full"
+                                            value={productForm.type || ProductType.CATALOG}
+                                            onChange={e => setProductForm({ ...productForm, type: e.target.value as ProductType })}
+                                        >
+                                            <option value={ProductType.CATALOG}>Catalog (Hàng tiêu chuẩn)</option>
+                                            <option value={ProductType.NON_CATALOG}>Non-catalog (Phi tiêu chuẩn)</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="erp-label">Danh mục</label>
+                                        <select 
+                                            className="erp-input w-full"
+                                            value={productForm.categoryId || ""}
+                                            onChange={e => setProductForm({ ...productForm, categoryId: e.target.value })}
+                                        >
+                                            <option value="" disabled>Chọn danh mục</option>
+                                            {categories.map(cat => (
+                                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="col-span-2 form-group">
+                                        <label className="erp-label">Tổ chức / Nhà cung cấp</label>
+                                        <select 
+                                            className="erp-input w-full"
+                                            value={productForm.orgId || ""}
+                                            onChange={e => setProductForm({ ...productForm, orgId: e.target.value })}
+                                        >
+                                            <option value="" disabled>Chọn tổ chức</option>
+                                            {organizations.map(org => (
+                                                <option key={org.id} value={org.id}>{org.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black uppercase text-slate-900 tracking-widest">Kích hoạt sản phẩm</span>
+                                            <span className="text-[9px] text-slate-900 font-bold">Cho phép sử dụng sản phẩm này trong các yêu cầu mua hàng</span>
+                                        </div>
+                                        <button 
+                                            type="button"
+                                            onClick={() => setProductForm({...productForm, isActive: !productForm.isActive})}
+                                            className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${productForm.isActive ? 'bg-[#2563EB]' : 'bg-[#000000]'}`}
+                                        >
+                                            <div className={`h-4 w-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${productForm.isActive ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-4 pt-6">
+                                    <button 
+                                        type="button"
+                                        className="btn-secondary flex-1 py-4 uppercase tracking-widest text-xs"
+                                        onClick={() => setIsProductModalOpen(false)}
+                                    >
+                                        Hủy bỏ
+                                    </button>
+                                    <button 
+                                        type="submit"
+                                        className="btn-primary flex-1 py-4 uppercase tracking-widest text-xs"
+                                        disabled={loading}
+                                    >
+                                        {loading ? "Đang xử lý..." : (editingProduct ? "Lưu thay đổi" : "Khởi tạo")}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             )}
-        </main>
+
+            {/* Product/Category Creation Form Modal */}
+            {isCategoryModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-6">
+                            <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
+                                {editingCategory ? "Cập nhật Danh mục" : "Thêm Danh mục mới"}
+                            </h2>
+                            <p className="text-xs text-slate-900 font-bold uppercase tracking-widest mb-10">QUẢN LÝ DANH MỤC</p>
+
+                            <form onSubmit={(e) => { e.preventDefault(); handleSaveCategory(); }} className="space-y-6">
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="form-group">
+                                        <label className="erp-label">Mã (Code)</label>
+                                        <input 
+                                            className="erp-input w-full" 
+                                            placeholder="VD: CAT-001"
+                                            value={categoryForm.code || ""} 
+                                            onChange={e => setCategoryForm({...categoryForm, code: e.target.value})} 
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="erp-label">Tên (Name)</label>
+                                        <input 
+                                            className="erp-input w-full" 
+                                            placeholder="Nhập tên..."
+                                            value={categoryForm.name || ""} 
+                                            onChange={e => setCategoryForm({...categoryForm, name: e.target.value})} 
+                                        />
+                                    </div>
+                                    
+                                    <div className="col-span-2 form-group">
+                                        <label className="erp-label">Tổ chức / Nhà cung cấp</label>
+                                        <select 
+                                            className="erp-input w-full"
+                                            value={categoryForm.orgId || ""}
+                                            onChange={e => setCategoryForm({...categoryForm, orgId: e.target.value})}
+                                        >
+                                            <option value="" disabled>Chọn tổ chức</option>
+                                            {organizations.map(org => (
+                                                <option key={org.id} value={org.id}>{org.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="col-span-2 form-group">
+                                        <label className="erp-label">Mô tả</label>
+                                        <textarea 
+                                            className="erp-input w-full h-24 resize-none" 
+                                            placeholder="Nhập mô tả..."
+                                            value={categoryForm.description || ""} 
+                                            onChange={e => setCategoryForm({...categoryForm, description: e.target.value})} 
+                                        />
+                                    </div>
+
+                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black uppercase text-slate-900 tracking-widest">Kích hoạt</span>
+                                            <span className="text-[9px] text-slate-900 font-bold">Trạng thái hoạt động của dữ liệu</span>
+                                        </div>
+                                        <button 
+                                            type="button"
+                                            onClick={() => setCategoryForm({...categoryForm, isActive: !categoryForm.isActive})}
+                                            className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${categoryForm.isActive ? 'bg-[#2563EB]' : 'bg-[#000000]'}`}
+                                        >
+                                            <div className={`h-4 w-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${categoryForm.isActive ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-4 pt-6">
+                                    <button 
+                                        type="button"
+                                        className="btn-secondary flex-1 py-4 uppercase tracking-widest text-xs"
+                                        onClick={() => setIsCategoryModalOpen(false)}
+                                    >
+                                        Hủy bỏ
+                                    </button>
+                                    <button 
+                                        type="submit"
+                                        className="btn-primary flex-1 py-4 uppercase tracking-widest text-xs"
+                                        disabled={loading}
+                                    >
+                                        {loading ? "Đang xử lý..." : "Lưu thay đổi"}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
+

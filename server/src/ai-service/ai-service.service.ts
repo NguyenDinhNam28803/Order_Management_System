@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
-
 import { PrismaService } from '../prisma/prisma.service';
 
+// --- INTERFACES ---
 export interface AiDatabaseResponse<T = unknown> {
-  length: number;
-  cons: any;
-  score: number;
+  length?: number;
+  cons?: string[];
+  score?: number;
   success: boolean;
   summary: string;
   data: T[];
@@ -16,15 +16,94 @@ export interface AiDatabaseResponse<T = unknown> {
   message?: string;
 }
 
-export interface AiResponseSupplier {
-  rfqId: string;
-  supplierId: string;
-  isRecommended: boolean;
+export interface AiSupplierEvaluation {
+  overallScore: number;
+  otdScore: number;
+  qualityScore: number;
+  priceScore: number;
+  tierRecommendation: string;
+  analysis: string;
+  improvementPlan: string;
+  pros: string[];
+  cons: string[];
+}
+
+export interface AiQuotationAnalysis {
+  score: number;
+  assessment: string;
+  pros: string[];
+  cons: string[];
+  recommendation: 'RECOMMEND' | 'CONSIDER' | 'REJECT';
+}
+
+export interface QuotationEmailExtract {
+  rfqNumber?: string;
+  quotationNumber?: string;
+  totalPrice?: number;
+  currency?: string;
+  leadTimeDays?: number;
+  validityDays?: number;
+  paymentTerms?: string;
+  deliveryTerms?: string;
+  items?: Array<{
+    description: string;
+    qty: number;
+    unitPrice: number;
+    unit?: string;
+  }>;
+}
+
+export interface PoConfirmationEmailExtract {
+  poNumber?: string;
+  estimatedDelivery?: string;
+  notes?: string;
+}
+
+export interface ShippingEmailExtract {
+  poNumber?: string;
+  trackingNumber?: string;
+  carrier?: string;
+  shippedDate?: string;
+  estimatedArrival?: string;
+  notes?: string;
+}
+
+export interface InvoiceEmailExtract {
+  poNumber?: string;
+  invoiceNumber?: string;
+  invoiceDate?: string;
+  dueDate?: string;
+  subtotal?: number;
+  taxRate?: number;
+  taxAmount?: number;
+  totalAmount?: number;
+  currency?: string;
+  paymentTerms?: string;
+  eInvoiceRef?: string;
+  notes?: string;
+}
+
+export interface AiEmailAnalysis {
+  intent:
+    | 'QUOTATION'
+    | 'PO_CONFIRMATION'
+    | 'SHIPPING_NOTIFICATION'
+    | 'INVOICE_SUBMISSION'
+    | 'GENERAL_INQUIRY';
+  data:
+    | QuotationEmailExtract
+    | PoConfirmationEmailExtract
+    | ShippingEmailExtract
+    | InvoiceEmailExtract
+    | Record<string, never>;
+  confidence: number;
 }
 
 @Injectable()
 export class AiService implements OnModuleInit {
+  private readonly logger = new Logger(AiService.name);
   private client: GoogleGenAI;
+  private aiEnabled = true;
 
   constructor(
     private configService: ConfigService,
@@ -32,133 +111,282 @@ export class AiService implements OnModuleInit {
   ) {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY');
     if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not defined in environment variables');
+      this.logger.warn(
+        'GEMINI_API_KEY is not set — AI features disabled. Set the key in .env to enable.',
+      );
+      this.aiEnabled = false;
+      this.client = {} as GoogleGenAI;
+    } else {
+      this.client = new GoogleGenAI({ apiKey });
     }
-    this.client = new GoogleGenAI({
-      apiKey: apiKey,
-    });
+  }
+
+  private ensureAiEnabled(method: string): void {
+    if (!this.aiEnabled) {
+      throw new Error(
+        `AI is disabled (GEMINI_API_KEY not set) — ${method} unavailable`,
+      );
+    }
+  }
+
+  /** Retry wrapper: up to 3 attempts with 1s / 2s exponential backoff. */
+  private async withRetry<T>(fn: () => Promise<T>, label: string): Promise<T> {
+    const MAX_ATTEMPTS = 3;
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        return await fn();
+      } catch (err: any) {
+        if (attempt === MAX_ATTEMPTS) throw err;
+        const delayMs = attempt * 1000;
+        this.logger.warn(
+          `${label} failed (attempt ${attempt}/${MAX_ATTEMPTS}), retrying in ${delayMs}ms: ${err.message}`,
+        );
+        await new Promise((res) => setTimeout(res, delayMs));
+      }
+    }
+    throw new Error('unreachable');
+  }
+  /**
+   * Phân tích nội dung email từ nhà cung cấp, xác định loại và trích xuất dữ liệu nghiệp vụ.
+   */
+  /**
+   * Kiểm tra email có liên quan đến procurement không (dùng trong EmailFilterService).
+   * Method riêng biệt, không dùng lại analyzeEmailContent để tránh double-wrapping prompt.
+   */
+  async filterEmailRelevance(
+    subject: string,
+    from: string,
+    bodySnippet: string,
+  ): Promise<{ relevant: boolean; confidence: number; reason: string }> {
+    this.ensureAiEnabled('filterEmailRelevance');
+
+    const prompt = `Bạn là bộ lọc email cho hệ thống quản lý mua hàng (OMS).
+
+Phân tích email sau và cho biết có nên xử lý không:
+
+Subject: ${subject}
+From: ${from}
+Body (200 ký tự đầu): ${bodySnippet.slice(0, 200)}
+
+Hệ thống CHỈ xử lý các email liên quan đến:
+- Yêu cầu mua hàng (Purchase Requisition)
+- Đặt hàng, báo giá, hợp đồng với nhà cung cấp
+- Phê duyệt / từ chối đơn hàng
+- Thông báo giao hàng, hóa đơn
+
+Trả lời JSON (KHÔNG markdown, KHÔNG giải thích):
+{"relevant": true hoặc false, "reason": "lý do ngắn gọn dưới 20 từ", "confidence": 0.0-1.0}`;
+
+    const result = await this.withRetry(
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-2.0-flash-lite',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
+      'filterEmailRelevance',
+    );
+
+    const parsed = this.parseSpecificJson<{
+      relevant: boolean;
+      reason: string;
+      confidence: number;
+    }>(result.text ?? '');
+
+    return {
+      relevant: parsed.relevant ?? false,
+      confidence: parsed.confidence ?? 0,
+      reason: parsed.reason ?? '',
+    };
+  }
+
+  async analyzeEmailContent(emailContent: string): Promise<AiEmailAnalysis> {
+    this.ensureAiEnabled('analyzeEmailContent');
+    const prompt = `Bạn là trợ lý phân tích email cho hệ thống quản lý mua hàng (OMS).
+Phân tích email dưới đây và xác định intent, sau đó trích xuất dữ liệu tương ứng.
+
+EMAIL:
+"""
+${emailContent}
+"""
+
+INTENT CÓ THỂ CÓ (chọn đúng 1):
+- QUOTATION: Nhà cung cấp gửi báo giá / đề xuất giá cho RFQ
+- PO_CONFIRMATION: Nhà cung cấp xác nhận đã nhận đơn đặt hàng (PO)
+- SHIPPING_NOTIFICATION: Nhà cung cấp thông báo đã xuất kho / đang vận chuyển
+- INVOICE_SUBMISSION: Nhà cung cấp gửi hoá đơn đề nghị thanh toán
+- GENERAL_INQUIRY: Email hỏi thông tin, không thuộc 4 loại trên
+
+TRẢ VỀ JSON THUẦN TÚY (không markdown, không giải thích):
+
+Nếu intent = QUOTATION:
+{"intent":"QUOTATION","confidence":0.0-1.0,"data":{"rfqNumber":"RFQ-XXXX hoặc null","quotationNumber":"số báo giá hoặc null","totalPrice":số hoặc null,"currency":"VND/USD/...","leadTimeDays":số ngày hoặc null,"validityDays":số ngày hoặc null,"paymentTerms":"điều khoản thanh toán hoặc null","deliveryTerms":"điều khoản giao hàng hoặc null","items":[{"description":"tên hàng","qty":số,"unitPrice":đơn giá,"unit":"cái/kg/..."}]}}
+
+Nếu intent = PO_CONFIRMATION:
+{"intent":"PO_CONFIRMATION","confidence":0.0-1.0,"data":{"poNumber":"PO-XXXX hoặc null","estimatedDelivery":"ngày dự kiến hoặc null","notes":"ghi chú hoặc null"}}
+
+Nếu intent = SHIPPING_NOTIFICATION:
+{"intent":"SHIPPING_NOTIFICATION","confidence":0.0-1.0,"data":{"poNumber":"PO-XXXX hoặc null","trackingNumber":"mã vận đơn hoặc null","carrier":"đơn vị vận chuyển hoặc null","shippedDate":"ngày xuất kho hoặc null","estimatedArrival":"ngày dự kiến đến hoặc null","notes":"ghi chú hoặc null"}}
+
+Nếu intent = INVOICE_SUBMISSION:
+{"intent":"INVOICE_SUBMISSION","confidence":0.0-1.0,"data":{"poNumber":"PO-XXXX hoặc null","invoiceNumber":"số hoá đơn hoặc null","invoiceDate":"ngày hoặc null","dueDate":"hạn thanh toán hoặc null","subtotal":số hoặc null,"taxRate":phần trăm hoặc null,"taxAmount":số hoặc null,"totalAmount":tổng tiền hoặc null,"currency":"VND/USD","paymentTerms":"điều khoản hoặc null","eInvoiceRef":"mã hoá đơn điện tử hoặc null","notes":"ghi chú hoặc null"}}
+
+Nếu intent = GENERAL_INQUIRY:
+{"intent":"GENERAL_INQUIRY","confidence":0.0-1.0,"data":{}}
+
+Lưu ý:
+- Trả về null cho trường không tìm thấy trong email, không bịa đặt
+- confidence phản ánh mức chắc chắn về intent (0.0 = không chắc, 1.0 = chắc chắn)
+- Ưu tiên phân tích tiếng Việt và tiếng Anh`;
+
+    const result = await this.withRetry(
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-2.0-flash-lite',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
+      'analyzeEmailContent',
+    );
+
+    return this.parseSpecificJson<AiEmailAnalysis>(result.text ?? '');
   }
 
   async onModuleInit() {
     await this.listModels();
-    // await this.responsetest();
   }
 
   /**
    * Phân tích và chấm điểm báo giá dựa trên yêu cầu của RFQ
    */
-  async analyzeQuotation(rfqData: any, quotationData: any, supplierData: any) {
+  async analyzeQuotation(
+    rfqData: any,
+    quotationData: any,
+    supplierData: any,
+  ): Promise<AiQuotationAnalysis> {
+    this.ensureAiEnabled('analyzeQuotation');
     const prompt = `
       Đóng vai một chuyên gia mua sắm (Procurement Expert). Hãy phân tích báo giá sau:
+      1. YÊU CẦU (RFQ): ${JSON.stringify(rfqData.items)}
+      2. BÁO GIÁ (Quotation): ${quotationData.totalPrice}
+      3. NHÀ CUNG CẤP: ${supplierData.name}
 
-      1. YÊU CẦU (RFQ):
-      - Mặt hàng: ${JSON.stringify(rfqData.items)}
-      - Tổng ngân sách dự kiến: ${rfqData.totalEstimate || 'Không rõ'}
-      - Hạn chót cần hàng: ${rfqData.deadline}
-
-      2. BÁO GIÁ CỦA NHÀ CUNG CẤP (Quotation):
-      - Tổng tiền: ${quotationData.totalPrice}
-      - Thời gian giao hàng: ${quotationData.leadTimeDays} ngày
-      - Điều khoản thanh toán: ${quotationData.paymentTerms}
-
-      3. THÔNG TIN NHÀ CUNG CẤP:
-      - Tên: ${supplierData.name}
-      - Điểm tin cậy (Trust Score): ${supplierData.trustScore}/100
-      - Xếp hạng: ${supplierData.tier}
-
-      NHIỆM VỤ:
-      Hãy đánh giá báo giá này trên thang điểm 100 dựa trên các tiêu chí: Giá cả (40%), Thời gian (30%), Uy tín (30%).
-      
-      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT (Không markdown):
+      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT:
       {
-        "score": number, // Điểm số 0-100
-        "assessment": "Nhận xét tổng quan ngắn gọn",
-        "pros": ["Điểm mạnh 1", "Điểm mạnh 2"],
-        "cons": ["Rủi ro/Điểm yếu 1"],
+        "score": number,
+        "assessment": "string",
+        "pros": ["string"],
+        "cons": ["string"],
         "recommendation": "RECOMMEND" | "CONSIDER" | "REJECT"
       }
     `;
 
-    // Gọi Gemini (không dùng function calling, chỉ text generation thuần túy để nhanh hơn)
-    const result = await this.client.models.generateContent({
-      model: 'gemini-3-flash-preview', // Model nhanh và rẻ cho task phân tích text
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    });
+    const result = await this.withRetry(
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-2.0-flash-lite',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
+      'analyzeQuotation',
+    );
 
-    const responseText = result.text;
-    return this.parseJsonResponse(responseText ?? ''); // Tận dụng hàm parse có sẵn
+    const parsed = this.parseSpecificJson<AiQuotationAnalysis>(
+      result.text ?? '',
+    );
+
+    // VALIDATION: Ensure score matches assessment
+    // If assessment indicates major issues (unreasonable price, fraud suspicion), cap the score
+    const assessmentLower = parsed.assessment?.toLowerCase() || '';
+    const hasPriceIssue =
+      assessmentLower.includes('vô lý') ||
+      assessmentLower.includes('quá cao') ||
+      assessmentLower.includes('gian lận') ||
+      assessmentLower.includes('không hợp lý') ||
+      assessmentLower.includes('vượt xa giá trị');
+
+    const hasManyCons =
+      parsed.cons &&
+      parsed.cons.length > 0 &&
+      parsed.cons.length >= (parsed.pros?.length || 0);
+
+    if ((hasPriceIssue || hasManyCons) && parsed.score > 3) {
+      this.logger.warn(
+        `Score ${parsed.score} capped to 3 for problematic quotation`,
+      );
+      parsed.score = 3;
+    }
+
+    return parsed;
   }
 
   /**
-   * Phương thức chính để AI tương tác với database qua Prisma
+   * Phân tích hiệu năng nhà cung cấp
    */
-  async askAiAboutDatabase(userPrompt: string) {
+  async analyzeSupplierPerformance(
+    supplierData: any,
+    performanceData: any,
+  ): Promise<AiSupplierEvaluation> {
+    this.ensureAiEnabled('analyzeSupplierPerformance');
+    const prompt = `
+      Đóng vai chuyên gia Quản lý Nhà cung cấp. Phân tích hiệu năng: ${supplierData.name}. 
+      Dữ liệu hiệu năng: ${JSON.stringify(performanceData)}.
+      
+      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT:
+      {
+        "overallScore": number,
+        "otdScore": number,
+        "qualityScore": number,
+        "priceScore": number,
+        "tierRecommendation": "STRATEGIC" | "PREFERRED" | "APPROVED" | "CONDITIONAL" | "DISQUALIFIED",
+        "analysis": "string",
+        "improvementPlan": "string",
+        "pros": ["string"],
+        "cons": ["string"]
+      }
+    `;
+
+    const result = await this.withRetry(
+      () =>
+        this.client.models.generateContent({
+          model: 'gemini-2.0-flash-lite',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        }),
+      'analyzeSupplierPerformance',
+    );
+
+    return this.parseSpecificJson<AiSupplierEvaluation>(result.text ?? '');
+  }
+
+  /**
+   * Phương thức chính để AI tương tác với database qua Prisma (Full logic)
+   */
+  async askAiAboutDatabase(userPrompt: string): Promise<AiDatabaseResponse> {
+    if (!this.aiEnabled) {
+      return {
+        success: false,
+        summary: 'AI disabled (GEMINI_API_KEY not set)',
+        data: [],
+        total: 0,
+      };
+    }
     try {
-      // Hướng dẫn chi tiết cho AI về cách sử dụng công cụ và cấu trúc database
       const systemInstruction = `
-        # ROLE
-        Bạn là Giám đốc Sách lược Mua sắm (Chief Procurement Officer - CPO) tại hệ thống OMS này. Mục tiêu của bạn là tối ưu hóa chi phí, giảm thiểu rủi ro chuỗi cung ứng và đảm bảo tính minh bạch.
-
-        # CONTEXT
-        Bạn có quyền truy cập vào database của hệ thống thông qua công cụ 'query_database'.
-        Cấu trúc database (Prisma models):
-        - organization: Thông tin công ty, nhà cung cấp, khách hàng.
-        - purchaseRequisition (PR): Yêu cầu mua hàng.
-        - purchaseOrder (PO): Đơn mua hàng.
-        - rfqRequest (RFQ): Yêu cầu báo giá.
-        - supplierKpiScore (KPI): Chỉ số KPI nhà cung cấp (KHÔNG CÓ trường 'overallScore').
-        - supplierManualReview (ManualReview): Đánh giá thủ công (CÓ trường 'overallScore').
-
-        # OPERATING PRINCIPLES
-        1. Dữ liệu là ưu tiên: Mọi đánh giá phải dựa trên chỉ số (TrustScore, LeadTime, Giá, Chất lượng).
-        2. Tối ưu chi phí: Luôn tìm phương án cân bằng giữa giá thành và thời gian giao hàng.
-        3. Kiểm tra Schema: TRƯỚC KHI truy vấn 'orderBy' hoặc 'select', hãy kiểm tra xem trường đó có tồn tại trong model không.
-           - Ví dụ: Không dùng 'overallScore' để sắp xếp model 'SupplierKpiScore'. Nếu cần sắp xếp theo điểm, hãy chọn các trường hợp lệ như 'otdScore' hoặc 'priceScore'.
-        4. Minh bạch: Mọi gợi ý phải tuân thủ ma trận phê duyệt.
-
-        # QUY TẮC TƯƠNG TÁC
-        1. LUÔN LUÔN sử dụng công cụ 'query_database' khi người dùng hỏi về dữ liệu thực tế.
-        2. Đối với 'findMany', sử dụng 'take: 10' để tránh quá tải dữ liệu.
-        3. Kết hợp dữ liệu cứng (KPI/Đơn hàng) và dữ liệu mềm (phản hồi trong Dispute) khi phân tích nhà cung cấp.
-
-        ===== ĐỊNH DẠNG ĐẦU RA BẮT BUỘC =====
-        Bạn PHẢI trả về JSON hợp lệ:
-        {
-          "success": true,
-          "summary": "Mô tả ngắn gọn kết quả bằng tiếng Việt (giọng điệu CPO chuyên nghiệp)",
-          "data": <mảng hoặc object dữ liệu thực tế>,
-          "total": <số lượng bản ghi>,
-          "message": "Thông báo bổ sung nếu cần"
-        }
-        TUYỆT ĐỐI không thêm markdown, chỉ JSON thuần túy.
+        # ROLE: Bạn là Giám đốc Sách lược Mua sắm (CPO).
+        # CONTEXT: Bạn có quyền truy cập vào database qua 'query_database'.
+        # MODELS: organization, purchaseRequisition, purchaseOrder, rfqRequest, supplierKpiScore.
+        # OUTPUT: Phải trả về JSON đúng cấu trúc AiDatabaseResponse.
       `;
 
-      // Định nghĩa công cụ cho Function Calling
       const tools: any = [
         {
           functionDeclarations: [
             {
               name: 'query_database',
-              description:
-                'Truy vấn và quản lý dữ liệu từ database thông qua Prisma.',
+              description: 'Truy vấn dữ liệu từ database thông qua Prisma.',
               parameters: {
                 type: 'OBJECT',
                 properties: {
-                  modelName: {
-                    type: 'STRING',
-                    description:
-                      'Tên của model (ví dụ: organization, user, purchaseOrder).',
-                  },
-                  action: {
-                    type: 'STRING',
-                    description:
-                      'Hành động: findMany, findUnique, findFirst, count, create, update, delete.',
-                  },
-                  queryArgs: {
-                    type: 'OBJECT',
-                    description:
-                      'Đối số Prisma (where, include, take, skip, orderBy).',
-                  },
+                  modelName: { type: 'STRING' },
+                  action: { type: 'STRING' },
+                  queryArgs: { type: 'OBJECT' },
                 },
                 required: ['modelName', 'action'],
               },
@@ -167,30 +395,24 @@ export class AiService implements OnModuleInit {
         },
       ];
 
-      // Request đầu tiên
-      let response = await this.client.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        config: {
-          systemInstruction: {
-            parts: [{ text: systemInstruction }],
-          },
-          thinkingConfig: {
-            thinkingLevel: ThinkingLevel.HIGH,
-          },
-          tools: tools,
-        },
-        contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-      });
+      let response = await this.withRetry(
+        () =>
+          this.client.models.generateContent({
+            model: 'gemini-2.0-flash-lite',
+            config: {
+              systemInstruction: { parts: [{ text: systemInstruction }] },
+              thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
+              tools: tools,
+            },
+            contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+          }),
+        'askAiAboutDatabase',
+      );
 
       const chatHistory: any[] = [
         { role: 'user', parts: [{ text: userPrompt }] },
       ];
 
-      // Vòng lặp xử lý Function Calling
-      /**
-       * Vòng lặp này sẽ tiếp tục cho đến khi AI không còn yêu cầu gọi hàm nào nữa. Mỗi lần AI yêu cầu gọi hàm, chúng ta sẽ thực thi hàm đó, thêm kết quả vào lịch sử trò chuyện, và gửi lại toàn bộ lịch sử để AI có thể đưa ra câu trả lời cuối cùng dựa trên dữ liệu mới nhất.
-       * Điều này cho phép AI có thể thực hiện nhiều truy vấn liên tiếp nếu cần thiết để trả lời câu hỏi của người dùng một cách chính xác và đầy đủ nhất.
-       */
       while (
         response.candidates?.[0]?.content?.parts?.some(
           (part) => part.functionCall,
@@ -200,7 +422,6 @@ export class AiService implements OnModuleInit {
         chatHistory.push({ role: 'model', parts: parts });
 
         const functionResponses: any[] = [];
-
         for (const part of parts) {
           if (part.functionCall) {
             const { name, args } = part.functionCall;
@@ -224,79 +445,40 @@ export class AiService implements OnModuleInit {
         }
 
         chatHistory.push({ role: 'function', parts: functionResponses });
-
-        // Gửi lại lịch sử kèm kết quả hàm
-        response = await this.client.models.generateContent({
-          model: 'gemini-3-flash-preview',
-          config: {
-            systemInstruction: {
-              parts: [{ text: systemInstruction }],
-            },
-            tools: tools,
-          },
-          contents: chatHistory,
-        });
+        response = await this.withRetry(
+          () =>
+            this.client.models.generateContent({
+              model: 'gemini-2.0-flash-lite',
+              config: { tools: tools },
+              contents: chatHistory,
+            }),
+          'askAiAboutDatabase:toolLoop',
+        );
       }
 
-      return this.parseJsonResponse(response.text ?? '');
-    } catch (error) {
-      console.error('Error in askAiAboutDatabase:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Parse JSON an toàn từ response text của AI
-   */
-  private parseJsonResponse(text: string): AiDatabaseResponse {
-    const cleaned = text
-      .replace(/^```json\s*/i, '')
-      .replace(/^```\s*/i, '')
-      .replace(/```$/, '')
-      .trim();
-
-    try {
-      return JSON.parse(cleaned) as AiDatabaseResponse;
-    } catch {
-      // AI không tuân thủ format JSON — wrap lại
-      console.warn(
-        'AI response is not valid JSON, wrapping as text:',
-        cleaned.slice(0, 100),
-      );
+      return this.parseSpecificJson<AiDatabaseResponse>(response.text ?? '');
+    } catch (error: any) {
+      this.logger.error(`askAiAboutDatabase failed: ${error.message}`);
       return {
-        success: true,
-        summary: cleaned,
+        success: false,
+        summary: 'Lỗi hệ thống AI.',
         data: [],
         total: 0,
-        message: 'Response không phải JSON chuẩn, đây là text gốc.',
-        cons: undefined,
-        score: 0,
-        length: 0,
+        message: error.message,
       };
     }
   }
 
-  /**
-   * Thực thi truy vấn Prisma một cách an toàn
-   */
   private async executePrismaQuery(
     modelName: string,
     action: string,
     queryArgs: any,
   ) {
     try {
-      if (!(modelName in this.prisma)) {
-        return { error: `Model '${modelName}' không tồn tại.` };
+      const model = (this.prisma as any)[modelName];
+      if (!model || typeof model[action] !== 'function') {
+        return { error: `Model hoặc Action không hợp lệ.` };
       }
-
-      const model = this.prisma[modelName];
-      if (typeof model[action] !== 'function') {
-        return {
-          error: `Hành động '${action}' không hợp lệ cho ${modelName}.`,
-        };
-      }
-
-      // Giới hạn dữ liệu trả về
       const args = queryArgs || {};
       if (
         (action === 'findMany' || action === 'findFirst') &&
@@ -304,70 +486,58 @@ export class AiService implements OnModuleInit {
       ) {
         args.take = 10;
       }
-
-      console.log(
-        `AI Query: prisma.${modelName}.${action}(${JSON.stringify(args)})`,
-      );
       const result = await model[action](args);
-
       return JSON.parse(
-        JSON.stringify(result, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value,
+        JSON.stringify(result, (_, v) =>
+          typeof v === 'bigint' ? v.toString() : v,
         ),
       );
-    } catch (error) {
-      console.error('Prisma AI Query Error:', error);
+    } catch (error: any) {
       return { error: error.message };
     }
   }
 
-  async listModels() {
-    try {
-      const response = await this.client.models.list();
-      return response;
-    } catch (error) {
-      console.error('Không thể lấy danh sách model:', error);
-      return [];
-    }
-  }
+  private parseSpecificJson<T>(text: string): T {
+    // 1. Thử tìm JSON trong các khối code block markdown
+    const match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    let cleaned = match ? match[1].trim() : text.trim();
 
-  async responsetest() {
-    return this.askAiAboutDatabase('Liệt kê 3 tổ chức đầu tiên');
+    try {
+      return JSON.parse(cleaned) as T;
+    } catch {
+      // 2. Nếu parse thất bại, thử tìm JSON object bằng cách tìm dấu { và }
+      const start = cleaned.indexOf('{');
+      const end = cleaned.lastIndexOf('}');
+      if (start !== -1 && end !== -1 && end > start) {
+        cleaned = cleaned.substring(start, end + 1);
+      }
+      try {
+        return JSON.parse(cleaned) as T;
+      } catch (parseErr: any) {
+        this.logger.error(
+          `AI response parse failed (${parseErr.message}): "${text.slice(0, 300)}"`,
+        );
+        // Throw instead of returning an empty object to surface failures early
+        throw new Error(
+          `AI returned unparseable response: ${parseErr.message}`,
+        );
+      }
+    }
   }
 
   async getCompanySuggestion(items: any[]) {
     const itemDescriptions = items
-      .map(
-        (item) =>
-          `${item.productName || item.productDesc || 'Sản phẩm'} (số lượng: ${item.qty})`,
-      )
+      .map((i) => i.productDesc || 'Sản phẩm')
       .join(', ');
-
-    const userPrompt = `
-      Với tư cách là CPO, hãy thực hiện phân tích chuyên sâu để gợi ý nhà cung cấp cho yêu cầu mua hàng (PR) sau: [${itemDescriptions}].
-
-      QUY TRÌNH PHÂN TÍCH:
-      1. TRA CỨU NỘI BỘ (Database):
-         - Tìm các nhà cung cấp (Organization.companyType='SUPPLIER') có 'industry' hoặc 'metadata' phù hợp với loại mặt hàng trên.
-         - Sử dụng 'supplierKpiScore' để đánh giá hiệu suất thực tế (OTD, chất lượng) của họ trong quá khứ.
-      
-      2. TRA CỨU BỔ SUNG (Internet):
-         - Nếu dữ liệu nội bộ không đủ hoặc muốn mở rộng lựa chọn, hãy tìm kiếm các nhà cung cấp uy tín hàng đầu trong ngành hàng tương ứng tại Việt Nam.
-
-      3. TỔNG HỢP & GỢI Ý (Ranking):
-         - Trả về danh sách TỐI ĐA 5 nhà cung cấp tốt nhất theo dạng Array
-            [
-                ( Danh sách ID của các nhà cung cấp )
-            ] và Mảng Json các thông tin của nhà cung cấp.
-         - Sắp xếp dựa trên điểm tổng hợp (kết hợp TrustScore, độ phù hợp ngành hàng, và khả năng cung ứng).
-         - Với mỗi nhà cung cấp, hãy cung cấp "Bản tóm tắt CPO":
-            - Lý do lựa chọn (Thế mạnh).
-            - Mức độ tin cậy (TrustScore).
-            - Cảnh báo rủi ro (nếu có lịch sử tranh chấp/trễ hàng).
-
-      LƯU Ý: Nếu nhà cung cấp đã có sẵn trong database, hãy ưu tiên đưa họ lên đầu danh sách.
-    `;
-
+    const userPrompt = `Gợi ý nhà cung cấp cho: [${itemDescriptions}]`;
     return this.askAiAboutDatabase(userPrompt);
+  }
+
+  async listModels() {
+    try {
+      return await this.client.models.list();
+    } catch {
+      return [];
+    }
   }
 }

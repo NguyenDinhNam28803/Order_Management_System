@@ -1,10 +1,26 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ApprovalModuleService } from './approval-module.service';
 import { ApprovalModuleController } from './approval-module.controller';
 import { PrismaModule } from '../prisma/prisma.module';
+import { BudgetModuleModule } from '../budget-module/budget-module.module';
+import { AutomationModule } from '../common/automation/automation.module';
+import { UserModuleModule } from '../user-module/user-module.module';
+import { AuditModuleModule } from '../audit-module/audit-module.module';
+import { NotificationModuleModule } from '../notification-module/notification-module.module';
+import { GatewayModule } from '../gateway/gateway.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    ConfigModule,
+    PrismaModule,
+    forwardRef(() => BudgetModuleModule),
+    AutomationModule,
+    UserModuleModule,
+    AuditModuleModule,
+    NotificationModuleModule,
+    GatewayModule,
+  ],
   controllers: [ApprovalModuleController],
   providers: [ApprovalModuleService],
   exports: [ApprovalModuleService],

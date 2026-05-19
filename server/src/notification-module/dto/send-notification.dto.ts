@@ -6,24 +6,25 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
+import type { EmailEventType } from '../email-template.service';
 
 export class SendNotificationDto {
   @ApiProperty({ example: '325f187a-c1f6-4a4e-8692-234b6e50334a' })
   @IsUUID('4')
   @IsNotEmpty()
-  recipientId: string;
+  recipientId!: string;
 
   @ApiProperty({ example: 'PR_SUBMITTED' })
   @IsString()
   @IsNotEmpty()
-  eventType: string;
+  eventType!: EmailEventType;
 
   @ApiProperty({
     example: { prNumber: 'PR-2026-001', fullName: 'Nguyen Van A' },
   })
   @IsObject()
   @IsNotEmpty()
-  data: Record<string, any>;
+  data!: Record<string, any>;
 
   @ApiPropertyOptional({ example: 'PURCHASE_REQUISITION' })
   @IsString()

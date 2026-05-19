@@ -13,6 +13,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 
 export interface AuthTokens {
   accessToken: string;
@@ -30,6 +31,7 @@ export class AuthModuleRepository {
     private readonly hashPasswordService: HashPasswordService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly notificationService: NotificationModuleService,
   ) {}
 
   /**
@@ -70,6 +72,22 @@ export class AuthModuleRepository {
 
     const tokens = await this.generateToken(user);
     await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
+
+    void this.notificationService
+      .sendDirectEmail(
+        user.email,
+        '[SPMS] Đăng nhập thành công',
+        'USER_LOGIN',
+        {
+          name: user.fullName || user.email,
+          loginAt: new Date().toLocaleString('vi-VN'),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          dashUrl:
+            this.configService.get('FRONTEND_URL') ??
+            'http://procuresmart.io.vn/',
+        },
+      )
+      .catch(() => {});
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, hashedRefreshToken, ...userInfo } = user;
@@ -113,7 +131,6 @@ export class AuthModuleRepository {
       const tokens = await this.generateToken(user);
       await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash: _, hashedRefreshToken: __, ...userInfo } = user;
       return {
         user: userInfo,
@@ -175,6 +192,20 @@ export class AuthModuleRepository {
         throw new ForbiddenException('Access Denied');
       }
 
+      // Kiểm tra refresh token hết hạn
+      if (
+        user.refreshTokenExpiresAt &&
+        user.refreshTokenExpiresAt < new Date()
+      ) {
+        await this.prisma.user.update({
+          where: { id: user.id },
+          data: { hashedRefreshToken: null, refreshTokenExpiresAt: null },
+        });
+        throw new ForbiddenException(
+          'Refresh token đã hết hạn, vui lòng đăng nhập lại',
+        );
+      }
+
       const refreshTokenMatches = await bcrypt.compare(
         refreshToken,
         user.hashedRefreshToken,
@@ -234,12 +265,14 @@ export class AuthModuleRepository {
     fullName: string;
     role: UserRole;
     orgId: string;
+    deptId: string | null;
   }): Promise<AuthTokens> {
     const payload = {
       sub: user.id,
       email: user.email,
       role: user.role,
       orgId: user.orgId,
+      deptId: user.deptId,
     };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -271,11 +304,18 @@ export class AuthModuleRepository {
   }
 
   private async updateRefreshTokenHash(userId: string, refreshToken: string) {
-    const hash = await bcrypt.hash(refreshToken, 10);
+    const hash = await bcrypt.hash(refreshToken, 12);
+    const refreshTokenTtlDays = this.configService.get<number>(
+      'REFRESH_TOKEN_TTL_DAYS',
+      7,
+    );
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + refreshTokenTtlDays);
     await this.prisma.user.update({
       where: { id: userId },
       data: {
         hashedRefreshToken: hash,
+        refreshTokenExpiresAt: expiresAt,
       },
     });
   }

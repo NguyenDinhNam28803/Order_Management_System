@@ -12,17 +12,23 @@ import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { EmailService } from './email.service';
 import { EmailTemplatesService } from './email-template.service';
 import { IsEmail, IsNotEmpty, IsObject, IsString } from 'class-validator';
+import type { EmailEventType } from './email-template.service';
 
 export class EmailRequest {
   @ApiProperty({ example: 'user@gmail.com', description: 'Email người nhận' })
   @IsEmail()
   @IsNotEmpty()
-  to: string;
+  to!: string;
 
   @ApiProperty({ example: 'Thông báo đơn hàng', description: 'Tiêu đề email' })
   @IsString()
   @IsNotEmpty()
-  subject: string;
+  subject!: string;
+
+  @ApiProperty({ example: 'USER_REGISTERED', description: 'Loại email' })
+  @IsString()
+  @IsNotEmpty()
+  eventType!: EmailEventType;
 
   @ApiProperty({
     example: { orderId: '123', status: 'Approved' },
@@ -30,7 +36,7 @@ export class EmailRequest {
   })
   @IsObject()
   @IsNotEmpty()
-  data: Record<string, any>;
+  data!: Record<string, any>;
 }
 
 @ApiTags('Notification Management')
@@ -120,7 +126,7 @@ export class NotificationModuleController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   async sendEmailNotification(@Body() data: EmailRequest) {
-    const html = this.emailTemplatesService.render(data.subject, data.data);
+    const html = this.emailTemplatesService.render(data.eventType, data.data);
     await this.emailService.sendEmail(data.to, data.subject, html);
   }
 }

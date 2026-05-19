@@ -1,96 +1,116 @@
-"use client";
+﻿"use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useProcurement } from "../context/ProcurementContext";
 import Sidebar from "./Sidebar";
+import ToastContainer from "./Toast";
+import GlobalAISearch from "./GlobalAISearch";
+import Topbar from "./Topbar";
 
 export default function AppContent({ children }: { children: React.ReactNode }) {
-    const { currentUser, notifications } = useProcurement();
+    const { currentUser, isAuthChecking } = useProcurement();
     const pathname = usePathname();
-    const router = useRouter();
+    const router   = useRouter();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const isWhiteListed = pathname === "/login" || pathname === "/register";
+    const isAuthPage = pathname === "/login" || pathname === "/register";
+
+    const isExternalPage =
+        pathname.startsWith("/rfq/quote") ||
+        pathname.startsWith("/po/confirm") ||
+        pathname.startsWith("/grn/update") ||
+        pathname.startsWith("/invoice/submit");
+
+    const isWhiteListed = isAuthPage || isExternalPage;
 
     useEffect(() => {
-        if (!currentUser && !isWhiteListed) {
-            router.push("/login");
-        }
-        if (currentUser && isWhiteListed) {
-            router.push("/");
-        }
-    }, [currentUser, isWhiteListed, router]);
+        if (isAuthChecking) return;
+        if (!currentUser && !isWhiteListed) router.push("/login");
+        if (currentUser  && isAuthPage)     router.push("/");
+    }, [currentUser, isAuthChecking, isWhiteListed, isAuthPage, router]);
+
+    // Close sidebar on route change (mobile UX)
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSidebarOpen(false);
+    }, [pathname]);
+
+    if (isAuthChecking && !isExternalPage) {
+        return (
+            <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(#2563EB 0.5px, transparent 0.5px)', backgroundSize: '28px 28px' }}></div>
+
+                <div className="flex flex-col items-center gap-10 relative z-10">
+                    <div className="relative">
+                        <div className="h-16 w-16 rounded-xl bg-white border-[3px] border-[#2563EB] flex items-center justify-center shadow-xl shadow-[#2563EB]/10 relative overflow-hidden">
+                            <span className="text-[#0F172A] text-lg font-black tracking-tighter select-none">PS</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#2563EB]/8 to-transparent animate-[shimmer_2s_infinite]" />
+                        </div>
+                        <div className="absolute -inset-4 bg-[#2563EB]/8 rounded-full blur-xl animate-pulse-slow -z-10"></div>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-6">
+                        <div className="flex flex-col items-center">
+                            <h2 className="text-[#0F172A] text-base font-black tracking-tight mb-0.5">ProcureSmart</h2>
+                            <p className="text-[#2563EB] text-[9px] font-black uppercase tracking-[0.3em] opacity-80">Enterprise ERP System</p>
+                        </div>
+
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="flex items-center gap-3">
+                                <span className="text-[#475569] text-[10px] font-bold uppercase tracking-[0.2em] animate-pulse">ĐANG TẢI DỮ LIỆU</span>
+                                <div className="flex gap-1">
+                                    <div className="w-1 h-1 rounded-full bg-[#2563EB] animate-bounce [animation-delay:-0.3s]"></div>
+                                    <div className="w-1 h-1 rounded-full bg-[#2563EB] animate-bounce [animation-delay:-0.15s]"></div>
+                                    <div className="w-1 h-1 rounded-full bg-[#2563EB] animate-bounce"></div>
+                                </div>
+                            </div>
+
+                            <div className="relative w-72 h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
+                                <div className="absolute inset-y-0 left-0 bg-[#2563EB] rounded-full animate-[loading-bar_2s_ease-in-out_infinite]" style={{ width: '45%' }}>
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_1.5s_infinite]"></div>
+                                </div>
+                            </div>
+
+                            <span className="text-[9px] font-semibold text-[#94A3B8] uppercase tracking-widest">Hệ thống đang được khởi tạo, vui lòng đợi...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="absolute bottom-10 left-0 right-0 flex justify-center">
+                    <span className="text-[8px] font-bold text-[#94A3B8]/60 uppercase tracking-[0.3em]">ENTERPRISE BLUE STEEL • 2026</span>
+                </div>
+            </div>
+        );
+    }
 
     if (!currentUser && !isWhiteListed) return null;
 
-    if (isWhiteListed) return <main className="min-h-screen bg-slate-50">{children}</main>;
+    if (isWhiteListed) return (
+        <main className="animate-in fade-in duration-500 min-h-screen bg-[#F8FAFC] text-[#0F172A]">
+            {children}
+        </main>
+    );
 
     return (
-        <div className="flex h-screen overflow-hidden bg-slate-50">
-            {/* Toast Notifications */}
-            <div className="fixed top-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
-                {notifications && notifications
-                    .filter((n: any) => !n.role || n.role === currentUser?.role)
-                    .map((n: any) => (
-                    <div 
-                        key={n.id}
-                        className={`pointer-events-auto min-w-[320px] p-5 rounded-[24px] shadow-2xl border border-white/20 backdrop-blur-xl animate-in slide-in-from-right-8 duration-500 overflow-hidden flex items-center gap-4 ${
-                            n.type === 'success' ? 'bg-emerald-500/95 text-white shadow-emerald-200/40' :
-                            n.type === 'error' ? 'bg-red-500/95 text-white shadow-red-200/40' :
-                            n.type === 'warning' ? 'bg-amber-400/95 text-erp-navy shadow-amber-200/40' :
-                            'bg-erp-blue/95 text-white shadow-erp-blue/20'
-                        }`}
-                    >
-                        <div className="h-10 w-10 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
-                            {n.type === 'success' && <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>}
-                            {n.type === 'error' && <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>}
-                            {n.type === 'warning' && <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>}
-                            {n.type === 'info' && <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
-                        </div>
-                        <div className="flex-1 text-sm font-black uppercase tracking-tight leading-tight">
-                            {n.message}
-                        </div>
-                    </div>
-                ))}
-            </div>
+        <div className="flex h-screen overflow-hidden bg-[#F8FAFC]">
+            <ToastContainer />
+            <Sidebar
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+            />
 
-            {/* Sidebar Cố định */}
-            <Sidebar />
-            
-            {/* Vùng nội dung chính */}
-            <div className="flex-1 flex flex-col overflow-hidden ml-16 transition-all duration-300">
-                {/* Header Doanh nghiệp */}
-                <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 shadow-sm">
-                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                        {pathname === "/" ? "Bảng điều khiển Hệ thống" : `MODULE / ${pathname.split('/').pop()?.toUpperCase() || ""}`}
-                    </div>
-                    <div className="flex items-center gap-6">
-                        <div className="relative">
-                           <div className="h-4 w-4 bg-red-500 rounded-full absolute -top-1 -right-1 border-2 border-white flex items-center justify-center text-[8px] font-bold text-white">2</div>
-                           <div className="text-slate-400 hover:text-erp-navy transition-colors cursor-pointer">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
-                           </div>
-                        </div>
-                        <div className="flex items-center gap-3 pl-6 border-l border-slate-100">
-                            <div className="flex flex-col text-right">
-                                <span className="text-xs font-black text-slate-700 leading-none">{currentUser?.name || currentUser?.fullName}</span>
-                                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Hoạt động</span>
-                            </div>
-                            <div className="h-9 w-9 rounded-xl bg-erp-navy flex items-center justify-center text-white text-[11px] font-black shadow-lg shadow-erp-navy/20 cursor-pointer hover:scale-105 transition-transform">
-                                {currentUser?.icon || currentUser?.fullName?.substring(0, 2).toUpperCase() || "JD"}
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                {/* Main Content Area */}
-                <main className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
-                    <div className="max-w-screen-2xl mx-auto pb-12">
+            {/* Main content — offset by sidebar width on md+ */}
+            <div className="flex-1 flex flex-col h-screen overflow-hidden md:ml-[180px]">
+                <Topbar onMenuClick={() => setSidebarOpen(prev => !prev)} />
+                <main className="flex-1 overflow-y-auto bg-[#F8FAFC] relative">
+                    <div className="w-full p-4 md:p-6 pb-32">
                         {children}
                     </div>
                 </main>
             </div>
+
+            <GlobalAISearch />
         </div>
     );
 }
