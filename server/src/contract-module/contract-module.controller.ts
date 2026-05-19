@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Request,
-  BadRequestException,
 } from '@nestjs/common';
 import { ContractModuleService } from './contract-module.service';
 import { CreateContractDto } from './dto/create-contract.dto';
@@ -50,18 +49,12 @@ export class ContractModuleController {
    * @returns Trạng thái hợp đồng sau khi gửi duyệt
    */
   @Post(':id/submit')
-  @ApiOperation({
-    summary: 'Gửi hợp đồng để phê duyệt (tự động theo ApprovalMatrix)',
-  })
+  @ApiOperation({ summary: 'Gửi hợp đồng để phê duyệt' })
   submitForApproval(
     @Param('id') id: string,
-    @Request() req: { user: JwtPayload },
+    @Body('approverId') approverId: string,
   ) {
-    return this.contractModuleService.submitForApproval(
-      id,
-      req.user.sub,
-      req.user.orgId,
-    );
+    return this.contractModuleService.submitForApproval(id, approverId);
   }
 
   /**

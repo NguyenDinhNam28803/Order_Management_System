@@ -95,10 +95,3 @@ export class CreateBudgetAllocationDto {
 export class UpdateBudgetAllocationDto extends PartialType(
   CreateBudgetAllocationDto,
 ) {}
-
-export class RejectBudgetAllocationDto {
-  @ApiProperty({ example: 'Vượt quá hạn mức ngân sách năm' })
-  @IsString()
-  @IsNotEmpty()
-  rejectedReason?: string;
-}

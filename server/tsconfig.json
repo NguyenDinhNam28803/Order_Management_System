@@ -22,9 +22,8 @@
     "noFallthroughCasesInSwitch": false,
     "types": ["node", "jest"],
     "paths": {
-      "@app/*": ["./src/app/*"],
-      "@common/*": ["./src/common/*"],
-      "generated/*": ["./generated/*"]
+      "generated/*": ["generated/*"],
+      "src/*": ["src/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

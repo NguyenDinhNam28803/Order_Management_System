@@ -142,23 +142,13 @@ export class BudgetModuleController {
    * Cập nhật chu kỳ ngân sách
    */
   @Patch('periods/:id')
-  @Roles(
-    UserRole.FINANCE,
-    UserRole.DIRECTOR,
-    UserRole.CEO,
-    UserRole.PLATFORM_ADMIN,
-  )
-  @ApiOperation({
-    summary: 'Cập nhật chu kỳ ngân sách',
-    description:
-      'Cập nhật thông tin của một chu kỳ ngân sách hiện có theo mã ID. Dành cho vai trò Tài chính, Giám đốc hoặc Quản trị hệ thống.',
-  })
+  @Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Cập nhật chu kỳ ngân sách' })
   async updatePeriod(
     @Param('id') id: string,
     @Body() dto: UpdateBudgetPeriodDto,
-    @Request() user: JwtPayload,
   ) {
-    return this.budgetService.updatePeriod(id, dto, user);
+    return this.budgetService.updatePeriod(id, dto);
   }
 
   /**

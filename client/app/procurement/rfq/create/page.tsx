@@ -101,8 +101,8 @@ export default function CreateRFQPage() {
 
     // Filter organizations to exclude current user's org
     const realVendors = React.useMemo(() => 
-        (organizations || []).filter((o: Organization) => o.id !== currentUser?.orgId),
-    [organizations, currentUser?.orgId]);
+        (organizations || []).filter((o: any) => o.id !== (currentUser as any)?.orgId),
+    [organizations, currentUser]);
 
     const filteredVendors = realVendors.filter((v: Organization) =>
         v.name.toLowerCase().includes(vendorSearch.toLowerCase()) || 
@@ -278,7 +278,7 @@ export default function CreateRFQPage() {
             // Updated to match backend CreateRfqDto
             const payload = {
                 prId: prId,
-                title: targetPR ? `RFQ for ${targetPR.prNumber || targetPR.id}` : `RFQ for ${prId}`,
+                title: `RFQ for ${targetPR?.prNumber || targetPR?.id}`,
                 description: note,
                 deadline: new Date(deadline).toISOString(),
                 supplierIds: selectedVendors.map(v => v.id),
