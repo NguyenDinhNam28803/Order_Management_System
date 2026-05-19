@@ -294,7 +294,7 @@ export default function SupplierPO() {
                     <span className="text-xs text-slate-900">Tổng PO: {pos.length} | PO của bạn: {supplierPOs.length}</span>
                     <button 
                         onClick={() => setShowAll(!showAll)} 
-                        className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl ${showAll ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-slate-600 border border-[rgba(148,163,184,0.1)]'}`}
+                        className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl ${showAll ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)]'}`}
                     >
                         {showAll ? 'Chỉ hiện PO của tôi' : 'Hiện tất cả PO'}
                     </button>

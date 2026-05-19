@@ -129,7 +129,7 @@ export default function CostCentersPage() {
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm Cost Center
                 </button>
@@ -144,7 +144,7 @@ export default function CostCentersPage() {
                     <div className="flex items-center gap-4">
                         <button 
                             onClick={toggleMyDept}
-                            className={`text-[10px] font-black px-4 py-2 rounded-xl transition-all border ${isMyDept ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-transparent text-slate-600 border-[rgba(148,163,184,0.3)] hover:border-[#2563EB]/30'}`}
+                            className={`text-[10px] font-black px-4 py-2 rounded-xl transition-all border ${isMyDept ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-transparent text-white border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30'}`}
                         >
                             {isMyDept ? "PHÒNG BAN CỦA TÔI" : "TẤT CẢ ĐƠN VỊ"}
                         </button>

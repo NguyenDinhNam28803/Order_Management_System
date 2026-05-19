@@ -54,7 +54,7 @@ export default function MatchingPage() {
                             </div>
                             <button
                                 onClick={() => setDisputeResolved(true)}
-                                className="bg-white text-red-600 border border-red-200 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                                className="bg-white text-red-600 border border-red-200 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm"
                             >
                                 Giải quyết tranh chấp (Admin)
                             </button>

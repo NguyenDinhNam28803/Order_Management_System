@@ -71,7 +71,7 @@ export default function RegisterPage() {
 
                     <div className="space-y-6">
                         <div className="flex items-center gap-4 group">
-                            <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                            <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
                                 <ShieldCheck size={20} />
                             </div>
                             <div>
@@ -80,7 +80,7 @@ export default function RegisterPage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-4 group">
-                            <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                            <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
                                 <Zap size={20} />
                             </div>
                             <div>
@@ -175,7 +175,7 @@ export default function RegisterPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-xl shadow-xl shadow-emerald-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 relative group overflow-hidden mt-6"
+                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl shadow-xl shadow-emerald-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 relative group overflow-hidden mt-6"
                             >
                                 {isLoading ? (
                                     <div className="h-5 w-5 border-3 border-white/20 border-t-white rounded-full animate-spin"></div>

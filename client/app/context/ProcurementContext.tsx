@@ -689,7 +689,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             { q: 4, start: `${fiscalYear}-10-01`, end: `${fiscalYear}-12-31` },
         ];
         
+        // Chạy song song 4 quý thay vì tuần tự
         const quarterResults = await Promise.all(quarters.map(async (item) => {
+            // 1. Kiểm tra xem period đã tồn tại chưa (tránh lỗi unique constraint)
             const existingPeriod = state.budgetPeriods.find(
                 p => p.fiscalYear === fiscalYear &&
                      p.periodType === 'QUARTERLY' &&
@@ -723,11 +725,13 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 period = periodData.data || periodData;
             }
 
+            // 2. Kiểm tra allocation đã tồn tại chưa
             const existingAlloc = state.budgetAllocations.find(
                 a => a.budgetPeriodId === period.id && a.costCenterId === costCenterId
             );
             if (existingAlloc) return false;
 
+            // 3. Tạo Budget Allocation cho quý
             const allocResp = await apiFetch('/budgets/allocations', {
                 method: 'POST',
                 body: JSON.stringify({
@@ -745,6 +749,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
             return allocResp.ok;
         }));
+
         const successCount = quarterResults.filter(Boolean).length;
         
         if (successCount > 0) {

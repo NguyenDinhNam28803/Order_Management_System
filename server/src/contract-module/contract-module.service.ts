@@ -295,13 +295,7 @@ export class ContractModuleService {
         const buyerUsers = await this.prisma.user.findMany({
           where: {
             orgId: contract.orgId,
-            role: {
-              in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as (
-                | 'PROCUREMENT'
-                | 'DIRECTOR'
-                | 'CEO'
-              )[],
-            },
+            role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as ('PROCUREMENT' | 'DIRECTOR' | 'CEO')[] },
             isActive: true,
           },
           select: { email: true, fullName: true },

@@ -271,7 +271,7 @@ export default function SpendTrackingPage() {
                                         className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
                                             currentPage === page
                                                 ? 'bg-[#2563EB] text-white'
-                                                : 'bg-[#F1F5F9] text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+                                                : 'bg-[#F1F5F9] text-white hover:text-white hover:bg-slate-100'
                                         }`}
                                     >
                                         {page}

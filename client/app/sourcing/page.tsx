@@ -116,7 +116,7 @@ export default function SourcingPage() {
                     </p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 px-5 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all">
+                    <button className="flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all">
                         <Filter size={16} /> Bộ lọc nâng cao
                     </button>
                     <Link href="/sourcing/rfq-create">
@@ -368,7 +368,7 @@ function POManagement({ pos }: { pos: PO[] | null }) {
             {(pos || []).map((po) => (
                 <div key={po.id} className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-6 flex justify-between items-center group hover:border-[#2563EB]/20 transition-all shadow-lg shadow-[#2563EB]/5">
                     <div className="flex gap-6 items-center">
-                        <div className="w-16 h-16 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center font-black text-white text-lg group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-inner">***</div>
+                        <div className="w-16 h-16 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center font-black text-white text-lg group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-inner">***</div>
                         <div>
                             <h4 className="font-black text-slate-900 text-base uppercase tracking-tight">{po.vendor}</h4>
                             <span className="text-[11px] font-black text-[#2563EB] uppercase tracking-[0.1em]">{(po.total || 0).toLocaleString()} ₫ | {getStatusLabel(po.status)}</span>

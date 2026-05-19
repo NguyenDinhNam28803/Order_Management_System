@@ -72,7 +72,7 @@ export default function SpendReportPage() {
                     <p className="text-sm font-bold text-slate-900 mt-1">DỮ LIỆU ĐƯỢC TỔNG HỢP THEO GIỜ TỪ HỆ THỐNG GIAO DỊCH LÕI</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-6 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
+                    <button className="flex items-center gap-2 px-6 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                         <Filter size={14} /> Bộ lọc
                     </button>
                     <button className="flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20">

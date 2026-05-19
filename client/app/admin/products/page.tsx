@@ -319,7 +319,7 @@ export default function ProductAdminPage() {
                 </div>
                 <div className="flex gap-4">
                     <button 
-                        className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                        className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                         onClick={() => {
                             if (activeTab === "Sản phẩm") {
                                 setEditingProduct(null);
@@ -348,7 +348,7 @@ export default function ProductAdminPage() {
                                     className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                                         activeTab === tab 
                                         ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
-                                        : "text-slate-600 hover:text-[#2563EB] hover:bg-[#2563EB]/10"
+                                        : "text-white hover:text-[#2563EB] hover:bg-[#2563EB]/10"
                                     }`}
                                 >
                                     {tab}

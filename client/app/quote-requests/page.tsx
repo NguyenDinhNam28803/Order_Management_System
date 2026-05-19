@@ -90,7 +90,7 @@ export default function QuoteRequestPage() {
                 <div className="flex items-center gap-2">
                     <button 
                         onClick={() => setStatusFilter("ALL")}
-                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === 'ALL' ? 'bg-[#2563EB] text-white shadow-sm' : 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === 'ALL' ? 'bg-[#2563EB] text-white' : 'bg-[#FFFFFF] text-white hover:bg-slate-100'}`}
                     >
                         Tất cả
                     </button>
@@ -100,7 +100,7 @@ export default function QuoteRequestPage() {
                             <button 
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
-                                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === status ? 'bg-[#2563EB] text-white shadow-sm' : 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === status ? 'bg-[#2563EB] text-white' : 'bg-[#FFFFFF] text-white hover:bg-slate-100'}`}
                             >
                                 {label}
                             </button>

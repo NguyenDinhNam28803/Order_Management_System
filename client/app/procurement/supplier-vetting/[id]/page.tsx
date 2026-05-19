@@ -75,7 +75,7 @@ const CHECK_LABELS: Record<string, string> = {
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   DRAFT:            { label: "Nháp",          cls: "text-black bg-slate-500/10 border-slate-500/20" },
-  IN_REVIEW:        { label: "Đang kiểm tra", cls: "text-[#3B82F6] bg-[#2563EB]/10 border-[#2563EB]/20" },
+  IN_REVIEW:        { label: "Đang kiểm tra", cls: "text-blue-600 bg-blue-600/10 border-blue-600/20" },
   PENDING_APPROVAL: { label: "Chờ phê duyệt", cls: "text-black bg-amber-500/10 border-amber-500/20" },
   APPROVED:         { label: "Đã duyệt",      cls: "text-black bg-emerald-500/10 border-emerald-500/20" },
   REJECTED:         { label: "Từ chối",       cls: "text-red-400 bg-red-500/10 border-red-500/20" },
@@ -111,9 +111,9 @@ function CheckRow({
   }[check.checkStatus] ?? <Clock size={16} className="text-black" />;
 
   return (
-    <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] overflow-hidden">
+    <div className="rounded-xl border border-slate-200 bg-slate-100 overflow-hidden">
       <div
-        className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#1C2128] transition-colors"
+        className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-slate-800 transition-colors"
         onClick={() => editable && setOpen((o) => !o)}
       >
         {statusIcon}
@@ -124,16 +124,16 @@ function CheckRow({
           <span className="text-xs text-slate-900">{check.verifiedBy.fullName ?? check.verifiedBy.email}</span>
         )}
         {editable && (
-          <span className="text-xs text-[#3B82F6]">{open ? "Thu gọn" : "Cập nhật"}</span>
+          <span className="text-xs text-blue-600">{open ? "Thu gọn" : "Cập nhật"}</span>
         )}
       </div>
 
       {open && (
-        <div className="border-t border-[rgba(240,246,252,0.06)] px-4 py-3 space-y-3">
+        <div className="border-t border-slate-200/50 px-4 py-3 space-y-3">
           {check.fileUrl && (
             <div className="text-xs text-slate-900">
               File hiện tại:{" "}
-              <a href={check.fileUrl} target="_blank" rel="noopener noreferrer" className="text-[#3B82F6] hover:underline flex items-center gap-1 inline-flex">
+              <a href={check.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1 inline-flex">
                 Xem <ExternalLink size={10} />
               </a>
             </div>
@@ -144,7 +144,7 @@ function CheckRow({
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
               placeholder="https://..."
-              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/50"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-blue-600/50"
             />
           </div>
           <div>
@@ -153,7 +153,7 @@ function CheckRow({
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/50 resize-none"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-blue-600/50 resize-none"
             />
           </div>
           <div className="flex gap-2">
@@ -163,7 +163,7 @@ function CheckRow({
             <button disabled={saving} onClick={() => save("FAILED")} className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-500 disabled:opacity-50">
               {saving ? <Loader2 size={12} className="animate-spin" /> : <XCircle size={12} />}Failed
             </button>
-            <button disabled={saving} onClick={() => save("SKIPPED")} className="flex items-center gap-1.5 rounded-lg border border-[rgba(240,246,252,0.08)] px-3 py-1.5 text-xs text-slate-900 hover:text-slate-900">
+            <button disabled={saving} onClick={() => save("SKIPPED")} className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-900 hover:text-slate-900">
               <SkipForward size={12} />Skip
             </button>
           </div>
@@ -180,11 +180,11 @@ function ApproveModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: 
   const [loading, setLoading] = useState(false);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-slate-100 p-6 shadow-xl">
         <h2 className="mb-4 text-lg font-bold text-slate-900">Phê duyệt nhà cung cấp</h2>
         <div className="mb-4">
           <label className="mb-1 block text-xs text-slate-900">Xếp hạng (Tier)</label>
-          <select value={tier} onChange={(e) => setTier(e.target.value)} className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-2 text-sm text-slate-900 focus:outline-none">
+          <select value={tier} onChange={(e) => setTier(e.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none">
             <option value="APPROVED">APPROVED</option>
             <option value="PREFERRED">PREFERRED</option>
             <option value="CONDITIONAL">CONDITIONAL</option>
@@ -192,7 +192,7 @@ function ApproveModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: 
         </div>
         <div className="mb-4">
           <label className="mb-1 block text-xs text-slate-900">Ghi chú</label>
-          <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-2 text-sm text-slate-900 focus:outline-none resize-none" />
+          <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none resize-none" />
         </div>
         <div className="flex justify-end gap-3">
           <button onClick={onClose} className="px-4 py-2 text-sm text-slate-900 hover:text-slate-900">Huỷ</button>
@@ -215,11 +215,11 @@ function RejectModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: (
   const [loading, setLoading] = useState(false);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-xl border border-[rgba(240,246,252,0.1)] bg-[#F1F5F9] p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-slate-100 p-6 shadow-xl">
         <h2 className="mb-4 text-lg font-bold text-slate-900">Từ chối nhà cung cấp</h2>
         <div className="mb-4">
           <label className="mb-1 block text-xs text-slate-900">Lý do từ chối *</label>
-          <textarea rows={4} value={reason} onChange={(e) => setReason(e.target.value)} className="w-full rounded-lg border border-[rgba(240,246,252,0.08)] bg-[#FFFFFF] px-3 py-2 text-sm text-slate-900 focus:outline-none resize-none" />
+          <textarea rows={4} value={reason} onChange={(e) => setReason(e.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none resize-none" />
         </div>
         <div className="flex justify-end gap-3">
           <button onClick={onClose} className="px-4 py-2 text-sm text-slate-900 hover:text-slate-900">Huỷ</button>
@@ -322,15 +322,15 @@ export default function SupplierVettingDetailPage() {
   const canApprove = vetting?.status === "PENDING_APPROVAL" || vetting?.status === "IN_REVIEW";
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-[#FFFFFF]"><Loader2 size={28} className="animate-spin text-[#3B82F6]" /></div>;
+    return <div className="flex items-center justify-center py-20"><Loader2 size={28} className="animate-spin text-blue-600" /></div>;
   }
 
   if (error || !vetting) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#FFFFFF]">
+      <div className="flex flex-col items-center justify-center gap-4 py-20">
         <AlertCircle size={36} className="text-red-400" />
         <p className="text-sm text-red-400">{error || "Không tìm thấy dữ liệu"}</p>
-        <Link href="/procurement/supplier-vetting" className="text-sm text-[#3B82F6] hover:underline">← Quay lại</Link>
+        <Link href="/procurement/supplier-vetting" className="text-sm text-blue-600 hover:underline">← Quay lại</Link>
       </div>
     );
   }
@@ -339,47 +339,45 @@ export default function SupplierVettingDetailPage() {
   const failed = vetting.checks.filter((c) => c.checkStatus === "FAILED").length;
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] px-6 py-8">
+    <main className="p-6 space-y-6">
       {/* Header */}
-      <div className="mb-6">
-        <Link href="/procurement/supplier-vetting" className="mb-3 flex items-center gap-1 text-xs text-slate-900 hover:text-slate-900">
-          <ChevronLeft size={14} />Danh sách xét duyệt
-        </Link>
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <UserCheck size={22} className="text-[#3B82F6]" />
-              <h1 className="text-xl font-bold text-slate-900">{vetting.supplier.name}</h1>
-              <StatusBadge status={vetting.status} />
-            </div>
-            <p className="mt-1 text-xs text-slate-900">
-              Tạo bởi {vetting.requestedBy.fullName ?? vetting.requestedBy.email} •{" "}
-              {new Date(vetting.createdAt).toLocaleDateString("vi-VN")}
-              {vetting.assignedTo && ` • Phụ trách: ${vetting.assignedTo.fullName ?? vetting.assignedTo.email}`}
-            </p>
+      <div className="page-header">
+        <div>
+          <Link href="/procurement/supplier-vetting" className="mb-3 flex items-center gap-1 text-xs text-slate-900 hover:text-slate-900">
+            <ChevronLeft size={14} />Danh sách xét duyệt
+          </Link>
+          <div className="flex items-center gap-3">
+            <UserCheck size={22} className="text-blue-600" />
+            <h1 className="page-title">{vetting.supplier.name}</h1>
+            <StatusBadge status={vetting.status} />
           </div>
-          <div className="flex items-center gap-2">
-            {editable && (
-              <button
-                disabled={submitting}
-                onClick={submit}
-                className="flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2563EB] disabled:opacity-50"
-              >
-                {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-                Nộp phê duyệt
+          <p className="mt-1 text-xs text-slate-900">
+            Tạo bởi {vetting.requestedBy.fullName ?? vetting.requestedBy.email} •{" "}
+            {new Date(vetting.createdAt).toLocaleDateString("vi-VN")}
+            {vetting.assignedTo && ` • Phụ trách: ${vetting.assignedTo.fullName ?? vetting.assignedTo.email}`}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {editable && (
+            <button
+              disabled={submitting}
+              onClick={submit}
+              className="btn-primary flex items-center gap-2 disabled:opacity-50"
+            >
+              {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+              Nộp phê duyệt
+            </button>
+          )}
+          {canApprove && (
+            <>
+              <button onClick={() => setShowApprove(true)} className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
+                <ThumbsUp size={14} />Phê duyệt
               </button>
-            )}
-            {canApprove && (
-              <>
-                <button onClick={() => setShowApprove(true)} className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
-                  <ThumbsUp size={14} />Phê duyệt
-                </button>
-                <button onClick={() => setShowReject(true)} className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500">
-                  <ThumbsDown size={14} />Từ chối
-                </button>
-              </>
-            )}
-          </div>
+              <button onClick={() => setShowReject(true)} className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500">
+                <ThumbsDown size={14} />Từ chối
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -391,7 +389,7 @@ export default function SupplierVettingDetailPage() {
         {/* Left — supplier info + stats */}
         <div className="space-y-4">
           {/* Supplier info */}
-          <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] p-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-100 p-4">
             <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900"><Building2 size={14} />Thông tin NCC</h3>
             <dl className="space-y-2 text-xs">
               {[
@@ -418,28 +416,28 @@ export default function SupplierVettingDetailPage() {
           </div>
 
           {/* Stats */}
-          <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] p-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-100 p-4">
             <h3 className="mb-3 text-sm font-semibold text-slate-900">Tiến độ kiểm tra</h3>
             <div className="flex items-end gap-4">
               <div className="text-center">
-                <div className="text-2xl font-black text-black">{passed}</div>
+                <div className="text-2xl font-bold text-black">{passed}</div>
                 <div className="text-[10px] text-slate-900">Passed</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-black text-red-400">{failed}</div>
+                <div className="text-2xl font-bold text-red-400">{failed}</div>
                 <div className="text-[10px] text-slate-900">Failed</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-black text-slate-900">{vetting.checks.length - passed - failed}</div>
+                <div className="text-2xl font-bold text-slate-900">{vetting.checks.length - passed - failed}</div>
                 <div className="text-[10px] text-slate-900">Pending/Skip</div>
               </div>
             </div>
             {vetting.overallScore != null && (
               <div className="mt-3 flex items-center gap-2">
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-[rgba(240,246,252,0.06)]">
-                  <div className="h-full rounded-full bg-[#2563EB] transition-all" style={{ width: `${vetting.overallScore}%` }} />
+                  <div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${vetting.overallScore}%` }} />
                 </div>
-                <span className="text-xs font-bold text-[#3B82F6]">{vetting.overallScore}/100</span>
+                <span className="text-xs font-bold text-blue-600">{vetting.overallScore}/100</span>
               </div>
             )}
           </div>
@@ -454,7 +452,7 @@ export default function SupplierVettingDetailPage() {
 
           {/* Notes */}
           {vetting.notes && (
-            <div className="rounded-xl border border-[rgba(240,246,252,0.08)] bg-[#F1F5F9] p-4">
+            <div className="rounded-xl border border-slate-200 bg-slate-100 p-4">
               <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900"><FileText size={14} />Ghi chú</h3>
               <p className="text-xs text-slate-900 whitespace-pre-wrap">{vetting.notes}</p>
             </div>
@@ -472,6 +470,6 @@ export default function SupplierVettingDetailPage() {
 
       {showApprove && <ApproveModal onClose={() => setShowApprove(false)} onConfirm={approve} />}
       {showReject && <RejectModal onClose={() => setShowReject(false)} onConfirm={reject} />}
-    </div>
+    </main>
   );
 }

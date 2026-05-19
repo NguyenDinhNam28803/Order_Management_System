@@ -160,7 +160,7 @@ export default function FinanceBudgetsPage() {
             {/* Success Toast */}
             {saveSuccess && (
                 <div className="fixed top-10 left-1/2 -translate-x-1/2 z-100 animate-in slide-in-from-top-10 duration-500">
-                    <div className="bg-white rounded-xl shadow-2xl shadow-erp-navy/20 border border-slate-100 p-6 pr-10 flex items-center gap-5">
+                    <div className="bg-white rounded-3xl shadow-2xl shadow-erp-navy/20 border border-slate-100 p-6 pr-10 flex items-center gap-5">
                         <div className="h-14 w-14 rounded-2xl bg-green-500 flex items-center justify-center text-white shadow-lg shadow-green-200">
                             <CheckCircle2 size={32} className="animate-bounce" />
                         </div>

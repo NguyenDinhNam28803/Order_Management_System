@@ -237,7 +237,7 @@ export default function PRPage() {
                                     onClick={() => setActiveTab(filter)}
                                     className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === filter
                                             ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
-                                            : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+                                            : "text-white hover:text-white hover:bg-[#FFFFFF]"
                                         }`}
                                 >
                                     {filter}

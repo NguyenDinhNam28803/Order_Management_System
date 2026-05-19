@@ -1147,7 +1147,6 @@ export class BudgetModuleService {
     const financeUsers = await this.prisma.user.findMany({
       where: {
         orgId,
-
         role: { in: ['FINANCE', 'PLATFORM_ADMIN'] as ('FINANCE' | 'PLATFORM_ADMIN')[] },
         isActive: true,
       },

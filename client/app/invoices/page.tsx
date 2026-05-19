@@ -272,7 +272,7 @@ export default function InvoicesPage() {
               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors ${
                 filterStatus === s
                   ? "bg-[#2563EB] text-white"
-                  : "bg-[#F1F5F9] text-slate-600 hover:text-slate-900 hover:bg-slate-200"
+                  : "bg-[#F1F5F9] text-white hover:text-white hover:bg-[#F1F5F9]/80"
               }`}
             >
               {s === "ALL" ? "Tất cả" : STATUS_MAP[s]?.label ?? s}
