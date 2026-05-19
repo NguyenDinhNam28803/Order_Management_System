@@ -365,7 +365,7 @@ export default function QuotationManagementPage() {
     ];
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="p-6 space-y-6 animate-in fade-in duration-500">
             <ConfirmDialog
                 open={confirmState.open}
                 title={confirmState.title}
@@ -374,13 +374,13 @@ export default function QuotationManagementPage() {
                 onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
             />
             {/* Header */}
-            <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+            <div className="page-header">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">
+                    <h1 className="page-title">
                         {selectedRFQ ? `BÁO GIÁ CHO RFQ` : "QUẢN LÝ BÁO GIÁ"}
                     </h1>
-                    <p className="text-slate-900 font-bold text-sm tracking-tight flex items-center gap-2 uppercase">
-                        <ShieldAlert size={14} className="text-[#2563EB]" />
+                    <p className="page-subtitle flex items-center gap-2">
+                        <ShieldAlert size={14} className="text-blue-600" />
                         {selectedRFQ ? selectedRFQ.title || "Xem xét và trao thầu" : "Chọn RFQ để xem báo giá"}
                     </p>
                 </div>
@@ -388,7 +388,7 @@ export default function QuotationManagementPage() {
                     {selectedRFQ ? (
                         <button
                             onClick={() => setSelectedRFQ(null)}
-                            className="inline-flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm"
+                            className="btn-secondary"
                         >
                             <ArrowLeft size={16} /> Quay lại danh sách RFQ
                         </button>
