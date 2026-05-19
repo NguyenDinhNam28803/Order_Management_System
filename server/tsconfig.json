@@ -21,6 +21,7 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "types": ["node", "jest"],
+    "baseUrl": ".",
     "paths": {
       "generated/*": ["generated/*"],
       "src/*": ["src/*"]

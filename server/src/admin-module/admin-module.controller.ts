@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Delete, UseGuards, Body, Request, Query } from '@nestjs/common';
 import { AdminModuleService } from './admin-module.service';
 import { CreateAdminModuleDto } from './dto/create-admin-module.dto';
 import { UpdateAdminModuleDto } from './dto/update-admin-module.dto';

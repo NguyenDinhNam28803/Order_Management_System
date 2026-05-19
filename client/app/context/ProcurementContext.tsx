@@ -675,7 +675,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         setState(prev => ({ ...prev, currentUser: null }));
     }, []);
 
-    const addPR = useCallback((data: Partial<PR>) => {
+    const addPR = useCallback(async (data: Partial<PR>) => {
         const nextId = state.prs.length + 1;
         const total = (data.items || []).reduce((s: number, i: PRItem) => s + (Number(i.qty || i.quantity) * Number(i.estimatedPrice)), 0);
         
@@ -728,89 +728,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 const periodData = await periodResp.json();
                 period = periodData.data || periodData;
             }
+        }));
 
         setState(prev => ({ ...prev, prs: [newPR, ...prev.prs] }));
         return Promise.resolve(newPR.id);
     }, [state.prs, state.currentUser]);
-
-    const createRFQ = useCallback((prId: string, vendor: string) => {
-        const pr = state.prs.find(p => p.id === prId);
-        const newRFQ: RFQ = {
-            id: `rfq-${state.rfqs.length + 1}`,
-            prId,
-            vendor,
-            status: "SENT",
-            title: pr?.title ? `RFQ cho ${pr.title}` : "Yêu cầu báo giá mới",
-            createdAt: new Date().toISOString(),
-            dueDate: new Date(Date.now() + 86400000 * 7).toISOString(),
-            items: pr?.items || []
-        };
-        setState(prev => {
-            const updatedPrs = prev.prs.map(p => p.id === prId ? { ...p, status: "IN_SOURCING" } : p);
-            return { ...prev, prs: updatedPrs, rfqs: [...prev.rfqs, newRFQ] };
-        });
-        notify("Có một yêu cầu báo giá mới cần được xử lí!", "info", "SUPPLIER");
-        return Promise.resolve(true);
-    }, [notify, state.prs, state.rfqs.length]);
-
-    const createRFQConsolidated = useCallback((data: { title: string, vendor: string, items: PRItem[], prIds: string[], dueDate: string, attachments?: { name: string, url: string }[] }) => {
-        const newRFQ: RFQ = {
-            id: `rfq-${state.rfqs.length + 1}`,
-            prId: data.prIds.join(","), // Legacy support
-            vendor: data.vendor,
-            status: "SENT",
-            title: data.title || "Gói báo giá tổng hợp",
-            createdAt: new Date().toISOString(),
-            dueDate: data.dueDate || new Date(Date.now() + 86400000 * 7).toISOString(),
-            items: data.items.map(i => ({
-                id: i.id,
-                productId: i.productId,
-                item_name: i.item_name || i.productDesc || i.description,
-                item_code: i.item_code || i.sku,
-                quantity: i.quantity || i.qty,
-                unit: i.unit,
-                estimatedPrice: i.estimatedPrice
-            })),
-            attachments: data.attachments || [],
-            messages: []
-        };
-        setState(prev => {
-            const updatedPrs = prev.prs.map(p => data.prIds.includes(p.id) ? { ...p, status: "IN_SOURCING" } : p);
-            return { ...prev, prs: updatedPrs, rfqs: [...prev.rfqs, newRFQ] };
-        });
-        notify(`Đã gửi RFQ ${newRFQ.id} tới nhà cung cấp ${data.vendor}`, "success");
-        notify("Có một yêu cầu báo giá mới cần được xử lí!", "info", "SUPPLIER");
-        return Promise.resolve(newRFQ.id);
-    }, [notify, state.rfqs.length]);
-
-    const createQuote = useCallback(async (rfqId: string, quoteData: Partial<Quote>) => {
-        const newQuote: Quote = {
-            id: `q-${state.quotes.length + 1}`,
-            rfqId,
-            supplierId: quoteData.supplierId || "",
-            totalPrice: quoteData.totalPrice || 0,
-            currency: quoteData.currency || "VND",
-            leadTimeDays: quoteData.leadTimeDays || 7,
-            status: "PENDING",
-            createdAt: new Date().toISOString()
-        };
-        setState(prev => ({
-            ...prev,
-            quotes: [...prev.quotes, newQuote],
-            rfqs: prev.rfqs.map(r => r.id === rfqId ? { ...r, status: "QUOTED" } : r)
-        }));
-
-        const successCount = quarterResults.filter(Boolean).length;
-        
-        if (successCount > 0) {
-            notify(`Phân bổ 20/80 thành công: ${successCount}/4 quý (${quarterlyAllocation.toLocaleString()} VND/quý)`, "success");
-            await refreshData();
-            return true;
-        }
-        
-        notify("Phân bổ ngân sách thất bại", "error");
-        return false;
-    }, [apiFetch, refreshData, notify]);
 
     const reconcileQuarter = useCallback(async (costCenterId: string, fiscalYear: number, quarter: number) => {
         const resp = await apiFetch(`/budgets/reconcile-quarter/${costCenterId}/${fiscalYear}/${quarter}`, { method: 'POST' });
@@ -1062,34 +984,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, refreshData, notify]);
 
-    const addDept = useCallback((data: Partial<Department>) => {
-        setState(prev => {
-            const nextId = prev.departments.length + 1;
-            const newDept = { ...data, id: `dept-${nextId}`, code: data.code || `DEPT-${String(nextId).padStart(3, '0')}`, name: data.name || "" };
-            return { ...prev, departments: [...prev.departments, newDept as Department] };
-        });
-        return Promise.resolve(true);
-    }, []);
-
-    const updateDept = useCallback((id: string, data: Partial<Department>) => {
-        setState(prev => ({ ...prev, departments: prev.departments.map(d => d.id === id ? { ...d, ...data } : d) }));
-        return Promise.resolve(true);
-    }, []);
-
     const removeCostCenter = useCallback(async (id: string) => {
         const resp = await apiFetch(`/cost-centers/${id}`, { method: 'DELETE' });
         if (resp.ok) { notify("Đã xóa trung tâm chi phí", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
-
-    const addCostCenter = useCallback((data: Partial<CostCenter>) => {
-        setState(prev => {
-            const nextId = prev.costCenters.length + 1;
-            const newCC = { ...data, id: `cc-${nextId}`, code: data.code || `CC-${String(nextId).padStart(3, '0')}`, budgetUsed: 0, currency: data.currency || "VND", name: data.name || "", budgetAnnual: data.budgetAnnual || 0, deptId: data.deptId || "" };
-            return { ...prev, costCenters: [...prev.costCenters, newCC as CostCenter] };
-        });
-        return Promise.resolve(true);
-    }, []);
 
     const updateCostCenter = useCallback((id: string, data: Partial<CostCenter>) => {
         setState(prev => ({ ...prev, costCenters: prev.costCenters.map(cc => cc.id === id ? { ...cc, ...data } : cc) }));
@@ -1101,20 +1000,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         if (resp.ok) { notify("Đã xóa danh mục", "success"); await refreshData(); return true; }
         return false;
     }, [apiFetch, refreshData, notify]);
-
-    const addOrganization = useCallback((data: Partial<Organization>) => {
-        setState(prev => {
-            const nextId = prev.organizations.length + 1;
-            const newOrg = { ...data, id: `org-${nextId}`, code: data.code || `ORG-${String(nextId).padStart(3, '0')}`, name: data.name || "", address: data.address || "", taxId: data.taxId || "" };
-            return { ...prev, organizations: [...prev.organizations, newOrg as Organization] };
-        });
-        return Promise.resolve(true);
-    }, []);
-
-    const updateOrganization = useCallback((id: string, data: Partial<Organization>) => {
-        setState(prev => ({ ...prev, organizations: prev.organizations.map(o => o.id === id ? { ...o, ...data } : o) }));
-        return Promise.resolve(true);
-    }, []);
 
     const removeUser = useCallback(async (id: string) => {
         const resp = await apiFetch(`/users/${id}`, { method: 'DELETE' });
@@ -1128,26 +1013,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             const newUser = { ...data, id: `user-${nextId}`, employeeCode: data.employeeCode || `EMP-${String(nextId).padStart(3, '0')}` };
             return { ...prev, users: [...prev.users, newUser as User] };
         });
-        if (resp.ok) { notify("Cập nhật kết quả QC thành công", "success"); await refreshData(); return true; }
-        notify("Cập nhật kết quả QC thất bại", "error"); return false;
-    }, [apiFetch, refreshData, notify]);
+        return Promise.resolve(true);
+    }, []);
 
     const updateUser = useCallback((id: string, data: Partial<User>) => {
         setState(prev => ({ ...prev, users: prev.users.map(u => u.id === id ? { ...u, ...data } : u) }));
-        return Promise.resolve(true);
-    }, []);
-
-    const addBudgetPeriod = useCallback((data: Partial<BudgetPeriod>) => {
-        setState(prev => {
-            const nextId = prev.budgetPeriods.length + 1;
-            const newP = { ...data, id: `bp-${nextId}` };
-            return { ...prev, budgetPeriods: [...prev.budgetPeriods, newP as BudgetPeriod] };
-        });
-        return Promise.resolve(true);
-    }, []);
-
-    const updateBudgetPeriod = useCallback((id: string, data: Partial<BudgetPeriod>) => {
-        setState(prev => ({ ...prev, budgetPeriods: prev.budgetPeriods.map(p => p.id === id ? { ...p, ...data } : p) }));
         return Promise.resolve(true);
     }, []);
 
@@ -1339,12 +1209,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             const newA = { ...data, id: `ba-${nextId}` };
             return { ...prev, budgetAllocations: [...prev.budgetAllocations, newA as BudgetAllocation] };
         });
-        if (resp.ok) { notify(`Đã ${response === 'ACCEPT' ? 'chấp nhận' : 'từ chối'} đề xuất`, "success"); return true; }
-        return false;
-    }, [apiFetch, notify]);
-
-    const updateBudgetAllocation = useCallback((id: string, data: Partial<BudgetAllocation>) => {
-        setState(prev => ({ ...prev, budgetAllocations: prev.budgetAllocations.map(a => a.id === id ? { ...a, ...data } : a) }));
         return Promise.resolve(true);
     }, []);
 
@@ -1358,22 +1222,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         console.log("addBudgetAllocationBundle called with:", data);
         return Promise.resolve(true);
     }, []);
-
-    const createGRN = useCallback((_data: { poId: string, receivedItems: Record<string, number> }) => Promise.resolve(true), []);
-    const ackPO = useCallback((_id: string) => Promise.resolve(true), []);
-    const shipPO = useCallback((_id: string) => Promise.resolve(true), []);
-    const createInvoice = useCallback((_data: { poId: string, vendor: string, amount: number }) => Promise.resolve(true), []);
-    const payInvoice = useCallback((_id: string) => Promise.resolve(true), []);
-    const matchInvoice = useCallback((_id: string, _status?: string) => Promise.resolve(true), []);
-
-    const register = useCallback(async (data: Partial<User> & { password?: string }) => {
-        try {
-            const errBody = await resp.json();
-            const msg = errBody?.message ?? "Gửi phê duyệt thất bại";
-            notify(Array.isArray(msg) ? msg.join('; ') : String(msg), "error");
-        } catch { notify("Gửi phê duyệt thất bại", "error"); }
-        return false;
-    }, [apiFetch, notify, refreshData]);
 
     const terminateContract = useCallback(async (id: string, reason: string) => {
         const resp = await apiFetch(`/contracts/${id}/terminate`, { method: 'POST', body: JSON.stringify({ reason }) });

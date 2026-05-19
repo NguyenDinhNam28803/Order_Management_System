@@ -331,7 +331,7 @@ export default function POManagementPage() {
             {selectedPO && (
                 <PODetailDrawer po={selectedPO} onClose={() => setSelectedPO(null)} />
             )}
-        </div>
+        </main>
     );
 }
 

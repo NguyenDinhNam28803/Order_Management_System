@@ -147,8 +147,9 @@ export class BudgetModuleController {
   async updatePeriod(
     @Param('id') id: string,
     @Body() dto: UpdateBudgetPeriodDto,
+    @Request() req: { user: JwtPayload },
   ) {
-    return this.budgetService.updatePeriod(id, dto);
+    return this.budgetService.updatePeriod(id, dto, req.user);
   }
 
   /**

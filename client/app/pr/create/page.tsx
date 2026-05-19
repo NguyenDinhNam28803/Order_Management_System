@@ -531,8 +531,9 @@ export default function CreatePRPage() {
                                 />
                                 {fieldErrors.title && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">{fieldErrors.title}</span>}
                             </div>
-                            <ChevronDown size={15} className={`text-slate-400 transition-transform duration-200 shrink-0 ${showAiSection ? "rotate-180" : ""}`} />
-                        </button>
+                            <button onClick={() => setShowAiSection(!showAiSection)} className="flex w-full items-center justify-end mt-2 p-2 rounded-lg hover:bg-[rgba(148,163,184,0.05)] transition-all">
+                                <ChevronDown size={15} className={`text-slate-400 transition-transform duration-200 shrink-0 ${showAiSection ? "rotate-180" : ""}`} />
+                            </button>
 
                         {showAiSection && (
                             <div className="mt-5 pt-5 border-t border-[rgba(148,163,184,0.1)] space-y-4">
@@ -598,15 +599,11 @@ export default function CreatePRPage() {
                                             onClick={handleFillToManual}
                                             className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-[#2563EB] text-white text-xs font-bold hover:bg-[#1D4ED8] transition-colors"
                                         >
-                                            <option value="" className="bg-[#F1F5F9]">-- Chọn trung tâm chi phí --</option>
-                                            {filteredCostCenters.map(cc => (
-                                                <option key={cc.id} value={cc.id} className="bg-[#F1F5F9]">{String(cc.code)} - {String(cc.name)}</option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-900 pointer-events-none" size={16} />
-                                    {fieldErrors.costCenterId && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">{fieldErrors.costCenterId}</span>}
+                                            <Save size={16} />
+                                            Chuyển sang Tạo thủ công &amp; Gửi PR
+                                        </button>
                                     </div>
-                                </div>
+                                )}
 
                                 {aiError && (
                                     <div className="flex items-center gap-2 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs">
@@ -616,6 +613,7 @@ export default function CreatePRPage() {
                                 )}
                             </div>
                         )}
+                        </div>
                     </div>
 
                     {/* Step 1 — General Info */}

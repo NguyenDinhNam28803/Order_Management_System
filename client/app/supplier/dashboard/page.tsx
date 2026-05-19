@@ -186,14 +186,21 @@ export default function SupplierDashboard() {
     setTimeout(() => setNotification(null), 3000);
   };
 
-    const handleQuote = (rfqId: string) => {
-        createQuote(rfqId, {
-            totalPrice: 5000000,
-            leadTimeDays: 7,
-            currency: "VND"
-        });
+  const handleSubmitQuotation = () => {
+    if (!selectedRfq) return;
+
+    const updatedRfqs = rfqs.map(r => {
+      if (r.rfqId === selectedRfq.rfqId) {
+        return { ...r, status: "Quoted" as const };
       }
-    }
+      return r;
+    });
+
+    createQuote(selectedRfq.rfqId, {
+      totalPrice: 5000000,
+      leadTimeDays: 7,
+      currency: "VND"
+    });
 
     setRfqs(updatedRfqs);
     setSelectedRfq(null);

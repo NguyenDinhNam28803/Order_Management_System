@@ -8,7 +8,7 @@ import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
-import { ContractStatus, DocumentType } from '@prisma/client';
+import { ContractStatus, DocumentType, UserRole } from '@prisma/client';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
 import { generateDocNumber } from '../common/utils/doc-number.util';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
@@ -422,7 +422,7 @@ export class ContractModuleService {
       const allProcurementUsers = await this.prisma.user.findMany({
         where: {
           orgId: { in: orgIds },
-          role: { in: ['PROCUREMENT', 'ADMIN'] as ('PROCUREMENT' | 'ADMIN')[] },
+          role: { in: [UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN] },
           isActive: true,
         },
       });

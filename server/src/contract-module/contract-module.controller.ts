@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  BadRequestException,
 } from '@nestjs/common';
 import { ContractModuleService } from './contract-module.service';
 import { CreateContractDto } from './dto/create-contract.dto';
@@ -53,8 +54,9 @@ export class ContractModuleController {
   submitForApproval(
     @Param('id') id: string,
     @Body('approverId') approverId: string,
+    @Request() req: { user: JwtPayload },
   ) {
-    return this.contractModuleService.submitForApproval(id, approverId);
+    return this.contractModuleService.submitForApproval(id, approverId, req.user.orgId);
   }
 
   /**

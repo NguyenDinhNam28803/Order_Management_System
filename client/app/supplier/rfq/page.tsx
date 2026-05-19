@@ -371,11 +371,11 @@ export default function SupplierRFQ() {
                                         </button>
                                     </td>
                                 </tr>
-                            )}
+                            )
+                        })}
                         </tbody>
                     </table>
                 </div>
-            </div>
         </main>
     );
 }
