@@ -322,8 +322,23 @@ function NotificationInbox() {
 
 export default React.memo(NotificationInbox);
 
-// ── Notification Item ──────────────────────────────────────────────────────
+// ── Notification Item type ────────────────────────────────────────────────
+interface MergedNotificationItem {
+  id: string;
+  eventType: EmailEventType | undefined;
+  type: string;
+  title: string;
+  content: string;
+  requester: string;
+  amount: string | null;
+  status: string;
+  deadline: string;
+  referenceId: string | null | undefined;
+  isNotification: boolean;
+  isStatusUpdate?: boolean;
+}
 
+// ── Notification Item ──────────────────────────────────────────────────────
 const NotificationItem = ({ item }: { item: MergedNotificationItem }) => {
   const isPending = item.status === 'PENDING';
   const eventType = item.eventType as EmailEventType | undefined;

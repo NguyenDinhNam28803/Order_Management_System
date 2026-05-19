@@ -26,7 +26,7 @@ export class SupplierKpiTaskService {
 
     const buyerIds = buyers.map((b) => b.id);
 
-    // 2. Batch-load tất cả cặp Buyer-Supplier trong 6 tháng qua — 1 query thay vì N queries
+    // 2. Tìm tất cả các cặp Buyer-Supplier trong 6 tháng qua — 1 query thay vì N queries
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 

@@ -169,7 +169,7 @@ export default function GRNPage() {
                                         <Camera size={40} className="group-hover:scale-110 transition-transform" />
                                         <span className="text-[10px] mt-4 font-black uppercase tracking-widest">Chụp ảnh</span>
                                     </div>
-                                    <div className="h-40 rounded-2xl overflow-hidden shadow-inner relative group border border-slate-100">
+                                    <div className="h-40 rounded-xl overflow-hidden shadow-inner relative group border border-slate-100">
                                         <Image src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=400&auto=format&fit=crop" className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" alt="QC evidence" width={400} height={160} unoptimized />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
                                             <span className="text-white text-[9px] font-black uppercase">Ảnh 01: Thùng hàng bị móp</span>

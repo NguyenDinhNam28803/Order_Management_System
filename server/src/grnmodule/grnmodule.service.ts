@@ -218,7 +218,7 @@ export class GrnmoduleService {
     const supplierUser = await this.prisma.user.findFirst({
       where: {
         orgId: supplierOrgId,
-        role: 'SUPPLIER' as const,
+        role: 'SUPPLIER' as 'SUPPLIER',
         isActive: true,
       },
       include: { organization: true },
@@ -267,7 +267,7 @@ export class GrnmoduleService {
     const financeUsers = await this.prisma.user.findMany({
       where: {
         orgId: fullGrn.orgId,
-        role: { in: ['FINANCE', 'PLATFORM_ADMIN'] as ('FINANCE' | 'PLATFORM_ADMIN')[] },
+        role: { in: ['FINANCE', 'ADMIN'] as ('FINANCE' | 'ADMIN')[] },
         isActive: true,
       },
     });
