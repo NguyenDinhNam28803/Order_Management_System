@@ -38,7 +38,7 @@ const Tooltip = ({ children, content, position = 'top' }: { children: React.Reac
                     position === 'left' ? 'right-full top-1/2 -translate-y-1/2 mr-2' :
                     'left-full top-1/2 -translate-y-1/2 ml-2'
                 }`}>
-                    <div className="bg-[#0F172A] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-xl max-w-xs text-xs text-[#F8FAFC]">
+                    <div className="bg-slate-900 border border-slate-700 rounded-xl p-3 shadow-xl max-w-xs text-xs text-slate-100">
                         {content}
                         <div className={`absolute ${
                             position === 'top' ? 'top-full left-1/2 -translate-x-1/2 border-t-[#0F172A]' :
@@ -215,7 +215,7 @@ export default function ProcurementSuppliersPage() {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
             case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
             case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
-            default: return "bg-[#0F172A] text-[#F8FAFC] border-[rgba(148,163,184,0.1)]";
+            default: return "bg-slate-900 text-slate-100 border-slate-700";
         }
     };
 
@@ -227,16 +227,16 @@ export default function ProcurementSuppliersPage() {
     };
 
     return (
-        <main className="min-h-screen bg-[#FFFFFF] text-slate-900 p-8">
-            <div className="max-w-[1400px] mx-auto">
+        <main className="p-6 space-y-6">
+            <div className="max-w-[1400px] mx-auto space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="page-header">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="h-10 w-10 bg-[#2563EB]/10 rounded-xl flex items-center justify-center border border-[#2563EB]/20">
-                                <Truck size={20} className="text-[#2563EB]" />
+                            <div className="h-10 w-10 bg-blue-600/10 rounded-xl flex items-center justify-center border border-blue-600/20">
+                                <Truck size={20} className="text-blue-600" />
                             </div>
-                            <h1 className="text-2xl font-black uppercase tracking-tight text-slate-900">
+                            <h1 className="page-title">
                                 Đánh giá Nhà cung cấp
                             </h1>
                         </div>
@@ -245,25 +245,25 @@ export default function ProcurementSuppliersPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="bg-[#F1F5F9] px-4 py-2 rounded-xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="bg-slate-100 px-4 py-2 rounded-xl border border-slate-200">
                             <span className="text-slate-900 text-xs font-bold uppercase">Tổng NCC:</span>
-                            <span className="text-slate-900 font-black ml-2">{suppliers.length}</span>
+                            <span className="text-slate-900 font-bold ml-2">{suppliers.length}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Filters */}
-                <div className="bg-[#F1F5F9] p-4 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
+                <div className="bg-slate-100 p-4 rounded-[32px] border border-slate-200 shadow-xl shadow-blue-600/5">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 flex gap-3">
-                            <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
-                                <Search size={20} className="text-[#2563EB]" />
+                            <div className="h-14 w-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                                <Search size={20} className="text-blue-600" />
                             </div>
                             <div className="relative flex-1">
                                 <input
                                     type="text"
                                     placeholder="Tìm kiếm nhà cung cấp..."
-                                    className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                    className="w-full h-14 pl-6 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -271,18 +271,18 @@ export default function ProcurementSuppliersPage() {
                         </div>
                         
                         <div className="flex items-center gap-3">
-                            <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
-                                <Filter size={18} className="text-[#2563EB]" />
+                            <div className="h-14 w-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                                <Filter size={18} className="text-blue-600" />
                             </div>
-                            <div className="flex bg-[#FFFFFF] p-1 rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-sm">
+                            <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm">
                                 {["ALL", "GOLD", "SILVER", "BRONZE"].map((tier) => (
                                     <button
                                         key={tier}
                                         onClick={() => setSelectedTier(tier)}
-                                        className={`px-6 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                        className={`px-6 h-10 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
                                             selectedTier === tier
-                                                ? "bg-[#2563EB] text-black shadow-lg shadow-[#2563EB]/20"
-                                                : "text-white hover:bg-[#F1F5F9]"
+                                                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                                                : "text-slate-500 hover:bg-slate-100"
                                         }`}
                                     >
                                         {tier === "ALL" ? "Tất cả" : tier}
@@ -296,23 +296,23 @@ export default function ProcurementSuppliersPage() {
                 {/* Suppliers Grid */}
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
-                        <Loader2 size={32} className="animate-spin text-[#2563EB]" />
+                        <Loader2 size={32} className="animate-spin text-blue-600" />
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {sortedSuppliers.map((supplier) => (
                             <div
                                 key={supplier.id}
-                                className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-6 hover:border-[#2563EB]/30 transition-all group"
+                                className="erp-card p-6 hover:border-blue-600/30 transition-all group"
                             >
                                 {/* Header */}
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-12 w-12 bg-[#FFFFFF] rounded-xl flex items-center justify-center text-[#2563EB] font-black text-lg border border-[rgba(148,163,184,0.1)]">
+                                        <div className="h-12 w-12 bg-white rounded-xl flex items-center justify-center text-blue-600 font-bold text-lg border border-slate-200">
                                             {supplier.name.substring(0, 2).toUpperCase()}
                                         </div>
                                         <div>
-                                            <h3 className="font-black text-slate-900 text-sm line-clamp-1">
+                                            <h3 className="font-bold text-slate-900 text-sm line-clamp-1">
                                                 {supplier.name}
                                             </h3>
                                             <p className="text-slate-900 text-xs font-bold">
@@ -320,13 +320,13 @@ export default function ProcurementSuppliersPage() {
                                             </p>
                                         </div>
                                     </div>
-                                    <div className={`px-3 py-1 rounded-full text-xs font-black uppercase border ${getTierColor(supplier.tier)}`}>
+                                    <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${getTierColor(supplier.tier)}`}>
                                         {supplier.tier || "Chưa đánh giá"}
                                     </div>
                                 </div>
 
                                 {/* KPI Score with Formula Tooltip */}
-                                <div className="bg-[#FFFFFF] rounded-xl p-4 mb-4 border border-[rgba(148,163,184,0.05)]">
+                                <div className="bg-white rounded-xl p-4 mb-4 border border-slate-200">
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <div className="flex items-center gap-1 mb-1">
@@ -343,7 +343,7 @@ export default function ProcurementSuppliersPage() {
                                                             </div>
                                                             <div className="flex justify-between">
                                                                 <span>Quality (30%)</span>
-                                                                <span className="text-[#3B82F6]">{supplier.qualityScore?.toFixed(1) || '--'} × 0.3</span>
+                                                                <span className="text-blue-600">{supplier.qualityScore?.toFixed(1) || '--'} × 0.3</span>
                                                             </div>
                                                             <div className="flex justify-between">
                                                                 <span>Price (20%)</span>
@@ -354,7 +354,7 @@ export default function ProcurementSuppliersPage() {
                                                                 <span className="text-black">{supplier.manualScore?.toFixed(1) || '--'} × 0.2</span>
                                                             </div>
                                                         </div>
-                                                        <div className="border-t border-[rgba(148,163,184,0.2)] pt-1 mt-2">
+                                                        <div className="border-t border-slate-200 pt-1 mt-2">
                                                             <p className="font-bold text-slate-900">Phân loại Tier:</p>
                                                             <p>🥇 GOLD: ≥90 điểm</p>
                                                             <p>🥈 SILVER: 70-89 điểm</p>
@@ -362,10 +362,10 @@ export default function ProcurementSuppliersPage() {
                                                         </div>
                                                     </div>
                                                 }>
-                                                    <HelpCircle size={12} className="text-slate-900 hover:text-[#2563EB] cursor-help" />
+                                                    <HelpCircle size={12} className="text-slate-900 hover:text-blue-600 cursor-help" />
                                                 </Tooltip>
                                             </div>
-                                            <p className={`text-2xl font-black ${getScoreColor(supplier.overallScore || supplier.kpiScore)}`}>
+                                            <p className={`text-2xl font-bold ${getScoreColor(supplier.overallScore || supplier.kpiScore)}`}>
                                                 {typeof supplier.overallScore === 'number' 
                                                     ? supplier.overallScore.toFixed(1) 
                                                     : typeof supplier.kpiScore === 'number' 
@@ -396,7 +396,7 @@ export default function ProcurementSuppliersPage() {
                                             <p className="text-slate-900">Tính: (Số PO đúng hạn / Tổng PO) × 100</p>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-slate-100 hover:text-[#F8FAFC] transition-colors">
+                                        <div className="bg-white rounded-lg p-2 text-center cursor-help hover:bg-slate-100 transition-colors">
                                             <TrendingUp size={14} className="text-black mx-auto mb-1" />
                                             <p className="text-[10px] text-slate-900">OTD</p>
                                             <p className="text-xs font-bold text-slate-900">
@@ -406,7 +406,7 @@ export default function ProcurementSuppliersPage() {
                                     </Tooltip>
                                     <Tooltip content={
                                         <div className="space-y-1">
-                                            <p className="font-bold text-[#3B82F6]">Quality Score</p>
+                                            <p className="font-bold text-blue-600">Quality Score</p>
                                             <p>Đánh giá chất lượng sản phẩm dựa trên:</p>
                                             <ul className="list-disc pl-4 space-y-0.5">
                                                 <li>Tỷ lệ đồng ý hàng (GRN)</li>
@@ -416,8 +416,8 @@ export default function ProcurementSuppliersPage() {
                                             </ul>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-slate-100 hover:text-[#F8FAFC] transition-colors">
-                                            <Award size={14} className="text-[#2563EB] mx-auto mb-1" />
+                                        <div className="bg-white rounded-lg p-2 text-center cursor-help hover:bg-slate-100 transition-colors">
+                                            <Award size={14} className="text-blue-600 mx-auto mb-1" />
                                             <p className="text-[10px] text-slate-900">Chất lượng</p>
                                             <p className="text-xs font-bold text-slate-900">
                                                 {typeof supplier.qualityScore === 'number' ? supplier.qualityScore.toFixed(0) : "--"}%
@@ -436,7 +436,7 @@ export default function ProcurementSuppliersPage() {
                                             </ul>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-slate-100 hover:text-[#F8FAFC] transition-colors">
+                                        <div className="bg-white rounded-lg p-2 text-center cursor-help hover:bg-slate-100 transition-colors">
                                             <Star size={14} className="text-yellow-400 mx-auto mb-1" />
                                             <p className="text-[10px] text-slate-900">Giá</p>
                                             <p className="text-xs font-bold text-slate-900">
@@ -458,7 +458,7 @@ export default function ProcurementSuppliersPage() {
                                             </ul>
                                         </div>
                                     }>
-                                        <div className="bg-[#FFFFFF] rounded-lg p-2 text-center cursor-help hover:bg-slate-100 hover:text-[#F8FAFC] transition-colors">
+                                        <div className="bg-white rounded-lg p-2 text-center cursor-help hover:bg-slate-100 transition-colors">
                                             <BarChart3 size={14} className="text-black mx-auto mb-1" />
                                             <p className="text-[10px] text-slate-900">Thủ công</p>
                                             <p className="text-xs font-bold text-slate-900">
@@ -480,14 +480,14 @@ export default function ProcurementSuppliersPage() {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => router.push(`/procurement/suppliers/${supplier.id}`)}
-                                        className="flex-1 bg-[#FFFFFF] hover:bg-slate-100 text-slate-900 hover:text-[#F8FAFC] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
+                                        className="btn-secondary flex-1 justify-center"
                                     >
                                         <Eye size={14} />
                                         Xem chi tiết
                                     </button>
                                     <button
                                         onClick={() => router.push(`/supplier/${supplier.id}/kpi-evaluation`)}
-                                        className="flex-1 bg-[#F1F5F9] hover:bg-slate-100 text-slate-900 hover:text-[#F8FAFC] py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-[rgba(148,163,184,0.1)] flex items-center justify-center gap-2"
+                                        className="btn-secondary flex-1 justify-center"
                                     >
                                         <BarChart3 size={14} />
                                         KPI
@@ -495,7 +495,7 @@ export default function ProcurementSuppliersPage() {
                                     <button
                                         onClick={() => handleEvaluate(supplier.id)}
                                         disabled={evaluatingId === supplier.id}
-                                        className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                        className="btn-primary flex-1 justify-center disabled:opacity-50"
                                     >
                                         {evaluatingId === supplier.id ? (
                                             <Loader2 size={14} className="animate-spin" />

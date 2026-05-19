@@ -21,7 +21,7 @@ interface POMockData extends PO {
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; dot: string }> = {
     DRAFT:        { label: "Nháp",        bg: "bg-slate-500/10",   text: "text-black",   border: "border-slate-500/20",   dot: "bg-slate-400" },
-    ISSUED:       { label: "Đã phát hành", bg: "bg-[#2563EB]/10",    text: "text-[#3B82F6]",    border: "border-[#2563EB]/20",    dot: "bg-[#3B82F6]" },
+    ISSUED:       { label: "Đã phát hành", bg: "bg-blue-600/10",    text: "text-blue-600",    border: "border-blue-600/20",    dot: "bg-blue-600" },
     SUBMITTED:    { label: "Đã gửi",       bg: "bg-indigo-500/10",  text: "text-black",  border: "border-indigo-500/20",  dot: "bg-indigo-400" },
     ACKNOWLEDGED: { label: "Đã xác nhận",  bg: "bg-emerald-500/10", text: "text-black", border: "border-emerald-500/20", dot: "bg-emerald-400" },
     COMPLETED:    { label: "Hoàn tất",     bg: "bg-purple-500/10",  text: "text-black",  border: "border-purple-500/20",  dot: "bg-purple-400" },
@@ -33,7 +33,7 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
 function StatusBadge({ status }: { status: string }) {
     const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.DRAFT;
     return (
-        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
+        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
             {cfg.label}
         </span>
@@ -44,13 +44,13 @@ function StatCard({ icon: Icon, label, value, sub, color }: {
     icon: React.ElementType; label: string; value: string | number; sub?: string; color: string;
 }) {
     return (
-        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] p-5 flex items-center gap-4">
+        <div className="erp-card p-5 flex items-center gap-4">
             <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${color}`}>
                 <Icon size={20} />
             </div>
             <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-0.5">{label}</p>
-                <p className="text-xl font-black text-slate-900 tracking-tight truncate">{value}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-0.5">{label}</p>
+                <p className="text-xl font-bold text-slate-900 truncate">{value}</p>
                 {sub && <p className="text-[10px] text-slate-900 font-medium mt-0.5">{sub}</p>}
             </div>
         </div>
@@ -108,17 +108,17 @@ export default function POManagementPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FFFFFF] text-slate-900">
-            <div className="max-w-[1600px] mx-auto px-6 py-8 space-y-6">
+        <main className="p-6 space-y-6">
+            <div className="max-w-[1600px] mx-auto space-y-6">
 
                 {/* ── Header ── */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="page-header">
                     <div>
                         <div className="flex items-center gap-3 mb-1">
-                            <div className="w-8 h-8 rounded-lg bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center">
-                                <ShoppingBag size={16} className="text-[#2563EB]" />
+                            <div className="w-8 h-8 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center">
+                                <ShoppingBag size={16} className="text-blue-600" />
                             </div>
-                            <h1 className="text-2xl font-black tracking-tight">Quản lý Đơn đặt hàng (PO)</h1>
+                            <h1 className="page-title">Quản lý Đơn đặt hàng (PO)</h1>
                         </div>
                         <p className="text-sm text-slate-900 font-medium ml-11">
                             Theo dõi vòng đời đơn hàng từ phát hành đến hoàn tất thanh toán
@@ -126,7 +126,7 @@ export default function POManagementPage() {
                     </div>
                     <button
                         onClick={() => setView("create")}
-                        className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-[#2563EB]/20 transition-all"
+                        className="btn-primary flex items-center gap-2"
                     >
                         <Plus size={16} /> Tạo PO mới
                     </button>
@@ -134,7 +134,7 @@ export default function POManagementPage() {
 
                 {/* ── Stats ── */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <StatCard icon={Package}       label="Tổng đơn hàng"  value={allPOs.length}                        color="bg-[#2563EB]/10 text-[#2563EB]" />
+                    <StatCard icon={Package}       label="Tổng đơn hàng"  value={allPOs.length}                        color="bg-blue-600/10 text-blue-600" />
                     <StatCard icon={Banknote}       label="Tổng giá trị"   value={`${(totalValue / 1e6).toFixed(1)}M ₫`} sub="tổng ngân sách cam kết" color="bg-emerald-500/10 text-black" />
                     <StatCard icon={Clock}          label="Đang xử lý"     value={pendingCount}                         sub="chờ xác nhận / giao hàng" color="bg-amber-500/10 text-black" />
                     <StatCard icon={TrendingUp}     label="Hoàn tất"       value={doneCount}                            sub="đã xác nhận & thanh toán" color="bg-purple-500/10 text-black" />
@@ -143,18 +143,18 @@ export default function POManagementPage() {
                 {/* ── Toolbar ── */}
                 <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                     <div className="relative flex-1 max-w-sm group">
-                        <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 group-focus-within:text-[#2563EB] transition-colors" />
+                        <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 group-focus-within:text-blue-600 transition-colors" />
                         <input
                             type="text"
                             placeholder="Tìm mã PO, nhà cung cấp..."
-                            className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-900 outline-none focus:border-[#2563EB]/40 transition-all"
+                            className="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-900 outline-none focus:border-blue-600/40 transition-all"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
                     </div>
 
                     {/* Status Tabs */}
-                    <div className="flex gap-1 bg-[#F1F5F9] border border-[rgba(148,163,184,0.08)] rounded-xl p-1 overflow-x-auto">
+                    <div className="flex gap-1 bg-slate-100 border border-slate-200 rounded-xl p-1 overflow-x-auto">
                         {[
                             { key: "ALL", label: "Tất cả" },
                             { key: "DRAFT", label: "Nháp" },
@@ -165,16 +165,16 @@ export default function POManagementPage() {
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveStatus(tab.key)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-all ${
                                     activeStatus === tab.key
-                                        ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20"
-                                        : "text-white hover:text-white"
+                                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                                        : "text-slate-600 hover:text-slate-900"
                                 }`}
                             >
                                 {tab.label}
                                 {statusTabs[tab.key] !== undefined && (
-                                    <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-black ${
-                                        activeStatus === tab.key ? "bg-white/20" : "bg-[#FFFFFF]"
+                                    <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold ${
+                                        activeStatus === tab.key ? "bg-white/20" : "bg-white"
                                     }`}>
                                         {statusTabs[tab.key]}
                                     </span>
@@ -183,16 +183,16 @@ export default function POManagementPage() {
                         ))}
                     </div>
 
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-[11px] font-black uppercase tracking-wider text-slate-900 hover:text-slate-900 transition-all">
+                    <button className="btn-secondary flex items-center gap-2">
                         <Download size={14} /> Xuất
                     </button>
                 </div>
 
                 {/* ── Table ── */}
-                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+                <div className="erp-card table-card">
                     {filtered.length === 0 ? (
                         <div className="py-24 flex flex-col items-center gap-4 text-slate-900">
-                            <div className="w-14 h-14 rounded-2xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                            <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center">
                                 <ShoppingBag size={24} />
                             </div>
                             <div className="text-center">
@@ -208,7 +208,7 @@ export default function POManagementPage() {
                         <div className="overflow-x-auto">
                             <table className="erp-table text-xs">
                                 <thead>
-                                    <tr className="border-b border-[rgba(148,163,184,0.08)]">
+                                    <tr className="border-b border-slate-200">
                                         {["Mã PO", "Nhà cung cấp", "Liên kết PR → RFQ", "Trạng thái", "Tổng tiền", "Escrow", ""].map((h, i) => (
                                             <th key={i} className={`px-5 py-4 ${i >= 5 ? "text-right" : "text-left"}`}>
                                                 {h}
@@ -218,17 +218,17 @@ export default function POManagementPage() {
                                 </thead>
                                 <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
                                     {filtered.map(po => (
-                                        <tr key={po.id} className="group hover:bg-[#FFFFFF]/60 transition-colors">
+                                        <tr key={po.id} className="group hover:bg-white/60 transition-colors">
                                             {/* Mã PO */}
                                             <td className="px-5 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-lg bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB] flex-shrink-0">
+                                                    <div className="w-9 h-9 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-600 flex-shrink-0">
                                                         <FileText size={15} />
                                                     </div>
                                                     <div>
-                                                        <p className="font-black text-slate-900 text-sm leading-none">Đơn hàng</p>
+                                                        <p className="font-bold text-slate-900 text-sm leading-none">Đơn hàng</p>
                                                         {!(po as POMockData).rfqId && (
-                                                            <span className="text-[8px] font-black text-black bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 mt-1 inline-block">
+                                                            <span className="text-[8px] font-bold text-black bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 mt-1 inline-block">
                                                                 AUTO
                                                             </span>
                                                         )}
@@ -245,7 +245,7 @@ export default function POManagementPage() {
                                             <td className="px-5 py-4">
                                                 <div className="flex items-center gap-2 flex-wrap">
                                                     {(po as POMockData).prId ? (
-                                                        <span className="text-[10px] font-black text-slate-900 bg-[#FFFFFF] px-2.5 py-1 rounded-lg border border-[rgba(148,163,184,0.1)]">
+                                                        <span className="text-[10px] font-bold text-slate-900 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
                                                             PR-***
                                                         </span>
                                                     ) : (
@@ -254,7 +254,7 @@ export default function POManagementPage() {
                                                     {(po as POMockData).rfqId && (
                                                         <>
                                                             <ChevronRight size={12} className="text-slate-900" />
-                                                            <span className="text-[10px] font-black text-[#2563EB] bg-[#2563EB]/10 px-2.5 py-1 rounded-lg border border-[#2563EB]/20">
+                                                            <span className="text-[10px] font-bold text-blue-600 bg-blue-600/10 px-2.5 py-1 rounded-lg border border-blue-600/20">
                                                                 RFQ-***
                                                             </span>
                                                         </>
@@ -269,7 +269,7 @@ export default function POManagementPage() {
 
                                             {/* Tổng tiền */}
                                             <td className="px-5 py-4">
-                                                <span className="font-black text-slate-900 tabular-nums">
+                                                <span className="font-bold text-slate-900 tabular-nums">
                                                     {Number((po as POMockData).totalAmount || po.total || 0).toLocaleString()} ₫
                                                 </span>
                                             </td>
@@ -277,7 +277,7 @@ export default function POManagementPage() {
                                             {/* Escrow */}
                                             <td className="px-5 py-4">
                                                 {(po as POMockData).escrowLocked ? (
-                                                    <span className="inline-flex items-center gap-1.5 text-[10px] font-black text-black bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                                                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-black bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
                                                         <ShieldCheck size={12} /> Locked
                                                     </span>
                                                 ) : (
@@ -290,7 +290,7 @@ export default function POManagementPage() {
                                                 <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => setSelectedPO(po)}
-                                                        className="p-2 rounded-lg text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 transition-all"
+                                                        className="p-2 rounded-lg text-slate-900 hover:text-blue-600 hover:bg-blue-600/10 transition-all"
                                                         title="Xem chi tiết"
                                                     >
                                                         <Eye size={15} />
@@ -312,13 +312,13 @@ export default function POManagementPage() {
 
                     {/* Table footer */}
                     {filtered.length > 0 && (
-                        <div className="px-5 py-3 border-t border-[rgba(148,163,184,0.08)] flex items-center justify-between">
+                        <div className="px-5 py-3 border-t border-slate-200 flex items-center justify-between">
                             <p className="text-[11px] text-slate-900 font-medium">
                                 Hiển thị <span className="text-slate-900 font-bold">{filtered.length}</span> / {allPOs.length} đơn hàng
                             </p>
                             <p className="text-[11px] text-slate-900 font-medium">
                                 Tổng giá trị lọc:{" "}
-                                <span className="text-[#2563EB] font-black tabular-nums">
+                                <span className="text-blue-600 font-bold tabular-nums">
                                     {filtered.reduce((s, p) => s + Number((p as POMockData).totalAmount || p.total || 0), 0).toLocaleString()} ₫
                                 </span>
                             </p>
@@ -365,8 +365,8 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
     const totalAmount = formData.items.reduce((s, i) => s + i.total, 0);
 
     return (
-        <div className="min-h-screen bg-[#FFFFFF] text-slate-900">
-            <div className="max-w-4xl mx-auto px-6 py-8 space-y-6">
+        <main className="p-6 space-y-6">
+            <div className="max-w-4xl mx-auto space-y-6">
 
                 {/* Top bar */}
                 <div className="flex items-center justify-between">
@@ -378,12 +378,12 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                     </button>
                     <div className="flex gap-3">
                         <button
-                            className="px-5 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-wider hover:bg-slate-100 transition-all"
+                            className="btn-secondary"
                         >
                             Lưu nháp
                         </button>
                         <button
-                            className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl font-black text-[10px] uppercase tracking-wider shadow-lg shadow-[#2563EB]/20 transition-all"
+                            className="btn-primary flex items-center gap-2"
                         >
                             <Send size={14} /> Phát hành PO
                         </button>
@@ -391,13 +391,13 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                 </div>
 
                 {/* Form card */}
-                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
-                    <div className="px-7 py-5 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB]">
+                <div className="bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden">
+                    <div className="px-7 py-5 border-b border-slate-200 bg-white flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-600">
                             <ShoppingBag size={17} />
                         </div>
                         <div>
-                            <h2 className="font-black text-slate-900 text-base">Tạo đơn đặt hàng mới</h2>
+                            <h2 className="font-bold text-slate-900 text-base">Tạo đơn đặt hàng mới</h2>
                             <p className="text-[11px] text-slate-900 font-medium">Điền thông tin để phát hành PO</p>
                         </div>
                     </div>
@@ -450,7 +450,7 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                                     <button
                                         type="button"
                                         onClick={() => setFormData(f => ({ ...f, escrowLocked: !f.escrowLocked }))}
-                                        className={`w-12 h-6 rounded-full p-0.5 transition-all ${formData.escrowLocked ? "bg-amber-500" : "bg-[#0F172A] border border-[rgba(148,163,184,0.15)]"}`}
+                                        className={`w-12 h-6 rounded-full p-0.5 transition-all ${formData.escrowLocked ? "bg-amber-500" : "bg-slate-900 border border-slate-200"}`}
                                     >
                                         <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${formData.escrowLocked ? "translate-x-6" : "translate-x-0"}`} />
                                     </button>
@@ -466,19 +466,19 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                         {/* Items */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Danh sách mặt hàng</h3>
+                                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-900">Danh sách mặt hàng</h3>
                                 <button
                                     onClick={handleAddItem}
-                                    className="flex items-center gap-1.5 text-[11px] font-black uppercase text-[#2563EB] hover:bg-[#2563EB]/10 px-3 py-1.5 rounded-lg transition-all"
+                                    className="flex items-center gap-1.5 text-[11px] font-bold uppercase text-blue-600 hover:bg-blue-600/10 px-3 py-1.5 rounded-lg transition-all"
                                 >
                                     <PlusCircle size={14} /> Thêm dòng
                                 </button>
                             </div>
 
-                            <div className="rounded-xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+                            <div className="rounded-xl border border-slate-200 overflow-hidden">
                                 <table className="erp-table text-xs">
                                     <thead>
-                                        <tr className="border-b border-[rgba(148,163,184,0.08)]">
+                                        <tr className="border-b border-slate-200">
                                             <th className="px-4 py-3 text-left">Tên sản phẩm</th>
                                             <th className="px-4 py-3 text-center w-24">Số lượng</th>
                                             <th className="px-4 py-3 text-right w-36">Đơn giá (₫)</th>
@@ -486,9 +486,9 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                                             <th className="w-10" />
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
+                                    <tbody className="divide-y divide-slate-100">
                                         {formData.items.map((item, idx) => (
-                                            <tr key={item.id} className="group/row bg-[#F1F5F9]">
+                                            <tr key={item.id} className="group/row bg-slate-100">
                                                 <td className="px-3 py-2">
                                                     <input
                                                         type="text"
@@ -516,7 +516,7 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
                                                         onChange={e => handleUpdateItem(idx, "unitPrice", parseInt(e.target.value) || 0)}
                                                     />
                                                 </td>
-                                                <td className="px-4 py-2 text-right font-black text-[#2563EB] tabular-nums">
+                                                <td className="px-4 py-2 text-right font-bold text-blue-600 tabular-nums">
                                                     {Number(item.total ?? 0).toLocaleString()} ₫
                                                 </td>
                                                 <td className="px-2 py-2">
@@ -537,15 +537,15 @@ function POForm({ onCancel, prs, rfqs, organizations }: {
 
                         {/* Total */}
                         <div className="flex justify-end">
-                            <div className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.08)] rounded-xl px-6 py-4 text-right">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-1">Tổng đơn hàng</p>
-                                <p className="text-2xl font-black text-slate-900 tabular-nums">{totalAmount.toLocaleString()} <span className="text-base text-slate-900">₫</span></p>
+                            <div className="bg-white border border-slate-200 rounded-xl px-6 py-4 text-right">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-1">Tổng đơn hàng</p>
+                                <p className="text-2xl font-bold text-slate-900 tabular-nums">{totalAmount.toLocaleString()} <span className="text-base text-slate-900">₫</span></p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }
 
@@ -582,20 +582,20 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
     return (
         <div className="fixed inset-0 z-50 overflow-hidden">
             <div
-                className="absolute inset-0 bg-[#FFFFFF]/70 backdrop-blur-sm animate-in fade-in duration-200"
+                className="absolute inset-0 bg-white/70 backdrop-blur-sm animate-in fade-in duration-200"
                 onClick={onClose}
             />
-            <div className="absolute inset-y-0 right-0 w-full max-w-xl bg-[#F1F5F9] flex flex-col animate-in slide-in-from-right duration-300 border-l border-[rgba(148,163,184,0.08)] shadow-2xl">
+            <div className="absolute inset-y-0 right-0 w-full max-w-xl bg-slate-100 flex flex-col animate-in slide-in-from-right duration-300 border-l border-slate-200 shadow-xl">
 
                 {/* Header */}
-                <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] flex items-center justify-between">
+                <div className="px-6 py-5 border-b border-slate-200 bg-white flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB]">
+                        <div className="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-600">
                             <ShoppingCart size={18} />
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <h3 className="font-black text-slate-900">Đơn hàng</h3>
+                                <h3 className="font-bold text-slate-900">Đơn hàng</h3>
                                 <StatusBadge status={data.status} />
                             </div>
                             <p className="text-[10px] text-slate-900 font-medium mt-0.5">
@@ -605,7 +605,7 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-xl text-slate-900 hover:text-slate-900 hover:bg-[rgba(148,163,184,0.08)] transition-all"
+                        className="p-2 rounded-xl text-slate-900 hover:text-slate-900 hover:bg-slate-100 transition-all"
                     >
                         <X size={18} />
                     </button>
@@ -615,11 +615,11 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                 <div className="flex-1 overflow-y-auto p-6 space-y-5">
 
                     {/* Supplier */}
-                    <section className="bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.08)] p-5">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-3 flex items-center gap-2">
+                    <section className="bg-white rounded-xl border border-slate-200 p-5">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-3 flex items-center gap-2">
                             <Building2 size={12} /> Nhà cung cấp
                         </p>
-                        <p className="font-black text-slate-900 text-base">
+                        <p className="font-bold text-slate-900 text-base">
                             {data.supplier?.name || data.vendorName || "N/A"}
                         </p>
                         <p className="text-xs text-slate-900 font-mono mt-1">
@@ -629,38 +629,38 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
 
                     {/* Links */}
                     <div className="grid grid-cols-2 gap-3">
-                        <section className="bg-[#2563EB]/5 border border-[#2563EB]/15 rounded-xl p-4">
-                            <p className="text-[9px] font-black text-[#2563EB] uppercase tracking-widest mb-1.5">Yêu cầu PR</p>
-                            <p className="font-black text-slate-900 text-sm">{(data as POMockData).prId ? "PR-***" : "—"}</p>
+                        <section className="bg-blue-600/5 border border-blue-600/15 rounded-xl p-4">
+                            <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mb-1.5">Yêu cầu PR</p>
+                            <p className="font-bold text-slate-900 text-sm">{(data as POMockData).prId ? "PR-***" : "—"}</p>
                         </section>
-                        <section className="bg-[#8B5CF6]/5 border border-[#8B5CF6]/15 rounded-xl p-4">
-                            <p className="text-[9px] font-black text-[#8B5CF6] uppercase tracking-widest mb-1.5">Báo giá RFQ</p>
-                            <p className="font-black text-slate-900 text-sm">{(data as POMockData).rfqId ? "RFQ-***" : "—"}</p>
+                        <section className="bg-purple-500/5 border border-purple-500/15 rounded-xl p-4">
+                            <p className="text-[9px] font-bold text-purple-500 uppercase tracking-widest mb-1.5">Báo giá RFQ</p>
+                            <p className="font-bold text-slate-900 text-sm">{(data as POMockData).rfqId ? "RFQ-***" : "—"}</p>
                         </section>
                     </div>
 
                     {/* Items */}
                     <section>
                         <div className="flex items-center justify-between mb-3">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 flex items-center gap-2">
                                 <Package size={12} /> Danh sách hàng hóa
                             </p>
                             {!loading && items.length > 0 && (
-                                <span className="text-[10px] font-black text-slate-900 bg-[#FFFFFF] px-2 py-1 rounded-lg border border-[rgba(148,163,184,0.08)]">
+                                <span className="text-[10px] font-bold text-slate-900 bg-white px-2 py-1 rounded-lg border border-slate-200">
                                     {items.length} mặt hàng
                                 </span>
                             )}
                         </div>
 
                         {loading ? (
-                            <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.08)] p-8 flex items-center justify-center gap-3 text-slate-900">
-                                <div className="w-4 h-4 border-2 border-[#000000] border-t-[#2563EB] rounded-full animate-spin" />
+                            <div className="bg-white rounded-xl border border-slate-200 p-8 flex items-center justify-center gap-3 text-slate-900">
+                                <div className="w-4 h-4 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
                                 <span className="text-xs font-bold">Đang tải danh sách hàng hóa...</span>
                             </div>
                         ) : items.length > 0 ? (
-                            <div className="rounded-xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+                            <div className="rounded-xl border border-slate-200 overflow-hidden">
                                 <table className="erp-table text-xs">
-                                    <thead className="border-b border-[rgba(148,163,184,0.08)]">
+                                    <thead className="border-b border-slate-200">
                                         <tr>
                                             <th className="px-4 py-3 text-left">Mô tả / Sản phẩm</th>
                                             <th className="px-4 py-3 text-center w-14">SL</th>
@@ -668,32 +668,32 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                                             <th className="px-4 py-3 text-right w-28">Thành tiền</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
+                                    <tbody className="divide-y divide-slate-100">
                                         {items.map((item: POItem) => {
                                             const unitPrice = Number(item.unitPrice || item.estimatedPrice || 0);
                                             const lineTotal = unitPrice * Number(item.qty || 0);
                                             return (
-                                                <tr key={item.id} className="hover:bg-[#FFFFFF]/50 transition-colors">
+                                                <tr key={item.id} className="hover:bg-white/50 transition-colors">
                                                     <td className="px-4 py-3 font-bold text-slate-900">
                                                         {item.description || (item as unknown as Record<string, string>).productName || "—"}
                                                     </td>
-                                                    <td className="px-4 py-3 text-center font-black text-slate-900">{item.qty}</td>
+                                                    <td className="px-4 py-3 text-center font-bold text-slate-900">{item.qty}</td>
                                                     <td className="px-4 py-3 text-right font-bold text-slate-900 tabular-nums">
                                                         {unitPrice.toLocaleString()} ₫
                                                     </td>
-                                                    <td className="px-4 py-3 text-right font-black text-[#2563EB] tabular-nums">
+                                                    <td className="px-4 py-3 text-right font-bold text-blue-600 tabular-nums">
                                                         {lineTotal.toLocaleString()} ₫
                                                     </td>
                                                 </tr>
                                             );
                                         })}
                                     </tbody>
-                                    <tfoot className="border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF]">
+                                    <tfoot className="border-t border-slate-200 bg-white">
                                         <tr>
-                                            <td colSpan={3} className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-900">
+                                            <td colSpan={3} className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-widest text-slate-900">
                                                 Tổng cộng
                                             </td>
-                                            <td className="px-4 py-3 text-right font-black text-slate-900 tabular-nums">
+                                            <td className="px-4 py-3 text-right font-bold text-slate-900 tabular-nums">
                                                 {items.reduce((s, i) => s + Number(i.unitPrice || i.estimatedPrice || 0) * Number(i.qty || 0), 0).toLocaleString()} ₫
                                             </td>
                                         </tr>
@@ -701,7 +701,7 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                                 </table>
                             </div>
                         ) : (
-                            <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.08)] p-6 text-center">
+                            <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
                                 <p className="text-sm text-slate-900">Không có chi tiết hàng hóa</p>
                                 <p className="text-[10px] text-slate-900/50 mt-1">PO có thể được tạo tự động từ RFQ</p>
                             </div>
@@ -712,15 +712,15 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                     <section className={`rounded-xl border p-4 flex items-center gap-4 ${
                         (data as POMockData).escrowLocked
                             ? "bg-amber-500/5 border-amber-500/20"
-                            : "bg-[#FFFFFF] border-[rgba(148,163,184,0.08)]"
+                            : "bg-white border-slate-200"
                     }`}>
                         <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                            (data as POMockData).escrowLocked ? "bg-amber-500/20 text-black" : "bg-[#0F172A] text-slate-900"
+                            (data as POMockData).escrowLocked ? "bg-amber-500/20 text-black" : "bg-slate-900 text-slate-900"
                         }`}>
                             <ShieldCheck size={17} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-0.5">Escrow</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-0.5">Escrow</p>
                             <p className={`text-sm font-bold ${(data as POMockData).escrowLocked ? "text-black" : "text-slate-900"}`}>
                                 {(data as POMockData).escrowLocked ? "Đã khóa — chờ xác nhận nhận hàng" : "Không sử dụng"}
                             </p>
@@ -729,18 +729,18 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-5 border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] space-y-4">
+                <div className="px-6 py-5 border-t border-slate-200 bg-white space-y-4">
                     <div className="flex justify-between items-center">
-                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-900">Tổng thanh toán</span>
-                        <span className="text-2xl font-black text-[#2563EB] tabular-nums">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-900">Tổng thanh toán</span>
+                        <span className="text-2xl font-bold text-blue-600 tabular-nums">
                             {grandTotal.toLocaleString()} ₫
                         </span>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                        <button className="py-2.5 border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-wider hover:bg-[#F1F5F9] transition-all">
+                        <button className="btn-secondary py-2.5 text-[10px] uppercase tracking-wider">
                             Gửi lại thông báo
                         </button>
-                        <button className="py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl font-black text-[10px] uppercase tracking-wider shadow-lg shadow-[#2563EB]/10 transition-all flex items-center justify-center gap-2">
+                        <button className="btn-primary py-2.5 text-[10px] uppercase tracking-wider flex items-center justify-center gap-2">
                             <Download size={13} /> In đơn hàng
                         </button>
                     </div>
@@ -754,7 +754,7 @@ function PODetailDrawer({ po, onClose }: { po: POMockData; onClose: () => void }
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
     return (
         <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-900">{label}</label>
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-900">{label}</label>
             {children}
         </div>
     );

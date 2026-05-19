@@ -62,18 +62,20 @@ export default function ProcurementQualityHub() {
   };
 
   return (
-    <main className="p-6 min-h-screen bg-[#F8FAFC]">
+    <main className="p-6 space-y-6">
       {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl font-black text-slate-900 flex items-center gap-3">
-          <ShieldCheck size={32} className="text-indigo-600" />
-          QUẢN TRỊ CHẤT LƯỢNG NCC
-        </h1>
-        <p className="text-slate-500 mt-1">Trung tâm điều phối giải trình (RCA) và quản trị rủi ro nhà cung cấp.</p>
-      </header>
+      <div className="page-header">
+        <div>
+          <h1 className="page-title flex items-center gap-3">
+            <ShieldCheck size={32} className="text-indigo-600" />
+            QUẢN TRỊ CHẤT LƯỢNG NCC
+          </h1>
+          <p className="text-slate-500 mt-1">Trung tâm điều phối giải trình (RCA) và quản trị rủi ro nhà cung cấp.</p>
+        </div>
+      </div>
 
       {/* Supplier Selection */}
-      <section className="mb-8">
+      <section>
         <SupplierSelector onViewHistory={handleSupplierSelect} />
       </section>
 

@@ -80,7 +80,7 @@ export default function ProcurementControlPage() {
 
     // Role check
     if (currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN") {
-        return <div className="p-20 text-center font-bold text-slate-900 bg-white min-h-screen">Bạn không có quyền truy cập trung tâm kiểm soát thu mua.</div>;
+        return <div className="p-20 text-center font-bold text-slate-900 bg-white">Bạn không có quyền truy cập trung tâm kiểm soát thu mua.</div>;
     }
 
     const handleAssignToMe = async (prId: string) => {
@@ -110,7 +110,7 @@ export default function ProcurementControlPage() {
                         <FileText size={18} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-black text-slate-900 tracking-tight">Yêu cầu mua</span>
+                        <span className="font-bold text-slate-900 tracking-tight">Yêu cầu mua</span>
                         <span className="text-[9px] text-slate-900 font-bold uppercase">{formatDate(row.createdAt)}</span>
                     </div>
                 </div>
@@ -120,7 +120,7 @@ export default function ProcurementControlPage() {
             label: "Loại",
             key: "type",
             render: (row: PR) => (
-                <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-widest ${row.type === 'CATALOG' ? 'bg-[#2563EB]/10 text-black' : 'bg-purple-500/10 text-black'}`}>
+                <span className={`px-2 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest ${row.type === 'CATALOG' ? 'bg-blue-600/10 text-black' : 'bg-purple-500/10 text-black'}`}>
                     {row.type || 'NON-CATALOG'}
                 </span>
             )
@@ -130,7 +130,7 @@ export default function ProcurementControlPage() {
             key: "title",
             render: (row: PR) => (
                 <div className="flex flex-col max-w-xs">
-                    <span className="text-sm font-black text-slate-900 truncate">{row.title}</span>
+                    <span className="text-sm font-bold text-slate-900 truncate">{row.title}</span>
                     <div className="flex items-center gap-2 mt-1">
                         <div className="h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center text-[8px] font-bold text-white shrink-0">
                             {(row.requester?.fullName || row.requester?.name || "U").substring(0,1)}
@@ -145,7 +145,7 @@ export default function ProcurementControlPage() {
             key: "deptId",
             render: (row: PR) => (
                 <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-900">
+                    <span className="text-xs font-bold text-slate-900">
                         {typeof row.department === 'string' ? row.department : row.department?.name || "N/A"}
                     </span>
                 </div>
@@ -156,7 +156,7 @@ export default function ProcurementControlPage() {
             key: "requiredDate",
             render: (row: PR) => (
                 <div className="flex flex-col items-center px-4">
-                    <span className="px-2 py-1 bg-rose-500/10 text-black rounded-md text-[10px] font-black uppercase tracking-widest border border-rose-500/20 overflow-hidden whitespace-nowrap">
+                    <span className="px-2 py-1 bg-rose-500/10 text-black rounded-md text-[10px] font-bold uppercase tracking-widest border border-rose-500/20 overflow-hidden whitespace-nowrap">
                         {formatDate(row.requiredDate)}
                     </span>
                 </div>
@@ -167,8 +167,8 @@ export default function ProcurementControlPage() {
             key: "totalEstimate",
             render: (row: PR) => (
                 <div className="text-right">
-                    <div className="font-black text-black text-sm">{formatVND(row.totalEstimate || 0)} ₫</div>
-                    <div className="text-[9px] text-slate-900 font-black uppercase tracking-widest">Base Amount</div>
+                    <div className="font-bold text-black text-sm">{formatVND(row.totalEstimate || 0)} ₫</div>
+                    <div className="text-[9px] text-slate-900 font-bold uppercase tracking-widest">Base Amount</div>
                 </div>
             )
         },
@@ -190,14 +190,14 @@ export default function ProcurementControlPage() {
                         </button>
                     )}
                     {row.status === 'APPROVED' && row.type !== 'CATALOG' && (
-                        <Link href="/sourcing" className="inline-flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
+                        <Link href="/sourcing" className="inline-flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
                             Lấy báo giá <ArrowRight size={14} />
                         </Link>
                     )}
                     {row.status === 'IN_SOURCING' && (
                         <Link 
                             href={`/procurement/rfq/create?prId=${row.id}`}
-                            className="inline-flex items-center gap-2 bg-amber-500/10 text-black border border-amber-500/20 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-amber-500/20 transition-all shadow-sm active:scale-95"
+                            className="inline-flex items-center gap-2 bg-amber-500/10 text-black border border-amber-500/20 px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-amber-500/20 transition-all shadow-sm active:scale-95"
                         >
                             Quản lý RFQ
                         </Link>
@@ -285,37 +285,37 @@ export default function ProcurementControlPage() {
 
             {/* Confirm Modal */}
             {confirmModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FFFFFF]/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-[#F1F5F9] rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-[rgba(148,163,184,0.1)]">
-                        <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-slate-100 rounded-[2.5rem] shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200">
+                        <div className="p-8 border-b border-slate-200 bg-white">
                             <div className="flex items-center gap-4">
-                                <div className="bg-[#2563EB] p-3 rounded-2xl text-white shadow-lg shadow-[#2563EB]/20">
+                                <div className="bg-blue-600 p-3 rounded-2xl text-white shadow-lg shadow-blue-600/20">
                                     <CheckCircle size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-black text-slate-900">Xác nhận giá Catalog</h2>
+                                    <h2 className="text-xl font-bold text-slate-900">Xác nhận giá Catalog</h2>
                                     <p className="text-slate-900 font-bold text-sm">Chi tiết yêu cầu</p>
                                 </div>
                             </div>
                         </div>
                         <div className="p-8 space-y-6">
-                            <div className="bg-[#FFFFFF] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-white p-6 rounded-2xl border border-slate-200">
                                 <div className="flex justify-between items-center mb-4">
                                     <span className="text-slate-900 font-bold text-sm">Nhà cung cấp:</span>
-                                    <span className="text-[#2563EB] font-black uppercase tracking-tight">
+                                    <span className="text-blue-600 font-bold uppercase">
                                         {organizations.find(o => o.id === confirmModal.preferredSupplierId)?.name || "NCC mặc định"}
                                     </span>
                                 </div>
-                                <div className="pt-4 border-t border-[rgba(148,163,184,0.05)]">
-                                    <label className="text-[10px] font-black uppercase text-slate-900 mb-2 block tracking-widest">Số lượng yêu cầu</label>
-                                    <div className="p-4 bg-[#F1F5F9] rounded-xl text-xs font-black text-slate-900 border border-[rgba(148,163,184,0.1)] uppercase">
+                                <div className="pt-4 border-t border-slate-200">
+                                    <label className="text-[10px] font-bold uppercase text-slate-900 mb-2 block tracking-widest">Số lượng yêu cầu</label>
+                                    <div className="p-4 bg-slate-100 rounded-xl text-xs font-bold text-slate-900 border border-slate-200 uppercase">
                                         {confirmModal.items?.[0]?.qty} {confirmModal.items?.[0]?.unit}
                                     </div>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="text-[10px] font-black uppercase text-slate-900 mb-2 block tracking-widest">Nhà cung cấp ưu tiên</label>
+                                <label className="text-[10px] font-bold uppercase text-slate-900 mb-2 block tracking-widest">Nhà cung cấp ưu tiên</label>
                                 <select className="erp-input w-full h-12 font-bold" defaultValue={confirmModal.preferredSupplierId}>
                                     {organizations.length > 0 ? (
                                         organizations.map(org => (
@@ -329,22 +329,22 @@ export default function ProcurementControlPage() {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-900 mb-2 block tracking-widest">Giá xác nhận (VNĐ)</label>
+                                    <label className="text-[10px] font-bold uppercase text-slate-900 mb-2 block tracking-widest">Giá xác nhận (VNĐ)</label>
                                     <input type="number" className="erp-input w-full h-12 font-bold" defaultValue={confirmModal.items?.[0]?.estimatedPrice} />
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-900 mb-2 block tracking-widest">Lead time (Ngày)</label>
+                                    <label className="text-[10px] font-bold uppercase text-slate-900 mb-2 block tracking-widest">Lead time (Ngày)</label>
                                     <input type="number" className="erp-input w-full h-12 font-bold" defaultValue="3" />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="text-[10px] font-black uppercase text-slate-900 mb-2 block tracking-widest">Ghi chú xác nhận</label>
+                                <label className="text-[10px] font-bold uppercase text-slate-900 mb-2 block tracking-widest">Ghi chú xác nhận</label>
                                 <textarea className="erp-input w-full h-24 py-4 font-bold" placeholder="Nhập ghi chú cho NCC..."></textarea>
                             </div>
 
                             <div className="flex gap-4 pt-4">
-                                <button onClick={() => setConfirmModal(null)} className="flex-1 px-6 py-4 rounded-2xl bg-[#FFFFFF] text-slate-900 font-black text-xs uppercase tracking-widest hover:text-slate-900 border border-[rgba(148,163,184,0.1)] transition-all">Hủy bỏ</button>
+                                <button onClick={() => setConfirmModal(null)} className="btn-secondary flex-1 justify-center">Hủy bỏ</button>
                                 <button
                                     onClick={() => handleConfirmCatalog(confirmModal)}
                                     className="btn-primary flex-1 justify-center"
@@ -365,7 +365,7 @@ function StatusPill({ status }: { status: string }) {
         'DRAFT': { bg: 'bg-slate-500/10', text: 'text-black', border: 'border-slate-500/20', label: 'Nháp' },
         'PENDING': { bg: 'bg-amber-500/10', text: 'text-black', border: 'border-amber-500/20', label: 'Chờ duyệt' },
         'PENDING_APPROVAL': { bg: 'bg-amber-500/10', text: 'text-black', border: 'border-amber-500/20', label: 'Chờ phê duyệt' },
-        'SUBMITTED': { bg: 'bg-[#2563EB]/10', text: 'text-black', border: 'border-[#2563EB]/20', label: 'Đã gửi' },
+        'SUBMITTED': { bg: 'bg-blue-600/10', text: 'text-black', border: 'border-blue-600/20', label: 'Đã gửi' },
         'UNDER_REVIEW': { bg: 'bg-purple-500/10', text: 'text-black', border: 'border-purple-500/20', label: 'Đang xem xét' },
         'APPROVED': { bg: 'bg-emerald-500/10', text: 'text-black', border: 'border-emerald-500/20', label: 'Đã duyệt' },
         'REJECTED': { bg: 'bg-rose-500/10', text: 'text-black', border: 'border-rose-500/20', label: 'Từ chối' },
@@ -378,7 +378,7 @@ function StatusPill({ status }: { status: string }) {
     const style = config[status] || { ...config['DRAFT'], label: status.replace(/_/g, ' ') };
     return (
         <div className="min-w-[110px]">
-            <span className={`inline-block px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border ${style.border}`}>
+            <span className={`inline-block px-3 py-1.5 rounded-lg font-bold text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border ${style.border}`}>
                 {style.label}
             </span>
         </div>

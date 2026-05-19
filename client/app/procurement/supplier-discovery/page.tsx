@@ -18,7 +18,7 @@ const StatusBadge = ({ status }: { status: DiscoveredSupplier['status'] }) => {
   if (status === 'WORKED_BEFORE')
     return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-black border border-emerald-500/30"><BadgeCheck size={10} />Đã hợp tác</span>;
   if (status === 'IN_SYSTEM')
-    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30"><CheckCircle2 size={10} />Trong hệ thống</span>;
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600/15 text-blue-600 border border-blue-600/30"><CheckCircle2 size={10} />Trong hệ thống</span>;
   return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/15 text-black border border-slate-500/30"><Sparkles size={10} />Mới</span>;
 };
 
@@ -27,10 +27,10 @@ const ScoreBar = ({ score }: { score: number }) => {
   const color = score >= 80 ? '#10B981' : score >= 60 ? '#F59E0B' : '#EF4444';
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 bg-[rgba(240,246,252,0.06)] rounded-full overflow-hidden">
+      <div className="flex-1 h-1.5 bg-slate-200/40 rounded-full overflow-hidden">
         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, background: color }} />
       </div>
-      <span className="text-[11px] font-black tabular-nums" style={{ color }}>{score}</span>
+      <span className="text-[11px] font-bold tabular-nums" style={{ color }}>{score}</span>
     </div>
   );
 };
@@ -71,27 +71,27 @@ const SupplierDetailModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[#FFFFFF]/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#F1F5F9] rounded-2xl border border-[rgba(240,246,252,0.1)] shadow-2xl overflow-hidden">
+      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-slate-100 rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-start justify-between p-5 border-b border-[#E2E8F0] bg-[#FFFFFF] shrink-0">
+        <div className="flex items-start justify-between p-5 border-b border-slate-200 bg-white shrink-0">
           <div className="flex-1 min-w-0 pr-4">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h2 className="text-base font-black text-slate-900 truncate">{s.name}</h2>
+              <h2 className="text-base font-bold text-slate-900 truncate">{s.name}</h2>
               <StatusBadge status={s.status} />
             </div>
             <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-slate-900">
               {s.province && <span className="flex items-center gap-1"><MapPin size={10} />{s.province}</span>}
               {s.industry && <span className="flex items-center gap-1"><Building2 size={10} />{s.industry}</span>}
               {s.website && (
-                <a href={s.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#3B82F6] hover:underline">
+                <a href={s.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline">
                   <Globe size={10} />{s.website.replace(/^https?:\/\//, '')}
                 </a>
               )}
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 text-slate-900 hover:text-slate-900 hover:bg-[rgba(240,246,252,0.06)] rounded-lg transition-all shrink-0">
+          <button onClick={onClose} className="p-1.5 text-slate-900 hover:text-slate-900 hover:bg-slate-200/40 rounded-lg transition-all shrink-0">
             <X size={16} />
           </button>
         </div>
@@ -100,21 +100,21 @@ const SupplierDetailModal = ({
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
 
           {/* ── AI Score section ── */}
-          <div className="bg-[#FFFFFF] rounded-xl border border-[#E2E8F0] p-4">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-3 flex items-center gap-1.5">
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-3 flex items-center gap-1.5">
               <Sparkles size={11} className="text-violet-400" /> Đánh giá AI
             </p>
             {/* Score row */}
             <div className="flex items-center gap-4 mb-4">
               <div className="flex items-center justify-center w-16 h-16 rounded-xl border-2 shrink-0" style={{ borderColor: scoreColor + '40', background: scoreColor + '15' }}>
-                <span className="text-2xl font-black tabular-nums" style={{ color: scoreColor }}>{s.aiScore}</span>
+                <span className="text-2xl font-bold tabular-nums" style={{ color: scoreColor }}>{s.aiScore}</span>
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-bold" style={{ color: scoreColor }}>{scoreLabel}</span>
                   <span className="text-[10px] text-slate-900">/ 100</span>
                 </div>
-                <div className="h-2 bg-[rgba(240,246,252,0.06)] rounded-full overflow-hidden">
+                <div className="h-2 bg-slate-200/40 rounded-full overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-700" style={{ width: `${s.aiScore}%`, background: scoreColor }} />
                 </div>
               </div>
@@ -123,20 +123,20 @@ const SupplierDetailModal = ({
             {/* AI Summary */}
             {s.aiSummary && (
               <div className="mb-4">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900 mb-1.5">Nhận xét AI</p>
-                <p className="text-[12.5px] text-[#C9D1D9] leading-relaxed">{s.aiSummary}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-900 mb-1.5">Nhận xét AI</p>
+                <p className="text-[12.5px] text-slate-500 leading-relaxed">{s.aiSummary}</p>
               </div>
             )}
 
             {/* Match reasons */}
             {s.matchReasons.length > 0 && (
               <div>
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900 mb-2">Lý do chấm điểm</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-900 mb-2">Lý do chấm điểm</p>
                 <div className="space-y-1.5">
                   {s.matchReasons.map((r, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <CheckCircle2 size={13} className="text-violet-400 shrink-0 mt-0.5" />
-                      <span className="text-[12px] text-[#C9D1D9]">{r}</span>
+                      <span className="text-[12px] text-slate-500">{r}</span>
                     </div>
                   ))}
                 </div>
@@ -149,9 +149,9 @@ const SupplierDetailModal = ({
           </div>
 
           {/* ── Company info section ── */}
-          <div className="bg-[#FFFFFF] rounded-xl border border-[#E2E8F0] p-4">
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 flex items-center gap-1.5">
                 <Building2 size={11} /> Thông tin liên hệ
               </p>
               <button
@@ -177,7 +177,7 @@ const SupplierDetailModal = ({
                 <Phone size={12} className="text-slate-900 shrink-0" />
                 <span className="text-slate-900 w-24 shrink-0">Điện thoại</span>
                 {s.phone
-                  ? <a href={`tel:${s.phone}`} className="text-slate-900 font-medium hover:text-[#3B82F6] transition-colors">{s.phone}</a>
+                  ? <a href={`tel:${s.phone}`} className="text-slate-900 font-medium hover:text-blue-600 transition-colors">{s.phone}</a>
                   : <span className="text-slate-900 italic text-[11px]">Chưa có thông tin</span>}
               </div>
               <div className="flex items-center gap-2 text-[12px]">
@@ -205,7 +205,7 @@ const SupplierDetailModal = ({
                 <Globe size={12} className="text-slate-900 shrink-0" />
                 <span className="text-slate-900 w-24 shrink-0">Website</span>
                 {s.website
-                  ? <a href={s.website} target="_blank" rel="noopener noreferrer" className="text-[#3B82F6] hover:underline flex items-center gap-1">
+                  ? <a href={s.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
                       {s.website.replace(/^https?:\/\//, '')} <ArrowUpRight size={10} />
                     </a>
                   : <span className="text-slate-900 italic text-[11px]">Chưa có thông tin</span>}
@@ -215,8 +215,8 @@ const SupplierDetailModal = ({
 
           {/* ── Products & Certifications ── */}
           {(s.products.length > 0 || s.certifications.length > 0) && (
-            <div className="bg-[#FFFFFF] rounded-xl border border-[#E2E8F0] p-4">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-3 flex items-center gap-1.5">
+            <div className="bg-white rounded-xl border border-slate-200 p-4">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-3 flex items-center gap-1.5">
                 <Zap size={11} /> Năng lực & Chứng chỉ
               </p>
               {s.products.length > 0 && (
@@ -224,7 +224,7 @@ const SupplierDetailModal = ({
                   <p className="text-[10px] font-semibold text-slate-900 uppercase mb-1.5">Sản phẩm / Dịch vụ</p>
                   <div className="flex flex-wrap gap-1.5">
                     {s.products.map((p, i) => (
-                      <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-[rgba(240,246,252,0.05)] text-[#C9D1D9] border border-[#E2E8F0]">{p}</span>
+                      <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100/50 text-slate-500 border border-slate-200">{p}</span>
                     ))}
                   </div>
                 </div>
@@ -247,27 +247,27 @@ const SupplierDetailModal = ({
           {/* ── Source ── */}
           <div className="flex items-center gap-2">
             <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] text-[#3B82F6] hover:underline">
+              className="inline-flex items-center gap-1.5 text-[11px] text-blue-600 hover:underline">
               <ArrowUpRight size={12} />Xem nguồn dữ liệu gốc
             </a>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 border-t border-[#E2E8F0] bg-[#FFFFFF] px-5 py-4 flex items-center justify-between gap-3">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg text-[12px] text-slate-900 hover:text-slate-900 border border-[#E2E8F0] hover:border-[rgba(240,246,252,0.15)] transition-all">
+        <div className="shrink-0 border-t border-slate-200 bg-white px-5 py-4 flex items-center justify-between gap-3">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg text-[12px] text-slate-900 hover:text-slate-900 border border-slate-200 hover:border-slate-300 transition-all">
             Đóng
           </button>
           {s.status === 'NEW' && (
             <button
               onClick={() => onVetting(s.name)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-[#1D4ED8] text-white hover:bg-[#2563EB] disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-blue-700 text-white hover:bg-blue-600 disabled:opacity-50 transition-all"
             >
               <Import size={13} /> Xét duyệt nhà cung cấp
             </button>
           )}
           {s.status === 'IN_SYSTEM' && (
-            <span className="text-[11px] text-slate-900 flex items-center gap-1"><CheckCircle2 size={12} className="text-[#3B82F6]" />Đã có trong hệ thống</span>
+            <span className="text-[11px] text-slate-900 flex items-center gap-1"><CheckCircle2 size={12} className="text-blue-600" />Đã có trong hệ thống</span>
           )}
           {s.status === 'WORKED_BEFORE' && (
             <span className="text-[11px] text-black flex items-center gap-1"><CheckCircle2 size={12} />Đã từng hợp tác</span>
@@ -291,7 +291,7 @@ const SupplierCard = ({
   onVetting: (name: string) => void;
 }) => {
   return (
-    <div className={`rounded-xl border transition-all duration-200 ${selected ? 'border-[#2563EB]/50 bg-[#2563EB]/5' : 'border-[#E2E8F0] bg-[#F1F5F9]'} hover:border-[rgba(240,246,252,0.15)]`}>
+    <div className={`rounded-xl border transition-all duration-200 ${selected ? 'border-blue-600/50 bg-blue-600/5' : 'border-slate-200 bg-slate-100'} hover:border-slate-300`}>
       <div className="p-4">
         {/* Header row */}
         <div className="flex items-start gap-3">
@@ -299,7 +299,7 @@ const SupplierCard = ({
             type="checkbox"
             checked={selected}
             onChange={onToggleSelect}
-            className="mt-1 rounded border-[rgba(240,246,252,0.2)] accent-[#2563EB]"
+            className="mt-1 rounded border-slate-200 accent-blue-600"
           />
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -310,7 +310,7 @@ const SupplierCard = ({
               {supplier.province && <span className="flex items-center gap-1"><MapPin size={10} />{supplier.province}</span>}
               {supplier.industry && <span className="flex items-center gap-1"><Building2 size={10} />{supplier.industry}</span>}
               {supplier.website && (
-                <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#3B82F6] hover:underline" onClick={e => e.stopPropagation()}>
+                <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline" onClick={e => e.stopPropagation()}>
                   <Globe size={10} />{supplier.website.replace(/^https?:\/\//, '')}
                 </a>
               )}
@@ -334,7 +334,7 @@ const SupplierCard = ({
         {supplier.matchReasons.length > 0 && (
           <div className="mt-2 pl-6 flex flex-wrap gap-1.5">
             {supplier.matchReasons.slice(0, 3).map((r, i) => (
-              <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-[rgba(59,130,246,0.1)] text-[#D99B89] border border-[#2563EB]/20">{r}</span>
+              <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-blue-600/10 text-slate-500 border border-blue-600/20">{r}</span>
             ))}
             {supplier.matchReasons.length > 3 && (
               <span className="text-[10px] text-slate-900">+{supplier.matchReasons.length - 3}</span>
@@ -360,7 +360,7 @@ const SupplierCard = ({
           {supplier.status === 'NEW' && (
             <button
               onClick={() => onVetting(supplier.name)}
-              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#2563EB]/15 text-[#3B82F6] border border-[#2563EB]/30 hover:bg-[#2563EB]/25 transition-colors disabled:opacity-50"
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-blue-600/15 text-blue-600 border border-blue-600/30 hover:bg-blue-600/25 transition-colors disabled:opacity-50"
             >
               <Import size={11} /> Xét duyệt nhà cung cấp
             </button>
@@ -380,8 +380,8 @@ const SupplierCard = ({
 // ─── Compare Panel ───────────────────────────────────────────────────────────
 const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[]; onClose: () => void }) => (
   <div className="fixed inset-0 z-50 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div className="bg-[#F1F5F9] border border-[rgba(240,246,252,0.1)] rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-auto">
-      <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0]">
+    <div className="bg-slate-100 border border-slate-200 rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-auto">
+      <div className="flex items-center justify-between p-4 border-b border-slate-200">
         <h3 className="font-bold text-slate-900">So sánh Nhà cung cấp</h3>
         <button onClick={onClose} className="text-slate-900 hover:text-slate-900 transition-colors"><X size={16} /></button>
       </div>
@@ -577,23 +577,25 @@ export default function SupplierDiscoveryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] text-slate-900">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+    <main className="p-6 space-y-6">
+      <div className="max-w-5xl mx-auto space-y-6">
 
         {/* ── Page header ── */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-[#1D4ED8] flex items-center justify-center shadow-lg shadow-violet-500/30">
-              <Sparkles size={15} className="text-slate-900" />
+        <div className="page-header">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-blue-700 flex items-center justify-center shadow-lg shadow-violet-500/30">
+                <Sparkles size={15} className="text-white" />
+              </div>
+              <h1 className="page-title">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
+              <span className="ml-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/30 uppercase tracking-wider">Beta</span>
             </div>
-            <h1 className="text-xl font-black text-slate-900">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
-            <span className="ml-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/30 uppercase tracking-wider">Beta</span>
+            <p className="text-[12px] text-slate-900">Tìm kiếm nhà cung cấp từ nguồn bên ngoài bằng AI · Gemini + Tavily Search</p>
           </div>
-          <p className="text-[12px] text-slate-900">Tìm kiếm nhà cung cấp từ nguồn bên ngoài bằng AI · Gemini + Tavily Search</p>
         </div>
 
         {/* ── Search form ── */}
-        <div className="bg-[#F1F5F9] border border-[#E2E8F0] rounded-2xl p-4 mb-5">
+        <div className="bg-slate-100 border border-slate-200 rounded-2xl p-4 mb-5">
           {/* Main query */}
           <div className="flex gap-2 mb-3">
             <div className="relative flex-1">
@@ -604,13 +606,13 @@ export default function SupplierDiscoveryPage() {
                 onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
                 placeholder="VD: nhà cung cấp laptop văn phòng Hà Nội..."
-                className="w-full pl-9 pr-4 py-2.5 bg-[#FFFFFF] border border-[rgba(240,246,252,0.1)] rounded-xl text-sm text-slate-900 placeholder-[#000000] focus:outline-none focus:border-violet-500/50 transition-colors"
+                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500/50 transition-colors"
               />
             </div>
             <button
               onClick={handleSearch}
               disabled={loading || !query.trim()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-[#1D4ED8] text-slate-900 hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-violet-500/20"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-blue-700 text-white hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-violet-500/20"
             >
               {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
               Tìm kiếm AI
@@ -623,12 +625,12 @@ export default function SupplierDiscoveryPage() {
               value={location}
               onChange={e => setLocation(e.target.value)}
               placeholder="Khu vực..."
-              className="w-32 px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-slate-900 placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
+              className="w-32 px-3 py-1.5 text-[12px] bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500/40"
             />
             <select
               value={companySize}
               onChange={e => setCompanySize(e.target.value as '' | 'STARTUP' | 'SME' | 'ENTERPRISE')}
-              className="px-3 py-1.5 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-slate-900 focus:outline-none focus:border-violet-500/40"
+              className="px-3 py-1.5 text-[12px] bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-violet-500/40"
             >
               <option value="">Quy mô</option>
               <option value="STARTUP">Startup</option>
@@ -639,7 +641,7 @@ export default function SupplierDiscoveryPage() {
               <button
                 key={p.key}
                 onClick={() => togglePriority(p.key)}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${priorities.includes(p.key) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-slate-900 border-[#E2E8F0] hover:border-[rgba(240,246,252,0.2)]'}`}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${priorities.includes(p.key) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-slate-900 border-slate-200 hover:border-slate-300'}`}
               >
                 {p.icon}{p.label}
               </button>
@@ -654,14 +656,14 @@ export default function SupplierDiscoveryPage() {
 
           {/* Advanced filters */}
           {showAdvanced && (
-            <div className="mt-3 pt-3 border-t border-[rgba(240,246,252,0.06)] grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="mt-3 pt-3 border-t border-slate-200/50 grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <p className="text-[10px] text-slate-900 uppercase font-semibold mb-2">Sản phẩm cụ thể</p>
                 <input
                   value={products}
                   onChange={e => setProducts(e.target.value)}
                   placeholder="VD: laptop Dell, máy in HP..."
-                  className="w-full px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-slate-900 placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
+                  className="w-full px-3 py-2 text-[12px] bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500/40"
                 />
               </div>
               <div>
@@ -671,7 +673,7 @@ export default function SupplierDiscoveryPage() {
                   min={1} max={20}
                   value={limit}
                   onChange={e => setLimit(Math.min(20, Math.max(1, Number(e.target.value))))}
-                  className="w-24 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-slate-900 focus:outline-none focus:border-violet-500/40"
+                  className="w-24 px-3 py-2 text-[12px] bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-violet-500/40"
                 />
               </div>
               {categories.length > 0 && (
@@ -682,7 +684,7 @@ export default function SupplierDiscoveryPage() {
                       <button
                         key={c.id}
                         onClick={() => toggleCategory(c.name)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${selectedCategories.includes(c.name) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-slate-900 border-[#E2E8F0] hover:border-[rgba(240,246,252,0.2)]'}`}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${selectedCategories.includes(c.name) ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' : 'bg-transparent text-slate-900 border-slate-200 hover:border-slate-300'}`}
                       >
                         {c.name}
                       </button>
@@ -705,10 +707,10 @@ export default function SupplierDiscoveryPage() {
         {loading && (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="rounded-xl border border-[#E2E8F0] bg-[#F1F5F9] p-4 animate-pulse">
-                <div className="h-4 w-48 bg-[rgba(240,246,252,0.05)] rounded mb-2" />
-                <div className="h-3 w-72 bg-[rgba(240,246,252,0.03)] rounded mb-3" />
-                <div className="h-3 w-full bg-[rgba(240,246,252,0.03)] rounded" />
+              <div key={i} className="rounded-xl border border-slate-200 bg-slate-100 p-4 animate-pulse">
+                <div className="h-4 w-48 bg-slate-100/50 rounded mb-2" />
+                <div className="h-3 w-72 bg-slate-100/30 rounded mb-3" />
+                <div className="h-3 w-full bg-slate-100/30 rounded" />
               </div>
             ))}
             <p className="text-center text-[12px] text-text-muted flex items-center justify-center gap-2">
@@ -750,7 +752,7 @@ export default function SupplierDiscoveryPage() {
                 )}
                 <button
                   onClick={handleExport}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[rgba(240,246,252,0.05)] text-slate-900 border border-[#E2E8F0] hover:border-[rgba(240,246,252,0.15)] transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-slate-100/50 text-slate-900 border border-slate-200 hover:border-slate-300 transition-colors"
                 >
                   <Download size={11} />Export CSV
                 </button>
@@ -785,10 +787,10 @@ export default function SupplierDiscoveryPage() {
             )}
 
             {/* ── AI Chat ── */}
-            <div className="mt-8 bg-[#F1F5F9] border border-[#E2E8F0] rounded-2xl overflow-hidden">
+            <div className="mt-8 bg-slate-100 border border-slate-200 rounded-2xl overflow-hidden">
               <button
                 onClick={() => setChatOpen(v => !v)}
-                className="w-full flex items-center gap-2 p-4 text-left hover:bg-[rgba(240,246,252,0.03)] transition-colors"
+                className="w-full flex items-center gap-2 p-4 text-left hover:bg-slate-100/30 transition-colors"
               >
                 <MessageSquare size={14} className="text-violet-400" />
                 <span className="font-bold text-sm text-slate-900">Hỏi AI về kết quả tìm kiếm</span>
@@ -796,7 +798,7 @@ export default function SupplierDiscoveryPage() {
               </button>
 
               {chatOpen && (
-                <div className="border-t border-[rgba(240,246,252,0.06)]">
+                <div className="border-t border-slate-200/50">
                   {/* Messages */}
                   <div className="p-4 space-y-3 max-h-64 overflow-y-auto">
                     {chatMessages.length === 0 && (
@@ -805,7 +807,7 @@ export default function SupplierDiscoveryPage() {
                           <button
                             key={q}
                             onClick={() => setChatInput(q)}
-                            className="block w-full text-left text-[11px] px-3 py-2 rounded-lg bg-[rgba(240,246,252,0.03)] border border-[rgba(240,246,252,0.06)] text-slate-900 hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                            className="block w-full text-left text-[11px] px-3 py-2 rounded-lg bg-slate-100/30 border border-slate-200/50 text-slate-900 hover:border-violet-500/30 hover:text-violet-300 transition-colors"
                           >
                             {q}
                           </button>
@@ -814,14 +816,14 @@ export default function SupplierDiscoveryPage() {
                     )}
                     {chatMessages.map((m, i) => (
                       <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[80%] px-3 py-2 rounded-xl text-[12px] leading-relaxed ${m.role === 'user' ? 'bg-violet-500/20 text-violet-200' : 'bg-[rgba(240,246,252,0.05)] text-slate-900'}`}>
+                        <div className={`max-w-[80%] px-3 py-2 rounded-xl text-[12px] leading-relaxed ${m.role === 'user' ? 'bg-violet-500/20 text-violet-200' : 'bg-slate-100/50 text-slate-900'}`}>
                           {m.text}
                         </div>
                       </div>
                     ))}
                     {chatLoading && (
                       <div className="flex justify-start">
-                        <div className="px-3 py-2 rounded-xl bg-[rgba(240,246,252,0.05)] text-slate-900 text-[12px] flex items-center gap-2">
+                        <div className="px-3 py-2 rounded-xl bg-slate-100/50 text-slate-900 text-[12px] flex items-center gap-2">
                           <Loader2 size={11} className="animate-spin" />AI đang phân tích...
                         </div>
                       </div>
@@ -829,13 +831,13 @@ export default function SupplierDiscoveryPage() {
                   </div>
 
                   {/* Input */}
-                  <div className="p-3 border-t border-[rgba(240,246,252,0.06)] flex gap-2">
+                  <div className="p-3 border-t border-slate-200/50 flex gap-2">
                     <input
                       value={chatInput}
                       onChange={e => setChatInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleAiChat()}
                       placeholder="Hỏi AI về nhà cung cấp trong kết quả..."
-                      className="flex-1 px-3 py-2 text-[12px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg text-slate-900 placeholder-[#000000] focus:outline-none focus:border-violet-500/40"
+                      className="flex-1 px-3 py-2 text-[12px] bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500/40"
                     />
                     <button
                       onClick={handleAiChat}
@@ -862,7 +864,7 @@ export default function SupplierDiscoveryPage() {
                 <button
                   key={s}
                   onClick={() => { setQuery(s); }}
-                  className="px-3 py-1.5 rounded-lg text-[11px] bg-[#F1F5F9] border border-[#E2E8F0] text-slate-900 hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-[11px] bg-slate-100 border border-slate-200 text-slate-900 hover:border-violet-500/30 hover:text-violet-300 transition-colors"
                 >
                   {s}
                 </button>
@@ -890,7 +892,7 @@ export default function SupplierDiscoveryPage() {
       {comparing && selectedSuppliers.length >= 2 && (
         <ComparePanel suppliers={selectedSuppliers} onClose={() => setComparing(false)} />
       )}
-    </div>
+    </main>
   );
 }
 
