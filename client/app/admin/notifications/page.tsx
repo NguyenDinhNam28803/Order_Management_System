@@ -162,14 +162,14 @@ export default function NotificationAdminPage() {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="group relative px-6 py-3 bg-[#F1F5F9] text-slate-900 font-bold rounded-[20px] 
+            className="group relative px-6 py-3 bg-[#F1F5F9] text-slate-900 font-bold rounded-xl 
               border border-[rgba(148,163,184,0.1)] hover:text-slate-900 hover:border-[#2563EB]/50 
               transition-all duration-300 flex items-center gap-2 disabled:opacity-50"
           >
             <RefreshCw size={18} className={isRefreshing ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-500"} />
             <span>LÀM MỚI</span>
           </button>
-          <button className="group relative px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-slate-900 font-bold rounded-[20px] 
+          <button className="group relative px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-slate-900 font-bold rounded-xl 
             shadow-lg shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 hover:scale-105 transition-all duration-300 
             flex items-center gap-2">
             <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
@@ -181,7 +181,7 @@ export default function NotificationAdminPage() {
       {/* Template Categories */}
       <div className="space-y-6">
         {templateCategories.map((category, idx) => (
-          <div key={category.title} className="bg-[#F1F5F9] rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden animate-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${idx * 100}ms` }}>
+          <div key={category.title} className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden animate-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${idx * 100}ms` }}>
             <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]">
               <div className="flex items-center justify-between">
                 <div>
@@ -214,13 +214,13 @@ export default function NotificationAdminPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-gradient-to-br from-[#2563EB]/10 to-[#3B82F6]/5 rounded-4xl p-8 border border-[#2563EB]/20">
+      <div className="bg-gradient-to-br from-[#2563EB]/10 to-[#3B82F6]/5 rounded-xl p-8 border border-[#2563EB]/20">
         <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
           <Mail className="w-5 h-5 text-[#2563EB]" />
           Hướng dẫn sử dụng
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-900">
-          <div className="flex items-start gap-4 p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+          <div className="flex items-start gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
             <div className="w-10 h-10 bg-[#2563EB]/20 rounded-xl flex items-center justify-center shrink-0">
               <Mail className="w-5 h-5 text-[#3B82F6]" />
             </div>
@@ -229,7 +229,7 @@ export default function NotificationAdminPage() {
               <p className="text-slate-900">Sử dụng API <code className="text-[#3B82F6] bg-[#2563EB]/10 px-2 py-0.5 rounded">/notifications/send</code> để gửi email với template tương ứng</p>
             </div>
           </div>
-          <div className="flex items-start gap-4 p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+          <div className="flex items-start gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
             <div className="w-10 h-10 bg-[#2563EB]/20 rounded-xl flex items-center justify-center shrink-0">
               <RefreshCw className="w-5 h-5 text-[#3B82F6]" />
             </div>

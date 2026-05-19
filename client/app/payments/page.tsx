@@ -73,7 +73,7 @@ export default function PaymentsPage() {
                         <p className="text-sm text-slate-900">Thanh toán các đơn hàng đã được đối soát hoàn tất.</p>
                     </div>
 
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-sm overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm overflow-hidden">
                         <div className="p-4 border-b border-slate-100 font-black text-[10px] uppercase tracking-widest text-black">Danh sách chờ thanh toán</div>
                         {loading ? (
                             <div className="p-8 text-center text-black">Đang tải...</div>
@@ -97,7 +97,7 @@ export default function PaymentsPage() {
                                                         </span>
                                                     </td>
                                                     <td className="flex items-center gap-2">
-                                                        <button disabled={isCompleted} className={`${!isCompleted ? 'bg-erp-navy text-slate-900 hover:bg-erp-navy/90' : 'text-slate-300 bg-slate-100'} px-4 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 disabled:cursor-not-allowed`}>
+                                                        <button disabled={isCompleted} className={`${!isCompleted ? 'bg-erp-navy text-white hover:bg-erp-navy/90' : 'text-slate-300 bg-slate-100'} px-4 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 disabled:cursor-not-allowed`}>
                                                             {isCompleted ? 'Đã thanh toán' : 'Thanh toán'} <ArrowRight size={12} />
                                                         </button>
                                                         {payment.status === 'PENDING' && (
@@ -120,7 +120,7 @@ export default function PaymentsPage() {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-[#F1F5F9] rounded-3xl p-8 text-slate-900 shadow-2xl relative overflow-hidden border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl p-8 text-slate-900 shadow-2xl relative overflow-hidden border border-[rgba(148,163,184,0.1)]">
                         <div className="absolute -top-10 -right-10 h-40 w-40 bg-[#2563EB]/5 rounded-full blur-2xl font-black"></div>
                         <h3 className="text-xs font-black uppercase text-slate-900 mb-8 tracking-widest">Ví tổng thanh toán</h3>
                         <div className="text-4xl font-black mb-1 text-slate-900">{formatCurrency(totalAmount)}</div>
@@ -138,7 +138,7 @@ export default function PaymentsPage() {
                         </div>
                     </div>
 
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-6 shadow-sm">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] p-6 shadow-sm">
                         <h4 className="text-[10px] font-black uppercase text-slate-900 mb-4">Lịch sử giao dịch gần đây</h4>
                         <div className="space-y-4">
                             {payments.filter(p => p.status === 'COMPLETED').slice(0, 3).map(payment => (

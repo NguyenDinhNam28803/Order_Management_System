@@ -18,6 +18,7 @@ interface PO {
     vendor?: string;
     supplier?: { name?: string };
     items: POItem[];
+    status?: string;
     createdAt?: string;
 }
 
@@ -45,7 +46,7 @@ export default function CreateGRN() {
     const [qcData, setQcData] = useState<Record<string, QcDataItem>>({});
 
     const shippedPos = useMemo(
-        () => (allPos as PO[]).filter((p: any) => p.status === "SHIPPED"),
+        () => (allPos as PO[]).filter((p) => p.status === "SHIPPED"),
         [allPos]
     );
 
@@ -118,7 +119,7 @@ export default function CreateGRN() {
             {!activePO ? (
                 <div className="space-y-4">
                     {/* Search filter */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                         <label className="text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2 block">Lọc đơn mua hàng (PO)</label>
                         <div className="relative">
                             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" />
@@ -133,7 +134,7 @@ export default function CreateGRN() {
                     </div>
 
                     {/* PO list */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                         <div className="p-4 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">Đơn hàng chờ nhập kho (SHIPPED)</span>
                             <span className="text-[10px] font-bold text-black bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">{filteredPos.length} đơn</span>
@@ -184,7 +185,7 @@ export default function CreateGRN() {
                     </button>
 
                     {/* Header Info PO */}
-                    <div className="bg-[#F1F5F9] text-slate-900 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-center z-10 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] text-slate-900 rounded-xl p-6 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-center z-10 border border-[rgba(148,163,184,0.1)]">
                         <div className="absolute top-0 right-0 p-4 opacity-5"><Package size={150} /></div>
                         <div>
                             <div className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-1">Incoming Shipment</div>
@@ -198,7 +199,7 @@ export default function CreateGRN() {
                     </div>
 
                     {/* Step 1: Nhận hàng vật lý */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
                         <div className="p-4 bg-amber-500/10 border-b border-amber-500/20 flex items-center gap-2">
                             <Package size={16} className="text-black" />
                             <h3 className="text-sm font-black uppercase tracking-widest text-black">Bước 1: Đối chiếu & đếm số lượng (Phát sinh chênh lệch)</h3>
@@ -250,7 +251,7 @@ export default function CreateGRN() {
                     </div>
 
                     {/* Step 2: Quality Control */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
                         <div className="p-4 bg-[#2563EB]/10 border-b border-[#2563EB]/20 flex justify-between items-center">
                             <div className="flex items-center gap-2">
                                 <FileCheck size={16} className="text-black" />
@@ -354,7 +355,7 @@ export default function CreateGRN() {
                     </div>
 
                     {/* Step 3: Tổng Kết & Submit */}
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 text-slate-900 relative overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 text-slate-900 relative overflow-hidden">
                         <div className="absolute -right-20 -bottom-20 opacity-10"><FileText size={250} /></div>
                         <div className="flex flex-col md:flex-row justify-between items-center gap-8 relative z-10 p-4">
                             <div className="w-full md:w-1/2">
@@ -388,7 +389,7 @@ export default function CreateGRN() {
                                 </div>
                             </div>
                             <div className="w-full md:w-auto text-right flex flex-col items-end gap-4">
-                                <div className="bg-[#FFFFFF] flex flex-col items-center justify-center p-6 border-dashed border-2 border-emerald-500/20 bg-emerald-500/5 rounded-2xl">
+                                <div className="bg-[#FFFFFF] flex flex-col items-center justify-center p-6 border-dashed border-2 border-emerald-500/20 bg-emerald-500/5 rounded-xl">
                                     <div className="text-[10px] font-black uppercase tracking-widest text-black mb-2">Final Step</div>
                                     <button onClick={handleConfirm} className="bg-emerald-500 hover:bg-emerald-600 text-emerald-950 font-black uppercase tracking-widest text-xs px-8 py-4 rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2">
                                         <FileCheck size={18} /> Confirm GRN

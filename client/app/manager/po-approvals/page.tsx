@@ -52,7 +52,7 @@ export default function POApprovalsPage() {
                 <p className="text-slate-900 font-medium">Danh sách PO đang chờ bạn phê duyệt trước khi phát hành</p>
             </header>
 
-            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr className="border-b border-[rgba(148,163,184,0.1)]">
@@ -120,7 +120,7 @@ export default function POApprovalsPage() {
             {/* Reject Modal */}
             {rejectModal.isOpen && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#FFFFFF]/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-[#F1F5F9] rounded-3xl w-full max-w-md p-8 shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-md p-8 shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
                         <h2 className="text-xl font-black text-slate-900 mb-2 tracking-tight uppercase">TỪ CHỐI ĐƠN HÀNG</h2>
                         <p className="text-slate-900 text-sm mb-6 font-medium">Lý do từ chối sẽ được gửi đến bộ phận mua sắm</p>
                         
@@ -128,7 +128,7 @@ export default function POApprovalsPage() {
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
                             placeholder="Nhập lý do chi tiết..."
-                            className="w-full h-32 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl p-4 text-sm font-medium text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all mb-6"
+                            className="w-full h-32 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl p-4 text-sm font-medium text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all mb-6"
                         />
 
                         <div className="flex gap-3">

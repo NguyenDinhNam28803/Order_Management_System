@@ -67,8 +67,8 @@ export default function POPage() {
     if (showPreview) {
         return (
             <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col h-[90vh] animate-in zoom-in-95 duration-200">
-                    <div className="bg-slate-800 text-slate-900 p-4 flex justify-between items-center border-b border-slate-700">
+                <div className="bg-white rounded-xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col h-[90vh] animate-in zoom-in-95 duration-200">
+                    <div className="bg-slate-800 text-white p-4 flex justify-between items-center border-b border-slate-700">
                         <div className="flex items-center gap-3">
                             <FileText size={20} className="text-[#3B82F6]" />
                             <h3 className="font-bold tracking-widest text-sm">PREVIEW: PURCHASE_ORDER_DRAFT.PDF</h3>
@@ -214,7 +214,7 @@ export default function POPage() {
                         </div>
 
                         {/* PO Info Fields */}
-                        <div className="erp-card shadow-sm border border-slate-200">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 border border-slate-200">
                             <h3 className="text-sm font-black uppercase tracking-widest text-brand-primary mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
                                 <FileCheck size={16} /> Thông tin Hợp đồng / PO
                             </h3>
@@ -281,7 +281,7 @@ export default function POPage() {
                         </div>
 
                         {/* Điểu khoản Phạt (Penalty) - 5.4 Spec */}
-                        <div className="erp-card shadow-sm border border-slate-200 bg-orange-50/30">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 border border-slate-200 bg-orange-50/30">
                             <h3 className="text-sm font-black uppercase tracking-widest text-brand-primary mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
                                 <ShieldCheck size={16} className="text-orange-500" /> Chế tài / Điều khoản phạt
                             </h3>
@@ -313,7 +313,7 @@ export default function POPage() {
                         </div>
 
                         {/* Line Items (Locked) */}
-                        <div className="erp-card p-0! shadow-sm border border-slate-200 overflow-hidden">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden p-0! border border-slate-200">
                             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-black flex items-center gap-2">
                                     <Lock size={14} /> Chi tiết Items (Khóa giá từ Báo giá)
@@ -346,7 +346,7 @@ export default function POPage() {
 
                     {/* Cột phải: Settings, Attachments & Submit */}
                     <div className="space-y-6">
-                        <div className="erp-card shadow-sm border border-slate-200">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 border border-slate-200">
                              <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary mb-4 flex items-center gap-2">
                                  <UploadCloud size={16} /> Tài liệu Đính kèm Legal
                              </h3>
@@ -371,7 +371,7 @@ export default function POPage() {
                              </div>
                         </div>
 
-                        <div className="erp-card shadow-lg shadow-erp-navy/5 border-2 border-erp-blue rounded-2xl relative overflow-hidden">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 shadow-lg shadow-erp-navy/5 border-2 border-erp-blue rounded-xl relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-10"><Send size={80} className="text-erp-blue" fill="currentColor"/></div>
                             <div className="relative z-10 space-y-4">
                                 <div>
@@ -388,7 +388,7 @@ export default function POPage() {
                                 
                                 <button 
                                     onClick={() => setShowPreview(true)}
-                                    className="w-full py-4 bg-erp-navy hover:bg-erp-blue border border-erp-navy hover:border-erp-blue shadow-xl text-slate-900 rounded-xl font-black uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
+                                    className="w-full py-4 bg-erp-navy hover:bg-erp-blue border border-erp-navy hover:border-erp-blue shadow-xl text-white rounded-xl font-black uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
                                 >
                                     <ShieldCheck size={16} /> Submit Để Phê Duyệt PO
                                 </button>
@@ -411,23 +411,23 @@ export default function POPage() {
                 </div>
             </div>
             
-            <div className="bg-bg-secondary p-4 rounded-4xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8 flex justify-between items-center">
+            <div className="bg-bg-secondary p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8 flex justify-between items-center">
                 <div className="flex-1 flex gap-3 max-w-xl">
-                    <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                    <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                         <Search size={20} className="text-[#2563EB]" />
                     </div>
                     <div className="relative flex-1">
                         <input 
                             type="text" 
                             placeholder="Tìm kiếm PO #, Nhà cung cấp..." 
-                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all" 
+                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all" 
                         />
                     </div>
                     <button className="p-2 bg-white border border-slate-200 rounded-xl text-black hover:text-erp-navy transition-all"><Filter size={20} /></button>
                 </div>
             </div>
 
-            <div className="erp-card p-0! overflow-hidden shadow-xl shadow-erp-navy/5">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-xl shadow-erp-navy/5">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr className="bg-slate-50">

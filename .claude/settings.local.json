@@ -48,7 +48,20 @@
       "Bash(Select-Object Name, PSIsContainer)",
       "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\" -Directory)",
       "Bash(Select-Object -ExpandProperty Name)",
-      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\\\\src\" -Directory)"
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\\\\src\" -Directory)",
+      "Bash(findstr '\"version\"')",
+      "Bash(Sort-Object)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\" -Recurse -Filter \"*.vue\")",
+      "Bash(Select-Object FullName)",
+      "Bash(Head -50)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\" -Force)",
+      "PowerShell(npm run *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Order_management_system\\\\server\\\\src\" -Recurse -Directory)",
+      "PowerShell(Get-ChildItem \"D:\\\\Order_management_system\" -Depth 1 | Where-Object { $_.Name -ne \"node_modules\" } | Select-Object Name, PSIsContainer)",
+      "PowerShell(cd \"D:\\\\Order_management_system\\\\client\"; npx eslint . --ext .ts,.tsx 2>&1 | Where-Object { $_ -match \"error\" } | Out-String)",
+      "PowerShell($data = Get-Content \"D:\\\\Order_management_system\\\\client-lint.json\" -Raw | ConvertFrom-Json; $data | Where-Object { $_.errorCount -gt 0 } | ForEach-Object { $f = $_.filePath; $_.messages | Where-Object { $_.severity -eq 2 } | ForEach-Object { \"$f`:$\\($_.line\\):$\\($_.column\\) $\\($_.message\\) [$\\($_.ruleId\\)]\" } })",
+      "PowerShell($data = Get-Content \"D:\\\\Order_management_system\\\\client-lint2.json\" -Raw | ConvertFrom-Json; $errors = $data | Where-Object { $_.errorCount -gt 0 } | ForEach-Object { $f = $_.filePath; $_.messages | Where-Object { $_.severity -eq 2 } | ForEach-Object { \"$f`:$\\($_.line\\) $\\($_.message\\) [$\\($_.ruleId\\)]\" } }; $errors; Write-Host \"Total errors: $\\($errors.Count\\)\")",
+      "PowerShell(Out-File *)"
     ]
   }
 }

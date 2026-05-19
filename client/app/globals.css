@@ -94,6 +94,16 @@ body {
   letter-spacing: -0.011em;
 }
 
+/* ── Global Placeholder Fix ──────────────────────────────────── */
+/* Override placeholder:text-slate-900 pattern used across 40+ files */
+/* This ensures all placeholders are visually distinct from entered text */
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #94A3B8 !important; /* slate-400 — readable but clearly secondary */
+  opacity: 1;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans);
   font-weight: 700;

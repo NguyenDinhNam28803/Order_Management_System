@@ -609,7 +609,7 @@ export default function ProcurementSupplierDetailPage() {
 
                         {/* AI Analysis & Improvement Plan */}
                         {latestKPI?.improvementPlan && (
-                            <div className="lg:col-span-3 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-amber-500/5 border border-amber-500/20 rounded-2xl p-6">
+                            <div className="lg:col-span-3 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-amber-500/5 border border-amber-500/20 rounded-[10px] p-6">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="p-2 bg-amber-500/10 rounded-xl">
                                         <Zap size={20} className="text-black" />

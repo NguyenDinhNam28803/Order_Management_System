@@ -38,7 +38,7 @@ export default function BudgetHeatmap() {
     };
 
     return (
-        <div className="erp-card bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden group">
+        <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden group">
             <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#1A1D26]">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-[#2563EB] text-[#F8FAFC] rounded-2xl shadow-lg shadow-[#2563EB]/20 group-hover:scale-110 transition-transform duration-500">

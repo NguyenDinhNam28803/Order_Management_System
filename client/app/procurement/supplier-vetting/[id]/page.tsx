@@ -28,7 +28,7 @@ async function apiFetch(path: string, options: RequestInit = {}) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error((err as any).message || "Request failed");
+    throw new Error((err as { message?: string }).message || "Request failed");
   }
   return res.json();
 }
@@ -90,7 +90,7 @@ function StatusBadge({ status }: { status: string }) {
 // ─── Check Row ────────────────────────────────────────────────────────────────
 function CheckRow({
   check, editable, onUpdate,
-}: { check: VettingCheck; editable: boolean; onUpdate: (checkId: string, data: any) => Promise<void> }) {
+}: { check: VettingCheck; editable: boolean; onUpdate: (checkId: string, data: Record<string, unknown>) => Promise<void> }) {
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState(check.notes ?? "");
   const [fileUrl, setFileUrl] = useState(check.fileUrl ?? "");
@@ -256,8 +256,8 @@ export default function SupplierVettingDetailPage() {
     try {
       const data = await apiFetch(`/supplier-vetting/${id}`);
       setVetting(data as VettingDetail);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
@@ -265,7 +265,7 @@ export default function SupplierVettingDetailPage() {
 
   useEffect(() => { void load(); }, [load]);
 
-  const updateCheck = async (checkId: string, data: any) => {
+  const updateCheck = async (checkId: string, data: Record<string, unknown>) => {
     setActionErr("");
     try {
       await apiFetch(`/supplier-vetting/${id}/checks/${checkId}`, {
@@ -273,8 +273,8 @@ export default function SupplierVettingDetailPage() {
         body: JSON.stringify(data),
       });
       await load();
-    } catch (err: any) {
-      setActionErr(err.message);
+    } catch (err: unknown) {
+      setActionErr(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -283,8 +283,8 @@ export default function SupplierVettingDetailPage() {
     try {
       await apiFetch(`/supplier-vetting/${id}/submit`, { method: "POST", body: JSON.stringify({}) });
       await load();
-    } catch (err: any) {
-      setActionErr(err.message);
+    } catch (err: unknown) {
+      setActionErr(err instanceof Error ? err.message : String(err));
     } finally {
       setSubmitting(false);
     }
@@ -299,8 +299,8 @@ export default function SupplierVettingDetailPage() {
       });
       setShowApprove(false);
       await load();
-    } catch (err: any) {
-      setActionErr(err.message);
+    } catch (err: unknown) {
+      setActionErr(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -313,8 +313,8 @@ export default function SupplierVettingDetailPage() {
       });
       setShowReject(false);
       await load();
-    } catch (err: any) {
-      setActionErr(err.message);
+    } catch (err: unknown) {
+      setActionErr(err instanceof Error ? err.message : String(err));
     }
   };
 

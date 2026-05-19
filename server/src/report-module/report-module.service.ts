@@ -41,22 +41,21 @@ export class ReportModuleService {
       _count: { id: true },
     });
 
-    // Lấy tên nhà cung cấp
-    const result = await Promise.all(
-      spend.map(async (item) => {
-        const supplier = await this.prisma.organization.findUnique({
-          where: { id: item.supplierId },
-          select: { name: true },
-        });
-        return {
-          supplierName: supplier?.name || 'Unknown',
-          totalAmount: item._sum.totalAmount,
-          poCount: item._count.id,
-        };
-      }),
-    );
+    // Batch load tên nhà cung cấp — tránh N+1 query
+    const supplierIds = spend.map((item) => item.supplierId).filter(Boolean);
+    const suppliers = await this.prisma.organization.findMany({
+      where: { id: { in: supplierIds } },
+      select: { id: true, name: true },
+    });
+    const supplierMap = new Map(suppliers.map((s) => [s.id, s.name]));
 
-    return result.sort((a, b) => Number(b.totalAmount) - Number(a.totalAmount));
+    return spend
+      .map((item) => ({
+        supplierName: supplierMap.get(item.supplierId) || 'Unknown',
+        totalAmount: item._sum.totalAmount,
+        poCount: item._count.id,
+      }))
+      .sort((a, b) => Number(b.totalAmount) - Number(a.totalAmount));
   }
 
   /**

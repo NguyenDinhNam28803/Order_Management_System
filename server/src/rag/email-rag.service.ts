@@ -129,11 +129,6 @@ export class EmailRagService {
       }
 
       this.logger.log(`Fetched ${emails.length} emails from INBOX`);
-      emails.forEach((email, index) => {
-        this.logger.log(
-          `[${index + 1}] messageId: ${email.messageId} | from: ${email.from} | to: ${email.to} | subject: ${email.subject} | date: ${email.date.toLocaleString('vi-VN')} | body: ${email.body.slice(0, 150)}${email.body.length > 150 ? '...' : ''}`,
-        );
-      });
       return emails;
     } catch (error: any) {
       this.logger.error(`IMAP fetch failed: ${error.message}`);

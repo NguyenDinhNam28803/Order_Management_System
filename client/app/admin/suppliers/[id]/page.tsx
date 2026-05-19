@@ -132,7 +132,7 @@ export default function AdminSupplierDetailPage() {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
             case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
             case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
-            default: return "bg-[#0F172A] text-slate-900 border-[rgba(148,163,184,0.1)]";
+            default: return "bg-[#0F172A] text-white border-[rgba(148,163,184,0.1)]";
         }
     };
 
@@ -179,7 +179,7 @@ export default function AdminSupplierDetailPage() {
                     
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="h-16 w-16 bg-[#2563EB]/10 rounded-2xl flex items-center justify-center border border-[#2563EB]/20">
+                            <div className="h-16 w-16 bg-[#2563EB]/10 rounded-xl flex items-center justify-center border border-[#2563EB]/20">
                                 <Building2 size={32} className="text-[#2563EB]" />
                             </div>
                             <div>
@@ -250,7 +250,7 @@ export default function AdminSupplierDetailPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* KPI Overview Cards */}
                         <div className="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <TrendingUp size={16} className="text-black" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">OTD Score</span>
@@ -261,7 +261,7 @@ export default function AdminSupplierDetailPage() {
                                 <p className="text-slate-900 text-xs mt-1">Giao hàng đúng hạn</p>
                             </div>
                             
-                            <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Package size={16} className="text-[#2563EB]" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">Quality Score</span>
@@ -272,7 +272,7 @@ export default function AdminSupplierDetailPage() {
                                 <p className="text-slate-900 text-xs mt-1">Chất lượng sản phẩm</p>
                             </div>
                             
-                            <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Award size={16} className="text-yellow-400" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">Price Score</span>
@@ -283,7 +283,7 @@ export default function AdminSupplierDetailPage() {
                                 <p className="text-slate-900 text-xs mt-1">Cạnh tranh giá</p>
                             </div>
                             
-                            <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Star size={16} className="text-black" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">Manual Score</span>
@@ -294,7 +294,7 @@ export default function AdminSupplierDetailPage() {
                                 <p className="text-slate-900 text-xs mt-1">Đánh giá thủ công</p>
                             </div>
                             
-                            <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <CheckCircle size={16} className="text-black" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">Tổng PO</span>
@@ -305,7 +305,7 @@ export default function AdminSupplierDetailPage() {
                                 <p className="text-slate-900 text-xs mt-1">6 tháng gần nhất</p>
                             </div>
                             
-                            <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <div className="flex items-center gap-2 mb-2">
                                     <AlertTriangle size={16} className="text-black" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">Tranh chấp</span>
@@ -318,7 +318,7 @@ export default function AdminSupplierDetailPage() {
                         </div>
 
                         {/* Overall Score */}
-                        <div className="bg-gradient-to-br from-[#2563EB]/10 to-[#8B5CF6]/10 rounded-2xl p-8 border border-[#2563EB]/20">
+                        <div className="bg-gradient-to-br from-[#2563EB]/10 to-[#8B5CF6]/10 rounded-[10px] p-8 border border-[#2563EB]/20">
                             <p className="text-slate-900 text-xs font-bold uppercase tracking-wider mb-4">Overall Score</p>
                             <p className={`text-6xl font-black mb-4 ${getScoreColor(latestKPI?.overallScore)}`}>
                                 {latestKPI?.overallScore?.toFixed(1) || "--"}%
@@ -330,7 +330,7 @@ export default function AdminSupplierDetailPage() {
 
                         {/* Improvement Plan */}
                         {latestKPI?.improvementPlan && (
-                            <div className="lg:col-span-3 bg-amber-500/5 border border-amber-500/20 rounded-2xl p-6">
+                            <div className="lg:col-span-3 bg-amber-500/5 border border-amber-500/20 rounded-[10px] p-6">
                                 <div className="flex items-center gap-2 mb-3">
                                     <TrendingUp size={18} className="text-black" />
                                     <h3 className="text-sm font-black text-black uppercase">Kế hoạch cải thiện (AI)</h3>
@@ -345,7 +345,7 @@ export default function AdminSupplierDetailPage() {
                     <div className="space-y-6">
                         <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
                         
-                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr>
@@ -430,7 +430,7 @@ export default function AdminSupplierDetailPage() {
                                     desc: "Tốc độ phản hồi và tham gia báo giá" 
                                 },
                             ].map((criteria, idx) => (
-                                <div key={idx} className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                <div key={idx} className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex items-start justify-between mb-4">
                                         <div>
                                             <h3 className="font-black text-slate-900 text-sm">{criteria.name}</h3>
@@ -463,7 +463,7 @@ export default function AdminSupplierDetailPage() {
                         </div>
 
                         {/* Buyer Rating Sub-criteria */}
-                        <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                        <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                             <h3 className="text-sm font-black text-slate-900 uppercase mb-4">Chi tiết Buyer Ratings (Manual Score)</h3>
                             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                                 {[

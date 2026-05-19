@@ -168,7 +168,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-bg-primary rounded-2xl border border-border shadow-2xl overflow-hidden flex flex-col">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-bg-primary rounded-xl border border-border shadow-2xl overflow-hidden flex flex-col">
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">

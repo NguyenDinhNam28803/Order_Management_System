@@ -94,7 +94,7 @@ export default function FinanceMatching() {
 
             {/* 3-Way Panel Section */}
             <div className="space-y-6">
-                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
                     <div className="p-4 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center text-slate-900">
                         <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
                             <FileCheck size={16}/> 3-Way Matching Panel (Bảng Đối Soát 3 Cột)
@@ -172,7 +172,7 @@ export default function FinanceMatching() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                     {/* Resolution (8.2) */}
                     {isException ? (
-                        <div className="bg-[#F1F5F9] rounded-2xl border border-rose-500/20 shadow-xl shadow-rose-500/5">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-rose-500/20 shadow-xl shadow-rose-500/5">
                             <h3 className="text-sm font-black uppercase tracking-widest text-black mb-6 flex items-center gap-2 border-b border-rose-500/20 pb-2">
                                 <AlertTriangle size={16}/> Exception Resolution (Xử lý Lệch)
                             </h3>
@@ -203,7 +203,7 @@ export default function FinanceMatching() {
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-[#F1F5F9] rounded-2xl border border-emerald-500/20 shadow-xl shadow-emerald-500/5 flex flex-col items-center justify-center text-black text-center py-12">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-emerald-500/20 shadow-xl shadow-emerald-500/5 flex flex-col items-center justify-center text-black text-center py-12">
                             <CheckCircle2 size={48} className="mx-auto mb-4 opacity-50" />
                             <h3 className="text-xl font-black uppercase tracking-widest mb-2">Hoàn Toàn Khớp (Matched)</h3>
                             <p className="text-xs font-bold opacity-70">Có thể duyệt ngày thanh toán cho hóa đơn này.</p>
@@ -211,7 +211,7 @@ export default function FinanceMatching() {
                     )}
 
                     {/* Lên Lịch / Duyệt Thanh toán (8.2) */}
-                    <div className={`bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 ${(!isException || action === "Accept") ? '' : 'opacity-50 pointer-events-none grayscale'}`}>
+                    <div className={`bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 ${(!isException || action === "Accept") ? '' : 'opacity-50 pointer-events-none grayscale'}`}>
                          <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2 border-b border-[rgba(148,163,184,0.1)] pb-2">
                              <CreditCard size={16}/> Lên Lịch & Phê Duyệt Thanh Toán (AP)
                          </h3>

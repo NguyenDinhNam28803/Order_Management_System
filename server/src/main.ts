@@ -34,7 +34,10 @@ async function bootstrap() {
   );
 
   // --- Global Interceptors & Filters ---
-  app.useGlobalInterceptors(new TransformInterceptor(), new BigIntInterceptor());
+  app.useGlobalInterceptors(
+    new TransformInterceptor(),
+    new BigIntInterceptor(),
+  );
   app.useGlobalFilters(new AllExceptionsFilter());
 
   // --- Cấu hình Swagger chi tiết ---
@@ -105,7 +108,10 @@ async function bootstrap() {
   // Falls back to localhost:3000 for local dev when env var is not set.
   const allowedOriginsEnv = configService.get<string>('ALLOWED_ORIGINS', '');
   const allowedOrigins = allowedOriginsEnv
-    ? allowedOriginsEnv.split(',').map((o) => o.trim()).filter(Boolean)
+    ? allowedOriginsEnv
+        .split(',')
+        .map((o) => o.trim())
+        .filter(Boolean)
     : ['http://localhost:3000', 'https://localhost:3000'];
 
   app.enableCors({

@@ -218,7 +218,7 @@ export default function GrnUpdatePage() {
       <div className="max-w-2xl mx-auto space-y-5">
 
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="bg-gradient-to-r from-sky-700 to-[#8F442B] px-6 py-5">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-sky-200 text-xs font-semibold tracking-widest uppercase">Cập nhật vận chuyển</span>
@@ -301,7 +301,7 @@ export default function GrnUpdatePage() {
         </div>
 
         {/* Shipment form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
             <Truck className="w-4 h-4 text-sky-600" />
             <h2 className="font-semibold text-gray-800">Thông tin vận đơn</h2>

@@ -6,12 +6,13 @@ import {
   Search, Sparkles, X, ChevronDown, ChevronUp, Globe, Phone, Mail,
   MapPin, Star, CheckCircle2, Clock, Download, ArrowUpRight,
   Loader2, AlertCircle, Building2, Shield, Zap, DollarSign,
-  Send, MessageSquare, Import, Filter, RefreshCw, BadgeCheck,
+  Send, MessageSquare, ClipboardCheck, Filter, RefreshCw, BadgeCheck,
 } from "lucide-react";
 import {
   searchSuppliers, importSupplier, fetchDiscoveryCategories, enrichSupplier,
   DiscoveredSupplier, DiscoverSupplierDto, ProductCategory, SearchPriority,
 } from "../../services/supplierDiscoveryService";
+import { useProcurement } from "../../context/ProcurementContext";
 
 // ─── Status badge ───────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: DiscoveredSupplier['status'] }) => {
@@ -37,13 +38,14 @@ const ScoreBar = ({ score }: { score: number }) => {
 
 // ─── Supplier Detail Modal ───────────────────────────────────────────────────
 const SupplierDetailModal = ({
-  supplier, onClose, onImport, importing, onVetting,
+  supplier, onClose, onImport, importing, onVetting, vettingLoading,
 }: {
   supplier: DiscoveredSupplier;
   onClose: () => void;
   onImport: (s: DiscoveredSupplier) => void;
   importing: boolean;
-  onVetting: (name: string) => void;
+  onVetting: (s: DiscoveredSupplier) => void;
+  vettingLoading: boolean;
 }) => {
   const [enriched, setEnriched] = useState<Partial<DiscoveredSupplier> | null>(null);
   const [enriching, setEnriching] = useState(false);
@@ -263,7 +265,7 @@ const SupplierDetailModal = ({
               onClick={() => onVetting(s.name)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-blue-700 text-white hover:bg-blue-600 disabled:opacity-50 transition-all"
             >
-              <Import size={13} /> Xét duyệt nhà cung cấp
+              <ClipboardCheck size={13} /> Xét duyệt nhà cung cấp
             </button>
           )}
           {s.status === 'IN_SYSTEM' && (
@@ -280,7 +282,7 @@ const SupplierDetailModal = ({
 
 // ─── Supplier Card ───────────────────────────────────────────────────────────
 const SupplierCard = ({
-  supplier, selected, onToggleSelect, onImport, importing, onViewDetail, onVetting,
+  supplier, selected, onToggleSelect, onImport, importing, onViewDetail, onVetting, vettingLoading,
 }: {
   supplier: DiscoveredSupplier;
   selected: boolean;
@@ -288,7 +290,8 @@ const SupplierCard = ({
   onImport: (s: DiscoveredSupplier) => void;
   importing: boolean;
   onViewDetail: (s: DiscoveredSupplier) => void;
-  onVetting: (name: string) => void;
+  onVetting: (s: DiscoveredSupplier) => void;
+  vettingLoading: boolean;
 }) => {
   return (
     <div className={`rounded-xl border transition-all duration-200 ${selected ? 'border-blue-600/50 bg-blue-600/5' : 'border-slate-200 bg-slate-100'} hover:border-slate-300`}>
@@ -362,11 +365,11 @@ const SupplierCard = ({
               onClick={() => onVetting(supplier.name)}
               className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-blue-600/15 text-blue-600 border border-blue-600/30 hover:bg-blue-600/25 transition-colors disabled:opacity-50"
             >
-              <Import size={11} /> Xét duyệt nhà cung cấp
+              <ClipboardCheck size={11} /> Xét duyệt nhà cung cấp
             </button>
           )}
           {supplier.status === 'IN_SYSTEM' && (
-            <span className="ml-auto text-[10px] text-slate-900">Đã có trong hệ thống</span>
+            <span className="ml-auto text-[10px] text-[#000000]">Đã có trong hệ thống</span>
           )}
           {supplier.status === 'WORKED_BEFORE' && (
             <span className="ml-auto text-[10px] text-emerald-500">Đã từng hợp tác</span>
@@ -423,6 +426,7 @@ const ComparePanel = ({ suppliers, onClose }: { suppliers: DiscoveredSupplier[];
 // ─── Main Page ───────────────────────────────────────────────────────────────
 export default function SupplierDiscoveryPage() {
   const router = useRouter();
+  const { apiFetch } = useProcurement();
   const [query, setQuery] = useState('');
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -443,6 +447,7 @@ export default function SupplierDiscoveryPage() {
   const [comparing, setComparing] = useState(false);
   const [importingIdx, setImportingIdx] = useState<number | null>(null);
   const [importedSet, setImportedSet] = useState<Set<number>>(new Set());
+  const [vettingName, setVettingName] = useState<string | null>(null);
 
   const [detailSupplier, setDetailSupplier] = useState<DiscoveredSupplier | null>(null);
 
@@ -572,8 +577,42 @@ export default function SupplierDiscoveryPage() {
     { key: 'EXPERIENCE', label: 'Kinh nghiệm', icon: <Star size={11} /> },
   ];
 
-  const handleVetting = (name: string) => {
-    router.push(`/procurement/supplier-vetting?name=${encodeURIComponent(name)}`);
+  const handleVetting = async (supplier: DiscoveredSupplier) => {
+    setVettingName(supplier.name);
+    try {
+      // Nếu đã có trong hệ thống → dùng UUID sẵn có, không cần import lại
+      let supplierId = supplier.existingOrgId;
+
+      if (!supplierId) {
+        // Supplier mới → import vào hệ thống để lấy UUID
+        const imported = await importSupplier({
+          name: supplier.name,
+          email: supplier.email,
+          phone: supplier.phone,
+          website: supplier.website,
+          address: supplier.address,
+          province: supplier.province,
+          industry: supplier.industry,
+          taxCode: supplier.taxCode,
+        });
+        supplierId = imported.id;
+      }
+
+      // Tạo vetting request với supplierId (apiFetch tự gắn Authorization header)
+      const res = await apiFetch('/supplier-vetting', {
+        method: 'POST',
+        body: JSON.stringify({ supplierId }),
+      });
+      if (!res.ok) throw new Error(`Tạo yêu cầu thất bại (${res.status})`);
+
+      const json = await res.json() as { data: { id: string } };
+      router.push(`/procurement/supplier-vetting/${json.data.id}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Không thể tạo yêu cầu xét duyệt';
+      alert(msg);
+    } finally {
+      setVettingName(null);
+    }
   };
 
   return (
@@ -781,6 +820,7 @@ export default function SupplierDiscoveryPage() {
                     importing={importingIdx === i}
                     onViewDetail={setDetailSupplier}
                     onVetting={handleVetting}
+                    vettingLoading={vettingName === s.name}
                   />
                 ))}
               </div>
@@ -883,7 +923,8 @@ export default function SupplierDiscoveryPage() {
             const idx = results?.indexOf(s) ?? -1;
             if (idx >= 0) handleImport(s, idx);
           }}
-          onVetting={(name) => handleVetting(name)}
+          onVetting={handleVetting}
+          vettingLoading={vettingName === detailSupplier?.name}
           importing={importingIdx !== null}
         />
       )}

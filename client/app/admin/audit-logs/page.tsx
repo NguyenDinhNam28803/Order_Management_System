@@ -4,13 +4,12 @@ import React, { useState } from "react";
 import { useAuditLogs } from "../../hooks/useAuditLogs";
 import { AuditLogDetailModal } from "../../components/AuditLogDetailModal";
 import type { AuditLog } from "../../types/api-types";
-import { 
-    History, Search, Filter, Calendar, Shield, ExternalLink, RefreshCw 
+import {
+    History, Search, Filter, Calendar, Shield, ExternalLink, RefreshCw
 } from "lucide-react";
 
 export default function AuditLogsPage() {
     const [page, setPage] = useState(1);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
     const { data: result, isLoading, refetch } = useAuditLogs(page);
     
@@ -47,7 +46,7 @@ export default function AuditLogsPage() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            {selectedLog && <AuditLogDetailModal data={selectedLog.newValue} onClose={() => setSelectedLog(null)} />}
+            {selectedLog && <AuditLogDetailModal data={selectedLog.newValue ?? {}} onClose={() => setSelectedLog(null)} />}
             
             <div className="flex justify-between items-center mb-10">
                 <div className="flex items-center gap-3">
@@ -67,7 +66,7 @@ export default function AuditLogsPage() {
                 </button>
             </div>
 
-            <div className="bg-[#F1F5F9] p-4 rounded-2xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] flex flex-wrap gap-4 items-center mb-6">
+            <div className="bg-[#F1F5F9] p-4 rounded-xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] flex flex-wrap gap-4 items-center mb-6">
                 <div className="flex-1 min-w-[300px] relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" size={18} />
                     <input 
@@ -93,7 +92,7 @@ export default function AuditLogsPage() {
                 </div>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-2xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
                         <thead className="border-b border-[rgba(148,163,184,0.1)] tracking-wider">

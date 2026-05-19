@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
@@ -223,7 +223,7 @@ export default function ShopPage() {
                         {/* Main Content */}
                         <div className="col-span-9">
                             {/* Shop Banner */}
-                            <div className="relative h-62.5 rounded-2xl overflow-hidden mb-10 bg-[#000e28]">
+                            <div className="relative h-62.5 rounded-xl overflow-hidden mb-10 bg-[#000e28]">
                                 <Image src="/laptop.png" alt="Shop Banner" fill style={{ objectFit: 'cover' }} className="opacity-60" />
                                 <div className="absolute inset-0 bg-linear-to-r from-black/60 to-transparent flex flex-col justify-center px-12">
                                     <span className="text-secondary font-bold text-sm uppercase tracking-widest mb-2">Up To 30% Offer</span>
@@ -278,7 +278,7 @@ export default function ShopPage() {
                             {filteredProducts.length > 0 ? (
                                 <div className={`grid ${viewMode === "grid" ? "grid-cols-4 gap-6" : "grid-cols-1 gap-6"}`}>
                                     {filteredProducts.map((product) => (
-                                        <div key={product.id} className={`bg-white border border-gray-100 rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-300 relative ${viewMode === "list" ? "flex items-center" : ""}`}>
+                                        <div key={product.id} className={`bg-white border border-gray-100 rounded-xl overflow-hidden group hover:shadow-2xl transition-all duration-300 relative ${viewMode === "list" ? "flex items-center" : ""}`}>
                                             {/* Quick Actions Hidden by Default */}
                                             <div className={`absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 translate-x-4 group-hover:translate-x-0`}>
                                                 <button className="bg-white p-2.5 rounded-full shadow-lg hover:bg-secondary transition-colors"><Heart size={16} /></button>
@@ -311,7 +311,7 @@ export default function ShopPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                                <div className="text-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
                                     <div className="text-black mb-4 flex justify-center"><ShoppingCart size={48} /></div>
                                     <p className="text-lg font-bold text-primary">No products found matching your filters.</p>
                                     <button

@@ -43,7 +43,7 @@ export default function QuoteRequestPage() {
     const getStatusInfo = (status: QuoteRequestStatus) => {
         switch (status) {
             case QuoteRequestStatus.DRAFT:
-                return { label: "Nháp", color: "bg-[#0F172A] text-slate-900 border border-[rgba(148,163,184,0.1)]", icon: FileText };
+                return { label: "Nháp", color: "bg-[#0F172A] text-white border border-[rgba(148,163,184,0.1)]", icon: FileText };
             case QuoteRequestStatus.SUBMITTED:
                 return { label: "Đã gửi Thu mua", color: "bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20", icon: ClipboardList };
             case QuoteRequestStatus.PROCESSING:
@@ -51,14 +51,14 @@ export default function QuoteRequestPage() {
             case QuoteRequestStatus.COMPLETED:
                 return { label: "Đã có báo giá", color: "bg-emerald-500/10 text-black border border-emerald-500/20", icon: BadgeCheck };
             default:
-                return { label: status, color: "bg-[#0F172A] text-slate-900 border border-[rgba(148,163,184,0.1)]", icon: FileText };
+                return { label: status, color: "bg-[#0F172A] text-white border border-[rgba(148,163,184,0.1)]", icon: FileText };
         }
     };
 
     return (
         <main className="animate-in fade-in duration-500 min-h-screen bg-[#FFFFFF] text-slate-900">
             <div className="px-6 py-6 space-y-6">
-            <header className="flex justify-between items-center bg-[#F1F5F9] p-6 rounded-2xl shadow-sm border border-[rgba(148,163,184,0.1)]">
+            <header className="flex justify-between items-center bg-[#F1F5F9] p-6 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)]">
                 <div>
                     <h1 className="text-2xl font-black text-[#2563EB] tracking-tight">Yêu cầu báo giá</h1>
                     <p className="text-sm text-slate-900 font-medium">Quản lý và theo dõi các báo giá từ bộ phận Thu mua</p>
@@ -113,7 +113,7 @@ export default function QuoteRequestPage() {
                 {/* Main List */}
                 <div className="lg:col-span-2 space-y-4">
                     {filteredQRs.length === 0 ? (
-                        <div className="bg-[#F1F5F9] p-12 rounded-2xl border border-dashed border-[rgba(148,163,184,0.2)] text-center space-y-3">
+                        <div className="bg-[#F1F5F9] p-12 rounded-xl border border-dashed border-[rgba(148,163,184,0.2)] text-center space-y-3">
                             <div className="bg-[#FFFFFF] w-16 h-16 rounded-full flex items-center justify-center mx-auto text-slate-900">
                                 <Search size={32} />
                             </div>
@@ -126,7 +126,7 @@ export default function QuoteRequestPage() {
                                 <div 
                                     key={qr.id}
                                     onClick={() => setSelectedQR(qr)}
-                                    className={`group bg-[#F1F5F9] p-5 rounded-2xl border transition-all cursor-pointer hover:shadow-md ${selectedQR?.id === qr.id ? 'border-[#2563EB] ring-2 ring-[#2563EB]/10' : 'border-[rgba(148,163,184,0.1)]'}`}
+                                    className={`group bg-[#F1F5F9] p-5 rounded-xl border transition-all cursor-pointer hover:shadow-md ${selectedQR?.id === qr.id ? 'border-[#2563EB] ring-2 ring-[#2563EB]/10' : 'border-[rgba(148,163,184,0.1)]'}`}
                                 >
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-center gap-4">
@@ -172,7 +172,7 @@ export default function QuoteRequestPage() {
                 {/* Detail Panel */}
                 <div className="lg:col-span-1">
                     {selectedQR ? (
-                        <div className="bg-[#F1F5F9] p-6 rounded-2xl shadow-xl border border-[rgba(148,163,184,0.1)] sticky top-6 space-y-6">
+                        <div className="bg-[#F1F5F9] p-6 rounded-xl shadow-xl border border-[rgba(148,163,184,0.1)] sticky top-6 space-y-6">
                             <div className="flex justify-between items-start">
                                 <div>
                                     <h2 className="text-lg font-black text-slate-900 leading-tight">{selectedQR.title}</h2>
@@ -246,7 +246,7 @@ export default function QuoteRequestPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center p-12 bg-[#F1F5F9]/50 rounded-2xl border border-dashed border-[rgba(148,163,184,0.2)]">
+                        <div className="h-full flex flex-col items-center justify-center p-12 bg-[#F1F5F9]/50 rounded-xl border border-dashed border-[rgba(148,163,184,0.2)]">
                             <ClipboardList className="text-slate-900 mb-4" size={48} />
                             <p className="text-slate-900 text-sm font-bold italic text-center max-w-[240px] leading-relaxed">Chọn một yêu cầu để xem chi tiết báo giá và thực hiện hành động</p>
                         </div>

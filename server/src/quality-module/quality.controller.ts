@@ -6,12 +6,15 @@ import {
   Body,
   Req,
   ForbiddenException,
+  UseGuards,
 } from '@nestjs/common';
 import { QualityTrendService } from './quality-trend.service';
-import { PrismaService } from '../prisma/prisma.service'; // Thêm Import
+import { PrismaService } from '../prisma/prisma.service';
 import { UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('quality')
 export class QualityController {
   constructor(

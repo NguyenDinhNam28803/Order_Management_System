@@ -113,16 +113,16 @@ export class ContractModuleController {
     @Body('token') token?: string, // Token cho external
   ) {
     if (token) {
-       // Logic xác thực token sẽ được implement ở service hoặc guard riêng
-       // Tạm thời bỏ qua phần xác thực trong controller này
-    }
-    
-    // Nếu không có token, yêu cầu login như cũ
-    if (!token && !req.user) {
-        throw new BadRequestException('Yêu cầu đăng nhập hoặc mã token hợp lệ');
+      // Logic xác thực token sẽ được implement ở service hoặc guard riêng
+      // Tạm thời bỏ qua phần xác thực trong controller này
     }
 
-    const userId = req.user?.sub ?? 'EXTERNAL_USER';
+    // Nếu không có token, yêu cầu login như cũ
+    if (!token && !req.user) {
+      throw new BadRequestException('Yêu cầu đăng nhập hoặc mã token hợp lệ');
+    }
+
+    const userId = (req.user?.sub as string | undefined) ?? 'EXTERNAL_USER';
     return this.contractModuleService.signContract(id, userId, isBuyer);
   }
 

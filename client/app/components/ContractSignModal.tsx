@@ -173,7 +173,7 @@ export default function ContractSignModal({
                 onClick={step !== "signing" ? onClose : undefined}
             />
 
-            <div className="relative w-full max-w-lg bg-[#F1F5F9] rounded-[2rem] border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex flex-col max-h-[92vh] overflow-hidden pointer-events-auto animate-in zoom-in-95 duration-200">
+            <div className="relative w-full max-w-lg bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex flex-col max-h-[92vh] overflow-hidden pointer-events-auto animate-in zoom-in-95 duration-200">
 
                 {/* ── Header ── */}
                 <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-[2rem] flex items-center justify-between shrink-0">
@@ -268,7 +268,7 @@ export default function ContractSignModal({
                             </div>
 
                             {/* Code display */}
-                            <div className="bg-[#FFFFFF] border border-emerald-500/30 rounded-2xl p-5 text-center">
+                            <div className="bg-[#FFFFFF] border border-emerald-500/30 rounded-xl p-5 text-center">
                                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-900 mb-2">
                                     Mã xác nhận của bạn
                                 </p>

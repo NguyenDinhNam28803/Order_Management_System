@@ -120,7 +120,7 @@ export default function FinanceDashboard() {
             </div>
 
             {/* Invoices Interface */}
-            <div className="bg-[#F1F5F9] rounded-[40px] overflow-hidden border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
+            <div className="bg-white rounded-xl overflow-hidden border border-[#E2E8F0] shadow-sm">
                 <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#F1F5F9]">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-[#FFFFFF] text-[#2563EB] rounded-xl border border-[rgba(148,163,184,0.1)]">
@@ -254,7 +254,7 @@ function MetricCard({ icon, label, value, unit, color, onClick, subValue }: Metr
     return (
         <div 
             onClick={onClick}
-            className={`bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-3xl p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#2563EB]/30 ${onClick ? 'cursor-pointer' : ''}`}
+            className={`bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#2563EB]/30 ${onClick ? 'cursor-pointer' : ''}`}
         >
             <div className="flex justify-between items-start mb-6">
                 <div className={`p-3 rounded-[18px] shadow-sm transition-transform group-hover:scale-110 duration-500 border ${colorStyles[color]}`}>

@@ -179,7 +179,13 @@ export class PrmoduleService {
   async findAll(
     user: JwtPayload,
     pagination: { page: number; limit: number } = { page: 1, limit: 20 },
-  ): Promise<{ data: PurchaseRequisition[]; total: number; page: number; limit: number; totalPages: number }> {
+  ): Promise<{
+    data: PurchaseRequisition[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     return this.repository.findAll(user.orgId, pagination);
   }
 
@@ -336,7 +342,11 @@ export class PrmoduleService {
     return this.repository.findByRequester(userId);
   }
 
-  async findPaginated(orgId: string, skip: number, take: number): Promise<PurchaseRequisition[]> {
+  async findPaginated(
+    orgId: string,
+    skip: number,
+    take: number,
+  ): Promise<PurchaseRequisition[]> {
     return this.prisma.purchaseRequisition.findMany({
       where: { orgId },
       orderBy: { createdAt: 'desc' },

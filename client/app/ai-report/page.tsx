@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Zap, AlertTriangle, CheckCircle2, Shield, Info, ArrowRight, ArrowLeft, Send, FileText } from "lucide-react";
@@ -21,7 +21,7 @@ export default function AIReportPage() {
     if (isConfirmed) {
         return (
             <div className="h-screen flex items-center justify-center bg-slate-50">
-                <div className="text-center erp-card p-12! animate-in fade-in zoom-in duration-500">
+                <div className="text-center bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 p-12! animate-in fade-in zoom-in duration-500">
                     <div className="h-20 w-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
                         <CheckCircle2 size={40} />
                     </div>
@@ -64,7 +64,7 @@ export default function AIReportPage() {
                 {/* Cột trái (Chiếm 2/3) */}
                 <div className="xl:col-span-2 space-y-8">
                     {/* AI Pick - Đề xuất chính */}
-                    <div className="relative border-2 border-emerald-500 rounded-2xl p-8 bg-emerald-50/30 overflow-hidden shadow-lg shadow-emerald-500/10">
+                    <div className="relative border-2 border-emerald-500 rounded-xl p-8 bg-emerald-50/30 overflow-hidden shadow-lg shadow-emerald-500/10">
                         <div className="absolute top-0 right-0 p-8 opacity-5">
                             <Shield size={140} className="text-emerald-500" />
                         </div>
@@ -80,7 +80,7 @@ export default function AIReportPage() {
                                     <div className="flex items-center gap-1"><CheckCircle2 size={16} /> KPI lịch sử cao</div>
                                 </div>
                             </div>
-                            <div className="flex flex-col items-center justify-center p-6 bg-white border-2 border-emerald-100 rounded-2xl shadow-sm min-w-[140px]">
+                            <div className="flex flex-col items-center justify-center p-6 bg-white border-2 border-emerald-100 rounded-xl shadow-sm min-w-[140px]">
                                 <span className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Điểm tổng hợp</span>
                                 <div className="text-5xl font-black text-emerald-500  tracking-tighter">94<span className="text-2xl text-emerald-300">/100</span></div>
                             </div>
@@ -88,7 +88,7 @@ export default function AIReportPage() {
                     </div>
 
                     {/* Bảng so sánh */}
-                    <div className="erp-card !p-0 overflow-hidden">
+                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
                         <div className="p-6 border-b border-slate-50 flex items-center gap-2">
                             <h3 className="text-sm font-black uppercase tracking-widest text-brand-primary flex items-center gap-2">
                                 <FileText size={16} className="text-erp-blue" /> So sánh chi tiết các nhà cung cấp
@@ -141,7 +141,7 @@ export default function AIReportPage() {
                 {/* Cột phải (Chiếm 1/3) */}
                 <div className="space-y-8">
                     {/* Phân tích rủi ro */}
-                    <div className="erp-card bg-white shadow-xl shadow-erp-navy/5">
+                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 shadow-xl shadow-erp-navy/5">
                         <h3 className="text-xs font-black uppercase tracking-widest text-black mb-6 flex items-center gap-2">
                             Cảnh báo Rủi ro & Lưu ý
                         </h3>
@@ -164,7 +164,7 @@ export default function AIReportPage() {
                     </div>
 
                     {/* Khu Vực Khẳng Định (Confirm) */}
-                    <div className="erp-card bg-slate-50 border-2 border-slate-200">
+                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 bg-slate-50 border-2 border-slate-200">
                         <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary mb-6">Xác nhận đơn vị cung cấp</h3>
                         
                         <div className="space-y-4 mb-6">
@@ -205,7 +205,7 @@ export default function AIReportPage() {
                             onClick={handleConfirm}
                             disabled={selection === 'Other' && overrideReason.trim().length < 10}
                             className={`w-full py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all ${
-                                (selection === 'Other' && overrideReason.trim().length < 10) ? 'bg-slate-300 text-black cursor-not-allowed shadow-none' : 'bg-erp-navy text-slate-900 hover:bg-slate-800 shadow-xl shadow-erp-navy/20'
+                                (selection === 'Other' && overrideReason.trim().length < 10) ? 'bg-slate-300 text-black cursor-not-allowed shadow-none' : 'bg-erp-navy text-white hover:bg-slate-800 shadow-xl shadow-erp-navy/20'
                             }`}
                         >
                             <Send size={16} /> Xác nhận lựa chọn

@@ -88,7 +88,7 @@ export default function ProcurementQualityHub() {
             <QualityRiskPanel supplierId={selectedSupplierId} />
             
             {/* Trend Chart */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
               <div className="p-4 border-b border-slate-100 bg-slate-50/50">
                 <h3 className="font-bold text-slate-800 flex items-center gap-2">
                   <TrendingUp size={18} className="text-indigo-500" />
@@ -103,7 +103,7 @@ export default function ProcurementQualityHub() {
 
           {/* Right Column: RCA Management */}
           <div className="xl:col-span-1 space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 h-full flex flex-col">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 h-full flex flex-col">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                 <h3 className="font-bold text-slate-800 flex items-center gap-2">
                   <History size={18} className="text-indigo-500" />

@@ -129,7 +129,7 @@ export default function SourcingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 {stats.map((stat) => (
-                    <div key={stat.label} className="bg-[#F1F5F9] p-8 rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 flex items-center gap-6 group hover:border-[#2563EB]/20 transition-all duration-500">
+                    <div key={stat.label} className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 flex items-center gap-6 group hover:border-[#2563EB]/20 transition-all duration-500">
                         <div className={`w-16 h-16 rounded-2xl ${stat.bg.replace('-50', '-500/10')} ${stat.color} flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500`}>
                             <stat.icon size={28} />
                         </div>
@@ -141,7 +141,7 @@ export default function SourcingPage() {
                 ))}
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="flex bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] p-2 gap-2 overflow-x-auto">
                     <TabButton active={activeTab === "quote-requests"} onClick={() => setActiveTab("quote-requests")} label="Yêu cầu Báo giá" count={quoteRequests.filter(q => ['SUBMITTED', 'PROCESSING', 'QUOTED'].includes(q.status)).length} />
                     <TabButton active={activeTab === "catalog-prs"} onClick={() => setActiveTab("catalog-prs")} label="Xác nhận Catalog" count={approvedPRs.filter(p => p.type === 'CATALOG').length} />
@@ -184,7 +184,7 @@ export default function SourcingPage() {
                     )}
                     {activeTab === "active-rfqs" && (
                         <div className="p-24 text-center text-slate-900 font-black uppercase tracking-[0.2em] text-xs flex flex-col items-center gap-6">
-                            <div className="w-20 h-20 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#2563EB]/50 shadow-inner">
+                            <div className="w-20 h-20 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#2563EB]/50 shadow-inner">
                                 <Send size={32} />
                             </div>
                             <span>Danh sách RFQ đang chờ nhà cung cấp phản hồi.</span>
@@ -194,9 +194,9 @@ export default function SourcingPage() {
                     {activeTab === "suppliers" && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
                             {suppliersList.map(supplier => (
-                                <div key={supplier.id} className="border border-[rgba(148,163,184,0.1)] p-6 rounded-3xl hover:border-[#2563EB]/30 transition-all cursor-pointer group bg-[#F1F5F9]/50 shadow-lg shadow-black/5 hover:bg-[#F1F5F9]/80">
+                                <div key={supplier.id} className="border border-[rgba(148,163,184,0.1)] p-6 rounded-xl hover:border-[#2563EB]/30 transition-all cursor-pointer group bg-[#F1F5F9]/50 shadow-lg shadow-black/5 hover:bg-[#F1F5F9]/80">
                                     <div className="flex justify-between items-start mb-6">
-                                        <div className="w-12 h-12 rounded-2xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center font-black text-slate-900 uppercase text-sm shadow-inner group-hover:bg-[#2563EB]/10 transition-colors">
+                                        <div className="w-12 h-12 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center font-black text-slate-900 uppercase text-sm shadow-inner group-hover:bg-[#2563EB]/10 transition-colors">
                                             {supplier.name.substring(0, 1)}
                                         </div>
                                     </div>
@@ -317,7 +317,7 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
             {!processingId ? (
                 <div className="space-y-4">
                     {quoteRequests.map((qr) => (
-                        <div key={qr.id} className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl p-6 flex justify-between items-center shadow-lg shadow-[#2563EB]/5">
+                        <div key={qr.id} className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-6 flex justify-between items-center shadow-lg shadow-[#2563EB]/5">
                             <div className="flex gap-4 items-center">
                                 <div className="w-10 h-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center font-black text-slate-900 text-xs">{qr.qrNumber.split('-').pop()}</div>
                                 <div>
@@ -333,13 +333,13 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
                     ))}
                 </div>
             ) : (
-                <div className="p-8 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)]">
+                <div className="p-8 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <h3 className="font-black text-slate-900 uppercase mb-8 flex items-center gap-3">
                         <Zap size={20} className="text-amber-500" /> Nhập giá: <span className="text-[#2563EB]">{editData?.qrNumber}</span>
                     </h3>
                     <div className="space-y-4">
                         {editData?.items.map((item, idx: number) => (
-                            <div key={idx} className="bg-[#F1F5F9] p-6 rounded-2xl border border-[rgba(148,163,184,0.1)] grid grid-cols-1 md:grid-cols-2 gap-6 hover:border-[#2563EB]/20 transition-all">
+                            <div key={idx} className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] grid grid-cols-1 md:grid-cols-2 gap-6 hover:border-[#2563EB]/20 transition-all">
                                 <div>
                                     <label className="text-[10px] font-black uppercase text-slate-900 block mb-2 tracking-widest">Mặt hàng yêu cầu</label>
                                     <div className="text-sm font-black text-slate-900 p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.05)] uppercase">{item.productName}</div>
@@ -366,7 +366,7 @@ function POManagement({ pos }: { pos: PO[] | null }) {
     return (
         <div className="p-8 space-y-4">
             {(pos || []).map((po) => (
-                <div key={po.id} className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-[32px] p-6 flex justify-between items-center group hover:border-[#2563EB]/20 transition-all shadow-lg shadow-[#2563EB]/5">
+                <div key={po.id} className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-6 flex justify-between items-center group hover:border-[#2563EB]/20 transition-all shadow-lg shadow-[#2563EB]/5">
                     <div className="flex gap-6 items-center">
                         <div className="w-16 h-16 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center font-black text-white text-lg group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-inner">***</div>
                         <div>

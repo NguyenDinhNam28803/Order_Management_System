@@ -95,6 +95,31 @@ export class RfqRepository {
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
+  async findPaginated(orgId: string, skip: number, take: number) {
+    const [data, total] = await Promise.all([
+      this.prisma.rfqRequest.findMany({
+        where: { orgId },
+        include: {
+          pr: true,
+          createdBy: true,
+          suppliers: true,
+          organization: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+      }),
+      this.prisma.rfqRequest.count({ where: { orgId } }),
+    ]);
+    return {
+      data,
+      total,
+      page: Math.floor(skip / take) + 1,
+      limit: take,
+      totalPages: Math.ceil(total / take),
+    };
+  }
+
   async findOne(id: string) {
     return this.prisma.rfqRequest.findUnique({
       where: { id },

@@ -6,12 +6,23 @@ import {
   Param,
   Delete,
   UseGuards,
+  Body,
+  Request,
+  Query,
 } from '@nestjs/common';
 import { AdminModuleService } from './admin-module.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreateAdminModuleDto } from './dto/create-admin-module.dto';
+import { UpdateAdminModuleDto } from './dto/update-admin-module.dto';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
 import { UserRole } from '@prisma/client';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('Admin Module')
 @Controller('admin')
@@ -21,56 +32,50 @@ import { UserRole } from '@prisma/client';
 export class AdminModuleController {
   constructor(private readonly adminModuleService: AdminModuleService) {}
 
-  /**
-   * Tạo mới một bản ghi quản trị
-   * @returns Bản ghi vừa được tạo
-   */
+  @Get('stats')
+  @ApiOperation({ summary: 'Thống kê toàn hệ thống' })
+  getPlatformStats() {
+    return this.adminModuleService.getPlatformStats();
+  }
+
   @Post()
-  @ApiOperation({ summary: 'Tạo bản ghi quản trị mới' })
-  create() {
-    return this.adminModuleService.create();
+  @ApiOperation({ summary: 'Tạo bản ghi audit log thủ công' })
+  create(
+    @Body() createAdminModuleDto: CreateAdminModuleDto,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.adminModuleService.create(createAdminModuleDto, req.user);
   }
 
-  /**
-   * Lấy danh sách tất cả các bản ghi quản trị
-   * @returns Danh sách bản ghi
-   */
   @Get()
-  @ApiOperation({ summary: 'Lấy tất cả bản ghi quản trị' })
-  findAll() {
-    return this.adminModuleService.findAll();
+  @ApiOperation({ summary: 'Lấy danh sách audit logs (có phân trang)' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  findAll(@Query('page') page?: string, @Query('limit') limit?: string) {
+    return this.adminModuleService.findAll(
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 50,
+    );
   }
 
-  /**
-   * Lấy thông tin chi tiết một bản ghi quản trị theo ID
-   * @param id ID của bản ghi
-   * @returns Thông tin chi tiết bản ghi
-   */
   @Get(':id')
-  @ApiOperation({ summary: 'Lấy chi tiết bản ghi quản trị theo ID' })
+  @ApiOperation({ summary: 'Lấy chi tiết audit log theo ID' })
   findOne(@Param('id') id: string) {
-    return this.adminModuleService.findOne(+id);
+    return this.adminModuleService.findOne(id);
   }
 
-  /**
-   * Cập nhật thông tin một bản ghi quản trị theo ID
-   * @param id ID của bản ghi cần cập nhật
-   * @returns Bản ghi sau khi cập nhật
-   */
   @Patch(':id')
-  @ApiOperation({ summary: 'Cập nhật bản ghi quản trị theo ID' })
-  update(@Param('id') id: string) {
-    return this.adminModuleService.update(+id);
+  @ApiOperation({ summary: 'Cập nhật ghi chú audit log theo ID' })
+  update(
+    @Param('id') id: string,
+    @Body() updateAdminModuleDto: UpdateAdminModuleDto,
+  ) {
+    return this.adminModuleService.update(id, updateAdminModuleDto);
   }
 
-  /**
-   * Xóa một bản ghi quản trị theo ID
-   * @param id ID của bản ghi cần xóa
-   * @returns Kết quả xóa
-   */
   @Delete(':id')
-  @ApiOperation({ summary: 'Xóa bản ghi quản trị theo ID' })
+  @ApiOperation({ summary: 'Xóa audit log theo ID' })
   remove(@Param('id') id: string) {
-    return this.adminModuleService.remove(+id);
+    return this.adminModuleService.remove(id);
   }
 }

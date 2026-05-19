@@ -371,7 +371,7 @@ export default function InvoiceDetailPage() {
               <AlertCircle size={20} className="text-black shrink-0 mt-0.5" />
               <div className="flex-1">
                 <h3 className="font-bold text-black mb-1">Lỗi đối soát 3 bên</h3>
-                <p className="text-rose-300/80 text-sm">{invoice.exceptionReason}</p>
+                <p className="text-rose-600 text-sm">{invoice.exceptionReason}</p>
               </div>
             </div>
           </div>

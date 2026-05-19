@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 
 interface TooltipProps {
   content: React.ReactNode;
-  children: React.ReactElement;
+  children: React.ReactElement<React.HTMLAttributes<HTMLElement>>;
   placement?: "top" | "bottom" | "left" | "right";
   delay?: number;
 }
@@ -60,7 +60,8 @@ export default function Tooltip({
     right: "translate(0, -50%)",
   };
 
-  const child = React.cloneElement(children, {
+  // eslint-disable-next-line react-hooks/refs
+  const child = React.cloneElement(children as React.ReactElement<React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> }>, {
     ref: triggerRef,
     onMouseEnter: show,
     onMouseLeave: hide,

@@ -403,7 +403,7 @@ export default function CreateRFQPage() {
                         </div>
                     </div>
 
-                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-[32px] p-8 flex items-start gap-4">
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-8 flex items-start gap-4">
                         <div className="h-10 w-10 bg-amber-500/10 text-black rounded-xl flex items-center justify-center shrink-0 border border-amber-500/20">
                             <Info size={20} />
                         </div>

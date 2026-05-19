@@ -103,12 +103,20 @@ export class PaymentModuleService {
         data: { status: InvoiceStatus.PAID, paidAt: new Date() },
       });
 
-      // 3. Cập nhật PO sang COMPLETED nếu đây là hóa đơn cuối cùng
-      // (Logic đơn giản: Giả sử 1 PO 1 Invoice cho Happy Path)
-      await tx.purchaseOrder.update({
-        where: { id: payment.poId },
-        data: { status: PoStatus.COMPLETED, completedAt: new Date() },
+      // 3. Cập nhật PO sang COMPLETED chỉ khi TẤT CẢ invoices đã được thanh toán
+      const unpaidInvoices = await tx.supplierInvoice.count({
+        where: {
+          poId: payment.poId,
+          status: { notIn: [InvoiceStatus.PAID, InvoiceStatus.CANCELLED] },
+          id: { not: payment.invoiceId },
+        },
       });
+      if (unpaidInvoices === 0) {
+        await tx.purchaseOrder.update({
+          where: { id: payment.poId },
+          data: { status: PoStatus.COMPLETED, completedAt: new Date() },
+        });
+      }
 
       // 4. Cập nhật Ngân sách (Spent Amount)
       if (payment.po.costCenterId) {
@@ -138,8 +146,7 @@ export class PaymentModuleService {
       where: {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         orgId: payment.supplierId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        role: 'SUPPLIER' as 'SUPPLIER',
+        role: 'SUPPLIER' as const,
         isActive: true,
       },
       include: { organization: true },

@@ -93,7 +93,7 @@ export default function RegisterPage() {
 
                 {/* Register Form Section */}
                 <div className="w-full max-w-md mx-auto animate-in fade-in slide-in-from-right-12 duration-700">
-                    <div className="bg-[#0f1525] border border-white/10 rounded-[40px] p-10 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group">
+                    <div className="bg-[#0f1525] border border-white/10 rounded-xl p-6 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group">
                         <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
 
                         <div className="mb-8 text-center md:text-left">
@@ -120,7 +120,7 @@ export default function RegisterPage() {
                                         value={form.name}
                                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                                         placeholder="Nhập họ tên đầy đủ..."
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
+                                        className="w-full bg-[#161c31] border border-white/5 rounded-xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
                                     />
                                 </div>
                             </div>
@@ -137,7 +137,7 @@ export default function RegisterPage() {
                                         value={form.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                                         placeholder="user@name.com"
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
+                                        className="w-full bg-[#161c31] border border-white/5 rounded-xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
                                     />
                                 </div>
                             </div>
@@ -154,7 +154,7 @@ export default function RegisterPage() {
                                         value={form.password}
                                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                                         placeholder="••••••••"
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
+                                        className="w-full bg-[#161c31] border border-white/5 rounded-xl pl-14 pr-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 transition-all font-bold placeholder:text-slate-700"
                                     />
                                 </div>
                             </div>
@@ -162,7 +162,7 @@ export default function RegisterPage() {
                             <div className="space-y-2">
                                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-black ml-1">Vai trò (Role)</label>
                                 <select
-                                    className="w-full bg-[#161c31] border border-white/5 rounded-2xl px-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 transition-all font-black appearance-none cursor-pointer"
+                                    className="w-full bg-[#161c31] border border-white/5 rounded-xl px-6 py-4 text-slate-900 text-sm outline-none focus:border-emerald-500/50 transition-all font-black appearance-none cursor-pointer"
                                     value={form.role}
                                     onChange={(e) => setForm({ ...form, role: e.target.value })}
                                 >

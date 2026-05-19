@@ -77,7 +77,7 @@ export default function CreateQuoteRequestPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Form Main */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-[#F1F5F9] p-8 rounded-2xl shadow-xl border border-[rgba(148,163,184,0.1)] space-y-8">
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl shadow-xl border border-[rgba(148,163,184,0.1)] space-y-8">
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="group space-y-2">
@@ -152,7 +152,7 @@ export default function CreateQuoteRequestPage() {
 
                             <div className="space-y-4">
                                 {items.map((item, idx) => (
-                                    <div key={idx} className="group relative grid grid-cols-12 gap-x-4 p-5 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/20 shadow-sm transition-all animate-in fade-in slide-in-from-top-2">
+                                    <div key={idx} className="group relative grid grid-cols-12 gap-x-4 p-5 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/20 shadow-sm transition-all animate-in fade-in slide-in-from-top-2">
                                         <div className="col-span-12 lg:col-span-6 space-y-1.5">
                                             <label className="text-[10px] font-black uppercase tracking-tighter text-slate-900 ml-1">Tên mặt hàng/Mục đích</label>
                                             <input 
@@ -185,7 +185,7 @@ export default function CreateQuoteRequestPage() {
                                         <div className="col-span-12 lg:col-span-1 flex items-end justify-center pb-1">
                                             <button 
                                                 onClick={() => removeItem(idx)}
-                                                className="p-2 text-black hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-all"
+                                                className="p-2 text-black hover:text-rose-600 hover:bg-rose-500/10 rounded-lg transition-all"
                                             >
                                                 <Trash2 size={18} />
                                             </button>
@@ -199,7 +199,7 @@ export default function CreateQuoteRequestPage() {
 
                 {/* Info Panel & Actions */}
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-[#F1F5F9] p-8 rounded-2xl shadow-2xl text-slate-900 space-y-6 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl shadow-2xl text-slate-900 space-y-6 border border-[rgba(148,163,184,0.1)]">
                         <div className="border-b border-[rgba(148,163,184,0.1)] pb-4">
                             <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-2 italic underline underline-offset-4 decoration-[#2563EB]">Xác nhận gửi</h3>
                             <p className="text-[11px] text-slate-900 leading-relaxed font-medium">Bản tin báo giá sẽ được chuyển tới bộ phận Thu mua để tiến hành RFQ tới các nhà cung cấp.</p>
@@ -217,7 +217,7 @@ export default function CreateQuoteRequestPage() {
                             <button 
                                 onClick={() => handleAction(false)}
                                 disabled={!isValid}
-                                className={`w-full flex items-center justify-center gap-3 bg-[#0F172A] text-slate-900 font-black py-4 rounded-xl hover:bg-[#FFFFFF] transition-all active:scale-95 border border-[rgba(148,163,184,0.1)] ${!isValid ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                className={`w-full flex items-center justify-center gap-3 bg-[#0F172A] text-white font-black py-4 rounded-xl hover:bg-slate-800 transition-all active:scale-95 border border-[rgba(148,163,184,0.1)] ${!isValid ? 'opacity-30 cursor-not-allowed' : ''}`}
                             >
                                 <Save size={20} />
                                 Lưu bản nháp
@@ -225,7 +225,7 @@ export default function CreateQuoteRequestPage() {
                         </div>
                     </div>
 
-                    <div className="bg-[#F1F5F9] p-6 rounded-2xl border border-dashed border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] p-6 rounded-xl border border-dashed border-[rgba(148,163,184,0.1)]">
                         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-4">Mẹo nhỏ</h4>
                         <ul className="space-y-4">
                             {[

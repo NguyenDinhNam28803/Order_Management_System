@@ -16,7 +16,7 @@ export function CEODashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Strategic Overview */}
-      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+      <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
         <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
           <Activity size={14} className="text-[#2563EB]" /> Tổng quan chiến lược
         </h3>
@@ -146,7 +146,7 @@ export function CEODashboard() {
 export function FinanceDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+      <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
         <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
           <Activity size={14} className="text-[#2563EB]" /> Kiểm soát tài chính
         </h3>
@@ -209,7 +209,7 @@ export function FinanceDashboard() {
 export function ProcurementDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+      <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
         <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
           <Activity size={14} className="text-[#2563EB]" /> Pipeline thu mua
         </h3>
@@ -282,7 +282,7 @@ export function ProcurementDashboard() {
 export function StaffDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+      <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
         <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
           <Activity size={14} className="text-[#2563EB]" /> Tổng quan công việc
         </h3>
@@ -340,7 +340,7 @@ export function StaffDashboard() {
 export function WarehouseDashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
+      <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6">
         <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
           <Activity size={14} className="text-[#2563EB]" /> Hoạt động kho
         </h3>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -32,6 +32,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
     // Close sidebar on route change (mobile UX)
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSidebarOpen(false);
     }, [pathname]);
 
@@ -42,7 +43,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
                 <div className="flex flex-col items-center gap-10 relative z-10">
                     <div className="relative">
-                        <div className="h-16 w-16 rounded-2xl bg-white border-[3px] border-[#2563EB] flex items-center justify-center shadow-xl shadow-[#2563EB]/10 relative overflow-hidden">
+                        <div className="h-16 w-16 rounded-xl bg-white border-[3px] border-[#2563EB] flex items-center justify-center shadow-xl shadow-[#2563EB]/10 relative overflow-hidden">
                             <span className="text-[#0F172A] text-lg font-black tracking-tighter select-none">PS</span>
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#2563EB]/8 to-transparent animate-[shimmer_2s_infinite]" />
                         </div>

@@ -16,6 +16,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 import { RolesGuard, Roles } from '../common/roles.guard';
 import { UserRole } from '@prisma/client';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('Dispute Management')
 @ApiBearerAuth('JWT-auth')
@@ -24,11 +25,6 @@ import { UserRole } from '@prisma/client';
 export class DisputeModuleController {
   constructor(private readonly disputeModuleService: DisputeModuleService) {}
 
-  /**
-   * Tạo một khiếu nại hoặc tranh chấp mới
-   * @param createDisputeModuleDto Dữ liệu tạo tranh chấp
-   * @returns Tranh chấp vừa tạo
-   */
   @Post()
   @Roles(
     UserRole.REQUESTER,
@@ -40,8 +36,11 @@ export class DisputeModuleController {
     UserRole.PLATFORM_ADMIN,
   )
   @ApiOperation({ summary: 'Tạo khiếu nại/tranh chấp mới' })
-  create(@Body() createDisputeModuleDto: CreateDisputeModuleDto) {
-    return this.disputeModuleService.create(createDisputeModuleDto);
+  create(
+    @Body() createDisputeModuleDto: CreateDisputeModuleDto,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.disputeModuleService.create(createDisputeModuleDto, req.user);
   }
 
   @Get()
@@ -54,8 +53,8 @@ export class DisputeModuleController {
     UserRole.PLATFORM_ADMIN,
   )
   @ApiOperation({ summary: 'Lấy tất cả khiếu nại/tranh chấp' })
-  findAll() {
-    return this.disputeModuleService.findAll();
+  findAll(@Request() req: { user: JwtPayload }) {
+    return this.disputeModuleService.findAll(req.user.orgId);
   }
 
   @Get(':id')
@@ -70,7 +69,7 @@ export class DisputeModuleController {
   )
   @ApiOperation({ summary: 'Lấy chi tiết khiếu nại/tranh chấp theo ID' })
   findOne(@Param('id') id: string) {
-    return this.disputeModuleService.findOne(+id);
+    return this.disputeModuleService.findOne(id);
   }
 
   @Patch(':id')
@@ -87,13 +86,13 @@ export class DisputeModuleController {
     @Param('id') id: string,
     @Body() updateDisputeModuleDto: UpdateDisputeModuleDto,
   ) {
-    return this.disputeModuleService.update(+id, updateDisputeModuleDto);
+    return this.disputeModuleService.update(id, updateDisputeModuleDto);
   }
 
   @Delete(':id')
   @Roles(UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Xóa khiếu nại/tranh chấp theo ID' })
   remove(@Param('id') id: string) {
-    return this.disputeModuleService.remove(+id);
+    return this.disputeModuleService.remove(id);
   }
 }

@@ -67,7 +67,7 @@ export default function GlobalAISearch() {
                     />
 
                     {/* Modal */}
-                    <div className="relative bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.12)] shadow-2xl shadow-black/80 p-6 w-full max-w-sm animate-slide-up">
+                    <div className="relative bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.12)] shadow-2xl shadow-black/80 p-6 w-full max-w-sm animate-slide-up">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-5">
                             <div className="flex items-center gap-2.5">

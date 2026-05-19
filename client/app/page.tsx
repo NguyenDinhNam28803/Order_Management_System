@@ -162,7 +162,7 @@ export default function Dashboard() {
                 </header>
 
                 {/* HÀNG 1 — Stats Cards with Reports/Spend Style */}
-                <div className="bg-[#F1F5F9] rounded-[32px] border border-[rgba(148,163,184,0.1)] shadow-2xl p-6 mb-6">
+                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6 mb-6">
                     <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
                         <Activity size={14} className="text-[#2563EB]" /> Tổng quan hoạt động
                     </h3>
@@ -249,7 +249,7 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 xl:grid-cols-10 gap-10">
                     {/* GIỮ 60% — Danh sách PR */}
                     <div className="xl:col-span-6 space-y-6">
-                        <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                              <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
                                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-3 leading-none">
                                      <FileText size={16} className="text-[#2563EB]" /> Danh sách PR của tôi (gần nhất)
@@ -318,7 +318,7 @@ export default function Dashboard() {
                     {/* GIỮ 40% — QR & NOTI */}
                     <div className="xl:col-span-4 space-y-10">
                         {/* QR Section */}
-                        <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                              <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
                                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-3">
                                      <ClipboardList size={16} className="text-[#2563EB]" /> Yêu cầu báo giá (QR)
@@ -328,7 +328,7 @@ export default function Dashboard() {
                              <div className="p-8 space-y-4">
                                  {quoteRequests.length > 0 ? (
                                      [...quoteRequests].sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 3).map(qr => (
-                                         <div key={qr.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/20 transition-all group">
+                                         <div key={qr.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/20 transition-all group">
                                              <div className="flex flex-col gap-1">
                                                  <div className="flex items-center gap-2">
                                                      <span className="text-[10px] font-black text-slate-900">{qr.qrNumber}</span>
@@ -364,7 +364,7 @@ export default function Dashboard() {
                         </div>
 
                         {/* Notifications */}
-                        <div className="bg-[#F1F5F9] rounded-[40px] shadow-2xl shadow-[#2563EB]/5 p-10 text-slate-900 relative overflow-hidden group border border-[rgba(148,163,184,0.1)]">
+                        <div className="bg-[#F1F5F9] rounded-xl shadow-2xl shadow-[#2563EB]/5 p-6 text-slate-900 relative overflow-hidden group border border-[rgba(148,163,184,0.1)]">
                              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
                                  <Bell size={100} />
                              </div>
@@ -392,7 +392,7 @@ export default function Dashboard() {
 
     function MetricCard({ title, value, icon, color }: { title: string; value: string | number; icon: React.ReactNode; color: string }) {
         return (
-            <div className={`erp-card p-8! border-none shadow-xl shadow-[#2563EB]/5 relative overflow-hidden group hover:translate-y-[-4px] transition-all duration-300 bg-[#F1F5F9]`}>
+            <div className={`bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 p-8! border-none shadow-xl shadow-[#2563EB]/5 relative overflow-hidden group hover:translate-y-[-4px] transition-all duration-300 bg-[#F1F5F9]`}>
                 <div className={`absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 rounded-full opacity-5 group-hover:opacity-10 transition-opacity ${color}`}></div>
                 <div className="flex justify-between items-center mb-6">
                     <div className={`p-4 rounded-2xl ${color} bg-opacity-10 ${color.replace('bg-', 'text-')}`}>
@@ -408,7 +408,7 @@ export default function Dashboard() {
     function ActionRequired({ items, onConvert }: { items: QuoteRequest[]; onConvert: (id: string) => Promise<void> }) {
         if (items.length === 0) return null;
         return (
-            <div className="bg-[#F1F5F9] rounded-[40px] p-10 border border-[rgba(148,163,184,0.1)] mb-12 shadow-2xl shadow-[#2563EB]/5">
+            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] mb-12 shadow-2xl shadow-[#2563EB]/5">
                 <div className="flex items-center gap-3 mb-8">
                     <div className="h-2 w-2 rounded-full bg-[#2563EB] animate-pulse"></div>
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 leading-none">CẦN HÀNH ĐỘNG NGAY ({items.length})</h3>
@@ -435,9 +435,9 @@ export default function Dashboard() {
         };
 
         return (
-            <div className="bg-[#FFFFFF] p-6 rounded-[32px] border border-[rgba(148,163,184,0.1)] flex items-center justify-between shadow-xl shadow-[#2563EB]/5 hover:-translate-y-1 transition-all duration-300 group">
+            <div className="bg-[#FFFFFF] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center justify-between shadow-xl shadow-[#2563EB]/5 hover:-translate-y-1 transition-all duration-300 group">
                 <div className="flex items-center gap-4">
-                    <div className="p-4 bg-[#2563EB]/10 text-[#2563EB] rounded-[20px] group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
+                    <div className="p-4 bg-[#2563EB]/10 text-[#2563EB] rounded-xl group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
                     <div>
                         <h4 className="text-xs font-black text-slate-900 uppercase mb-1">{qr.qrNumber} ĐÃ CÓ BÁO GIÁ</h4>
                         <p className="text-[10px] text-slate-900 font-bold uppercase tracking-tight opacity-70">Nhà cung cấp đã nộp giá. Chuyển sang PR để duyệt mua hàng.</p>
@@ -563,7 +563,7 @@ export default function Dashboard() {
                 {/* CFO Stat Cards - Clean Consistent Style */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     {/* Total Budget Card */}
-                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Tổng Ngân Sách</span>
                             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -581,7 +581,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Weekly Payment Forecast Card */}
-                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Dự Kiến Chi Tuần Này</span>
                             <div className="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
@@ -594,7 +594,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Pending Approvals Card */}
-                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Chờ CFO Duyệt</span>
                             <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
@@ -607,7 +607,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Department Spending Breakdown */}
-                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-purple-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-purple-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Top Chi Tiêu</span>
                             <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
@@ -643,7 +643,7 @@ export default function Dashboard() {
                                 <Activity size={14} /> Duyệt Định Biên Ngân Sách ({pendingBudgetCount})
                             </h3>
                         </div>
-                        <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr>
@@ -701,7 +701,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
+                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                     <div className="overflow-x-auto">
                         <table className="erp-table text-xs whitespace-nowrap">
                             <thead>
@@ -742,7 +742,7 @@ export default function Dashboard() {
                                     <tr>
                                         <td colSpan={7} className="py-20 text-center text-slate-900 font-black uppercase text-[10px]">
                                             <div className="flex flex-col items-center gap-3">
-                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-slate-900" /></div>
+                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-white" /></div>
                                                 Không có phiếu nào chờ duyệt
                                             </div>
                                         </td>
@@ -832,7 +832,7 @@ export default function Dashboard() {
                             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">YÊU CẦU CẦN XỬ LÝ (PR -{">"} RFQ)</h3>
                             <Link href="/sourcing" className="text-[10px] font-black text-[#2563EB] hover:underline uppercase tracking-widest">Xem tất cả {">"}</Link>
                         </div>
-                        <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <div className="overflow-x-auto">
                                 <table className="erp-table text-xs whitespace-nowrap">
                                     <thead>
@@ -861,7 +861,7 @@ export default function Dashboard() {
                                                     </td>
                                                     <td className="py-5 px-4">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-slate-900 group-hover:scale-110 transition-transform">
+                                                            <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                                                                 <FileText size={14} />
                                                             </div>
                                                             <div className="flex flex-col">
@@ -956,7 +956,7 @@ export default function Dashboard() {
                             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">TÌNH TRẠNG GIAO HÀNG (ĐANG GIAO)</h3>
                             <Link href="/po" className="text-[10px] font-black text-[#2563EB] hover:underline uppercase tracking-widest">PO Manager {">"}</Link>
                         </div>
-                        <div className="erp-card !p-0 overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <div className="overflow-x-auto">
                                 <table className="erp-table text-xs whitespace-nowrap">
                                     <thead>
@@ -1118,7 +1118,7 @@ export default function Dashboard() {
                 {/* Summary Cards - Clean Style */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     {/* Pending PRs Card */}
-                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">PR Chờ Duyệt</span>
                             <div className="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
@@ -1131,7 +1131,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Pending POs Card */}
-                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Cảnh Báo Tồn Đọng</span>
                             <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
@@ -1144,7 +1144,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Quick Action Card */}
-                    <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Tạo PR Mới</span>
                             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -1184,7 +1184,7 @@ export default function Dashboard() {
                         {/* Budget Stats Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Total Allocated */}
-                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
+                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Tổng ngân sách</span>
                                     <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center">
@@ -1226,7 +1226,7 @@ export default function Dashboard() {
                             </div>
 
                             {/* Remaining Budget */}
-                            <div className="bg-[#F1F5F9] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Còn lại</span>
                                     <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
@@ -1244,7 +1244,7 @@ export default function Dashboard() {
                         {deptAllocation && (
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 {/* Main Progress Bar */}
-                                <div className="lg:col-span-2 bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                <div className="lg:col-span-2 bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex items-center justify-between mb-4">
                                         <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">Tỷ lệ sử dụng ngân sách</h4>
                                         <span className={`text-sm font-black ${
@@ -1290,7 +1290,7 @@ export default function Dashboard() {
                                 </div>
 
                                 {/* Budget Alerts */}
-                                <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                     <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                                         <AlertTriangle size={14} className="text-black" />
                                         Cảnh báo ngân sách
@@ -1349,7 +1349,7 @@ export default function Dashboard() {
 
                         {/* Cost Center Budget Breakdown */}
                         {deptAllocation && costCenters && costCenters.length > 0 && (
-                            <div className="bg-[#F1F5F9] rounded-2xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
                                 <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-4">Phân bổ theo Cost Center</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {costCenters
@@ -1386,7 +1386,7 @@ export default function Dashboard() {
                 )}
 
                 {/* Search & Filter Toolbar */}
-                <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#F1F5F9] p-4 rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm">
                     <div className="flex items-center gap-4">
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-2 px-4 border-r border-[rgba(148,163,184,0.1)]">
                             <FileText size={16} className="text-[#2563EB]" /> Queue Cần Duyệt Mới Nhất
@@ -1405,7 +1405,7 @@ export default function Dashboard() {
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm mã PR, người tạo..."
-                                className="pl-11 pr-6 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl text-xs font-bold w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-[#FFFFFF] transition-all text-slate-900 placeholder:text-slate-900"
+                                className="pl-11 pr-6 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-[#FFFFFF] transition-all text-slate-900 placeholder:text-slate-900"
                             />
                         </div>
                         <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
@@ -1417,13 +1417,13 @@ export default function Dashboard() {
                         <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Khoảng giá <ChevronDown size={14} />
                         </button>
-                        <Link href="/approvals" className="ml-2 text-[9px] font-black uppercase text-[#2563EB] hover:underline bg-[#2563EB]/10 px-4 py-2.5 rounded-2xl border border-[#2563EB]/20 transition-all">
+                        <Link href="/approvals" className="ml-2 text-[9px] font-black uppercase text-[#2563EB] hover:underline bg-[#2563EB]/10 px-4 py-2.5 rounded-xl border border-[#2563EB]/20 transition-all">
                             Tới màn hình duyệt &gt;
                         </Link>
                     </div>
                 </div>
 
-                <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#2563EB]/5 bg-[#F1F5F9]">
+                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-xl shadow-[#2563EB]/5 bg-[#F1F5F9]">
                     <div className="overflow-x-auto">
                         <table className="erp-table text-xs whitespace-nowrap">
                             <thead>
@@ -1498,7 +1498,7 @@ export default function Dashboard() {
                                     <tr>
                                         <td colSpan={9} className="py-20 text-center text-slate-900 font-black uppercase tracking-widest text-[10px]">
                                             <div className="flex flex-col items-center gap-3">
-                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-slate-900" /></div>
+                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-white" /></div>
                                                 Hiện tại không có phiếu nào cần bạn phê duyệt
                                             </div>
                                         </td>
@@ -1532,7 +1532,7 @@ export default function Dashboard() {
                             <p className="text-[10px] font-black text-slate-900 mb-0.5">{myOrg?.name || "Đối tác ProcurePro"}</p>
                             <p className="text-[8px] font-bold text-black uppercase tracking-tighter">Xác thực: Gold Partner</p>
                         </div>
-                        <div className="w-10 h-10 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center shadow-sm">
+                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center shadow-sm">
                             <Building2 size={20} className="text-[#2563EB]" />
                         </div>
                     </div>
@@ -1553,7 +1553,7 @@ export default function Dashboard() {
                             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">YÊU CẦU BÁO GIÁ ĐẾN (RFQ)</h3>
                             <Link href="/supplier/rfq" className="text-[10px] font-black text-[#2563EB] hover:underline uppercase tracking-widest">Xem tất cả ›</Link>
                         </div>
-                        <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr>
@@ -1586,7 +1586,7 @@ export default function Dashboard() {
                         <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-2">
                              <Bell size={14} className="text-[#2563EB]" /> THÔNG BÁO TỪ HỆ THỐNG
                         </h3>
-                        <div className="bg-[#F1F5F9] rounded-[40px] p-10 text-slate-900 relative overflow-hidden group shadow-2xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
+                        <div className="bg-[#F1F5F9] rounded-xl p-6 text-slate-900 relative overflow-hidden group shadow-2xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
                              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
                                  <Zap size={100} />
                              </div>
@@ -1611,12 +1611,12 @@ export default function Dashboard() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-8">Hệ thống Quản trị Tổng thể</h1>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                <div className="erp-card p-6! border-l-4 border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
+                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 border-l-4 border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
                     <div className="text-2xl font-black text-slate-900">{formatVND(budgets?.allocated || 0)} ₫</div>
                     <div className="mt-2 text-[10px] text-slate-900 font-bold">Ngân sách đã phân bổ</div>
                 </div>
             </div>
-            <div className="erp-card !p-0 overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr><th>Mã PR</th><th>Phòng ban</th><th className="text-right">Giá trị</th><th className="text-right">Thao tác</th></tr>
@@ -1647,7 +1647,7 @@ export default function Dashboard() {
 
             {selectedPRDetails && (
                 <div className="fixed inset-0 z-[100] bg-[#FFFFFF]/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-[2rem] shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
                         <div className="flex justify-between items-center p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
                             <div>
                                 <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3 tracking-tighter">
@@ -1656,7 +1656,7 @@ export default function Dashboard() {
                                 </h2>
                                 <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest mt-1">Cập nhật: {new Date(selectedPRDetails.createdAt || "").toLocaleString('vi-VN')}</p>
                             </div>
-                            <button onClick={() => setSelectedPRDetails(null)} className="h-12 w-12 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-black rounded-2xl flex items-center justify-center transition-all">
+                            <button onClick={() => setSelectedPRDetails(null)} className="h-12 w-12 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-black rounded-xl flex items-center justify-center transition-all">
                                 <Plus className="rotate-45" size={24} />
                             </button>
                         </div>
@@ -1664,7 +1664,7 @@ export default function Dashboard() {
                         <div className="p-0 overflow-y-auto custom-scrollbar flex flex-col md:flex-row flex-1">
                             <div className="p-8 md:w-2/3 border-r border-[rgba(148,163,184,0.1)] space-y-8">
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                    <div className="p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)] text-center">
+                                    <div className="p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] text-center">
                                         <div className="text-[9px] font-black uppercase text-slate-900 mb-1">Trạng thái</div>
                                         <span className={`status-pill status-${(selectedPRDetails.status || 'draft').toLowerCase()}`}>{getStatusLabel(selectedPRDetails.status)}</span>
                                     </div>
@@ -1674,7 +1674,7 @@ export default function Dashboard() {
                                             {formatDate(selectedPRDetails.requiredDate)}
                                         </div>
                                     </div>
-                                    <div className="p-4 bg-[#FFFFFF] rounded-2xl text-center border border-[rgba(148,163,184,0.1)]">
+                                    <div className="p-4 bg-[#FFFFFF] rounded-xl text-center border border-[rgba(148,163,184,0.1)]">
                                         <div className="text-[9px] font-black uppercase text-slate-900 mb-1">Tổng dự toán</div>
                                         <div className="text-sm font-black text-black">{formatVND(selectedPRDetails.totalEstimate || 0)} ₫</div>
                                     </div>
@@ -1682,7 +1682,7 @@ export default function Dashboard() {
 
                                 <div className="space-y-4">
                                     <h3 className="text-[10px] font-black text-slate-900 uppercase">Danh sách hàng hóa</h3>
-                                    <div className="border border-[rgba(148,163,184,0.1)] rounded-2xl overflow-hidden">
+                                    <div className="border border-[rgba(148,163,184,0.1)] rounded-xl overflow-hidden">
                                         <table className="erp-table text-xs text-left">
                                             <thead className="border-b border-[rgba(148,163,184,0.1)]">
                                                 <tr><th className="p-4">Sản phẩm</th><th className="p-4 text-center">SL</th><th className="p-4 text-right">Giá</th></tr>

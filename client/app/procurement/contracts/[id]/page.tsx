@@ -346,7 +346,7 @@ export default function ContractDetailPage() {
                         {!canSign && isPending && (
                             <div className="mt-4 flex items-start gap-2 p-3 bg-amber-500/5 border border-amber-500/15 rounded-xl">
                                 <AlertCircle size={14} className="text-black shrink-0 mt-0.5" />
-                                <p className="text-xs text-amber-200/70">
+                                <p className="text-xs text-amber-700">
                                     {isBuyer && contract.buyerSignedAt
                                         ? "Bạn đã ký. Đang chờ nhà cung cấp ký."
                                         : !isBuyer && contract.supplierSignedAt
@@ -366,7 +366,7 @@ export default function ContractDetailPage() {
                         {isTerminated && (
                             <div className="mt-4 flex items-start gap-2 p-3 bg-rose-500/5 border border-rose-500/15 rounded-xl">
                                 <Ban size={14} className="text-black shrink-0 mt-0.5" />
-                                <p className="text-xs text-rose-200/70">Hợp đồng đã chấm dứt.</p>
+                                <p className="text-xs text-rose-600">Hợp đồng đã chấm dứt.</p>
                             </div>
                         )}
                     </div>

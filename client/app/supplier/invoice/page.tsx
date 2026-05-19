@@ -140,7 +140,7 @@ export default function SupplierInvoice() {
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
                 {/* Main Form Form */}
                 <div className="xl:col-span-3 space-y-6">
-                    <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4 p-6">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex items-center gap-4 p-6">
                         <label className="text-xs font-black uppercase text-slate-900 whitespace-nowrap">Chọn PO Đã Giao</label>
                         <select 
                             className="w-full md:w-1/2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-slate-900 focus:outline-none focus:border-[#2563EB]/30"
@@ -156,21 +156,21 @@ export default function SupplierInvoice() {
                     {selectedPO ? (
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+                                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                                     <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2">Số HĐ Điện Tử VAT</label>
                                     <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30" placeholder="VD: 0001234" value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} />
                                 </div>
-                                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+                                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                                     <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2">Ký hiệu Mẫu số</label>
                                     <input type="text" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-slate-900 focus:outline-none focus:border-[#2563EB]/30" defaultValue="1C26TAA" />
                                 </div>
-                                <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+                                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
                                     <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2">Ngày xuất (Auto)</label>
                                     <input type="date" className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-3 font-bold text-slate-900 opacity-70 cursor-not-allowed" disabled defaultValue={new Date().toISOString().substring(0, 10)} />
                                 </div>
                             </div>
 
-                            <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
+                            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
                                 <div className="p-4 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex items-center justify-between">
                                     <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                                         <FileCheck size={14} /> Danh sách Đối soát HĐ (Items)
@@ -217,7 +217,7 @@ export default function SupplierInvoice() {
                             </div>
                         </>
                     ) : (
-                        <div className="bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] border-dashed py-32 text-center text-slate-900">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] border-dashed py-32 text-center text-slate-900">
                             <Search size={48} className="mx-auto mb-4 opacity-10" />
                             <p className="text-xs font-black uppercase tracking-widest">Chưa chọn chứng từ thanh toán</p>
                             <p className="text-[10px] mt-2 italic font-medium">Bạn chỉ được lập invoice khi có xác nhận nhập kho từ Buyer.</p>
@@ -227,7 +227,7 @@ export default function SupplierInvoice() {
 
                 {/* Right Column: Tổng kết thuế & Submit */}
                 <div className="space-y-6">
-                    <div className={`bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 transition-all ${selectedPO ? 'border-[#2563EB]/20' : 'opacity-50 grayscale pointer-events-none'}`}>
+                    <div className={`bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 transition-all ${selectedPO ? 'border-[#2563EB]/20' : 'opacity-50 grayscale pointer-events-none'}`}>
                         <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2 border-b border-[rgba(148,163,184,0.1)] pb-4">
                             <Calculator size={16}/> Tích Toán Giá Trị
                         </h3>

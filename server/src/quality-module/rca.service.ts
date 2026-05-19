@@ -6,20 +6,21 @@ export class RcaService {
   constructor(private prisma: PrismaService) {}
 
   async createRca(data: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return await this.prisma.rootCauseAnalysis.create({ data });
   }
 
   async getRcaBySupplier(supplierId: string) {
     return await this.prisma.rootCauseAnalysis.findMany({
       where: { supplierId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
   async updateRcaStatus(id: string, status: string) {
     return await this.prisma.rootCauseAnalysis.update({
       where: { id },
-      data: { status }
+      data: { status },
     });
   }
 }

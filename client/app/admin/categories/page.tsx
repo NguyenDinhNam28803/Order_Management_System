@@ -108,7 +108,7 @@ export default function CategoriesPage() {
             key: "name",
             render: (row) => (
                 <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#2563EB] shadow-sm">
+                    <div className="h-12 w-12 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#2563EB] shadow-sm">
                         <Layers size={22} />
                     </div>
                     <div>
@@ -206,7 +206,7 @@ export default function CategoriesPage() {
                 </button>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
                         <div className="flex flex-col">
@@ -214,7 +214,7 @@ export default function CategoriesPage() {
                             <div className="text-2xl font-black text-slate-900">{categories.length} <span className="text-xs text-slate-900 font-bold uppercase ml-1">Nhóm ngành</span></div>
                         </div>
                         <div className="h-10 w-px bg-[rgba(148,163,184,0.1)] hidden md:block" />
-                        <div className="flex items-center gap-2 bg-[#2563EB]/10 px-4 py-2 rounded-2xl border border-[#2563EB]/20">
+                        <div className="flex items-center gap-2 bg-[#2563EB]/10 px-4 py-2 rounded-xl border border-[#2563EB]/20">
                             <Globe size={14} className="text-[#2563EB]" />
                             <span className="text-[10px] font-black text-[#2563EB] uppercase tracking-tight">Cấu trúc đa chi nhánh</span>
                         </div>
@@ -227,7 +227,7 @@ export default function CategoriesPage() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Tìm kiếm mã hoặc tên danh mục..."
-                            className="w-full pl-12 pr-4 py-3.5 bg-[#F1F5F9] border-2 border-[rgba(148,163,184,0.1)] rounded-[20px] text-xs text-slate-900 font-bold focus:border-[#2563EB] focus:ring-0 outline-none transition-all placeholder:text-slate-900"
+                            className="w-full pl-12 pr-4 py-3.5 bg-[#F1F5F9] border-2 border-[rgba(148,163,184,0.1)] rounded-xl text-xs text-slate-900 font-bold focus:border-[#2563EB] focus:ring-0 outline-none transition-all placeholder:text-slate-900"
                         />
                     </div>
                 </div>
@@ -238,8 +238,8 @@ export default function CategoriesPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
-                        <div className="p-10">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-6">
                             <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 {editingCategory ? "Cập nhật Danh mục" : "Thêm Danh mục mới"}
                             </h2>
@@ -297,7 +297,7 @@ export default function CategoriesPage() {
                                     />
                                 </div>
 
-                                <div className="flex items-center justify-between p-4 bg-[#FFFFFF] rounded-2xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="flex items-center justify-between p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
                                     <div className="flex flex-col">
                                         <span className="text-[10px] font-black uppercase text-slate-900 tracking-widest">Kích hoạt Danh mục</span>
                                         <span className="text-[9px] text-slate-900 font-bold">Danh mục đang hoạt động sẽ xuất hiện khi tạo sản phẩm</span>
