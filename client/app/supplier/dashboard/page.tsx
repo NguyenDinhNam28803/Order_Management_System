@@ -186,86 +186,11 @@ export default function SupplierDashboard() {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const currentRFQs = useMemo(() => {
-    return rfqs.filter(r => r.status === activeTab);
-  }, [rfqs, activeTab]);
-
-  const handleStartQuoting = (rfq: RFQ) => {
-    setSelectedRfq(rfq);
-    // Initialize form data
-    const initialData: Record<string, { unitPrice: string, note: string }> = {};
-    rfq.items.forEach(item => {
-      initialData[item.id] = { unitPrice: "", note: "" };
-    });
-    setQuotationData(initialData);
-  };
-
-  const handlePriceChange = (itemId: string, value: string) => {
-    setQuotationData(prev => ({
-      ...prev,
-      [itemId]: { ...prev[itemId], unitPrice: value }
-    }));
-  };
-
-  const handleNoteChange = (itemId: string, value: string) => {
-    setQuotationData(prev => ({
-      ...prev,
-      [itemId]: { ...prev[itemId], note: value }
-    }));
-  };
-
-  // Calculate Total using useMemo
-  const totalValue = useMemo(() => {
-    if (!selectedRfq) return 0;
-    return selectedRfq.items.reduce((sum, item) => {
-      const price = parseFloat(quotationData[item.id]?.unitPrice || "0");
-      return sum + (price * item.quantity);
-    }, 0);
-  }, [selectedRfq, quotationData]);
-
-  const handleSubmitQuotation = () => {
-    if (!selectedRfq) return;
-
-    // Validation: unitPrice > 0
-    const isValid = selectedRfq.items.every(item => {
-      const price = parseFloat(quotationData[item.id]?.unitPrice || "0");
-      return price > 0;
-    });
-
-    if (!isValid) {
-      notify("Vui lòng nhập đơn giá hợp lệ (> 0) cho tất cả các mặt hàng.", "error");
-      return;
-    }
-
-    // Update local state (for mock RFQs)
-    const updatedRfqs = rfqs.map(r => {
-      if (r.rfqId === selectedRfq.rfqId) {
-        return {
-          ...r,
-          status: "Quoted" as const,
-          totalAmount: totalValue,
-          items: r.items.map(item => ({
-            ...item,
-            unitPrice: parseFloat(quotationData[item.id].unitPrice),
-            note: quotationData[item.id].note
-          }))
-        };
-      }
-      return r;
-    });
-
-    // Update Context (for real QuoteRequests)
-    if (selectedRfq.rfqId.startsWith("QR-")) {
-      const contextQR = contextQRs.find(q => q.qrNumber === selectedRfq.rfqId);
-      if (contextQR) {
-        updateQuoteRequest(contextQR.id, {
-          status: QuoteRequestStatus.QUOTED,
-          items: contextQR.items.map(it => ({
-            ...it,
-            unitPrice: parseFloat(quotationData[it.id]?.unitPrice || "0"),
-            supplierName: currentUser?.fullName || "Nhà cung cấp",
-            supplierId: currentUser?.orgId || ""
-          }))
+    const handleQuote = (rfqId: string) => {
+        createQuote(rfqId, {
+            totalPrice: 5000000,
+            leadTimeDays: 7,
+            currency: "VND"
         });
       }
     }

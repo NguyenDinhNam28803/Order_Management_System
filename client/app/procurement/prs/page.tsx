@@ -1,9 +1,8 @@
 ﻿"use client";
 
 import { useState, useMemo } from "react";
-import { useProcurement, PR, PRItem } from "../../context/ProcurementContext";
-import { ERPTableColumn } from "../../components/shared/ERPTable";
-import { formatVND } from "../../utils/formatUtils";
+import { useProcurement, PR } from "../../context/ProcurementContext";
+import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable from "../../components/shared/ERPTable";
 import { 
     Search, ListFilter, ArrowRight, 
@@ -14,7 +13,7 @@ import {
     UserPlus, Settings} from "lucide-react";
 import Link from "next/link";
 
-// Local interfaces removed in favor of global definitions in ProcurementContext.
+
 export default function ProcurementControlPage() {
     const { prs, currentUser, apiFetch, refreshData, notify, organizations } = useProcurement();
     const [searchTerm, setSearchTerm] = useState("");

@@ -95,35 +95,7 @@ export default function SupplierInvoice() {
             alert("Vui lòng nhập Số HĐ");
             return;
         }
-        
-        // Build invoice items from current PO items with grnItemId for 3-way matching
-        const items = currentPO.items.map(item => {
-            // Find corresponding GRN item by poItemId
-            const grnItem = currentGRN?.items?.find((g: {poItemId?: string}) => g.poItemId === item.id);
-            return {
-                poItemId: item.id,
-                grnItemId: grnItem?.id,
-                description: item.description,
-                qty: Number(invoiceItems[item.id]) || 0,
-                unitPrice: Number(item.unitPrice ?? item.total) || 0
-            };
-        }).filter(item => item.qty > 0);
-        
-        const payload = {
-            poId: currentPO.id,
-            grnId: currentGRN?.id || deliverablePOs.find(p => p.id === currentPO.id)?.grn || '',
-            invoiceNumber: invoiceNo,
-            supplierId: currentUser?.orgId || '',
-            orgId: currentPO.orgId || '',
-            subtotal: subTotal,
-            taxRate: vat,
-            totalAmount: totalAmount,
-            currency: 'VND',
-            invoiceDate: new Date().toISOString().split('T')[0],
-            items: items
-        };
-        
-        createInvoice(payload);
+        createInvoice({ poId: currentPO.id, vendor: currentPO.vendor, amount: totalAmount });
         alert(`Đã xuất Hóa đơn ${invoiceNo} (Invoice) cho ${currentPO.id} thành công!`);
         router.push("/supplier/dashboard");
     }

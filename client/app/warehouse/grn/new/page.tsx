@@ -88,22 +88,18 @@ export default function CreateGRN() {
 
     const handleConfirm = async () => {
         if (!activePO) return;
-        try {
-            const items = activePO.items.map((item) => ({
-                poItemId: item.id,
-                receivedQty: Number(recvData[item.id].actual) || 0
-            }));
-            const grnSuccess = await createGRN({ poId: activePO.id, items });
-            if (grnSuccess) {
-                alert("GRN & Kết quả QC đã được ghi nhận thành công. Dữ liệu đã được đẩy sang bộ phận Kế toán để đối soát 3 bên.");
-                setActivePO(null);
-                setPoLookup("");
-                router.push("/warehouse/dashboard");
-            }
-        } catch {
-            alert("Có lỗi xảy ra khi tạo GRN. Vui lòng kiểm tra lại kết nối.");
-        }
-    };
+        
+        const receivedItems: Record<string, number> = {};
+        activePO.items.forEach((item: any) => {
+           receivedItems[item.id] = Number(recvData[item.id].actual) || 0;
+        });
+
+        createGRN({ poId: activePO.id, receivedItems });
+        alert("GRN Đã được ghi nhận. Hệ thống tự động đẩy dữ liệu sang TồnKho & Chuyển sang 3-Way Matching cho kế toán (Finance).");
+        setActivePO(null);
+        setPoLookup("");
+        router.push("/warehouse/dashboard");
+    }
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">

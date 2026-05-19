@@ -277,8 +277,8 @@ export default function CreateRFQPage() {
         try {
             // Updated to match backend CreateRfqDto
             const payload = {
-                prId: prId as string,
-                title: "RFQ cho " + (targetPR?.title || 'yêu cầu mua hàng') + "",
+                prId: prId,
+                title: targetPR ? `RFQ for ${targetPR.prNumber || targetPR.id}` : `RFQ for ${prId}`,
                 description: note,
                 deadline: new Date(deadline).toISOString(),
                 supplierIds: selectedVendors.map(v => v.id),

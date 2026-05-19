@@ -59,26 +59,11 @@ export default function SupplierRFQ() {
             total += val * (item.qty || 0);
         });
 
-        const payload: CreateQuoteDto = {
-            rfqId: activeRFQ.id,
-            supplierId: currentUser?.orgId || "",
-            leadTimeDays: Number(leadTime) || 0,
+        createQuote(activeRFQ.id, {
             totalPrice: total,
-            items: activeRFQ.items ? activeRFQ.items.map((item: PRItem) => ({
-                rfqItemId: item.id || "",
-                unitPrice: pricesObj[item.id || ""] || 0,
-                qtyOffered: Number(item.qty) || 0,
-            })) : [],
-        };
-
-        const newQuote = await createQuote(payload);
-        
-        if (newQuote && newQuote.id) {
-            await submitQuotation(newQuote.id);
-            notify(`Báo giá đã được gửi thành công!`, "success");
-        } else {
-            notify("Có lỗi khi gửi báo giá", "error");
-        }
+            leadTimeDays: Number(leadTime) || 7,
+            currency: "VND"
+        });
         
         setViewState("LIST");
     };
@@ -339,127 +324,51 @@ export default function SupplierRFQ() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="erp-table text-xs whitespace-nowrap">
-                        <thead>
-                            <tr className="text-[#4A4A45] italic">
-                                <th className="px-6 py-6 w-[140px]">ID Giao dịch</th>
-                                <th className="w-[180px]">Khách hàng</th>
-                                <th className="w-[280px] max-w-[280px]">Thông tin hạng mục</th>
-                                <th className="w-[110px]">Thời gian nộp</th>
-                                <th className="text-center w-[100px]">Countdown</th>
-                                <th className="text-right px-6 w-[140px]">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
-                            {myRfqs.map((r: RFQ) => {
-                                const prDetail = prs.find((p) => p.id === r.prId);
-                                const customerName = prDetail ? (typeof prDetail.department === 'string' ? prDetail.department : prDetail.department?.name) || "ProcurePro Network" : "ProcurePro Network";
-                                
-                                return (
-                                    <tr 
-                                        key={r.id} 
-                                        className="hover:bg-slate-100 border-b border-[rgba(148,163,184,0.05)] cursor-pointer group transition-all" 
-                                        onClick={() => { setSelectedRfqId(r.id); setViewState("DETAIL"); }}
-                                    >
-                                        <td className="px-6 py-8">
-                                            <div className="font-black text-[#0F172A] text-sm uppercase tracking-tighter group-hover:text-[#2563EB] transition-colors">{r.rfqNumber || "RFQ-***"}</div>
-                                        </td>
-                                        <td className="py-8">
-                                            <div className="flex items-center gap-3">
-                                                 <div className="h-10 w-10 bg-[#2563EB]/10 text-[#2563EB] rounded-xl flex items-center justify-center border border-[#2563EB]/20 font-black group-hover:bg-[#2563EB] group-hover:text-black transition-all">
-                                                      {customerName.substring(0, 1)}
-                                                 </div>
-                                                 <div className="font-black text-[#0F172A] tracking-tight group-hover:text-[#F8FAFC] transition-colors">{customerName}</div>
-                                            </div>
-                                        </td>
-                                        <td className="py-8 max-w-[280px]">
-                                            <div className="flex flex-wrap gap-1.5">
-                                                {(r.items && r.items.length > 0) ? (
-                                                    <>
-                                                        <span className="bg-[#FFFFFF] text-[#0F172A] text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] group-hover:bg-white/10 group-hover:text-white group-hover:border-white/20 transition-all truncate max-w-[200px]">
-                                                            {r.items[0].description || r.items[0].productName || 'Item'} x{r.items[0].qty || 1}
-                                                        </span>
-                                                        {r.items.length > 1 && (
-                                                            <span className="bg-[#2563EB]/10 text-[#2563EB] text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border border-[#2563EB]/20 group-hover:bg-[#2563EB] group-hover:text-black transition-all">
-                                                                +{r.items.length - 1}
-                                                            </span>
-                                                        )}
-                                                    </>
-                                                ) : prDetail?.items && prDetail.items.length > 0 ? (
-                                                    <>
-                                                        <span className="bg-[#FFFFFF] text-[#0F172A] text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border border-[rgba(148,163,184,0.1)] group-hover:bg-white/10 group-hover:text-white group-hover:border-white/20 transition-all truncate max-w-[200px]">
-                                                            {prDetail.items[0].productName || prDetail.items[0].description} x{prDetail.items[0].qty}
-                                                        </span>
-                                                        {prDetail.items.length > 1 && (
-                                                            <span className="bg-[#2563EB]/10 text-[#2563EB] text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border border-[#2563EB]/20 group-hover:bg-[#2563EB] group-hover:text-black transition-all">
-                                                                +{prDetail.items.length - 1}
-                                                            </span>
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    <span className="italic text-[#4A4A45] font-bold uppercase text-[9px] tracking-widest group-hover:text-[#F8FAFC]/50 transition-colors">Không có dữ liệu</span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="py-8">
-                                            <div className="text-[#0F172A] font-bold text-[11px] mb-1 group-hover:text-[#F8FAFC] transition-colors">{r.deadline ? new Date(r.deadline).toLocaleDateString('vi-VN') : '-'}</div>
-                                            <div className="text-[9px] font-black text-[#4A4A45] uppercase tracking-widest group-hover:text-[#F8FAFC]/60 transition-colors">{r.deadline ? new Date(r.deadline).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'}) : ''}</div>
-                                        </td>
-                                        <td className="text-center py-8">
-                                            {(() => {
-                                                if (!r.deadline) return (
-                                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#0F172A]/10 text-[#0F172A] border border-[#0F172A]/20 rounded-xl font-black uppercase text-[10px] tracking-widest">
-                                                        Không xác định
-                                                    </div>
-                                                );
-                                                const deadline = new Date(r.deadline).getTime();
-                                                const now = Date.now();
-                                                const diff = deadline - now;
-                                                if (diff <= 0) {
-                                                    return (
-                                                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-500/10 text-black border border-rose-500/20 rounded-xl font-black uppercase text-[10px] tracking-widest">
-                                                            <div className="h-1.5 w-1.5 rounded-full bg-rose-500"></div>
-                                                            HẾT HẠN
-                                                        </div>
-                                                    );
-                                                }
-                                                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                                                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                                                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                                                const timeStr = days > 0 ? `${days}D ${hours}H` : `${hours}H ${mins}M`;
-                                                const isUrgent = days === 0 && hours < 12;
-                                                return (
-                                                    <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl font-black uppercase text-[10px] tracking-widest group-hover:scale-105 transition-all duration-500 ${isUrgent ? 'bg-rose-500/10 text-black border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-black' : 'bg-emerald-500/10 text-black border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-black'}`}>
-                                                        <div className={`h-1.5 w-1.5 rounded-full animate-pulse ${isUrgent ? 'bg-rose-500 group-hover:bg-black' : 'bg-emerald-500 group-hover:bg-black'}`}></div>
-                                                        {timeStr}
-                                                    </div>
-                                                );
-                                            })()}
-                                        </td>
-                                        <td className="text-right px-6 py-8">
-                                            <button className="h-10 px-4 bg-[#2563EB] text-[#0F172A] rounded-xl font-black text-[9px] uppercase tracking-[0.15em] shadow-lg shadow-[#2563EB]/10 hover:bg-[#1D4ED8] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 ml-auto group/btn">
-                                                CHI TIẾT <ChevronDown size={12} className="-rotate-90 group-hover/btn:translate-x-1 transition-transform" />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                            {myRfqs.length === 0 && (
-                                <tr>
-                                    <td colSpan={6} className="text-center py-32">
-                                         <div className="flex flex-col items-center gap-4">
-                                             <div className="w-20 h-20 bg-[#F1F5F9] rounded-full flex items-center justify-center">
-                                                 <Inbox size={32} className="text-[#0F172A]" />
-                                             </div>
-                                             <div className="text-[#0F172A] font-black uppercase tracking-[0.2em] text-sm">
-                                                 KHÔNG CÓ RFQ NÀO
-                                             </div>
-                                             <p className="text-[#4A4A45] text-xs max-w-md font-bold">
-                                                 Bạn chưa được mời tham gia báo giá nào. Hệ thống sẽ tự động thông báo khi có RFQ phù hợp.
-                                             </p>
-                                         </div>
+            <div className="erp-card !p-0 overflow-hidden shadow-sm border border-slate-200">
+                <table className="erp-table text-xs m-0">
+                    <thead className="bg-slate-50">
+                        <tr>
+                            <th>Số RFQ</th>
+                            <th>Khách hàng</th>
+                            <th>Hạng mục tóm tắt</th>
+                            <th>Hạn nộp</th>
+                            <th className="text-center">Countdown</th>
+                            <th className="text-right">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {openRfqs.map((r: any) => {
+                            const prDetail = prs.find((p: any) => p.id === r.prId);
+                            const customerName = prDetail ? (typeof prDetail.department === 'string' ? prDetail.department : prDetail.department?.name) : "ProcurePro Network";
+                            
+                            return (
+                                <tr key={r.id} className="hover:bg-slate-50 border-b border-slate-100 cursor-pointer group" onClick={() => { setSelectedRfqId(r.id); setViewState("DETAIL"); }}>
+                                    <td className="font-black text-erp-navy px-6 py-6 uppercase tracking-tight">{r.id}</td>
+                                    <td className="font-bold text-slate-700">{customerName}</td>
+                                    <td className="text-slate-500 font-medium">
+                                        <div className="flex flex-wrap gap-1">
+                                            {prDetail?.items && prDetail.items.length > 0 ? (
+                                                prDetail.items.slice(0, 3).map((item: any, i: number) => (
+                                                    <span key={i} className="bg-slate-100 text-[10px] px-2 py-0.5 rounded border border-slate-200">
+                                                        {item.item_name || item.description} x{item.quantity || item.qty}
+                                                    </span>
+                                                ))
+                                            ) : (
+                                                <span className="italic text-slate-300">Không có hạng mục</span>
+                                            )}
+                                            {prDetail?.items && prDetail.items.length > 3 && (
+                                                <span className="text-[9px] text-slate-400 pt-1">+{prDetail.items.length - 3} khác</span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="font-mono text-slate-400 text-[10px]">{new Date(r.createdAt || 0).toLocaleString()}</td>
+                                    <td className="text-center">
+                                        <span className="bg-red-50 text-red-600 border border-red-100 font-black uppercase text-[9px] px-2 py-1 rounded-lg tracking-widest animate-pulse">20h 15m</span>
+                                    </td>
+                                    <td className="text-right px-6">
+                                        <button className="text-[10px] font-black uppercase tracking-widest text-erp-blue flex items-center gap-1 ml-auto group-hover:gap-2 transition-all">
+                                            Xem chi tiết & Báo giá <ChevronDown size={14} className="-rotate-90"/>
+                                        </button>
                                     </td>
                                 </tr>
                             )}

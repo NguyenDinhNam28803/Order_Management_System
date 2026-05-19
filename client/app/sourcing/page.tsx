@@ -47,9 +47,11 @@ export default function SourcingPage() {
                 supplierIds: targetSupplier ? [targetSupplier.id] : [],
                 deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
             });
-            if (success) {
-                notify("Đã khởi tạo RFQ thành công", "success");
-                await refreshData();
+            if (res.ok) {
+                // Call context-level local createRFQ for local storage/demo state
+                await createRFQ(prId, "Thiên Long Digital");
+                notify("Đã khởi tạo RFQ thành công cho đơn " + prId, "success");
+                refreshData();
             }
         } catch (err) {
             notify("Lỗi khi khởi tạo RFQ", "error");
