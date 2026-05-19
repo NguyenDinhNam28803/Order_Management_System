@@ -357,13 +357,13 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                         <span className="text-[10px] font-black uppercase tracking-widest">Chi tiết thông tin</span>
                                     </div>
                                     <div className="space-y-3">
-                                        {(aiResponse.data.answer.data as Array<Record<string, any>>).map((item, idx) => (
+                                        {(aiResponse.data.answer.data as Array<{ status?: string; details?: Record<string, unknown>; [key: string]: unknown }>).map((item, idx) => (
                                             <div key={idx} className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
                                                 {/* Header with status if available */}
-                                                {!!(item.status || (item.details as any)?.["Đánh giá nhà cung cấp"]) && (
+                                                {!!(item.status || item.details?.["Đánh giá nhà cung cấp"]) && (
                                                     <div className="px-4 py-3 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
                                                         <span className="text-xs font-bold text-slate-900">
-                                                            {(item.details as any)?.["Đánh giá nhà cung cấp"] || `Kết quả ${idx + 1}`}
+                                                            {String(item.details?.["Đánh giá nhà cung cấp"] ?? `Kết quả ${idx + 1}`)}
                                                         </span>
                                                         {!!item.status && (
                                                             <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${
@@ -371,27 +371,27 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                                                 item.status === 'APPROVED' ? 'bg-[#2563EB]/20 text-[#2563EB]' :
                                                                 'bg-amber-500/20 text-black'
                                                             }`}>
-                                                                {item.status as string}
+                                                                {item.status}
                                                             </span>
                                                         )}
                                                     </div>
                                                 )}
                                                 {/* Render details object */}
-                                                {item.details && Object.keys(item.details as any).length > 0 && (
+                                                {item.details && Object.keys(item.details).length > 0 && (
                                                     <div className="p-4">
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                            {Object.entries(item.details as Record<string, unknown>)
+                                                            {Object.entries(item.details)
                                                                 .filter(([key]) => key !== 'id' && !key.toLowerCase().includes('id') && !key.toLowerCase().includes('org') && !key.toLowerCase().includes('company'))
                                                                 .map(([key, value]: [string, unknown]) => {
                                                                     // Skip empty/null values
                                                                     if (value === null || value === undefined || value === '') return null;
-                                                                    
+
                                                                     // Format numeric values
                                                                     const isNumeric = typeof value === 'number';
-                                                                    const displayValue = isNumeric && value > 1000 
-                                                                        ? value.toLocaleString('vi-VN') 
+                                                                    const displayValue = isNumeric && value > 1000
+                                                                        ? value.toLocaleString('vi-VN')
                                                                         : String(value);
-                                                                    
+
                                                                     return (
                                                                         <div key={key} className="flex flex-col gap-1">
                                                                             <span className="text-[10px] font-bold text-slate-900 uppercase tracking-wider">
@@ -404,7 +404,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                                                                     : 'text-slate-900'
                                                                             }`}>
                                                                                 {displayValue}
-                                                                                {key.includes('Điểm') || key.includes('score') ? '/100' : 
+                                                                                {key.includes('Điểm') || key.includes('score') ? '/100' :
                                                                                  key.includes('tỉ lệ') || key.includes('rate') ? '%' : ''}
                                                                             </span>
                                                                         </div>
@@ -414,10 +414,10 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                                     </div>
                                                 )}
                                                 {/* Notes/Ghi chú as footer */}
-                                                {!!(item.details as any)?.["Ghi chú"] && (
+                                                {!!item.details?.["Ghi chú"] && (
                                                     <div className="px-4 py-3 bg-[#FFFFFF]/50 border-t border-[rgba(148,163,184,0.1)]">
                                                         <p className="text-xs text-slate-900 italic">
-                                                            {(item.details as any)["Ghi chú"]}
+                                                            {String(item.details["Ghi chú"])}
                                                         </p>
                                                     </div>
                                                 )}

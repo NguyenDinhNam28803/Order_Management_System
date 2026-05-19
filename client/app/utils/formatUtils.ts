@@ -10,7 +10,7 @@ export const convertPrismaDecimal = (val: unknown): number => {
     // Hoặc có thể là string representation
     if (typeof val === 'object' && val !== null) {
         // Thử lấy giá trị từ các thuộc tính quen thuộc
-        const v = val as any;
+        const v = val as Record<string, unknown>;
         
         // Nếu có toString method (Prisma Decimal có)
         if (typeof v.toString === 'function') {
@@ -37,9 +37,9 @@ export const convertPrismaDecimal = (val: unknown): number => {
             
             // Nối các digits lại thành chuỗi
             const digitStr = digits.join('');
-            const exponent = v.e || 0;
-            const sign = v.s === -1 ? -1 : 1;
-            
+            const exponent = Number(v.e) || 0;
+            const sign = Number(v.s) === -1 ? -1 : 1;
+
             // Tính giá trị: digits * 10^(exponent - digits.length + 1)
             const value = sign * parseFloat(digitStr) * Math.pow(10, exponent - digitStr.length + 1);
             return isNaN(value) ? 0 : value;

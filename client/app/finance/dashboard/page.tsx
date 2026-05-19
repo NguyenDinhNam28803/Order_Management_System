@@ -132,13 +132,13 @@ export default function FinanceDashboard() {
                     <div className="flex items-center gap-4">
                         <div className="bg-[#FFFFFF] p-1 rounded-xl flex gap-1 border border-[rgba(148,163,184,0.1)]">
                             <button 
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:text-slate-900'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
                                 onClick={() => setActiveTab("ALL")}
                             >
                                 Tất cả
                             </button>
                             <button 
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-slate-600 hover:text-slate-900'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-white hover:text-white'}`}
                                 onClick={() => setActiveTab("EXCEPTION")}
                             >
                                 Exception <span className="bg-rose-500/20 text-black px-1.5 py-0.5 rounded-md text-[9px] border border-rose-500/20">{activeInvoices.filter((i) => i.status === 'EXCEPTION').length}</span>
@@ -225,7 +225,7 @@ export default function FinanceDashboard() {
                     <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Showing {displayedInvoices.length} of {activeInvoices.length} invoices in queue</p>
                     <div className="flex gap-1">
                          {[1, 2, 3].map(i => (
-                             <button key={i} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === 1 ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm' : 'border-slate-200 bg-white text-slate-600 hover:text-slate-900'}`}>{i}</button>
+                             <button key={i} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === 1 ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm' : 'border-transparent text-white hover:text-white'}`}>{i}</button>
                          ))}
                     </div>
                 </div>
@@ -234,8 +234,17 @@ export default function FinanceDashboard() {
     )
 }
 
-function MetricCard({ icon, label, value, unit, color, onClick, subValue }: any) {
-    const colorStyles: any = {
+interface MetricCardProps {
+    icon: React.ReactNode;
+    label: string;
+    value: React.ReactNode;
+    unit?: string;
+    color: 'indigo' | 'rose' | 'amber' | 'emerald';
+    onClick?: () => void;
+    subValue?: React.ReactNode;
+}
+function MetricCard({ icon, label, value, unit, color, onClick, subValue }: MetricCardProps) {
+    const colorStyles: Record<string, string> = {
         indigo: "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20",
         rose: "bg-rose-500/10 text-black border-rose-500/20",
         amber: "bg-amber-500/10 text-black border-amber-500/20",

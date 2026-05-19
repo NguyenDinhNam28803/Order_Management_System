@@ -72,17 +72,52 @@ export class RfqRepository {
     });
   }
 
-  async findAll(orgId: string) {
-    return this.prisma.rfqRequest.findMany({
-      where: { orgId },
-      include: {
-        pr: true,
-        createdBy: true,
-        suppliers: true,
-        organization: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(
+    orgId: string,
+    { page, limit }: { page: number; limit: number } = { page: 1, limit: 20 },
+  ) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.rfqRequest.findMany({
+        where: { orgId },
+        include: {
+          pr: true,
+          createdBy: true,
+          suppliers: true,
+          organization: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.rfqRequest.count({ where: { orgId } }),
+    ]);
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
+  async findPaginated(orgId: string, skip: number, take: number) {
+    const [data, total] = await Promise.all([
+      this.prisma.rfqRequest.findMany({
+        where: { orgId },
+        include: {
+          pr: true,
+          createdBy: true,
+          suppliers: true,
+          organization: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+      }),
+      this.prisma.rfqRequest.count({ where: { orgId } }),
+    ]);
+    return {
+      data,
+      total,
+      page: Math.floor(skip / take) + 1,
+      limit: take,
+      totalPages: Math.ceil(total / take),
+    };
   }
 
   async findOne(id: string) {

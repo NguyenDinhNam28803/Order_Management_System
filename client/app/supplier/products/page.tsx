@@ -303,7 +303,7 @@ export default function SupplierProductsPage() {
                             </div>
                             <button 
                                 onClick={() => setIsModalOpen(false)}
-                                className="h-12 w-12 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 flex items-center justify-center transition-all shadow-sm group"
+                                className="h-12 w-12 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 flex items-center justify-center transition-all shadow-sm group"
                             >
                                 <Plus size={24} className="rotate-45 text-slate-900 group-hover:text-black transition-colors" />
                             </button>

@@ -17,7 +17,7 @@ export default function ApprovalHistoryPage() {
                 </div>
                 
                 <div className="flex gap-4 mt-6 lg:mt-0">
-                    <div className="flex bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] p-1 shadow-sm">
+                    <div className="flex bg-[#F1F5F9] rounded-2xl border border-[rgba(148,163,184,0.1)] p-1 shadow-sm">
                         <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white bg-[#2563EB] rounded-xl transition-all shadow-sm">Hôm nay</button>
                         <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-900 hover:text-slate-900 transition-all">Tuần này</button>
                         <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-900 hover:text-slate-900 transition-all">Tháng này</button>

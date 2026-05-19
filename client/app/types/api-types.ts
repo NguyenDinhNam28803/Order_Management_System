@@ -230,8 +230,10 @@ export interface PRItem {
     id: string;
     productName: string;
     qty: number;
+    quantity?: number;
     unit: string;
-    estimatedPrice: number; 
+    estimatedPrice: number;
+    totalPrice?: number;
     description?: string;
     lineItem?: number;
     productDesc?: string;
@@ -709,8 +711,8 @@ export interface AuditLog {
     action: string;
     entityType: string;
     entityId: string;
-    oldValue?: unknown;
-    newValue?: unknown;
+    oldValue?: Record<string, unknown>;
+    newValue?: Record<string, unknown>;
     ipAddress?: string;
     userAgent?: string;
     createdAt: string;

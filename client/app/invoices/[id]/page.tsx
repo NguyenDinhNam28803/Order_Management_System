@@ -98,16 +98,15 @@ export default function InvoiceDetailPage() {
       return;
     }
     setCreatingContract(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const payload: any = {
+    const payload: Partial<Contract> = {
       title: contractForm.title.trim(),
       supplierId: invoice.supplier.id,
       contractType: contractForm.contractType || undefined,
-      value: contractForm.value ? Number(contractForm.value) : undefined,
+      totalValue: contractForm.value ? Number(contractForm.value) : undefined,
       startDate: contractForm.startDate || undefined,
       endDate: contractForm.endDate || undefined,
     };
-    const ok = await createContract(payload as Partial<Contract>);
+    const ok = await createContract(payload);
     setCreatingContract(false);
     if (ok) {
       setShowContractModal(false);

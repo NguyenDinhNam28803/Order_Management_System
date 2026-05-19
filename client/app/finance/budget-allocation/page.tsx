@@ -117,7 +117,7 @@ export default function BudgetAllocationPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                   selectedQuarter === q 
                     ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20" 
-                    : "text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                    : "text-white hover:bg-slate-100"
                 }`}
               >
                 Quý {q}
@@ -351,7 +351,7 @@ export default function BudgetAllocationPage() {
               <div className="space-y-4">
                 <p className="text-sm font-bold text-slate-900 mb-4 px-2 italic">⚠️ Chọn Trung tâm chi phí (Cost Center) để thực hiện tính toán và phân bổ tự động cho cả năm {selectedYear}:</p>
                 {costCenters.map(cc => (
-                  <div key={cc.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] hover:bg-slate-100 border border-[rgba(148,163,184,0.1)] rounded-xl transition-all group">
+                  <div key={cc.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] hover:bg-slate-100 border border-[rgba(148,163,184,0.1)] rounded-3xl transition-all group">
                     <div>
                       <p className="font-black text-slate-900 group-hover:text-white transition-colors">{cc.name}</p>
                       <div className="flex items-center gap-3 mt-1">
@@ -363,7 +363,7 @@ export default function BudgetAllocationPage() {
                     <button 
                       disabled={loading}
                       onClick={() => handleDistribute(cc.id)}
-                      className="px-6 py-2.5 bg-[#F1F5F9] border-2 border-[rgba(148,163,184,0.1)] hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-white rounded-xl font-black text-sm transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-slate-900"
+                      className="px-6 py-2.5 bg-[#F1F5F9] border-2 border-[rgba(148,163,184,0.1)] hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-white rounded-2xl font-black text-sm transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-slate-900"
                     >
                       {loading ? <Loader2 size={18} className="animate-spin" /> : "PHÂN BỔ NGAY"}
                     </button>

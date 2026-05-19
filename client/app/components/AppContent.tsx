@@ -32,6 +32,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
     // Close sidebar on route change (mobile UX)
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSidebarOpen(false);
     }, [pathname]);
 

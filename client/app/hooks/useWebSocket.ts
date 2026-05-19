@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
 
 interface WebSocketMessage {
     type: string;
@@ -44,10 +44,6 @@ export function useWebSocket({
     const onConnectRef    = useRef(onConnect);
     const onDisconnectRef = useRef(onDisconnect);
     const onErrorRef      = useRef(onError);
-    onMessageRef.current    = onMessage;
-    onConnectRef.current    = onConnect;
-    onDisconnectRef.current = onDisconnect;
-    onErrorRef.current      = onError;
 
     const connect = useCallback(() => {
         if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -99,8 +95,14 @@ export function useWebSocket({
         }
     }, [url, reconnectInterval, maxReconnectAttempts]); // stable primitives only
 
-    // Update ref to point to current connect function
-    connectRef.current = connect;
+    // Sync all callback refs after render to avoid stale closures
+    useLayoutEffect(() => {
+        onMessageRef.current    = onMessage;
+        onConnectRef.current    = onConnect;
+        onDisconnectRef.current = onDisconnect;
+        onErrorRef.current      = onError;
+        connectRef.current      = connect;
+    });
 
     const disconnect = useCallback(() => {
         isManualClose.current = true;
@@ -127,6 +129,7 @@ export function useWebSocket({
 
     useEffect(() => {
         if (autoConnect) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             connect();
         }
 

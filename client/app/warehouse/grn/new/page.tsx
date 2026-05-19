@@ -18,6 +18,7 @@ interface PO {
     vendor?: string;
     supplier?: { name?: string };
     items: POItem[];
+    status?: string;
     createdAt?: string;
 }
 
@@ -45,7 +46,7 @@ export default function CreateGRN() {
     const [qcData, setQcData] = useState<Record<string, QcDataItem>>({});
 
     const shippedPos = useMemo(
-        () => (allPos as PO[]).filter((p: any) => p.status === "SHIPPED"),
+        () => (allPos as PO[]).filter((p) => p.status === "SHIPPED"),
         [allPos]
     );
 

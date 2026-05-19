@@ -94,12 +94,12 @@ export default function SupplierDashboard() {
       try {
         const rfqs = await fetchMySupplierRFQs();
         // Map API response to dashboard RFQ format
-        const mappedRfqs = rfqs.map((r: any) => ({
+        const mappedRfqs = rfqs.map((r) => ({
           rfqId: r.rfqNumber || r.id.substring(0, 8),
           projectName: r.title || `Yêu cầu báo giá #${r.rfqNumber || r.id.substring(0, 8)}`,
           status: r.status === "SENT" ? "Pending" : (r.status === "QUOTATION_RECEIVED" ? "Quoted" : "Pending"),
           createdAt: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : "Vừa xong",
-          items: r.items?.map((item: any) => ({
+          items: r.items?.map((item) => ({
             id: item.id || "ITM-" + Math.random().toString(36).substring(7),
             name: item.productName || item.productDesc || "Sản phẩm",
             quantity: item.qty || 1
@@ -309,14 +309,14 @@ export default function SupplierDashboard() {
       <nav className="flex flex-col gap-2">
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Pending"); }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Pending" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:bg-slate-100 hover:text-white'}`}
         >
           <LayoutDashboard size={20} />
           <span>Dashboard</span>
         </button>
         <button 
           onClick={() => { setSelectedRfq(null); setActiveTab("Quoted"); }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!selectedRfq && activeTab === "Quoted" ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:bg-slate-100 hover:text-white'}`}
         >
           <History size={20} />
           <span>Lịch sử báo giá</span>
@@ -351,19 +351,19 @@ export default function SupplierDashboard() {
           <div className="flex bg-[#F1F5F9] p-1.5 rounded-xl border border-[rgba(148,163,184,0.1)]">
           <button 
             onClick={() => setActiveTab("Pending")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:text-slate-900'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
           >
             Chưa xử lý
           </button>
           <button 
             onClick={() => setActiveTab("CatalogConfirmation")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:text-slate-900'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'CatalogConfirmation' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
           >
             Xác nhận giá Catalog
           </button>
           <button 
             onClick={() => setActiveTab("Quoted")}
-            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:text-slate-900'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Quoted' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
           >
             Đã báo giá
           </button>

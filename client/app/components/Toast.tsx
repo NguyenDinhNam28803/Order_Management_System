@@ -99,8 +99,8 @@ const ToastItem = ({ notification, onRemove }: { notification: Notification; onR
             <div className="toast-icon">{getIcon()}</div>
 
             <div className="toast-content">
-                {(notification as any).title && (
-                    <p className="toast-title">{(notification as any).title}</p>
+                {notification.title && (
+                    <p className="toast-title">{notification.title}</p>
                 )}
                 <p className="toast-message">{notification.message}</p>
             </div>
@@ -127,7 +127,7 @@ const MAX_VISIBLE = 3;
 export const ToastContainer: React.FC = () => {
     const { notifications, removeNotification } = useToast();
 
-    let currentUser: any = null;
+    let currentUser: { role?: string } | null = null;
     try {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const proc = useProcurement();

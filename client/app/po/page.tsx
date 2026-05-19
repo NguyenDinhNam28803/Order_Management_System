@@ -74,7 +74,7 @@ export default function POPage() {
                             <h3 className="font-bold tracking-widest text-sm">PREVIEW: PURCHASE_ORDER_DRAFT.PDF</h3>
                         </div>
                         <div className="flex gap-2">
-                            <button className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white" title="Download"><DownloadCloud size={16}/></button>
+                            <button className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-900" title="Download"><DownloadCloud size={16}/></button>
                             <button onClick={() => setShowPreview(false)} className="p-2 bg-slate-700 hover:bg-red-500 rounded-lg text-white"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
                         </div>
                     </div>

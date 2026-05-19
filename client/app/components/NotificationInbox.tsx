@@ -13,6 +13,21 @@ import { getStatusLabel, formatVND } from "../utils/formatUtils";
 import { EmailEventType, EVENT_DISPLAY_CONFIG } from "../types/notification-types";
 import { useSocketIO, NotificationPayload as SocketNotification } from "../hooks/useSocketIO";
 
+interface MergedNotificationItem {
+  id: string;
+  eventType: EmailEventType | undefined;
+  type: string;
+  title: string;
+  content: string;
+  requester: string;
+  amount: string | null;
+  status: string;
+  deadline: string | undefined;
+  referenceId: string | null | undefined;
+  isNotification: boolean;
+  isStatusUpdate?: boolean;
+}
+
 // ── Utility to strip HTML tags ─────────────────────────────────────────────
 function stripHtml(html: string) {
   if (!html) return "";
@@ -88,8 +103,7 @@ function NotificationInbox() {
   const { currentUser, apiFetch, refreshData, prs, myPrs, approvals } = useProcurement();
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState<'PENDING' | 'ALL' | 'APPROVED'>('PENDING');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<SocketNotification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -218,7 +232,7 @@ function NotificationInbox() {
         className={`relative flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${
           isOpen
             ? "bg-[#2563EB] border-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
-            : "bg-[#FFFFFF] border-[#E2E8F0] text-slate-600 hover:text-slate-900 hover:border-slate-300"
+            : "bg-[#FFFFFF] border-[#E2E8F0] text-white hover:text-white hover:border-[rgba(240,246,252,0.18)]"
         }`}
       >
         <Bell size={14} className={unreadCount > 0 ? "animate-pulse" : ""} />
@@ -282,7 +296,7 @@ function NotificationInbox() {
                 <p className="text-[11px] text-slate-900 font-medium tracking-widest uppercase">Đang đồng bộ dữ liệu...</p>
               </div>
             ) : mergedItems.length > 0 ? (
-              mergedItems.map((item) => <NotificationItem key={item.id} item={item} />)
+              mergedItems.map((item) => <NotificationItem key={item.id} item={item as MergedNotificationItem} />)
             ) : (
               <div className="py-20 px-10 text-center">
                 <div className="w-16 h-16 bg-[#FFFFFF] rounded-xl flex items-center justify-center mx-auto mb-6 border border-[rgba(240,246,252,0.05)] shadow-xl">
@@ -368,7 +382,7 @@ const NotificationItem = ({ item }: { item: MergedNotificationItem }) => {
               {getTypeLabel()}
             </span>
             <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
-              {new Date(item.deadline).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+              {item.deadline ? new Date(item.deadline).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
             </span>
           </div>
 

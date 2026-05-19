@@ -38,7 +38,7 @@ export {
 };
 
 export interface Notification {
-    id: number; message: string; type: 'success' | 'error' | 'info' | 'warning'; role?: string;
+    id: number; message: string; type: 'success' | 'error' | 'info' | 'warning'; role?: string; title?: string;
 }
 
 // ── PO Consolidation ──────────────────────────────────────────────────────────
@@ -477,7 +477,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 total: convertPrismaDecimal(p.total ?? p.totalAmount),
                 totalAmount: convertPrismaDecimal(p.totalAmount ?? p.total),
                 vendor: p.vendor || p.supplierName || p.supplier?.name || p.supplierId || 'N/A',
-                items: p.items?.map((item: any) => ({
+                items: p.items?.map((item: Record<string, unknown>) => ({
                     ...item,
                     qty: convertPrismaDecimal(item.qty ?? item.quantity),
                     quantity: convertPrismaDecimal(item.quantity ?? item.qty),
@@ -689,22 +689,19 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             { q: 4, start: `${fiscalYear}-10-01`, end: `${fiscalYear}-12-31` },
         ];
         
-        let successCount = 0;
-        
-        for (const item of quarters) {
+        // Chạy song song 4 quý thay vì tuần tự
+        const quarterResults = await Promise.all(quarters.map(async (item) => {
             // 1. Kiểm tra xem period đã tồn tại chưa (tránh lỗi unique constraint)
             const existingPeriod = state.budgetPeriods.find(
-                p => p.fiscalYear === fiscalYear && 
-                     p.periodType === 'QUARTERLY' && 
+                p => p.fiscalYear === fiscalYear &&
+                     p.periodType === 'QUARTERLY' &&
                      p.periodNumber === item.q
             );
-            
+
             let period;
             if (existingPeriod) {
-                console.log(`Using existing period Q${item.q}: ${existingPeriod.id.slice(0,8)}...`);
                 period = existingPeriod;
             } else {
-                // Tạo Budget Period mới
                 const periodResp = await apiFetch('/budgets/periods', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -715,32 +712,25 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                         endDate: item.end,
                     }),
                 });
-                
+
                 if (!periodResp.ok) {
                     const errorText = await periodResp.text();
-                    console.log(`Failed to create period Q${item.q}:`, errorText);
-                    // Nếu lỗi do trùng lặp, thử refresh để lấy period mới nhất
                     if (errorText.includes('Unique constraint') || errorText.includes('P2002')) {
                         await refreshData();
-                        continue;
                     }
-                    continue;
+                    return false;
                 }
-                
+
                 const periodData = await periodResp.json();
                 period = periodData.data || periodData;
             }
-            
+
             // 2. Kiểm tra allocation đã tồn tại chưa
             const existingAlloc = state.budgetAllocations.find(
                 a => a.budgetPeriodId === period.id && a.costCenterId === costCenterId
             );
-            
-            if (existingAlloc) {
-                console.log(`Allocation already exists for Q${item.q}, skipping`);
-                continue;
-            }
-            
+            if (existingAlloc) return false;
+
             // 3. Tạo Budget Allocation cho quý
             const allocResp = await apiFetch('/budgets/allocations', {
                 method: 'POST',
@@ -756,13 +746,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                     notes: `Phân bổ 20/80 - Quý ${item.q}/${fiscalYear}: 20% của ${annualBudget.toLocaleString()} VND`,
                 }),
             });
-            
-            if (allocResp.ok) {
-                successCount++;
-            } else {
-                console.log(`Failed to create allocation Q${item.q}:`, await allocResp.text());
-            }
-        }
+
+            return allocResp.ok;
+        }));
+
+        const successCount = quarterResults.filter(Boolean).length;
         
         if (successCount > 0) {
             notify(`Phân bổ 20/80 thành công: ${successCount}/4 quý (${quarterlyAllocation.toLocaleString()} VND/quý)`, "success");
@@ -1287,7 +1275,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 ...q,
                 totalPrice: convertPrismaDecimal(q.totalPrice ?? q.total ?? q.amount),
                 leadTimeDays: q.leadTimeDays ?? q.leadTime ?? null,
-                items: Array.isArray(q.items) ? q.items.map((i: any) => ({
+                items: Array.isArray(q.items) ? q.items.map((i: Record<string, unknown>) => ({
                     ...i,
                     unitPrice: convertPrismaDecimal(i.unitPrice ?? i.price),
                     totalPrice: convertPrismaDecimal(i.totalPrice ?? i.total),

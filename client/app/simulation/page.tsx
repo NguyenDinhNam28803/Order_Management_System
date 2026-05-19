@@ -691,13 +691,13 @@ export default function SimulationPage() {
                 <div className="flex bg-[#F1F5F9] p-1 rounded-xl border border-[rgba(148,163,184,0.1)]">
                     <button 
                         onClick={() => { setActiveWorkflow("CATALOG"); handleReset(); }}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#2563EB] text-white shadow-lg" : "text-slate-600 hover:text-slate-900"}`}
+                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#2563EB] text-white shadow-lg" : "text-white hover:text-white"}`}
                     >
                         Workflow 1: Catalog
                     </button>
                     <button 
                         onClick={() => { setActiveWorkflow("NON_CATALOG"); handleReset(); }}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "NON_CATALOG" ? "bg-purple-600 text-white shadow-lg" : "text-slate-600 hover:text-slate-900"}`}
+                        className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "NON_CATALOG" ? "bg-purple-600 text-white shadow-lg" : "text-white hover:text-white"}`}
                     >
                         Workflow 2: Non-Catalog
                     </button>
