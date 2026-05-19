@@ -5,12 +5,23 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as pc from 'picocolors';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { randomUUID } from 'crypto';
+import type { Request, Response, NextFunction } from 'express';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { BigIntInterceptor } from './common/interceptors/bigint.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  // --- Request ID middleware — attach x-request-id to every request for tracing ---
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const requestId = (req.headers['x-request-id'] as string) || randomUUID();
+    req.headers['x-request-id'] = requestId;
+    res.setHeader('x-request-id', requestId);
+    next();
+  });
 
   // --- Global Security & Validation ---
   app.use(helmet());
@@ -23,7 +34,10 @@ async function bootstrap() {
   );
 
   // --- Global Interceptors & Filters ---
-  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalInterceptors(
+    new TransformInterceptor(),
+    new BigIntInterceptor(),
+  );
   app.useGlobalFilters(new AllExceptionsFilter());
 
   // --- Cấu hình Swagger chi tiết ---
@@ -90,11 +104,21 @@ async function bootstrap() {
     customSiteTitle: 'OMS API Documentation',
   });
 
-  // Enable CORS
+  // Enable CORS — origins loaded from ALLOWED_ORIGINS env var (comma-separated)
+  // Falls back to localhost:3000 for local dev when env var is not set.
+  const allowedOriginsEnv = configService.get<string>('ALLOWED_ORIGINS', '');
+  const allowedOrigins = allowedOriginsEnv
+    ? allowedOriginsEnv
+        .split(',')
+        .map((o) => o.trim())
+        .filter(Boolean)
+    : ['http://localhost:3000', 'https://localhost:3000'];
+
   app.enableCors({
-    origin: 'http://localhost:3000', // Đảm bảo khớp với URL của client
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true, // Quan trọng: Cho phép gửi/nhận cookie
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   });
 
   const port = configService.get<number>('PORT', 3000);

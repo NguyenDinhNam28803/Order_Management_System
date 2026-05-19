@@ -4,172 +4,314 @@ import React from "react";
 import {
     LayoutDashboard, ShoppingCart, CheckSquare, Truck,
     FileCheck, ShieldAlert, Users, Settings, LogOut,
-    FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign
+    FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers,
+    ShieldCheck, MessageSquare, History, FileText,
+    Bell, Command, Star, Zap, Brain, PlusCircle, GitMerge, Sparkles, UserCheck, X
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useProcurement } from "../context/ProcurementContext";
 
-const roleMapping: Record<string, { label: string, class: string }> = {
-    "REQUESTER": { label: "Người yêu cầu", class: "role-requester" },
-    "DEPT_APPROVER": { label: "Trưởng phòng", class: "role-approver" },
-    "DIRECTOR": { label: "Giám đốc", class: "role-approver" },
-    "CEO": { label: "CEO / Board", class: "role-admin" },
-    "PROCUREMENT": { label: "Thu mua", class: "role-procurement" },
-    "WAREHOUSE": { label: "Kho vận", class: "role-warehouse" },
-    "QA": { label: "Kiểm soát CL", class: "role-warehouse" },
-    "FINANCE": { label: "Tài chính", class: "role-finance" },
-    "PLATFORM_ADMIN": { label: "Quản trị viên", class: "role-admin" },
-    "SUPPLIER": { label: "Nhà cung cấp", class: "role-supplier" },
-    "SYSTEM": { label: "Hệ thống AI", class: "role-admin" },
+const roleMapping: Record<string, { label: string; class: string; dot: string }> = {
+    "REQUESTER": { label: "Người yêu cầu", class: "role-requester", dot: "#94A3B8" },
+    "DEPT_APPROVER": { label: "Trưởng phòng", class: "role-approver", dot: "#FBBF24" },
+    "DIRECTOR": { label: "Giám đốc", class: "role-director", dot: "#3B82F6" },
+    "CEO": { label: "CEO / Board", class: "role-ceo", dot: "#A78BFA" },
+    "PROCUREMENT": { label: "Thu mua", class: "role-procurement", dot: "#FBBF24" },
+    "WAREHOUSE": { label: "Kho vận", class: "role-warehouse", dot: "#F472B6" },
+    "QA": { label: "Kiểm soát CL", class: "role-warehouse", dot: "#F472B6" },
+    "FINANCE": { label: "Tài chính", class: "role-finance", dot: "#34D399" },
+    "PLATFORM_ADMIN": { label: "Quản trị viên", class: "role-admin", dot: "#FB7185" },
+    "SUPPLIER": { label: "Nhà cung cấp", class: "role-supplier", dot: "#FB923C" },
+    "SYSTEM": { label: "Hệ thống AI", class: "role-admin", dot: "#FB7185" },
 };
 
-const navigation = [
+interface NavItem {
+    name: string;
+    icon: React.ComponentType<{ size?: number; className?: string }>;
+    path: string;
+    roles: string[];
+}
+
+interface NavGroup {
+    group: string;
+    dot: string;
+    roles: string[];
+    items: NavItem[];
+}
+
+const navigation: NavGroup[] = [
     {
-        group: "Menu chính", 
-        roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "CEO", "FINANCE"],
+        group: "Menu chính",
+        dot: "#2563EB",
+        roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "CEO", "FINANCE"],
         items: [
-            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
-            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "WAREHOUSE", "FINANCE", "CEO", "QA"] },
+            { name: "Tạo PR mới", icon: PlusCircle, path: "/pr/create", roles: ["DIRECTOR", "CEO", "PLATFORM_ADMIN"] },
+            { name: "Yêu cầu mua hàng (PR)", icon: FolderTree, path: "/pr", roles: ["REQUESTER", "MANAGER", "DEPT_APPROVER", "DIRECTOR", "PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Yêu cầu báo giá (QR)", icon: ShoppingBag, path: "/quote-requests", roles: ["REQUESTER", "PLATFORM_ADMIN"] },
             { name: "Kiểm soát PR", icon: ClipboardCheck, path: "/procurement/prs", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
-            { name: "Phê duyệt", icon: CheckSquare, path: "/approvals", roles: ["DEPT_APPROVER", "DIRECTOR", "PLATFORM_ADMIN", "CEO"] },
+        ]
+    },
+    {
+        group: "Quản lý Đơn hàng",
+        dot: "#10B981",
+        roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"],
+        items: [
+            { name: "Đơn đặt hàng (PO)", icon: ShoppingBag, path: "/procurement/pos", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Gộp PO từ nhiều PR", icon: GitMerge, path: "/po/consolidate", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Quản lý Báo giá", icon: FileText, path: "/procurement/quotations", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Quản trị chất lượng", icon: ShieldCheck, path: "/procurement/quality-management", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
+            { name: "Quản lý Hợp đồng", icon: ShieldCheck, path: "/procurement/contracts", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Đánh giá Nhà cung cấp", icon: Star, path: "/procurement/suppliers", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Khiếu nại & Tranh chấp", icon: MessageSquare, path: "/procurement/disputes", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Theo dõi giao hàng", icon: Truck, path: "/procurement/delivery", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Điều chỉnh PO (Amendments)", icon: ShieldAlert, path: "/procurement/amendments", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+        ]
+    },
+    {
+        group: "Nguồn hàng",
+        dot: "#06B6D4",
+        roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"],
+        items: [
             { name: "Nguồn hàng & Báo giá", icon: Search, path: "/sourcing", roles: ["PROCUREMENT", "PLATFORM_ADMIN"] },
+            { name: "Khám phá NCC (AI)", icon: Sparkles, path: "/procurement/supplier-discovery", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
+            { name: "Xét duyệt NCC", icon: UserCheck, path: "/procurement/supplier-vetting", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "DIRECTOR", "CEO"] },
         ]
     },
     {
-        group: "Nghiệp vụ Mua hàng & Kho", 
-        roles: ["PROCUREMENT", "WAREHOUSE", "PLATFORM_ADMIN", "FINANCE"],
+        group: "Trung tâm Phê duyệt",
+        dot: "#F59E0B",
+        roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO", "PLATFORM_ADMIN"],
         items: [
-            { name: "Đơn mua hàng (PO)", icon: ShoppingCart, path: "/po", roles: ["PROCUREMENT", "PLATFORM_ADMIN", "FINANCE"] },
-            { name: "Nhập kho (GRN)", icon: Truck, path: "/grn", roles: ["WAREHOUSE", "PLATFORM_ADMIN"] },
+            { name: "Phê duyệt PR", icon: CheckSquare, path: "/approvals", roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO"] },
+            { name: "Phê duyệt PO", icon: ShoppingCart, path: "/manager/po-approvals", roles: ["DEPT_APPROVER", "FINANCE", "DIRECTOR"] },
+            { name: "Quản lý Hóa đơn", icon: FileText, path: "/finance/invoices", roles: ["FINANCE", "DIRECTOR"] },
+            { name: "Phê duyệt Thanh toán", icon: FileCheck, path: "/payments", roles: ["FINANCE", "DIRECTOR"] },
+            { name: "Lịch sử phê duyệt", icon: ClipboardCheck, path: "/manager/approval-history", roles: ["DEPT_APPROVER", "FINANCE", "DIRECTOR", "CEO"] },
         ]
     },
     {
-        group: "Kế toán (Finance)", 
-        roles: ["FINANCE", "PLATFORM_ADMIN"],
+        group: "Quản lý Ngân sách",
+        dot: "#8B5CF6",
+        roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN", "DIRECTOR"],
         items: [
-            { name: "Bàn làm việc Kế toán", icon: LayoutDashboard, path: "/finance/dashboard", roles: ["FINANCE"] },
-            { name: "Xử lý Invoice & Matching", icon: ShieldAlert, path: "/finance/matching", roles: ["FINANCE"] },
-            { name: "Lệnh thanh toán", icon: FileCheck, path: "/payments", roles: ["FINANCE"] },
+            { name: "Lập ngân sách", icon: Building, path: "/manager/budget-planning", roles: ["DEPT_APPROVER", "PLATFORM_ADMIN"] },
+            { name: "Phân bổ ngân sách", icon: FolderTree, path: "/finance/budget-allocation", roles: ["FINANCE", "PLATFORM_ADMIN"] },
+            { name: "Duyệt cấp NS", icon: CheckSquare, path: "/finance/budget-approval", roles: ["FINANCE", "DIRECTOR", "PLATFORM_ADMIN", "CEO"] },
+            { name: "Theo dõi chi tiêu", icon: DollarSign, path: "/manager/spend-tracking", roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
+            { name: "Cảnh báo vượt ngân sách", icon: ShieldAlert, path: "/manager/budget-alerts", roles: ["DEPT_APPROVER", "FINANCE", "PLATFORM_ADMIN"] },
         ]
     },
     {
-        group: "Hệ thống", 
-        roles: ["PLATFORM_ADMIN", "FINANCE"],
+        group: "Báo cáo",
+        dot: "#EC4899",
+        roles: ["MANAGER", "DEPT_APPROVER", "FINANCE", "DIRECTOR", "PLATFORM_ADMIN", "CEO"],
+        items: [
+            { name: "Báo cáo Chi phí", icon: ClipboardCheck, path: "/reports/spend", roles: ["FINANCE", "DIRECTOR"] },
+        ]
+    },
+    {
+        group: "Hệ thống",
+        dot: "#EF4444",
+        roles: ["PLATFORM_ADMIN"],
         items: [
             { name: "Quản lý Nhà cung cấp", icon: Truck, path: "/admin/suppliers", roles: ["PLATFORM_ADMIN"] },
-            { name: "Danh mục sản phẩm", icon: ShoppingBag, path: "/admin/products", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Sản phẩm", icon: ShoppingBag, path: "/admin/products", roles: ["PLATFORM_ADMIN"] },
+            { name: "Quản lý Danh mục", icon: Layers, path: "/admin/categories", roles: ["PLATFORM_ADMIN"] },
             { name: "Quản lý nhân sự", icon: Users, path: "/users", roles: ["PLATFORM_ADMIN"] },
             { name: "Quản lý Tổ chức", icon: LayoutDashboard, path: "/admin/organizations", roles: ["PLATFORM_ADMIN"] },
             { name: "Quản lý Phòng ban", icon: Building, path: "/admin/departments", roles: ["PLATFORM_ADMIN"] },
             { name: "Quản lý Cost Center", icon: ShieldAlert, path: "/admin/cost-centers", roles: ["PLATFORM_ADMIN"] },
-            { name: "Quản lý Ngân sách", icon: DollarSign, path: "/finance/budgets", roles: ["PLATFORM_ADMIN", "FINANCE"] },
+            { name: "Nhật ký hệ thống", icon: History, path: "/admin/audit-logs", roles: ["PLATFORM_ADMIN"] },
+            { name: "AI Admin / RAG Sync", icon: Brain, path: "/admin/ai-sync", roles: ["PLATFORM_ADMIN"] },
             { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["PLATFORM_ADMIN"] },
         ]
     },
     {
-        group: "Nhà cung cấp (B2B)", 
+        group: "Nhà cung cấp (B2B)",
+        dot: "#F97316",
         roles: ["SUPPLIER"],
         items: [
-            { name: "Bàn làm việc B2B", icon: LayoutDashboard, path: "/supplier/dashboard", roles: ["SUPPLIER"] },
+            { name: "Bảng điều khiển", icon: LayoutDashboard, path: "/supplier/dashboard", roles: ["SUPPLIER"] },
+            { name: "Quản lý Sản phẩm", icon: ShoppingBag, path: "/supplier/products", roles: ["SUPPLIER"] },
             { name: "Yêu cầu báo giá (RFQ)", icon: FolderTree, path: "/supplier/rfq", roles: ["SUPPLIER"] },
             { name: "Đơn đặt hàng (PO)", icon: ShoppingCart, path: "/supplier/po", roles: ["SUPPLIER"] },
+            { name: "Hợp đồng & Ký kết", icon: ShieldCheck, path: "/procurement/contracts", roles: ["SUPPLIER"] },
             { name: "Gửi hóa đơn (Invoice)", icon: FileCheck, path: "/supplier/invoice", roles: ["SUPPLIER"] },
         ]
     },
     {
-        group: "Kho vận (Warehouse)", 
+        group: "Kho vận (Warehouse)",
+        dot: "#EC4899",
         roles: ["WAREHOUSE"],
         items: [
             { name: "Bàn làm việc Kho", icon: LayoutDashboard, path: "/warehouse/dashboard", roles: ["WAREHOUSE"] },
             { name: "Kiểm định & Tạo GRN", icon: FileCheck, path: "/warehouse/grn/new", roles: ["WAREHOUSE"] },
+            { name: "Biểu đồ hàng lỗi", icon: ShieldAlert, path: "/warehouse/defects", roles: ["WAREHOUSE"] },
         ]
     },
 ];
 
-export default function Sidebar() {
-    const pathname = usePathname();
-    const { currentUser, logout } = useProcurement();
-
-    const roleInfo = currentUser ? roleMapping[currentUser.role] : { label: "Khách", class: "role-finance" };
-
-    return (
-        <aside className="group fixed left-0 top-0 z-50 h-screen w-16 hover:w-64 border-r border-slate-200 bg-white shadow-xl transition-all duration-300 ease-in-out flex flex-col overflow-hidden">
-            {/* Logo Section */}
-            <div className="flex h-16 items-center px-4 border-b border-slate-100 shrink-0">
-                <div className="h-8 w-8 rounded bg-erp-navy flex items-center justify-center shrink-0">
-                    <span className="text-white text-xs font-bold">PP</span>
-                </div>
-                <span className="ml-4 text-sm font-black tracking-tight text-erp-navy opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    PROCURE<span className="text-erp-blue">PRO</span>
-                </span>
-            </div>
-
-            {/* Nav */}
-            <nav className="mt-4 px-2 space-y-4 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-32">
-                {navigation.map((group) => {
-                    const groupVisible = !currentUser || group.roles.includes(currentUser.role);
-                    if (!groupVisible && currentUser?.role !== "PLATFORM_ADMIN") return null;
-
-                    const visibleItems = group.items.filter(item => !currentUser || item.roles.includes(currentUser.role));
-                    if (visibleItems.length === 0) return null;
-
-                    return (
-                        <div key={group.group}>
-                            <h3 className="mb-2 px-4 text-[9px] font-black uppercase tracking-widest text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                {group.group}
-                            </h3>
-                            <div className="space-y-1">
-                                {visibleItems.map((item) => {
-                                    const isActive = pathname === item.path;
-                                    return (
-                                        <Link
-                                            key={item.name}
-                                            href={item.path}
-                                            className={`flex items-center p-3 rounded-xl transition-all group/item ${
-                                                isActive ? "bg-erp-navy text-white shadow-lg shadow-erp-navy/20" : "text-slate-400 hover:bg-slate-50 hover:text-erp-navy"
-                                            }`}
-                                        >
-                                            <item.icon size={20} className="shrink-0" />
-                                            <span className="ml-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold text-sm">
-                                                {item.name}
-                                            </span>
-                                            {isActive && <ChevronRight size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />}
-                                        </Link>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    );
-                })}
-            </nav>
-
-            {/* Logout / User Info Footer */}
-            <div className="absolute bottom-0 w-full border-t border-slate-100 bg-slate-50 p-3">
-                <div className="flex items-center gap-3 mb-2">
-                    <div className="h-10 w-10 rounded-xl bg-erp-navy flex items-center justify-center font-black text-white text-xs shrink-0 shadow-lg shadow-erp-navy/20">
-                        {currentUser?.icon || currentUser?.fullName?.substring(0, 2).toUpperCase() || "GU"}
-                    </div>
-                    <div className="flex flex-col opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden">
-                        <span className="text-xs font-black truncate text-slate-700">{currentUser?.name || currentUser?.fullName || "Jonathan Doe"}</span>
-                        <div className="flex">
-                            <span className={`inline-block px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider text-white ${roleInfo?.class ?? "bg-slate-400"}`}>
-                                ROLE: {currentUser?.role === "DEPT_APPROVER" ? "MANAGER" : (currentUser?.role === "DIRECTOR" ? "DIRECTOR" : (currentUser?.role || "GUEST"))}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <button 
-                    onClick={logout}
-                    className="flex w-full items-center gap-3 p-3 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-xl transition-colors group/logout"
-                >
-                    <LogOut size={20} className="shrink-0" />
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        Đăng xuất
-                    </span>
-                </button>
-            </div>
-        </aside>
-    );
+interface SidebarProps {
+    isOpen?: boolean;
+    onClose?: () => void;
 }
 
+export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+    const pathname = usePathname() || "/";
+    const { currentUser, logout } = useProcurement();
+
+    const roleKey = currentUser?.role || "GUEST";
+    const roleInfo = roleMapping[roleKey] || { label: "Khách", class: "role-finance", dot: "#94A3B8" };
+
+    const initials = (currentUser?.fullName || currentUser?.name || "GU")
+        .split(" ").slice(-2).map((w: string) => w[0]?.toUpperCase() || "").join("").slice(0, 2) || "GU";
+
+    return (
+        <>
+            {/* Mobile backdrop */}
+            {onClose && (
+                <div
+                    className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 md:hidden ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+                    onClick={onClose}
+                    aria-hidden="true"
+                />
+            )}
+
+            <aside
+                className={`sidebar-dark fixed left-0 top-0 z-50 h-screen w-[180px] flex flex-col overflow-hidden transition-transform duration-300 ease-in-out
+                    ${isOpen ? "translate-x-0" : "-translate-x-full"}
+                    md:translate-x-0`}
+                aria-label="Navigation principale"
+            >
+                {/* ── Logo ── */}
+                <div className="flex h-14 items-center gap-2.5 px-3.5 border-b border-white/8 shrink-0">
+                    <div className="relative h-7 w-7 rounded-lg bg-[#1E293B] border-2 border-[#2563EB] flex items-center justify-center shrink-0">
+                        <span className="text-white text-[9px] font-black tracking-tight select-none">PS</span>
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0F172A] status-dot-active" />
+                    </div>
+                    <div className="flex flex-col min-w-0 flex-1">
+                        <span className="text-[12.5px] font-black tracking-tight text-white whitespace-nowrap leading-none">
+                            PROCURE<span className="text-[#2563EB]">SMART</span>
+                        </span>
+                        <span className="text-[8.5px] font-semibold text-slate-500 tracking-widest uppercase leading-tight">ERP Platform</span>
+                    </div>
+                    {/* Mobile close button */}
+                    {onClose && (
+                        <button
+                            onClick={onClose}
+                            className="md:hidden p-1 rounded-lg text-slate-500 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+                            aria-label="Đóng menu"
+                        >
+                            <X size={14} />
+                        </button>
+                    )}
+                </div>
+
+                {/* ── Nav ── */}
+                <nav className="mt-2.5 px-2 space-y-2.5 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-36" aria-label="Menu chính">
+                    {navigation.map((group) => {
+                        const userRole = currentUser?.role;
+                        const groupVisible = !userRole || group.roles.includes(userRole);
+                        if (!groupVisible && userRole !== "PLATFORM_ADMIN") return null;
+
+                        const visibleItems = group.items.filter(item => !userRole || item.roles.includes(userRole));
+                        if (visibleItems.length === 0) return null;
+
+                        return (
+                            <div key={group.group}>
+                                <div className="nav-group-label mb-1 px-1.5">
+                                    <span
+                                        className="nav-group-dot"
+                                        style={{ background: group.dot }}
+                                    />
+                                    <span style={{ color: group.dot, opacity: 0.6 }}>{group.group}</span>
+                                </div>
+                                <div className="space-y-0.5">
+                                    {visibleItems.map((item) => {
+                                        const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(`${item.path}/`));
+                                        return (
+                                            <Link
+                                                key={item.name}
+                                                href={item.path}
+                                                onClick={onClose}
+                                                className={`sidebar-item relative ${isActive ? "active" : ""}`}
+                                                aria-current={isActive ? "page" : undefined}
+                                            >
+                                                <item.icon
+                                                    size={14}
+                                                    className={`shrink-0 transition-colors ${isActive ? "text-[#2563EB]" : "text-slate-500"}`}
+                                                    aria-hidden="true"
+                                                />
+                                                <span className="whitespace-nowrap font-medium text-[12px] truncate leading-snug">
+                                                    {item.name}
+                                                </span>
+                                                {isActive ? (
+                                                    <ChevronRight size={11} className="ml-auto text-[#2563EB] shrink-0" aria-hidden="true" />
+                                                ) : null}
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </nav>
+
+                {/* ── Quick Stats ── */}
+                <div className="px-2.5 py-2 border-t border-white/6 bg-white/4">
+                    <div className="grid grid-cols-3 gap-1 text-center">
+                        <div className="p-1.5 bg-white/6 rounded-md border border-white/6">
+                            <p className="text-[8px] text-slate-500 font-semibold uppercase tracking-wide">Chờ</p>
+                            <p className="text-[13px] font-bold text-white num-display leading-tight">—</p>
+                        </div>
+                        <div className="p-1.5 bg-white/6 rounded-md border border-white/6">
+                            <p className="text-[8px] text-slate-500 font-semibold uppercase tracking-wide">Online</p>
+                            <p className="text-[13px] font-bold text-white num-display leading-tight">24</p>
+                        </div>
+                        <div className="p-1.5 bg-white/6 rounded-md border border-white/6">
+                            <p className="text-[8px] text-slate-500 font-semibold uppercase tracking-wide">AI</p>
+                            <p className="text-[13px] font-bold text-violet-400 num-display leading-tight flex items-center justify-center gap-0.5">
+                                <span className="status-dot status-dot-active" />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── User Footer ── */}
+                <div className="border-t border-white/6 bg-[#0F172A] p-2 space-y-0.5">
+                    <Link
+                        href="/users/profile"
+                        onClick={onClose}
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/6 rounded-lg transition-all duration-150 group cursor-pointer"
+                    >
+                        <div
+                            className="h-7 w-7 rounded-lg flex items-center justify-center font-bold text-white text-[10px] shrink-0 shadow-md"
+                            style={{ background: `linear-gradient(135deg, ${roleInfo.dot}99 0%, ${roleInfo.dot} 100%)` }}
+                            aria-hidden="true"
+                        >
+                            {initials}
+                        </div>
+                        <div className="flex flex-col overflow-hidden min-w-0 flex-1">
+                            <span className="text-[11px] font-bold truncate text-slate-200 leading-tight group-hover:text-white transition-colors">
+                                {currentUser?.name || currentUser?.fullName || "Guest"}
+                            </span>
+                            <span className={`role-badge mt-0.5 w-fit ${roleInfo.class}`}>
+                                {roleInfo.label}
+                            </span>
+                        </div>
+                        <ChevronRight size={11} className="text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" aria-hidden="true" />
+                    </Link>
+                    <button
+                        onClick={logout}
+                        className="flex w-full items-center gap-2 px-2 py-1.5 text-[11px] font-bold text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-150"
+                    >
+                        <LogOut size={13} className="shrink-0" aria-hidden="true" />
+                        <span>Đăng xuất</span>
+                    </button>
+                </div>
+            </aside>
+        </>
+    );
+}

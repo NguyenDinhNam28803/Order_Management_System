@@ -44,7 +44,7 @@ export class PoRepository {
               description: item.notes || 'Product from quotation',
               qty: item.qtyOffered || 0,
               unitPrice: item.unitPrice,
-              total: (item.qtyOffered as any) * (item.unitPrice as any),
+              total: Number(item.qtyOffered || 0) * Number(item.unitPrice),
             })),
           },
         },
@@ -116,10 +116,43 @@ export class PoRepository {
     });
   }
 
-  async findAll(orgId: string) {
+  async findAll(
+    orgId: string,
+    { page, limit }: { page: number; limit: number } = { page: 1, limit: 20 },
+  ) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.purchaseOrder.findMany({
+        where: { orgId },
+        include: { supplier: true, buyer: true },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.purchaseOrder.count({ where: { orgId } }),
+    ]);
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
+  async findBySupplier(supplierId: string) {
     return this.prisma.purchaseOrder.findMany({
-      where: { orgId },
-      include: { supplier: true, buyer: true },
+      where: { supplierId },
+      include: {
+        items: true,
+        supplier: true,
+        buyer: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getAll() {
+    return this.prisma.purchaseOrder.findMany({
+      include: {
+        supplier: true,
+        buyer: true,
+        items: true,
+      },
       orderBy: { createdAt: 'desc' },
     });
   }

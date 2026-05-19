@@ -1,12 +1,11 @@
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
-  moduleFormat    = "commonjs"
-}
 
 datasource db {
   provider   = "postgresql"
-  extensions = [pg_trgm, pgcrypto, uuid_ossp(map: "uuid-ossp")]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  moduleFormat    = "commonjs"
 }
 
 model Organization {
@@ -48,6 +47,7 @@ model Organization {
   goodsReceiptsOrg         GoodsReceipt[]
   orgBudgets               OrgBudget[]
   documents                OrganizationDocument[]
+  vettingRequestsAsSupplier SupplierVettingRequest[] @relation("VettingSupplier")
   kycVerifier              User?                    @relation("OrgKycVerifier", fields: [kycVerifiedById], references: [id])
   prItems                  PrItem[]                 @relation("PreferredSupplier")
   purchaseOrdersAsBuyer    PurchaseOrder[]          @relation("PoBuyerOrg")
@@ -61,9 +61,12 @@ model Organization {
   invoicesAsSupplier       SupplierInvoice[]        @relation("InvoiceSupplierOrg")
   kpiScoresAsBuyer         SupplierKpiScore[]       @relation("KpiBuyerOrg")
   kpiScoresAsSupplier      SupplierKpiScore[]       @relation("KpiSupplier")
+  supplierCategories       SupplierCategory[]
+  supplierProductPrices    SupplierProductPrice[]
   systemConfigs            SystemConfig[]
   users                    User[]
   webhookConfigs           WebhookConfig[]
+  rootCauseAnalyses        RootCauseAnalysis[] // Thêm dòng này
 
   @@map("organizations")
 }
@@ -85,6 +88,46 @@ model OrganizationDocument {
   organization Organization @relation(fields: [orgId], references: [id])
 
   @@map("organization_documents")
+}
+
+model SupplierVettingRequest {
+  id             String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  orgId          String        @map("org_id") @db.Uuid
+  supplierId     String        @map("supplier_id") @db.Uuid
+  requestedById  String        @map("requested_by_id") @db.Uuid
+  assignedToId   String?       @map("assigned_to_id") @db.Uuid
+  status         VettingStatus @default(DRAFT)
+  priceVsMarket  Decimal?      @map("price_vs_market") @db.Decimal(5, 2)
+  overallScore   Decimal?      @map("overall_score") @db.Decimal(5, 2)
+  rejectedReason String?       @map("rejected_reason")
+  notes          String?
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  supplier      Organization         @relation("VettingSupplier", fields: [supplierId], references: [id])
+  requestedBy   User                 @relation("VettingRequester", fields: [requestedById], references: [id])
+  assignedTo    User?                @relation("VettingAssignee", fields: [assignedToId], references: [id])
+  checks        SupplierVettingCheck[]
+
+  @@map("supplier_vetting_requests")
+}
+
+model SupplierVettingCheck {
+  id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  vettingId    String   @map("vetting_id") @db.Uuid
+  checkType    String   @map("check_type") @db.VarChar(50)
+  checkStatus  String   @default("PENDING") @map("check_status") @db.VarChar(20)
+  verifiedById String?  @map("verified_by_id") @db.Uuid
+  verifiedAt   DateTime? @map("verified_at") @db.Timestamptz(6)
+  fileUrl      String?  @map("file_url") @db.VarChar(500)
+  notes        String?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  vetting    SupplierVettingRequest @relation(fields: [vettingId], references: [id], onDelete: Cascade)
+  verifiedBy User?                  @relation("CheckVerifier", fields: [verifiedById], references: [id])
+
+  @@map("supplier_vetting_checks")
 }
 
 model Department {
@@ -133,6 +176,7 @@ model CostCenter {
   organization         Organization          @relation(fields: [orgId], references: [id])
   purchaseOrders       PurchaseOrder[]
   purchaseRequisitions PurchaseRequisition[]
+  poItemSources        PoItemSource[]
 
   @@unique([orgId, code])
   @@map("cost_centers")
@@ -161,6 +205,7 @@ model User {
   createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
   hashedRefreshToken       String?                @map("hashed_refresh_token") @db.VarChar(255)
+  refreshTokenExpiresAt    DateTime?              @map("refresh_token_expires_at") @db.Timestamptz(6)
   approvalMatrixRules      ApprovalMatrixRule[]
   approvalWorkflows        ApprovalWorkflow[]     @relation("ApprovalApprover")
   approvalDelegations      ApprovalWorkflow[]     @relation("ApprovalDelegatedFrom")
@@ -203,8 +248,14 @@ model User {
   invoicesApproved         SupplierInvoice[]      @relation("InvoiceApprover")
   manualReviews            SupplierManualReview[]
   systemConfigUpdates      SystemConfig[]
+  quotationRequests        QuotationRequest[]
+  budgetOverridesReq       BudgetOverrideRequest[] @relation("BudgetOverrideRequester")
+  budgetOverridesApprv     BudgetOverrideRequest[] @relation("BudgetOverrideApprover")
   delegatesReceived        UserDelegate[]         @relation("Delegate")
   delegatesGiven           UserDelegate[]         @relation("Delegator")
+  vettingRequestsMade      SupplierVettingRequest[] @relation("VettingRequester")
+  vettingRequestsAssigned  SupplierVettingRequest[] @relation("VettingAssignee")
+  vettingChecksVerified    SupplierVettingCheck[] @relation("CheckVerifier")
   department               Department?            @relation(fields: [deptId], references: [id])
   organization             Organization           @relation(fields: [orgId], references: [id])
   webhookConfigs           WebhookConfig[]
@@ -271,11 +322,15 @@ model ApprovalWorkflow {
   updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
   approver        User           @relation("ApprovalApprover", fields: [approverId], references: [id])
   delegatedFrom   User?          @relation("ApprovalDelegatedFrom", fields: [delegatedFromId], references: [id])
-  escalatedTo     User?          @relation("ApprovalEscalatedTo", fields: [escalatedToId], references: [id])
-
+  escalatedTo     User?          @relation("ApprovalEscalatedTo", fields: [escalatedToId], references: [id])    
   @@index([documentType, documentId])
   @@index([approverId, status])
   @@map("approval_workflows")
+}
+
+enum ProductType {
+  CATALOG
+  NON_CATALOG
 }
 
 model ProductCategory {
@@ -291,6 +346,8 @@ model ProductCategory {
   prItems           PrItem[]
   parent            ProductCategory?   @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children          ProductCategory[]  @relation("CategoryHierarchy")
+  supplierCategories SupplierCategory[]
+  quotationRequests QuotationRequest[]
   products          Product[]
   rfqItems          RfqItem[]
 
@@ -307,13 +364,22 @@ model Product {
   unit         String           @default("PCS") @db.VarChar(30)
   unitPriceRef Decimal?         @map("unit_price_ref") @db.Decimal(18, 2)
   currency     CurrencyCode     @default(VND)
+  type         ProductType      @default(CATALOG)
+  lastPriceAt  DateTime?        @map("last_price_at") @db.Timestamptz(6)
   specSheetUrl String?          @map("spec_sheet_url") @db.VarChar(500)
   imageUrls    Json             @default("[]") @map("image_urls")
   attributes   Json             @default("{}")
+  // Phân biệt loại mặt hàng dựa vào mức độ thay đổi giá
+  priceVolatility    PriceVolatility           @default(STABLE)
+  requiresQuoteFirst Boolean?          @default(false) @map("requires_quote_first")
+  // true: Bắt buộc phải báo giá trước khi tạo PR
+  lastPriceUpdate    DateTime?       @map("last_price_update") @db.Timestamptz(6)
+  priceChangeFreq    Int?            @map("price_change_freq") @db.SmallInt  // Số lần thay đổi/tháng
   isActive     Boolean          @default(true) @map("is_active")
   createdAt    DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
   prItems      PrItem[]
+  supplierPrices SupplierProductPrice[]
   category     ProductCategory? @relation(fields: [categoryId], references: [id])
 
   @@map("products")
@@ -342,18 +408,22 @@ model PurchaseRequisition {
   completedAt    DateTime?       @map("completed_at") @db.Timestamptz(6)
   cancelledAt    DateTime?       @map("cancelled_at") @db.Timestamptz(6)
   cancelReason   String?         @map("cancel_reason")
+  deletedAt      DateTime?       @map("deleted_at") @db.Timestamptz(6)
   metadata       Json            @default("{}")
   createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
   attachments    PrAttachment[]
   items          PrItem[]
   purchaseOrders PurchaseOrder[]
+  poItemSources  PoItemSource[]
   costCenter     CostCenter?     @relation(fields: [costCenterId], references: [id])
   department     Department      @relation(fields: [deptId], references: [id])
   organization   Organization    @relation(fields: [orgId], references: [id])
   procurement    User?           @relation("PrProcurement", fields: [procurementId], references: [id])
   requester      User            @relation("PrRequester", fields: [requesterId], references: [id])
   rfqRequests    RfqRequest[]
+  quotationRequests    QuotationRequest[]
+  budgetOverrides      BudgetOverrideRequest[]
 
   @@index([orgId, status])
   @@index([requesterId])
@@ -376,6 +446,7 @@ model PrItem {
   preferredSupplierId String?             @map("preferred_supplier_id") @db.Uuid
   createdAt           DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   poItems             PoItem[]
+  poItemSources       PoItemSource[]
   category            ProductCategory?    @relation(fields: [categoryId], references: [id])
   pr                  PurchaseRequisition @relation(fields: [prId], references: [id], onDelete: Cascade)
   preferredSupplier   Organization?       @relation("PreferredSupplier", fields: [preferredSupplierId], references: [id])
@@ -420,6 +491,7 @@ model RfqRequest {
   aiReport               Json                @default("{}") @map("ai_report")
   awardedSupplierId      String?             @map("awarded_supplier_id") @db.Uuid
   awardedAt              DateTime?           @map("awarded_at") @db.Timestamptz(6)
+  deletedAt              DateTime?           @map("deleted_at") @db.Timestamptz(6)
   createdById            String              @map("created_by") @db.Uuid
   createdAt              DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -427,6 +499,7 @@ model RfqRequest {
   items                  RfqItem[]
   qaThreads              RfqQaThread[]
   quotations             RfqQuotation[]
+  quotationRequests      QuotationRequest[]
   awardedSupplier        Organization?       @relation("RfqAwardedSupplier", fields: [awardedSupplierId], references: [id])
   createdBy              User                @relation(fields: [createdById], references: [id])
   organization           Organization        @relation(fields: [orgId], references: [id])
@@ -434,6 +507,8 @@ model RfqRequest {
   singleSourceApprover   User?               @relation("RfqSingleSourceApprover", fields: [singleSourceApproverId], references: [id])
   suppliers              RfqSupplier[]
 
+  @@index([orgId, status])
+  @@index([createdById])
   @@map("rfq_requests")
 }
 
@@ -587,6 +662,7 @@ model PurchaseOrder {
   completedAt        DateTime?              @map("completed_at") @db.Timestamptz(6)
   cancelledAt        DateTime?              @map("cancelled_at") @db.Timestamptz(6)
   cancelReason       String?                @map("cancel_reason")
+  deletedAt          DateTime?              @map("deleted_at") @db.Timestamptz(6)
   poPdfUrl           String?                @map("po_pdf_url") @db.VarChar(500)
   escrowLocked       Boolean                @default(false) @map("escrow_locked")
   escrowLockedAt     DateTime?              @map("escrow_locked_at") @db.Timestamptz(6)
@@ -614,6 +690,7 @@ model PurchaseOrder {
   supplier           Organization           @relation("PoSupplierOrg", fields: [supplierId], references: [id])
   invoices           SupplierInvoice[]
   manualReviews      SupplierManualReview[]
+  rootCauseAnalyses  RootCauseAnalysis[]
 
   @@index([orgId, status])
   @@index([supplierId])
@@ -638,12 +715,31 @@ model PoItem {
   createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   grnItems        GrnItem[]
   invoiceItems    InvoiceItem[]
+  sources         PoItemSource[]
   po              PurchaseOrder     @relation(fields: [poId], references: [id], onDelete: Cascade)
   prItem          PrItem?           @relation(fields: [prItemId], references: [id])
   quotationItem   RfqQuotationItem? @relation(fields: [quotationItemId], references: [id])
 
   @@unique([poId, lineNumber])
   @@map("po_items")
+}
+
+// Bảng trung gian: truy vết từng PR item đóng góp vào PO item khi gộp nhiều PR
+model PoItemSource {
+  id             String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  poItemId       String              @map("po_item_id") @db.Uuid
+  prItemId       String              @map("pr_item_id") @db.Uuid
+  prId           String              @map("pr_id") @db.Uuid
+  contributedQty Decimal             @map("contributed_qty") @db.Decimal(12, 3)
+  costCenterId   String?             @map("cost_center_id") @db.Uuid
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  poItem         PoItem              @relation(fields: [poItemId], references: [id], onDelete: Cascade)
+  prItem         PrItem              @relation(fields: [prItemId], references: [id])
+  pr             PurchaseRequisition @relation(fields: [prId], references: [id])
+  costCenter     CostCenter?         @relation(fields: [costCenterId], references: [id])
+
+  @@map("po_item_sources")
 }
 
 model PoAmendment {
@@ -705,6 +801,7 @@ model GoodsReceipt {
   packingListUrl        String?           @map("packing_list_url") @db.VarChar(500)
   coaUrl                String?           @map("coa_url") @db.VarChar(500)
   waybillNumber         String?           @map("waybill_number") @db.VarChar(100)
+  deletedAt             DateTime?         @map("deleted_at") @db.Timestamptz(6)
   notes                 String?
   createdAt             DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt             DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -721,7 +818,33 @@ model GoodsReceipt {
   invoices              SupplierInvoice[]
 
   @@index([poId])
+  @@index([orgId, status])
   @@map("goods_receipts")
+}
+
+enum DefectCategory {
+  FUNCTIONAL
+  AESTHETIC
+  MATERIAL
+  DIMENSIONAL
+  PACKAGING
+}
+
+model RootCauseAnalysis {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  supplierId  String   @map("supplier_id") @db.Uuid
+  poId        String   @map("po_id") @db.Uuid
+  description String
+  rootCause   String   @map("root_cause")
+  actionPlan  String   @map("action_plan")
+  dueDate     DateTime @map("due_date") @db.Date
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  supplier    Organization @relation(fields: [supplierId], references: [id])
+  po          PurchaseOrder @relation(fields: [poId], references: [id])
+
+  @@map("root_cause_analyses")
 }
 
 model GrnItem {
@@ -738,6 +861,7 @@ model GrnItem {
   batchNumber     String?       @map("batch_number") @db.VarChar(100)
   expiryDate      DateTime?     @map("expiry_date") @db.Date
   storageLocation String?       @map("storage_location") @db.VarChar(100)
+  defectCategory  DefectCategory? @map("defect_category")
   createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   grn             GoodsReceipt  @relation(fields: [grnId], references: [id], onDelete: Cascade)
   poItem          PoItem        @relation(fields: [poItemId], references: [id])
@@ -810,6 +934,7 @@ model SupplierInvoice {
   approvedAt       DateTime?           @map("approved_at") @db.Timestamptz(6)
   approvedById     String?             @map("approved_by") @db.Uuid
   paidAt           DateTime?           @map("paid_at") @db.Timestamptz(6)
+  deletedAt        DateTime?           @map("deleted_at") @db.Timestamptz(6)
   notes            String?
   createdAt        DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -826,6 +951,7 @@ model SupplierInvoice {
 
   @@index([poId])
   @@index([supplierId])
+  @@index([orgId, status])
   @@map("supplier_invoices")
 }
 
@@ -1193,7 +1319,7 @@ model BudgetPeriod {
   id                String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   orgId             String             @map("org_id") @db.Uuid
   fiscalYear        Int                @map("fiscal_year") @db.SmallInt
-  periodType        String             @default("ANNUAL") @map("period_type") @db.VarChar(10)
+  periodType        BudgetPeriodType   @default(ANNUAL) @map("period_type")
   periodNumber      Int                @default(1) @map("period_number") @db.SmallInt
   startDate         DateTime           @map("start_date") @db.Date
   endDate           DateTime           @map("end_date") @db.Date
@@ -1218,17 +1344,26 @@ model BudgetAllocation {
   spentAmount     Decimal          @default(0) @map("spent_amount") @db.Decimal(18, 2)
   currency        CurrencyCode     @default(VND)
   notes           String?
+  status          BudgetAllocationStatus    @default(DRAFT)
+  approvedById    String?                   @map("approved_by") @db.Uuid
+  approvedAt      DateTime?                 @map("approved_at") @db.Timestamptz(6)
+  rejectedReason  String?                   @map("rejected_reason")
   createdById     String?          @map("created_by") @db.Uuid
   createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  budgetCode      String?          @map("budget_code") @db.VarChar(50)
   budgetPeriod    BudgetPeriod     @relation(fields: [budgetPeriodId], references: [id])
   category        ProductCategory? @relation(fields: [categoryId], references: [id])
   costCenter      CostCenter       @relation(fields: [costCenterId], references: [id])
   createdBy       User?            @relation(fields: [createdById], references: [id])
   department      Department?      @relation(fields: [deptId], references: [id])
   org             Organization     @relation("BudgetAllocOrg", fields: [orgId], references: [id])
+  overrideRequests BudgetOverrideRequest[]
 
-  @@unique([budgetPeriodId, costCenterId])
+  @@unique([budgetPeriodId, costCenterId, deptId, categoryId])
+  @@index([budgetCode])
+  @@index([orgId, status])
+  @@index([costCenterId, status])
   @@map("budget_allocations")
 }
 
@@ -1304,6 +1439,170 @@ model OrgBudget {
   @@map("org_budgets")
 }
 
+model DocumentEmbedding {
+  id          Int      @id @default(autoincrement())
+  content     String
+  sourceTable String   @map("source_table")
+  sourceId    String   @map("source_id")
+  metadata    Json?
+  embedding   Unsupported("vector")?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("document_embeddings")
+}
+
+model FailedEmail {
+  id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  to           String   @db.VarChar(255)
+  subject      String   @db.VarChar(255)
+  body         String
+  error        String?
+  attempts     Int      @default(0)
+  nextRetryAt  DateTime @default(now()) @map("next_retry_at") @db.Timestamptz(6)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("failed_emails")
+}
+
+// Sửa thêm bảng
+
+model QuotationRequest {
+  id            String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  prId          String   @map("pr_id") @db.Uuid
+  requesterId   String   @map("requester_id") @db.Uuid
+  categoryId    String?  @map("category_id") @db.Uuid
+  description   String
+  estimatedBudget Decimal? @map("estimated_budget") @db.Decimal(18, 2)
+  status        QuotationRequestStatus @default(PENDING)
+  // PENDING → ACKNOWLEDGED → RFQ_CREATED → PRICE_RETURNED → COMPLETED
+  rfqId         String?  @map("rfq_id") @db.Uuid  // sau khi thu mua tạo RFQ
+  returnedPrice Decimal? @map("returned_price") @db.Decimal(18, 2)
+  note          String?
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  pr        PurchaseRequisition @relation(fields: [prId], references: [id])
+  requester User                @relation(fields: [requesterId], references: [id])
+  rfq       RfqRequest?         @relation(fields: [rfqId], references: [id])
+  category  ProductCategory? @relation(fields: [categoryId], references: [id])
+
+  @@map("quotation_requests")
+}
+
+model SupplierCategory {
+  id         String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  supplierId String          @map("supplier_id") @db.Uuid
+  categoryId String          @map("category_id") @db.Uuid
+  isPrimary  Boolean         @default(false) @map("is_primary")
+  createdAt  DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  supplier   Organization    @relation(fields: [supplierId], references: [id])
+  category   ProductCategory @relation(fields: [categoryId], references: [id])
+
+  @@unique([supplierId, categoryId])
+  @@map("supplier_categories")
+}
+
+model SupplierProductPrice {
+  id          String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  supplierId  String       @map("supplier_id") @db.Uuid
+  productId   String       @map("product_id") @db.Uuid
+  unitPrice   Decimal      @map("unit_price") @db.Decimal(18, 2)
+  currency    CurrencyCode @default(VND)
+  minQty      Decimal?     @map("min_qty") @db.Decimal(12, 3)
+  effectiveFrom DateTime   @map("effective_from") @db.Date
+  effectiveUntil DateTime? @map("effective_until") @db.Date
+  isActive    Boolean      @default(true) @map("is_active")
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  supplier    Organization @relation(fields: [supplierId], references: [id])
+  product     Product      @relation(fields: [productId], references: [id])
+
+  @@unique([supplierId, productId, effectiveFrom])
+  @@map("supplier_product_prices")
+}
+
+model BudgetOverrideRequest {
+  id               String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  budgetAllocId    String       @map("budget_alloc_id") @db.Uuid
+  prId             String       @map("pr_id") @db.Uuid
+  requestedById    String       @map("requested_by") @db.Uuid
+  overrideAmount   Decimal      @map("override_amount") @db.Decimal(18, 2)
+  reason           String
+  status           BudgetOverrideStatus @default(PENDING)
+  approvedById     String?      @map("approved_by") @db.Uuid
+  approvedAt       DateTime?    @map("approved_at") @db.Timestamptz(6)
+  rejectedReason   String?      @map("rejected_reason")
+  createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  budgetAlloc   BudgetAllocation    @relation(fields: [budgetAllocId], references: [id])
+  pr            PurchaseRequisition @relation(fields: [prId], references: [id])
+  requestedBy   User   @relation("BudgetOverrideRequester", fields: [requestedById], references: [id])
+  approvedBy    User?  @relation("BudgetOverrideApprover", fields: [approvedById], references: [id])
+
+  @@map("budget_override_requests")
+}
+
+model ExternalToken {
+  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  token       String    @unique @db.VarChar(128)
+  type        TokenType
+  referenceId String    @map("reference_id") @db.Uuid
+  targetEmail String    @map("target_email") @db.VarChar(255)
+  metadata    Json      @default("{}")
+  expiresAt   DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt      DateTime? @map("used_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([token])
+  @@index([referenceId, type])
+  @@map("external_tokens")
+}
+
+enum TokenType {
+  RFQ_QUOTE        // NCC báo giá (thay login)
+  PO_CONFIRM       // NCC confirm nhận PO
+  GRN_MILESTONE    // NCC update trạng thái giao hàng
+  INVOICE_SUBMIT   // NCC nộp invoice
+  // APPROVAL không cần token riêng — dùng ApprovalWorkflow có sẵn
+}
+
+enum PriceVolatility {
+  STABLE        // STABLE: Giá ổn định (~30 ngày không đổi) → Tạo RFQ trực tiếp
+  MODERATE      // MODERATE: Giá thay đổi vừa phải (~1-2 lần/tháng) → Báo giá/RFQ
+  VOLATILE      // VOLATILE: Giá thay đổi thường xuyên (>2 lần/tháng) → Yêu cầu báo giá trước
+}
+
+enum BudgetOverrideStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BudgetAllocationStatus {
+  DRAFT         // Trưởng phòng đang soạn
+  SUBMITTED     // Đã gửi lên kế toán
+  APPROVED      // Kế toán duyệt → mới được dùng
+  REJECTED      // Bị từ chối
+  CLOSED        // Hết kỳ
+}
+
+enum QuotationRequestStatus {
+  PENDING
+  ACKNOWLEDGED
+  RFQ_CREATED
+  PRICE_RETURNED
+  COMPLETED
+  CANCELLED
+}
+
+enum BudgetPeriodType {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+  RESERVE
+}
+
 enum UserRole {
   REQUESTER
   DEPT_APPROVER
@@ -1344,6 +1643,7 @@ enum SupplierTier {
 
 enum PrStatus {
   DRAFT
+  PENDING_OVERRIDE
   PENDING_APPROVAL
   UNDER_REVIEW
   LEVEL2_REVIEW
@@ -1491,6 +1791,17 @@ enum DocumentType {
   GRN
   PAYMENT
   CONTRACT
+  BUDGET_ALLOCATION
+  SUPPLIER_VETTING
+}
+
+enum VettingStatus {
+  DRAFT
+  IN_REVIEW
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  CANCELLED
 }
 
 enum NotificationChannel {

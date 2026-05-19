@@ -1,0 +1,27 @@
+
+enum DefectCategory {
+  FUNCTIONAL
+  AESTHETIC
+  MATERIAL
+  DIMENSIONAL
+  PACKAGING
+}
+
+model RootCauseAnalysis {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  supplierId  String   @map("supplier_id") @db.Uuid
+  poId        String   @map("po_id") @db.Uuid
+  description String
+  rootCause   String   @map("root_cause")
+  actionPlan  String   @map("action_plan")
+  dueDate     DateTime @map("due_date") @db.Date
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  supplier    Organization @relation(fields: [supplierId], references: [id])
+  po          PurchaseOrder @relation(fields: [poId], references: [id])
+
+  @@map("root_cause_analyses")
+}
+
+// Cập nhật lại model GrnItem bằng cách tìm kiếm và thay thế (sử dụng replace cho surgical update)

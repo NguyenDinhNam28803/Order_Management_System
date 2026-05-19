@@ -1,0 +1,203 @@
+﻿'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useProcurement } from '@/app/context/ProcurementContext';
+import { PR, PRItem } from '@/app/types/api-types';
+import { ArrowLeft, Clock, FileText, Send, Building2, User, FileDigit, Calendar } from 'lucide-react';
+import Link from 'next/link';
+
+export default function PRDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const prId = params.id as string;
+  const { fetchPrDetail, submitPR, notify } = useProcurement();
+  const [pr, setPR] = useState<PR | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchPrDetail(prId);
+        setPR(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load PR');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (prId) fetch();
+  }, [prId, fetchPrDetail]);
+
+  const handleSubmit = async () => {
+    if (!pr) return;
+    try {
+      setSubmitting(true);
+      await submitPR(prId);
+      notify('PR submitted for approval', 'success');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit PR');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) return <div className="p-8 text-slate-900">Loading...</div>;
+  if (error) return <div className="p-8 text-black">Error: {error}</div>;
+  if (!pr) return <div className="p-8 text-slate-900">PR not found</div>;
+
+  const getStatusDisplay = (status: string) => {
+    switch (status) {
+        case 'APPROVED': return { label: 'Đã phê duyệt', class: 'status-approved' };
+        case 'DRAFT': return { label: 'Bản nháp', class: 'status-draft' };
+        case 'PENDING_APPROVAL': return { label: 'Chờ duyệt', class: 'status-pending' };
+        default: return { label: status, class: 'status-info' };
+    }
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto">
+      {/* Header with Breadcrumbs */}
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <button 
+            onClick={() => router.back()} 
+            className="flex items-center gap-2 text-xs font-bold text-slate-900 hover:text-[#2563EB] transition-colors mb-4 uppercase tracking-widest"
+          >
+            <ArrowLeft size={14} /> Quay lại danh sách
+          </button>
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Chi tiết Yêu cầu (PR)</h1>
+            <span className={`status-pill ${getStatusDisplay(pr.status).class}`}>
+              {getStatusDisplay(pr.status).label}
+            </span>
+          </div>
+        </div>
+        {pr.status === 'DRAFT' && (
+          <button
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="btn-primary w-full md:w-auto text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/20"
+          >
+            {submitting ? (
+              <><Clock size={16} className="animate-spin" /> Đang gửi...</>
+            ) : (
+              <><Send size={16} /> Trình phê duyệt</>
+            )}
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 space-y-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+            <FileText size={160} />
+          </div>
+          <h3 className="section-title">Thông tin chung</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900"><FileDigit size={12}/> Mã Yêu Cầu</div>
+              <p className="text-sm font-bold text-slate-900">{pr.prNumber || pr.id.split('-')[0].toUpperCase()}</p>
+            </div>
+            <div className="space-y-1">
+              <div className="flex flex-col">
+                <span className="text-slate-900 text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-1">
+                  <Building2 size={10} /> BỘ PHẬN
+                </span>
+                <span className="font-bold text-slate-900 text-sm">
+                  {typeof pr.department === 'object' && pr.department?.name 
+                    ? pr.department.name 
+                    : typeof pr.department === 'string' 
+                      ? pr.department 
+                      : pr.deptId 
+                        ? "Phòng ban #" + pr.deptId.substring(0, 8)
+                        : "N/A"}
+                </span>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900"><User size={12}/> Người Yêu Cầu</div>
+              <p className="text-sm font-bold text-slate-900">{pr.requester?.fullName || "Chưa cập nhật"}</p>
+            </div>
+            <div className="space-y-1 md:col-span-3">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900">Mục Đích / Tiêu Đề</div>
+              <p className="text-base font-bold text-slate-900">{pr.title || "Yêu cầu mua sắm vật tư"}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 flex flex-col justify-between relative overflow-hidden">
+           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#10B981]/5 rounded-full blur-2xl"></div>
+           <div>
+              <h3 className="section-title">Tổng Giá Trị (Dự kiến)</h3>
+              <div className="text-4xl font-black text-black mt-2 tracking-tight">
+                  {pr.totalEstimate?.toLocaleString('vi-VN')} <span className="text-xl">VND</span>
+              </div>
+           </div>
+           
+           <div className="mt-8 space-y-3 pt-4 border-t border-[rgba(148,163,184,0.1)]">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-slate-900 font-bold flex items-center gap-1"><Calendar size={14}/> Ngày tạo:</span>
+                <span className="text-slate-900 font-semibold">{new Date(pr.createdAt).toLocaleDateString('vi-VN')}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-slate-900 font-bold flex items-center gap-1"><FileText size={14}/> Số lượng SP:</span>
+                <span className="text-slate-900 font-semibold">{pr.items?.length || 0} mặt hàng</span>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-[rgba(148,163,184,0.1)]">
+          <h3 className="section-title m-0">Danh sách Danh Mục Hàng Hoá</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="erp-table text-xs">
+            <thead>
+              <tr>
+                <th className="w-12 text-center">STT</th>
+                <th className="">Sản phẩm / Dịch vụ</th>
+                <th className="text-right w-24">Số lượng</th>
+                <th className="text-right w-40">Đơn giá (Ước tính)</th>
+                <th className="text-right w-48">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pr.items && pr.items.length > 0 ? pr.items.map((item: PRItem, idx) => (
+                <tr key={item.id}>
+                  <td className="text-center font-bold text-slate-900">{idx + 1}</td>
+                  <td>
+                    <div className="font-bold text-slate-900">{item.productName || "Sản phẩm Dịch vụ"}</div>
+                    {(item.description && item.description !== item.productName) && (
+                      <div className="text-[10px] text-slate-900 mt-1">{item.description}</div>
+                    )}
+                  </td>
+                  <td className="text-right font-bold text-[#2563EB]">
+                    {item.qty} <span className="text-[9px] text-slate-900 ml-1 uppercase">{item.unit || "Cái"}</span>
+                  </td>
+                  <td className="text-right font-semibold text-slate-900">
+                    {item.estimatedPrice?.toLocaleString('vi-VN')} ₫
+                  </td>
+                  <td className="text-right font-black text-black">
+                    {(item.qty * (item.estimatedPrice || 0)).toLocaleString('vi-VN')} ₫
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                   <td colSpan={5} className="py-12 text-center text-slate-900 font-bold text-xs uppercase tracking-widest">
+                      Không có mặt hàng nào được tìm thấy
+                   </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -4,6 +4,7 @@ import {
   BadRequestException,
   Inject,
   forwardRef,
+  Logger,
 } from '@nestjs/common';
 import { PrStatus } from '@prisma/client';
 import { CreateRfqDto } from './dto/create-rfq.dto';
@@ -13,23 +14,27 @@ import { RfqRepository } from './rfq.repository';
 import { RfqStatus, QuotationStatus } from '@prisma/client';
 import { AiService } from '../ai-service/ai-service.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { NotificationModuleService } from 'src/notification-module/notification-module.service';
-import { AutomationService } from 'src/common/automation/automation.service';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
+import { TokenType } from '../external-token-module/external-token.service';
+import { AutomationService } from '../common/automation/automation.service';
+import { generateDocNumber } from '../common/utils/doc-number.util';
 
 export class RfqSupplierCreateManyInput {
-  rfqId: string;
-  supplierId: string;
-  isRecommended: boolean;
+  rfqId!: string;
+  supplierId!: string;
+  isRecommended!: boolean;
 }
 
 export class RFQItem {
-  name: string;
-  description: string;
-  qty: number;
+  name!: string;
+  description!: string;
+  qty!: number;
 }
 
 @Injectable()
 export class RfqmoduleService {
+  private readonly logger = new Logger(RfqmoduleService.name);
+
   constructor(
     private readonly repository: RfqRepository,
     private readonly aiService: AiService,
@@ -64,17 +69,33 @@ export class RfqmoduleService {
     const suggestedSupplierIds =
       await this.aiService.getCompanySuggestion(items);
 
-    console.log(suggestedSupplierIds);
-    if (!suggestedSupplierIds || suggestedSupplierIds.length === 0) {
+    if (
+      !suggestedSupplierIds ||
+      !suggestedSupplierIds.data ||
+      suggestedSupplierIds.data.length === 0
+    ) {
       return [];
     }
 
-    // Extract supplier IDs from the AI response
-    const supplierIds = Array.isArray(suggestedSupplierIds.data)
+    // Extract supplier IDs from the AI response and ensure they are valid strings
+    const rawSupplierData = Array.isArray(suggestedSupplierIds.data)
       ? suggestedSupplierIds.data
       : [suggestedSupplierIds.data];
 
-    const supplierData: RfqSupplierCreateManyInput[] = supplierIds.map(
+    const validSupplierIds = rawSupplierData
+      .map((item: any) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object')
+          return item.id || item.supplierId || item.orgId;
+        return null;
+      })
+      .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+    if (validSupplierIds.length === 0) {
+      return [];
+    }
+
+    const supplierData: RfqSupplierCreateManyInput[] = validSupplierIds.map(
       (sId: string) => ({
         rfqId: rfq.id,
         supplierId: sId,
@@ -144,18 +165,16 @@ export class RfqmoduleService {
     );
 
     // 4. Lưu kết quả vào DB (Update Quotation)
-    if (aiResult.success !== false) {
-      await this.prisma.rfqQuotation.update({
-        where: { id: quotationId },
-        data: {
-          aiScore: aiResult.score,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          aiBreakdown: aiResult as any, // Lưu full JSON kết quả
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          aiFlags: aiResult.cons, // Lưu rủi ro vào flags
-        },
-      });
-    }
+    // AI Service đã parse thành công thì aiResult sẽ có dữ liệu
+    await this.prisma.rfqQuotation.update({
+      where: { id: quotationId },
+      data: {
+        aiScore: aiResult.score,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        aiBreakdown: aiResult as any, // Lưu full JSON kết quả
+        aiFlags: aiResult.cons, // Lưu rủi ro vào flags
+      },
+    });
 
     return aiResult;
   }
@@ -204,7 +223,7 @@ export class RfqmoduleService {
       throw new NotFoundException('Yêu cầu mua hàng chưa được duyệt !');
     }
 
-    const rfqNumber = `RFQ-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const rfqNumber = generateDocNumber('RFQ');
     const rfq = await this.repository.create(
       createRfqDto,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -214,52 +233,95 @@ export class RfqmoduleService {
       rfqNumber,
     );
 
-    // Gửi email cho các nhà cung cấp
+    // Gửi email cho các nhà cung cấp — lỗi email KHÔNG làm fail toàn bộ request
     if (createRfqDto.supplierIds?.length > 0) {
-      await this.sendInvitationEmails(rfq, createRfqDto.supplierIds);
+      try {
+        await this.sendInvitationEmails(rfq, createRfqDto.supplierIds);
+      } catch (emailError) {
+        this.logger.error(
+          `RFQ ${rfq.rfqNumber} created but failed to send invitation emails`,
+          emailError,
+        );
+      }
     }
 
     return rfq;
   }
 
   private async sendInvitationEmails(rfq: any, supplierIds: string[]) {
-    // Tìm các user có role SUPPLIER thuộc các org này
+    // Lấy user SUPPLIER kèm thông tin org để có tên hiển thị
     const suppliers = await this.prisma.user.findMany({
       where: {
         orgId: { in: supplierIds },
         role: 'SUPPLIER',
+        isActive: true,
       },
+      include: { organization: true },
     });
 
+    // Chuẩn hoá items sang format mà template RFQ_MAGIC_LINK cần
+
+    const items: Array<{ name: string; qty: number; unit: string }> = (
+      rfq.items as any[]
+    ).map((i) => ({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      name: i.description || i.name || 'Hàng hóa',
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      qty: i.qty ?? i.quantity ?? 1,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      unit: i.unit ?? 'cái',
+    }));
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const itemsSummary = rfq.items
-      .map((i: any) => `${i.description} (${i.qty} ${i.unit})`)
-      .join(', ');
+    const deadlineDate: Date = rfq.deadline;
 
     for (const supplier of suppliers) {
-      await this.notificationService.sendNotification({
-        recipientId: supplier.id,
-        eventType: 'RFQ_INVITATION', // Phải khớp với eventType trong db
-        referenceType: 'RFQ',
+      if (!supplier.email) continue;
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const supplierName: string =
+        (supplier as any).organization?.name ??
+        supplier.fullName ??
+        supplier.email;
+
+      await this.notificationService.sendExternalEmailWithMagicLink({
+        to: supplier.email,
+        subject: `[Mời báo giá] ${rfq.rfqNumber} — ${rfq.title} | Hạn: ${deadlineDate.toLocaleDateString('vi-VN')}`,
+        eventType: 'RFQ_MAGIC_LINK',
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         referenceId: rfq.id,
+        tokenType: TokenType.RFQ_QUOTE,
+        expiresInDays: 7,
         data: {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          rfqNumber: rfq.rfqNumber,
+          rfqCode: rfq.rfqNumber,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           rfqTitle: rfq.title,
+          supplierName,
+          deadline: deadlineDate,
+          items,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          deadline: rfq.deadline.toLocaleDateString(),
+          contactPerson: rfq.contactPerson ?? '',
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          itemsSummary: itemsSummary,
+          contactEmail: rfq.contactEmail ?? '',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          paymentTerms: rfq.paymentTerms ?? '',
         },
       });
     }
   }
 
-  async findAll(user: any) {
+  async findAll(
+    user: any,
+    pagination: { page: number; limit: number } = { page: 1, limit: 20 },
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return this.repository.findAll(user.orgId);
+    return this.repository.findAll(user.orgId, pagination);
+  }
+
+  async findPaginated(user: any, skip: number, take: number) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.repository.findPaginated(user.orgId, skip, take);
   }
 
   async findOne(id: string) {
@@ -275,6 +337,52 @@ export class RfqmoduleService {
     if (!rfq) {
       throw new NotFoundException(`RFQ with ID ${id} not found`);
     }
+
+    // State machine: define valid forward/backward transitions
+    const ALLOWED_TRANSITIONS: Partial<Record<RfqStatus, RfqStatus[]>> = {
+      [RfqStatus.DRAFT]: [RfqStatus.SENT, RfqStatus.CANCELLED],
+      [RfqStatus.SENT]: [RfqStatus.SUPPLIER_REVIEWING, RfqStatus.CANCELLED],
+      [RfqStatus.SUPPLIER_REVIEWING]: [
+        RfqStatus.QUOTATION_RECEIVED,
+        RfqStatus.CANCELLED,
+      ],
+      [RfqStatus.QUOTATION_RECEIVED]: [
+        RfqStatus.AI_ANALYZING,
+        RfqStatus.REQUESTER_REVIEW,
+        RfqStatus.CANCELLED,
+      ],
+      [RfqStatus.AI_ANALYZING]: [
+        RfqStatus.AI_RECOMMENDED,
+        RfqStatus.QUOTATION_RECEIVED,
+      ],
+      [RfqStatus.AI_RECOMMENDED]: [
+        RfqStatus.REQUESTER_REVIEW,
+        RfqStatus.NEGOTIATION,
+      ],
+      [RfqStatus.REQUESTER_REVIEW]: [
+        RfqStatus.SELECTION_CONFIRMED,
+        RfqStatus.NEGOTIATION,
+        RfqStatus.CANCELLED,
+      ],
+      [RfqStatus.NEGOTIATION]: [
+        RfqStatus.AWARD_PENDING,
+        RfqStatus.SELECTION_CONFIRMED,
+        RfqStatus.CANCELLED,
+      ],
+      [RfqStatus.SELECTION_CONFIRMED]: [RfqStatus.AWARD_PENDING],
+      [RfqStatus.AWARD_PENDING]: [RfqStatus.AWARDED, RfqStatus.CANCELLED],
+      [RfqStatus.AWARDED]: [RfqStatus.CLOSED],
+      [RfqStatus.CLOSED]: [],
+      [RfqStatus.CANCELLED]: [],
+    };
+
+    const allowed = ALLOWED_TRANSITIONS[rfq.status] ?? [];
+    if (!allowed.includes(status)) {
+      throw new BadRequestException(
+        `Không thể chuyển trạng thái RFQ từ ${rfq.status} sang ${status}. Các trạng thái hợp lệ: [${allowed.join(', ') || 'none'}]`,
+      );
+    }
+
     return this.repository.updateStatus(id, status);
   }
 
@@ -302,7 +410,7 @@ export class RfqmoduleService {
       throw new BadRequestException('Supplier is not invited for this RFQ');
     }
 
-    const quotationNumber = `QUO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const quotationNumber = generateDocNumber('QUO');
     return this.repository.createQuotation(
       rfqId,
       createQuotationDto.supplierId,
@@ -337,7 +445,45 @@ export class RfqmoduleService {
     if (!quotation) {
       throw new NotFoundException(`Quotation with ID ${id} not found`);
     }
-    return this.repository.submitQuotation(id);
+    const result = await this.repository.submitQuotation(id);
+
+    // Gửi email QUOTATION_RECEIVED cho người tạo RFQ (procurement)
+    void this.notifyQuotationReceived(
+      quotation.rfqId,
+      quotation.supplierId,
+    ).catch(() => {});
+
+    return result;
+  }
+
+  private async notifyQuotationReceived(rfqId: string, supplierId: string) {
+    const [rfq, supplierOrg, quotationCount] = await Promise.all([
+      this.prisma.rfqRequest.findUnique({
+        where: { id: rfqId },
+        include: { createdBy: true },
+      }),
+      this.prisma.organization.findUnique({ where: { id: supplierId } }),
+      this.prisma.rfqQuotation.count({ where: { rfqId } }),
+    ]);
+
+    if (!rfq || !(rfq.createdBy as any)?.email) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const creator = rfq.createdBy as any;
+    await this.notificationService.sendDirectEmail(
+      creator.email as string,
+      `[Báo giá mới] ${rfq.rfqNumber} — ${rfq.title ?? ''}`,
+      'QUOTATION_RECEIVED',
+      {
+        name: (creator.fullName as string) || (creator.email as string),
+        rfqNumber: rfq.rfqNumber,
+        rfqTitle: rfq.title ?? '',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        supplierName: (supplierOrg as any)?.name ?? 'Nhà cung cấp',
+        quotationCount,
+        loginUrl: process.env['FRONTEND_URL'] ?? '#',
+      },
+    );
   }
 
   /**
@@ -588,6 +734,42 @@ export class RfqmoduleService {
    * @param awardedById ID của người thực hiện trao thầu
    * @returns Thông tin RFQ sau khi trao thầu
    */
+  async findRfqBySupplier(supplierId: string) {
+    const rfqSuppliers = await this.prisma.rfqSupplier.findMany({
+      where: { supplierId },
+      include: {
+        rfq: {
+          include: {
+            items: true,
+            pr: {
+              include: {
+                department: true,
+              },
+            },
+            createdBy: true,
+            suppliers: {
+              include: {
+                supplier: true,
+              },
+            },
+            quotations: {
+              where: { supplierId },
+            },
+          },
+        },
+      },
+      orderBy: { invitedAt: 'desc' },
+    });
+
+    return rfqSuppliers.map((rs) => ({
+      ...rs.rfq,
+      supplierStatus: rs.status,
+      invitedAt: rs.invitedAt,
+      respondedAt: rs.respondedAt,
+      hasQuotation: rs.rfq.quotations.length > 0,
+    }));
+  }
+
   async awardQuotation(
     rfqId: string,
     quotationId: string,

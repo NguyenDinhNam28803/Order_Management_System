@@ -22,10 +22,14 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UserModule } from './entities/user-module.entity';
+import { CreateUserDelegationDto } from './dto/user-delegation.dto';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('User Module')
 @Controller('users')
 @ApiBearerAuth('JWT-auth')
+@Throttle({ default: { limit: 30, ttl: 60000 } })
 export class UserModuleController {
   constructor(private readonly userModuleService: UserModuleService) {}
 
@@ -40,9 +44,51 @@ export class UserModuleController {
       'Trả về thông tin chi tiết của người dùng hiện tại dựa trên JWT đã xác thực',
   })
   @ApiResponse({ status: 200, type: UserModule })
-  getProfile(@Request() req) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  getProfile(@Request() req: { user: JwtPayload }) {
     return this.userModuleService.findOne(req.user.sub);
+  }
+
+  // --- Delegation APIs ---
+
+  /**
+   * Tạo một ủy quyền mới (Ủy quyền cho người khác duyệt thay mình)
+   */
+  @UseGuards(JwtAuthGuard)
+  @Post('delegations')
+  @ApiOperation({
+    summary: 'Tạo ủy quyền phê duyệt mới',
+    description:
+      'Thiết lập một người dùng khác phê duyệt thay thế mình trong một khoảng thời gian nhất định',
+  })
+  async createDelegation(
+    @Body() dto: CreateUserDelegationDto,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.userModuleService.createDelegation(dto, req.user);
+  }
+
+  /**
+   * Lấy danh sách các ủy quyền tôi đã tạo
+   */
+  @UseGuards(JwtAuthGuard)
+  @Get('delegations/me')
+  @ApiOperation({ summary: 'Lấy danh sách các ủy quyền của tôi' })
+  async getMyDelegations(@Request() req: { user: JwtPayload }) {
+    return this.userModuleService.findMyDelegations(req.user.sub);
+  }
+
+  /**
+   * Bật/Tắt một bản ghi ủy quyền
+   */
+  @UseGuards(JwtAuthGuard)
+  @Patch('delegations/:id/toggle')
+  @ApiOperation({ summary: 'Bật/Tắt trạng thái ủy quyền' })
+  async toggleDelegation(
+    @Param('id') id: string,
+    @Body('isActive') isActive: boolean,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.userModuleService.toggleDelegation(id, req.user.sub, isActive);
   }
 
   /**
@@ -62,15 +108,16 @@ export class UserModuleController {
   }
 
   /**
-   * Lấy danh sách tất cả người dùng trong hệ thống
+   * Lấy danh sách tất cả người dùng trong công ty của admin
    */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.PLATFORM_ADMIN)
   @Get()
-  @ApiOperation({ summary: 'Lấy danh sách tất cả người dùng' })
+  @ApiOperation({ summary: 'Lấy danh sách người dùng trong công ty' })
   @ApiResponse({ status: 200, type: [UserModule] })
-  findAll() {
-    return this.userModuleService.findAll();
+  findAll(@Request() req: { user: JwtPayload }) {
+    // Filter users by admin's organization
+    return this.userModuleService.findAll({ orgId: req.user.orgId });
   }
 
   /**

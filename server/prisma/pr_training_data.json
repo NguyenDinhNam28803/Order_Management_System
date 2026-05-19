@@ -1,0 +1,54 @@
+[
+  {
+    "id": "1f503031-12d9-41d1-8314-815d786a5647",
+    "prNumber": "PR-2026-5889",
+    "features": {
+      "title": "a",
+      "description": "",
+      "justification": "a",
+      "totalAmount": 1400000,
+      "currency": "VND",
+      "priority": 2,
+      "department": "Information Technology",
+      "costCenter": "Chi phí vần hành phòng IT ",
+      "requesterRole": "REQUESTER",
+      "requesterTrustScore": 100,
+      "itemsCount": 1,
+      "itemsSummary": "Chuột không dây Logitech (Qty: 4)",
+      "budgetStatus": {
+        "allocated": 200000000,
+        "remaining": 200000000,
+        "isOverBudget": false
+      }
+    },
+    "label": 1,
+    "decision": "APPROVED",
+    "approverComment": ""
+  },
+  {
+    "id": "dcaae80d-c2b2-4134-a836-9a515ad0671b",
+    "prNumber": "PR-2026-4959",
+    "features": {
+      "title": "mua chuột",
+      "description": "",
+      "justification": "Thiếu chuột",
+      "totalAmount": 1400000,
+      "currency": "VND",
+      "priority": 2,
+      "department": "Information Technology",
+      "costCenter": "Chi phí vần hành phòng IT ",
+      "requesterRole": "REQUESTER",
+      "requesterTrustScore": 100,
+      "itemsCount": 1,
+      "itemsSummary": "Chuột không dây Logitech (Qty: 4)",
+      "budgetStatus": {
+        "allocated": 200000000,
+        "remaining": 200000000,
+        "isOverBudget": false
+      }
+    },
+    "label": 1,
+    "decision": "APPROVED",
+    "approverComment": ""
+  }
+]

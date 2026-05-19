@@ -110,12 +110,4 @@ export class ProductModuleRepository {
 
   //   return results;
   // }
-
-  async responsetest() {
-    // Giả sử service AI có hàm này, nếu không bạn hãy xóa đi
-    if (typeof this.aiService['responsetest'] === 'function') {
-      return this.aiService['responsetest']();
-    }
-    return { message: 'responsetest method not found in AiService' };
-  }
 }

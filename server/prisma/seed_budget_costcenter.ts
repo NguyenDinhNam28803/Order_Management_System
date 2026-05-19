@@ -24,7 +24,7 @@ async function main() {
     data: {
       orgId: costCenter.orgId,
       fiscalYear: 2026,
-      periodType: 'QUARTER',
+      periodType: 'QUARTERLY',
       periodNumber: 1,
       startDate: new Date('2026-01-01'),
       endDate: new Date('2026-03-31'),

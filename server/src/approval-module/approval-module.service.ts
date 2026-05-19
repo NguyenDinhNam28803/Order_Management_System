@@ -1,28 +1,51 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { AutomationService } from '../common/automation/automation.service';
+import { EventsGateway } from '../gateway/events.gateway';
 import {
   DocumentType,
   ApprovalStatus,
   UserRole,
   PrStatus,
   PoStatus,
+  GrnStatus,
+  InvoiceStatus,
+  PaymentStatus,
+  VettingStatus,
+  ContractStatus,
 } from '@prisma/client';
+import { BudgetModuleService } from '../budget-module/budget-module.service';
+import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { UserModuleService } from '../user-module/user-module.service';
+import { AuditModuleService } from '../audit-module/audit-module.service';
+import { NotificationModuleService } from '../notification-module/notification-module.service';
 
 @Injectable()
 export class ApprovalModuleService {
+  private readonly logger = new Logger(ApprovalModuleService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly automationService: AutomationService,
+    @Inject(forwardRef(() => BudgetModuleService))
+    private readonly budgetService: BudgetModuleService,
+    private readonly userService: UserModuleService,
+    private readonly auditService: AuditModuleService,
+    private readonly notificationService: NotificationModuleService,
+    private readonly eventsGateway: EventsGateway,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
    * 1. Khởi tạo luồng duyệt (Initiate Workflow)
-   * Hàm này quét bảng ApprovalMatrixRule để tạo ra các bước duyệt cụ thể trong ApprovalWorkflow.
    */
   async initiateWorkflow(params: {
     docType: DocumentType;
@@ -30,10 +53,33 @@ export class ApprovalModuleService {
     totalAmount: number;
     orgId: string;
     requesterId: string;
+    user?: JwtPayload;
   }) {
-    const { docType, docId, totalAmount, orgId, requesterId } = params;
+    const { docType, docId, totalAmount, orgId, requesterId, user } = params;
 
-    // A. Tìm các quy tắc (Rules) phù hợp với loại tài liệu và hạn mức tiền
+    // Idempotency guard: if workflow steps already exist for this document,
+    // the previous attempt created them but failed before updating status —
+    // just update the status and return to avoid duplicate workflow chains.
+    const existingSteps = await this.prisma.approvalWorkflow.count({
+      where: { documentType: docType, documentId: docId },
+    });
+    if (existingSteps > 0) {
+      const hasPending = await this.prisma.approvalWorkflow.count({
+        where: {
+          documentType: docType,
+          documentId: docId,
+          status: ApprovalStatus.PENDING,
+        },
+      });
+      const retryStatus = hasPending > 0 ? 'PENDING_APPROVAL' : 'APPROVED';
+      await this.updateSourceDocumentStatus(docType, docId, retryStatus, user);
+      return {
+        message: 'Workflow already exists, status synced',
+        stepsCreated: existingSteps,
+        allAutoApproved: hasPending === 0,
+      };
+    }
+
     const rules = await this.prisma.approvalMatrixRule.findMany({
       where: {
         orgId,
@@ -45,33 +91,38 @@ export class ApprovalModuleService {
     });
 
     if (rules.length === 0) {
-      // Nếu không có luật nào, tự động duyệt tài liệu
-      console.log(`No rules found for ${docType} ${docId}. Auto-approving...`);
-      await this.updateSourceDocumentStatus(docType, docId, 'APPROVED');
+      this.logger.log(
+        `No rules found for ${docType} ${docId}. Auto-approving...`,
+      );
+      await this.updateSourceDocumentStatus(docType, docId, 'APPROVED', user);
       return { message: 'No rules found. Document auto-approved.' };
     }
 
-    // B. Tạo các bước duyệt (Workflow Steps)
-    const workflowData: Array<{
-      documentType: DocumentType;
-      documentId: string;
-      step: number;
-      approverId: string;
-      status: ApprovalStatus;
-      dueAt: Date;
-    }> = [];
+    const workflowData: any[] = [];
+    let allAutoApproved = true;
 
     for (const rule of rules) {
-      const approverId = await this.resolveApproverId(
+      const originalApproverId = await this.resolveApproverId(
         rule.approverRole,
         requesterId,
         orgId,
       );
 
-      if (!approverId) {
+      if (!originalApproverId) {
         throw new NotFoundException(
           `Không tìm thấy người duyệt có vai trò ${rule.approverRole} trong tổ chức.`,
         );
+      }
+
+      const delegateId =
+        await this.userService.getActiveDelegate(originalApproverId);
+      const approverId = delegateId ? delegateId : originalApproverId;
+      const delegatedFromId = delegateId ? originalApproverId : null;
+
+      // Tự động duyệt nếu người yêu cầu chính là người duyệt
+      const isAutoApproved = approverId === requesterId;
+      if (!isAutoApproved) {
+        allAutoApproved = false;
       }
 
       workflowData.push({
@@ -79,37 +130,98 @@ export class ApprovalModuleService {
         documentId: docId,
         step: rule.level,
         approverId: approverId,
-        status:
-          rule.level === 1 ? ApprovalStatus.PENDING : ApprovalStatus.PENDING, // Hoặc WAITING cho step > 1
+        delegatedFromId: delegatedFromId,
+        status: isAutoApproved
+          ? ApprovalStatus.APPROVED
+          : ApprovalStatus.PENDING,
+        actionedAt: isAutoApproved ? new Date() : null,
+        comment: isAutoApproved
+          ? 'Hệ thống tự động duyệt (Người yêu cầu là người duyệt)'
+          : null,
         dueAt: new Date(Date.now() + rule.slaHours * 60 * 60 * 1000),
       });
     }
 
-    // C. Lưu tất cả các bước vào database
-    await this.prisma.approvalWorkflow.createMany({
-      data: workflowData,
-    });
+    await this.prisma.approvalWorkflow.createMany({ data: workflowData });
 
-    // D. Cập nhật trạng thái tài liệu gốc sang 'PENDING_APPROVAL'
-    await this.updateSourceDocumentStatus(docType, docId, 'PENDING_APPROVAL');
+    const finalStatus = allAutoApproved ? 'APPROVED' : 'PENDING_APPROVAL';
+    try {
+      await this.updateSourceDocumentStatus(docType, docId, finalStatus, user);
+    } catch (err) {
+      // Status update failed — roll back workflow so the idempotency guard above
+      // doesn't block a clean retry on the next submit attempt.
+      await this.prisma.approvalWorkflow.deleteMany({
+        where: { documentType: docType, documentId: docId },
+      });
+      throw err;
+    }
+
+    // ── Gửi email thông báo cho từng approver chưa được tự động duyệt ────────
+    if (!allAutoApproved) {
+      const docLabel = this.getDocumentLabel(docType);
+      const pendingSteps = workflowData.filter(
+        (s) => s.status === ApprovalStatus.PENDING,
+      );
+
+      if (pendingSteps.length > 0) {
+        // Batch-load tất cả approvers trong 1 query thay vì N queries
+        const approverIds = pendingSteps.map((s) => s.approverId);
+        const approvers = await this.prisma.user.findMany({
+          where: { id: { in: approverIds } },
+        });
+        const approverMap = new Map(approvers.map((u) => [u.id, u]));
+
+        // Load document 1 lần thay vì lặp lại N lần trong notifyApprover
+        let prDoc: any = null;
+        if (docType === DocumentType.PURCHASE_REQUISITION) {
+          prDoc = await this.prisma.purchaseRequisition.findUnique({
+            where: { id: docId },
+            include: {
+              requester: { select: { fullName: true } },
+              department: { select: { name: true } },
+            },
+          });
+        }
+
+        for (const step of pendingSteps) {
+          const approver = approverMap.get(step.approverId);
+          if (!approver) continue;
+          this.notifyApproverWithData(
+            approver,
+            docLabel,
+            docId,
+            totalAmount,
+            docType,
+            prDoc,
+          ).catch((err: Error) =>
+            this.logger.error(
+              `notifyApproverWithData failed for approver ${approver.id}: ${err.message}`,
+              err.stack,
+            ),
+          );
+        }
+      }
+    }
 
     return {
-      message: 'Workflow initiated successfully',
+      message: allAutoApproved
+        ? 'Workflow auto-approved'
+        : 'Workflow initiated successfully',
       stepsCreated: workflowData.length,
+      allAutoApproved,
     };
   }
 
   /**
    * 2. Xử lý hành động duyệt (Approve/Reject)
-   * Người dùng nhấn nút 'Duyệt' hoặc 'Từ chối' trên UI.
    */
   async handleAction(
     workflowId: string,
-    userId: string,
+    user: JwtPayload,
     action: 'APPROVE' | 'REJECT',
     comment?: string,
   ) {
-    // A. Kiểm tra bước duyệt hiện tại
+    const userId = user.sub;
     const currentStep = await this.prisma.approvalWorkflow.findUnique({
       where: { id: workflowId },
     });
@@ -123,7 +235,6 @@ export class ApprovalModuleService {
       throw new BadRequestException('Bước duyệt này đã được xử lý trước đó.');
     }
 
-    // B. Cập nhật trạng thái bước hiện tại
     const newStatus =
       action === 'APPROVE' ? ApprovalStatus.APPROVED : ApprovalStatus.REJECTED;
 
@@ -136,18 +247,28 @@ export class ApprovalModuleService {
       },
     });
 
-    // C. Logic rẽ nhánh (Branching)
     if (action === 'REJECT') {
-      // Nếu có 1 người từ chối -> Toàn bộ tài liệu bị REJECTED ngay lập tức
       await this.updateSourceDocumentStatus(
         currentStep.documentType,
         currentStep.documentId,
         'REJECTED',
+        user,
       );
+      this.notifyRequesterOnResult(
+        currentStep.documentType,
+        currentStep.documentId,
+        'REJECTED',
+        comment,
+      ).catch((err: Error) =>
+        this.logger.error(
+          `notifyRequesterOnResult (REJECTED) failed: ${err.message}`,
+          err.stack,
+        ),
+      );
+      this.emitApprovalEvent(currentStep, 'REJECTED', user.orgId);
       return { status: 'REJECTED', message: 'Tài liệu đã bị từ chối.' };
     }
 
-    // D. Nếu DUYỆT -> Kiểm tra xem còn bước nào tiếp theo chưa duyệt không
     const remainingSteps = await this.prisma.approvalWorkflow.findMany({
       where: {
         documentType: currentStep.documentType,
@@ -159,18 +280,48 @@ export class ApprovalModuleService {
     });
 
     if (remainingSteps.length === 0) {
-      // Đã duyệt hết tất cả các cấp -> Tài liệu được duyệt hoàn toàn
       await this.updateSourceDocumentStatus(
         currentStep.documentType,
         currentStep.documentId,
         'APPROVED',
+        user,
       );
+      // Thông báo cho người yêu cầu biết tài liệu đã được duyệt hoàn toàn
+      this.notifyRequesterOnResult(
+        currentStep.documentType,
+        currentStep.documentId,
+        'APPROVED',
+      ).catch((err: Error) =>
+        this.logger.error(
+          `notifyRequesterOnResult (APPROVED) failed: ${err.message}`,
+          err.stack,
+        ),
+      );
+      this.emitApprovalEvent(currentStep, 'APPROVED', user.orgId);
       return {
         status: 'FULLY_APPROVED',
         message: 'Tài liệu đã được duyệt hoàn toàn.',
       };
     } else {
-      // Còn các bước sau -> Tiếp tục chờ cấp tiếp theo duyệt
+      // Gửi email cho approver của bước tiếp theo
+      const nextStep = remainingSteps[0];
+      const docLabel = this.getDocumentLabel(currentStep.documentType);
+      const docAmount = await this.getDocumentAmount(
+        currentStep.documentType,
+        currentStep.documentId,
+      );
+      this.notifyApprover(
+        nextStep.approverId,
+        docLabel,
+        currentStep.documentId,
+        docAmount,
+        currentStep.documentType,
+      ).catch((err: Error) =>
+        this.logger.error(
+          `notifyApprover (next step) failed for approver ${nextStep.approverId}: ${err.message}`,
+          err.stack,
+        ),
+      );
       return {
         status: 'PARTIALLY_APPROVED',
         message: 'Đã duyệt cấp hiện tại, đang chờ cấp tiếp theo.',
@@ -178,16 +329,12 @@ export class ApprovalModuleService {
     }
   }
 
-  /**
-   * Helper: Chuyển đổi từ Vai trò (Role) sang ID người dùng cụ thể (User ID)
-   */
   private async resolveApproverId(
     role: UserRole,
     requesterId: string,
     orgId: string,
   ): Promise<string | null> {
     if (role === UserRole.DEPT_APPROVER) {
-      // Tìm Trưởng phòng của người yêu cầu (Requester)
       const requester = await this.prisma.user.findUnique({
         where: { id: requesterId },
         include: { department: true },
@@ -195,8 +342,6 @@ export class ApprovalModuleService {
       return requester?.department?.headUserId || null;
     }
 
-    // Với các vai trò công ty (CEO, Director, Finance, Procurement)
-    // Tìm người đầu tiên đang hoạt động có vai trò này trong cùng công ty.
     const user = await this.prisma.user.findFirst({
       where: {
         orgId,
@@ -210,74 +355,681 @@ export class ApprovalModuleService {
 
   /**
    * Helper: Cập nhật trạng thái của tài liệu nguồn (PR, PO, GRN, v.v.)
+   * Đảm bảo khớp hoàn toàn với Enum trong schema.prisma
    */
   private async updateSourceDocumentStatus(
     type: DocumentType,
     id: string,
-    status: string,
+    actionStatus: 'APPROVED' | 'REJECTED' | 'PENDING_APPROVAL',
+    user?: JwtPayload,
   ) {
-    const data: any = { status };
-
-    // Tùy vào trạng thái cuối cùng, ta có thể cập nhật thêm ngày duyệt
-    if (status === 'APPROVED') {
-      data.approvedAt = new Date();
-      // Kích hoạt tự động hóa
-      void this.automationService.handleDocumentApproved(type, id);
-    }
-
     switch (type) {
-      case DocumentType.PURCHASE_REQUISITION:
+      case DocumentType.PURCHASE_REQUISITION: {
+        let status: PrStatus = PrStatus.PENDING_APPROVAL;
+        if (actionStatus === 'APPROVED') status = PrStatus.APPROVED;
+        if (actionStatus === 'REJECTED') status = PrStatus.REJECTED;
+
+        const pr = await this.prisma.purchaseRequisition.findUnique({
+          where: { id },
+        });
+
+        if (
+          pr &&
+          actionStatus === 'REJECTED' &&
+          pr.status !== PrStatus.REJECTED &&
+          user
+        ) {
+          if (pr.costCenterId) {
+            await this.budgetService.releaseBudget(
+              pr.costCenterId,
+              pr.orgId,
+              Number(pr.totalEstimate),
+              user,
+            );
+          }
+        }
+
         await this.prisma.purchaseRequisition.update({
           where: { id },
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          data: { status: status as PrStatus, approvedAt: data.approvedAt },
+          data: {
+            status,
+            approvedAt: actionStatus === 'APPROVED' ? new Date() : undefined,
+          },
         });
         break;
-      case DocumentType.PURCHASE_ORDER:
-        await this.prisma.$transaction(async (tx) => {
-          const po = await tx.purchaseOrder.findUnique({ where: { id } });
-          if (!po) return;
+      }
 
-          // Nếu bị từ chối, giải phóng ngân sách đã cam kết
-          if (status === 'REJECTED' && po.status !== PoStatus.REJECTED) {
-            if (po.deptId && po.costCenterId) {
-              const budget = await tx.budgetAllocation.findFirst({
-                where: {
-                  orgId: po.orgId,
-                  deptId: po.deptId,
-                  costCenterId: po.costCenterId,
-                  currency: po.currency,
-                },
-              });
-              if (budget) {
-                await tx.budgetAllocation.update({
-                  where: { id: budget.id },
-                  data: { committedAmount: { decrement: po.totalAmount } },
-                });
-              }
-            }
+      case DocumentType.PURCHASE_ORDER: {
+        let status: PoStatus = PoStatus.PENDING_APPROVAL;
+        if (actionStatus === 'APPROVED') status = PoStatus.APPROVED;
+        if (actionStatus === 'REJECTED') status = PoStatus.REJECTED;
+
+        const po = await this.prisma.purchaseOrder.findUnique({
+          where: { id },
+        });
+        if (
+          po &&
+          actionStatus === 'REJECTED' &&
+          po.status !== PoStatus.REJECTED &&
+          user
+        ) {
+          if (po.costCenterId) {
+            await this.budgetService.releaseBudget(
+              po.costCenterId,
+              po.orgId,
+              Number(po.totalAmount),
+              user,
+            );
           }
+        }
 
-          await tx.purchaseOrder.update({
-            where: { id },
-            data: { status: status as PoStatus },
-          });
+        await this.prisma.purchaseOrder.update({
+          where: { id },
+          data: { status },
         });
         break;
-      // Thêm các loại khác (GRN, INVOICE, PAYMENT) khi hệ thống mở rộng
+      }
+
+      case DocumentType.GRN: {
+        let status: GrnStatus = GrnStatus.DRAFT; // Default
+        if (actionStatus === 'APPROVED') status = GrnStatus.CONFIRMED;
+        if (actionStatus === 'REJECTED') status = GrnStatus.DISPUTED;
+        if (actionStatus === 'PENDING_APPROVAL')
+          status = GrnStatus.UNDER_REVIEW;
+
+        await this.prisma.goodsReceipt.update({
+          where: { id },
+          data: { status },
+        });
+        break;
+      }
+
+      case DocumentType.SUPPLIER_INVOICE: {
+        let status: InvoiceStatus = InvoiceStatus.SUBMITTED;
+        if (actionStatus === 'APPROVED')
+          status = InvoiceStatus.PAYMENT_APPROVED;
+        if (actionStatus === 'REJECTED') status = InvoiceStatus.REJECTED;
+
+        await this.prisma.supplierInvoice.update({
+          where: { id },
+          data: {
+            status,
+            approvedAt: actionStatus === 'APPROVED' ? new Date() : undefined,
+          },
+        });
+        break;
+      }
+
+      case DocumentType.PAYMENT: {
+        let status: PaymentStatus = PaymentStatus.PENDING;
+        if (actionStatus === 'APPROVED') status = PaymentStatus.COMPLETED;
+        if (actionStatus === 'REJECTED') status = PaymentStatus.FAILED;
+
+        await this.prisma.payment.update({
+          where: { id },
+          data: {
+            status,
+            approvedAt: actionStatus === 'APPROVED' ? new Date() : undefined,
+          },
+        });
+        break;
+      }
+
+      case DocumentType.BUDGET_ALLOCATION: {
+        let status = 'SUBMITTED'; // Default
+        let updateData: any = {};
+
+        if (actionStatus === 'APPROVED') {
+          status = 'APPROVED';
+
+          // Lấy BudgetAllocation để tạo budgetCode
+          const budget = await this.prisma.budgetAllocation.findUnique({
+            where: { id },
+            include: {
+              budgetPeriod: true,
+              department: true,
+              category: true,
+              costCenter: true,
+            },
+          });
+
+          if (budget) {
+            // Tạo budgetCode (giống như trong approveAllocation)
+            const deptCode =
+              budget.department?.code || budget.costCenter?.code || 'ORG';
+            const catCode = budget.category?.code || 'GEN';
+            const year = budget.budgetPeriod?.fiscalYear;
+            let periodCode = '';
+
+            switch (budget.budgetPeriod?.periodType) {
+              case 'MONTHLY':
+                periodCode = `M${budget.budgetPeriod?.periodNumber}`;
+                break;
+              case 'QUARTERLY':
+                periodCode = `Q${budget.budgetPeriod?.periodNumber}`;
+                break;
+              case 'ANNUAL':
+                periodCode = 'FY';
+                break;
+              case 'RESERVE':
+                periodCode = 'RS';
+                break;
+              default:
+                periodCode = `P${budget.budgetPeriod?.periodNumber}`;
+            }
+
+            const budgetCode =
+              `BG-${deptCode}-${catCode}-${year}-${periodCode}`.toUpperCase();
+
+            updateData = {
+              status,
+              budgetCode,
+              approvedById: user?.sub,
+              approvedAt: new Date(),
+            };
+          }
+        } else if (actionStatus === 'REJECTED') {
+          status = 'REJECTED';
+          updateData = {
+            status: ApprovalStatus.REJECTED,
+          };
+        } else if (actionStatus === 'PENDING_APPROVAL') {
+          status = 'SUBMITTED';
+          updateData = {
+            status: ApprovalStatus.PENDING,
+          };
+        }
+
+        await this.prisma.budgetAllocation.update({
+          where: { id },
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: updateData,
+        });
+        // await this.auditService.create(
+        //   {
+        //     action: 'APPROVE_BUDGET_ALLOCATION',
+        //     entityType: 'BudgetAllocation',
+        //     entityId: id,
+        //     oldValue: location,
+        //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        //     newValue: updateData,
+        //   },
+        //   user!,
+        // );
+        break;
+      }
+
+      case DocumentType.SUPPLIER_VETTING: {
+        let vStatus: VettingStatus = VettingStatus.PENDING_APPROVAL;
+        if (actionStatus === 'APPROVED') vStatus = VettingStatus.APPROVED;
+        if (actionStatus === 'REJECTED') vStatus = VettingStatus.REJECTED;
+        await this.prisma.supplierVettingRequest.update({
+          where: { id },
+          data: { status: vStatus },
+        });
+        break;
+      }
+
+      case DocumentType.CONTRACT: {
+        let cStatus: ContractStatus = ContractStatus.PENDING_SIGNATURE;
+        if (actionStatus === 'REJECTED') cStatus = ContractStatus.DRAFT;
+
+        await this.prisma.contract.update({
+          where: { id },
+          data: { status: cStatus },
+        });
+
+        // Khi được duyệt → thông báo cả hai bên cần ký
+        if (
+          actionStatus === 'APPROVED' ||
+          actionStatus === 'PENDING_APPROVAL'
+        ) {
+          void this.notifyContractSigningParties(id);
+        }
+        break;
+      }
+    }
+
+    if (actionStatus === 'APPROVED') {
+      this.automationService
+        .handleDocumentApproved(type, id)
+        .catch((err: Error) =>
+          this.logger.error(
+            `handleDocumentApproved failed for ${type} ${id}: ${err.message}`,
+            err.stack,
+          ),
+        );
     }
   }
 
-  /**
-   * Truy vấn danh sách việc cần duyệt cho người dùng hiện tại
-   */
   async getMyPendingApprovals(userId: string) {
     return this.prisma.approvalWorkflow.findMany({
       where: {
         approverId: userId,
         status: ApprovalStatus.PENDING,
       },
+      // include: {
+      //   purchaseRequisition: true,
+      // },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  // ── Helpers thông báo email ──────────────────────────────────────────────────
+
+  /** Gửi email với dữ liệu approver và document đã được load sẵn (tránh N+1). */
+  private async notifyApproverWithData(
+    approver: { id: string; email: string | null; fullName: string | null },
+    docLabel: string,
+    docId: string,
+    totalAmount: number,
+    docType?: DocumentType,
+    prDoc?: any,
+  ): Promise<void> {
+    try {
+      if (!approver.email) return;
+
+      const frontendUrl =
+        this.configService.get<string>('FRONTEND_URL') ?? 'http://procuresmart.io.vn/';
+
+      if (docType === DocumentType.PURCHASE_REQUISITION) {
+        await this.notificationService.sendDirectEmail(
+          approver.email,
+          `[OMS] Yêu cầu phê duyệt PR: ${prDoc?.prNumber ?? docId}`,
+          'PR_APPROVAL_LINK',
+          {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            prCode: prDoc?.prNumber ?? docId,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            prTitle: prDoc?.title ?? docLabel,
+            approverName: approver.fullName ?? approver.email,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            requesterName: prDoc?.requester?.fullName ?? 'Người dùng',
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            requesterDept: prDoc?.department?.name ?? '',
+            totalAmount,
+            remainingBudget: 0,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            justification: prDoc?.justification ?? '',
+            slaDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
+            approveLink: `${frontendUrl}/approvals`,
+            rejectLink: `${frontendUrl}/approvals`,
+            detailLink: `${frontendUrl}/pr/${docId}`,
+          },
+        );
+      } else {
+        await this.notificationService.sendDirectEmail(
+          approver.email,
+          `[OMS] Yêu cầu phê duyệt ${docLabel} mới`,
+          'PO_APPROVAL_REQUEST',
+          {
+            name: approver.fullName ?? approver.email,
+            docType: docLabel,
+            docId,
+            totalAmount:
+              new Intl.NumberFormat('vi-VN').format(totalAmount) + ' VNĐ',
+            approveLink: `${frontendUrl}/approvals`,
+          },
+        );
+      }
+    } catch (err: any) {
+      this.logger.warn(
+        `notifyApproverWithData failed for ${approver.id}: ${err.message}`,
+      );
+    }
+  }
+
+  /** Gửi email thông báo cho approver khi có tài liệu chờ duyệt */
+  private async notifyApprover(
+    approverId: string,
+    docLabel: string,
+    docId: string,
+    totalAmount: number,
+    docType?: DocumentType,
+  ): Promise<void> {
+    try {
+      const approver = await this.prisma.user.findUnique({
+        where: { id: approverId },
+      });
+      if (!approver?.email) return;
+
+      const frontendUrl =
+        this.configService.get<string>('FRONTEND_URL') ?? 'http://procuresmart.io.vn/';
+
+      if (docType === DocumentType.PURCHASE_REQUISITION) {
+        const pr = await this.prisma.purchaseRequisition.findUnique({
+          where: { id: docId },
+          include: {
+            requester: { select: { fullName: true } },
+            department: { select: { name: true } },
+          },
+        });
+
+        await this.notificationService.sendDirectEmail(
+          approver.email,
+          `[OMS] Yêu cầu phê duyệt PR: ${pr?.prNumber ?? docId}`,
+          'PR_APPROVAL_LINK',
+          {
+            prCode: pr?.prNumber ?? docId,
+            prTitle: pr?.title ?? docLabel,
+            approverName: approver.fullName ?? approver.email,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            requesterName: (pr?.requester as any)?.fullName ?? 'Người dùng',
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            requesterDept: (pr?.department as any)?.name ?? '',
+            totalAmount,
+            remainingBudget: 0,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            justification: (pr as any)?.justification ?? '',
+            slaDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
+            approveLink: `${frontendUrl}/approvals`,
+            rejectLink: `${frontendUrl}/approvals`,
+            detailLink: `${frontendUrl}/pr/${docId}`,
+          },
+        );
+      } else {
+        await this.notificationService.sendDirectEmail(
+          approver.email,
+          `[OMS] Yêu cầu phê duyệt ${docLabel} mới`,
+          'PO_APPROVAL_REQUEST',
+          {
+            name: approver.fullName ?? approver.email,
+            docType: docLabel,
+            docId,
+            totalAmount:
+              new Intl.NumberFormat('vi-VN').format(totalAmount) + ' VNĐ',
+            approveLink: `${frontendUrl}/approvals`,
+          },
+        );
+      }
+    } catch (err: any) {
+      this.logger.warn(
+        `notifyApprover failed for ${approverId}: ${err.message}`,
+      );
+    }
+  }
+
+  /** Gửi email thông báo kết quả (APPROVED / REJECTED) cho người yêu cầu */
+  private async notifyRequesterOnResult(
+    docType: DocumentType,
+    docId: string,
+    result: 'APPROVED' | 'REJECTED',
+    comment?: string,
+  ): Promise<void> {
+    try {
+      const requesterId = await this.getRequesterId(docType, docId);
+      if (!requesterId) return;
+
+      const requester = await this.prisma.user.findUnique({
+        where: { id: requesterId },
+      });
+      if (!requester?.email) return;
+
+      const docLabel = this.getDocumentLabel(docType);
+      const isPoOrPr =
+        docType === DocumentType.PURCHASE_REQUISITION ||
+        docType === DocumentType.PURCHASE_ORDER;
+      const eventType =
+        result === 'APPROVED'
+          ? 'PO_APPROVED'
+          : isPoOrPr
+            ? 'PR_REJECTED'
+            : 'PO_APPROVAL_REQUEST';
+      const subject =
+        result === 'APPROVED'
+          ? `[OMS] ${docLabel} của bạn đã được phê duyệt`
+          : `[OMS] ${docLabel} của bạn bị từ chối`;
+
+      await this.notificationService.sendDirectEmail(
+        requester.email,
+        subject,
+        eventType,
+        {
+          name: requester.fullName ?? requester.email,
+          docType: docLabel,
+          docId,
+          status: result === 'APPROVED' ? 'Đã phê duyệt' : 'Bị từ chối',
+          comment: comment ?? '',
+          detailLink: `${this.configService.get<string>('FRONTEND_URL') ?? ''}/pr`,
+        },
+      );
+    } catch (err: any) {
+      this.logger.warn(
+        `notifyRequesterOnResult failed for ${docId}: ${err.message}`,
+      );
+    }
+  }
+
+  /** Lấy requesterId từ tài liệu nguồn */
+  private async getRequesterId(
+    docType: DocumentType,
+    docId: string,
+  ): Promise<string | null> {
+    switch (docType) {
+      case DocumentType.PURCHASE_REQUISITION: {
+        const pr = await this.prisma.purchaseRequisition.findUnique({
+          where: { id: docId },
+          select: { requesterId: true },
+        });
+        return pr?.requesterId ?? null;
+      }
+      case DocumentType.PURCHASE_ORDER: {
+        const po = await this.prisma.purchaseOrder.findUnique({
+          where: { id: docId },
+          select: { buyerId: true },
+        });
+        return po?.buyerId ?? null;
+      }
+      case DocumentType.GRN: {
+        const grn = await this.prisma.goodsReceipt.findUnique({
+          where: { id: docId },
+          select: { receivedById: true },
+        });
+        return grn?.receivedById ?? null;
+      }
+      case DocumentType.SUPPLIER_INVOICE: {
+        // Invoice không có submittedById — dùng buyerId của PO liên quan
+        const invoice = await this.prisma.supplierInvoice.findUnique({
+          where: { id: docId },
+          select: { po: { select: { buyerId: true } } },
+        });
+        return invoice?.po?.buyerId ?? null;
+      }
+      case DocumentType.PAYMENT: {
+        const payment = await this.prisma.payment.findUnique({
+          where: { id: docId },
+          select: { createdById: true },
+        });
+        return payment?.createdById ?? null;
+      }
+      case DocumentType.BUDGET_ALLOCATION: {
+        const budget = await this.prisma.budgetAllocation.findUnique({
+          where: { id: docId },
+          select: { createdById: true },
+        });
+        return budget?.createdById ?? null;
+      }
+      case DocumentType.CONTRACT: {
+        const contract = await this.prisma.contract.findUnique({
+          where: { id: docId },
+          select: { createdById: true },
+        });
+        return contract?.createdById ?? null;
+      }
+      default:
+        return null;
+    }
+  }
+
+  /** Lấy giá trị tài liệu để hiển thị trong email thông báo bước duyệt tiếp theo */
+  private async getDocumentAmount(
+    docType: DocumentType,
+    docId: string,
+  ): Promise<number> {
+    switch (docType) {
+      case DocumentType.PURCHASE_REQUISITION: {
+        const pr = await this.prisma.purchaseRequisition.findUnique({
+          where: { id: docId },
+          select: { totalEstimate: true },
+        });
+        return Number(pr?.totalEstimate ?? 0);
+      }
+      case DocumentType.PURCHASE_ORDER: {
+        const po = await this.prisma.purchaseOrder.findUnique({
+          where: { id: docId },
+          select: { totalAmount: true },
+        });
+        return Number(po?.totalAmount ?? 0);
+      }
+      case DocumentType.SUPPLIER_INVOICE: {
+        const invoice = await this.prisma.supplierInvoice.findUnique({
+          where: { id: docId },
+          select: { totalAmount: true },
+        });
+        return Number(invoice?.totalAmount ?? 0);
+      }
+      case DocumentType.PAYMENT: {
+        const payment = await this.prisma.payment.findUnique({
+          where: { id: docId },
+          select: { amount: true },
+        });
+        return Number(payment?.amount ?? 0);
+      }
+      case DocumentType.BUDGET_ALLOCATION: {
+        const budget = await this.prisma.budgetAllocation.findUnique({
+          where: { id: docId },
+          select: { allocatedAmount: true },
+        });
+        return Number(budget?.allocatedAmount ?? 0);
+      }
+      case DocumentType.CONTRACT: {
+        const contract = await this.prisma.contract.findUnique({
+          where: { id: docId },
+          select: { value: true },
+        });
+        return Number(contract?.value ?? 0);
+      }
+      default:
+        return 0;
+    }
+  }
+
+  /** Trả về tên hiển thị của loại tài liệu */
+  private getDocumentLabel(docType: DocumentType): string {
+    const labels: Partial<Record<DocumentType, string>> = {
+      [DocumentType.PURCHASE_REQUISITION]: 'Phiếu yêu cầu mua hàng (PR)',
+      [DocumentType.PURCHASE_ORDER]: 'Đơn đặt hàng (PO)',
+      [DocumentType.GRN]: 'Biên bản nhận hàng (GRN)',
+      [DocumentType.SUPPLIER_INVOICE]: 'Hóa đơn nhà cung cấp',
+      [DocumentType.PAYMENT]: 'Thanh toán',
+      [DocumentType.BUDGET_ALLOCATION]: 'Phân bổ ngân sách',
+      [DocumentType.SUPPLIER_VETTING]: 'Xét duyệt nhà cung cấp',
+      [DocumentType.CONTRACT]: 'Hợp đồng',
+    };
+    return labels[docType] ?? docType;
+  }
+
+  /** Gửi email yêu cầu ký cho cả bên mua lẫn nhà cung cấp */
+  private async notifyContractSigningParties(
+    contractId: string,
+  ): Promise<void> {
+    try {
+      const contract = await this.prisma.contract.findUnique({
+        where: { id: contractId },
+        include: { buyerOrg: true, supplierOrg: true },
+      });
+      if (!contract) return;
+
+      const frontendUrl =
+        this.configService.get<string>('FRONTEND_URL') ?? 'http://procuresmart.io.vn';
+      const baseData = {
+        contractNumber: contract.contractNumber,
+        contractTitle: contract.title,
+        value: Number(contract.value ?? 0),
+        currency: contract.currency,
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+      };
+
+      // ── Thông báo bên mua (PROCUREMENT / DIRECTOR / CEO) ──
+      const buyerUsers = await this.prisma.user.findMany({
+        where: {
+          orgId: contract.orgId,
+          role: { in: [UserRole.PROCUREMENT, UserRole.DIRECTOR, UserRole.CEO] },
+          isActive: true,
+        },
+        select: { email: true, fullName: true },
+      });
+
+      for (const u of buyerUsers) {
+        if (!u.email) continue;
+        void this.notificationService
+          .sendDirectEmail(
+            u.email,
+            `[OMS] Hợp đồng ${contract.contractNumber} cần chữ ký của bạn`,
+            'CONTRACT_SIGN_REQUEST',
+            {
+              ...baseData,
+              recipientName: u.fullName ?? u.email,
+              partnerName: contract.supplierOrg?.name ?? 'Nhà cung cấp',
+              signingLink: `${frontendUrl}/procurement/contracts/${contractId}`,
+              role: 'buyer',
+            },
+          )
+          .catch(() => {});
+      }
+
+      // ── Thông báo nhà cung cấp (SUPPLIER role trong supplier org) ──
+      const supplierUsers = await this.prisma.user.findMany({
+        where: {
+          orgId: contract.supplierId,
+          role: UserRole.SUPPLIER,
+          isActive: true,
+        },
+        select: { email: true, fullName: true },
+      });
+
+      for (const u of supplierUsers) {
+        if (!u.email) continue;
+        void this.notificationService
+          .sendDirectEmail(
+            u.email,
+            `[OMS] Hợp đồng ${contract.contractNumber} cần chữ ký của bạn`,
+            'CONTRACT_SIGN_REQUEST',
+            {
+              ...baseData,
+              recipientName: u.fullName ?? u.email,
+              partnerName: contract.buyerOrg?.name ?? 'Bên mua',
+              signingLink: `${frontendUrl}/supplier/contracts`,
+              role: 'supplier',
+            },
+          )
+          .catch(() => {});
+      }
+
+      this.logger.log(
+        `Sent CONTRACT_SIGN_REQUEST to ${buyerUsers.length} buyer(s) and ${supplierUsers.length} supplier(s) for contract ${contract.contractNumber}`,
+      );
+    } catch (err: any) {
+      this.logger.warn(`notifyContractSigningParties failed: ${err.message}`);
+    }
+  }
+
+  private emitApprovalEvent(
+    step: any,
+    status: 'APPROVED' | 'REJECTED',
+    orgId: string,
+  ) {
+    try {
+      this.eventsGateway.emitApprovalUpdate(orgId, {
+        workflowId: step.id as string,
+        documentId: step.documentId as string,
+        documentType: step.documentType as string,
+        status,
+        approverId: step.approverId as string | undefined,
+      });
+    } catch {
+      // Never block the main flow on WS emit failure
+    }
   }
 }

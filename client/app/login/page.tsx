@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
-import { Lock, Mail, ArrowRight, ShieldCheck, Zap } from "lucide-react";
+import { Lock, Mail, ArrowRight, ShieldCheck, Zap, ChevronLeft, ChevronRight, PanelRightOpen, PanelRightClose, X } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
@@ -14,168 +14,160 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const token = Cookies.get('accessToken');
-    if(token) {
-        // We could redirect here, but usually it's handled in a layout or middleware
-        // console.log("User already logged in");
-    }
+    const demoUsers = [
+        { name: "IT Requester", email: "itrequesterprocuresmart@gmail.com", role: "REQUESTER" },
+        { name: "IT Manager", email: "lyhung.dn81@gmail.com", role: "DEPT_APPROVER" },
+        { name: "Procurement", email: "procurementprocuresmart@gmail.com", role: "PROCUREMENT" },
+        { name: "Finance", email: "financeprocuresmart@gmail.com", role: "FINANCE" },
+        { name: "Warehouse", email: "hunglctb00380@fpt.edu.vn", role: "WAREHOUSE" },
+        { name: "Admin", email: "adminprocuresmart@gmail.com", role: "PLATFORM_ADMIN" },
+    ];
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
-        
-        const success = await login(email, password);
-        if (success) {
-            router.push("/");
-        } else {
-            setError("Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.");
+
+        try {
+            const success = await login(email, password);
+            if (success) {
+                const userCookie = Cookies.get('user');
+                const user = userCookie ? JSON.parse(userCookie) : null;
+                if (user?.role === 'SUPPLIER') {
+                    router.push("/supplier");
+                } else {
+                    router.push("/");
+                }
+            } else {
+                setError("Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.");
+                setIsLoading(false);
+            }
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Đã xảy ra lỗi trong quá trình đăng nhập.";
+            setError(errorMessage);
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center p-6 relative overflow-hidden">
-            {/* Background Decorations */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full"></div>
+        <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-[#2563EB] selection:text-white">
+            {/* Top Bar */}
+            <div className="h-12 border-b border-[#E2E8F0] flex items-center justify-between px-6 bg-[#F1F5F9] z-50">
+                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">Sign In</div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#94A3B8]">
+                    /Login — <span className="text-slate-900">Editorial Split Layout</span>
+                </div>
+            </div>
 
-            <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 relative z-10 items-center">
-                {/* Visual Section */}
-                <div className="hidden md:block pr-8 animate-in fade-in slide-in-from-left-12 duration-700">
-                    <div className="inline-flex items-center justify-center h-20 w-20 bg-blue-600 rounded-3xl shadow-2xl shadow-blue-500/30 mb-8 border border-white/10">
-                        <ShieldCheck size={40} className="text-white" />
-                    </div>
-                    <h1 className="text-6xl font-black text-white tracking-tighter mb-4 uppercase leading-none">
-                        Procure<span className="text-blue-500">Pro</span>
-                    </h1>
-                    <p className="text-slate-400 text-lg font-medium mb-12 max-w-md">
-                        Hệ thống Quản trị Mua sắm & Chuỗi cung ứng tập trung dành cho doanh nghiệp Enterprise.
-                    </p>
-                    
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Tài khoản Demo (Quick Login):</div>
-                            <div className="text-[10px] font-black text-blue-500 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">{users?.length || 0} Roles available</div>
+            <div className="flex-1 flex flex-col md:flex-row">
+                {/* Left Panel - Brand */}
+                <div className="flex-1 bg-[#0F172A] relative flex flex-col justify-center px-12 md:px-20 py-20 overflow-hidden">
+                    {/* Background Subtle Gradient */}
+                    <div className="absolute inset-0 bg-linear-to-br from-[#2A2A25] to-transparent opacity-50"></div>
+
+                    <div className="relative z-10 flex flex-col h-full">
+                        <div className="flex items-center gap-3 mb-auto">
+                            <div className="w-10 h-10 bg-[#2563EB] rounded-lg flex items-center justify-center text-white font-serif text-xl font-bold shadow-xl shadow-[#2563EB]/20">P</div>
+                            <span className="text-xl font-serif font-black text-bg-primary tracking-tight">ProcureSmart</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
-                            {users?.map((u: any) => (
-                                <button 
-                                    key={u.id}
-                                    type="button"
-                                    onClick={() => { setEmail(u.email); setPassword("password123"); }}
-                                    className="bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/40 p-4 rounded-2xl text-left transition-all group relative overflow-hidden active:scale-95"
-                                >
-                                    <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-100 transition-opacity">
-                                        <Zap size={12} className="text-blue-400" />
-                                    </div>
-                                    <div className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1 truncate">{u.role?.replace('_', ' ')}</div>
-                                    <div className="text-sm font-black text-white group-hover:text-blue-100 truncate">{u.name || u.fullName}</div>
-                                </button>
-                            ))}
+
+                        <div className="my-auto max-w-xl">
+                            <h1 className="text-5xl md:text-7xl font-serif font-bold leading-[1.1] tracking-tight mb-8">
+                                <span className="text-white">Mua sắm thông minh,</span> <span className="italic text-[#2563EB]">quy trình tinh gọn.</span>
+                            </h1>
+                            <p className="text-lg md:text-xl text-[#94A3B8] leading-relaxed font-medium max-w-lg">
+                                Một hệ thống duy nhất cho toàn bộ chu trình Procure-to-Pay — từ yêu cầu, phê duyệt đa cấp, RFQ, nhập kho đến đối soát và thanh toán. Tự động hoá bằng AI, minh bạch bằng audit trail.
+                            </p>
+                        </div>
+
+                        <div className="mt-auto pt-12 flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-[#55554F]">
+                            <div>Phiên bản 4.2 • Q2 2026</div>
+                            <div>SSO • SOC 2 TYPE II</div>
                         </div>
                     </div>
                 </div>
 
-                {/* Login Form Section */}
-                <div className="w-full max-w-md mx-auto animate-in fade-in slide-in-from-right-12 duration-700">
-                    <div className="md:hidden text-center mb-10">
-                         <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">PROCURE<span className="text-blue-500">PRO</span></h1>
-                         <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Enterprise ERP System</p>
-                    </div>
-
-                    <div className="bg-[#0f1525] border border-white/10 rounded-[40px] p-10 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                        
-                        <div className="mb-10">
-                            <h2 className="text-xl font-black text-white uppercase tracking-widest mb-2">Đăng nhập</h2>
-                            <p className="text-slate-500 text-xs font-bold">Vui lòng nhập thông tin xác thực doanh nghiệp.</p>
+                {/* Right Panel - Form */}
+                <div className="flex-1 bg-[#F8FAFC] flex flex-col justify-center px-12 md:px-24 py-20 relative">
+                    <div className="max-w-md w-full mx-auto">
+                        <div className="mb-12">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#94A3B8] mb-4">Đăng nhập doanh nghiệp</p>
+                            <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900">
+                                Chào mừng <span className="italic font-medium text-[#6B6658]">trở lại.</span>
+                            </h2>
                         </div>
 
-                        <form onSubmit={handleLogin} className="space-y-6">
+                        <form onSubmit={handleLogin} className="space-y-8">
                             {error && (
-                                <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black py-4 px-4 rounded-2xl text-center uppercase tracking-widest animate-pulse">
+                                <div className="p-4 bg-[#A52A2A]/5 border border-[#A52A2A]/20 text-[#A52A2A] text-[10px] font-black uppercase tracking-widest rounded-xl">
                                     {error}
                                 </div>
                             )}
-                            
-                            <div className="space-y-2">
-                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Email Công ty</label>
-                                <div className="relative group">
-                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-slate-500 group-focus-within:text-blue-500 transition-colors">
-                                        <Mail size={20} />
-                                    </div>
-                                    <input
-                                        type="email"
-                                        required
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="name@company.com"
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-5 text-white text-sm outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 transition-all font-bold placeholder:text-slate-700"
-                                    />
-                                </div>
+
+                            <div className="space-y-3">
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#94A3B8] ml-1">Email Công ty</label>
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="lam@procuresmart.vn"
+                                    className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-6 py-4 text-slate-900 text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#E2E8F0]"
+                                />
                             </div>
 
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-end mb-2">
-                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Mật khẩu</label>
-                                    <button type="button" className="text-[9px] font-black text-blue-500 uppercase tracking-widest hover:text-blue-400 transition-colors">Quên mật khẩu?</button>
-                                </div>
-                                <div className="relative group">
-                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center text-slate-500 group-focus-within:text-blue-500 transition-colors">
-                                        <Lock size={20} />
-                                    </div>
-                                    <input
-                                        type="password"
-                                        required
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="••••••••"
-                                        className="w-full bg-[#161c31] border border-white/5 rounded-2xl pl-14 pr-6 py-5 text-white text-sm outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 transition-all font-bold placeholder:text-slate-700"
-                                    />
-                                </div>
+                            <div className="space-y-3">
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#94A3B8] ml-1">Mật khẩu</label>
+                                <input
+                                    type="password"
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••••••"
+                                    className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-6 py-4 text-slate-900 text-sm outline-none focus:border-[#000000] transition-all font-medium placeholder:text-[#E2E8F0]"
+                                />
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 relative group overflow-hidden mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-[#0F172A] hover:bg-black text-[#F8FAFC] font-black text-sm py-4 rounded-xl transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
                             >
-                                {isLoading ? (
-                                    <div className="h-5 w-5 border-3 border-white/20 border-t-white rounded-full animate-spin"></div>
-                                ) : (
-                                    <>
-                                        Đăng nhập Hệ thống
-                                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                                    </>
-                                )}
+                                {isLoading ? "Đang xử lý..." : "Đăng nhập · ↵"}
                             </button>
+
+                            <div className="flex justify-between items-center pt-4">
+                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#94A3B8] hover:text-slate-900 transition-colors border-b border-transparent hover:border-[#000000]">
+                                    Quên mật khẩu?
+                                </button>
+                                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-[#94A3B8] hover:text-slate-900 transition-colors border-b border-transparent hover:border-[#000000]">
+                                    Liên hệ quản trị
+                                </button>
+                            </div>
                         </form>
 
-                        <div className="mt-12 pt-8 border-t border-white/5 text-center flex flex-col gap-4">
-                            <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
-                                <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
-                                Secure Enterprise SSO Powered
-                                <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
-                            </p>
-                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">
-                                Chưa có tài khoản? <Link href="/register" className="text-blue-500 hover:text-blue-400 underline underline-offset-4 ml-1">Đăng ký ngay</Link>
-                            </p>
+                        <div className="mt-12 pt-12 border-t border-[#E2E8F0]">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#94A3B8] mb-6">Truy cập nhanh Demo</p>
+                            <div className="grid grid-cols-2 gap-3">
+                                {demoUsers.map((u, i) => (
+                                    <button
+                                        key={i}
+                                        type="button"
+                                        onClick={() => { setEmail(u.email); setPassword(""); }}
+                                        className="p-3 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-left hover:border-[#000000] transition-all group flex flex-col gap-1"
+                                    >
+                                        <div className="text-[8px] font-black text-black uppercase tracking-widest">{u.role}</div>
+                                        <div className="text-[11px] font-bold text-slate-900 truncate">{u.name}</div>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
-
-                    <div className="mt-8 flex justify-center gap-6">
-                        <Link href="/help" className="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-slate-400 transition-colors">Trợ giúp</Link>
-                        <Link href="/privacy" className="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-slate-400 transition-colors">Bảo mật</Link>
-                        <Link href="/terms" className="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-slate-400 transition-colors">Điều khoản</Link>
-                    </div>
                 </div>
-            </div>
-
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-800">Antigravity Engine v2.0</p>
             </div>
         </div>
     );
 }
+

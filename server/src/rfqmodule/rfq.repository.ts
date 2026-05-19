@@ -23,6 +23,11 @@ export class RfqRepository {
   ) {
     const { prId, supplierIds, ...rfqData } = data;
 
+    // Validate prId is provided
+    if (!prId) {
+      throw new Error('prId is required when creating RFQ');
+    }
+
     // Lấy items từ PR để copy sang RFQ
     const prItems = await this.prisma.prItem.findMany({
       where: { prId },
@@ -67,12 +72,52 @@ export class RfqRepository {
     });
   }
 
-  async findAll(orgId: string) {
-    return this.prisma.rfqRequest.findMany({
-      where: { orgId },
-      include: { pr: true, createdBy: true },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(
+    orgId: string,
+    { page, limit }: { page: number; limit: number } = { page: 1, limit: 20 },
+  ) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.rfqRequest.findMany({
+        where: { orgId },
+        include: {
+          pr: true,
+          createdBy: true,
+          suppliers: true,
+          organization: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.rfqRequest.count({ where: { orgId } }),
+    ]);
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
+  async findPaginated(orgId: string, skip: number, take: number) {
+    const [data, total] = await Promise.all([
+      this.prisma.rfqRequest.findMany({
+        where: { orgId },
+        include: {
+          pr: true,
+          createdBy: true,
+          suppliers: true,
+          organization: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+      }),
+      this.prisma.rfqRequest.count({ where: { orgId } }),
+    ]);
+    return {
+      data,
+      total,
+      page: Math.floor(skip / take) + 1,
+      limit: take,
+      totalPages: Math.ceil(total / take),
+    };
   }
 
   async findOne(id: string) {
@@ -144,6 +189,54 @@ export class RfqRepository {
     data: CreateQuotationDto,
     quotationNumber: string,
   ) {
+    // Check if quotation already exists for this rfq + supplier
+    const existingQuotation = await this.prisma.rfqQuotation.findUnique({
+      where: {
+        rfqId_supplierId: {
+          rfqId,
+          supplierId,
+        },
+      },
+      include: { items: true },
+    });
+
+    if (existingQuotation) {
+      // Update existing quotation: delete old items and create new ones
+      return this.prisma.$transaction(async (tx) => {
+        // Delete old items
+        await tx.rfqQuotationItem.deleteMany({
+          where: { quotationId: existingQuotation.id },
+        });
+
+        // Update quotation with new data
+        return tx.rfqQuotation.update({
+          where: { id: existingQuotation.id },
+          data: {
+            totalPrice: data.totalPrice,
+            currency: data.currency || 'VND',
+            leadTimeDays: data.leadTimeDays,
+            paymentTerms: data.paymentTerms,
+            deliveryTerms: data.deliveryTerms,
+            validityDays: data.validityDays || 30,
+            notes: data.notes,
+            status: 'DRAFT',
+            items: {
+              create: data.items.map((item: QuotationItemDto) => ({
+                rfqItemId: item.rfqItemId,
+                unitPrice: item.unitPrice,
+                qtyOffered: item.qtyOffered,
+                discountPct: item.discountPct || 0,
+                leadTimeDays: item.leadTimeDays,
+                notes: item.notes,
+              })),
+            },
+          },
+          include: { items: true, rfq: true },
+        });
+      });
+    }
+
+    // Create new quotation
     return this.prisma.rfqQuotation.create({
       data: {
         quotationNumber,

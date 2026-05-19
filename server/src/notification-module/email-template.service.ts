@@ -1,28 +1,196 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
 export type EmailEventType =
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   | 'USER_LOGIN'
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   | 'USER_REGISTERED'
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  | 'NEW_USER_ACCOUNT' // alias of USER_REGISTERED — used by DB seed
   | 'RFQ_INVITATION'
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   | 'PO_APPROVAL_REQUEST'
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   | 'PO_APPROVED'
-  | string;
+  | 'PR_APPROVED' // PR được phê duyệt — notify requester
+  | 'PR_REJECTED' // PR bị từ chối — notify requester
+  | 'QUOTATION_RECEIVED' // Nhận được báo giá — notify procurement
+  | 'CONTRACT_SIGN_REQUEST' // Yêu cầu ký hợp đồng — notify buyer/supplier
+  | 'CONTRACT_EXPIRY_WARNING' // Hợp đồng sắp hết hạn — notify procurement
+  | 'GRN_CONFIRMED' // Kho xác nhận nhận hàng — notify supplier/finance
+  | 'BUDGET_LIMIT_WARNING' // Ngân sách gần đạt giới hạn — notify finance/manager
+  // ── Magic Link templates (open process) ──
+  | 'RFQ_MAGIC_LINK' // NCC báo giá qua link, không cần đăng nhập
+  | 'PR_APPROVAL_LINK' // Approver duyệt PR qua email 1-click
+  | 'PO_CONFIRM_LINK' // NCC xác nhận nhận PO
+  | 'GRN_MILESTONE_UPDATE' // NCC cập nhật trạng thái giao hàng
+  | 'INVOICE_SUBMIT_LINK' // NCC nộp hóa đơn sau GRN
+  | 'INVOICE_RECEIVED' // Tài chính nhận được hóa đơn từ NCC (email/portal)
+  | 'PAYMENT_CONFIRMED'; // Xác nhận đã thanh toán thành công
 
 @Injectable()
-export class EmailTemplatesService {
+export class EmailTemplatesService implements OnModuleInit {
+  private readonly logger = new Logger(EmailTemplatesService.name);
+
+  // In-memory cache: eventType → { subject, bodyTemplate }
+  // Loaded once on startup, reloaded via reloadCache() if needed.
+  private cache = new Map<
+    string,
+    { subject: string | null; bodyTemplate: string }
+  >();
+
+  constructor(private readonly prisma: PrismaService) {}
+
+  async onModuleInit() {
+    await this.reloadCache();
+  }
+
+  /** Tải lại toàn bộ templates từ DB vào memory (1 query duy nhất). */
+  async reloadCache(): Promise<void> {
+    try {
+      const rows = await this.prisma.notificationTemplate.findMany({
+        where: { isActive: true },
+        select: { eventType: true, subject: true, bodyTemplate: true },
+      });
+      this.cache.clear();
+      for (const row of rows) {
+        this.cache.set(row.eventType, {
+          subject:
+            row.subject?.replace(
+              '{{loginAt}}',
+              new Date().toLocaleString('vi-VN'),
+            ) ?? null,
+          bodyTemplate: row.bodyTemplate,
+        });
+      }
+      this.logger.log(`Email template cache loaded: ${rows.length} templates`);
+    } catch (err) {
+      this.logger.warn(
+        `Failed to load email templates from DB, will use hardcoded fallback. ${(err as Error).message}`,
+      );
+    }
+  }
+
+  // ── Accent color per event type ────────────────────────────────────────────
+  private readonly accentColors: Partial<Record<EmailEventType, string>> = {
+    USER_LOGIN: '#0f4c81',
+    USER_REGISTERED: '#0d7c4e',
+    NEW_USER_ACCOUNT: '#0d7c4e',
+    RFQ_INVITATION: '#0d9488',
+    RFQ_MAGIC_LINK: '#1d4ed8',
+    PR_APPROVED: '#16a34a',
+    PR_REJECTED: '#dc2626',
+    PR_APPROVAL_LINK: '#7c3aed',
+    PO_APPROVAL_REQUEST: '#f59e0b',
+    PO_APPROVED: '#0d7c4e',
+    PO_CONFIRM_LINK: '#0f766e',
+    QUOTATION_RECEIVED: '#1d4ed8',
+    CONTRACT_SIGN_REQUEST: '#0f766e',
+    CONTRACT_EXPIRY_WARNING: '#b45309',
+    GRN_CONFIRMED: '#0f766e',
+    GRN_MILESTONE_UPDATE: '#b45309',
+    INVOICE_SUBMIT_LINK: '#1e40af',
+    INVOICE_RECEIVED: '#0f766e',
+    BUDGET_LIMIT_WARNING: '#f59e0b',
+    PAYMENT_CONFIRMED: '#065f46',
+  };
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  private fmt(amount: number): string {
+    return new Intl.NumberFormat('vi-VN').format(amount) + ' VNĐ';
+  }
+
+  private fmtDate(val: string | Date): string {
+    const d = typeof val === 'string' ? new Date(val) : val;
+    return d.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  }
+
   /**
-   * Trả về HTML email dựa trên eventType.
+   * Render HTML email: ưu tiên lấy bodyTemplate từ memory cache (đã load lúc startup),
+   * nếu không có thì dùng hardcoded template. Không query DB khi render.
    */
-  render(eventType: EmailEventType, data: Record<string, any>): string {
+  render(eventType: EmailEventType, data: Record<string, any>) {
+    const cached = this.cache.get(eventType);
+    if (cached?.bodyTemplate) {
+      return this.renderFromDb(
+        eventType,
+        cached.subject ?? eventType,
+        cached.bodyTemplate,
+        data,
+      );
+    }
+    return this.renderHardcoded(eventType, data);
+  }
+
+  // ── Render từ bodyTemplate DB ──────────────────────────────────────────────
+  private renderFromDb(
+    eventType: EmailEventType,
+    subject: string,
+    bodyTemplate: string,
+    data: Record<string, any>,
+  ): string {
+    // Thay thế {{variable}} bằng giá trị thực
+    const rendered = bodyTemplate.replace(
+      /\{\{(\w+)\}\}/g,
+      (_match, key: string) =>
+        data[key] !== undefined && data[key] !== null
+          ? String(data[key] as string | number)
+          : '',
+    );
+
+    // Chuyển plain-text (newline) thành các đoạn HTML
+    const paragraphs = rendered
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .map((line) => `<p>${line}</p>`)
+      .join('\n        ');
+
+    const accentColor = this.accentColors[eventType] ?? '#334155';
+
+    // Lấy label hiển thị ở header nhỏ
+    const labelMap: Partial<Record<EmailEventType, string>> = {
+      USER_LOGIN: 'Đăng nhập',
+      USER_REGISTERED: 'Tài khoản mới',
+      NEW_USER_ACCOUNT: 'Tài khoản mới',
+      RFQ_INVITATION: 'Mời báo giá',
+      PR_APPROVED: 'Yêu cầu mua hàng',
+      PR_REJECTED: 'Yêu cầu mua hàng',
+      PO_APPROVAL_REQUEST: 'Phê duyệt đơn hàng',
+      PO_APPROVED: 'Đơn hàng',
+      QUOTATION_RECEIVED: 'Báo giá mới',
+      CONTRACT_EXPIRY_WARNING: 'Cảnh báo hợp đồng',
+      GRN_CONFIRMED: 'Nhận hàng',
+      INVOICE_RECEIVED: 'Hóa đơn mới',
+      BUDGET_LIMIT_WARNING: 'Cảnh báo ngân sách',
+    };
+    const label = labelMap[eventType] ?? 'Thông báo hệ thống';
+
+    const content = `
+      <div class="header">
+        <div class="header-label">${label}</div>
+        <h1>${subject}</h1>
+      </div>
+      <div class="body">
+        ${paragraphs}
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base(accentColor, content);
+  }
+
+  // ── Fallback: hardcoded template ───────────────────────────────────────────
+  private renderHardcoded(
+    eventType: EmailEventType,
+    data: Record<string, any>,
+  ): string {
     switch (eventType) {
       case 'USER_LOGIN':
         return this.templateWelcomeBack(data);
       case 'USER_REGISTERED':
+      case 'NEW_USER_ACCOUNT':
         return this.templateNewMember(data);
       case 'RFQ_INVITATION':
         return this.templateRfqInvitation(data);
@@ -30,14 +198,563 @@ export class EmailTemplatesService {
         return this.templatePoApprovalRequest(data);
       case 'PO_APPROVED':
         return this.templatePoApproved(data);
+      case 'PR_APPROVED':
+        return this.templatePrApproved(data);
+      case 'PR_REJECTED':
+        return this.templatePrRejected(data);
+      case 'QUOTATION_RECEIVED':
+        return this.templateQuotationReceived(data);
+      case 'CONTRACT_SIGN_REQUEST':
+        return this.templateContractSignRequest(data);
+      case 'CONTRACT_EXPIRY_WARNING':
+        return this.templateContractExpiryWarning(data);
+      case 'GRN_CONFIRMED':
+        return this.templateGrnConfirmed(data);
+      case 'BUDGET_LIMIT_WARNING':
+        return this.templateBudgetLimitWarning(data);
+      // ── Magic Link ──
+      case 'RFQ_MAGIC_LINK':
+        return this.templateRfqMagicLink(data);
+      case 'PR_APPROVAL_LINK':
+        return this.templatePrApprovalLink(data);
+      case 'PO_CONFIRM_LINK':
+        return this.templatePoConfirmLink(data);
+      case 'GRN_MILESTONE_UPDATE':
+        return this.templateGrnMilestoneUpdate(data);
+      case 'INVOICE_SUBMIT_LINK':
+        return this.templateInvoiceSubmitLink(data);
+      case 'INVOICE_RECEIVED':
+        return this.templateInvoiceReceived(data);
+      case 'PAYMENT_CONFIRMED':
+        return this.templatePaymentConfirmed(data);
       default:
         return this.templateGeneric(data);
     }
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // RFQ Invitation
-  // ─────────────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MAGIC LINK 1 — RFQ_MAGIC_LINK
+  // NCC báo giá qua link, không cần tài khoản
+  //
+  // data: {
+  //   rfqCode, rfqTitle, supplierName, rfqLink,
+  //   deadline (string|Date), contactPerson, contactEmail,
+  //   paymentTerms?,
+  //   items: [{ name, qty, unit }]
+  // }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateRfqMagicLink(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const rfqCode = data.rfqCode ?? '';
+    const rfqTitle = data.rfqTitle ?? '';
+    const supplierName = data.supplierName ?? 'Quý đối tác';
+    const rfqLink = data.rfqLink ?? '#';
+    const deadline = data.deadline ? this.fmtDate(data.deadline) : '';
+    const contactName = data.contactPerson ?? '';
+    const contactEmail = data.contactEmail ?? '';
+    const payTerms = data.paymentTerms ?? '';
+    const items: Array<{ name: string; qty: number; unit: string }> =
+      data.items ?? [];
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const rows = items
+      .map(
+        (item, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${item.name}</td>
+        <td style="text-align:center">${item.qty}</td>
+        <td style="text-align:center">${item.unit}</td>
+      </tr>`,
+      )
+      .join('');
+
+    const content = `
+      <div class="header">
+        <div class="header-label">${rfqCode}</div>
+        <h1>Mời báo giá hàng hóa</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${supplierName}</strong>,</p>
+        <p>Chúng tôi trân trọng mời quý vị báo giá cho yêu cầu <strong>${rfqTitle}</strong>.
+           Vui lòng nhấn <em>Báo Giá Ngay</em> — <strong>không cần tài khoản hay đăng nhập</strong>.</p>
+
+        <table class="info-table">
+          <thead>
+            <tr>
+              <td><strong>#</strong></td>
+              <td><strong>Mặt hàng</strong></td>
+              <td style="text-align:center"><strong>Số lượng</strong></td>
+              <td style="text-align:center"><strong>Đơn vị</strong></td>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+
+        <div class="btn-wrap">
+          <a href="${rfqLink}" class="btn">Báo Giá Ngay</a>
+        </div>
+        <p style="text-align:center;font-size:12px;color:#aaa;margin-top:8px">
+          Link hết hạn lúc 23:59 ngày ${deadline} · Chỉ dùng được 1 lần
+        </p>
+
+        <hr class="divider"/>
+
+        <table class="info-table">
+          ${contactName ? `<tr><td>Người liên hệ</td><td>${contactName} · ${contactEmail}</td></tr>` : ''}
+          ${deadline ? `<tr><td>Hạn chót</td><td>${deadline}</td></tr>` : ''}
+          ${payTerms ? `<tr><td>Điều kiện TT</td><td>${payTerms}</td></tr>` : ''}
+        </table>
+      </div>
+      <div class="footer">
+        Nếu link không hoạt động, hãy trả lời email này hoặc liên hệ ${contactEmail}<br/>
+        Đây là email tự động từ hệ thống SPMS
+      </div>`;
+
+    return this.base('#1d4ed8', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MAGIC LINK 2 — PR_APPROVAL_LINK
+  // Approver duyệt PR qua email, không cần vào hệ thống
+  //
+  // data: {
+  //   prCode, prTitle, approverName, requesterName, requesterDept,
+  //   totalAmount (number), remainingBudget (number), justification,
+  //   slaDeadline (string|Date),
+  //   approveLink, rejectLink, detailLink
+  // }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templatePrApprovalLink(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const prCode = data.prCode ?? '';
+    const prTitle = data.prTitle ?? '';
+    const approverName = data.approverName ?? '';
+    const requesterName = data.requesterName ?? '';
+    const requesterDept = data.requesterDept ?? '';
+    const totalAmount = Number(data.totalAmount ?? 0);
+    const remainingBudget = Number(data.remainingBudget ?? 0);
+    const justification = data.justification ?? '';
+    const slaDeadline = data.slaDeadline ? this.fmtDate(data.slaDeadline) : '';
+    const approveLink = data.approveLink ?? '#';
+    const rejectLink = data.rejectLink ?? '#';
+    const detailLink = data.detailLink ?? '#';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Cần phê duyệt</div>
+        <h1>${prCode} đang chờ duyệt</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${approverName}</strong>,</p>
+        <p>Có một yêu cầu mua hàng cần bạn phê duyệt. Xem thông tin bên dưới và chọn hành động.</p>
+
+        <table class="info-table">
+          <tr><td>Tiêu đề PR</td><td>${prTitle}</td></tr>
+          <tr><td>Người yêu cầu</td><td>${requesterName} · ${requesterDept}</td></tr>
+          <tr><td>Tổng giá trị</td><td><strong style="color:#1d4ed8">${this.fmt(totalAmount)}</strong></td></tr>
+          <tr><td>Ngân sách còn lại</td><td><strong style="color:#059669">${this.fmt(remainingBudget)}</strong></td></tr>
+          <tr><td>Lý do yêu cầu</td><td>${justification}</td></tr>
+        </table>
+
+        <div class="alert">
+          ⚠️ SLA: Vui lòng phê duyệt trước <strong>${slaDeadline}</strong>.
+          Quá giờ hệ thống sẽ tự động chuyển lên cấp trên.
+        </div>
+
+        <div class="btn-wrap" style="display:flex;gap:10px;justify-content:center">
+          <a href="${approveLink}" class="btn" style="background:#16a34a">✅ Phê Duyệt</a>
+          <a href="${rejectLink}"  class="btn" style="background:#dc2626">❌ Từ Chối</a>
+        </div>
+        <p style="text-align:center;margin-top:12px">
+          <a href="${detailLink}" style="font-size:13px;color:#6b7280">Xem chi tiết đầy đủ →</a>
+        </p>
+      </div>
+      <div class="footer">
+        Không cần đăng nhập hệ thống · Link hết hạn sau 48 giờ<br/>
+        Nếu bạn đã xử lý, hãy bỏ qua email này
+      </div>`;
+
+    return this.base('#7c3aed', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MAGIC LINK 3 — PO_CONFIRM_LINK
+  // NCC xác nhận nhận PO + file PDF đính kèm
+  //
+  // data: {
+  //   poCode, supplierName, confirmLink, poPdfUrl,
+  //   issuedDate, deliveryDate (string|Date),
+  //   deliveryAddress, paymentTerms, latePenaltyPct (number),
+  //   contactEmail, contactPhone, totalAmount (number),
+  //   items: [{ name, qty, unitPrice, total }]
+  // }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templatePoConfirmLink(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poCode = data.poCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = data.supplierName ?? 'Quý đối tác';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const confirmLink = data.confirmLink ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poPdfUrl = data.poPdfUrl ?? '#';
+    const issuedDate = data.issuedDate ? this.fmtDate(data.issuedDate) : '';
+    const deliveryDate = data.deliveryDate
+      ? this.fmtDate(data.deliveryDate)
+      : '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const deliveryAddr = data.deliveryAddress ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const paymentTerms = data.paymentTerms ?? '';
+    const penalty = Number(data.latePenaltyPct ?? 0.1);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const contactEmail = data.contactEmail ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const contactPhone = data.contactPhone ?? '';
+    const totalAmount = Number(data.totalAmount ?? 0);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const items: Array<{
+      name: string;
+      qty: number;
+      unitPrice: number;
+      total: number;
+    }> = data.items ?? [];
+
+    const rows = items
+      .map(
+        (item) => `
+      <tr>
+        <td>${item.name}</td>
+        <td style="text-align:center">${item.qty}</td>
+        <td style="text-align:right">${this.fmt(item.unitPrice)}</td>
+        <td style="text-align:right">${this.fmt(item.total)}</td>
+      </tr>`,
+      )
+      .join('');
+
+    const content = `
+      <div class="header">
+        <div class="header-label">${poCode}</div>
+        <h1>Đơn mua hàng chính thức</h1>
+      </div>
+      <div class="body">
+        <p>Kính gửi <strong>${supplierName}</strong>,</p>
+        <p>Chúng tôi trân trọng gửi đơn mua hàng chính thức. Vui lòng xác nhận đã nhận và có thể thực hiện đơn hàng.</p>
+
+        <table class="info-table">
+          <thead>
+            <tr>
+              <td><strong>Mặt hàng</strong></td>
+              <td style="text-align:center"><strong>SL</strong></td>
+              <td style="text-align:right"><strong>Đơn giá</strong></td>
+              <td style="text-align:right"><strong>Thành tiền</strong></td>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <p style="text-align:right;font-size:13px">
+          Tổng cộng (chưa VAT): <strong style="font-size:15px">${this.fmt(totalAmount)}</strong>
+        </p>
+
+        <hr class="divider"/>
+
+        <table class="info-table">
+          <tr><td>Ngày phát hành</td><td>${issuedDate}</td></tr>
+          <tr><td>Giao hàng trước</td><td>${deliveryDate}</td></tr>
+          <tr><td>Địa chỉ giao</td><td>${deliveryAddr}</td></tr>
+          <tr><td>Điều kiện TT</td><td>${paymentTerms}</td></tr>
+          <tr><td>Phạt giao trễ</td><td>${penalty}%/ngày, tối đa 30 ngày</td></tr>
+        </table>
+
+        <div class="alert" style="background:#f0fdf4;border-color:#16a34a;color:#166534">
+          📄 File PDF đính kèm đầy đủ điều khoản.
+          <a href="${poPdfUrl}" style="color:#0f766e;margin-left:4px">Tải file PDF PO →</a>
+        </div>
+
+        <div class="btn-wrap">
+          <a href="${confirmLink}" class="btn">Xác Nhận Nhận PO</a>
+        </div>
+        <p style="text-align:center;font-size:12px;color:#aaa;margin-top:8px">
+          Không cần đăng nhập · Link hết hạn sau 7 ngày
+        </p>
+      </div>
+      <div class="footer">
+        Liên hệ: ${contactEmail} · ĐT: ${contactPhone}
+      </div>`;
+
+    return this.base('#0f766e', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MAGIC LINK 4 — GRN_MILESTONE_UPDATE
+  // NCC cập nhật trạng thái giao hàng (không cần đăng nhập)
+  //
+  // data: {
+  //   poCode, supplierName, updateLink, warehouseEmail,
+  //   expectedDelivery (string|Date),
+  //   completedSteps: string[],
+  //   currentStep: string,
+  //   pendingSteps: string[]
+  // }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateGrnMilestoneUpdate(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poCode = data.poCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = data.supplierName ?? 'Quý đối tác';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const updateLink = data.updateLink ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const warehouseEmail = data.warehouseEmail ?? '';
+    const expectedDel = data.expectedDelivery
+      ? this.fmtDate(data.expectedDelivery)
+      : '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const completedSteps: string[] = data.completedSteps ?? [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const currentStep: string = data.currentStep ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const pendingSteps: string[] = data.pendingSteps ?? [];
+
+    const doneItems = completedSteps
+      .map(
+        (s) => `
+      <tr>
+        <td style="padding:7px 12px;color:#059669">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669;margin-right:8px;vertical-align:middle"></span>${s}
+        </td>
+      </tr>`,
+      )
+      .join('');
+
+    const activeItem = `
+      <tr style="background:#eff6ff">
+        <td style="padding:7px 12px;color:#1d4ed8;font-weight:bold">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1d4ed8;margin-right:8px;vertical-align:middle"></span>${currentStep} — Cần cập nhật
+        </td>
+      </tr>`;
+
+    const pendingItems = pendingSteps
+      .map(
+        (s) => `
+      <tr>
+        <td style="padding:7px 12px;color:#9ca3af">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d1d5db;margin-right:8px;vertical-align:middle"></span>${s}
+        </td>
+      </tr>`,
+      )
+      .join('');
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Shipment Tracking</div>
+        <h1>Cập nhật giao hàng<br/>${poCode}</h1>
+      </div>
+      <div class="body">
+        <p>Kính gửi <strong>${supplierName}</strong>,</p>
+        <p>Vui lòng cập nhật trạng thái giao hàng cho đơn <strong>${poCode}</strong> bằng cách nhấn nút bên dưới.</p>
+
+        <table style="width:100%;border-collapse:collapse;margin:12px 0 16px">
+          ${doneItems}
+          ${activeItem}
+          ${pendingItems}
+        </table>
+
+        <table class="info-table">
+          <tr><td>Ngày giao dự kiến</td><td>${expectedDel}</td></tr>
+        </table>
+
+        <div class="btn-wrap">
+          <a href="${updateLink}" class="btn">Cập Nhật Trạng Thái</a>
+        </div>
+        <p style="text-align:center;font-size:12px;color:#aaa;margin-top:8px">
+          Nhập số vận đơn, đơn vị vận chuyển, ngày giao dự kiến · Không cần tài khoản
+        </p>
+
+        <div class="alert">
+          ✉️ Sau khi cập nhật, bộ phận kho hàng sẽ nhận thông báo tự động để chuẩn bị tiếp nhận.
+        </div>
+      </div>
+      <div class="footer">
+        Cập nhật trạng thái giúp giảm thiểu liên lạc qua lại · Liên hệ kho: ${warehouseEmail}
+      </div>`;
+
+    return this.base('#b45309', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MAGIC LINK 5 — INVOICE_SUBMIT_LINK
+  // NCC nộp hóa đơn sau khi GRN xác nhận
+  //
+  // data: {
+  //   poCode, grnCode, supplierName, submitLink, financeEmail,
+  //   grnConfirmedAt (string|Date), poAmount (number), grnPercent (number),
+  //   paymentTerms, estimatedPaymentDate (string|Date), financeContact
+  // }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateInvoiceSubmitLink(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poCode = data.poCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const grnCode = data.grnCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = data.supplierName ?? 'Quý đối tác';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const submitLink = data.submitLink ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const financeEmail = data.financeEmail ?? '';
+    const grnConfirmedAt = data.grnConfirmedAt
+      ? this.fmtDate(data.grnConfirmedAt)
+      : '';
+    const poAmount = Number(data.poAmount ?? 0);
+    const grnPercent = Number(data.grnPercent ?? 100);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const paymentTerms = data.paymentTerms ?? '';
+    const estPayDate = data.estimatedPaymentDate
+      ? this.fmtDate(data.estimatedPaymentDate)
+      : '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const financeContact = data.financeContact ?? '';
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Nộp hóa đơn</div>
+        <h1>GRN xác nhận — Sẵn sàng nhận invoice</h1>
+      </div>
+      <div class="body">
+        <p>Kính gửi <strong>${supplierName}</strong>,</p>
+        <p>Chúng tôi đã xác nhận nhận hàng cho đơn <strong>${poCode}</strong> (${grnCode}) vào ngày ${grnConfirmedAt}. Vui lòng nộp hóa đơn qua link bên dưới.</p>
+
+        <table class="info-table">
+          <tr>
+            <td>Giá trị PO</td>
+            <td><strong style="color:#166534">${this.fmt(poAmount)}</strong></td>
+          </tr>
+          <tr>
+            <td>GRN xác nhận</td>
+            <td><strong style="color:#166534">${grnPercent}% — Đủ số lượng</strong></td>
+          </tr>
+        </table>
+
+        <p style="margin:8px 0">
+          <span style="display:inline-block;background:#dcfce7;color:#166534;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:4px;margin-right:6px">3-Way Match sẵn sàng</span>
+          <span style="display:inline-block;background:#dbeafe;color:#1e40af;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:4px">Hệ thống tự động đối chiếu</span>
+        </p>
+
+        <div class="alert" style="background:#eff6ff;border-color:#1d4ed8;color:#1e3a8a">
+          📋 Vui lòng upload file PDF hóa đơn VAT và điền số tiền đúng với PO.
+          Hệ thống sẽ tự động đối chiếu PO ↔ GRN ↔ Invoice.
+        </div>
+
+        <div class="btn-wrap">
+          <a href="${submitLink}" class="btn">Nộp Hóa Đơn Ngay</a>
+        </div>
+        <p style="text-align:center;font-size:12px;color:#aaa;margin-top:8px">
+          Upload PDF invoice + điền số tiền · Không cần đăng nhập · Link hết hạn sau 14 ngày
+        </p>
+
+        <hr class="divider"/>
+
+        <table class="info-table">
+          <tr><td>Điều kiện TT</td><td>${paymentTerms}</td></tr>
+          <tr><td>Hạn TT dự kiến</td><td>${estPayDate}</td></tr>
+          <tr><td>Người xử lý</td><td>${financeContact} · ${financeEmail}</td></tr>
+        </table>
+      </div>
+      <div class="footer">
+        Hệ thống tự đối chiếu 3 chiều PO ↔ GRN ↔ Invoice · Nếu sai lệch sẽ tạo dispute ticket tự động
+      </div>`;
+
+    return this.base('#1e40af', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MAGIC LINK 6 — PAYMENT_CONFIRMED
+  // Xác nhận đã thanh toán thành công cho NCC
+  //
+  // data: {
+  //   paymentCode, invoiceCode, poCode, supplierName,
+  //   amount (number), bankRef, paidAt (string|Date),
+  //   paymentMethod, historyLink, financeEmail, financePhone
+  // }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templatePaymentConfirmed(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const paymentCode = data.paymentCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const invoiceCode = data.invoiceCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const poCode = data.poCode ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName = data.supplierName ?? 'Quý đối tác';
+    const amount = Number(data.amount ?? 0);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const bankRef = data.bankRef ?? '';
+    const paidAt = data.paidAt ? this.fmtDate(data.paidAt) : '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const paymentMethod = data.paymentMethod ?? 'Chuyển khoản ngân hàng';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const historyLink = data.historyLink ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const financeEmail = data.financeEmail ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const financePhone = data.financePhone ?? '';
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Thanh toán thành công</div>
+        <h1>Đã chuyển khoản thành công</h1>
+      </div>
+      <div class="body">
+        <p>Kính gửi <strong>${supplierName}</strong>,</p>
+        <p>Chúng tôi xác nhận đã thực hiện thanh toán thành công. Vui lòng kiểm tra tài khoản trong vòng 1–2 ngày làm việc.</p>
+
+        <div style="background:#f0fdf4;border-radius:8px;padding:20px;text-align:center;margin:16px 0">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:4px">Số tiền đã thanh toán</div>
+          <div style="font-size:28px;font-weight:bold;color:#065f46">${this.fmt(amount)}</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:4px">Bao gồm VAT 10%</div>
+        </div>
+
+        <table class="info-table">
+          <tr><td>Mã thanh toán</td><td>${paymentCode}</td></tr>
+          <tr><td>Hóa đơn</td><td>${invoiceCode}</td></tr>
+          <tr><td>Đơn mua hàng</td><td>${poCode}</td></tr>
+          <tr><td>Phương thức</td><td>${paymentMethod}</td></tr>
+          <tr><td>Mã GD ngân hàng</td><td>${bankRef}</td></tr>
+          <tr><td>Ngày thanh toán</td><td>${paidAt}</td></tr>
+        </table>
+
+        <div class="alert" style="background:#f0fdf4;border-color:#16a34a;color:#166534">
+          ✓ Dữ liệu đã được đồng bộ tự động vào hệ thống kế toán MISA.
+          Vui lòng đối chiếu sao kê nếu cần.
+        </div>
+
+        <div class="btn-wrap">
+          <a href="${historyLink}" class="btn">Xem Lịch Sử Giao Dịch</a>
+        </div>
+
+        <hr class="divider"/>
+
+        <p style="font-size:13px;color:#999">
+          Nếu sau 3 ngày làm việc chưa nhận được tiền, vui lòng liên hệ
+          <strong>${financeEmail}</strong> hoặc gọi ${financePhone}.
+          Ghi rõ mã <strong>${paymentCode}</strong> khi liên hệ.
+        </p>
+      </div>
+      <div class="footer">
+        Cảm ơn quý vị đã hợp tác · Hệ thống SPMS<br/>
+        Đây là email tự động, vui lòng không reply trực tiếp
+      </div>`;
+
+    return this.base('#065f46', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CÁC TEMPLATE CŨ — giữ nguyên
+  // ═══════════════════════════════════════════════════════════════════════════
+
   private templateRfqInvitation(data: Record<string, any>): string {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const rfqNumber = data.rfqNumber ?? '';
@@ -64,14 +781,10 @@ export class EmailTemplatesService {
         <div class="btn-wrap">
           <a href="#" class="btn">Xem chi tiết & Gửi báo giá</a>
         </div>
-      </div>
-    `;
+      </div>`;
     return this.base('#0d9488', content);
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // PO Approval Request
-  // ─────────────────────────────────────────────────────────────
   private templatePoApprovalRequest(data: Record<string, any>): string {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const poNumber = data.poNumber ?? '';
@@ -97,14 +810,10 @@ export class EmailTemplatesService {
         <div class="btn-wrap">
           <a href="#" class="btn">Phê duyệt ngay</a>
         </div>
-      </div>
-    `;
+      </div>`;
     return this.base('#f59e0b', content);
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // PO Approved
-  // ─────────────────────────────────────────────────────────────
   private templatePoApproved(data: Record<string, any>): string {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const poNumber = data.poNumber ?? '';
@@ -116,13 +825,529 @@ export class EmailTemplatesService {
       <div class="body">
         <p>Chúc mừng, đơn hàng <b>${poNumber}</b> đã được phê duyệt thành công bởi bộ phận quản lý.</p>
         <p>Hệ thống sẽ tiến hành gửi PO này tới nhà cung cấp ngay lập tức.</p>
-      </div>
-    `;
+      </div>`;
     return this.base('#0d7c4e', content);
   }
 
+  private templateWelcomeBack(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const name = data.name ?? 'bạn';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const time = data.loginAt ?? new Date().toLocaleString('vi-VN');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const device = data.device ?? 'Không xác định';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const location = data.location ?? 'Không xác định';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const dashUrl = data.dashUrl ?? '#';
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Đăng nhập thành công</div>
+        <h1>Chào mừng trở lại,<br/>${name} 👋</h1>
+      </div>
+      <div class="body">
+        <p>Chúng tôi ghi nhận một phiên đăng nhập mới vào tài khoản của bạn.</p>
+        <table class="info-table">
+          <tr><td>Thời gian</td><td>${time}</td></tr>
+          <tr><td>Thiết bị</td><td>${device}</td></tr>
+          <tr><td>Vị trí</td><td>${location}</td></tr>
+        </table>
+        <div class="alert">
+          ⚠️ Nếu bạn <strong>không thực hiện</strong> đăng nhập này, hãy đổi mật khẩu ngay lập tức và liên hệ quản trị viên.
+        </div>
+        <div class="btn-wrap">
+          <a href="${dashUrl}" class="btn">Vào Dashboard</a>
+        </div>
+      </div>
+      <div class="footer">
+        Email này được gửi tự động khi có đăng nhập mới.<br/>
+        <a href="#">Quản lý thông báo</a> &nbsp;·&nbsp; <a href="#">Hỗ trợ</a>
+      </div>`;
+    return this.base('#0f4c81', content);
+  }
+
+  private templateNewMember(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const name = data.name ?? 'bạn';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const email = data.email ?? '';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const role = data.role ?? 'Member';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const org = data.orgName ?? 'Hệ thống';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const loginUrl = data.loginUrl ?? '#';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const tempPass = data.tempPassword;
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Chào mừng thành viên mới</div>
+        <h1>Xin chào,<br/>${name}! 🎉</h1>
+      </div>
+      <div class="body">
+        <p>Tài khoản của bạn đã được tạo thành công trong hệ thống <strong>${org}</strong>.</p>
+        <table class="info-table">
+          <tr><td>Họ tên</td><td>${name}</td></tr>
+          <tr><td>Email</td><td>${email}</td></tr>
+          <tr><td>Vai trò</td><td>${role}</td></tr>
+          <tr><td>Tổ chức</td><td>${org}</td></tr>
+          ${tempPass ? `<tr><td>Mật khẩu tạm</td><td><strong>${tempPass}</strong></td></tr>` : ''}
+        </table>
+        ${tempPass ? `<div class="alert">🔐 Đây là mật khẩu tạm thời. Vui lòng <strong>đổi mật khẩu ngay</strong> sau khi đăng nhập lần đầu.</div>` : ''}
+        <div class="btn-wrap">
+          <a href="${loginUrl}" class="btn">Đăng nhập ngay</a>
+        </div>
+        <hr class="divider"/>
+        <p style="font-size:13px;color:#999;text-align:center">
+          Cần hỗ trợ? Liên hệ quản trị viên hệ thống hoặc reply email này.
+        </p>
+      </div>
+      <div class="footer">
+        Bạn nhận email này vì tài khoản vừa được tạo trong hệ thống.<br/>
+        <a href="#">Chính sách bảo mật</a> &nbsp;·&nbsp; <a href="#">Hỗ trợ</a>
+      </div>`;
+    return this.base('#0d7c4e', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PR_APPROVED — Thông báo PR được phê duyệt cho người tạo
+  // data: { name, prNumber, prTitle, approverName, totalAmount (number), loginUrl }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templatePrApproved(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const name = data.name ?? 'bạn';
+    const prNumber = data.prNumber ?? '';
+    const prTitle = data.prTitle ?? '';
+    const approverName = data.approverName ?? 'Quản lý';
+    const totalAmount = Number(data.totalAmount ?? 0);
+    const loginUrl = data.loginUrl ?? '#';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Yêu cầu mua hàng</div>
+        <h1>PR ${prNumber} đã được phê duyệt ✓</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${name}</strong>,</p>
+        <p>Yêu cầu mua hàng của bạn đã được phê duyệt thành công. Bộ phận mua sắm sẽ tiến hành tạo đơn hàng.</p>
+
+        <table class="info-table">
+          <tr><td>Mã PR</td><td><strong>${prNumber}</strong></td></tr>
+          <tr><td>Tiêu đề</td><td>${prTitle}</td></tr>
+          <tr><td>Người duyệt</td><td>${approverName}</td></tr>
+          ${totalAmount ? `<tr><td>Tổng giá trị</td><td><strong style="color:#166534">${this.fmt(totalAmount)}</strong></td></tr>` : ''}
+        </table>
+
+        <div class="alert" style="background:#f0fdf4;border-color:#16a34a;color:#166534">
+          ✅ Yêu cầu đã được ghi nhận và chuyển sang bước xử lý tiếp theo.
+        </div>
+
+        <div class="btn-wrap">
+          <a href="${loginUrl}" class="btn">Xem trạng thái PR</a>
+        </div>
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base('#16a34a', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PR_REJECTED — Thông báo PR bị từ chối cho người tạo
+  // data: { name, prNumber, prTitle, approverName, rejectReason, loginUrl }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templatePrRejected(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const name = data.name ?? 'bạn';
+    const prNumber = data.prNumber ?? '';
+    const prTitle = data.prTitle ?? '';
+    const approverName = data.approverName ?? 'Quản lý';
+    const rejectReason = data.rejectReason ?? 'Không có lý do cụ thể';
+    const loginUrl = data.loginUrl ?? '#';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Yêu cầu mua hàng</div>
+        <h1>PR ${prNumber} bị từ chối</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${name}</strong>,</p>
+        <p>Rất tiếc, yêu cầu mua hàng của bạn đã bị từ chối. Vui lòng xem lý do bên dưới và chỉnh sửa nếu cần thiết.</p>
+
+        <table class="info-table">
+          <tr><td>Mã PR</td><td><strong>${prNumber}</strong></td></tr>
+          <tr><td>Tiêu đề</td><td>${prTitle}</td></tr>
+          <tr><td>Người từ chối</td><td>${approverName}</td></tr>
+        </table>
+
+        <div class="alert">
+          ❌ <strong>Lý do từ chối:</strong> ${rejectReason}
+        </div>
+
+        <p style="font-size:14px;color:#555">
+          Bạn có thể chỉnh sửa yêu cầu và gửi lại để xét duyệt lại.
+        </p>
+
+        <div class="btn-wrap">
+          <a href="${loginUrl}" class="btn" style="background:#dc2626">Xem & Chỉnh sửa PR</a>
+        </div>
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base('#dc2626', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // QUOTATION_RECEIVED — Thông báo nhận được báo giá từ nhà cung cấp
+  // data: { name, rfqNumber, rfqTitle, supplierName, quotationCount (number), loginUrl }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateQuotationReceived(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const name = data.name ?? 'bạn';
+    const rfqNumber = data.rfqNumber ?? '';
+    const rfqTitle = data.rfqTitle ?? '';
+    const supplierName = data.supplierName ?? 'Nhà cung cấp';
+    const quotationCount = Number(data.quotationCount ?? 1);
+    const loginUrl = data.loginUrl ?? '#';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Báo giá mới</div>
+        <h1>Nhận được báo giá cho ${rfqNumber}</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${name}</strong>,</p>
+        <p>Hệ thống vừa ghi nhận báo giá mới từ nhà cung cấp. Vui lòng vào hệ thống để xem xét và so sánh.</p>
+
+        <table class="info-table">
+          <tr><td>Mã RFQ</td><td><strong>${rfqNumber}</strong></td></tr>
+          <tr><td>Tiêu đề</td><td>${rfqTitle}</td></tr>
+          <tr><td>Nhà cung cấp</td><td>${supplierName}</td></tr>
+          <tr><td>Tổng số báo giá nhận</td><td><strong style="color:#1d4ed8">${quotationCount} báo giá</strong></td></tr>
+        </table>
+
+        <div class="btn-wrap">
+          <a href="${loginUrl}" class="btn">Xem & So sánh báo giá</a>
+        </div>
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base('#1d4ed8', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONTRACT_SIGN_REQUEST — Yêu cầu ký hợp đồng (gửi cho buyer hoặc supplier)
+  // data: { recipientName, contractNumber, contractTitle, partnerName,
+  //         value (number), currency, startDate, endDate, signingLink, role }
+  // role: 'buyer' | 'supplier'
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateContractSignRequest(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const recipientName = data.recipientName ?? 'Quý đối tác';
+    const contractNumber = data.contractNumber ?? '';
+    const contractTitle = data.contractTitle ?? '';
+    const partnerName = data.partnerName ?? '';
+    const value = Number(data.value ?? 0);
+    const currency = data.currency ?? 'VND';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const startDate = data.startDate ? this.fmtDate(data.startDate) : '—';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const endDate = data.endDate ? this.fmtDate(data.endDate) : '—';
+    const signingLink = data.signingLink ?? '#';
+    const role = data.role === 'buyer' ? 'Bên mua' : 'Nhà cung cấp';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const content = `
+      <div class="header" style="background:#0f766e">
+        <div class="header-label">Yêu cầu ký hợp đồng</div>
+        <h1>Hợp đồng ${contractNumber} cần chữ ký của bạn</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${recipientName}</strong>,</p>
+        <p>Hợp đồng sau đây đã được phê duyệt và đang chờ chữ ký điện tử của <strong>${role}</strong>. Vui lòng đăng nhập và hoàn tất ký kết để hợp đồng có hiệu lực.</p>
+
+        <table class="info-table">
+          <tr><td>Mã hợp đồng</td><td><strong>${contractNumber}</strong></td></tr>
+          <tr><td>Tiêu đề</td><td>${contractTitle}</td></tr>
+          <tr><td>Đối tác</td><td><strong>${partnerName}</strong></td></tr>
+          <tr><td>Giá trị</td><td><strong style="color:#0f766e">${this.fmt(value)} ${currency}</strong></td></tr>
+          <tr><td>Thời hạn</td><td>${startDate} → ${endDate}</td></tr>
+          <tr><td>Vai trò ký</td><td>${role}</td></tr>
+        </table>
+
+        <div class="alert" style="background:#f0fdf4;border-color:#0f766e;color:#14532d">
+          ✍️ Vui lòng ký hợp đồng trước khi hết thời hạn để tránh làm trễ tiến độ dự án.
+        </div>
+
+        <div class="btn-wrap">
+          <a href="${signingLink}" class="btn" style="background:#0f766e">Ký hợp đồng ngay</a>
+        </div>
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base('#0f766e', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONTRACT_EXPIRY_WARNING — Cảnh báo hợp đồng sắp hết hạn
+  // data: { name, contractCode, contractTitle, supplierName, expiryDate (string|Date), daysLeft (number), loginUrl }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateContractExpiryWarning(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const name = data.name ?? 'bạn';
+    const contractCode = data.contractCode ?? '';
+    const contractTitle = data.contractTitle ?? '';
+    const supplierName = data.supplierName ?? '';
+    const expiryDate = data.expiryDate ? this.fmtDate(data.expiryDate) : '';
+    const daysLeft = Number(data.daysLeft ?? 0);
+    const loginUrl = data.loginUrl ?? '#';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const urgencyColor =
+      daysLeft <= 7 ? '#dc2626' : daysLeft <= 14 ? '#f59e0b' : '#b45309';
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Cảnh báo hợp đồng</div>
+        <h1>${contractCode} sắp hết hạn</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${name}</strong>,</p>
+        <p>Hợp đồng sau đây sẽ hết hạn trong thời gian ngắn. Vui lòng gia hạn hoặc thương lượng hợp đồng mới.</p>
+
+        <table class="info-table">
+          <tr><td>Mã hợp đồng</td><td><strong>${contractCode}</strong></td></tr>
+          <tr><td>Tiêu đề</td><td>${contractTitle}</td></tr>
+          <tr><td>Nhà cung cấp</td><td>${supplierName}</td></tr>
+          <tr><td>Ngày hết hạn</td><td><strong style="color:${urgencyColor}">${expiryDate}</strong></td></tr>
+          <tr><td>Còn lại</td><td><strong style="color:${urgencyColor}">${daysLeft} ngày</strong></td></tr>
+        </table>
+
+        <div class="alert" style="${daysLeft <= 7 ? 'background:#fef2f2;border-color:#dc2626;color:#7f1d1d' : ''}">
+          ⚠️ ${daysLeft <= 7 ? 'Hợp đồng sẽ hết hạn rất sớm! Cần xử lý ngay.' : 'Vui lòng liên hệ nhà cung cấp để gia hạn hoặc đàm phán hợp đồng mới.'}
+        </div>
+
+        <div class="btn-wrap">
+          <a href="${loginUrl}" class="btn" style="background:${urgencyColor}">Xem hợp đồng</a>
+        </div>
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base(urgencyColor, content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // GRN_CONFIRMED — Kho xác nhận nhận hàng, thông báo cho finance/supplier
+  // data: { name, grnCode, poCode, supplierName, confirmedAt (string|Date),
+  //         receivedQty (number), totalAmount (number), loginUrl }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateGrnConfirmed(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const name = data.name ?? 'bạn';
+    const grnCode = data.grnCode ?? '';
+    const poCode = data.poCode ?? '';
+    const supplierName = data.supplierName ?? '';
+    const confirmedAt = data.confirmedAt ? this.fmtDate(data.confirmedAt) : '';
+    const totalAmount = Number(data.totalAmount ?? 0);
+    const loginUrl = data.loginUrl ?? '#';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Xác nhận nhận hàng</div>
+        <h1>GRN ${grnCode} đã xác nhận</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${name}</strong>,</p>
+        <p>Bộ phận kho hàng đã xác nhận nhận hàng thành công. Hệ thống đã sẵn sàng cho bước đối chiếu hóa đơn (3-Way Match).</p>
+
+        <table class="info-table">
+          <tr><td>Mã GRN</td><td><strong>${grnCode}</strong></td></tr>
+          <tr><td>Đơn mua hàng</td><td>${poCode}</td></tr>
+          <tr><td>Nhà cung cấp</td><td>${supplierName}</td></tr>
+          <tr><td>Ngày xác nhận</td><td>${confirmedAt}</td></tr>
+          ${totalAmount ? `<tr><td>Giá trị hàng nhận</td><td><strong style="color:#166534">${this.fmt(totalAmount)}</strong></td></tr>` : ''}
+        </table>
+
+        <div class="alert" style="background:#f0fdf4;border-color:#16a34a;color:#166534">
+          ✅ Hệ thống đã tự động kích hoạt quy trình đối chiếu PO ↔ GRN ↔ Invoice.
+          Nhà cung cấp sẽ nhận email yêu cầu nộp hóa đơn.
+        </div>
+
+        <div class="btn-wrap">
+          <a href="${loginUrl}" class="btn">Xem chi tiết GRN</a>
+        </div>
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base('#0f766e', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INVOICE_RECEIVED — Thông báo tài chính khi nhận hóa đơn mới từ NCC
+  // data: { name, invoiceNumber, supplierName, poNumber, totalAmount (number),
+  //         invoiceDate (string|Date), dueDate? (string|Date),
+  //         matchingStatus ('AUTO_APPROVED'|'EXCEPTION_REVIEW'|'PENDING'),
+  //         loginUrl }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateInvoiceReceived(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const name = data.name ?? 'bạn';
+    const invoiceNumber = data.invoiceNumber ?? '';
+    const supplierName = data.supplierName ?? 'Nhà cung cấp';
+    const poNumber = data.poNumber ?? '';
+    const totalAmount = Number(data.totalAmount ?? 0);
+    const invoiceDate = data.invoiceDate ? this.fmtDate(data.invoiceDate) : '';
+    const dueDate = data.dueDate ? this.fmtDate(data.dueDate) : '';
+    const matchingStatus: string = data.matchingStatus ?? 'PENDING';
+    const loginUrl = data.loginUrl ?? '#';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const statusBadge =
+      matchingStatus === 'AUTO_APPROVED'
+        ? '<span style="display:inline-block;background:#dcfce7;color:#166534;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:4px">✅ Đối soát tự động thành công</span>'
+        : matchingStatus === 'EXCEPTION_REVIEW'
+          ? '<span style="display:inline-block;background:#fee2e2;color:#991b1b;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:4px">⚠️ Cần xét duyệt thủ công</span>'
+          : '<span style="display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:4px">🔄 Đang xử lý đối soát</span>';
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Hóa đơn mới</div>
+        <h1>Nhận được hóa đơn ${invoiceNumber}</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${name}</strong>,</p>
+        <p>Hệ thống vừa ghi nhận hóa đơn mới từ nhà cung cấp qua email. Vui lòng vào hệ thống để xem xét và xử lý thanh toán.</p>
+
+        <table class="info-table">
+          <tr><td>Số hóa đơn</td><td><strong>${invoiceNumber}</strong></td></tr>
+          <tr><td>Nhà cung cấp</td><td>${supplierName}</td></tr>
+          <tr><td>Đơn đặt hàng</td><td>${poNumber}</td></tr>
+          <tr><td>Tổng tiền</td><td><strong style="color:#0f766e">${this.fmt(totalAmount)}</strong></td></tr>
+          <tr><td>Ngày hóa đơn</td><td>${invoiceDate}</td></tr>
+          ${dueDate ? `<tr><td>Hạn thanh toán</td><td><strong>${dueDate}</strong></td></tr>` : ''}
+        </table>
+
+        <p style="margin:12px 0">${statusBadge}</p>
+
+        ${
+          matchingStatus === 'EXCEPTION_REVIEW'
+            ? `
+        <div class="alert" style="background:#fff7ed;border-color:#f97316;color:#7c2d12">
+          ⚠️ Hóa đơn này có sai lệch so với PO/GRN vượt mức cho phép. Cần kiểm tra thủ công trước khi duyệt thanh toán.
+        </div>`
+            : ''
+        }
+
+        <div class="btn-wrap">
+          <a href="${loginUrl}" class="btn">Xem & Xử lý hóa đơn</a>
+        </div>
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base('#0f766e', content);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BUDGET_LIMIT_WARNING — Cảnh báo ngân sách gần đạt giới hạn
+  // data: { name, deptName, budgetPeriod, usedPercent (number),
+  //         usedAmount (number), totalBudget (number), remainingAmount (number), loginUrl }
+  // ═══════════════════════════════════════════════════════════════════════════
+  private templateBudgetLimitWarning(data: Record<string, any>): string {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const name = data.name ?? 'bạn';
+    const deptName = data.deptName ?? '';
+    const budgetPeriod = data.budgetPeriod ?? '';
+    const usedPercent = Number(data.usedPercent ?? 0);
+    const usedAmount = Number(data.usedAmount ?? 0);
+    const totalBudget = Number(data.totalBudget ?? 0);
+    const remainingAmount = Number(data.remainingAmount ?? 0);
+    const loginUrl = data.loginUrl ?? '#';
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    const barColor = usedPercent >= 90 ? '#dc2626' : '#f59e0b';
+
+    const content = `
+      <div class="header">
+        <div class="header-label">Cảnh báo ngân sách</div>
+        <h1>Ngân sách ${deptName} đạt ${usedPercent}%</h1>
+      </div>
+      <div class="body">
+        <p>Xin chào <strong>${name}</strong>,</p>
+        <p>Ngân sách của phòng ban <strong>${deptName}</strong> trong kỳ <strong>${budgetPeriod}</strong> đã sử dụng đến ngưỡng cảnh báo.</p>
+
+        <div style="background:#f8f8f8;border-radius:8px;padding:16px;margin:16px 0">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px">
+            <span>Đã dùng</span>
+            <strong style="color:${barColor}">${usedPercent}%</strong>
+          </div>
+          <div style="background:#e5e7eb;border-radius:4px;height:10px;overflow:hidden">
+            <div style="background:${barColor};width:${Math.min(usedPercent, 100)}%;height:100%;border-radius:4px"></div>
+          </div>
+        </div>
+
+        <table class="info-table">
+          <tr><td>Tổng ngân sách</td><td>${this.fmt(totalBudget)}</td></tr>
+          <tr><td>Đã sử dụng</td><td><strong style="color:${barColor}">${this.fmt(usedAmount)}</strong></td></tr>
+          <tr><td>Còn lại</td><td><strong style="color:#166534">${this.fmt(remainingAmount)}</strong></td></tr>
+        </table>
+
+        <div class="alert" style="${usedPercent >= 90 ? 'background:#fef2f2;border-color:#dc2626;color:#7f1d1d' : ''}">
+          ⚠️ ${
+            usedPercent >= 90
+              ? 'Ngân sách gần hết! Các yêu cầu mua hàng mới cần xin phê duyệt đặc biệt.'
+              : 'Vui lòng kiểm soát chi tiêu để tránh vượt ngân sách.'
+          }
+        </div>
+
+        <div class="btn-wrap">
+          <a href="${loginUrl}" class="btn" style="background:${barColor}">Xem báo cáo ngân sách</a>
+        </div>
+      </div>
+      <div class="footer">
+        Đây là email tự động từ hệ thống SPMS · Vui lòng không reply
+      </div>`;
+
+    return this.base(barColor, content);
+  }
+
+  private templateGeneric(data: Record<string, any>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const title = data.title ?? 'Thông báo hệ thống';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const message = data.message ?? '';
+    const content = `
+      <div class="header">
+        <div class="header-label">Thông báo</div>
+        <h1>${title}</h1>
+      </div>
+      <div class="body">
+        <p>${message}</p>
+      </div>
+      <div class="footer">© 2025 Order Management System</div>`;
+    return this.base('#334155', content);
+  }
+
   // ─────────────────────────────────────────────────────────────
-  // Base layout
+  // Base layout — giữ nguyên 100% từ file gốc
   // ─────────────────────────────────────────────────────────────
   private base(accentColor: string, content: string): string {
     return `
@@ -142,16 +1367,12 @@ export class EmailTemplatesService {
       padding: 40px 16px;
     }
     .wrapper { max-width: 560px; margin: 0 auto; }
-
-    /* Card */
     .card {
       background: #ffffff;
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
     }
-
-    /* Header stripe */
     .header {
       background: ${accentColor};
       padding: 36px 40px 32px;
@@ -180,13 +1401,9 @@ export class EmailTemplatesService {
       color: #ffffff;
       line-height: 1.25;
     }
-
-    /* Body */
     .body { padding: 36px 40px; }
     .body p { font-size: 15px; line-height: 1.7; color: #444; margin-bottom: 16px; }
     .body p:last-child { margin-bottom: 0; }
-
-    /* Info table */
     .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
     .info-table td {
       padding: 10px 14px;
@@ -200,8 +1417,6 @@ export class EmailTemplatesService {
       width: 38%;
       white-space: nowrap;
     }
-
-    /* CTA Button */
     .btn-wrap { text-align: center; margin: 28px 0 8px; }
     .btn {
       display: inline-block;
@@ -214,11 +1429,7 @@ export class EmailTemplatesService {
       font-size: 15px;
       letter-spacing: 0.3px;
     }
-
-    /* Divider */
     .divider { border: none; border-top: 1px solid #f0f0f0; margin: 24px 0; }
-
-    /* Alert box */
     .alert {
       background: #fff8e1;
       border-left: 4px solid #f59e0b;
@@ -229,8 +1440,6 @@ export class EmailTemplatesService {
       margin: 20px 0;
       line-height: 1.6;
     }
-
-    /* Footer */
     .footer {
       padding: 20px 40px 28px;
       text-align: center;
@@ -254,138 +1463,5 @@ export class EmailTemplatesService {
   </div>
 </body>
 </html>`;
-  }
-
-  // ─────────────────────────────────────────────────────────────
-  // 1. Chào mừng trở lại (USER_LOGIN)
-  // ─────────────────────────────────────────────────────────────
-  private templateWelcomeBack(data: Record<string, any>): string {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const name = data.name ?? 'bạn';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const time = data.loginAt ?? new Date().toLocaleString('vi-VN');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const device = data.device ?? 'Không xác định';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const location = data.location ?? 'Không xác định';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const dashUrl = data.dashUrl ?? '#';
-
-    const content = `
-      <div class="header">
-        <div class="header-label">Đăng nhập thành công</div>
-        <h1>Chào mừng trở lại,<br/>${name} 👋</h1>
-      </div>
-
-      <div class="body">
-        <p>Chúng tôi ghi nhận một phiên đăng nhập mới vào tài khoản của bạn. Dưới đây là thông tin chi tiết:</p>
-
-        <table class="info-table">
-          <tr><td>Thời gian</td><td>${time}</td></tr>
-          <tr><td>Thiết bị</td><td>${device}</td></tr>
-          <tr><td>Vị trí</td><td>${location}</td></tr>
-        </table>
-
-        <div class="alert">
-          ⚠️ Nếu bạn <strong>không thực hiện</strong> đăng nhập này, hãy đổi mật khẩu ngay lập tức và liên hệ quản trị viên.
-        </div>
-
-        <div class="btn-wrap">
-          <a href="${dashUrl}" class="btn">Vào Dashboard</a>
-        </div>
-      </div>
-
-      <div class="footer">
-        Email này được gửi tự động khi có đăng nhập mới.<br/>
-        <a href="#">Quản lý thông báo</a> &nbsp;·&nbsp; <a href="#">Hỗ trợ</a>
-      </div>
-    `;
-
-    return this.base('#0f4c81', content);
-  }
-
-  // ─────────────────────────────────────────────────────────────
-  // 2. Thành viên mới (USER_REGISTERED)
-  // ─────────────────────────────────────────────────────────────
-  private templateNewMember(data: Record<string, any>): string {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const name = data.name ?? 'bạn';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const email = data.email ?? '';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const role = data.role ?? 'Member';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const org = data.orgName ?? 'Hệ thống';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const loginUrl = data.loginUrl ?? '#';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const tempPass = data.tempPassword;
-
-    const content = `
-      <div class="header">
-        <div class="header-label">Chào mừng thành viên mới</div>
-        <h1>Xin chào,<br/>${name}! 🎉</h1>
-      </div>
-
-      <div class="body">
-        <p>Tài khoản của bạn đã được tạo thành công trong hệ thống <strong>${org}</strong>. Bạn có thể đăng nhập và bắt đầu sử dụng ngay bây giờ.</p>
-
-        <table class="info-table">
-          <tr><td>Họ tên</td><td>${name}</td></tr>
-          <tr><td>Email</td><td>${email}</td></tr>
-          <tr><td>Vai trò</td><td>${role}</td></tr>
-          <tr><td>Tổ chức</td><td>${org}</td></tr>
-          ${tempPass ? `<tr><td>Mật khẩu tạm</td><td><strong>${tempPass}</strong></td></tr>` : ''}
-        </table>
-
-        ${
-          tempPass
-            ? `
-        <div class="alert">
-          🔐 Đây là mật khẩu tạm thời. Vui lòng <strong>đổi mật khẩu ngay</strong> sau khi đăng nhập lần đầu.
-        </div>`
-            : ''
-        }
-
-        <div class="btn-wrap">
-          <a href="${loginUrl}" class="btn">Đăng nhập ngay</a>
-        </div>
-
-        <hr class="divider"/>
-        <p style="font-size:13px; color:#999; text-align:center;">
-          Cần hỗ trợ? Liên hệ quản trị viên hệ thống hoặc reply email này.
-        </p>
-      </div>
-
-      <div class="footer">
-        Bạn nhận email này vì tài khoản vừa được tạo trong hệ thống.<br/>
-        <a href="#">Chính sách bảo mật</a> &nbsp;·&nbsp; <a href="#">Hỗ trợ</a>
-      </div>
-    `;
-
-    return this.base('#0d7c4e', content);
-  }
-
-  // ─────────────────────────────────────────────────────────────
-  // Fallback generic
-  // ─────────────────────────────────────────────────────────────
-  private templateGeneric(data: Record<string, any>): string {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const title = data.title ?? 'Thông báo hệ thống';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const message = data.message ?? '';
-
-    const content = `
-      <div class="header">
-        <div class="header-label">Thông báo</div>
-        <h1>${title}</h1>
-      </div>
-      <div class="body">
-        <p>${message}</p>
-      </div>
-      <div class="footer">© 2025 Order Management System</div>
-    `;
-
-    return this.base('#334155', content);
   }
 }

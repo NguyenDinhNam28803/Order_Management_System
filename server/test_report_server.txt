@@ -1,0 +1,11 @@
+
+> server@0.0.1 test
+> jest
+
+● Validation Error:
+
+  Module ts-jest in the transform option was not found.
+         <rootDir> is: /app/server/src
+
+  Configuration Documentation:
+  https://jestjs.io/docs/configuration

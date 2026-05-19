@@ -1,7 +1,6 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
-import DashboardHeader from "../components/DashboardHeader";
 import { ShieldAlert, CheckCircle2, XCircle, ArrowRight, Lock, FileCheck, Info } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
@@ -9,9 +8,9 @@ import { useRouter } from "next/navigation";
 export default function MatchingPage() {
     const { pos } = useProcurement();
     const router = useRouter();
-
+    
     // Find PO that is COMMITTED (simulating that it's been received but not paid)
-    const activePO = pos.find((p: any) => p.status === "RECEIVED");
+    const activePO = pos.find((p) => p.status === "MATCHING");
 
     const [disputeResolved, setDisputeResolved] = useState(false);
 
@@ -22,18 +21,16 @@ export default function MatchingPage() {
     };
 
     return (
-        <main className="pt-16 px-8 pb-12">
-            <DashboardHeader breadcrumbs={["Tài chính", "Đối soát 3 bên"]} />
-
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-erp-navy tracking-tight">Đối soát 3 bên (3-Way Match)</h1>
-                    <p className="text-sm text-slate-500 mt-1">Hệ thống tự động đối chiếu dữ liệu giữa PO, Nhập kho và Hóa đơn.</p>
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Đối soát 3 bên (3-Way Match)</h1>
+                    <p className="text-sm text-slate-900 mt-1">Hệ thống tự động đối chiếu dữ liệu giữa PO, Nhập kho và Hóa đơn.</p>
                 </div>
             </div>
 
             {!activePO ? (
-                <div className="erp-card bg-slate-50 border-dashed py-32 text-center text-slate-400">
+                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 bg-slate-50 border-dashed py-32 text-center text-black">
                     <FileCheck size={48} className="mx-auto mb-4 opacity-10" />
                     <p className="text-xs font-black uppercase tracking-widest">Không có đơn hàng nào cần đối soát tại thời điểm này</p>
                 </div>
@@ -41,11 +38,11 @@ export default function MatchingPage() {
                 <div className="space-y-8 animate-in fade-in slide-in-from-top duration-500">
                     {/* --- Alert Banner --- */}
                     {!disputeResolved && (
-                        <div className="bg-red-50 border border-red-100 rounded-3xl p-8 flex items-start gap-6 animate-pulse shadow-sm shadow-red-100">
+                        <div className="bg-red-50 border border-red-100 rounded-xl p-8 flex items-start gap-6 animate-pulse shadow-sm shadow-red-100">
                             <div className="h-14 w-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center shrink-0">
                                 <ShieldAlert size={30} />
                             </div>
-                            <div className="flex-grow">
+                            <div className="grow">
                                 <h4 className="text-sm font-black text-red-800 uppercase tracking-widest mb-1">Cảnh báo: Lệch số lượng mực in!</h4>
                                 <p className="text-xs text-red-700 font-medium leading-relaxed">
                                     Hóa đơn Nhà cung cấp (Invoice) yêu cầu: <span className="font-black underline">50 Thùng</span>.
@@ -64,15 +61,15 @@ export default function MatchingPage() {
                         </div>
                     )}
 
-                    <div className="erp-card !p-0 overflow-hidden">
+                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
                         <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
                             <div>
-                                <h3 className="text-sm font-black uppercase tracking-widest text-erp-navy">Kết quả đối soát: {activePO.id}</h3>
-                                <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">Vendor: {activePO.vendor}</p>
+                                <h3 className="text-sm font-black uppercase tracking-widest text-brand-primary">Kết quả đối soát: {activePO.id}</h3>
+                                <p className="text-[10px] font-bold text-black mt-1 uppercase">Vendor: {activePO.vendor}</p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Info size={14} className="text-slate-300" />
-                                <span className="text-[10px] font-black uppercase text-slate-400">Dung sai cho phép: 2%</span>
+                                <span className="text-[10px] font-black uppercase text-black">Dung sai cho phép: 2%</span>
                             </div>
                         </div>
                         <table className="erp-table">
@@ -80,24 +77,24 @@ export default function MatchingPage() {
                                 <tr>
                                     <th>Hạng mục</th>
                                     <th className="text-center bg-slate-50/50">SL PO (Đặt)</th>
-                                    <th className="text-center bg-blue-50/50">SL GRN (Nhận)</th>
+                                    <th className="text-center bg-[#F9EFEC]/50">SL GRN (Nhận)</th>
                                     <th className="text-center bg-indigo-50/50">SL Invoice (HD)</th>
                                     <th className="text-right">Kết quả</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td className="p-6 font-bold text-erp-navy">Vải Cotton 100% (Trắng)</td>
-                                    <td className="p-6 text-center font-mono">500</td>
-                                    <td className="p-6 text-center font-mono font-black text-emerald-600">500</td>
-                                    <td className="p-6 text-center font-mono font-black text-emerald-600">500</td>
+                                    <td className="p-6 font-bold text-brand-primary">Vải Cotton 100% (Trắng)</td>
+                                    <td className="p-6 text-center ">500</td>
+                                    <td className="p-6 text-center  font-black text-emerald-600">500</td>
+                                    <td className="p-6 text-center  font-black text-emerald-600">500</td>
                                     <td className="p-6 text-right"><span className="status-pill status-approved">Khớp 100%</span></td>
                                 </tr>
                                 <tr>
-                                    <td className="p-6 font-bold text-erp-navy">Mực in lụa (Thùng 20L)</td>
-                                    <td className="p-6 text-center font-mono">50</td>
-                                    <td className="p-6 text-center font-mono font-black text-red-600 bg-red-50/30">42</td>
-                                    <td className="p-6 text-center font-mono font-black text-red-600 bg-red-50/30 animate-pulse">50</td>
+                                    <td className="p-6 font-bold text-brand-primary">Mực in lụa (Thùng 20L)</td>
+                                    <td className="p-6 text-center ">50</td>
+                                    <td className="p-6 text-center  font-black text-red-600 bg-red-50/30">42</td>
+                                    <td className="p-6 text-center  font-black text-red-600 bg-red-50/30 animate-pulse">50</td>
                                     <td className="p-6 text-right"><span className="status-pill status-rejected">Bất thường</span></td>
                                 </tr>
                             </tbody>
@@ -106,9 +103,9 @@ export default function MatchingPage() {
 
                     <div className="flex justify-between items-center">
                         <div className="flex gap-4">
-                            <div className="erp-card !p-4 border-dashed bg-slate-50/50 flex items-center gap-3">
-                                <Lock size={16} className="text-slate-400" />
-                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Ngân sách đang khóa: <span className="text-erp-navy">{activePO.total.toLocaleString()} ₫</span></span>
+                            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 !p-4 border-dashed bg-slate-50/50 flex items-center gap-3">
+                                <Lock size={16} className="text-black" />
+                                <span className="text-[10px] font-black uppercase text-black tracking-widest">Ngân sách đang khóa: <span className="text-brand-primary">{(activePO.total ?? activePO.totalAmount ?? 0).toLocaleString()} ₫</span></span>
                             </div>
                         </div>
                         <div className="flex gap-3">
@@ -129,3 +126,4 @@ export default function MatchingPage() {
         </main>
     );
 }
+

@@ -8,20 +8,24 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Min,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
-import { CurrencyCode } from '@prisma/client';
+import { CurrencyCode, BudgetPeriodType } from '@prisma/client';
 
 export class CreateBudgetPeriodDto {
   @ApiProperty({ example: 2026 })
   @IsNumber()
   @IsNotEmpty()
-  fiscalYear: number;
+  fiscalYear?: number;
 
-  @ApiPropertyOptional({ example: 'ANNUAL', default: 'ANNUAL' })
-  @IsString()
+  @ApiPropertyOptional({
+    enum: BudgetPeriodType,
+    default: BudgetPeriodType.ANNUAL,
+  })
+  @IsEnum(BudgetPeriodType)
   @IsOptional()
-  periodType?: string;
+  periodType?: BudgetPeriodType;
 
   @ApiPropertyOptional({ example: 1, default: 1 })
   @IsNumber()
@@ -33,14 +37,14 @@ export class CreateBudgetPeriodDto {
   @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
-  startDate: Date;
+  startDate?: Date;
 
   @ApiProperty({ example: '2026-12-31' })
   @Transform(({ value }) => (value === '' ? undefined : value))
   @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
-  endDate: Date;
+  endDate?: Date;
 
   @ApiPropertyOptional({ example: true, default: true })
   @IsBoolean()
@@ -54,12 +58,12 @@ export class CreateBudgetAllocationDto {
   @ApiProperty({ example: '325f187a-c1f6-4a4e-8692-234b6e50334a' })
   @IsUUID('4')
   @IsNotEmpty()
-  budgetPeriodId: string;
+  budgetPeriodId!: string;
 
   @ApiProperty({ example: '325f187a-c1f6-4a4e-8692-234b6e50334b' })
   @IsUUID('4')
   @IsNotEmpty()
-  costCenterId: string;
+  costCenterId!: string;
 
   @ApiPropertyOptional({ example: '325f187a-c1f6-4a4e-8692-234b6e50334c' })
   @IsUUID('4')
@@ -73,8 +77,9 @@ export class CreateBudgetAllocationDto {
 
   @ApiProperty({ example: 1000000.0 })
   @IsNumber()
+  @Min(0)
   @IsNotEmpty()
-  allocatedAmount: number;
+  allocatedAmount!: number;
 
   @ApiPropertyOptional({ enum: CurrencyCode, default: CurrencyCode.VND })
   @IsEnum(CurrencyCode)

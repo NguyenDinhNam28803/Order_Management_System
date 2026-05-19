@@ -15,7 +15,6 @@ export class JwtAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
-    console.log('Extracted token:', token);
     if (!token) {
       throw new UnauthorizedException('Không tìm thấy token xác thực');
     }
@@ -25,7 +24,6 @@ export class JwtAuthGuard implements CanActivate {
       request['user'] = payload;
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
-        console.warn('Token đã hết hạn:', error);
         throw new UnauthorizedException(
           'Token đã hết hạn, vui lòng đăng nhập lại',
         );

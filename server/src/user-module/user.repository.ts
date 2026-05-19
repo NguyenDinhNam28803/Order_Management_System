@@ -38,14 +38,13 @@ export class UserRepository {
 
   async findAll() {
     return this.prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        fullName: true,
-        isActive: true,
-        role: true,
-        orgId: true,
-        deptId: true,
+      include: {
+        department: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
   }
@@ -53,12 +52,37 @@ export class UserRepository {
   async findById(id: string) {
     return this.prisma.user.findUnique({
       where: { id },
+      include: {
+        department: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            companyType: true,
+          },
+        },
+      },
     });
   }
 
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
+      include: {
+        department: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
   }
 
@@ -66,6 +90,14 @@ export class UserRepository {
     return this.prisma.user.update({
       where: { id },
       data,
+      include: {
+        department: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
   }
 

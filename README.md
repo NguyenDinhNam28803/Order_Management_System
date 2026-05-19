@@ -1,4 +1,4 @@
-# 🚀 Smart E-Procurement & Order Management System (OMS)
+# Smart E-Procurement & Order Management System (OMS)
 
 Hệ thống quản trị mua sắm tập trung (E-Procurement) toàn diện, tích hợp Trí tuệ nhân tạo (AI) để tối ưu hóa quy trình từ yêu cầu mua sắm đến thanh toán (Procure-to-Pay). Dự án được thiết kế với kiến trúc module mạnh mẽ, khả năng tự động hóa cao và giao diện người dùng hiện đại.
 

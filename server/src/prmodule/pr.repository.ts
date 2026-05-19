@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrDto } from './dto/create-pr.dto';
 import { PrStatus, PurchaseRequisition } from '@prisma/client';
-import { AiService } from 'src/ai-service/ai-service.service';
+import { AiService } from '../ai-service/ai-service.service';
 
 @Injectable()
 export class PrRepository {
@@ -49,12 +49,22 @@ export class PrRepository {
     });
   }
 
-  async findAll(orgId: string): Promise<PurchaseRequisition[]> {
-    return this.prisma.purchaseRequisition.findMany({
-      where: { orgId },
-      include: { requester: true, department: true, items: true },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(
+    orgId: string,
+    { page, limit }: { page: number; limit: number } = { page: 1, limit: 20 },
+  ) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.purchaseRequisition.findMany({
+        where: { orgId },
+        include: { requester: true, department: true, items: true },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.purchaseRequisition.count({ where: { orgId } }),
+    ]);
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async findOne(id: string): Promise<any> {

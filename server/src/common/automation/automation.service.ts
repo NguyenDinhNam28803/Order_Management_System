@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RfqmoduleService } from '../../rfqmodule/rfqmodule.service';
+import { EmailService } from '../../notification-module/email.service';
+import { NotificationModuleService } from '../../notification-module/notification-module.service';
+import { PdfGeneratorService } from '../../notification-module/pdf-generator.service';
+import { TokenType } from '../../external-token-module/external-token.service';
 import {
   DocumentType,
   PrStatus,
@@ -8,16 +13,44 @@ import {
   PoStatus,
   GrnStatus,
   QcResult,
+  PriceVolatility,
+  NotificationChannel,
+  NotificationStatus,
+  UserRole,
 } from '@prisma/client';
+import { generateDocNumber } from '../utils/doc-number.util';
+
+interface AutomationConfig {
+  contractThreshold: number;
+  defaultContractDays: number;
+  autoSendEmail: boolean;
+}
 
 @Injectable()
 export class AutomationService {
   private readonly logger = new Logger(AutomationService.name);
+  private readonly config: AutomationConfig;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly rfqService: RfqmoduleService,
-  ) {}
+    private readonly emailService: EmailService,
+    private readonly notificationService: NotificationModuleService,
+    private readonly pdfGenerator: PdfGeneratorService,
+    private readonly configService: ConfigService,
+  ) {
+    this.config = {
+      contractThreshold: this.configService.get<number>(
+        'CONTRACT_THRESHOLD',
+        50000000,
+      ),
+      defaultContractDays: this.configService.get<number>(
+        'CONTRACT_DEFAULT_DAYS',
+        365,
+      ),
+      autoSendEmail: this.configService.get<boolean>('AUTO_SEND_EMAIL', true),
+    };
+  }
 
   /**
    * Xử lý sau khi một tài liệu được duyệt hoàn toàn
@@ -26,9 +59,158 @@ export class AutomationService {
     this.logger.log(`Handling automation for approved ${docType}: ${docId}`);
 
     if (docType === DocumentType.PURCHASE_REQUISITION) {
-      await this.autoCreateRfqFromPr(docId);
-    } else if (docType === DocumentType.PURCHASE_ORDER) {
-      await this.autoCreateGrnFromPo(docId);
+      await this.routePrApprovalFlow(docId);
+    }
+    // Note: GRN creation is now handled after supplier accepts PO, not immediately after PO approval
+  }
+
+  /**
+   * Xử lý khi Nhà cung cấp chấp nhận PO
+   * Tạo GRN draft để bộ phận kho chuẩn bị nhận hàng
+   */
+  async handlePoSupplierAccepted(poId: string, supplierId: string) {
+    this.logger.log(
+      `Supplier ${supplierId} accepted PO ${poId}. Creating draft GRN...`,
+    );
+
+    try {
+      const po = await this.prisma.purchaseOrder.findUnique({
+        where: { id: poId },
+        include: {
+          items: true,
+          supplier: true,
+        },
+      });
+
+      if (!po) {
+        this.logger.error(`PO ${poId} not found`);
+        return;
+      }
+
+      // Kiểm tra PO đã ở trạng thái ACKNOWLEDGED (NCC đã chấp nhận)
+      if (po.status !== PoStatus.ACKNOWLEDGED) {
+        this.logger.warn(
+          `PO ${po.poNumber} status is ${po.status}, expected ACKNOWLEDGED`,
+        );
+      }
+
+      // Kiểm tra xem đã có GRN draft nào cho PO này chưa
+      const existingGrn = await this.prisma.goodsReceipt.findFirst({
+        where: {
+          poId: po.id,
+          status: GrnStatus.DRAFT,
+        },
+      });
+
+      if (existingGrn) {
+        this.logger.warn(
+          `Draft GRN ${existingGrn.grnNumber} already exists for PO ${po.poNumber}`,
+        );
+        return existingGrn;
+      }
+
+      // Tạo GRN draft
+      const grnNumber = generateDocNumber('GRN-DRAFT');
+
+      const grn = await this.prisma.goodsReceipt.create({
+        data: {
+          grnNumber,
+          poId: po.id,
+          orgId: po.orgId,
+          // supplierId field doesn't exist in GoodsReceipt model
+          receivedById: po.buyerId, // Gán người mua làm người nhận tạm thời
+          status: GrnStatus.DRAFT,
+          notes: `GRN draft được tạo tự động sau khi NCC ${po.supplier?.name || supplierId} chấp nhận PO ${po.poNumber}. Bộ phận kho cần cập nhật khi hàng về thực tế.`,
+          items: {
+            create: po.items.map((item, index) => ({
+              poItemId: item.id,
+              lineNumber: index + 1,
+              receivedQty: item.qty, // Số lượng dự kiến nhận = số lượng đặt
+              acceptedQty: 0, // Chưa nhận thực tế
+              rejectedQty: 0,
+              qcResult: QcResult.PENDING,
+              notes: `Chờ nhận hàng thực tế từ NCC`,
+            })),
+          },
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      // Cập nhật trạng thái PO sang GRN_CREATED
+      await this.prisma.purchaseOrder.update({
+        where: { id: po.id },
+        data: { status: PoStatus.GRN_CREATED },
+      });
+
+      this.logger.log(
+        `Draft GRN ${grn.grnNumber} created successfully for PO ${po.poNumber}. Items count: ${po.items.length}`,
+      );
+
+      // Gửi thông báo in-app cho tất cả user có role WAREHOUSE trong cùng org
+      await this.notifyWarehouseTeam(po, grn);
+
+      // Gửi email magic link /grn/update cho NCC để cập nhật thông tin vận chuyển
+      void this.notifySupplierGrnMilestone(grn.id, po).catch((e) =>
+        this.logger.error(
+          `Failed to send GRN milestone email for PO ${po.poNumber}`,
+          e,
+        ),
+      );
+
+      return grn;
+    } catch (error) {
+      this.logger.error(`Failed to create draft GRN for PO ${poId}: ${error!}`);
+      throw error;
+    }
+  }
+
+  /**
+   * ROUTING 2 FLOWS DỰA VÀO MẶT HÀNG:
+   * - Flow 1 (Giá ổn định): Tạo RFQ ngay
+   * - Flow 2 (Giá thay đổi): Tạo QuotationRequest (báo giá trước) sau đó tạo PR từ giá báo
+   */
+  private async routePrApprovalFlow(prId: string) {
+    try {
+      const pr = await this.prisma.purchaseRequisition.findUnique({
+        where: { id: prId },
+        include: {
+          items: {
+            include: { product: true },
+          },
+        },
+      });
+
+      if (!pr || pr.status !== PrStatus.APPROVED) {
+        this.logger.warn(`PR ${prId} not in APPROVED status`);
+        return;
+      }
+
+      // Kiểm tra xem PR có mặt hàng yêu cầu báo giá không
+      const hasVolatileItems = pr.items.some(
+        (item) =>
+          (item.product?.priceVolatility === PriceVolatility.VOLATILE ||
+            item.product?.priceVolatility === PriceVolatility.MODERATE ||
+            item.product?.requiresQuoteFirst === true) ??
+          false,
+      );
+
+      if (hasVolatileItems) {
+        this.logger.log(
+          `PR ${pr.prNumber} contains volatile items. Creating QuotationRequest instead of RFQ...`,
+        );
+        await this.autoCreateQuotationRequestFromPr(prId);
+      } else {
+        this.logger.log(
+          `PR ${pr.prNumber} contains stable items. Creating RFQ...`,
+        );
+        await this.autoCreateRfqFromPr(prId);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to route PR approval flow for ${prId}: ${error!}`,
+      );
     }
   }
 
@@ -61,7 +243,7 @@ export class AutomationService {
       this.logger.log(`Auto-creating GRN for PO: ${po.poNumber}`);
 
       // 3. Tạo GRN và GRN Items trong transaction
-      const grnNumber = `GRN-AUTO-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+      const grnNumber = generateDocNumber('GRN-AUTO');
 
       await this.prisma.$transaction(async (tx) => {
         const grn = await tx.goodsReceipt.create({
@@ -94,10 +276,7 @@ export class AutomationService {
         );
       });
     } catch (error) {
-      this.logger.error(
-        `Failed to auto-create GRN from PO ${poId}: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to auto-create GRN from PO ${poId}: ${error!}`);
     }
   }
 
@@ -150,7 +329,7 @@ export class AutomationService {
       this.logger.log(`Auto-creating PO for RFQ: ${rfq.rfqNumber}`);
 
       // 3. Chuẩn bị dữ liệu PO
-      const poNumber = `PO-AUTO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const poNumber = generateDocNumber('PO-AUTO');
 
       // Tính toán ngày giao hàng dựa trên leadTime của báo giá
       const deliveryDate = new Date();
@@ -158,7 +337,7 @@ export class AutomationService {
         deliveryDate.getDate() + (quotation.leadTimeDays || 7),
       );
 
-      await this.prisma.$transaction(async (tx) => {
+      const createdPo = await this.prisma.$transaction(async (tx) => {
         // Tạo PO chính thức
         const po = await tx.purchaseOrder.create({
           data: {
@@ -198,7 +377,31 @@ export class AutomationService {
           },
         });
 
-        // 4. Cập nhật cam kết ngân sách (Budget Commitment)
+        // 4. Cập nhật thông tin giá cho Product
+        for (const qItem of quotation.items) {
+          const rfqItem = rfq.items.find((i) => i.id === qItem.rfqItemId);
+          // Tìm prItem gốc để lấy productId
+          const prItem = rfqItem
+            ? await tx.prItem.findUnique({
+                where: { id: rfqItem.prItemId || '' },
+              })
+            : null;
+
+          if (prItem?.productId) {
+            await tx.product.update({
+              where: { id: prItem.productId },
+              data: {
+                unitPriceRef: qItem.unitPrice,
+                lastPriceAt: new Date(),
+              },
+            });
+            this.logger.log(
+              `Updated price for product ${prItem.productId} to ${Number(qItem.unitPrice)}`,
+            );
+          }
+        }
+
+        // 5. Cập nhật cam kết ngân sách (Budget Commitment)
         if (rfq.pr?.costCenterId && rfq.pr?.deptId) {
           const budget = await tx.budgetAllocation.findFirst({
             where: {
@@ -219,17 +422,276 @@ export class AutomationService {
         }
 
         this.logger.log(`PO ${po.poNumber} created and budget committed.`);
+
+        // 6. Kiểm tra tạo hợp đồng tự động nếu PO đạt ngưỡng
+        const poTotal = Number(quotation.totalPrice);
+        if (poTotal >= this.config.contractThreshold) {
+          this.logger.log(
+            `PO ${po.poNumber} value ${poTotal.toLocaleString('vi-VN')} VND exceeds threshold. Triggering contract automation...`,
+          );
+          // Gọi sau transaction để tránh deadlock
+          setImmediate(() => {
+            this.processPOAutomation(po.id)
+              .then((result) => {
+                if (result?.contractCreated) {
+                  this.logger.log(
+                    `Auto-created contract ${result.contractNumber} for PO ${po.poNumber}`,
+                  );
+                } else {
+                  this.logger.warn(
+                    `Contract not created for PO ${po.poNumber}: ${result?.message}`,
+                  );
+                }
+              })
+              .catch((err) => {
+                this.logger.error(
+                  `Error in contract automation for PO ${po.poNumber}: ${err.message}`,
+                );
+              });
+          });
+        } else {
+          this.logger.log(
+            `PO ${po.poNumber} value ${poTotal.toLocaleString('vi-VN')} VND below contract threshold ${this.config.contractThreshold.toLocaleString('vi-VN')} VND`,
+          );
+        }
+
+        return po;
       });
+
+      // Gửi email PO_CONFIRM_LINK cho nhà cung cấp sau khi PO được tạo
+
+      if (createdPo)
+        void this.sendPoConfirmLinkEmail(createdPo, quotation, rfq).catch(
+          () => {},
+        );
     } catch (error) {
       this.logger.error(
-        `Failed to auto-create PO from RFQ ${rfqId}: ${error.message}`,
-        error.stack,
+        `Failed to auto-create PO from RFQ ${rfqId}: ${error!}`,
+      );
+    }
+  }
+
+  private async sendPoConfirmLinkEmail(
+    po: Record<string, unknown>,
+    quotation: Record<string, unknown>,
+    rfq: Record<string, unknown>,
+  ) {
+    const supplierId = quotation['supplierId'];
+    const supplierUser = await this.prisma.user.findFirst({
+      where: {
+        orgId: supplierId as string,
+        role: UserRole.SUPPLIER,
+        isActive: true,
+      },
+      include: { organization: true },
+    });
+    if (!supplierUser?.email) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName: string =
+      (supplierUser.organization as any)?.name ??
+      supplierUser.fullName ??
+      supplierUser.email;
+
+    const quotationItems: any[] = Array.isArray(quotation['items'])
+      ? quotation['items']
+      : [];
+
+    const rfqItems: any[] = Array.isArray(rfq['items']) ? rfq['items'] : [];
+
+    const items = quotationItems.map((qItem: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const rfqItem = rfqItems.find((i: any) => i.id === qItem.rfqItemId);
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        name: rfqItem?.description || 'N/A',
+
+        qty: Number(qItem.qtyOffered || rfqItem?.qty || 0),
+
+        unitPrice: Number(qItem.unitPrice),
+        total:
+          Number(qItem.unitPrice) *
+          Number(qItem.qtyOffered || rfqItem?.qty || 0) *
+          (1 - Number(qItem.discountPct ?? 0) / 100),
+      };
+    });
+
+    await this.notificationService.sendExternalEmailWithMagicLink({
+      to: supplierUser.email,
+
+      subject: `[Đơn mua hàng] ${po['poNumber'] as string} — Vui lòng xác nhận`,
+      eventType: 'PO_CONFIRM_LINK',
+      referenceId: po['id'] as string,
+      tokenType: TokenType.PO_CONFIRM,
+      expiresInDays: 7,
+      data: {
+        poCode: po['poNumber'],
+        supplierName,
+        issuedDate: new Date(),
+        deliveryDate: po['deliveryDate'],
+        deliveryAddress: po['deliveryAddress'] ?? '',
+        paymentTerms: po['paymentTerms'] ?? '',
+
+        totalAmount: Number(quotation['totalPrice']),
+        items,
+      },
+    });
+    this.logger.log(
+      `PO_CONFIRM_LINK email sent to ${supplierUser.email} for PO ${po['poNumber'] as string}`,
+    );
+
+    // Gửi thêm email đính kèm PDF PO để nhà cung cấp lưu hồ sơ
+    try {
+      const poFull = await this.prisma.purchaseOrder.findUnique({
+        where: { id: po['id'] as string },
+        include: {
+          items: true,
+          supplier: true,
+          buyer: { include: { organization: true } },
+          pr: true,
+        },
+      });
+
+      if (poFull) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const buyerOrg = (poFull.buyer as any)?.organization ?? {};
+        const supplierOrg = poFull.supplier ?? {};
+        const subtotal = poFull.items.reduce(
+          (sum, i) => sum + Number(i.total ?? 0),
+          0,
+        );
+
+        const pdfBuffer = await this.pdfGenerator.generatePoPdf({
+          poNumber: poFull.poNumber,
+          issuedDate: poFull.createdAt,
+          deliveryDate: poFull.deliveryDate,
+          paymentTerms: poFull.paymentTerms ?? undefined,
+          deliveryAddress: poFull.deliveryAddress ?? undefined,
+          notes: poFull.notes ?? undefined,
+          buyerOrg: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            name: buyerOrg.name ?? 'Buyer',
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            address: buyerOrg.address,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            email: buyerOrg.email,
+          },
+          supplierOrg: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            name: (supplierOrg as any).name ?? supplierName,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            address: (supplierOrg as any).address,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            email: (supplierOrg as any).email,
+          },
+          items: poFull.items.map((i) => ({
+            lineNumber: i.lineNumber,
+            description: i.description,
+            qty: Number(i.qty),
+            unit: i.unit ?? undefined,
+            unitPrice: Number(i.unitPrice),
+            total: Number(i.total ?? 0),
+          })),
+          subtotal,
+          totalAmount: Number(poFull.totalAmount),
+          currency: poFull.currency ?? 'VND',
+        });
+
+        await this.emailService.sendEmail(
+          supplierUser.email,
+          `[Đính kèm PDF] Đơn mua hàng ${poFull.poNumber}`,
+          `<p>Kính gửi <strong>${supplierName}</strong>,</p>
+           <p>Vui lòng tìm đơn mua hàng <strong>${poFull.poNumber}</strong> đính kèm theo email này để lưu hồ sơ.</p>
+           <p>Để xác nhận hoặc từ chối đơn hàng, vui lòng sử dụng link trong email trước đó.</p>
+           <p>Trân trọng,<br/>Đội Mua Hàng</p>`,
+          [
+            {
+              filename: `${poFull.poNumber}.pdf`,
+              content: pdfBuffer,
+              contentType: 'application/pdf',
+            },
+          ],
+        );
+        this.logger.log(`PDF PO attached email sent to ${supplierUser.email}`);
+      }
+    } catch (pdfErr) {
+      this.logger.warn(`Failed to send PDF PO email: ${pdfErr}`);
+    }
+  }
+
+  /**
+   * FLOW 2 - Tự động tạo QuotationRequest từ PR có mặt hàng giá thay đổi
+   * Chờ nhà cung cấp báo giá trước, sau đó mới tạo PR/PO thực tế
+   */
+  private async autoCreateQuotationRequestFromPr(prId: string) {
+    try {
+      const pr = await this.prisma.purchaseRequisition.findUnique({
+        where: { id: prId },
+        include: {
+          items: {
+            include: { product: true },
+          },
+          requester: true,
+        },
+      });
+
+      if (!pr) {
+        this.logger.error(`PR ${prId} not found`);
+        return;
+      }
+
+      this.logger.log(
+        `Auto-creating QuotationRequests for PR with volatile items: ${pr.prNumber}`,
+      );
+
+      // Tạo QuotationRequest cho mỗi item (hoặc mỗi category)
+      // Nhóm theo categoryId để tránh trùng lặp
+      const categoryMap = new Map<string | null, number>();
+
+      for (const item of pr.items) {
+        const catId = item.categoryId || 'default';
+        const totalAmount = Number(item.estimatedPrice) * Number(item.qty);
+
+        if (categoryMap.has(catId)) {
+          // Cộng gọp vào category hiện có
+          categoryMap.set(catId, categoryMap.get(catId)! + totalAmount);
+        } else {
+          categoryMap.set(catId, totalAmount);
+        }
+      }
+
+      // Tạo QuotationRequest cho từng category
+      for (const [catId, budgetAmount] of categoryMap) {
+        const quotationReq = await this.prisma.quotationRequest.create({
+          data: {
+            prId: pr.id,
+            requesterId: pr.requesterId,
+            categoryId: catId === 'default' ? null : catId,
+            description: `Báo giá cho danh mục mặt hàng - PR ${pr.prNumber}`,
+            estimatedBudget: budgetAmount,
+            status: 'PENDING',
+            note: `Mặt hàng có giá thay đổi liên tục. Yêu cầu báo giá chi tiết trước khi thực hiện mua.`,
+          },
+        });
+
+        this.logger.log(
+          `QuotationRequest created: ${quotationReq.id} for category: ${catId}`,
+        );
+      }
+
+      this.logger.log(
+        `Automation completed: QuotationRequests created for PR ${pr.prNumber}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to auto-create QuotationRequest from PR ${prId}: ${error!}`,
       );
     }
   }
 
   /**
-   * Tự động tạo RFQ từ PR đã duyệt
+   * FLOW 1 - Tự động tạo RFQ từ PR có mặt hàng giá ổn định
+   * Tạo RFQ ngay để mời nhà cung cấp báo giá tiêu chuẩn
    */
   private async autoCreateRfqFromPr(prId: string) {
     try {
@@ -259,7 +721,7 @@ export class AutomationService {
       this.logger.log(`Auto-creating RFQ for PR: ${pr.prNumber}`);
 
       // 3. Chuẩn bị dữ liệu RFQ
-      const rfqNumber = `RFQ-AUTO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const rfqNumber = generateDocNumber('RFQ-AUTO');
 
       // Tạo RFQ Request
       const rfq = await this.prisma.rfqRequest.create({
@@ -298,10 +760,332 @@ export class AutomationService {
 
       this.logger.log(`Automation completed for PR ${pr.prNumber}`);
     } catch (error) {
+      this.logger.error(`Failed to auto-create RFQ from PR ${prId}: ${error!}`);
+    }
+  }
+
+  /**
+   * PO Automation: Tạo contract tự động khi PO đạt ngưỡng giá
+   */
+  async processPOAutomation(poId: string) {
+    try {
+      const po = await this.prisma.purchaseOrder.findUnique({
+        where: { id: poId },
+        include: {
+          supplier: true,
+          items: true,
+        },
+      });
+
+      if (!po) {
+        return { success: false, message: `PO not found: ${poId}` };
+      }
+
+      const totalAmount = Number(po.totalAmount);
+      this.logger.log(
+        `Processing PO ${po.poNumber} with value: ${totalAmount}`,
+      );
+
+      if (totalAmount < this.config.contractThreshold) {
+        return {
+          success: true,
+          poId: po.id,
+          contractCreated: false,
+          message: `PO ${po.poNumber} below threshold ${this.config.contractThreshold.toLocaleString('vi-VN')} VND`,
+        };
+      }
+
+      if (po.contractId) {
+        const existingContract = await this.prisma.contract.findUnique({
+          where: { id: po.contractId },
+        });
+        if (existingContract) {
+          return {
+            success: true,
+            poId: po.id,
+            contractCreated: false,
+            contractId: existingContract.id,
+            message: `PO ${po.poNumber} already has contract ${existingContract.contractNumber}`,
+          };
+        }
+      }
+
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + this.config.defaultContractDays);
+
+      const contractNumber = await this.generateContractNumber(po.orgId);
+
+      const contract = await this.prisma.contract.create({
+        data: {
+          contractNumber,
+          title: `Contract from ${po.poNumber}`,
+          description: `Auto-generated contract from PO ${po.poNumber} value ${totalAmount.toLocaleString('vi-VN')} VND`,
+          orgId: po.orgId,
+          supplierId: po.supplierId,
+          value: totalAmount,
+          currency: po.currency || 'VND',
+          startDate,
+          endDate,
+          status: 'DRAFT',
+          milestones: {
+            create: [
+              {
+                title: 'Contract Signing',
+                description: 'Both parties sign the contract',
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                paymentPct: 0,
+                status: 'PENDING',
+              },
+              {
+                title: 'First Delivery',
+                description: 'Initial delivery as per PO',
+                dueDate:
+                  po.deliveryDate ||
+                  new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                paymentPct: 30,
+                status: 'PENDING',
+              },
+              {
+                title: 'Final Payment',
+                description: 'Final payment upon completion',
+                dueDate: endDate,
+                paymentPct: 70,
+                status: 'PENDING',
+              },
+            ],
+          },
+        },
+      });
+
+      await this.prisma.purchaseOrder.update({
+        where: { id: po.id },
+        data: { contractId: contract.id },
+      });
+
+      this.logger.log(
+        `Created contract ${contract.contractNumber} from PO ${po.poNumber}`,
+      );
+
+      let emailSent = false;
+      if (this.config.autoSendEmail && po.supplier?.email) {
+        emailSent = await this.sendContractNotificationEmail(
+          contract.id,
+          po,
+          totalAmount,
+        );
+      }
+
+      return {
+        success: true,
+        poId: po.id,
+        poNumber: po.poNumber,
+        contractCreated: true,
+        contractId: contract.id,
+        contractNumber: contract.contractNumber,
+        message: `Created contract ${contract.contractNumber} from PO ${po.poNumber}${emailSent ? ' and sent email' : ''}`,
+        emailSent,
+      };
+    } catch (error: any) {
+      this.logger.error(`PO Automation error: ${error.message}`, error.stack);
+      return { success: false, message: `Error: ${error.message}` };
+    }
+  }
+
+  async sendContractEmail(contractId: string) {
+    const contract = await this.prisma.contract.findUnique({
+      where: { id: contractId },
+      include: {
+        supplierOrg: true,
+        purchaseOrders: {
+          include: { supplier: true },
+          take: 1,
+        },
+      },
+    });
+
+    if (!contract) {
+      throw new Error(`Contract not found: ${contractId}`);
+    }
+
+    const po = contract.purchaseOrders?.[0];
+    if (!po) {
+      throw new Error('No PO linked to contract');
+    }
+
+    const emailSent = await this.sendContractNotificationEmail(
+      contractId,
+      po,
+      Number(contract.value || 0),
+    );
+
+    return {
+      success: emailSent,
+      contractId,
+      message: emailSent ? 'Email sent' : 'Failed to send email',
+    };
+  }
+
+  private async generateContractNumber(orgId: string): Promise<string> {
+    const year = new Date().getFullYear();
+    const count = await this.prisma.contract.count({ where: { orgId } });
+    return `CTR-${year}-${String(count + 1).padStart(4, '0')}`;
+  }
+
+  private async sendContractNotificationEmail(
+    contractId: string,
+    po: any,
+    totalAmount: number,
+  ): Promise<boolean> {
+    try {
+      const contract = await this.prisma.contract.findUnique({
+        where: { id: contractId },
+        include: { supplierOrg: true },
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const supplierEmail = contract?.supplierOrg?.email || po?.supplier?.email;
+      if (!supplierEmail) {
+        this.logger.warn('Cannot send email: missing supplier info');
+        return false;
+      }
+
+      const { subject, body } = this.generateContractEmailContent(
+        contract,
+        po,
+        totalAmount,
+      );
+
+      await this.emailService.sendEmail(supplierEmail, subject, body);
+
+      this.logger.log(`Sent contract email to ${supplierEmail}`);
+      return true;
+    } catch (error: any) {
+      this.logger.error(`Email error: ${error.message}`, error.stack);
+      return false;
+    }
+  }
+
+  private generateContractEmailContent(
+    contract: any,
+    po: any,
+    _totalAmount: number,
+  ) {
+    const subject = `New Contract ${contract.contractNumber} - Value ${Number(contract.value || 0).toLocaleString('vi-VN')} VND`;
+
+    const body = `
+Dear ${contract.supplierOrg?.name || 'Supplier'},
+
+A new contract has been created from PO ${po.poNumber}:
+
+CONTRACT DETAILS:
+- Number: ${contract.contractNumber}
+- Title: ${contract.title}
+- Value: ${Number(contract.value || 0).toLocaleString('vi-VN')} ${contract.currency}
+- Start: ${contract.startDate?.toLocaleDateString('vi-VN')}
+- End: ${contract.endDate?.toLocaleDateString('vi-VN')}
+- Status: Pending signature
+
+Please login to view and sign the contract.
+
+Best regards,
+Procurement System
+    `;
+
+    return { subject, body };
+  }
+
+  private async notifyWarehouseTeam(po: any, grn: any): Promise<void> {
+    try {
+      const warehouseUsers = await this.prisma.user.findMany({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        where: { orgId: po.orgId, role: UserRole.WAREHOUSE, isActive: true },
+        select: { id: true, orgId: true },
+      });
+
+      if (warehouseUsers.length === 0) {
+        this.logger.warn(
+          `No active WAREHOUSE users found in org ${po.orgId} to notify`,
+        );
+        return;
+      }
+
+      await this.prisma.notification.createMany({
+        data: warehouseUsers.map((u) => ({
+          recipientId: u.id,
+          orgId: u.orgId,
+          eventType: 'GRN_DRAFT_CREATED',
+          channel: NotificationChannel.IN_APP,
+          priority: 2,
+          subject: `Chuẩn bị nhận hàng: PO ${po.poNumber}`,
+          body: `Nhà cung cấp đã xác nhận PO ${po.poNumber}. Phiếu nhập kho nháp ${grn.grnNumber} đã được tạo. Vui lòng vào module Kho vận để xác nhận nhận hàng thực tế.`,
+          referenceType: 'GRN',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          referenceId: grn.id,
+          status: NotificationStatus.SENT,
+        })),
+      });
+
+      this.logger.log(
+        `Warehouse notification sent to ${warehouseUsers.length} user(s) for GRN ${grn.grnNumber}`,
+      );
+    } catch (error) {
       this.logger.error(
-        `Failed to auto-create RFQ from PR ${prId}: ${error.message}`,
-        error.stack,
+        `Failed to send warehouse notification for GRN ${grn.grnNumber}: ${error}`,
       );
     }
+  }
+
+  private async notifySupplierGrnMilestone(
+    grnId: string,
+    po: any,
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierOrgId: string | undefined = po?.supplierId;
+    if (!supplierOrgId) return;
+
+    const supplierUser = await this.prisma.user.findFirst({
+      where: {
+        orgId: supplierOrgId,
+        role: UserRole.SUPPLIER,
+        isActive: true,
+      },
+      include: { organization: true },
+    });
+    if (!supplierUser?.email) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const supplierName: string =
+      (supplierUser.organization as any)?.name ??
+      supplierUser.fullName ??
+      supplierUser.email;
+
+    await this.notificationService.sendExternalEmailWithMagicLink({
+      to: supplierUser.email,
+
+      subject: `[Cập nhật giao hàng] ${po.poNumber as string}`,
+      eventType: 'GRN_MILESTONE_UPDATE',
+      referenceId: grnId,
+      tokenType: TokenType.GRN_MILESTONE,
+      expiresInDays: 7,
+      data: {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        poCode: po.poNumber,
+        supplierName,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        expectedDelivery: po.deliveryDate ?? new Date(),
+        completedSteps: ['Đặt hàng', 'Xác nhận PO'],
+        currentStep: 'Đang giao hàng',
+        pendingSteps: ['Xác nhận nhận hàng'],
+        warehouseEmail:
+          process.env['WAREHOUSE_EMAIL'] ??
+          process.env['EMAIL_FROM_EMAIL'] ??
+          '',
+      },
+    });
+
+    this.logger.log(
+      `GRN milestone email sent to ${supplierUser.email} for GRN ${grnId}`,
+    );
   }
 }

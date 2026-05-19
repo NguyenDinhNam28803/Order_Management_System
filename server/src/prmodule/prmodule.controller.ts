@@ -6,12 +6,14 @@ import {
   Param,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { PrmoduleService } from './prmodule.service';
 import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
-import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Purchase Requisition (PR)')
 @Controller('procurement-requests')
@@ -27,6 +29,7 @@ export class PrmoduleController {
    * @returns Yêu cầu mua sắm vừa tạo
    */
   @Post()
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
     summary: 'Tạo yêu cầu mua hàng mới',
     description: 'Tạo một yêu cầu mua hàng mới trong hệ thống',
@@ -39,6 +42,7 @@ export class PrmoduleController {
   }
 
   @Post('/ai-suggest')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({
     summary: 'AI gợi ý công ty theo sản phẩm',
     description: 'AI hệ thống chạy để tìm kiếm công ty và gợi ý',
@@ -46,6 +50,24 @@ export class PrmoduleController {
   async suggest(@Body() items: CreatePrItemDto[]) {
     return this.prService.AiSuggest(items);
   }
+
+  @Get('paginated')
+  @ApiOperation({ summary: 'Lấy PR có phân trang' })
+  async findPaginated(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: { user: JwtPayload },
+  ) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
+    const data = await this.prService.findPaginated(req.user.orgId, skip, take);
+
+    const total = await this.prService.count(req.user.orgId);
+
+    return { data, total, page: Number(page), limit: Number(limit) };
+  }
+
   /**
    * Lấy danh sách tất cả các yêu cầu mua sắm của tổ chức hiện tại
    * @param req Thông tin người dùng để lọc theo tổ chức
@@ -57,8 +79,15 @@ export class PrmoduleController {
     description:
       'Trả về danh sách tất cả yêu cầu mua hàng của tổ chức hiện tại',
   })
-  async findAll(@Request() req: { user: JwtPayload }) {
-    return this.prService.findAll(req.user);
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Request() req: { user: JwtPayload },
+  ) {
+    return this.prService.findAll(req.user, {
+      page: +page,
+      limit: Math.min(+limit, 100),
+    });
   }
 
   /**
@@ -95,11 +124,12 @@ export class PrmoduleController {
    * @returns Trạng thái PR sau khi gửi duyệt
    */
   @Post(':id/submit')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({
-    summary: 'Gửi yêu cầu mua hàng để phê duyệt',
-    description: 'Gửi yêu cầu mua hàng đang ở trạng thái nháp để chờ phê duyệt',
+    summary: 'Gửi PR đi duyệt',
+    description: 'Chuyển trạng thái PR từ DRAFT sang PENDING_APPROVAL',
   })
-  async submit(@Param('id') id: string) {
-    return this.prService.submit(id);
+  async submit(@Param('id') id: string, @Body() user: JwtPayload) {
+    return this.prService.submit(id, user);
   }
 }
