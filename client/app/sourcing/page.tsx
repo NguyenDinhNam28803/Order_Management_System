@@ -40,19 +40,15 @@ export default function SourcingPage() {
         try {
             const pr = prs.find(p => p.id === prId);
             const targetSupplier = suppliersList[0];
-            const success = await createRFQ({
+            await createRFQ({
                 prId,
                 title: pr?.title ? `RFQ: ${pr.title}` : `RFQ cho PR ${prId.substring(0,8)}`,
                 description: "Yêu cầu báo giá",
                 supplierIds: targetSupplier ? [targetSupplier.id] : [],
                 deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
             });
-            if (res.ok) {
-                // Call context-level local createRFQ for local storage/demo state
-                await createRFQ(prId, "Thiên Long Digital");
-                notify("Đã khởi tạo RFQ thành công cho đơn " + prId, "success");
-                refreshData();
-            }
+            notify("Đã khởi tạo RFQ thành công cho đơn " + prId, "success");
+            refreshData();
         } catch (err) {
             notify("Lỗi khi khởi tạo RFQ", "error");
         } finally {
@@ -83,9 +79,9 @@ export default function SourcingPage() {
                         const poTotal = Number(newPO.totalAmount || newPO.total || 0);
                         if (poTotal >= 50000000) {
                             notify(`Đơn hàng đạt ngưỡng 50M VND. Đang tạo hợp đồng...`, "info");
-                            const result = await processPOAutomation(newPO.id);
+                            const result = await processPOAutomation(newPO.id) as { contractCreated?: boolean; message?: string } | null;
                             if (result?.contractCreated) {
-                                notify(result.message, "success");
+                                notify(result.message ?? '', "success");
                             }
                         }
                     }

@@ -4,11 +4,37 @@ import { useState, useEffect, useRef } from "react";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
-import { useProcurement, Product, CostCenter } from "../../context/ProcurementContext";
-import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle } from "lucide-react";
-import DashboardHeader from "../../components/DashboardHeader";
+import { useProcurement, Product, CostCenter, CurrencyCode, BudgetAllocation } from "../../context/ProcurementContext";
+import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle, ArrowLeft, Send, Bot, PenTool, Wand2, ArrowRight, MessageSquare, Wallet, Zap, Activity, ChevronDown, ShoppingCart, AlertTriangle, Calendar } from "lucide-react";
+import { CreatePrDto } from "../../types/api-types";
+import { convertPrismaDecimal, formatVND } from "../../utils/formatUtils";
 import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
 
+
+interface PrDraftResponse {
+    success: boolean;
+    title: string;
+    description?: string;
+    justification?: string;
+    priority?: number;
+    currency?: string;
+    suggestedCostCenterId?: string;
+    totalEstimate: number;
+    confidence: 'high' | 'medium' | 'low';
+    reasoning?: string;
+    error?: string;
+    validationErrors?: string[];
+    items: Array<{
+        productDesc: string;
+        qty: number;
+        estimatedPrice: number;
+        unit: string;
+        currency?: string;
+        categoryId?: string;
+        specNote?: string;
+        preferredSupplierId?: string;
+    }>;
+}
 
 interface PRItem {
     id?: string;
@@ -69,6 +95,7 @@ export default function CreatePRPage() {
 
     const router = useRouter();
 
+    const [activeTab, setActiveTab]          = useState<'ai' | 'manual'>('manual');
     const [showAiSection, setShowAiSection] = useState(false);
     const [aiPrompt, setAiPrompt]           = useState("");
     const [isGenerating, setIsGenerating]   = useState(false);
@@ -211,10 +238,6 @@ export default function CreatePRPage() {
         setAiPrompt(""); setAiDraft(null); setAiError(null); setAiMessages([]);
     };
 
-    const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-    const [errorMessage, setErrorMessage] = useState("");
-    const [fieldErrors, setFieldErrors] = useState<PRFormErrors>({});
-
     const handleSubmit = async () => {
         setFieldErrors({});
         const parsed = prFormSchema.safeParse({
@@ -257,9 +280,9 @@ export default function CreatePRPage() {
         setSubmissionStatus("loading");
         setIsSubmitting(true);
         try {
-            const createdPR = await addPR(payload);
-            if (createdPR?.id) {
-                await submitPR(createdPR.id);
+            const prId = await addPR(payload as unknown as import("../../context/ProcurementContext").PR);
+            if (prId) {
+                await submitPR(prId);
                 setSubmissionStatus("success");
                 setTimeout(() => router.push("/pr"), 2000);
             } else {
@@ -823,12 +846,25 @@ export default function CreatePRPage() {
                     </div>
 
                     {/* Step 3 — Budget Allocations */}
-                    <BudgetAllocationsPanel
-                        allocations={budgetAllocations as BudgetAllocation[]}
-                        selectedCostCenterId={form.costCenterId}
-                        selectedAllocationId={selectedAllocationId}
-                        onSelect={setSelectedAllocationId}
-                    />
+                    {budgetAllocations && budgetAllocations.length > 0 && (
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
+                            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-4">
+                                <span className="step-badge">3</span>
+                                Phân bổ ngân sách
+                            </h3>
+                            <div className="space-y-2">
+                                {(budgetAllocations as BudgetAllocation[]).filter(a => a.costCenterId === form.costCenterId).map((a) => (
+                                    <div
+                                        key={a.id}
+                                        onClick={() => setSelectedAllocationId(a.id)}
+                                        className={`p-3 rounded-lg border cursor-pointer transition-all ${selectedAllocationId === a.id ? 'border-[#2563EB] bg-blue-50' : 'border-[rgba(148,163,184,0.2)] hover:border-[#2563EB]/40'}`}
+                                    >
+                                        <span className="text-xs font-semibold text-slate-700">{formatVND(convertPrismaDecimal(a.allocatedAmount))} ₫ (Đã chi: {formatVND(convertPrismaDecimal(a.spentAmount))} ₫)</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* FORM SECTION 3 — DANH MỤC HÀNG HÓA */}
                     <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
@@ -992,7 +1028,6 @@ export default function CreatePRPage() {
                                     {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} className="group-hover:fill-white transition-all" />}
                                     {isSubmitting ? "Đang xử lý..." : "Xác nhận & Gửi"}
                                 </button>
-                            </div>
 
                             <div className="space-y-2.5">
                                 <div className="flex justify-between items-center">
@@ -1060,7 +1095,7 @@ export default function CreatePRPage() {
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Status overlay */}
             {submissionStatus !== "idle" && (

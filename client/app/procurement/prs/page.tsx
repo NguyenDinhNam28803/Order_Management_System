@@ -3,7 +3,8 @@
 import { useState, useMemo } from "react";
 import { useProcurement, PR } from "../../context/ProcurementContext";
 import DashboardHeader from "../../components/DashboardHeader";
-import ERPTable from "../../components/shared/ERPTable";
+import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
+import { formatVND } from "../../utils/formatUtils";
 import { 
     Search, ListFilter, ArrowRight, 
     FileText, CheckCircle, 

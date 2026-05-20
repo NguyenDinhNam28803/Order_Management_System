@@ -106,25 +106,16 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
         })),
       };
 
-      const res = await addPR(prData);
+      const prId = await addPR(prData as unknown as PR);
 
-      if (!res) {
+      if (!prId) {
         throw new Error("Không thể tạo PR");
       }
 
-      // if (!res.ok) {
-      //   const err = await res.json();
-      //   // DEBUG: Log lỗi chi tiết
-      //   console.error('[AIPrGenerator] Server error response:', err);
-      //   const errorMsg = err.message || err.error || JSON.stringify(err) || "Không thể tạo PR";
-      //   throw new Error(errorMsg);
-      // }
-
-      // const createdPr = await res.json();
       setShowSuccess(true);
-      
+
       setTimeout(() => {
-        onPrCreated?.(res);
+        onPrCreated?.({ id: prId } as PR);
         handleClose();
       }, 1500);
     } catch (err: unknown) {

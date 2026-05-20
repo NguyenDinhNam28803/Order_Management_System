@@ -95,7 +95,15 @@ export default function SupplierInvoice() {
             alert("Vui lòng nhập Số HĐ");
             return;
         }
-        createInvoice({ poId: currentPO.id, vendor: currentPO.vendor, amount: totalAmount });
+        createInvoice({
+            poId: currentPO.id,
+            invoiceNumber: invoiceNo,
+            supplierId: supplierOrgId ?? '',
+            orgId: supplierOrgId ?? '',
+            subtotal: subTotal,
+            totalAmount,
+            invoiceDate: new Date().toISOString(),
+        });
         alert(`Đã xuất Hóa đơn ${invoiceNo} (Invoice) cho ${currentPO.id} thành công!`);
         router.push("/supplier/dashboard");
     }

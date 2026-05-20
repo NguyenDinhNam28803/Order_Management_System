@@ -162,7 +162,7 @@ function NotificationInbox() {
       eventType: n.eventType as EmailEventType | undefined,
       type: n.referenceType || 'SYSTEM',
       title: n.subject || 'Thông báo hệ thống',
-      content: stripHtml(n.body),
+      content: stripHtml(n.body ?? ''),
       requester: 'Hệ thống',
       amount: null as string | null,
       status: (n.status === 'READ' || n.status === 'DELIVERED') ? 'APPROVED' : 'PENDING',
@@ -220,7 +220,7 @@ function NotificationInbox() {
       return matchesSearch;
     });
 
-    return filtered.sort((a, b) => new Date(b.deadline).getTime() - new Date(a.deadline).getTime());
+    return filtered.sort((a, b) => new Date(b.deadline ?? '').getTime() - new Date(a.deadline ?? '').getTime());
   }, [notifications, approvals, prs, myPrs, filter, searchQuery]);
 
   const unreadCount = mergedItems.filter(i => i.status === 'PENDING').length;
@@ -322,21 +322,7 @@ function NotificationInbox() {
 
 export default React.memo(NotificationInbox);
 
-// ── Notification Item type ────────────────────────────────────────────────
-interface MergedNotificationItem {
-  id: string;
-  eventType: EmailEventType | undefined;
-  type: string;
-  title: string;
-  content: string;
-  requester: string;
-  amount: string | null;
-  status: string;
-  deadline: string;
-  referenceId: string | null | undefined;
-  isNotification: boolean;
-  isStatusUpdate?: boolean;
-}
+// ── Notification Item type (duplicate removed — see top of file) ──────────
 
 // ── Notification Item ──────────────────────────────────────────────────────
 const NotificationItem = ({ item }: { item: MergedNotificationItem }) => {

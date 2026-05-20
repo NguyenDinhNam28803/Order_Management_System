@@ -44,7 +44,7 @@ export default function PODetailPage() {
     try {
       setSubmitting(true);
       const updated = await confirmPO(poId);
-      setPO(updated);
+      setPO(updated as POWithDetails);
       notify('PO confirmed successfully', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to confirm PO');
@@ -57,7 +57,7 @@ export default function PODetailPage() {
     try {
       setSubmitting(true);
       const updated = await submitPO(poId);
-      setPO(updated);
+      setPO(updated as POWithDetails);
       notify('PO submitted to approver', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit PO');

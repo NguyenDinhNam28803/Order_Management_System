@@ -80,7 +80,7 @@ const initialRFQs: RFQ[] = [
 ];
 
 export default function SupplierDashboard() {
-  const { rfqs: contextRfqs, quoteRequests: contextQRs, currentUser, organizations, updateQuoteRequest, fetchMySupplierRFQs } = useProcurement();
+  const { rfqs: contextRfqs, quoteRequests: contextQRs, currentUser, organizations, updateQuoteRequest, fetchMySupplierRFQs, createQuote } = useProcurement();
   
   // State for real API RFQs
   const [apiRfqs, setApiRfqs] = useState<RFQ[]>([]);
@@ -186,6 +186,27 @@ export default function SupplierDashboard() {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  const currentRFQs = rfqs.filter(r => r.status === activeTab);
+
+  const totalValue = selectedRfq
+    ? selectedRfq.items.reduce((sum, item) => {
+        const price = Number(quotationData[item.id]?.unitPrice) || 0;
+        return sum + price * item.quantity;
+      }, 0)
+    : 0;
+
+  const handleStartQuoting = (rfq: RFQ) => {
+    setSelectedRfq(rfq);
+  };
+
+  const handlePriceChange = (itemId: string, value: string) => {
+    setQuotationData(prev => ({ ...prev, [itemId]: { ...prev[itemId], unitPrice: value, note: prev[itemId]?.note ?? '' } }));
+  };
+
+  const handleNoteChange = (itemId: string, value: string) => {
+    setQuotationData(prev => ({ ...prev, [itemId]: { ...prev[itemId], note: value, unitPrice: prev[itemId]?.unitPrice ?? '' } }));
+  };
+
   const handleSubmitQuotation = () => {
     if (!selectedRfq) return;
 
@@ -196,10 +217,11 @@ export default function SupplierDashboard() {
       return r;
     });
 
-    createQuote(selectedRfq.rfqId, {
+    createQuote({
+      rfqId: selectedRfq.rfqId,
+      supplierId: currentUser?.orgId ?? '',
       totalPrice: 5000000,
       leadTimeDays: 7,
-      currency: "VND"
     });
 
     setRfqs(updatedRfqs);

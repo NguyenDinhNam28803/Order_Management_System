@@ -59,7 +59,7 @@ export default function SpendReportPage() {
 
     const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
     const categoryChartData = spendByCategory.slice(0, 6).map((c, idx) => ({
-        label: c.categoryName,
+        label: c.categoryName ?? c.category ?? '',
         value: Number(c.totalAmount),
         color: COLORS[idx % COLORS.length]
     }));
@@ -158,7 +158,7 @@ export default function SpendReportPage() {
                                         {idx < 3 && <div className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-1">Core Partner</div>}
                                     </td>
                                     <td className="text-center font-bold text-slate-900 group-hover:text-white transition-colors">
-                                        {s.poCount}
+                                        {s.orderCount}
                                     </td>
                                     <td className="text-right pr-12 text-[#2563EB] font-black text-sm">
                                         {formatVND(Number(s.totalAmount))}

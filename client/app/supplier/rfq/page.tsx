@@ -59,10 +59,11 @@ export default function SupplierRFQ() {
             total += val * (item.qty || 0);
         });
 
-        createQuote(activeRFQ.id, {
+        createQuote({
+            rfqId: activeRFQ.id,
+            supplierId: currentUser?.orgId ?? '',
             totalPrice: total,
             leadTimeDays: Number(leadTime) || 7,
-            currency: "VND"
         });
         
         setViewState("LIST");

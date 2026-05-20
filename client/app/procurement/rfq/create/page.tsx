@@ -277,7 +277,7 @@ export default function CreateRFQPage() {
         try {
             // Updated to match backend CreateRfqDto
             const payload = {
-                prId: prId,
+                prId: prId ?? '',
                 title: `RFQ for ${targetPR?.prNumber || targetPR?.id}`,
                 description: note,
                 deadline: new Date(deadline).toISOString(),

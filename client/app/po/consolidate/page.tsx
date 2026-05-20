@@ -285,7 +285,7 @@ export default function POConsolidatePage() {
 
   // ── Success screen ──────────────────────────────────────────────────────────
   if (result) {
-    const s = result.consolidationSummary;
+    const s = result.consolidationSummary ?? { sourcePrCount: 0, sourcePrNumbers: [] as string[], mergedItemCount: 0, totalOriginalItems: 0, savedItems: 0, totalAmount: 0, budgetReservedByCostCenter: {} as Record<string, number> };
     return (
       <div className="p-6 flex items-center justify-center min-h-[60vh]">
         <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 max-w-lg w-full text-center animate-fade-in">
@@ -312,7 +312,7 @@ export default function POConsolidatePage() {
           </div>
 
           <div className="flex flex-wrap gap-1.5 justify-center mb-6">
-            {s.sourcePrNumbers.map((n, idx) => (
+            {s.sourcePrNumbers.map((_n: string, idx: number) => (
               <span key={idx} className="ref-tag">********</span>
             ))}
           </div>
