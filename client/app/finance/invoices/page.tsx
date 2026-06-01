@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
 import { FileText, Search, CheckCircle2, Clock, AlertCircle, ArrowRight, FileCheck, XCircle, CreditCard, Filter } from "lucide-react";
-import { formatVND, getStatusLabel } from "@/app/utils/formatUtils";
+import { formatVND, getStatusLabel, formatDate } from "@/app/utils/formatUtils";
 import { Organization } from "@/app/types/api-types";
 
 // Extended Invoice with UI-specific fields from API
@@ -214,7 +214,7 @@ export default function FinanceInvoicesPage() {
                                             )}
                                         </td>
                                         <td className="px-6 py-5 text-center text-sm text-slate-900">
-                                            {new Date(inv.invoiceDate || inv.createdAt).toLocaleDateString("vi-VN")}
+                                            {formatDate(inv.invoiceDate ?? inv.createdAt)}
                                         </td>
                                         <td className="px-6 py-5 text-right">
                                             <button

@@ -1,12 +1,13 @@
 ﻿"use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import {
     BarChart3, CreditCard, Filter, Download, DollarSign, Users, Layers
 } from "lucide-react";
 import { useProcurement, SpendOverview, SpendBySupplier, SpendByCategory } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
 import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
+import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
 
 export default function SpendReportPage() {
     const { fetchSpendOverview, fetchSpendBySupplier, fetchSpendByCategory } = useProcurement();
@@ -50,6 +51,38 @@ export default function SpendReportPage() {
             </div>
         );
     }
+
+    type SupplierRow = SpendBySupplier & { isTopPartner: boolean };
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const supplierTableData = useMemo<SupplierRow[]>(
+        () => spendBySupplier.map((s, i) => ({ ...s, isTopPartner: i < 3 })),
+        [spendBySupplier]
+    );
+    const supplierColumns: ERPTableColumn<SupplierRow>[] = [
+        {
+            label: "Tên nhà cung cấp",
+            key: "supplierName",
+            sortable: true,
+            render: (s) => (
+                <div className="px-2">
+                    <div className="font-bold text-slate-900">{s.supplierName}</div>
+                    {s.isTopPartner && <div className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-1">Core Partner</div>}
+                </div>
+            ),
+        },
+        {
+            label: "Tần suất Giao dịch (PO)",
+            key: "orderCount",
+            sortable: true,
+            render: (s) => <span className="block text-center font-bold text-slate-900">{s.orderCount}</span>,
+        },
+        {
+            label: "Tổng Tiền Thanh Toán",
+            key: "totalAmount",
+            sortable: true,
+            render: (s) => <span className="block text-right pr-8 text-[#2563EB] font-black text-sm">{formatVND(Number(s.totalAmount), true)}</span>,
+        },
+    ];
 
     const supplierChartData = spendBySupplier.slice(0, 5).map(s => ({
         label: s.supplierName,
@@ -141,33 +174,12 @@ export default function SpendReportPage() {
                         <Layers className="text-[#2563EB]" size={18} /> Phân mảnh chi tiết nhà cung cấp
                     </h3>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="erp-table text-xs">
-                        <thead>
-                            <tr className="border-b border-[rgba(148,163,184,0.1)]">
-                                <th className="px-8 py-5 text-left">Tên nhà cung cấp</th>
-                                <th className="text-center">Tần suất Giao dịch (PO)</th>
-                                <th className="text-right pr-12">Tổng Tiền Thanh Toán</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
-                            {spendBySupplier.map((s, idx) => (
-                                <tr key={idx} className="hover:bg-[#FFFFFF] transition-colors cursor-pointer group">
-                                    <td className="px-8 py-4">
-                                        <div className="font-bold text-slate-900">{s.supplierName}</div>
-                                        {idx < 3 && <div className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-1">Core Partner</div>}
-                                    </td>
-                                    <td className="text-center font-bold text-slate-900 group-hover:text-white transition-colors">
-                                        {s.orderCount}
-                                    </td>
-                                    <td className="text-right pr-12 text-[#2563EB] font-black text-sm">
-                                        {formatVND(Number(s.totalAmount))}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <ERPTable
+                    columns={supplierColumns}
+                    data={supplierTableData}
+                    emptyMessage="Chưa có dữ liệu nhà cung cấp"
+                    emptyDescription="Dữ liệu sẽ xuất hiện sau khi có giao dịch"
+                />
             </div>
         </main>
     );

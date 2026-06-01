@@ -56,7 +56,11 @@ export class ContractModuleController {
     @Body('approverId') approverId: string,
     @Request() req: { user: JwtPayload },
   ) {
-    return this.contractModuleService.submitForApproval(id, approverId, req.user.orgId);
+    return this.contractModuleService.submitForApproval(
+      id,
+      approverId,
+      req.user.orgId,
+    );
   }
 
   /**

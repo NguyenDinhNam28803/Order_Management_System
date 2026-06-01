@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useProcurement } from "@/app/context/ProcurementContext";
 import { Search, Filter, History, ShoppingCart, FolderTree, CheckCircle, XCircle, ChevronLeft, ChevronRight, Clock } from "lucide-react";
-import { formatVND } from "../../utils/formatUtils";
+import { formatVND, formatDateTime } from "../../utils/formatUtils";
 
 export default function ApprovalHistoryPage() {
     const [filter, setFilter] = useState({ type: "ALL", status: "ALL", date: "" });
@@ -103,7 +103,7 @@ export default function ApprovalHistoryPage() {
                                     </div>
                                 </td>
                                 <td className="px-6 py-5 text-[11px] font-bold text-slate-900 text-center whitespace-nowrap">
-                                    {item.createdAt ? new Date(item.createdAt).toLocaleDateString("vi-VN") + ' ' + new Date(item.createdAt).toLocaleTimeString("vi-VN", { hour: '2-digit', minute: '2-digit' }) : '—'}
+                                    {formatDateTime(item.createdAt)}
                                 </td>
                                 <td className="px-6 py-5 text-xs text-slate-900 font-medium italic">
                                     {item.status === 'APPROVED' ? 'Hồ sơ đã được phê duyệt thành công' : 'Hồ sơ đã bị từ chối'}

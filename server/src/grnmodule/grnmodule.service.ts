@@ -218,7 +218,7 @@ export class GrnmoduleService {
     const supplierUser = await this.prisma.user.findFirst({
       where: {
         orgId: supplierOrgId,
-        role: 'SUPPLIER' as 'SUPPLIER',
+        role: 'SUPPLIER' as const,
         isActive: true,
       },
       include: { organization: true },

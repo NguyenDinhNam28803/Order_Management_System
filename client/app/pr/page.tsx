@@ -6,18 +6,11 @@ import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
 import { Plus, FileText, Send, Check, X } from "lucide-react";
 import Link from "next/link";
 import { ApprovalWorkflow } from "../context/ProcurementContext";
-import { getStatusLabel, convertPrismaDecimal, formatVND } from "../utils/formatUtils";
+import { getStatusLabel, convertPrismaDecimal, formatVND, formatDate } from "../utils/formatUtils";
 
 export default function PRPage() {
     const { prs, myPrs, currentUser, actionApproval, costCenters, approvals, submitPR } = useProcurement();
     const [activeTab, setActiveTab] = React.useState("Tất cả");
-
-    const formatDate = (ds?: string) => {
-        if (!ds) return "N/A";
-        const d = new Date(ds);
-        if (isNaN(d.getTime())) return ds;
-        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
-    };
 
     const isManager = currentUser?.role === "DEPT_APPROVER";
     const isDirector = currentUser?.role === "DIRECTOR";

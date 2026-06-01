@@ -50,8 +50,9 @@ export default function FinanceMatching() {
     const [payDate, setPayDate] = useState("2026-04-15"); // Net 30
     const [payMethod, setPayMethod] = useState("Bank Transfer (VND)");
 
-    const invoiceAmount = invoice?.amount || 0;
-    const subTotal = invoiceAmount / 1.1;
+    const invoiceAmount = Number(invoice?.amount ?? 0);
+    const VAT_RATE = 0.1;
+    const subTotal = invoiceAmount / (1 + VAT_RATE);
     const vat = invoiceAmount - subTotal;
 
     const handleRejectFeedback = () => {
@@ -77,7 +78,7 @@ export default function FinanceMatching() {
                             Nhà CC: {invoice?.vendor?.length && invoice.vendor.length > 16 ? "Supplier-***" : (invoice?.vendor || "N/A")} <span className="text-[#2563EB] bg-[#2563EB]/10 px-2 rounded ml-2 border border-[#2563EB]/20">Payment: Net 30</span>
                         </div>
                         <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-4">
-                            Hóa Đơn ***
+                            {invoice?.invoiceNumber ?? "—"}
                             {isException ? (
                                 <span className="text-[12px] uppercase font-black tracking-widest text-black bg-rose-500/10 px-4 py-1.5 border border-rose-500/20 rounded-full shadow-sm flex items-center gap-1">
                                     <ShieldAlert size={14}/> EXCEPTION DETECTED
@@ -138,7 +139,7 @@ export default function FinanceMatching() {
                                                     <span className="text-[9px] text-slate-900">@ {formatVND(item.inv.price)}</span>
                                                 </div>
                                                 <div className="text-right font-black text-slate-900 text-sm">
-                                                    {formatVND(item.inv.qty * item.inv.price)} ₫
+                                                    {formatVND(item.inv.qty * item.inv.price, true)}
                                                 </div>
                                             </div>
                                             {!item.matched && (
@@ -156,15 +157,15 @@ export default function FinanceMatching() {
                     <div className="p-6 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] flex justify-end gap-12">
                         <div className="text-right space-y-2">
                             <p className="text-[10px] font-black uppercase text-slate-900 tracking-widest">Tổng trước thuế</p>
-                            <p className="text-xl font-black text-slate-900">{subTotal.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
+                            <p className="text-xl font-black text-slate-900">{formatVND(subTotal, true)}</p>
                         </div>
                         <div className="text-right space-y-2">
                             <p className="text-[10px] font-black uppercase text-slate-900 tracking-widest">Thuế GTGT (10%)</p>
-                            <p className="text-xl font-black text-slate-900">{vat.toLocaleString()} <span className="text-[10px]">VNĐ</span></p>
+                            <p className="text-xl font-black text-slate-900">{formatVND(vat, true)}</p>
                         </div>
                         <div className="text-right space-y-2">
                             <p className="text-[10px] font-black uppercase text-[#2563EB] tracking-widest border-b border-[#2563EB]/30 pb-1 mb-1 inline-block">Tổng Yêu Cầu T/T (Invoice)</p>
-                            <p className="text-3xl font-black text-slate-900">{(subTotal + vat).toLocaleString()} <span className="text-xs">VNĐ</span></p>
+                            <p className="text-3xl font-black text-slate-900">{formatVND(subTotal + vat, true)}</p>
                         </div>
                     </div>
                 </div>

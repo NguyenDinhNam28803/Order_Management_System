@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { ArrowRight, ShieldCheck, History } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { Payment } from "../types/api-types";
+import { formatVND, formatDate } from "../utils/formatUtils";
+import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
 
 // Extended Payment with API extra fields
 interface PaymentWithDetails extends Payment {
@@ -37,14 +39,6 @@ export default function PaymentsPage() {
         fetch();
     }, [fetchPayments]);
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-            minimumFractionDigits: 0,
-        }).format(amount);
-    };
-
     const getStatusDisplay = (status: string) => {
         switch (status) {
             case 'COMPLETED':
@@ -77,45 +71,62 @@ export default function PaymentsPage() {
                         <div className="p-4 border-b border-slate-100 font-black text-[10px] uppercase tracking-widest text-black">Danh sách chờ thanh toán</div>
                         {loading ? (
                             <div className="p-8 text-center text-black">Đang tải...</div>
-                        ) : (
-                            <table className="erp-table text-xs">
-                                <thead><tr><th>Mã giao dịch</th><th>Nhà cung cấp</th><th>Số tiền</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
-                                <tbody>
-                                    {payments.length > 0 ? (
-                                        payments.map((payment) => {
-                                            const statusDisplay = getStatusDisplay(payment.status);
-                                            const isCompleted = payment.status === 'COMPLETED';
-                                            
-                                            return (
-                                                <tr key={payment.id}>
-                                                    <td className=" font-bold">#PAY-{payment.id.split('-')[0].toUpperCase()}</td>
-                                                                                                    <td className="font-bold">{payment.supplierName || 'N/A'}</td>
-                                                    <td className="font-black text-brand-primary">{formatCurrency(payment.amount)}</td>
-                                                    <td>
-                                                        <span className={`status-pill ${statusDisplay.class}`}>
-                                                            {statusDisplay.label}
-                                                        </span>
-                                                    </td>
-                                                    <td className="flex items-center gap-2">
-                                                        <button disabled={isCompleted} className={`${!isCompleted ? 'bg-erp-navy text-white hover:bg-erp-navy/90' : 'text-slate-300 bg-slate-100'} px-4 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 disabled:cursor-not-allowed`}>
-                                                            {isCompleted ? 'Đã thanh toán' : 'Thanh toán'} <ArrowRight size={12} />
-                                                        </button>
-                                                        {payment.status === 'PENDING' && (
-                                                            <>
-                                                                <button className="text-amber-500 hover:text-amber-700 mx-1" title="Sửa Thanh toán">Edit</button>
-                                                                <button className="text-red-500 hover:text-red-700 mx-1" title="Xóa Thanh toán">Delete</button>
-                                                            </>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })
-                                    ) : (
-                                        <tr><td colSpan={5} className="p-8 text-center text-black">Không có thanh toán nào</td></tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        )}
+                        ) : (() => {
+                            const paymentColumns: ERPTableColumn<PaymentWithDetails>[] = [
+                                {
+                                    label: "Mã giao dịch",
+                                    render: (p) => <span className="font-bold">{p.transactionId ?? `#PAY-${p.id.slice(0, 8).toUpperCase()}`}</span>,
+                                },
+                                {
+                                    label: "Nhà cung cấp",
+                                    key: "supplierName",
+                                    sortable: true,
+                                    render: (p) => <span className="font-bold">{p.supplierName || 'N/A'}</span>,
+                                },
+                                {
+                                    label: "Số tiền",
+                                    key: "amount",
+                                    sortable: true,
+                                    render: (p) => <span className="font-black text-brand-primary">{formatVND(p.amount, true)}</span>,
+                                },
+                                {
+                                    label: "Trạng thái",
+                                    key: "status",
+                                    sortable: true,
+                                    render: (p) => {
+                                        const sd = getStatusDisplay(p.status);
+                                        return <span className={`status-pill ${sd.class}`}>{sd.label}</span>;
+                                    },
+                                },
+                                {
+                                    label: "Hành động",
+                                    render: (p) => {
+                                        const isCompleted = p.status === 'COMPLETED';
+                                        return (
+                                            <div className="flex items-center gap-2">
+                                                <button disabled={isCompleted} className={`${!isCompleted ? 'bg-erp-navy text-white hover:bg-erp-navy/90' : 'text-slate-300 bg-slate-100'} px-4 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 disabled:cursor-not-allowed`}>
+                                                    {isCompleted ? 'Đã thanh toán' : 'Thanh toán'} <ArrowRight size={12} />
+                                                </button>
+                                                {p.status === 'PENDING' && (
+                                                    <>
+                                                        <button className="text-amber-500 hover:text-amber-700 mx-1" title="Sửa Thanh toán">Edit</button>
+                                                        <button className="text-red-500 hover:text-red-700 mx-1" title="Xóa Thanh toán">Delete</button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        );
+                                    },
+                                },
+                            ];
+                            return (
+                                <ERPTable
+                                    columns={paymentColumns}
+                                    data={payments}
+                                    emptyMessage="Không có thanh toán nào"
+                                    emptyDescription="Các giao dịch thanh toán sẽ xuất hiện tại đây"
+                                />
+                            );
+                        })()}
                     </div>
                 </div>
 
@@ -123,7 +134,7 @@ export default function PaymentsPage() {
                     <div className="bg-[#F1F5F9] rounded-xl p-8 text-slate-900 shadow-2xl relative overflow-hidden border border-[rgba(148,163,184,0.1)]">
                         <div className="absolute -top-10 -right-10 h-40 w-40 bg-[#2563EB]/5 rounded-full blur-2xl font-black"></div>
                         <h3 className="text-xs font-black uppercase text-slate-900 mb-8 tracking-widest">Ví tổng thanh toán</h3>
-                        <div className="text-4xl font-black mb-1 text-slate-900">{formatCurrency(totalAmount)}</div>
+                        <div className="text-4xl font-black mb-1 text-slate-900">{formatVND(totalAmount, true)}</div>
                         <p className="text-[10px] text-black font-bold mb-8 italic">● Hệ thống đã sẵn sàng giải ngân</p>
 
                         <div className="space-y-4 pt-8 border-t border-[rgba(148,163,184,0.1)]">
@@ -133,7 +144,7 @@ export default function PaymentsPage() {
                             </div>
                             <div className="flex justify-between items-center text-xs">
                                 <span className="text-slate-900">Tổng chi:</span>
-                                <span className="font-bold text-slate-900">{formatCurrency(totalAmount)}</span>
+                                <span className="font-bold text-slate-900">{formatVND(totalAmount, true)}</span>
                             </div>
                         </div>
                     </div>
@@ -146,9 +157,9 @@ export default function PaymentsPage() {
                                     <div className="h-8 w-8 rounded-full bg-emerald-500/10 text-black flex items-center justify-center border border-emerald-500/20"><ShieldCheck size={16} /></div>
                                     <div className="flex-1">
                                         <div className="text-[10px] font-bold text-slate-900">Thanh toán {payment.id}</div>
-                                                                                <div className="text-[9px] text-slate-900">{new Date(payment.paymentDate || payment.createdAt).toLocaleDateString('vi-VN')} - Thành công</div>
+                                                                                <div className="text-[9px] text-slate-900">{formatDate(payment.paymentDate ?? payment.createdAt)} - Thành công</div>
                                     </div>
-                                    <div className="text-[10px] font-black text-slate-900">-{formatCurrency(payment.amount)}</div>
+                                    <div className="text-[10px] font-black text-slate-900">-{formatVND(payment.amount, true)}</div>
                                 </div>
                             ))}
                         </div>

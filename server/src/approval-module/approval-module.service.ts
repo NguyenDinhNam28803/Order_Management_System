@@ -630,7 +630,8 @@ export class ApprovalModuleService {
       if (!approver.email) return;
 
       const frontendUrl =
-        this.configService.get<string>('FRONTEND_URL') ?? 'http://procuresmart.io.vn/';
+        this.configService.get<string>('FRONTEND_URL') ??
+        'http://procuresmart.io.vn/';
 
       if (docType === DocumentType.PURCHASE_REQUISITION) {
         await this.notificationService.sendDirectEmail(
@@ -694,7 +695,8 @@ export class ApprovalModuleService {
       if (!approver?.email) return;
 
       const frontendUrl =
-        this.configService.get<string>('FRONTEND_URL') ?? 'http://procuresmart.io.vn/';
+        this.configService.get<string>('FRONTEND_URL') ??
+        'http://procuresmart.io.vn/';
 
       if (docType === DocumentType.PURCHASE_REQUISITION) {
         const pr = await this.prisma.purchaseRequisition.findUnique({
@@ -941,7 +943,8 @@ export class ApprovalModuleService {
       if (!contract) return;
 
       const frontendUrl =
-        this.configService.get<string>('FRONTEND_URL') ?? 'http://procuresmart.io.vn';
+        this.configService.get<string>('FRONTEND_URL') ??
+        'http://procuresmart.io.vn';
       const baseData = {
         contractNumber: contract.contractNumber,
         contractTitle: contract.title,

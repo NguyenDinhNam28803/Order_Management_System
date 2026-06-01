@@ -1,0 +1,503 @@
+﻿
+> client@0.1.0 lint
+> eslint
+
+
+D:\Order_management_system\client\app\admin\audit-logs\page.tsx
+   27:5   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+   44:5   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  109:30  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+D:\Order_management_system\client\app\admin\categories\page.tsx
+  4:58  warning  'ChevronRight' is defined but never used  @typescript-eslint/no-unused-vars
+  4:72  warning  'Hash' is defined but never used          @typescript-eslint/no-unused-vars
+  6:10  warning  'Organization' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\admin\cost-centers\page.tsx
+  105:21  warning  'orgId' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  105:28  warning  'currency' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\admin\departments\page.tsx
+  6:49  warning  'UpdateDepartmentPayload' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\admin\products\page.tsx
+   9:13  warning  'ChevronDown' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+   9:26  warning  'Loader2' is defined but never used                                                                                    @typescript-eslint/no-unused-vars
+  77:8   warning  React Hook useEffect has a missing dependency: 'currentUser?.orgId'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\Order_management_system\client\app\admin\suppliers\[id]\page.tsx
+    9:22  warning  'Mail' is defined but never used                                                                                    @typescript-eslint/no-unused-vars
+    9:28  warning  'MapPin' is defined but never used                                                                                  @typescript-eslint/no-unused-vars
+   10:5   warning  'ChevronRight' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+   10:40  warning  'ThumbsDown' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+   28:11  warning  'BuyerRatingDetail' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+   77:8   warning  React Hook useEffect has a missing dependency: 'fetchKPIHistory'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   87:23  warning  'result' is assigned a value but never used                                                                         @typescript-eslint/no-unused-vars
+   93:18  warning  'error' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+  123:22  warning  'error' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+  130:11  warning  'getRankStyle' is assigned a value but never used                                                                   @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\admin\suppliers\page.tsx
+  4:26  warning  'Organization' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\ai-report\page.tsx
+  4:58  warning  'ArrowRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\approvals\page.tsx
+   5:5   warning  'CheckSquare' is defined but never used           @typescript-eslint/no-unused-vars
+   5:41  warning  'Eye' is defined but never used                   @typescript-eslint/no-unused-vars
+   5:56  warning  'AlertTriangle' is defined but never used         @typescript-eslint/no-unused-vars
+   6:5   warning  'History' is defined but never used               @typescript-eslint/no-unused-vars
+   6:14  warning  'ArrowLeft' is defined but never used             @typescript-eslint/no-unused-vars
+   6:25  warning  'MessageSquareWarning' is defined but never used  @typescript-eslint/no-unused-vars
+   6:47  warning  'Paperclip' is defined but never used             @typescript-eslint/no-unused-vars
+   8:29  warning  'TrendingUp' is defined but never used            @typescript-eslint/no-unused-vars
+  21:31  warning  'departments' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  21:71  warning  'currentUser' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  22:11  warning  'router' is assigned a value but never used       @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\AuditLogDetailModal.tsx
+  3:17  warning  'useState' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\BudgetHeatmap.tsx
+  6:10  warning  'TrendingUp' is defined but never used                  @typescript-eslint/no-unused-vars
+  6:22  warning  'TrendingDown' is defined but never used                @typescript-eslint/no-unused-vars
+  9:26  warning  'budgetAllocations' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\ContractSignModal.tsx
+  69:13  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+
+D:\Order_management_system\client\app\components\DefectRateChart.tsx
+    3:28  warning  'useMemo' is defined but never used                                                                    @typescript-eslint/no-unused-vars
+   12:3   warning  'ReferenceArea' is defined but never used                                                              @typescript-eslint/no-unused-vars
+   13:3   warning  'ReferenceDot' is defined but never used                                                               @typescript-eslint/no-unused-vars
+   38:7   warning  'generateMockData' is assigned a value but never used                                                  @typescript-eslint/no-unused-vars
+   74:7   warning  'CustomTooltip' is assigned a value but never used                                                     @typescript-eslint/no-unused-vars
+  116:9   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+D:\Order_management_system\client\app\components\GlobalAISearch.tsx
+  4:48  warning  'Zap' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\NotificationInbox.tsx
+    5:25  warning  'Clock' is defined but never used                 @typescript-eslint/no-unused-vars
+    6:19  warning  'AlertTriangle' is defined but never used         @typescript-eslint/no-unused-vars
+  333:9   warning  'accentStyle' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\NotificationTemplatePreview.tsx
+  26:3  warning  'X' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\POAutomationButton.tsx
+   16:3   warning  'poNumber' is defined but never used     @typescript-eslint/no-unused-vars
+   17:3   warning  'totalAmount' is defined but never used  @typescript-eslint/no-unused-vars
+  113:16  warning  'error' is defined but never used        @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\QualityRiskPanel.tsx
+   4:10  warning  'AlertCircle' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+   4:54  warning  'CheckCircle2' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+  15:6   warning  React Hook useEffect has a missing dependency: 'checkTrend'. Either include it or remove the dependency array       react-hooks/exhaustive-deps
+  37:6   warning  React Hook useEffect has a missing dependency: 'generateWarning'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\Order_management_system\client\app\components\RAGChat.tsx
+    5:33  warning  'Bot' is defined but never used                 @typescript-eslint/no-unused-vars
+    6:5   warning  'Database' is defined but never used            @typescript-eslint/no-unused-vars
+    7:47  warning  'Settings' is defined but never used            @typescript-eslint/no-unused-vars
+   18:6   warning  'UserRole' is defined but never used            @typescript-eslint/no-unused-vars
+  191:38  warning  'approvals' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  274:18  warning  'err' is defined but never used                 @typescript-eslint/no-unused-vars
+  504:77  warning  'index' is defined but never used               @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\RFQInteraction.tsx
+   29:9   warning  'organizations' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  144:18  warning  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+  160:18  warning  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\RoleDashboard.tsx
+   7:16  warning  'TrendingDown' is defined but never used  @typescript-eslint/no-unused-vars
+   7:40  warning  'ArrowUpRight' is defined but never used  @typescript-eslint/no-unused-vars
+  14:11  warning  'pos' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  14:16  warning  'prs' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\Sidebar.tsx
+  9:5   warning  'Bell' is defined but never used     @typescript-eslint/no-unused-vars
+  9:11  warning  'Command' is defined but never used  @typescript-eslint/no-unused-vars
+  9:26  warning  'Zap' is defined but never used      @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\SimulationPanel.tsx
+  5:29  warning  'RefreshCw' is defined but never used                 @typescript-eslint/no-unused-vars
+  5:40  warning  'Play' is defined but never used                      @typescript-eslint/no-unused-vars
+  5:46  warning  'Circle' is defined but never used                    @typescript-eslint/no-unused-vars
+  5:54  warning  'PlayCircle' is defined but never used                @typescript-eslint/no-unused-vars
+  8:25  warning  'startSimulation' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\SmartSearch.tsx
+    6:3   warning  'Clock' is defined but never used  @typescript-eslint/no-unused-vars
+    6:10  warning  'User' is defined but never used   @typescript-eslint/no-unused-vars
+  160:14  warning  'err' is defined but never used    @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\SupplierSelector.tsx
+  205:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\SupplierSuggestionWidget.tsx
+  4:26  warning  'AlertCircle' is defined but never used  @typescript-eslint/no-unused-vars
+  4:39  warning  'Info' is defined but never used         @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\Toast.tsx
+  132:9  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/rules-of-hooks')
+
+D:\Order_management_system\client\app\components\Topbar.tsx
+  91:11  warning  'initials' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\charts\DonutChart.tsx
+  4:10  warning  'formatVND' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\charts\StatsCard.tsx
+  5:10  warning  'formatVND' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\components\shared\DateInput.tsx
+   4:10  warning  'Calendar' is defined but never used               @typescript-eslint/no-unused-vars
+  18:3   warning  'className' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  34:9   warning  'handleChange' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\context\ProcurementContext.tsx
+     9:22  warning  'CreatePrDto' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+     9:35  warning  'UpdatePrDto' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+    12:77  warning  'CreateCategoryDto' is defined but never used                                                             @typescript-eslint/no-unused-vars
+    12:96  warning  'UpdateCategoryDto' is defined but never used                                                             @typescript-eslint/no-unused-vars
+    13:43  warning  'CreateUserPayload' is defined but never used                                                             @typescript-eslint/no-unused-vars
+    13:62  warning  'UpdateUserPayload' is defined but never used                                                             @typescript-eslint/no-unused-vars
+   707:11  warning  'createPO' is assigned a value but never used                                                             @typescript-eslint/no-unused-vars
+  1302:11  warning  'fetchSupplierPOs' is assigned a value but never used                                                     @typescript-eslint/no-unused-vars
+  1608:52  warning  '_d' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+  1996:9   warning  React Hook useMemo has a duplicate dependency: 'apiFetch'. Either omit it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\Order_management_system\client\app\finance\budget-allocation\page.tsx
+   3:27  warning  'useEffect' is defined but never used                 @typescript-eslint/no-unused-vars
+   8:3   warning  'Plus' is defined but never used                      @typescript-eslint/no-unused-vars
+  12:3   warning  'History' is defined but never used                   @typescript-eslint/no-unused-vars
+  19:3   warning  'Calendar' is defined but never used                  @typescript-eslint/no-unused-vars
+  25:10  warning  'formatVND' is defined but never used                 @typescript-eslint/no-unused-vars
+  40:5   warning  'refreshData' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  44:24  warning  'setSelectedYear' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\finance\budget-approval\page.tsx
+  19:10  warning  'CostCenter' is defined but never used          @typescript-eslint/no-unused-vars
+  19:22  warning  'Department' is defined but never used          @typescript-eslint/no-unused-vars
+  25:9   warning  'approvals' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\finance\budgets\page.tsx
+  16:26  warning  'BudgetAllocation' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\finance\dashboard\page.tsx
+    6:42  warning  'PieChart' is defined but never used    @typescript-eslint/no-unused-vars
+  246:10  warning  'MetricCard' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\finance\invoices\page.tsx
+  24:23  warning  'pos' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\finance\matching\page.tsx
+  47:12  warning  'approvalState' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\login\page.tsx
+   4:10   warning  'Lock' is defined but never used                     @typescript-eslint/no-unused-vars
+   4:16   warning  'Mail' is defined but never used                     @typescript-eslint/no-unused-vars
+   4:22   warning  'ArrowRight' is defined but never used               @typescript-eslint/no-unused-vars
+   4:34   warning  'ShieldCheck' is defined but never used              @typescript-eslint/no-unused-vars
+   4:47   warning  'Zap' is defined but never used                      @typescript-eslint/no-unused-vars
+   4:52   warning  'ChevronLeft' is defined but never used              @typescript-eslint/no-unused-vars
+   4:65   warning  'ChevronRight' is defined but never used             @typescript-eslint/no-unused-vars
+   4:79   warning  'PanelRightOpen' is defined but never used           @typescript-eslint/no-unused-vars
+   4:95   warning  'PanelRightClose' is defined but never used          @typescript-eslint/no-unused-vars
+   4:112  warning  'X' is defined but never used                        @typescript-eslint/no-unused-vars
+   7:8    warning  'Link' is defined but never used                     @typescript-eslint/no-unused-vars
+  11:20   warning  'users' is assigned a value but never used           @typescript-eslint/no-unused-vars
+  17:12   warning  'sidebarOpen' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  17:25   warning  'setSidebarOpen' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\manager\approval-history\page.tsx
+  5:10  warning  'Search' is defined but never used              @typescript-eslint/no-unused-vars
+  5:18  warning  'Filter' is defined but never used              @typescript-eslint/no-unused-vars
+  5:26  warning  'History' is defined but never used             @typescript-eslint/no-unused-vars
+  5:35  warning  'ShoppingCart' is defined but never used        @typescript-eslint/no-unused-vars
+  5:74  warning  'XCircle' is defined but never used             @typescript-eslint/no-unused-vars
+  6:10  warning  'formatVND' is defined but never used           @typescript-eslint/no-unused-vars
+  9:12  warning  'filter' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  9:20  warning  'setFilter' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\manager\budget-alerts\page.tsx
+  4:36  warning  'ArrowRight' is defined but never used   @typescript-eslint/no-unused-vars
+  4:60  warning  'List' is defined but never used         @typescript-eslint/no-unused-vars
+  4:93  warning  'AlertCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\manager\budget-planning\page.tsx
+    4:43  warning  'Building' is defined but never used                                                                                                                      @typescript-eslint/no-unused-vars
+    5:50  warning  'BudgetPeriod' is defined but never used                                                                                                                  @typescript-eslint/no-unused-vars
+   72:8   warning  React Hook useEffect has missing dependencies: 'formData.budgetPeriodId' and 'formData.costCenterId'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  159:18  warning  'err' is defined but never used                                                                                                                           @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\manager\po-approvals\page.tsx
+  4:25  warning  'FileText' is defined but never used  @typescript-eslint/no-unused-vars
+  4:49  warning  'User' is defined but never used      @typescript-eslint/no-unused-vars
+  4:55  warning  'Landmark' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\manager\spend-tracking\page.tsx
+   4:52  warning  'Calendar' is defined but never used          @typescript-eslint/no-unused-vars
+   4:72  warning  'Filter' is defined but never used            @typescript-eslint/no-unused-vars
+  36:11  warning  'usedPct' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\page.tsx
+   7:16  warning  'Lock' is defined but never used                                 @typescript-eslint/no-unused-vars
+   8:5   warning  'ArrowDownRight' is defined but never used                       @typescript-eslint/no-unused-vars
+   8:71  warning  'Trash2' is defined but never used                               @typescript-eslint/no-unused-vars
+   9:25  warning  'Package' is defined but never used                              @typescript-eslint/no-unused-vars
+   9:77  warning  'Send' is defined but never used                                 @typescript-eslint/no-unused-vars
+  13:30  warning  'Organization' is defined but never used                         @typescript-eslint/no-unused-vars
+  29:11  warning  'quarterlyRemainingBudget' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  35:12  warning  'confirmModal' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  72:18  warning  'err' is defined but never used                                  @typescript-eslint/no-unused-vars
+  79:11  warning  'handleConfirmCatalogAction' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\payments\page.tsx
+  19:28  warning  'notify' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\po\[id]\page.tsx
+  6:69  warning  'User' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\po\consolidate\page.tsx
+  6:3  warning  'ConsolidationSummary' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\po\page.tsx
+  16:18  warning  'setPage' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  17:27  warning  'isLoading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\pr\[id]\page.tsx
+  8:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\pr\create\page.tsx
+    3:31  warning  'useRef' is defined but never used                    @typescript-eslint/no-unused-vars
+    8:24  warning  'FileText' is defined but never used                  @typescript-eslint/no-unused-vars
+    8:34  warning  'ShoppingBag' is defined but never used               @typescript-eslint/no-unused-vars
+    8:47  warning  'AlertCircle' is defined but never used               @typescript-eslint/no-unused-vars
+    8:60  warning  'Info' is defined but never used                      @typescript-eslint/no-unused-vars
+    8:66  warning  'Plus' is defined but never used                      @typescript-eslint/no-unused-vars
+   11:8   warning  'SupplierSuggestionWidget' is defined but never used  @typescript-eslint/no-unused-vars
+  144:11  warning  'activeCC' is assigned a value but never used         @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\pr\page.tsx
+   9:26  warning  'convertPrismaDecimal' is defined but never used     @typescript-eslint/no-unused-vars
+  15:11  warning  'formatDate' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  27:21  warning  'budgetSubtitle' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  61:22  warning  'row' is defined but never used                      @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\amendments\page.tsx
+    5:5   warning  'ShieldAlert' is defined but never used   @typescript-eslint/no-unused-vars
+    5:24  warning  'Search' is defined but never used        @typescript-eslint/no-unused-vars
+    5:32  warning  'Filter' is defined but never used        @typescript-eslint/no-unused-vars
+    6:17  warning  'ChevronRight' is defined but never used  @typescript-eslint/no-unused-vars
+    7:5   warning  'Eye' is defined but never used           @typescript-eslint/no-unused-vars
+    7:10  warning  'Edit3' is defined but never used         @typescript-eslint/no-unused-vars
+    7:17  warning  'CheckCircle' is defined but never used   @typescript-eslint/no-unused-vars
+    7:30  warning  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+    8:44  warning  'Ship' is defined but never used          @typescript-eslint/no-unused-vars
+  274:48  warning  'idx' is defined but never used           @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\contracts\page.tsx
+  11:10  warning  'ContractStatus' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\delivery\page.tsx
+    5:29  warning  'Calendar' is defined but never used                   @typescript-eslint/no-unused-vars
+    6:16  warning  'Edit3' is defined but never used                      @typescript-eslint/no-unused-vars
+    7:10  warning  'Activity' is defined but never used                   @typescript-eslint/no-unused-vars
+    7:28  warning  'ChevronRight' is defined but never used               @typescript-eslint/no-unused-vars
+   10:21  warning  'getStatusLabel' is defined but never used             @typescript-eslint/no-unused-vars
+   95:11  warning  'getProgressIndex' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  100:11  warning  'getStatusColor' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  110:35  warning  'data' is defined but never used                       @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\disputes\page.tsx
+  9:25  warning  'DocumentType' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\pos\page.tsx
+    7:8   warning  'AlertCircle' is defined but never used                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+    8:24  warning  'CheckCircle2' is defined but never used                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+    8:38  warning  'XCircle' is defined but never used                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   10:35  warning  'CircleDot' is defined but never used                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   12:26  warning  'PoStatus' is defined but never used                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  575:8   warning  React Hook useEffect has a missing dependency: 'po'. Either include it or remove the dependency array. If 'setDetail' needs the current value of 'po', you can also switch to useReducer instead of useState and read 'po' in the reducer  react-hooks/exhaustive-deps
+
+D:\Order_management_system\client\app\procurement\prs\page.tsx
+    5:8   warning  'DashboardHeader' is defined but never used  @typescript-eslint/no-unused-vars
+   13:5   warning  'ShieldAlert' is defined but never used      @typescript-eslint/no-unused-vars
+   13:18  warning  'AlertCircle' is defined but never used      @typescript-eslint/no-unused-vars
+   14:15  warning  'Settings' is defined but never used         @typescript-eslint/no-unused-vars
+   60:23  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   68:40  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  220:11  warning  'stats' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  222:57  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  223:56  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  224:55  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+D:\Order_management_system\client\app\procurement\quality-management\page.tsx
+   3:27  warning  'useEffect' is defined but never used        @typescript-eslint/no-unused-vars
+   8:3   warning  'FileText' is defined but never used         @typescript-eslint/no-unused-vars
+   9:3   warning  'CheckCircle2' is defined but never used     @typescript-eslint/no-unused-vars
+  10:3   warning  'XCircle' is defined but never used          @typescript-eslint/no-unused-vars
+  13:3   warning  'MessageSquare' is defined but never used    @typescript-eslint/no-unused-vars
+  22:9   warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\quotations\page.tsx
+   5:21  warning  'QuotationItem' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+  10:25  warning  'ArrowRight' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+  13:5   warning  'Star' is defined but never used                                                                                         @typescript-eslint/no-unused-vars
+  13:18  warning  'DollarSign' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+  14:13  warning  'RotateCcw' is defined but never used                                                                                    @typescript-eslint/no-unused-vars
+  14:41  warning  'Phone' is defined but never used                                                                                        @typescript-eslint/no-unused-vars
+  14:48  warning  'ShieldCheck' is defined but never used                                                                                  @typescript-eslint/no-unused-vars
+  15:47  warning  'Target' is defined but never used                                                                                       @typescript-eslint/no-unused-vars
+  26:26  warning  'setAnalyzingRFQ' is assigned a value but never used                                                                     @typescript-eslint/no-unused-vars
+  43:8   warning  React Hook useEffect has a missing dependency: 'loadQuotationsForRFQ'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  75:18  warning  'e' is defined but never used                                                                                            @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\rfq-sim\page.tsx
+  3:27  warning  'useMemo' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\rfq\create\page.tsx
+    8:5   warning  'User' is defined but never used                  @typescript-eslint/no-unused-vars
+   50:11  warning  'SubItem' is defined but never used               @typescript-eslint/no-unused-vars
+   75:28  warning  'refreshData' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  104:42  error    Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  104:75  error    Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+
+D:\Order_management_system\client\app\procurement\supplier-discovery\page.tsx
+    7:31  warning  'Clock' is defined but never used                                      @typescript-eslint/no-unused-vars
+   41:22  warning  'onImport' is defined but never used                                   @typescript-eslint/no-unused-vars
+   41:32  warning  'importing' is defined but never used                                  @typescript-eslint/no-unused-vars
+   41:54  warning  'vettingLoading' is defined but never used                             @typescript-eslint/no-unused-vars
+  285:39  warning  'onImport' is defined but never used                                   @typescript-eslint/no-unused-vars
+  285:49  warning  'importing' is defined but never used                                  @typescript-eslint/no-unused-vars
+  285:85  warning  'vettingLoading' is defined but never used                             @typescript-eslint/no-unused-vars
+  449:10  warning  'importedSet' is assigned a value but never used                       @typescript-eslint/no-unused-vars
+  816:23  warning  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+
+D:\Order_management_system\client\app\procurement\supplier-vetting\[id]\page.tsx
+    7:42  warning  'X' is defined but never used                @typescript-eslint/no-unused-vars
+  242:9   warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\supplier-vetting\page.tsx
+  160:9  warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\suppliers\[id]\page.tsx
+    9:5   warning  'Calendar' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+    9:15  warning  'Phone' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+    9:22  warning  'Mail' is defined but never used                                                                                    @typescript-eslint/no-unused-vars
+    9:28  warning  'MapPin' is defined but never used                                                                                  @typescript-eslint/no-unused-vars
+   10:5   warning  'ChevronRight' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+   10:30  warning  'ThumbsUp' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+   12:17  warning  'FileCheck' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+  124:8   warning  React Hook useEffect has a missing dependency: 'fetchKPIHistory'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  145:18  warning  'error' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+  184:18  warning  'error' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\procurement\suppliers\page.tsx
+   12:5   warning  'ChevronRight' is defined but never used                                                                                           @typescript-eslint/no-unused-vars
+   14:5   warning  'ArrowUpRight' is defined but never used                                                                                           @typescript-eslint/no-unused-vars
+   21:5   warning  'FileCheck' is defined but never used                                                                                              @typescript-eslint/no-unused-vars
+   22:5   warning  'Scale' is defined but never used                                                                                                  @typescript-eslint/no-unused-vars
+   23:5   warning  'TrendingDown' is defined but never used                                                                                           @typescript-eslint/no-unused-vars
+  124:18  warning  'error' is defined but never used                                                                                                  @typescript-eslint/no-unused-vars
+  159:8   warning  React Hook useEffect has missing dependencies: 'fetchKPIData' and 'suppliers'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  193:18  warning  'error' is defined but never used                                                                                                  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\quote-requests\page.tsx
+   5:19  warning  'Filter' is defined but never used           @typescript-eslint/no-unused-vars
+  13:46  warning  'notify' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\rfq\quote\page.tsx
+  6:9  warning  'Phone' is defined but never used  @typescript-eslint/no-unused-vars
+  7:3  warning  'Bell' is defined but never used   @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\services\notificationService.ts
+  6:48  warning  'NotificationPayload' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\settings\page.tsx
+  4:10  warning  'Settings' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\shop\page.tsx
+  7:10  warning  'Grid' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\simulation\page.tsx
+    3:27  warning  'useMemo' is defined but never used       @typescript-eslint/no-unused-vars
+    9:48  warning  'ArrowLeft' is defined but never used     @typescript-eslint/no-unused-vars
+   11:18  warning  'XSquare' is defined but never used       @typescript-eslint/no-unused-vars
+  517:10  warning  'ShoppingCart' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\sourcing\page.tsx
+   9:20   warning  'CheckCircle' is defined but never used                  @typescript-eslint/no-unused-vars
+   9:33   warning  'X' is defined but never used                            @typescript-eslint/no-unused-vars
+   9:50   warning  'Bot' is defined but never used                          @typescript-eslint/no-unused-vars
+  15:140  warning  'submitQuoteRequest' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  52:18   warning  'err' is defined but never used                          @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\sourcing\rfq-create\page.tsx
+   59:54  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:18  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\supplier\[id]\kpi-evaluation\page.tsx
+   6:151  warning  'Calendar' is defined but never used               @typescript-eslint/no-unused-vars
+  60:7    warning  'metricLabels' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\supplier\contracts\page.tsx
+   14:5   warning  'ShieldCheck' is defined but never used         @typescript-eslint/no-unused-vars
+   17:5   warning  'DollarSign' is defined but never used          @typescript-eslint/no-unused-vars
+   22:5   warning  'CheckCircle' is defined but never used         @typescript-eslint/no-unused-vars
+   79:26  warning  'contracts' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  116:21  warning  'wsStatus' is assigned a value but never used   @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\supplier\dashboard\page.tsx
+    4:73  warning  'QuoteRequestStatus' is defined but never used           @typescript-eslint/no-unused-vars
+    5:10  warning  'formatVND' is defined but never used                    @typescript-eslint/no-unused-vars
+    5:21  warning  'getStatusLabel' is defined but never used               @typescript-eslint/no-unused-vars
+   17:3   warning  'DollarSign' is defined but never used                   @typescript-eslint/no-unused-vars
+   83:85  warning  'updateQuoteRequest' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  118:21  warning  'setLocalRfqs' is assigned a value but never used        @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\supplier\invoice\page.tsx
+   4:10  warning  'FileText' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+  32:11  warning  'deliverablePOs' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+  57:11  warning  'currentGRN' is assigned a value but never used                                                                     @typescript-eslint/no-unused-vars
+  75:8   warning  React Hook useEffect has a missing dependency: 'currentPO.items'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\Order_management_system\client\app\supplier\page.tsx
+  70:7  warning  'getTierColor' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\supplier\po\page.tsx
+   4:10  warning  'Package' is defined but never used                   @typescript-eslint/no-unused-vars
+  51:26  warning  'setSelectedPoId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\supplier\products\page.tsx
+   4:35  warning  'ProductCategory' is defined but never used         @typescript-eslint/no-unused-vars
+  18:9   warning  'organizations' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\supplier\rfq\page.tsx
+    4:10  warning  'Inbox' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+    7:15  warning  'CreateQuoteDto' is defined but never used                                                                 @typescript-eslint/no-unused-vars
+   10:73  warning  'submitQuotation' is assigned a value but never used                                                       @typescript-eslint/no-unused-vars
+   32:8   warning  React Hook useEffect has a missing dependency: 'notify'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  341:43  error    Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  342:59  error    Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  352:87  error    Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+
+D:\Order_management_system\client\app\users\profile\page.tsx
+   17:5   warning  'Save' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   18:5   warning  'X' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   76:22  warning  'err' is defined but never used                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  147:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\Order_management_system\client\app\warehouse\dashboard\page.tsx
+  4:26  warning  'AlertTriangle' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Order_management_system\client\app\warehouse\grn\new\page.tsx
+  93:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 323 problems (12 errors, 311 warnings)
+  0 errors and 6 warnings potentially fixable with the `--fix` option.
+

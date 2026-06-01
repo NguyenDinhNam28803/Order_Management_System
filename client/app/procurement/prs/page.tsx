@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { useProcurement, PR } from "../../context/ProcurementContext";
 import DashboardHeader from "../../components/DashboardHeader";
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
-import { formatVND } from "../../utils/formatUtils";
+import { formatVND, formatDate } from "../../utils/formatUtils";
 import { 
     Search, ListFilter, ArrowRight, 
     FileText, CheckCircle, 
@@ -18,13 +18,6 @@ import Link from "next/link";
 export default function ProcurementControlPage() {
     const { prs, currentUser, apiFetch, refreshData, notify, organizations } = useProcurement();
     const [searchTerm, setSearchTerm] = useState("");
-
-    const formatDate = (ds?: string) => {
-        if (!ds) return "N/A";
-        const d = new Date(ds);
-        if (isNaN(d.getTime())) return ds;
-        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
-    };
 
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [deptFilter, setDeptFilter] = useState("ALL");
@@ -57,7 +50,7 @@ export default function ProcurementControlPage() {
     const departments = useMemo((): string[] => {
     const depts = new Set(
         (prs || [])
-            .map((pr: any) => (typeof pr.department === 'string' ? pr.department : pr.department?.name))
+            .map((pr: PR) => (typeof pr.department === 'string' ? pr.department : pr.department?.name))
             .filter(Boolean) as string[]
         );
         return Array.from(depts);
@@ -65,7 +58,7 @@ export default function ProcurementControlPage() {
 
     // Filtered data
     const filteredPRs = useMemo(() => {
-        return (prs || []).filter((pr: any) => {
+        return (prs || []).filter((pr: PR) => {
             const matchesSearch = 
                 (pr.prNumber || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (pr.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -219,9 +212,9 @@ export default function ProcurementControlPage() {
 
     const stats = [
         { label: "Tổng số PR", value: prs.length, icon: FileText, color: "text-slate-500", bg: "bg-slate-50" },
-        { label: "Chờ Tìm Nguồn", value: prs.filter((p: any) => p.status === 'APPROVED').length, icon: Zap, color: "text-amber-500", bg: "bg-amber-50" },
-        { label: "Đang Báo Giá", value: prs.filter((p: any) => p.status === 'IN_SOURCING').length, icon: Send, color: "text-blue-500", bg: "bg-blue-50" },
-        { label: "Hoàn tất PO", value: prs.filter((p: any) => p.status === 'PO_CREATED').length, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-50" },
+        { label: "Chờ Tìm Nguồn", value: prs.filter((p: PR) => p.status === 'APPROVED').length, icon: Zap, color: "text-amber-500", bg: "bg-amber-50" },
+        { label: "Đang Báo Giá", value: prs.filter((p: PR) => p.status === 'IN_SOURCING').length, icon: Send, color: "text-blue-500", bg: "bg-blue-50" },
+        { label: "Hoàn tất PO", value: prs.filter((p: PR) => p.status === 'PO_CREATED').length, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-50" },
     ];
 
     return (

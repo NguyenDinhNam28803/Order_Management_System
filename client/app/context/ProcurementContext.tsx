@@ -612,6 +612,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         } catch {
             if (attempt < 2) {
                 await new Promise(res => setTimeout(res, (attempt + 1) * 1000));
+                // eslint-disable-next-line react-hooks/immutability
                 return refreshData(attempt + 1);
             }
         }

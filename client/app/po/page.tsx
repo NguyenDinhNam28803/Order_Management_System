@@ -1,12 +1,14 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { formatVND, formatDate } from "../utils/formatUtils";
 import { FileText, Lock, Search, Filter, ArrowRight, ShieldCheck, FileCheck, Send, DownloadCloud, UploadCloud, Eye, CheckCircle } from "lucide-react";
-import { useProcurement } from "../context/ProcurementContext";
+import { useProcurement, PO } from "../context/ProcurementContext";
 import { usePurchaseOrders } from "../hooks/usePurchaseOrders";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TableSkeleton } from "../components/shared/TableSkeleton";
 import { ErrorBoundary } from "../components/shared/ErrorBoundary";
+import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
 
 export default function POPage() {
     const { prs, loadingMyPrs } = useProcurement();
@@ -21,13 +23,6 @@ export default function POPage() {
     const prId = searchParams.get("prId");
     const passedVendor = searchParams.get("vendor");
     const passedPrice = searchParams.get("price");
-
-    const formatDate = (ds?: string) => {
-        if (!ds) return "N/A";
-        const d = new Date(ds);
-        if (isNaN(d.getTime())) return ds;
-        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
-    };
 
     // Form State for new PO
     const isCreateMode = action === "create" && prId;
@@ -127,8 +122,8 @@ export default function POPage() {
                                         <tr key={i} className="border-b border-slate-100">
                                             <td className="py-3 px-4">{item.description || item.productName || item.productDesc}</td>
                                             <td className="py-3 px-4 text-center ">{item.qty}</td>
-                                            <td className="py-3 px-4 text-right ">{Number(item.estimatedPrice ?? 0).toLocaleString()}</td>
-                                            <td className="py-3 px-4 text-right  font-bold">{(Number(item.qty || 0) * Number(item.estimatedPrice ?? 0)).toLocaleString()}</td>
+                                            <td className="py-3 px-4 text-right">{formatVND(item.estimatedPrice ?? 0, true)}</td>
+                                            <td className="py-3 px-4 text-right font-bold">{formatVND(Number(item.qty || 0) * Number(item.estimatedPrice ?? 0), true)}</td>
                                         </tr>
                                     ))}
                                     {(!relatedPR?.items) && (
@@ -141,7 +136,7 @@ export default function POPage() {
                                     <tr>
                                         <td colSpan={3} className="py-4 px-4 text-right font-bold text-slate-600 uppercase">Total Amount:</td>
                                         <td className="py-4 px-4 text-right font-bold  text-xl text-brand-primary">
-                                            {passedPrice ? Number(passedPrice).toLocaleString() : relatedPR?.totalEstimate?.toLocaleString()} ₫
+                                            {passedPrice ? formatVND(Number(passedPrice), true) : formatVND(relatedPR?.totalEstimate ?? 0, true)}
                                         </td>
                                     </tr>
                                 </tfoot>
@@ -202,7 +197,7 @@ export default function POPage() {
                             <div>
                                 <div className="text-[10px] font-black uppercase text-black mb-1">Tổng GT Đơn hàng</div>
                                 <div className="font-black  text-emerald-600 text-lg">
-                                    {passedPrice ? Number(passedPrice).toLocaleString() : 'N/A'} ₫
+                                    {passedPrice ? formatVND(Number(passedPrice), true) : 'N/A'}
                                 </div>
                             </div>
                             
@@ -334,8 +329,8 @@ export default function POPage() {
                                         <tr key={idx} className="border-b border-slate-50">
                                             <td className="font-bold text-brand-primary">{item.description || item.productName}</td>
                                             <td className="text-center font-black">{item.qty || 0}</td>
-                                            <td className="text-right  text-black">{Number(item.estimatedPrice ?? 0).toLocaleString()}</td>
-                                            <td className="text-right  font-black text-erp-blue">{(Number(item.qty || 0) * Number(item.estimatedPrice ?? 0)).toLocaleString()} ₫</td>
+                                            <td className="text-right text-black">{formatVND(item.estimatedPrice ?? 0, true)}</td>
+                                            <td className="text-right font-black text-erp-blue">{formatVND(Number(item.qty || 0) * Number(item.estimatedPrice ?? 0), true)}</td>
                                             <td><input type="text" className="erp-input py-1! text-[10px]! w-full bg-slate-50 font-medium" placeholder="Ghi chú item..." /></td>
                                         </tr>
                                     ))}
@@ -427,68 +422,90 @@ export default function POPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-xl shadow-erp-navy/5">
-                <table className="erp-table text-xs">
-                    <thead>
-                        <tr className="bg-slate-50">
-                            <th>Mã PO</th>
-                            <th>Nhà cung cấp</th>
-                            <th className="text-right">Giá trị (VNĐ)</th>
-                            <th className="text-center">Ngày phát hành</th>
-                            <th className="text-center">Ngân sách</th>
-                            <th className="text-center">Trạng thái</th>
-                            <th className="text-right">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {pos.length > 0 ? pos.map((po) => (
-                            <tr key={po.id} className="hover:bg-slate-50">
-                                <td className="font-bold text-brand-primary flex items-center gap-2"><FileText size={14} className="text-erp-blue"/> {po.poNumber || po.id.split('-').pop()}</td>
-                                <td className="font-bold text-slate-700">{po.supplier?.name || po.vendor || 'N/A'}</td>
-                                <td className=" font-black text-right text-erp-blue text-sm">{Number(po.totalAmount ?? po.total ?? 0).toLocaleString()} ₫</td>
-                                <td className="text-black text-xs text-center">{formatDate(po.createdAt)}</td>
-                                <td className="text-center">
-                                    <div className="inline-flex items-center gap-1 text-[10px] font-black text-brand-primary bg-slate-100 px-2 py-1 rounded uppercase tracking-tighter">
-                                        <Lock size={10} /> Committed
-                                    </div>
-                                </td>
-                                <td className="text-center">
-                                    <span className={`status-pill ${po.status === 'PAID' ? 'status-approved' :
-                                            po.status === 'SHIPPED' ? 'status-pending' : 'status-draft'
-                                        }`}>
-                                        {po.status}
-                                    </span>
-                                </td>
-                                <td className="text-right">
-                                    <div className="flex justify-end items-center gap-2">
-                                        {po.status === "DRAFT" && (
-                                            <>
-                                                <button className="p-1.5 text-black hover:bg-amber-100 hover:text-amber-600 rounded-lg transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
-                                                <button className="p-1.5 text-black hover:bg-rose-100 hover:text-rose-600 rounded-lg transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg></button>
-                                            </>
-                                        )}
-                                        {po.status === "SHIPPED" && (
-                                            <button
-                                                onClick={() => router.push("/warehouse/dashboard")}
-                                                className="bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-1 transition-all"
-                                            >
-                                                Nhập kho <ArrowRight size={12} />
-                                            </button>
-                                        )}
-                                        <button className="p-1.5 text-black hover:bg-slate-100 hover:text-brand-primary rounded-lg transition-colors"><Eye size={16} /></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        )) : (
-                            <tr>
-                                <td colSpan={7} className="py-20 text-center text-black font-bold uppercase tracking-widest italic">
-                                    Chưa có đơn mua hàng nào được tạo
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            {(() => {
+                const poColumns: ERPTableColumn<PO>[] = [
+                    {
+                        label: "Mã PO",
+                        key: "poNumber",
+                        sortable: true,
+                        render: (po) => (
+                            <span className="font-bold text-brand-primary flex items-center gap-2">
+                                <FileText size={14} className="text-erp-blue shrink-0" />
+                                {po.poNumber || po.id.split('-').pop()}
+                            </span>
+                        ),
+                    },
+                    {
+                        label: "Nhà cung cấp",
+                        key: "vendor",
+                        sortable: true,
+                        render: (po) => <span className="font-bold text-slate-700">{po.supplier?.name || po.vendor || 'N/A'}</span>,
+                    },
+                    {
+                        label: "Giá trị (VNĐ)",
+                        key: "totalAmount",
+                        sortable: true,
+                        render: (po) => <span className="block font-black text-right text-erp-blue text-sm">{formatVND(po.totalAmount ?? po.total ?? 0, true)}</span>,
+                    },
+                    {
+                        label: "Ngày phát hành",
+                        key: "createdAt",
+                        sortable: true,
+                        render: (po) => <span className="block text-center text-black text-xs">{formatDate(po.createdAt)}</span>,
+                    },
+                    {
+                        label: "Ngân sách",
+                        render: () => (
+                            <div className="flex justify-center">
+                                <div className="inline-flex items-center gap-1 text-[10px] font-black text-brand-primary bg-slate-100 px-2 py-1 rounded uppercase tracking-tighter">
+                                    <Lock size={10} /> Committed
+                                </div>
+                            </div>
+                        ),
+                    },
+                    {
+                        label: "Trạng thái",
+                        key: "status",
+                        sortable: true,
+                        render: (po) => (
+                            <div className="flex justify-center">
+                                <span className={`status-pill ${po.status === 'PAID' ? 'status-approved' : po.status === 'SHIPPED' ? 'status-pending' : 'status-draft'}`}>
+                                    {po.status}
+                                </span>
+                            </div>
+                        ),
+                    },
+                    {
+                        label: "Hành động",
+                        render: (po) => (
+                            <div className="flex justify-end items-center gap-2">
+                                {po.status === "DRAFT" && (
+                                    <>
+                                        <button className="p-1.5 text-black hover:bg-amber-100 hover:text-amber-600 rounded-lg transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
+                                        <button className="p-1.5 text-black hover:bg-rose-100 hover:text-rose-600 rounded-lg transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg></button>
+                                    </>
+                                )}
+                                {po.status === "SHIPPED" && (
+                                    <button onClick={() => router.push("/warehouse/dashboard")} className="bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center gap-1 transition-all">
+                                        Nhập kho <ArrowRight size={12} />
+                                    </button>
+                                )}
+                                <button className="p-1.5 text-black hover:bg-slate-100 hover:text-brand-primary rounded-lg transition-colors"><Eye size={16} /></button>
+                            </div>
+                        ),
+                    },
+                ];
+                return (
+                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xl shadow-erp-navy/5 overflow-hidden">
+                        <ERPTable
+                            columns={poColumns}
+                            data={pos as PO[]}
+                            emptyMessage="Chưa có đơn mua hàng nào"
+                            emptyDescription="Đơn mua hàng sẽ xuất hiện sau khi được tạo từ báo giá"
+                        />
+                    </div>
+                );
+            })()}
         </main>
         </ErrorBoundary>
     );

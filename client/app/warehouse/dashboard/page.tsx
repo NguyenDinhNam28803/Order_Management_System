@@ -107,7 +107,7 @@ export default function WarehouseDashboard() {
                                             <div className="font-bold text-slate-900 text-xs truncate">PO-***</div>
                                         </td>
                                         <td className="py-4 px-4">
-                                            <div className="font-bold text-slate-900 text-xs truncate">{po.vendor}</div>
+                                            <div className="font-bold text-slate-900 text-xs truncate">{po.vendor || 'N/A'}</div>
                                         </td>
                                         <td className="py-4 px-4">
                                             <div className="truncate font-medium text-slate-900 text-xs">{po.items}</div>

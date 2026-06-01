@@ -101,7 +101,7 @@ export default function CreateRFQPage() {
 
     // Filter organizations to exclude current user's org
     const realVendors = React.useMemo(() => 
-        (organizations || []).filter((o: any) => o.id !== (currentUser as any)?.orgId),
+        (organizations || []).filter((o: Organization) => o.id !== currentUser?.orgId),
     [organizations, currentUser]);
 
     const filteredVendors = realVendors.filter((v: Organization) =>

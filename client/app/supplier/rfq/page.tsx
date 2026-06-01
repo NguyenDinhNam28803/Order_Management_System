@@ -338,8 +338,8 @@ export default function SupplierRFQ() {
                         </tr>
                     </thead>
                     <tbody>
-                        {openRfqs.map((r: any) => {
-                            const prDetail = prs.find((p: any) => p.id === r.prId);
+                        {openRfqs.map((r: RFQ) => {
+                            const prDetail = prs.find((p: PR) => p.id === r.prId);
                             const customerName = prDetail ? (typeof prDetail.department === 'string' ? prDetail.department : prDetail.department?.name) : "ProcurePro Network";
                             
                             return (
@@ -349,7 +349,7 @@ export default function SupplierRFQ() {
                                     <td className="text-slate-500 font-medium">
                                         <div className="flex flex-wrap gap-1">
                                             {prDetail?.items && prDetail.items.length > 0 ? (
-                                                prDetail.items.slice(0, 3).map((item: any, i: number) => (
+                                                prDetail.items.slice(0, 3).map((item: PRItem, i: number) => (
                                                     <span key={i} className="bg-slate-100 text-[10px] px-2 py-0.5 rounded border border-slate-200">
                                                         {item.item_name || item.description} x{item.quantity || item.qty}
                                                     </span>

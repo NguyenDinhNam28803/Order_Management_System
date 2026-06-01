@@ -235,6 +235,7 @@ export interface PRItem {
     estimatedPrice: number;
     totalPrice?: number;
     description?: string;
+    item_name?: string;
     lineItem?: number;
     productDesc?: string;
     sku?: string;

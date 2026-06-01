@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { 
     FileCheck, ShieldAlert, CalendarClock, TrendingDown, Search, 
     CheckCircle2, ArrowRight, BarChart3, PieChart, Activity,
@@ -9,7 +9,7 @@ import {
 import { useRouter } from "next/navigation";
 
 import { useProcurement } from "../../context/ProcurementContext";
-import { formatVND } from "../../utils/formatUtils";
+import { formatVND, formatDate } from "../../utils/formatUtils";
 import BudgetHeatmap from "../../components/BudgetHeatmap";
 import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
 
@@ -17,9 +17,13 @@ export default function FinanceDashboard() {
     const router = useRouter();
     const { invoices } = useProcurement();
     const [activeTab, setActiveTab] = useState<"ALL" | "EXCEPTION">("ALL");
+    const [page, setPage] = useState(1);
+    const PAGE_SIZE = 10;
 
     const activeInvoices = invoices.filter((i) => i.status === "PENDING" || i.status === "EXCEPTION" || i.status === "UNMATCHED");
-    const displayedInvoices = activeTab === "ALL" ? activeInvoices : activeInvoices.filter((i) => i.status === "EXCEPTION");
+    const filteredInvoices = activeTab === "ALL" ? activeInvoices : activeInvoices.filter((i) => i.status === "EXCEPTION");
+    const totalPages = Math.max(1, Math.ceil(filteredInvoices.length / PAGE_SIZE));
+    const displayedInvoices = useMemo(() => filteredInvoices.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [filteredInvoices, page]);
 
     const totalSpentThisMonth = invoices
         .filter(i => i.status === "PAID")
@@ -131,15 +135,15 @@ export default function FinanceDashboard() {
                     
                     <div className="flex items-center gap-4">
                         <div className="bg-[#FFFFFF] p-1 rounded-xl flex gap-1 border border-[rgba(148,163,184,0.1)]">
-                            <button 
+                            <button
                                 className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
-                                onClick={() => setActiveTab("ALL")}
+                                onClick={() => { setActiveTab("ALL"); setPage(1); }}
                             >
                                 Tất cả
                             </button>
-                            <button 
+                            <button
                                 className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-white hover:text-white'}`}
-                                onClick={() => setActiveTab("EXCEPTION")}
+                                onClick={() => { setActiveTab("EXCEPTION"); setPage(1); }}
                             >
                                 Exception <span className="bg-rose-500/20 text-black px-1.5 py-0.5 rounded-md text-[9px] border border-rose-500/20">{activeInvoices.filter((i) => i.status === 'EXCEPTION').length}</span>
                             </button>
@@ -180,16 +184,16 @@ export default function FinanceDashboard() {
                                             <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center font-bold text-[10px] group-hover:bg-[#2563EB] group-hover:text-white transition-colors duration-300 border border-[#2563EB]/20">
                                                 ID
                                             </div>
-                                            <span className="font-bold text-slate-900 tracking-tight">INV-***</span>
+                                            <span className="font-bold text-slate-900 tracking-tight">{inv.invoiceNumber ?? inv.id.slice(0, 8).toUpperCase()}</span>
                                         </div>
                                     </td>
                                     <td>
                                         <div className="text-sm font-bold text-slate-900">{inv.vendor}</div>
                                         <div className="text-[10px] text-slate-900 font-medium uppercase tracking-tighter">Verified Partner</div>
                                     </td>
-                                    <td className=" text-[#2563EB] text-[11px] font-bold">PO-***</td>
-                                    <td className="text-right font-bold text-slate-900 text-sm">{formatVND(inv.amount ?? inv.totalAmount ?? 0)} ₫</td>
-                                    <td className="text-slate-900 text-[11px] font-semibold">{inv.createdAt ? new Date(inv.createdAt).toLocaleDateString('vi-VN') : '—'}</td>
+                                    <td className="text-[#2563EB] text-[11px] font-bold">{inv.poId ?? '—'}</td>
+                                    <td className="text-right font-bold text-slate-900 text-sm">{formatVND(inv.amount ?? inv.totalAmount ?? 0, true)}</td>
+                                    <td className="text-slate-900 text-[11px] font-semibold">{formatDate(inv.createdAt)}</td>
                                     <td className="text-center">
                                         {inv.status === "PENDING" ? (
                                             <div className="flex justify-center">
@@ -222,11 +226,11 @@ export default function FinanceDashboard() {
                 </div>
 
                 <div className="p-4 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] flex items-center justify-between">
-                    <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Showing {displayedInvoices.length} of {activeInvoices.length} invoices in queue</p>
+                    <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Showing {Math.min(page * PAGE_SIZE, filteredInvoices.length)} of {filteredInvoices.length} invoices in queue</p>
                     <div className="flex gap-1">
-                         {[1, 2, 3].map(i => (
-                             <button key={i} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === 1 ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm' : 'border-transparent text-white hover:text-white'}`}>{i}</button>
-                         ))}
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(i => (
+                            <button key={i} onClick={() => setPage(i)} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === page ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{i}</button>
+                        ))}
                     </div>
                 </div>
             </div>

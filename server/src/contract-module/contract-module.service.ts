@@ -249,7 +249,7 @@ export class ContractModuleService {
         const supplierUsers = await this.prisma.user.findMany({
           where: {
             orgId: contract.supplierId,
-            role: 'SUPPLIER' as 'SUPPLIER',
+            role: 'SUPPLIER' as const,
             isActive: true,
           },
           select: { email: true, fullName: true },
@@ -295,7 +295,13 @@ export class ContractModuleService {
         const buyerUsers = await this.prisma.user.findMany({
           where: {
             orgId: contract.orgId,
-            role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as ('PROCUREMENT' | 'DIRECTOR' | 'CEO')[] },
+            role: {
+              in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as (
+                | 'PROCUREMENT'
+                | 'DIRECTOR'
+                | 'CEO'
+              )[],
+            },
             isActive: true,
           },
           select: { email: true, fullName: true },
@@ -435,8 +441,7 @@ export class ContractModuleService {
 
       for (const contract of expiringContracts) {
         const daysLeft = Math.ceil(
-          (contract.endDate!.getTime() - now.getTime()) /
-            (1000 * 60 * 60 * 24),
+          (contract.endDate!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
         );
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const supplierName =

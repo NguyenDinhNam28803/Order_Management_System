@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Plus, Send, Save, X, Calculator, Building, PieChart, Layers, DollarSign, Calendar, Loader2 } from "lucide-react";
 import { useProcurement, BudgetAllocationStatus, BudgetPeriod } from "../../context/ProcurementContext";
-import { formatVND, parseMoney } from "../../utils/formatUtils";
+import { formatVND, parseMoney, formatDate } from "../../utils/formatUtils";
 import { CurrencyCode, CreateBudgetAllocationPayload } from "@/app/types/api-types";
 
 export default function BudgetPlanningPage() {
@@ -244,7 +244,7 @@ export default function BudgetPlanningPage() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-5 text-[11px] font-bold text-slate-900 text-center">
-                                        {alloc.createdAt ? new Date(alloc.createdAt).toLocaleDateString("vi-VN") : "--"}
+                                        {formatDate(alloc.createdAt)}
                                     </td>
                                     <td className="px-6 py-5 text-center">
                                         <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

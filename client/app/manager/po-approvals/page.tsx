@@ -77,7 +77,7 @@ export default function POApprovalsPage() {
                                             <span className="font-bold text-slate-900">{po.id}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 font-bold text-slate-900">{po.vendor}</td>
+                                    <td className="px-6 py-4 font-bold text-slate-900">{po.vendor || 'N/A'}</td>
                                     <td className="px-6 py-4">
                                         <span className="text-xs font-bold text-[#2563EB] underline decoration-[#2563EB]/30 cursor-pointer">{po.prId}</span>
                                     </td>

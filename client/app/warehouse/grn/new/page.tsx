@@ -90,7 +90,7 @@ export default function CreateGRN() {
         if (!activePO) return;
         
         const receivedItems: Record<string, number> = {};
-        activePO.items.forEach((item: any) => {
+        activePO.items.forEach((item: POItem) => {
            receivedItems[item.id] = Number(recvData[item.id].actual) || 0;
         });
 
