@@ -31,9 +31,9 @@ export class EmailListenerService {
     };
   }
 
-  // Sử dụng IDLE thay vì Cron
+  // EMAIL LISTENER DISABLED — IMAP IDLE đã bị tắt hoàn toàn
   onModuleInit() {
-    void this.startIdling();
+    this.logger.warn('[EMAIL LISTENER DISABLED] IMAP IDLE không khởi động.');
   }
 
   private async startIdling() {
