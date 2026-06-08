@@ -13,7 +13,7 @@ import ContractSignModal from "../../../components/ContractSignModal";
 
 // ── Status config ─────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<string, { label: string; bg: string; text: string; border: string; dot: string }> = {
-    ACTIVE:           { label: "Đang hiệu lực", bg: "bg-emerald-500/10", text: "text-black", border: "border-emerald-500/25", dot: "bg-emerald-400" },
+    ACTIVE:           { label: "Đang hiệu lực", bg: "bg-emerald-500/10", text: "text-emerald-700", border: "border-emerald-500/25", dot: "bg-emerald-400" },
     PENDING_SIGNATURE:{ label: "Chờ ký",         bg: "bg-amber-500/10",   text: "text-black",   border: "border-amber-500/25",   dot: "bg-amber-400"   },
     DRAFT:            { label: "Bản nháp",        bg: "bg-slate-500/10",   text: "text-black",   border: "border-slate-500/25",   dot: "bg-slate-400"   },
     EXPIRED:          { label: "Hết hạn",         bg: "bg-orange-500/10",  text: "text-black",  border: "border-orange-500/25",  dot: "bg-orange-400"  },
@@ -118,12 +118,12 @@ export default function ContractDetailPage() {
                             <FileText size={22} className="text-blue-600" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-1">
+                            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 mb-1">
                                 MÃ HỢP ĐỒNG — <span className="font-mono text-blue-600">#{contract.contractNumber}</span>
                             </p>
                             <h1 className="text-xl font-bold text-slate-900 leading-snug">{contract.title}</h1>
                             {contract.description && (
-                                <p className="text-sm text-slate-900 mt-1">{contract.description}</p>
+                                <p className="text-[0.8125rem] text-[#64748B] font-medium mt-1">{contract.description}</p>
                             )}
                         </div>
                     </div>
@@ -131,10 +131,10 @@ export default function ContractDetailPage() {
                     <div className="flex flex-col items-end gap-2 shrink-0">
                         <StatusBadge status={contract.status} />
                         {isActive && daysLeft !== null && daysLeft <= 30 && daysLeft > 0 && (
-                            <span className="text-[10px] text-black font-bold">⚠ Còn {daysLeft} ngày</span>
+                            <span className="text-[0.6875rem] text-black font-bold">⚠ Còn {daysLeft} ngày</span>
                         )}
                         {isActive && daysLeft !== null && daysLeft <= 0 && (
-                            <span className="text-[10px] text-black font-bold">⚠ Đã quá hạn</span>
+                            <span className="text-[0.6875rem] text-black font-bold">⚠ Đã quá hạn</span>
                         )}
                     </div>
                 </div>
@@ -213,7 +213,7 @@ export default function ContractDetailPage() {
                                         <th className="px-6 py-3 text-right">Số tiền</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
+                                <tbody className="divide-y divide-slate-100">
                                     {contract.milestones.map(m => (
                                         <tr key={m.id} className="hover:bg-white/40 transition-colors">
                                             <td className="px-6 py-3 font-medium text-slate-900">{m.title}</td>
@@ -224,10 +224,10 @@ export default function ContractDetailPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-3">
-                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider
-                                                    ${m.status === "COMPLETED" ? "bg-emerald-500/10 text-black" :
+                                                <span className={`text-[0.6875rem] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider
+                                                    ${m.status === "COMPLETED" ? "bg-emerald-500/10 text-emerald-700" :
                                                       m.status === "IN_PROGRESS" ? "bg-blue-600/10 text-blue-600" :
-                                                      "bg-slate-500/10 text-black"}`}>
+                                                      "bg-slate-500/10 text-slate-700"}`}>
                                                     {m.status === "COMPLETED" ? "Hoàn thành" : m.status === "IN_PROGRESS" ? "Đang thực hiện" : "Chờ"}
                                                 </span>
                                             </td>
@@ -250,13 +250,13 @@ export default function ContractDetailPage() {
                         <div className="erp-card p-6 space-y-4">
                             {contract.terms && (
                                 <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-2">Điều khoản hợp đồng</p>
+                                    <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 mb-2">Điều khoản hợp đồng</p>
                                     <p className="text-sm text-slate-900 leading-relaxed whitespace-pre-wrap">{contract.terms}</p>
                                 </div>
                             )}
                             {contract.notes && (
                                 <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-2">Ghi chú</p>
+                                    <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 mb-2">Ghi chú</p>
                                     <p className="text-sm text-slate-900 leading-relaxed whitespace-pre-wrap">{contract.notes}</p>
                                 </div>
                             )}
@@ -269,11 +269,11 @@ export default function ContractDetailPage() {
 
                     {/* Contract value */}
                     <div className="erp-card p-6">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-3">Tổng giá trị hợp đồng</p>
+                        <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 mb-3">Tổng giá trị hợp đồng</p>
                         <p className="text-3xl font-bold text-blue-600 tabular-nums">
                             {Number(contract.totalValue || 0).toLocaleString("vi-VN")}
                         </p>
-                        <p className="text-sm text-slate-900 mt-1">{contract.currency}</p>
+                        <p className="text-[0.8125rem] text-[#64748B] font-medium mt-1">{contract.currency}</p>
 
                         {contract.startDate && contract.endDate && (
                             <div className="mt-4 pt-4 border-t border-slate-200 flex items-center gap-2 text-xs text-slate-900">
@@ -289,7 +289,7 @@ export default function ContractDetailPage() {
                     <div className="erp-card p-6">
                         <div className="flex items-center gap-2 mb-4">
                             <ShieldCheck size={14} className="text-slate-900" />
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900">Trạng thái ký số</p>
+                            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900">Trạng thái ký số</p>
                         </div>
 
                         <div className="space-y-4">
@@ -301,7 +301,7 @@ export default function ContractDetailPage() {
                                         : <Clock size={14} className="text-slate-900" />}
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900">Bên Mua (Buyer)</p>
+                                    <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900">Bên Mua (Buyer)</p>
                                     {contract.buyerSignedAt ? (
                                         <p className="text-xs text-black font-medium mt-0.5">
                                             Đã ký: {new Date(contract.buyerSignedAt).toLocaleString("vi-VN")}
@@ -320,7 +320,7 @@ export default function ContractDetailPage() {
                                         : <Clock size={14} className="text-slate-900" />}
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900">Bên Bán (Supplier)</p>
+                                    <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900">Bên Bán (Supplier)</p>
                                     {contract.supplierSignedAt ? (
                                         <p className="text-xs text-black font-medium mt-0.5">
                                             Đã ký: {new Date(contract.supplierSignedAt).toLocaleString("vi-VN")}
@@ -375,7 +375,7 @@ export default function ContractDetailPage() {
                     <div className="erp-card p-6">
                         <div className="flex items-center gap-2 mb-3">
                             <User size={13} className="text-slate-900" />
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900">Người tạo</p>
+                            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900">Người tạo</p>
                         </div>
                         <p className="text-sm text-slate-900 font-medium">
                             {currentUser?.fullName || currentUser?.name || currentUser?.email || "—"}
@@ -391,9 +391,9 @@ export default function ContractDetailPage() {
             {showTerminate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-white/80 backdrop-blur-sm" onClick={() => setShowTerminate(false)} />
-                    <div className="relative w-full max-w-md bg-slate-100 rounded-2xl border border-rose-500/20 shadow-xl p-6">
+                    <div className="relative w-full max-w-md bg-slate-100 rounded-xl border border-rose-500/20 shadow-xl p-6">
 <div className="flex items-start gap-4 mb-5">
-                            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
+                            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-600 flex-shrink-0">
                                 <Ban size={18} />
                             </div>
                             <div>
@@ -402,11 +402,11 @@ export default function ContractDetailPage() {
                             </div>
                         </div>
                         <div className="mb-5">
-                            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-2">Lý do chấm dứt *</label>
+                            <label className="block text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 mb-2">Lý do chấm dứt *</label>
                             <textarea
                                 rows={3}
                                 placeholder="Nhập lý do chấm dứt hợp đồng..."
-                                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-900 outline-none focus:border-blue-600/50 resize-none transition-all"
+                                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-600/50 resize-none transition-all"
                                 value={terminateReason}
                                 onChange={e => setTerminateReason(e.target.value)}
                             />
@@ -437,3 +437,4 @@ export default function ContractDetailPage() {
         </main>
     );
 }
+

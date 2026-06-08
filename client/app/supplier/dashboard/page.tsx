@@ -249,14 +249,14 @@ export default function SupplierDashboard() {
   // --- Components ---
 
   const renderSidebar = () => (
-    <div className="w-64 bg-[#F1F5F9] min-h-screen p-6 text-slate-900 flex flex-col gap-8 hidden lg:flex sticky top-0 border-r border-[rgba(148,163,184,0.1)]">
+    <div className="w-64 bg-[#F1F5F9] min-h-screen p-6 text-slate-900 flex flex-col gap-8 hidden lg:flex sticky top-0 border-r border-slate-200">
       <div className="flex items-center gap-3 px-2">
         <div className="bg-[#2563EB]/10 p-2 rounded-xl border border-[#2563EB]/20">
           <Building2 size={24} className="text-[#2563EB]" />
         </div>
         <div>
           <h2 className="text-sm font-black uppercase tracking-widest leading-none text-slate-900">ProcurePro</h2>
-          <span className="text-[10px] font-bold text-slate-900 uppercase tracking-tighter">Supplier Portal</span>
+          <span className="text-[0.6875rem] font-bold text-[#64748B] uppercase tracking-tighter">Supplier Portal</span>
         </div>
       </div>
 
@@ -278,17 +278,17 @@ export default function SupplierDashboard() {
       </nav>
 
       <div className="mt-auto">
-        <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+        <div className="bg-[#FFFFFF] rounded-xl p-4 border border-slate-200">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center font-black text-xs text-white">
               ABC
             </div>
             <div className="overflow-hidden">
-              <p className="text-[10px] font-black truncate text-slate-900">{currentUser?.fullName || "Nhà cung cấp"}</p>
-              <p className="text-[8px] font-bold text-slate-900 uppercase">ID: {currentUser?.orgId || "N/A"}</p>
+              <p className="text-[0.6875rem] font-black truncate text-slate-900">{currentUser?.fullName || "Nhà cung cấp"}</p>
+              <p className="text-[0.6875rem] font-bold text-[#64748B] uppercase">ID: {currentUser?.orgId || "N/A"}</p>
             </div>
           </div>
-          <div className="px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-[10px] font-black uppercase tracking-wider text-center border border-[#2563EB]/20">Nhà cung cấp</div>
+          <div className="px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-[0.6875rem] font-black uppercase tracking-wider text-center border border-[#2563EB]/20">Nhà cung cấp</div>
         </div>
       </div>
     </div>
@@ -302,7 +302,7 @@ export default function SupplierDashboard() {
           <p className="text-slate-900 font-medium">Quản lý và phản hồi các yêu cầu báo giá từ đối tác.</p>
         </div>
         <div className="flex gap-3 mt-4 lg:mt-0">
-          <div className="flex bg-[#F1F5F9] p-1.5 rounded-xl border border-[rgba(148,163,184,0.1)]">
+          <div className="flex bg-[#F1F5F9] p-1.5 rounded-xl border border-slate-200">
           <button 
             onClick={() => setActiveTab("Pending")}
             className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'Pending' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
@@ -325,9 +325,9 @@ export default function SupplierDashboard() {
         </div>
       </header>
 
-      <div className="bg-[#F1F5F9] rounded-xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
+      <div className="bg-[#F1F5F9] rounded-xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-slate-200">
         <table className="erp-table text-xs text-left w-full" style={{ tableLayout: 'fixed' }}>
-          <thead className="border-b border-[rgba(148,163,184,0.1)]">
+          <thead className="border-b border-slate-200">
             <tr>
               <th className="w-[18%] py-4 px-4">Mã RFQ</th>
               <th className="w-[35%] py-4 px-4">Dự án / Yêu cầu</th>
@@ -336,7 +336,7 @@ export default function SupplierDashboard() {
               <th className="w-[17%] py-4 px-4 text-right">Hành động</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+          <tbody className="divide-y divide-slate-100">
             {loading ? (
               <tr>
                 <td colSpan={5} className="py-20 text-center">
@@ -350,7 +350,7 @@ export default function SupplierDashboard() {
               const isSimulation = rfq.rfqId.includes("SIM");
               const isApiData = !isSimulation && !rfq.rfqId.startsWith("RFQ-2024");
               return (
-                <tr key={rfq.rfqId} className={`group hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.05)] ${isSimulation ? 'bg-[#2563EB]/5' : ''}`}>
+                <tr key={rfq.rfqId} className={`group hover:bg-slate-100 transition-colors border-b border-slate-200 ${isSimulation ? 'bg-[#2563EB]/5' : ''}`}>
                   <td className="py-4 px-4">
                     <div className="font-black text-slate-900 text-xs truncate group-hover:text-[#2563EB] transition-colors">{rfq.rfqId}</div>
                     <div className="flex items-center gap-1 mt-1">
@@ -360,13 +360,13 @@ export default function SupplierDashboard() {
                   </td>
                   <td className="py-4 px-4">
                     <div className="font-bold text-slate-900 text-xs truncate group-hover:text-[#1D4ED8] transition-colors" title={rfq.projectName}>{rfq.projectName}</div>
-                    <div className="text-[10px] text-slate-500 font-medium uppercase mt-1 truncate group-hover:text-slate-600 transition-colors">
+                    <div className="text-[0.6875rem] text-[#64748B] font-medium uppercase mt-1 truncate group-hover:text-slate-600 transition-colors">
                       {rfq.items.length} hạng mục • {rfq.items.slice(0, 2).map(i => i.name).join(", ")}{rfq.items.length > 2 ? "..." : ""}
                     </div>
                   </td>
                   <td className="text-slate-600 text-xs py-4 px-4 text-center group-hover:text-slate-900 transition-colors">{rfq.createdAt}</td>
                   <td className="py-4 px-4 text-center">
-                    <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-black border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-black' : rfq.status === 'CatalogConfirmation' ? 'bg-[#2563EB]/10 text-[#3B82F6] border border-[#2563EB]/20 group-hover:bg-[#2563EB] group-hover:text-black' : 'bg-emerald-500/10 text-black border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-black'}`}>
+                    <span className={`px-2 py-1 rounded-lg text-[0.6875rem] font-black uppercase tracking-widest whitespace-nowrap ${rfq.status === 'Pending' ? 'bg-amber-500/10 text-amber-700 border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-white' : rfq.status === 'CatalogConfirmation' ? 'bg-[#2563EB]/10 text-[#3B82F6] border border-[#2563EB]/20 group-hover:bg-[#2563EB] group-hover:text-white' : 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white'}`}>
                       {rfq.status === 'Pending' ? 'Chờ báo giá' : rfq.status === 'CatalogConfirmation' ? 'Xác nhận giá' : 'Đã báo giá'}
                     </span>
                   </td>
@@ -374,14 +374,14 @@ export default function SupplierDashboard() {
                     {rfq.status === 'Pending' || rfq.status === 'CatalogConfirmation' ? (
                       <button 
                         onClick={() => handleStartQuoting(rfq)}
-                        className={`text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#2563EB] text-white border-[#2563EB] shadow-lg' : 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20 group-hover:border-[#2563EB]/50 group-hover:text-[#2563EB]'}`}
+                        className={`text-[0.6875rem] font-black uppercase tracking-widest inline-flex items-center gap-1 hover:gap-2 transition-all p-2 rounded-lg border ${isSimulation ? 'bg-[#2563EB] text-white border-[#2563EB] shadow-lg' : 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20 group-hover:border-[#2563EB]/50 group-hover:text-[#2563EB]'}`}
                       >
                         Báo giá <ChevronRight size={14} />
                       </button>
                     ) : (
                       <div className="text-right">
                         <div className="text-xs font-black text-slate-900 group-hover:text-[#F8FAFC] transition-colors">{(rfq.totalAmount || 0).toLocaleString()} ₫</div>
-                        <div className="text-[9px] font-bold text-black uppercase tracking-tighter group-hover:text-[#F8FAFC]/40 transition-colors">Đã gửi</div>
+                        <div className="text-[0.6875rem] font-bold text-[#64748B] uppercase tracking-tighter group-hover:text-[#F8FAFC]/40 transition-colors">Đã gửi</div>
                       </div>
                     )}
                   </td>
@@ -410,7 +410,7 @@ export default function SupplierDashboard() {
       <div className="animate-in slide-in-from-right-8 duration-500">
         <button 
           onClick={() => setSelectedRfq(null)}
-          className="flex items-center gap-2 text-black hover:text-brand-primary font-black uppercase tracking-widest text-[10px] transition-colors mb-6 group"
+          className="flex items-center gap-2 text-black hover:text-brand-primary font-black uppercase tracking-widest text-[0.6875rem] transition-colors mb-6 group"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 
           Trở lại danh sách
@@ -420,7 +420,7 @@ export default function SupplierDashboard() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="status-pill status-pending">Đang soạn thảo báo giá</span>
-              <span className="text-[10px] font-black text-black uppercase tracking-widest ml-2 flex items-center gap-1">
+              <span className="text-[0.6875rem] font-black text-[#64748B] uppercase tracking-widest ml-2 flex items-center gap-1">
                 <Calendar size={12} /> Hạn nộp: 15/04/2024
               </span>
             </div>
@@ -428,7 +428,7 @@ export default function SupplierDashboard() {
           </div>
           
           <div className="text-right">
-            <div className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Tổng giá trị dự tính</div>
+            <div className="text-[0.6875rem] font-black text-black uppercase tracking-widest mb-1">Tổng giá trị dự tính</div>
             <div className="text-4xl font-black text-erp-blue tracking-tighter">
               {totalValue.toLocaleString()} <span className="text-lg">₫</span>
             </div>
@@ -456,7 +456,7 @@ export default function SupplierDashboard() {
                       <tr key={item.id}>
                         <td className="py-6">
                           <div className="font-black text-slate-700">{item.name}</div>
-                          <div className="text-[10px] font-bold text-black uppercase tracking-tighter">Mã: {item.id}</div>
+                          <div className="text-[0.6875rem] font-bold text-black uppercase tracking-tighter">Mã: {item.id}</div>
                         </td>
                         <td className="text-center font-black text-brand-primary text-base border-x border-slate-50">
                           {item.quantity}
@@ -470,7 +470,7 @@ export default function SupplierDashboard() {
                               value={quotationData[item.id]?.unitPrice || ""}
                               onChange={(e) => handlePriceChange(item.id, e.target.value)}
                             />
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-300">₫</div>
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[0.6875rem] font-black text-slate-300">₫</div>
                           </div>
                         </td>
                         <td className="p-4">
@@ -487,7 +487,7 @@ export default function SupplierDashboard() {
                   </tbody>
                   <tfoot>
                     <tr className="bg-slate-50">
-                      <td colSpan={2} className="text-right py-6 uppercase tracking-widest text-black text-[10px]">Thành tiền (Draft):</td>
+                      <td colSpan={2} className="text-right py-6 uppercase tracking-widest text-black text-[0.6875rem]">Thành tiền (Draft):</td>
                       <td className="text-left py-6 pl-4 text-erp-blue text-xl font-black ">
                         {totalValue.toLocaleString()} ₫
                       </td>
@@ -555,11 +555,11 @@ export default function SupplierDashboard() {
       {renderSidebar()}
       
       <div className="flex-1 min-w-0">
-        <header className="h-16 bg-[#FFFFFF]/80 backdrop-blur-md border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between px-8 sticky top-0 z-30">
+        <header className="h-16 bg-[#FFFFFF]/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-30">
           <div className="flex items-center gap-4">
             <span className="lg:hidden font-black text-slate-900">ProcurePro</span>
-            <div className="h-4 w-px bg-[rgba(148,163,184,0.1)] hidden lg:block" />
-            <div className="text-[10px] font-black uppercase tracking-widest text-slate-900">
+            <div className="h-4 w-px bg-slate-100 hidden lg:block" />
+            <div className="text-[0.6875rem] font-black uppercase tracking-widest text-slate-900">
                Supplier Dashboard <ChevronRight size={10} className="inline mx-1" /> {selectedRfq ? 'RFQ Detail' : 'Overview'}
             </div>
           </div>
@@ -567,10 +567,10 @@ export default function SupplierDashboard() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-black text-slate-900 leading-none mb-0.5">{currentUser?.fullName || "Nhà cung cấp"}</p>
-                <p className="text-[8px] font-bold text-black uppercase tracking-tighter">Trạng thái: Online</p>
+                <p className="text-[0.6875rem] font-black text-slate-900 leading-none mb-0.5">{currentUser?.fullName || "Nhà cung cấp"}</p>
+                <p className="text-[0.6875rem] font-bold text-[#64748B] uppercase tracking-tighter">Trạng thái: Online</p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-[#F1F5F9] border border-slate-200 flex items-center justify-center">
                 <Building2 size={16} className="text-slate-900" />
               </div>
             </div>
@@ -599,4 +599,5 @@ export default function SupplierDashboard() {
     </div>
   );
 }
+
 

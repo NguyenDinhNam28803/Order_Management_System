@@ -93,7 +93,7 @@ export default function NotificationTemplatePreview({
   }), [rawPreview]);
 
   return (
-    <div className={`bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden ${className}`}>
+    <div className={`bg-[#F1F5F9] rounded-xl border border-slate-200 overflow-hidden ${className}`}>
       {/* Header */}
       <div 
         className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[#FFFFFF] transition-colors"
@@ -123,13 +123,13 @@ export default function NotificationTemplatePreview({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="border-t border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
+        <div className="border-t border-slate-200 bg-[#FFFFFF]">
           {/* Action Bar */}
-          <div className="px-4 py-3 bg-[#F1F5F9] border-b border-[rgba(148,163,184,0.1)] flex items-center gap-2">
+          <div className="px-4 py-3 bg-[#F1F5F9] border-b border-slate-200 flex items-center gap-2">
             <button
               onClick={(e) => { e.stopPropagation(); loadServerPreview(); }}
               disabled={isLoading}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-900 bg-[#FFFFFF] border border-[rgba(148,163,184,0.2)] rounded-lg hover:bg-[#2563EB]/10 hover:text-slate-900 hover:border-[#2563EB]/50 disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-900 bg-[#FFFFFF] border border-slate-200 rounded-lg hover:bg-[#2563EB]/10 hover:text-slate-900 hover:border-[#2563EB]/50 disabled:opacity-50 transition-all"
             >
               {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
               {showServerPreview ? 'Ẩn xem trước' : 'Xem trước từ server'}
@@ -160,9 +160,9 @@ export default function NotificationTemplatePreview({
 
           {/* Email Preview */}
           <div className="p-4 bg-[#0A0A0A]">
-            <div className="bg-[#1A1A1A] rounded-lg border border-[rgba(148,163,184,0.1)] overflow-hidden">
+            <div className="bg-[#1A1A1A] rounded-lg border border-slate-200 overflow-hidden">
               {/* Email Subject */}
-              <div className="px-4 py-3 border-b border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
+              <div className="px-4 py-3 border-b border-slate-200 bg-[#F1F5F9]">
                 <span className="text-sm text-slate-900">Subject: </span>
                 <span className="text-sm font-medium text-slate-900">{displayPreview.subject}</span>
               </div>
@@ -176,9 +176,9 @@ export default function NotificationTemplatePreview({
           </div>
 
           {/* Data Preview */}
-          <div className="px-4 py-3 border-t border-[rgba(148,163,184,0.1)]">
+          <div className="px-4 py-3 border-t border-slate-200">
             <h4 className="text-sm font-medium text-slate-900 mb-2">Dữ liệu template:</h4>
-            <pre className="text-xs text-[#3B82F6] bg-[#FFFFFF] p-3 rounded-lg overflow-x-auto border border-[rgba(148,163,184,0.1)]">
+            <pre className="text-xs text-[#3B82F6] bg-[#FFFFFF] p-3 rounded-lg overflow-x-auto border border-slate-200">
               {JSON.stringify(data, null, 2)}
             </pre>
           </div>

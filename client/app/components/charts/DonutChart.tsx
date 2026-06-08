@@ -58,7 +58,7 @@ export default function DonutChart({
   const radius = (size - 20) / 2;
 
   return (
-    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
       {title && (
         <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wider">
           {title}

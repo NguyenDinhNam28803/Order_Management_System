@@ -130,17 +130,17 @@ export default function AdminSupplierDetailPage() {
     const getRankStyle = (tier?: string) => {
         switch (tier) {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-            case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
-            case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
-            default: return "bg-[#0F172A] text-white border-[rgba(148,163,184,0.1)]";
+            case "SILVER": return "bg-slate-400/20 text-slate-600 border-slate-400/30";
+            case "BRONZE": return "bg-orange-500/20 text-orange-600 border-orange-500/30";
+            default: return "bg-[#0F172A] text-white border-slate-200";
         }
     };
 
     const getScoreColor = (score?: number) => {
         if (!score) return "text-slate-900";
-        if (score >= 90) return "text-black";
+        if (score >= 90) return "text-emerald-500";
         if (score >= 70) return "text-yellow-400";
-        return "text-black";
+        return "text-rose-500";
     };
 
     const latestKPI = kpiHistory[0];
@@ -157,7 +157,7 @@ export default function AdminSupplierDetailPage() {
         return (
             <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center text-slate-900">
                 <div className="text-center">
-                    <AlertTriangle size={48} className="mx-auto mb-4 text-black" />
+                    <AlertTriangle size={48} className="mx-auto mb-4 text-amber-500" />
                     <p className="text-xl font-bold">Không tìm thấy nhà cung cấp</p>
                 </div>
             </div>
@@ -167,7 +167,7 @@ export default function AdminSupplierDetailPage() {
     return (
         <main className="min-h-screen bg-[#FFFFFF] text-slate-900">
             {/* Header */}
-            <div className="bg-[#F1F5F9] border-b border-[rgba(148,163,184,0.1)]">
+            <div className="bg-[#F1F5F9] border-b border-slate-200">
                 <div className="max-w-[1400px] mx-auto px-8 py-6">
                     <button 
                         onClick={() => router.back()}
@@ -189,7 +189,7 @@ export default function AdminSupplierDetailPage() {
                                         {latestKPI?.tier || "Chưa đánh giá"}
                                     </span>
                                 </div>
-                                <p className="text-slate-900 text-sm">{supplier.code} • {supplier.email}</p>
+                                <p className="text-[0.8125rem] text-[#64748B] font-medium">{supplier.code} • {supplier.email}</p>
                             </div>
                         </div>
                         
@@ -219,7 +219,7 @@ export default function AdminSupplierDetailPage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="bg-[#F1F5F9] border-b border-[rgba(148,163,184,0.1)]">
+            <div className="bg-[#F1F5F9] border-b border-slate-200">
                 <div className="max-w-[1400px] mx-auto px-8">
                     <div className="flex gap-8">
                         {([
@@ -250,7 +250,7 @@ export default function AdminSupplierDetailPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* KPI Overview Cards */}
                         <div className="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                 <div className="flex items-center gap-2 mb-2">
                                     <TrendingUp size={16} className="text-black" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">OTD Score</span>
@@ -258,10 +258,10 @@ export default function AdminSupplierDetailPage() {
                                 <p className={`text-3xl font-black ${getScoreColor(latestKPI?.otdScore)}`}>
                                     {latestKPI?.otdScore?.toFixed(1) || "--"}%
                                 </p>
-                                <p className="text-slate-900 text-xs mt-1">Giao hàng đúng hạn</p>
+                                <p className="text-[#64748B] text-xs mt-1">Giao hàng đúng hạn</p>
                             </div>
                             
-                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Package size={16} className="text-[#2563EB]" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">Quality Score</span>
@@ -269,10 +269,10 @@ export default function AdminSupplierDetailPage() {
                                 <p className={`text-3xl font-black ${getScoreColor(latestKPI?.qualityScore)}`}>
                                     {latestKPI?.qualityScore?.toFixed(1) || "--"}%
                                 </p>
-                                <p className="text-slate-900 text-xs mt-1">Chất lượng sản phẩm</p>
+                                <p className="text-[#64748B] text-xs mt-1">Chất lượng sản phẩm</p>
                             </div>
                             
-                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Award size={16} className="text-yellow-400" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">Price Score</span>
@@ -280,10 +280,10 @@ export default function AdminSupplierDetailPage() {
                                 <p className={`text-3xl font-black ${getScoreColor(latestKPI?.priceScore)}`}>
                                     {latestKPI?.priceScore?.toFixed(1) || "--"}%
                                 </p>
-                                <p className="text-slate-900 text-xs mt-1">Cạnh tranh giá</p>
+                                <p className="text-[#64748B] text-xs mt-1">Cạnh tranh giá</p>
                             </div>
                             
-                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Star size={16} className="text-black" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">Manual Score</span>
@@ -291,10 +291,10 @@ export default function AdminSupplierDetailPage() {
                                 <p className={`text-3xl font-black ${getScoreColor(latestKPI?.manualScore)}`}>
                                     {latestKPI?.manualScore?.toFixed(1) || "--"}%
                                 </p>
-                                <p className="text-slate-900 text-xs mt-1">Đánh giá thủ công</p>
+                                <p className="text-[#64748B] text-xs mt-1">Đánh giá thủ công</p>
                             </div>
                             
-                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                 <div className="flex items-center gap-2 mb-2">
                                     <CheckCircle size={16} className="text-black" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">Tổng PO</span>
@@ -302,10 +302,10 @@ export default function AdminSupplierDetailPage() {
                                 <p className="text-3xl font-black text-slate-900">
                                     {latestKPI?.poCount || "0"}
                                 </p>
-                                <p className="text-slate-900 text-xs mt-1">6 tháng gần nhất</p>
+                                <p className="text-[#64748B] text-xs mt-1">6 tháng gần nhất</p>
                             </div>
                             
-                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                 <div className="flex items-center gap-2 mb-2">
                                     <AlertTriangle size={16} className="text-black" />
                                     <span className="text-slate-900 text-xs font-bold uppercase">Tranh chấp</span>
@@ -313,7 +313,7 @@ export default function AdminSupplierDetailPage() {
                                 <p className={`text-3xl font-black ${latestKPI?.disputeCount > 0 ? "text-black" : "text-black"}`}>
                                     {latestKPI?.disputeCount || "0"}
                                 </p>
-                                <p className="text-slate-900 text-xs mt-1">Số vụ khiếu nại</p>
+                                <p className="text-[#64748B] text-xs mt-1">Số vụ khiếu nại</p>
                             </div>
                         </div>
 
@@ -323,7 +323,7 @@ export default function AdminSupplierDetailPage() {
                             <p className={`text-6xl font-black mb-4 ${getScoreColor(latestKPI?.overallScore)}`}>
                                 {latestKPI?.overallScore?.toFixed(1) || "--"}%
                             </p>
-                            <p className="text-slate-900 text-sm leading-relaxed">
+                            <p className="text-[#64748B] text-sm leading-relaxed">
                                 {latestKPI?.notes || "Chưa có phân tích chi tiết. Vui lòng chạy đánh giá AI."}
                             </p>
                         </div>
@@ -332,10 +332,10 @@ export default function AdminSupplierDetailPage() {
                         {latestKPI?.improvementPlan && (
                             <div className="lg:col-span-3 bg-amber-500/5 border border-amber-500/20 rounded-[10px] p-6">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <TrendingUp size={18} className="text-black" />
-                                    <h3 className="text-sm font-black text-black uppercase">Kế hoạch cải thiện (AI)</h3>
+                                    <TrendingUp size={18} className="text-amber-500" />
+                                    <h3 className="text-sm font-black text-slate-900 uppercase">Kế hoạch cải thiện (AI)</h3>
                                 </div>
-                                <p className="text-slate-900 text-sm leading-relaxed">{latestKPI.improvementPlan}</p>
+                                <p className="text-[#64748B] text-sm leading-relaxed">{latestKPI.improvementPlan}</p>
                             </div>
                         )}
                     </div>
@@ -345,7 +345,7 @@ export default function AdminSupplierDetailPage() {
                     <div className="space-y-6">
                         <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
                         
-                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 overflow-hidden">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr>
@@ -361,7 +361,7 @@ export default function AdminSupplierDetailPage() {
                                 </thead>
                                 <tbody>
                                     {kpiHistory.map((kpi, idx) => (
-                                        <tr key={idx} className="border-t border-[rgba(148,163,184,0.05)]">
+                                        <tr key={idx} className="border-t border-slate-200">
                                             <td className="px-6 py-4 text-sm font-bold text-slate-900">
                                                 Q{kpi.periodQuarter} {kpi.periodYear}
                                             </td>
@@ -430,11 +430,11 @@ export default function AdminSupplierDetailPage() {
                                     desc: "Tốc độ phản hồi và tham gia báo giá" 
                                 },
                             ].map((criteria, idx) => (
-                                <div key={idx} className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                <div key={idx} className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                     <div className="flex items-start justify-between mb-4">
                                         <div>
                                             <h3 className="font-black text-slate-900 text-sm">{criteria.name}</h3>
-                                            <p className="text-slate-900 text-xs mt-1">{criteria.desc}</p>
+                                            <p className="text-[#64748B] text-xs mt-1">{criteria.desc}</p>
                                         </div>
                                         <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-xs font-bold">
                                             {criteria.weight}
@@ -463,7 +463,7 @@ export default function AdminSupplierDetailPage() {
                         </div>
 
                         {/* Buyer Rating Sub-criteria */}
-                        <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                        <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                             <h3 className="text-sm font-black text-slate-900 uppercase mb-4">Chi tiết Buyer Ratings (Manual Score)</h3>
                             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                                 {[
@@ -475,8 +475,8 @@ export default function AdminSupplierDetailPage() {
                                 ].map((item, idx) => (
                                     <div key={idx} className="bg-[#FFFFFF] rounded-xl p-4 text-center">
                                         <item.icon size={20} className="text-[#2563EB] mx-auto mb-2" />
-                                        <p className="text-slate-900 text-xs">{item.name}</p>
-                                        <p className="text-slate-900 font-bold text-sm mt-1">1-5 điểm</p>
+                                        <p className="text-[#64748B] text-xs">{item.name}</p>
+                                        <p className="text-[#64748B] font-bold text-sm mt-1">1-5 điểm</p>
                                     </div>
                                 ))}
                             </div>

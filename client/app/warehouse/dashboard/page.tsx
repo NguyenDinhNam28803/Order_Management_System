@@ -83,8 +83,8 @@ export default function WarehouseDashboard() {
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {/* Sắp giao hàng (7.1) */}
-                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
-                    <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
+                <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
+                    <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-[#FFFFFF]">
                         <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                             <Truck size={16} /> Lịch Giao Hàng (7 Ngày Tới)
                         </h3>
@@ -102,7 +102,7 @@ export default function WarehouseDashboard() {
                             </thead>
                             <tbody>
                                 {incomingPOs.map((po, idx) => (
-                                    <tr key={idx} className="cursor-pointer hover:bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)]" onClick={() => router.push(`/warehouse/grn/new?po=${po.id}`)}>
+                                    <tr key={idx} className="cursor-pointer hover:bg-[#FFFFFF] border-b border-slate-200" onClick={() => router.push(`/warehouse/grn/new?po=${po.id}`)}>
                                         <td className="py-4 px-4">
                                             <div className="font-bold text-slate-900 text-xs truncate">PO-***</div>
                                         </td>
@@ -116,9 +116,9 @@ export default function WarehouseDashboard() {
                                         <td className="text-center text-slate-900 py-4 px-4 text-xs">{po.deliveryDate}</td>
                                         <td className="text-center py-4 px-4">
                                             {po.status === "PENDING" ? (
-                                                <span className="text-[9px] font-black uppercase tracking-widest bg-[#2563EB]/10 text-[#2563EB] px-2 py-1 rounded border border-[#2563EB]/20">Sắp tới</span>
+                                                <span className="text-[0.6875rem] font-black uppercase tracking-widest bg-[#2563EB]/10 text-[#2563EB] px-2 py-1 rounded border border-[#2563EB]/20">Sắp tới</span>
                                             ) : (
-                                                <span className="text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-black px-2 py-1 rounded border border-amber-500/20">Trễ hạn</span>
+                                                <span className="text-[0.6875rem] font-black uppercase tracking-widest bg-amber-500/10 text-amber-700 px-2 py-1 rounded border border-amber-500/20">Trễ hạn</span>
                                             )}
                                         </td>
                                     </tr>
@@ -129,8 +129,8 @@ export default function WarehouseDashboard() {
                 </div>
 
                 {/* GRN Cần Xử Lý (Draft) (7.1) */}
-                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
-                    <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
+                <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden flex flex-col">
+                    <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-[#FFFFFF]">
                         <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                             <Info size={16} /> Phiếu GRN Đang Draft (Cần Xử Lý)
                         </h3>
@@ -148,7 +148,7 @@ export default function WarehouseDashboard() {
                             </thead>
                             <tbody>
                                 {draftGRNs.map((grn, idx) => (
-                                    <tr key={idx} className="border-b border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF]">
+                                    <tr key={idx} className="border-b border-slate-200 hover:bg-[#FFFFFF]">
                                         <td className="py-4 px-4">
                                             <div className="font-bold text-slate-900 text-xs truncate">{grn.id.replace('GRN-', '#GRN-')}</div>
                                         </td>
@@ -158,7 +158,7 @@ export default function WarehouseDashboard() {
                                         </td>
                                         <td className="text-slate-900 py-4 px-4 text-xs">{grn.date}</td>
                                         <td className="text-center py-4 px-4">
-                                            <span className="text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-black px-2 py-1 rounded border border-amber-500/20">
+                                            <span className="text-[0.6875rem] font-black uppercase tracking-widest bg-amber-500/10 text-amber-700 px-2 py-1 rounded border border-amber-500/20">
                                                 {grn.missing}
                                             </span>
                                         </td>

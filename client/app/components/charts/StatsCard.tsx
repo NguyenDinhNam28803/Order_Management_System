@@ -19,11 +19,11 @@ interface StatsCardProps {
 }
 
 const colorClasses = {
-  blue: "bg-[#FFFFFF] border-[#2563EB]/30 text-[#2563EB]",
-  green: "bg-[#FFFFFF] border-emerald-500/30 text-black",
-  amber: "bg-[#FFFFFF] border-amber-500/30 text-black",
-  red: "bg-[#FFFFFF] border-rose-500/30 text-black",
-  purple: "bg-[#FFFFFF] border-purple-500/30 text-black",
+  blue:   "bg-[#FFFFFF] border-[#2563EB]/30 text-[#2563EB]",
+  green:  "bg-[#FFFFFF] border-emerald-500/30 text-emerald-600",
+  amber:  "bg-[#FFFFFF] border-amber-500/30 text-amber-600",
+  red:    "bg-[#FFFFFF] border-rose-500/30 text-rose-600",
+  purple: "bg-[#FFFFFF] border-purple-500/30 text-purple-600",
 };
 
 const iconBgClasses = {
@@ -55,8 +55,8 @@ export default function StatsCard({
           </div>
           {trend && (
             <div
-              className={`flex items-center gap-1 text-[10px] font-medium ${
-                trend.isPositive ? "text-black" : "text-black"
+              className={`flex items-center gap-1 text-[0.6875rem] font-semibold ${
+                trend.isPositive ? "text-emerald-600" : "text-rose-600"
               }`}
             >
               {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%
@@ -64,15 +64,15 @@ export default function StatsCard({
           )}
         </div>
         
-        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">
+        <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-500 mb-0.5">
           {title}
         </p>
-        <h3 className="text-2xl font-black text-slate-900 leading-tight">{value}</h3>
+        <h3 className="text-2xl font-bold text-slate-900 leading-tight">{value}</h3>
         {subValue && (
           <p className="text-xs text-slate-500 mt-0.5">{subValue}</p>
         )}
 
-        {children && <div className="mt-2 pt-2 border-t border-[rgba(148,163,184,0.05)]">{children}</div>}
+        {children && <div className="mt-2 pt-2 border-t border-slate-100">{children}</div>}
       </div>
 
       {/* Background decoration */}

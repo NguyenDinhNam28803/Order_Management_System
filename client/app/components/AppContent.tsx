@@ -53,7 +53,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
                     <div className="flex flex-col items-center gap-6">
                         <div className="flex flex-col items-center">
                             <h2 className="text-[#0F172A] text-base font-black tracking-tight mb-0.5">ProcureSmart</h2>
-                            <p className="text-[#2563EB] text-[9px] font-black uppercase tracking-[0.3em] opacity-80">Enterprise ERP System</p>
+                            <p className="text-[#2563EB] text-[0.6875rem] font-black uppercase tracking-[0.3em] opacity-80">Enterprise ERP System</p>
                         </div>
 
                         <div className="flex flex-col items-center gap-4">
@@ -72,7 +72,7 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
                                 </div>
                             </div>
 
-                            <span className="text-[9px] font-semibold text-[#94A3B8] uppercase tracking-widest">Hệ thống đang được khởi tạo, vui lòng đợi...</span>
+                            <span className="text-[0.6875rem] font-semibold text-[#94A3B8] uppercase tracking-widest">Hệ thống đang được khởi tạo, vui lòng đợi...</span>
                         </div>
                     </div>
                 </div>

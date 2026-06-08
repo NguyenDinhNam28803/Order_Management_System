@@ -60,12 +60,12 @@ export default function GRNPage() {
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-brand-primary tracking-tight">Nhập kho & Kiểm định (GRN)</h1>
-                    <p className="text-sm text-black mt-1">Xác nhận hàng hóa thực nhận và kiểm soát chất lượng đầu vào.</p>
+                    <p className="text-[0.8125rem] text-[#64748B] font-medium mt-1">Xác nhận hàng hóa thực nhận và kiểm soát chất lượng đầu vào.</p>
                 </div>
             </div>
 
             {!activePO ? (
-                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 bg-slate-50 border-dashed py-32 text-center text-black">
+                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 bg-slate-50 border-dashed py-32 text-center text-slate-900">
                     <Truck size={48} className="mx-auto mb-4 opacity-10" />
                     <p className="text-xs font-black uppercase tracking-widest">Không có Đơn hàng (PO) nào đang chờ nhập kho</p>
                 </div>
@@ -77,13 +77,13 @@ export default function GRNPage() {
                                 <div className="p-3 bg-[#F9EFEC] rounded-xl"><Truck size={24} className="text-erp-blue" /></div>
                                 <div>
                                     <h3 className="text-sm font-black uppercase text-brand-primary">Xác nhận vận chuyển</h3>
-                                    <span className="text-[10px] font-black text-black uppercase">PO #{activePO.id} | {activePO.vendor ?? activePO.supplierName}</span>
+                                    <span className="text-[0.6875rem] font-black text-[#64748B] uppercase">PO #{activePO.id} | {activePO.vendor ?? activePO.supplierName}</span>
                                 </div>
                             </div>
 
                             <div className="p-5 bg-[#F9EFEC]/50 border border-[#F3DDD6] rounded-xl flex justify-between items-center">
                                 <div className="space-y-1">
-                                    <span className="block text-[9px] font-black uppercase text-[#3B82F6]">Trạng thái định vị (GPS)</span>
+                                    <span className="block text-[0.6875rem] font-black uppercase text-[#3B82F6]">Trạng thái định vị (GPS)</span>
                                     <span className="text-xs text-blue-800 font-black">Xưởng sản xuất - Cổng số 4</span>
                                 </div>
                                 <div className="status-pill status-approved">Đã tới cổng</div>
@@ -154,10 +154,10 @@ export default function GRNPage() {
                             </h3>
 
                             <div className="grid grid-cols-2 gap-4 mb-8">
-                                <button className="py-4 border-2 border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-black hover:border-emerald-500 hover:text-emerald-600 transition-all flex flex-col items-center gap-2">
+                                <button className="py-4 border-2 border-slate-100 rounded-xl text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 hover:border-emerald-500 hover:text-emerald-600 transition-all flex flex-col items-center gap-2">
                                     <CheckCircle2 size={24} /> Pass (Đạt)
                                 </button>
-                                <button className="py-4 border-2 border-erp-red bg-red-50/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-erp-red transition-all flex flex-col items-center gap-2 ring-4 ring-red-100">
+                                <button className="py-4 border-2 border-erp-red bg-red-50/50 rounded-xl text-[0.6875rem] font-black uppercase tracking-widest text-erp-red transition-all flex flex-col items-center gap-2 ring-4 ring-red-100">
                                     <AlertTriangle size={24} /> Fail (Lỗi)
                                 </button>
                             </div>
@@ -165,14 +165,14 @@ export default function GRNPage() {
                             <div className="space-y-4">
                                 <label className="erp-label">Hình ảnh bằng chứng (Lỗi/Thiếu)</label>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="h-40 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-300 hover:border-erp-blue hover:text-erp-blue cursor-pointer group transition-all">
+                                    <div className="h-40 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center text-slate-300 hover:border-erp-blue hover:text-erp-blue cursor-pointer group transition-all">
                                         <Camera size={40} className="group-hover:scale-110 transition-transform" />
-                                        <span className="text-[10px] mt-4 font-black uppercase tracking-widest">Chụp ảnh</span>
+                                        <span className="text-[0.6875rem] mt-4 font-black uppercase tracking-widest">Chụp ảnh</span>
                                     </div>
                                     <div className="h-40 rounded-xl overflow-hidden shadow-inner relative group border border-slate-100">
                                         <Image src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=400&auto=format&fit=crop" className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" alt="QC evidence" width={400} height={160} unoptimized />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                                            <span className="text-white text-[9px] font-black uppercase">Ảnh 01: Thùng hàng bị móp</span>
+                                            <span className="text-white text-[0.6875rem] font-black uppercase">Ảnh 01: Thùng hàng bị móp</span>
                                         </div>
                                     </div>
                                 </div>
@@ -187,17 +187,17 @@ export default function GRNPage() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <button
                                             onClick={() => setDeliveryStatus("ON_TIME")}
-                                            className={`py-4 border-2 rounded-xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "ON_TIME" ? "border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200" : "border-slate-100 bg-white text-black"}`}
+                                            className={`py-4 border-2 rounded-xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "ON_TIME" ? "border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200" : "border-slate-100 bg-white text-slate-900"}`}
                                         >
-                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
+                                            <div className="flex items-center gap-2 text-[0.6875rem] font-black uppercase tracking-widest">
                                                 <CheckCircle2 size={16} /> Giao đúng hạn
                                             </div>
                                         </button>
                                         <button
                                             onClick={() => setDeliveryStatus("LATE")}
-                                            className={`py-4 border-2 rounded-xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "LATE" ? "border-amber-500 bg-amber-50 text-amber-700 ring-2 ring-amber-200" : "border-slate-100 bg-white text-black"}`}
+                                            className={`py-4 border-2 rounded-xl flex flex-col items-center gap-2 transition-all ${deliveryStatus === "LATE" ? "border-amber-500 bg-amber-50 text-amber-700 ring-2 ring-amber-200" : "border-slate-100 bg-white text-slate-900"}`}
                                         >
-                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
+                                            <div className="flex items-center gap-2 text-[0.6875rem] font-black uppercase tracking-widest">
                                                 <Clock size={16} /> Giao trễ
                                             </div>
                                         </button>
@@ -208,7 +208,7 @@ export default function GRNPage() {
                                             <Star size={120} fill="currentColor" />
                                         </div>
                                         <div className="relative z-10">
-                                            <div className="text-[10px] font-black uppercase text-white/80 tracking-widest mb-1">
+                                            <div className="text-[0.6875rem] font-black uppercase text-white/80 tracking-widest mb-1">
                                                 Điểm đánh giá hệ thống
                                             </div>
                                             <div className="flex items-end gap-3">

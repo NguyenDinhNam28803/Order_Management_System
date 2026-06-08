@@ -167,7 +167,7 @@ export default function QuotationManagementPage() {
                     </div>
                     <div className="flex flex-col">
                         <span className="font-bold text-slate-900 tracking-tight">********</span>
-                        <span className="text-[9px] text-slate-900 font-bold uppercase">{formatDate(row.createdAt)}</span>
+                        <span className="text-[0.6875rem] text-slate-900 font-bold uppercase">{formatDate(row.createdAt)}</span>
                     </div>
                 </div>
             )
@@ -204,7 +204,7 @@ export default function QuotationManagementPage() {
                             <span className="text-sm font-bold text-blue-600">
                                 {row.suppliers?.length || 0} nhà cung cấp
                             </span>
-                            <span className="text-[9px] text-slate-900">Đã mời tham gia</span>
+                            <span className="text-[0.6875rem] text-slate-900">Đã mời tham gia</span>
                         </div>
                     </div>
                 </div>
@@ -256,7 +256,7 @@ export default function QuotationManagementPage() {
             key: "supplier",
             render: (row: Quotation) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-black border border-emerald-500/20">
+                    <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 border border-emerald-500/20">
                         <Building2 size={22} />
                     </div>
                     <div className="flex flex-col">
@@ -279,7 +279,7 @@ export default function QuotationManagementPage() {
             render: (row: Quotation) => (
                 <div className="text-right">
                     <div className=" font-bold text-black text-sm">{formatVND(row.totalPrice)} ₫</div>
-                    <div className="text-[9px] text-slate-900 font-bold uppercase">Total</div>
+                    <div className="text-[0.6875rem] text-slate-900 font-bold uppercase">Total</div>
                 </div>
             )
         },
@@ -350,12 +350,12 @@ export default function QuotationManagementPage() {
                         </button>
                     )}
                     {row.status === 'ACCEPTED' && (
-                        <span className="inline-flex items-center gap-2 bg-emerald-500/10 text-black px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest border border-emerald-500/20">
+                        <span className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-700 px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest border border-emerald-500/20">
                             <CheckCircle size={14} /> Đã trao
                         </span>
                     )}
                     {row.status === 'REJECTED' && (
-                        <span className="inline-flex items-center gap-2 bg-rose-500/10 text-black px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest border border-rose-500/20">
+                        <span className="inline-flex items-center gap-2 bg-rose-500/10 text-rose-700 px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest border border-rose-500/20">
                             <AlertCircle size={14} /> Từ chối
                         </span>
                     )}
@@ -401,7 +401,7 @@ export default function QuotationManagementPage() {
                                 <input
                                     type="text"
                                     placeholder="Tìm kiếm RFQ..."
-                                    className="w-full h-14 pl-6 pr-4 bg-slate-100 border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
+                                    className="w-full h-14 pl-6 pr-4 bg-slate-100 border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -442,7 +442,7 @@ export default function QuotationManagementPage() {
             {/* Award Modal */}
             {awardModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-slate-100 rounded-3xl w-full max-w-lg shadow-xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200">
+                    <div className="bg-slate-100 rounded-xl w-full max-w-lg shadow-xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200">
                         <div className="bg-emerald-600 px-8 py-6 text-white flex justify-between items-center">
                             <div>
                                 <h3 className="text-xl font-bold uppercase">Trao thầu</h3>
@@ -453,7 +453,7 @@ export default function QuotationManagementPage() {
                         <div className="p-8 space-y-6">
                             <div className="bg-white rounded-2xl p-6 border border-slate-200">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-black">
+                                    <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
                                         <Award size={24} />
                                     </div>
                                     <div>
@@ -502,7 +502,7 @@ export default function QuotationManagementPage() {
             {/* View Quotation Detail Modal - Redesigned */}
             {viewQuotation && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/90 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-3xl w-full max-w-4xl shadow-xl shadow-black/50 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 border border-slate-200 overflow-y-auto">
+                    <div className="bg-white rounded-xl w-full max-w-4xl shadow-xl shadow-black/50 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 border border-slate-200 overflow-y-auto">
 
                         {/* Header */}
                         <div className="bg-gradient-to-r from-slate-900 to-slate-100 px-8 py-5 flex justify-between items-center border-b border-slate-200 shrink-0">
@@ -529,8 +529,8 @@ export default function QuotationManagementPage() {
                                 {/* Horizontal Tabs */}
                                 <div className="flex px-6 pt-4 border-b border-slate-200 gap-6 shrink-0 bg-white">
                                     <button onClick={() => setActiveModalTab('AI')} className={`pb-3 text-xs font-bold uppercase tracking-widest border-b-2 transition-all ${activeModalTab === 'AI' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 hover:text-slate-900'}`}>Phân tích AI</button>
-                                    <button onClick={() => setActiveModalTab('QA')} className={`pb-3 text-xs font-bold uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'QA' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 hover:text-slate-900'}`}>Trao đổi (Q&A) <span className="bg-blue-600/20 text-blue-600 px-1.5 py-0.5 rounded text-[9px]">{qaThreadsList?.length || 0}</span></button>
-                                    <button onClick={() => setActiveModalTab('NEGOTIATION')} className={`pb-3 text-xs font-bold uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'NEGOTIATION' ? 'border-emerald-500 text-black' : 'border-transparent text-slate-900 hover:text-slate-900'}`}>Đàm phán Giá <span className="bg-emerald-500/20 text-black px-1.5 py-0.5 rounded text-[9px]">{counterOffersList?.length || 0}</span></button>
+                                    <button onClick={() => setActiveModalTab('QA')} className={`pb-3 text-xs font-bold uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'QA' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 hover:text-slate-900'}`}>Trao đổi (Q&A) <span className="bg-blue-600/20 text-blue-600 px-1.5 py-0.5 rounded text-[0.6875rem]">{qaThreadsList?.length || 0}</span></button>
+                                    <button onClick={() => setActiveModalTab('NEGOTIATION')} className={`pb-3 text-xs font-bold uppercase tracking-widest border-b-2 transition-all flex gap-2 items-center ${activeModalTab === 'NEGOTIATION' ? 'border-emerald-500 text-black' : 'border-transparent text-slate-900 hover:text-slate-900'}`}>Đàm phán Giá <span className="bg-emerald-500/10 text-emerald-700 px-1.5 py-0.5 rounded text-[0.6875rem]">{counterOffersList?.length || 0}</span></button>
                                 </div>
                                 <div className="flex-1 overflow-y-auto p-6">
                                     {activeModalTab === 'AI' && (
@@ -544,9 +544,9 @@ export default function QuotationManagementPage() {
                                                         }`}>
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-3">
-                                                                <div className={`h-14 w-14 rounded-xl flex items-center justify-center border ${viewQuotation.aiAnalysis.recommendation === 'ACCEPT' ? 'bg-emerald-500/20 border-emerald-500/30 text-black' :
-                                                                        viewQuotation.aiAnalysis.recommendation === 'REJECT' ? 'bg-rose-500/20 border-rose-500/30 text-black' :
-                                                                            'bg-amber-500/20 border-amber-500/30 text-black'
+                                                                <div className={`h-14 w-14 rounded-xl flex items-center justify-center border ${viewQuotation.aiAnalysis.recommendation === 'ACCEPT' ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-700' :
+                                                                        viewQuotation.aiAnalysis.recommendation === 'REJECT' ? 'bg-rose-500/20 border-rose-500/30 text-rose-700' :
+                                                                            'bg-amber-500/20 border-amber-500/30 text-amber-700'
                                                                     }`}>
                                                                     <Bot size={28} />
                                                                 </div>
@@ -598,14 +598,14 @@ export default function QuotationManagementPage() {
                                                         <div className="rounded-2xl p-5 bg-emerald-500/5 border border-emerald-500/20">
                                                             <div className="flex items-center gap-2 mb-4">
                                                                 <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                                                                    <ThumbsUp size={16} className="text-black" />
+                                                                    <ThumbsUp size={16} className="text-emerald-600" />
                                                                 </div>
-                                                                <div className="text-xs font-bold uppercase text-black tracking-wider">Ưu điểm</div>
+                                                                <div className="text-xs font-bold uppercase text-[#64748B] tracking-wider">Ưu điểm</div>
                                                             </div>
                                                             <ul className="space-y-3">
                                                                 {viewQuotation.aiAnalysis.pros.map((pro, idx) => (
                                                                     <li key={idx} className="flex items-start gap-2 text-sm text-slate-900">
-                                                                        <CheckCircle2 size={16} className="text-black shrink-0 mt-0.5" />
+                                                                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
                                                                         <span className="leading-relaxed">{pro}</span>
                                                                     </li>
                                                                 ))}
@@ -618,14 +618,14 @@ export default function QuotationManagementPage() {
                                                         <div className="rounded-2xl p-5 bg-rose-500/5 border border-rose-500/20">
                                                             <div className="flex items-center gap-2 mb-4">
                                                                 <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
-                                                                    <ThumbsDown size={16} className="text-black" />
+                                                                    <ThumbsDown size={16} className="text-rose-600" />
                                                                 </div>
-                                                                <div className="text-xs font-bold uppercase text-black tracking-wider">Nhược điểm</div>
+                                                                <div className="text-xs font-bold uppercase text-[#64748B] tracking-wider">Nhược điểm</div>
                                                             </div>
                                                             <ul className="space-y-3">
                                                                 {viewQuotation.aiAnalysis.cons.map((con, idx) => (
                                                                     <li key={idx} className="flex items-start gap-2 text-sm text-slate-900">
-                                                                        <AlertCircle size={16} className="text-black shrink-0 mt-0.5" />
+                                                                        <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
                                                                         <span className="leading-relaxed">{con}</span>
                                                                     </li>
                                                                 ))}
@@ -637,7 +637,7 @@ export default function QuotationManagementPage() {
                                         ) : (
                                             /* AI Analysis Loading / Not Available */
                                             <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                                                <div className="h-20 w-20 rounded-3xl bg-blue-600/10 flex items-center justify-center mb-4 animate-pulse">
+                                                <div className="h-20 w-20 rounded-xl bg-blue-600/10 flex items-center justify-center mb-4 animate-pulse">
                                                     <Sparkles size={36} className="text-blue-600" />
                                                 </div>
                                                 <h4 className="text-lg font-bold text-slate-900 mb-2">Đang phân tích AI...</h4>
@@ -793,7 +793,7 @@ export default function QuotationManagementPage() {
                             // Show quotations for selected RFQ
                             loading ? (
                                 <div className="py-32 text-center">
-                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-slate-900 text-slate-100 mb-6 animate-pulse">
+                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-slate-900 text-slate-100 mb-6 animate-pulse">
                                         <TrendingUp size={40} />
                                     </div>
                                     <h3 className="text-xl font-bold text-slate-900 mb-2 uppercase">Đang tải báo giá...</h3>
@@ -803,7 +803,7 @@ export default function QuotationManagementPage() {
                                     <ERPTable columns={quotationColumns} data={quotations} />
                                     {quotations.length === 0 && (
                                         <div className="py-32 text-center">
-                                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-slate-900 text-slate-100 mb-6">
+                                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-slate-900 text-slate-100 mb-6">
                                                 <AlertCircle size={40} />
                                             </div>
                                             <h3 className="text-xl font-bold text-slate-900 mb-2 uppercase">Chưa có báo giá nào</h3>
@@ -820,7 +820,7 @@ export default function QuotationManagementPage() {
                                 ) : null}
                                 {(!Array.isArray(filteredRFQs) || filteredRFQs.length === 0) && (
                                     <div className="py-32 text-center">
-                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-slate-900 text-slate-100 mb-6">
+                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-slate-900 text-slate-100 mb-6">
                                             <Search size={40} />
                                         </div>
                                         <h3 className="text-xl font-bold text-slate-900 mb-2 uppercase">Không có RFQ nào</h3>
@@ -855,7 +855,7 @@ function RFQStatusPill({ status }: { status: string }) {
 
     return (
         <div className="min-w-[100px]">
-            <span className={`inline-block px-3 py-1.5 rounded-lg font-bold text-[9px] uppercase tracking-wider ${style.bg} ${style.text} border ${style.border}`}>
+            <span className={`inline-block px-3 py-1.5 rounded-lg font-bold text-[0.6875rem] uppercase tracking-wider ${style.bg} ${style.text} border ${style.border}`}>
                 {label[status] || status}
             </span>
         </div>
@@ -883,7 +883,7 @@ function StatusPill({ status }: { status: string }) {
     };
 
     return (
-        <span className={`px-3 py-1.5 rounded-lg font-bold text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border border-slate-200`}>
+        <span className={`px-3 py-1.5 rounded-lg font-bold text-[0.6875rem] uppercase tracking-widest ${style.bg} ${style.text} border border-slate-200`}>
             {label[status] || status}
         </span>
     );

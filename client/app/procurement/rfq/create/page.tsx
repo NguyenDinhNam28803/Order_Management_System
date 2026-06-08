@@ -318,8 +318,8 @@ export default function CreateRFQPage() {
     if (isSuccess) {
         return (
             <div className="flex items-center justify-center py-24 bg-white">
-                <div className="bg-slate-100 p-12 rounded-[40px] shadow-xl text-center max-w-md animate-in zoom-in duration-500 border border-slate-200">
-                    <div className="w-24 h-24 bg-emerald-500/10 text-black rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
+                <div className="bg-slate-100 p-12 rounded-xl shadow-xl text-center max-w-md animate-in zoom-in duration-500 border border-slate-200">
+                    <div className="w-24 h-24 bg-emerald-500/10 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
                         <CheckCircle2 size={48} />
                     </div>
                     <h2 className="text-3xl font-bold text-slate-900 mb-2 uppercase">THÀNH CÔNG!</h2>
@@ -361,7 +361,7 @@ export default function CreateRFQPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Left side: PR Info Summary */}
                 <div className="lg:col-span-1 space-y-8">
-                    <div className="bg-slate-100 rounded-[40px] border border-slate-200 shadow-xl shadow-black/20 overflow-hidden">
+                    <div className="bg-slate-100 rounded-xl border border-slate-200 shadow-xl shadow-black/20 overflow-hidden">
                         <div className="bg-white p-8 text-slate-900 border-b border-slate-200">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="h-10 w-10 bg-blue-600/10 rounded-xl flex items-center justify-center border border-blue-600/20">
@@ -404,19 +404,19 @@ export default function CreateRFQPage() {
                     </div>
 
                     <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-8 flex items-start gap-4">
-                        <div className="h-10 w-10 bg-amber-500/10 text-black rounded-xl flex items-center justify-center shrink-0 border border-amber-500/20">
+                        <div className="h-10 w-10 bg-amber-500/10 text-amber-700 rounded-xl flex items-center justify-center shrink-0 border border-amber-500/20">
                             <Info size={20} />
                         </div>
                         <div>
-                            <h4 className="text-sm font-bold text-black uppercase tracking-tight mb-1">Mẹo chọn nhà cung cấp</h4>
-                            <p className="text-black/70 text-xs font-medium leading-relaxed">Chọn ít nhất 3 nhà cung cấp để tăng tính cạnh tranh và tối ưu hóa chi phí cho doanh nghiệp.</p>
+                            <h4 className="text-sm font-bold text-amber-900 uppercase tracking-tight mb-1">Mẹo chọn nhà cung cấp</h4>
+                            <p className="text-amber-800/70 text-xs font-medium leading-relaxed">Chọn ít nhất 3 nhà cung cấp để tăng tính cạnh tranh và tối ưu hóa chi phí cho doanh nghiệp.</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Right side: RFQ Formulation Form */}
                 <div className="lg:col-span-2">
-                    <form onSubmit={handleSubmit} className="bg-slate-100 rounded-[40px] border border-slate-200 shadow-xl p-10 space-y-10">
+                    <form onSubmit={handleSubmit} className="bg-slate-100 rounded-xl border border-slate-200 shadow-xl p-10 space-y-10">
                         {/* Vendor Section */}
                         <div className="space-y-6">
                             <div className="flex items-center justify-between">
@@ -430,11 +430,11 @@ export default function CreateRFQPage() {
                             </div>
 
                             <div className="relative">
-                                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-900" size={20} />
+                                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={20} />
                                 <input 
                                     type="text" 
                                     placeholder="Tìm kiếm nhà cung cấp từ kho dữ liệu hoặc nhập tên mới..."
-                                    className="w-full bg-white border border-slate-200 rounded-2xl pl-14 pr-6 py-5 h-16 text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-blue-600 transition-all"
+                                    className="w-full bg-white border border-slate-200 rounded-2xl pl-14 pr-6 py-5 h-16 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-600 transition-all"
                                     value={vendorSearch}
                                     onChange={(e) => setVendorSearch(e.target.value)}
                                 />
@@ -491,7 +491,7 @@ export default function CreateRFQPage() {
                                             AI đang phân tích sản phẩm…
                                         </span>
                                     ) : aiSuggestions.length > 0 ? (
-                                        <span className="text-black flex items-center gap-1.5">
+                                        <span className="text-violet-600 flex items-center gap-1.5">
                                             <Sparkles size={13} />
                                             AI đã gợi ý {aiSuggestions.length} nhà cung cấp
                                         </span>
@@ -569,7 +569,7 @@ export default function CreateRFQPage() {
                                                                 {suggestion.reasons.map((reason, rIdx) => (
                                                                     <span
                                                                         key={rIdx}
-                                                                        className="text-[9px] px-2 py-1 bg-slate-100 text-slate-900 rounded-lg border border-slate-200"
+                                                                        className="text-[0.6875rem] px-2 py-1 bg-slate-100 text-slate-900 rounded-lg border border-slate-200"
                                                                     >
                                                                         {reason}
                                                                     </span>
@@ -580,11 +580,11 @@ export default function CreateRFQPage() {
                                                             {suggestion.historicalData && (
                                                                 <div className="flex gap-4 text-[10px] text-slate-900">
                                                                     <span className="flex items-center gap-1">
-                                                                        <TrendingUp size={10} className="text-black" />
+                                                                        <TrendingUp size={10} className="text-slate-500" />
                                                                         Giao hàng: {suggestion.historicalData.deliveryRate}%
                                                                     </span>
                                                                     <span className="flex items-center gap-1">
-                                                                        <Star size={10} className="text-black" />
+                                                                        <Star size={10} className="text-amber-500" />
                                                                         Chất lượng: {suggestion.historicalData.qualityScore}/5
                                                                     </span>
                                                                 </div>
@@ -598,7 +598,7 @@ export default function CreateRFQPage() {
                                                             disabled={addedAiVendors.has(suggestion.id)}
                                                             className={"shrink-0 px-3 py-1.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all " + (
                                                                 addedAiVendors.has(suggestion.id)
-                                                                    ? "bg-emerald-500/10 text-black cursor-default"
+                                                                    ? "bg-emerald-500/10 text-emerald-700 cursor-default"
                                                                     : "bg-violet-500 hover:bg-violet-400 text-slate-900 shadow-lg shadow-violet-500/20"
                                                             )}
                                                         >
@@ -631,7 +631,7 @@ export default function CreateRFQPage() {
                                             </div>
                                             <div>
                                                 <div className="text-xs font-bold text-slate-900 truncate max-w-[150px]">{v.name}</div>
-                                                <div className="text-[9px] text-slate-900 font-bold">{v.email || "Email chưa được cấu hình"}</div>
+                                                <div className="text-[0.6875rem] text-slate-900 font-bold">{v.email || "Email chưa được cấu hình"}</div>
                                             </div>
                                         </div>
                                         <button 
@@ -662,7 +662,7 @@ export default function CreateRFQPage() {
                                             type="text" 
                                             readOnly
                                             placeholder="Chọn ngày..."
-                                            className="w-full bg-white border border-slate-200 rounded-xl h-14 px-4 text-slate-900 font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-blue-600 transition-all placeholder:text-slate-900"
+                                            className="w-full bg-white border border-slate-200 rounded-xl h-14 px-4 text-slate-900 font-bold group-focus-within/date:ring-2 group-focus-within/date:ring-blue-600 transition-all placeholder:text-slate-400"
                                             value={deadline ? (() => {
                                                 const [y, m, d] = deadline.split('-');
                                                 return d + "-" + m + "-" + y;
@@ -695,14 +695,14 @@ export default function CreateRFQPage() {
                         {/* Note Section */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 bg-amber-500/10 text-black rounded-lg flex items-center justify-center border border-amber-500/20">
+                                <div className="h-8 w-8 bg-amber-500/10 text-amber-700 rounded-lg flex items-center justify-center border border-amber-500/20">
                                     <FileText size={16} />
                                 </div>
                                 <h3 className="text-lg font-bold text-slate-900 uppercase tracking-tight">Ghi chú & Yêu cầu kỹ thuật</h3>
                             </div>
                             <textarea 
                                 placeholder="Ghi chú thêm cho nhà cung cấp về chất lượng, hình thức thanh toán, thời gian giao hàng mong muốn..."
-                                className="w-full min-h-[150px] rounded-3xl bg-white border border-slate-200 p-6 text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-blue-600 resize-none"
+                                className="w-full min-h-[150px] rounded-xl bg-white border border-slate-200 p-6 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-600 resize-none"
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
                             ></textarea>

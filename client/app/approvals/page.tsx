@@ -136,7 +136,7 @@ export default function ApprovalsPage() {
                             <input 
                                 type="text" 
                                 placeholder="Tìm kiếm trong hộp thư..."
-                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg pl-9 pr-4 py-2 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all"
+                                className="w-full bg-[#FFFFFF] border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -149,7 +149,7 @@ export default function ApprovalsPage() {
                                 <div 
                                     key={pr.id}
                                     onClick={() => setSelectedPR(pr)}
-                                    className={`p-4 border-b border-[rgba(148,163,184,0.1)] cursor-pointer transition-all hover:bg-[#FFFFFF]/50 relative group ${
+                                    className={`p-4 border-b border-slate-200 cursor-pointer transition-all hover:bg-[#FFFFFF]/50 relative group ${
                                         selectedPR?.id === pr.id ? "bg-[#2563EB]/5 border-l-4 border-l-[#2563EB] pl-3" : "pl-4"
                                     }`}
                                 >
@@ -165,7 +165,7 @@ export default function ApprovalsPage() {
                                     </p>
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-2">
-                                            <div className="h-5 w-5 rounded-full bg-[#F1F5F9] flex items-center justify-center text-[10px] font-bold text-slate-900 border border-[rgba(148,163,184,0.1)]">
+                                            <div className="h-5 w-5 rounded-full bg-[#F1F5F9] flex items-center justify-center text-[10px] font-bold text-slate-900 border border-slate-200">
                                                 {pr.requester?.fullName?.charAt(0) || "R"}
                                             </div>
                                             <span className="text-[10px] font-semibold text-slate-900">{pr.requester?.fullName || "Requester"}</span>
@@ -176,7 +176,7 @@ export default function ApprovalsPage() {
                             ))
                         ) : (
                             <div className="p-8 text-center mt-20">
-                                <div className="w-16 h-16 bg-[#F1F5F9] rounded-xl flex items-center justify-center mx-auto mb-4 border border-[rgba(148,163,184,0.1)]">
+                                <div className="w-16 h-16 bg-[#F1F5F9] rounded-xl flex items-center justify-center mx-auto mb-4 border border-slate-200">
                                     <Archive size={24} className="text-slate-900" />
                                 </div>
                                 <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest">Không có thư mới</h3>
@@ -190,7 +190,7 @@ export default function ApprovalsPage() {
                     {selectedPR ? (
                         <>
                             {/* Toolbar */}
-                            <div className="h-14 bg-[#F1F5F9] border-b border-[rgba(148,163,184,0.1)] px-6 flex items-center justify-between shadow-sm shrink-0">
+                            <div className="h-14 bg-[#F1F5F9] border-b border-slate-200 px-6 flex items-center justify-between shadow-sm shrink-0">
                                 <div className="flex items-center gap-3">
                                     <button className="p-2 hover:bg-[#FFFFFF] rounded-lg text-slate-900 transition-colors" title="Hủy bỏ/Lưu trữ">
                                         <Archive size={18} />
@@ -198,7 +198,7 @@ export default function ApprovalsPage() {
                                     <button className="p-2 hover:bg-[#FFFFFF] rounded-lg text-slate-900 transition-colors" title="Đánh dấu sao">
                                         <Star size={18} />
                                     </button>
-                                    <div className="w-px h-6 bg-[rgba(148,163,184,0.1)] mx-1"></div>
+                                    <div className="w-px h-6 bg-slate-100 mx-1"></div>
                                     <button 
                                         onClick={() => handleAction("APPROVE")}
                                         className="flex items-center gap-2 px-4 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-emerald-700 transition-colors shadow-sm"
@@ -207,7 +207,7 @@ export default function ApprovalsPage() {
                                     </button>
                                     <button 
                                         onClick={() => setActionType("REJECT")}
-                                        className="flex items-center gap-2 px-4 py-1.5 bg-rose-500/10 text-black border border-rose-500/20 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-rose-500/20 transition-colors"
+                                        className="flex items-center gap-2 px-4 py-1.5 bg-rose-500/10 text-rose-700 border border-rose-500/20 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-rose-500/20 transition-colors"
                                     >
                                         <XCircle size={14} /> Từ chối
                                     </button>
@@ -243,47 +243,47 @@ export default function ApprovalsPage() {
                                     </div>
 
                                     {/* Content Card */}
-                                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm overflow-hidden">
-                                        <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex justify-between items-center">
+                                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                                        <div className="p-6 border-b border-slate-200 bg-[#FFFFFF] flex justify-between items-center">
                                             <div className="flex items-center gap-4">
                                                 <div className="flex flex-col">
-                                                    <span className="text-[9px] font-bold text-slate-900 uppercase tracking-widest mb-0.5">Phòng ban</span>
+                                                    <span className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-widest mb-0.5">Phòng ban</span>
                                                     <span className="text-xs font-bold text-slate-900 uppercase">
                                                         {typeof selectedPR.department === 'object' ? selectedPR.department.name : "N/A"}
                                                     </span>
                                                 </div>
-                                                <div className="w-px h-8 bg-[rgba(148,163,184,0.1)]"></div>
+                                                <div className="w-px h-8 bg-slate-100"></div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-[9px] font-bold text-slate-900 uppercase tracking-widest mb-0.5">Cost Center</span>
+                                                    <span className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-widest mb-0.5">Cost Center</span>
                                                     <span className="text-xs font-bold text-[#2563EB]">
                                                         {costCenters.find(cc => cc.id === selectedPR.costCenterId)?.code || 'CC_GLOBAL'}
                                                     </span>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <span className="text-[9px] font-bold text-slate-900 uppercase tracking-widest mb-0.5 block">Tổng ngân sách đề xuất</span>
+                                                <span className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-widest mb-0.5 block">Tổng ngân sách đề xuất</span>
                                                 <span className="text-xl font-bold text-slate-900 tracking-tight">{formatVND(selectedPR.totalEstimate)}</span>
                                             </div>
                                         </div>
 
                                         <div className="p-8">
                                             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Mô tả và Lý do cần thiết</h3>
-                                            <div className="bg-[#FFFFFF] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] italic text-slate-900 text-sm leading-relaxed mb-10">
+                                            <div className="bg-[#FFFFFF] p-6 rounded-xl border border-slate-200 italic text-slate-900 text-sm leading-relaxed mb-10">
                                                 &quot;{selectedPR.justification}&quot;
                                             </div>
 
                                             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Chi tiết hàng hóa / dịch vụ</h3>
-                                            <div className="overflow-hidden border border-[rgba(148,163,184,0.1)] rounded-xl">
+                                            <div className="overflow-hidden border border-slate-200 rounded-xl">
                                                 <table className="erp-table text-xs">
                                                     <thead>
-                                                        <tr className="font-bold border-b border-[rgba(148,163,184,0.1)] tracking-tighter">
+                                                        <tr className="font-bold border-b border-slate-200 tracking-tighter">
                                                             <th className="px-5 py-4">Mô tả</th>
                                                             <th className="px-5 py-4 text-center">Số lượng</th>
                                                             <th className="px-5 py-4 text-right">Đơn giá</th>
                                                             <th className="px-5 py-4 text-right">Thành tiền</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="divide-y divide-[rgba(148,163,184,0.1)] font-medium">
+                                                    <tbody className="divide-y divide-slate-100 font-medium">
                                                         {selectedPR.items?.map((item, i) => (
                                                             <tr key={i} className="hover:bg-[#FFFFFF]/50 transition-colors">
                                                                 <td className="px-5 py-4 text-slate-900 font-bold">{item.description}</td>
@@ -301,7 +301,7 @@ export default function ApprovalsPage() {
                                     {/* Action Center - Bottom Detail Panel */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {/* Budget Analytics Heatmap - Mini */}
-                                        <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm overflow-hidden relative">
+                                        <div className="bg-[#F1F5F9] p-6 rounded-xl border border-slate-200 shadow-sm overflow-hidden relative">
                                             <div className="absolute top-0 left-0 w-1 h-full bg-[#2563EB]"></div>
                                             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
                                                 <TrendingDown size={14} className="text-[#2563EB]" /> Phân tích tác động Ngân sách
@@ -334,23 +334,23 @@ export default function ApprovalsPage() {
                                         </div>
 
                                         {/* Workflow & Documents */}
-                                        <div className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm">
+                                        <div className="bg-[#F1F5F9] p-6 rounded-xl border border-slate-200 shadow-sm">
                                             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
                                                 <AttachmentIcon size={14} className="text-[#2563EB]" /> Tài liệu đính kèm
                                             </h3>
                                             <div className="space-y-2">
-                                                <div className="group flex items-center justify-between p-3 rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 hover:bg-[#FFFFFF] transition-all cursor-pointer">
+                                                <div className="group flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-[#2563EB]/30 hover:bg-[#FFFFFF] transition-all cursor-pointer">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="h-8 w-8 bg-[#FFFFFF] text-[#2563EB] rounded-lg flex items-center justify-center border border-[rgba(148,163,184,0.1)] group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
+                                                        <div className="h-8 w-8 bg-[#FFFFFF] text-[#2563EB] rounded-lg flex items-center justify-center border border-slate-200 group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
                                                             <FileText size={14} />
                                                         </div>
                                                         <span className="text-xs font-bold text-slate-900">De_xuat_mua_sam.pdf</span>
                                                     </div>
                                                     <span className="text-[10px] font-bold text-slate-900">450KB</span>
                                                 </div>
-                                                <div className="group flex items-center justify-between p-3 rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 hover:bg-[#FFFFFF] transition-all cursor-pointer">
+                                                <div className="group flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-[#2563EB]/30 hover:bg-[#FFFFFF] transition-all cursor-pointer">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="h-8 w-8 bg-[#FFFFFF] text-[#2563EB] rounded-lg flex items-center justify-center border border-[rgba(148,163,184,0.1)] group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
+                                                        <div className="h-8 w-8 bg-[#FFFFFF] text-[#2563EB] rounded-lg flex items-center justify-center border border-slate-200 group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
                                                             <Calendar size={14} />
                                                         </div>
                                                         <span className="text-xs font-bold text-slate-900">Lich_su_bao_gia.xlsx</span>
@@ -362,13 +362,13 @@ export default function ApprovalsPage() {
                                     </div>
 
                                     {/* Action Memo Box */}
-                                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-lg ring-4 ring-[#2563EB]/5">
+                                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-slate-200 shadow-lg ring-4 ring-[#2563EB]/5">
                                         <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Nội dung chỉ thị phê duyệt</h3>
                                         <textarea 
                                             value={memo}
                                             onChange={(e) => setMemo(e.target.value)}
                                             placeholder="Ghi chú phản hồi cho người đề xuất... (Bắt buộc nếu từ chối)"
-                                            className="w-full h-32 p-6 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-medium outline-none focus:ring-4 focus:ring-[#2563EB]/10 text-slate-900 placeholder:text-slate-900 transition-all resize-none"
+                                            className="w-full h-32 p-6 bg-[#FFFFFF] border border-slate-200 rounded-xl text-sm font-medium outline-none focus:ring-4 focus:ring-[#2563EB]/10 text-slate-900 placeholder:text-slate-400 transition-all resize-none"
                                         />
                                         <div className="flex gap-4 mt-6">
                                             <button 
@@ -392,7 +392,7 @@ export default function ApprovalsPage() {
                         </>
                     ) : (
                         <div className="flex-1 flex flex-col items-center justify-center p-20 text-center">
-                            <div className="w-24 h-24 bg-[#F1F5F9] rounded-xl flex items-center justify-center shadow-2xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
+                            <div className="w-24 h-24 bg-[#F1F5F9] rounded-xl flex items-center justify-center shadow-2xl shadow-[#2563EB]/5 border border-slate-200">
                                 <Inbox size={48} className="text-slate-900" />
                             </div>
                             <h2 className="mt-8 text-xl font-bold text-slate-900 uppercase tracking-widest">Chọn một yêu cầu để kiểm định</h2>
@@ -405,8 +405,8 @@ export default function ApprovalsPage() {
             {/* Success Overlay */}
             {isSuccess && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#FFFFFF]/80 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] p-6 rounded-xl text-center shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-200 border border-[rgba(148,163,184,0.1)]">
-                        <div className="w-20 h-20 bg-emerald-500/10 text-black rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
+                    <div className="bg-[#F1F5F9] p-6 rounded-xl text-center shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-200 border border-slate-200">
+                        <div className="w-20 h-20 bg-emerald-500/10 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
                             <CheckCircle2 size={40} />
                         </div>
                         <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Thành công!</h3>

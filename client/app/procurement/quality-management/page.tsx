@@ -109,7 +109,7 @@ export default function ProcurementQualityHub() {
                   <History size={18} className="text-indigo-500" />
                   Lịch sử Giải trình (RCA)
                 </h3>
-                <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-full uppercase">
+                <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[0.6875rem] font-bold rounded-full uppercase">
                   {rcas.length} Bản ghi
                 </span>
               </div>
@@ -121,13 +121,13 @@ export default function ProcurementQualityHub() {
                   rcas.map((rca) => (
                     <div key={rca.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50 hover:border-indigo-200 transition-all">
                       <div className="flex justify-between items-start mb-2">
-                        <span className={`px-2 py-1 rounded text-[10px] font-bold ${
+                        <span className={`px-2 py-1 rounded text-[0.6875rem] font-bold ${
                           rca.status === 'APPROVED' ? 'bg-green-100 text-green-700' : 
                           rca.status === 'REJECTED' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
                         }`}>
                           {rca.status}
                         </span>
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[0.6875rem] text-slate-400">
                           {new Date(rca.createdAt).toLocaleDateString()}
                         </span>
                       </div>
@@ -161,7 +161,7 @@ export default function ProcurementQualityHub() {
             </div>
 
             {/* Strategic Action Card */}
-            <div className="bg-red-50 rounded-2xl border border-red-100 p-5">
+            <div className="bg-red-50 rounded-xl border border-red-100 p-5">
               <h3 className="text-red-900 font-bold flex items-center gap-2 mb-2">
                 <AlertTriangle size={18} />
                 Hành động chiến lược
@@ -183,3 +183,4 @@ export default function ProcurementQualityHub() {
     </main>
   );
 }
+

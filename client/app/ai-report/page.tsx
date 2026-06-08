@@ -26,7 +26,7 @@ export default function AIReportPage() {
                         <CheckCircle2 size={40} />
                     </div>
                     <h2 className="text-2xl font-black text-brand-primary mb-2">Đã xác nhận Nhà cung cấp!</h2>
-                    <p className="text-black mb-8">Phiếu PR sẽ được chuyển sang trạng thái chờ phê duyệt chính thức. Đang quay lại trang chủ...</p>
+                    <p className="text-[#64748B] mb-8">Phiếu PR sẽ được chuyển sang trạng thái chờ phê duyệt chính thức. Đang quay lại trang chủ...</p>
                 </div>
             </div>
         );
@@ -40,7 +40,7 @@ export default function AIReportPage() {
                         <Zap className="text-amber-500" size={28} />
                         Báo cáo Khuyến nghị từ AI
                     </h1>
-                    <p className="text-sm text-black mt-1">Hệ thống đã phân tích 3 nhà cung cấp cho hạng mục &quot;Máy may công nghiệp&quot;.</p>
+                    <p className="text-[0.8125rem] text-[#64748B] mt-1">Hệ thống đã phân tích 3 nhà cung cấp cho hạng mục &quot;Máy may công nghiệp&quot;.</p>
                 </div>
                 <Link href="/" className="btn-secondary py-2! text-xs flex items-center gap-2">
                     <ArrowLeft size={16} /> Quay lại
@@ -50,7 +50,7 @@ export default function AIReportPage() {
             {/* Banner Thông báo */}
             <div className="bg-linear-to-r from-amber-500 to-orange-500 p-4 rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-between mb-8 animate-in slide-in-from-top-4">
                 <div className="flex items-center gap-3">
-                    <div className="bg-white/20 p-2 rounded-lg text-slate-900">
+                    <div className="bg-white/20 p-2 rounded-lg text-white">
                         <Info size={24} />
                     </div>
                     <div>
@@ -81,7 +81,7 @@ export default function AIReportPage() {
                                 </div>
                             </div>
                             <div className="flex flex-col items-center justify-center p-6 bg-white border-2 border-emerald-100 rounded-xl shadow-sm min-w-[140px]">
-                                <span className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Điểm tổng hợp</span>
+                                <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-1">Điểm tổng hợp</span>
                                 <div className="text-5xl font-black text-emerald-500  tracking-tighter">94<span className="text-2xl text-emerald-300">/100</span></div>
                             </div>
                         </div>
@@ -109,7 +109,7 @@ export default function AIReportPage() {
                                 <tr className="bg-emerald-50/50 relative border-l-4 border-emerald-500">
                                     <td className="font-bold text-brand-primary">
                                         Cơ Khí Nhật Bản (Juki VN)
-                                        <span className="block text-[9px] font-black text-emerald-500 uppercase tracking-widest mt-1">Đề xuất</span>
+                                        <span className="block text-[0.6875rem] font-black text-emerald-500 uppercase tracking-widest mt-1">Đề xuất</span>
                                     </td>
                                     <td className="text-right  font-black text-erp-blue">210,000,000</td>
                                     <td className="text-center font-bold text-slate-600">5 ngày</td>
@@ -119,18 +119,18 @@ export default function AIReportPage() {
                                 </tr>
                                 <tr>
                                     <td className="font-bold text-brand-primary">Đại lý Việt Phát</td>
-                                    <td className="text-right  font-bold text-black">205,000,000</td>
+                                    <td className="text-right font-bold text-slate-900">205,000,000</td>
                                     <td className="text-center font-bold text-slate-600">12 ngày</td>
                                     <td className="text-center font-black text-amber-500">75/100</td>
-                                    <td className="text-center font-black text-black text-lg">82</td>
+                                    <td className="text-center font-black text-slate-700 text-lg">82</td>
                                     <td className="text-slate-600 font-medium italic text-[11px]">Giá rẻ nhất nhưng Lead time dài, khả năng trễ tiến độ dự án.</td>
                                 </tr>
                                 <tr>
                                     <td className="font-bold text-brand-primary">Công ty TNHH Hoàng Gia</td>
-                                    <td className="text-right  font-bold text-black">225,000,000</td>
+                                    <td className="text-right font-bold text-slate-900">225,000,000</td>
                                     <td className="text-center font-bold text-slate-600">3 ngày</td>
                                     <td className="text-center font-black text-emerald-500">88/100</td>
-                                    <td className="text-center font-black text-black text-lg">80</td>
+                                    <td className="text-center font-black text-slate-700 text-lg">80</td>
                                     <td className="text-slate-600 font-medium italic text-[11px]">Giao hàng hỏa tốc nhưng giá quá cao so với ngân sách.</td>
                                 </tr>
                             </tbody>
@@ -142,7 +142,7 @@ export default function AIReportPage() {
                 <div className="space-y-8">
                     {/* Phân tích rủi ro */}
                     <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 shadow-xl shadow-erp-navy/5">
-                        <h3 className="text-xs font-black uppercase tracking-widest text-black mb-6 flex items-center gap-2">
+                        <h3 className="text-xs font-bold uppercase tracking-widest text-[#64748B] mb-6 flex items-center gap-2">
                             Cảnh báo Rủi ro & Lưu ý
                         </h3>
                         <div className="space-y-4">
@@ -172,7 +172,7 @@ export default function AIReportPage() {
                                 <input type="radio" name="nccSelection" className="mt-1" checked={selection === 'AI'} onChange={() => setSelection('AI')} />
                                 <div>
                                     <div className="text-xs font-black text-brand-primary">Đồng ý với Đề xuất AI</div>
-                                    <div className="text-[10px] text-black font-bold mt-0.5">Chọn Cơ Khí Nhật Bản (Juki VN). Quy trình sẽ tiếp tục tự động sang bước duyệt.</div>
+                                    <div className="text-[10px] text-[#64748B] font-bold mt-0.5">Chọn Cơ Khí Nhật Bản (Juki VN). Quy trình sẽ tiếp tục tự động sang bước duyệt.</div>
                                 </div>
                             </label>
 
@@ -205,7 +205,7 @@ export default function AIReportPage() {
                             onClick={handleConfirm}
                             disabled={selection === 'Other' && overrideReason.trim().length < 10}
                             className={`w-full py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all ${
-                                (selection === 'Other' && overrideReason.trim().length < 10) ? 'bg-slate-300 text-black cursor-not-allowed shadow-none' : 'bg-erp-navy text-white hover:bg-slate-800 shadow-xl shadow-erp-navy/20'
+                                (selection === 'Other' && overrideReason.trim().length < 10) ? 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none' : 'bg-erp-navy text-white hover:bg-slate-800 shadow-xl shadow-erp-navy/20'
                             }`}
                         >
                             <Send size={16} /> Xác nhận lựa chọn

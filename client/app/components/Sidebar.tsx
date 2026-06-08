@@ -188,7 +188,7 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                 {/* ── Logo ── */}
                 <div className="flex h-14 items-center gap-2.5 px-3.5 border-b border-white/8 shrink-0">
                     <div className="relative h-7 w-7 rounded-lg bg-[#1E293B] border-2 border-[#2563EB] flex items-center justify-center shrink-0">
-                        <span className="text-white text-[9px] font-black tracking-tight select-none">PS</span>
+                        <span className="text-white text-[0.6875rem] font-black tracking-tight select-none">PS</span>
                         <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0F172A] status-dot-active" />
                     </div>
                     <div className="flex flex-col min-w-0 flex-1">

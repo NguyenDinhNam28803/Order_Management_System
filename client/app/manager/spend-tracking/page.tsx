@@ -64,7 +64,7 @@ export default function SpendTrackingPage() {
                                 setSelectedCC(e.target.value);
                                 setCurrentPage(1); // Reset pagination when filter changes
                             }}
-                            className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/50 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-900 px-4 py-3 pr-10 outline-none appearance-none cursor-pointer transition-all min-w-[200px] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20"
+                            className="bg-[#F1F5F9] border border-slate-200 hover:border-[#2563EB]/50 rounded-xl text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] px-4 py-3 pr-10 outline-none appearance-none cursor-pointer transition-all min-w-[200px] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20"
                         >
                             <option value="ALL" className="bg-[#F1F5F9] text-slate-900">Tất cả Trung tâm chi phí</option>
                             {myCostCenters.map(cc => (
@@ -137,9 +137,9 @@ export default function SpendTrackingPage() {
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 {/* Donut Chart Card */}
-                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
-                    <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
-                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-900 leading-none">Phân Bổ Ngân Sách</h4>
+                <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                    <div className="px-6 py-5 border-b border-slate-200 bg-[#FFFFFF]">
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-[#64748B] leading-none">Phân Bổ Ngân Sách</h4>
                     </div>
                     <div className="p-6">
                         <DonutChart 
@@ -156,9 +156,9 @@ export default function SpendTrackingPage() {
                 </div>
 
                 {/* Bar Chart Card with Pagination */}
-                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
-                    <div className="px-6 py-5 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex items-center justify-between">
-                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-900 leading-none">Chi Tiêu Theo Cost Center</h4>
+                <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                    <div className="px-6 py-5 border-b border-slate-200 bg-[#FFFFFF] flex items-center justify-between">
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-[#64748B] leading-none">Chi Tiêu Theo Cost Center</h4>
                         {filteredAllocations.length > 5 && (
                             <span className="text-[10px] font-bold text-slate-900">Top 5 / {filteredAllocations.length}</span>
                         )}
@@ -174,7 +174,7 @@ export default function SpendTrackingPage() {
                         />
                     </div>
                     {filteredAllocations.length > 5 && (
-                        <div className="px-6 py-3 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)]">
+                        <div className="px-6 py-3 bg-[#FFFFFF] border-t border-slate-200">
                             <p className="text-[10px] text-slate-900 text-center">
                                 Hiển thị top 5 cost center chi tiêu nhiều nhất • 
                                 <span className="text-[#2563EB] font-bold">{filteredAllocations.length - 5} cost center khác</span>
@@ -185,9 +185,9 @@ export default function SpendTrackingPage() {
             </div>
 
             {/* Allocation Table Detail */}
-            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
-                <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#FFFFFF]">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-slate-900 leading-none">Chi tiết phân bổ ngân sách</h4>
+            <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="px-8 py-6 border-b border-slate-200 flex items-center justify-between bg-[#FFFFFF]">
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-[#64748B] leading-none">Chi tiết phân bổ ngân sách</h4>
                     <button className="flex items-center gap-2 text-slate-900 hover:text-[#2563EB] transition-colors">
                         <Download size={16} />
                         <span className="text-[10px] font-black uppercase tracking-widest">Xuất báo cáo</span>
@@ -205,7 +205,7 @@ export default function SpendTrackingPage() {
                                 <th className="py-4 px-6 text-right">Còn lại</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                        <tbody className="divide-y divide-slate-100">
                             {paginatedAllocations.length > 0 ? paginatedAllocations.map((alloc) => {
                                 const cc = costCenters.find(c => c.id === alloc.costCenterId);
                                 const used = Number(alloc.spentAmount) + Number(alloc.committedAmount);
@@ -221,7 +221,7 @@ export default function SpendTrackingPage() {
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="text-[11px] font-black text-slate-900 leading-tight">{cc?.name || "N/A"}</span>
-                                                    <span className="text-[9px] font-bold text-slate-900 uppercase tracking-tight">{cc?.code || "N/A"}</span>
+                                                    <span className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-tight">{cc?.code || "N/A"}</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -251,7 +251,7 @@ export default function SpendTrackingPage() {
                 </div>
                 {/* Pagination Navigation */}
                 {totalPages > 1 && (
-                    <div className="flex items-center justify-between px-6 py-4 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)]">
+                    <div className="flex items-center justify-between px-6 py-4 bg-[#FFFFFF] border-t border-slate-200">
                         <div className="text-[10px] text-slate-900">
                             Hiển thị <span className="font-bold text-slate-900">{paginatedAllocations.length}</span> / <span className="font-bold text-slate-900">{filteredAllocations.length}</span> phân bổ
                         </div>
@@ -259,7 +259,7 @@ export default function SpendTrackingPage() {
                             <button
                                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                 disabled={currentPage === 1}
-                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#F1F5F9] border border-slate-200 rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                             >
                                 <ChevronDown size={12} className="rotate-90" /> Trước
                             </button>
@@ -281,7 +281,7 @@ export default function SpendTrackingPage() {
                             <button
                                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#F1F5F9] border border-slate-200 rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                             >
                                 Sau <ChevronDown size={12} className="-rotate-90" />
                             </button>

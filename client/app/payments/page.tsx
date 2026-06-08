@@ -67,7 +67,7 @@ export default function PaymentsPage() {
                         <p className="text-sm text-slate-900">Thanh toán các đơn hàng đã được đối soát hoàn tất.</p>
                     </div>
 
-                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                         <div className="p-4 border-b border-slate-100 font-black text-[10px] uppercase tracking-widest text-black">Danh sách chờ thanh toán</div>
                         {loading ? (
                             <div className="p-8 text-center text-black">Đang tải...</div>
@@ -131,13 +131,13 @@ export default function PaymentsPage() {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-[#F1F5F9] rounded-xl p-8 text-slate-900 shadow-2xl relative overflow-hidden border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl p-8 text-slate-900 shadow-2xl relative overflow-hidden border border-slate-200">
                         <div className="absolute -top-10 -right-10 h-40 w-40 bg-[#2563EB]/5 rounded-full blur-2xl font-black"></div>
                         <h3 className="text-xs font-black uppercase text-slate-900 mb-8 tracking-widest">Ví tổng thanh toán</h3>
                         <div className="text-4xl font-black mb-1 text-slate-900">{formatVND(totalAmount, true)}</div>
                         <p className="text-[10px] text-black font-bold mb-8 italic">● Hệ thống đã sẵn sàng giải ngân</p>
 
-                        <div className="space-y-4 pt-8 border-t border-[rgba(148,163,184,0.1)]">
+                        <div className="space-y-4 pt-8 border-t border-slate-200">
                             <div className="flex justify-between items-center text-xs">
                                 <span className="text-slate-900">Giao dịch trong hệ thống:</span>
                                 <span className="font-bold text-slate-900">{payments.length} đơn</span>
@@ -149,15 +149,15 @@ export default function PaymentsPage() {
                         </div>
                     </div>
 
-                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] p-6 shadow-sm">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 p-6 shadow-sm">
                         <h4 className="text-[10px] font-black uppercase text-slate-900 mb-4">Lịch sử giao dịch gần đây</h4>
                         <div className="space-y-4">
                             {payments.filter(p => p.status === 'COMPLETED').slice(0, 3).map(payment => (
                                 <div key={payment.id} className="flex items-center gap-3">
-                                    <div className="h-8 w-8 rounded-full bg-emerald-500/10 text-black flex items-center justify-center border border-emerald-500/20"><ShieldCheck size={16} /></div>
+                                    <div className="h-8 w-8 rounded-full bg-emerald-500/10 text-emerald-700 flex items-center justify-center border border-emerald-500/20"><ShieldCheck size={16} /></div>
                                     <div className="flex-1">
                                         <div className="text-[10px] font-bold text-slate-900">Thanh toán {payment.id}</div>
-                                                                                <div className="text-[9px] text-slate-900">{formatDate(payment.paymentDate ?? payment.createdAt)} - Thành công</div>
+                                                                                <div className="text-[0.6875rem] text-slate-900">{formatDate(payment.paymentDate ?? payment.createdAt)} - Thành công</div>
                                     </div>
                                     <div className="text-[10px] font-black text-slate-900">-{formatVND(payment.amount, true)}</div>
                                 </div>

@@ -49,7 +49,7 @@ export default function MatchingPage() {
                                     <br />
                                     Thực tế nhập kho (GRN) chỉ ghi nhận: <span className="font-black underline">42 Thùng</span>.
                                     <br /><br />
-                                    <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[9px] font-black uppercase">Chặn thanh toán</span>: Hệ thống đã tự động khóa thanh toán cho đơn hàng này.
+                                    <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[0.6875rem] font-black uppercase">Chặn thanh toán</span>: Hệ thống đã tự động khóa thanh toán cho đơn hàng này.
                                 </p>
                             </div>
                             <button

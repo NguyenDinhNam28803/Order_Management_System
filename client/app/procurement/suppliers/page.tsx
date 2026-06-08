@@ -213,8 +213,8 @@ export default function ProcurementSuppliersPage() {
     const getTierColor = (tier?: string) => {
         switch (tier) {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-            case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
-            case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
+            case "SILVER": return "bg-slate-400/20 text-slate-600 border-slate-400/30";
+            case "BRONZE": return "bg-orange-500/20 text-orange-700 border-orange-500/30";
             default: return "bg-slate-900 text-slate-100 border-slate-700";
         }
     };
@@ -253,17 +253,17 @@ export default function ProcurementSuppliersPage() {
                 </div>
 
                 {/* Filters */}
-                <div className="bg-slate-100 p-4 rounded-[32px] border border-slate-200 shadow-xl shadow-blue-600/5">
+                <div className="bg-slate-100 p-4 rounded-xl border border-slate-200 shadow-xl shadow-blue-600/5">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 flex gap-3">
-                            <div className="h-14 w-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                            <div className="h-14 w-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                                 <Search size={20} className="text-blue-600" />
                             </div>
                             <div className="relative flex-1">
                                 <input
                                     type="text"
                                     placeholder="Tìm kiếm nhà cung cấp..."
-                                    className="w-full h-14 pl-6 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
+                                    className="w-full h-14 pl-6 pr-4 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-400/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -271,15 +271,15 @@ export default function ProcurementSuppliersPage() {
                         </div>
                         
                         <div className="flex items-center gap-3">
-                            <div className="h-14 w-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                            <div className="h-14 w-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                                 <Filter size={18} className="text-blue-600" />
                             </div>
-                            <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm">
+                            <div className="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
                                 {["ALL", "GOLD", "SILVER", "BRONZE"].map((tier) => (
                                     <button
                                         key={tier}
                                         onClick={() => setSelectedTier(tier)}
-                                        className={`px-6 h-10 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
+                                        className={`px-6 h-10 rounded-xl text-[0.6875rem] font-bold uppercase tracking-widest transition-all ${
                                             selectedTier === tier
                                                 ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                                                 : "text-slate-500 hover:bg-slate-100"
@@ -330,7 +330,7 @@ export default function ProcurementSuppliersPage() {
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <div className="flex items-center gap-1 mb-1">
-                                                <p className="text-slate-900 text-[10px] font-bold uppercase tracking-wider">
+                                                <p className="text-slate-900 text-[0.6875rem] font-bold uppercase tracking-wider">
                                                     Overall Score
                                                 </p>
                                                 <Tooltip content={
@@ -374,7 +374,7 @@ export default function ProcurementSuppliersPage() {
                                             </p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-slate-900 text-[10px] font-bold uppercase tracking-wider mb-1">
+                                            <p className="text-slate-900 text-[0.6875rem] font-bold uppercase tracking-wider mb-1">
                                                 Đánh giá lần cuối
                                             </p>
                                             <p className="text-slate-900 text-xs">
@@ -398,7 +398,7 @@ export default function ProcurementSuppliersPage() {
                                     }>
                                         <div className="bg-white rounded-lg p-2 text-center cursor-help hover:bg-slate-100 transition-colors">
                                             <TrendingUp size={14} className="text-black mx-auto mb-1" />
-                                            <p className="text-[10px] text-slate-900">OTD</p>
+                                            <p className="text-[0.6875rem] text-[#64748B]">OTD</p>
                                             <p className="text-xs font-bold text-slate-900">
                                                 {typeof supplier.otdScore === 'number' ? supplier.otdScore.toFixed(0) : "--"}%
                                             </p>
@@ -418,7 +418,7 @@ export default function ProcurementSuppliersPage() {
                                     }>
                                         <div className="bg-white rounded-lg p-2 text-center cursor-help hover:bg-slate-100 transition-colors">
                                             <Award size={14} className="text-blue-600 mx-auto mb-1" />
-                                            <p className="text-[10px] text-slate-900">Chất lượng</p>
+                                            <p className="text-[0.6875rem] text-[#64748B]">Chất lượng</p>
                                             <p className="text-xs font-bold text-slate-900">
                                                 {typeof supplier.qualityScore === 'number' ? supplier.qualityScore.toFixed(0) : "--"}%
                                             </p>
@@ -438,7 +438,7 @@ export default function ProcurementSuppliersPage() {
                                     }>
                                         <div className="bg-white rounded-lg p-2 text-center cursor-help hover:bg-slate-100 transition-colors">
                                             <Star size={14} className="text-yellow-400 mx-auto mb-1" />
-                                            <p className="text-[10px] text-slate-900">Giá</p>
+                                            <p className="text-[0.6875rem] text-[#64748B]">Giá</p>
                                             <p className="text-xs font-bold text-slate-900">
                                                 {typeof supplier.priceScore === 'number' ? supplier.priceScore.toFixed(0) : "--"}%
                                             </p>
@@ -460,7 +460,7 @@ export default function ProcurementSuppliersPage() {
                                     }>
                                         <div className="bg-white rounded-lg p-2 text-center cursor-help hover:bg-slate-100 transition-colors">
                                             <BarChart3 size={14} className="text-black mx-auto mb-1" />
-                                            <p className="text-[10px] text-slate-900">Thủ công</p>
+                                            <p className="text-[0.6875rem] text-[#64748B]">Thủ công</p>
                                             <p className="text-xs font-bold text-slate-900">
                                                 {typeof supplier.manualScore === 'number' ? supplier.manualScore.toFixed(0) : "--"}%
                                             </p>
@@ -523,4 +523,5 @@ export default function ProcurementSuppliersPage() {
         </main>
     );
 }
+
 

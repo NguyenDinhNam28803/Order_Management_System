@@ -103,7 +103,7 @@ export default function CreateGRN() {
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <div className="mt-8 mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4 flex justify-between items-end">
+            <div className="mt-8 mb-8 border-b border-slate-200 pb-4 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
                         Goods Receipt Note (GRN) <span className="text-[10px] font-bold text-black bg-[#2563EB]/10 border border-[#2563EB]/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu Nhập & QC</span>
@@ -115,13 +115,13 @@ export default function CreateGRN() {
             {!activePO ? (
                 <div className="space-y-4">
                     {/* Search filter */}
-                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 p-6">
                         <label className="text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2 block">Lọc đơn mua hàng (PO)</label>
                         <div className="relative">
-                            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" />
+                            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                             <input
                                 type="text"
-                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-10 pr-4 py-3 font-bold text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all"
+                                className="w-full bg-[#FFFFFF] border border-slate-200 rounded-xl pl-10 pr-4 py-3 font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all"
                                 placeholder="Tìm theo mã PO, nhà cung cấp..."
                                 value={poLookup}
                                 onChange={e => setPoLookup(e.target.value)}
@@ -130,9 +130,9 @@ export default function CreateGRN() {
                     </div>
 
                     {/* PO list */}
-                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
-                        <div className="p-4 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">Đơn hàng chờ nhập kho (SHIPPED)</span>
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 overflow-hidden">
+                        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+                            <span className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]">Đơn hàng chờ nhập kho (SHIPPED)</span>
                             <span className="text-[10px] font-bold text-black bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">{filteredPos.length} đơn</span>
                         </div>
 
@@ -159,7 +159,7 @@ export default function CreateGRN() {
                                             <td className="text-center font-bold text-slate-900">{po.items?.length ?? 0}</td>
                                             <td className="text-slate-900">{po.createdAt ? new Date(po.createdAt).toLocaleDateString('vi-VN') : "—"}</td>
                                             <td>
-                                                <button className="text-[10px] font-black uppercase tracking-widest text-black bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded hover:bg-emerald-500/20 transition-colors">
+                                                <button className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded hover:bg-emerald-500/20 transition-colors">
                                                     Chọn
                                                 </button>
                                             </td>
@@ -181,10 +181,10 @@ export default function CreateGRN() {
                     </button>
 
                     {/* Header Info PO */}
-                    <div className="bg-[#F1F5F9] text-slate-900 rounded-xl p-6 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-center z-10 border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] text-slate-900 rounded-xl p-6 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-center z-10 border border-slate-200">
                         <div className="absolute top-0 right-0 p-4 opacity-5"><Package size={150} /></div>
                         <div>
-                            <div className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-1">Incoming Shipment</div>
+                            <div className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] mb-1">Incoming Shipment</div>
                             <h2 className="text-2xl font-black text-slate-900">Đơn hàng nhập kho</h2>
                             <p className="text-sm text-slate-900 font-medium">Bên giao: <span className="font-bold text-slate-900">{activePO.supplier?.name || activePO.vendor || "—"}</span></p>
                         </div>
@@ -195,7 +195,7 @@ export default function CreateGRN() {
                     </div>
 
                     {/* Step 1: Nhận hàng vật lý */}
-                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
                         <div className="p-4 bg-amber-500/10 border-b border-amber-500/20 flex items-center gap-2">
                             <Package size={16} className="text-black" />
                             <h3 className="text-sm font-black uppercase tracking-widest text-black">Bước 1: Đối chiếu & đếm số lượng (Phát sinh chênh lệch)</h3>
@@ -206,7 +206,7 @@ export default function CreateGRN() {
                                     <tr>
                                         <th>Mã / Diễn Giải</th>
                                         <th className="text-center w-24">SL Đặt (PO)</th>
-                                        <th className="text-center w-28 border-l border-[rgba(148,163,184,0.1)]">SL Packing List</th>
+                                        <th className="text-center w-28 border-l border-slate-200">SL Packing List</th>
                                         <th className="text-center w-32 border-l-2 border-amber-500/20 bg-amber-500/5">Thực Nhận Input</th>
                                         <th className="text-center w-24">Chênh lệch</th>
                                         <th>Notes Thường/Lệch</th>
@@ -218,25 +218,25 @@ export default function CreateGRN() {
                                         if (!rData) return null;
                                         const { diff, pct, isHigh } = calculateVariance(item.qty, rData.actual);
                                         return (
-                                            <tr key={item.id} className="border-b border-[rgba(148,163,184,0.1)] hover:bg-[#FFFFFF]">
+                                            <tr key={item.id} className="border-b border-slate-200 hover:bg-[#FFFFFF]">
                                                 <td className="font-bold text-slate-900">{item.description}</td>
                                                 <td className="text-center font-bold text-slate-900">{item.qty}</td>
-                                                <td className="text-center border-l border-[rgba(148,163,184,0.1)]">
-                                                    <input type="number" className="w-16 text-center text-xs bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded focus:outline-none focus:border-[#2563EB]/30 text-slate-900 py-1" value={rData.pList} onChange={e => handleRecvChange(item.id, 'pList', Number(e.target.value))} />
+                                                <td className="text-center border-l border-slate-200">
+                                                    <input type="number" className="w-16 text-center text-xs bg-[#FFFFFF] border border-slate-200 rounded focus:outline-none focus:border-[#2563EB]/30 text-slate-900 py-1" value={rData.pList} onChange={e => handleRecvChange(item.id, 'pList', Number(e.target.value))} />
                                                 </td>
                                                 <td className="text-center border-l-2 border-amber-500/20 bg-amber-500/5 p-2">
                                                     <input type="number" className="w-full text-center font-black text-sm bg-[#FFFFFF] border border-amber-500/30 rounded shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-slate-900 py-1" value={rData.actual} onChange={e => handleRecvChange(item.id, 'actual', Number(e.target.value))} />
                                                 </td>
                                                 <td className="text-center">
                                                     {diff !== 0 ? (
-                                                        <span className={`font-bold px-2 py-1 rounded text-[10px] ${isHigh ? 'bg-rose-500/10 text-black border border-rose-500/20' : 'bg-amber-500/10 text-black border border-amber-500/20'}`}>
+                                                        <span className={`font-bold px-2 py-1 rounded text-[10px] ${isHigh ? 'bg-rose-500/10 text-rose-700 border border-rose-500/20' : 'bg-amber-500/10 text-amber-700 border border-amber-500/20'}`}>
                                                             {diff > 0 ? '+' : ''}{diff} ({pct.toFixed(1)}%)
                                                             {isHigh && <AlertTriangle size={10} className="inline ml-1" />}
                                                         </span>
                                                     ) : <span className="text-black font-bold text-[10px]">Khớp</span>}
                                                 </td>
                                                 <td>
-                                                    <input type="text" className="w-full text-xs text-slate-900 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded px-2 py-1 placeholder:text-slate-900 text-slate-900" placeholder="Lý do lệch..." value={rData.note} onChange={e => handleRecvChange(item.id, 'note', e.target.value)} />
+                                                    <input type="text" className="w-full text-xs text-slate-900 bg-[#FFFFFF] border border-slate-200 rounded px-2 py-1 placeholder:text-slate-400 text-slate-900" placeholder="Lý do lệch..." value={rData.note} onChange={e => handleRecvChange(item.id, 'note', e.target.value)} />
                                                 </td>
                                             </tr>
                                         );
@@ -247,7 +247,7 @@ export default function CreateGRN() {
                     </div>
 
                     {/* Step 2: Quality Control */}
-                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 !p-0 overflow-hidden">
                         <div className="p-4 bg-[#2563EB]/10 border-b border-[#2563EB]/20 flex justify-between items-center">
                             <div className="flex items-center gap-2">
                                 <FileCheck size={16} className="text-black" />
@@ -256,16 +256,16 @@ export default function CreateGRN() {
                             <span className="text-[10px] font-bold text-black bg-[#FFFFFF] px-2 py-1 border border-[#2563EB]/20 rounded">Checklist: Đã áp dụng tiêu chuẩn ISO-9001</span>
                         </div>
 
-                        <div className="divide-y divide-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
+                        <div className="divide-y divide-slate-100 bg-[#F1F5F9]">
                             {activePO.items?.map((item) => {
                                 const qData = qcData[item.id];
                                 if (!qData) return null;
                                 return (
                                     <div key={item.id} className="p-6 transition-colors hover:bg-[#FFFFFF] relative group">
                                         <div className="flex flex-col xl:flex-row gap-6">
-                                            <div className="w-full xl:w-1/3 border-r border-[rgba(148,163,184,0.1)] pr-6">
+                                            <div className="w-full xl:w-1/3 border-r border-slate-200 pr-6">
                                                 <h4 className="font-bold text-slate-900 mb-2">{item.description}</h4>
-                                                <label className="text-[9px] font-black uppercase text-slate-900 tracking-widest mb-1 block">Kết quả QC Dropdown</label>
+                                                <label className="text-[0.6875rem] font-black uppercase text-slate-900 tracking-widest mb-1 block">Kết quả QC Dropdown</label>
                                                 <select
                                                     className={`w-full p-2 border rounded-lg font-bold text-xs outline-none focus:ring-2 ${qData.status === 'PASS' ? 'border-emerald-500/20 text-black bg-emerald-500/10 focus:ring-emerald-500/30' : qData.status === 'FAIL' ? 'border-rose-500/20 text-black bg-rose-500/10 focus:ring-rose-500/30' : 'border-amber-500/20 text-black bg-amber-500/10 focus:ring-amber-500/30'}`}
                                                     value={qData.status}
@@ -277,11 +277,11 @@ export default function CreateGRN() {
                                                 </select>
                                                 <div className="mt-4 space-y-2">
                                                     <label className="flex items-center gap-2 cursor-pointer">
-                                                        <input type="checkbox" className="w-3 h-3 text-[#2563EB] bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] rounded focus:ring-[#2563EB]/30" defaultChecked />
+                                                        <input type="checkbox" className="w-3 h-3 text-[#2563EB] bg-[#FFFFFF] border-slate-200 rounded focus:ring-[#2563EB]/30" defaultChecked />
                                                         <span className="text-[10px] text-slate-900 font-medium">Bao bì nguyên vẹn</span>
                                                     </label>
                                                     <label className="flex items-center gap-2 cursor-pointer">
-                                                        <input type="checkbox" className="w-3 h-3 text-[#2563EB] bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] rounded focus:ring-[#2563EB]/30" defaultChecked={qData.status === 'PASS'} />
+                                                        <input type="checkbox" className="w-3 h-3 text-[#2563EB] bg-[#FFFFFF] border-slate-200 rounded focus:ring-[#2563EB]/30" defaultChecked={qData.status === 'PASS'} />
                                                         <span className="text-[10px] text-slate-900 font-medium">Đúng quy cách kỹ thuật</span>
                                                     </label>
                                                 </div>
@@ -303,7 +303,7 @@ export default function CreateGRN() {
                                                                 </div>
                                                                 <div>
                                                                     <label className="text-[10px] font-black uppercase text-slate-900 mb-1 block">Lý do chính</label>
-                                                                    <select className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#2563EB]/30" value={qData.reason} onChange={e => handleQcChange(item.id, 'reason', e.target.value)}>
+                                                                    <select className="w-full bg-[#FFFFFF] border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#2563EB]/30" value={qData.reason} onChange={e => handleQcChange(item.id, 'reason', e.target.value)}>
                                                                         <option value="">-- Chọn --</option>
                                                                         <option value="Hư hỏng vật lý">Hư hỏng vật lý (Bể vỡ)</option>
                                                                         <option value="Sai quy cách">Sai quy cách (Specs)</option>
@@ -315,7 +315,7 @@ export default function CreateGRN() {
                                                             <div className="grid grid-cols-2 gap-4 mt-2">
                                                                 <div>
                                                                     <label className="text-[10px] font-black uppercase text-slate-900 mb-1 block flex items-center gap-1"><RotateCcw size={10} /> Action Xử lý</label>
-                                                                    <select className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-3 py-2 text-xs text-black font-bold focus:outline-none focus:border-[#2563EB]/30" value={qData.action} onChange={e => handleQcChange(item.id, 'action', e.target.value)}>
+                                                                    <select className="w-full bg-[#FFFFFF] border border-slate-200 rounded-lg px-3 py-2 text-xs text-black font-bold focus:outline-none focus:border-[#2563EB]/30" value={qData.action} onChange={e => handleQcChange(item.id, 'action', e.target.value)}>
                                                                         <option value="">-- Hành động kho --</option>
                                                                         <option value="Trả Nhà Cung Cấp">Return to Vendor (RTV)</option>
                                                                         <option value="Giữ tại kho chờ giải quyết">Hold & Chờ Procurement QĐ</option>
@@ -330,7 +330,7 @@ export default function CreateGRN() {
                                                                 </div>
                                                             </div>
                                                             <div>
-                                                                <input type="text" className="w-full text-xs text-slate-900 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg px-3 py-2 placeholder:text-slate-900 text-slate-900" placeholder="Ghi chú chi tiết cho bộ phận Thu Mua theo dõi..." />
+                                                                <input type="text" className="w-full text-xs text-slate-900 bg-[#FFFFFF] border border-slate-200 rounded-lg px-3 py-2 placeholder:text-slate-400 text-slate-900" placeholder="Ghi chú chi tiết cho bộ phận Thu Mua theo dõi..." />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -351,7 +351,7 @@ export default function CreateGRN() {
                     </div>
 
                     {/* Step 3: Tổng Kết & Submit */}
-                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 text-slate-900 relative overflow-hidden">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 text-slate-900 relative overflow-hidden">
                         <div className="absolute -right-20 -bottom-20 opacity-10"><FileText size={250} /></div>
                         <div className="flex flex-col md:flex-row justify-between items-center gap-8 relative z-10 p-4">
                             <div className="w-full md:w-1/2">
@@ -359,7 +359,7 @@ export default function CreateGRN() {
                                     <CheckCircle2 size={16} /> Summary Hoàn Thành GRN
                                 </h3>
                                 <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-xs font-bold text-slate-900">
-                                    <div className="flex justify-between border-b border-[rgba(148,163,184,0.1)] pb-2">
+                                    <div className="flex justify-between border-b border-slate-200 pb-2">
                                         <span>Tổng SL Nhận:</span>
                                         <span className="text-slate-900 text-base">
                                             {activePO.items?.reduce((sum: number, i) => sum + (recvData[i.id]?.actual || 0), 0)}
@@ -371,7 +371,7 @@ export default function CreateGRN() {
                                             {activePO.items?.reduce((sum: number, i) => sum + (qcData[i.id]?.failQty || 0), 0)}
                                         </span>
                                     </div>
-                                    <div className="flex justify-between border-b border-[rgba(148,163,184,0.1)] pb-2 col-span-2 mt-2">
+                                    <div className="flex justify-between border-b border-slate-200 pb-2 col-span-2 mt-2">
                                         <span className="uppercase tracking-widest text-[10px] text-slate-900">Tỷ lệ Pass (Kho):</span>
                                         <span className="text-black text-xl flex items-center gap-1">
                                             {(() => {
@@ -386,11 +386,11 @@ export default function CreateGRN() {
                             </div>
                             <div className="w-full md:w-auto text-right flex flex-col items-end gap-4">
                                 <div className="bg-[#FFFFFF] flex flex-col items-center justify-center p-6 border-dashed border-2 border-emerald-500/20 bg-emerald-500/5 rounded-xl">
-                                    <div className="text-[10px] font-black uppercase tracking-widest text-black mb-2">Final Step</div>
+                                    <div className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] mb-2">Final Step</div>
                                     <button onClick={handleConfirm} className="bg-emerald-500 hover:bg-emerald-600 text-emerald-950 font-black uppercase tracking-widest text-xs px-8 py-4 rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2">
                                         <FileCheck size={18} /> Confirm GRN
                                     </button>
-                                    <p className="text-[9px] text-black/60 mt-4 text-center max-w-xs font-bold">Data sẽ đẩy về ERP Tồn Kho & Hệ thống Kế toán Đối soát (3-Way Matching).</p>
+                                    <p className="text-[0.6875rem] text-black/60 mt-4 text-center max-w-xs font-bold">Data sẽ đẩy về ERP Tồn Kho & Hệ thống Kế toán Đối soát (3-Way Matching).</p>
                                 </div>
                             </div>
                         </div>

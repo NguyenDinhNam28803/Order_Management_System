@@ -74,30 +74,30 @@ export default function OrganizationsPage() {
             <div className="flex justify-between items-end mb-10">
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Quản lý Tổ chức</h1>
-                    <p className="text-sm text-slate-900 mt-1 font-medium italic">THIẾT LẬP THỰC THỂ PHÁP NHÂN VÀ THÔNG TIN CÔNG TY</p>
+                    <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium italic">THIẾT LẬP THỰC THỂ PHÁP NHÂN VÀ THÔNG TIN CÔNG TY</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                 >
                     <Plus size={18} /> Thêm Tổ chức
                 </button>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden">
-                <div className="p-8 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
+            <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="p-8 bg-[#FFFFFF] border-b border-slate-200 flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                        <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest border-r border-[rgba(148,163,184,0.1)] pr-4">Entity Directory</div>
+                        <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest border-r border-slate-200 pr-4">Entity Directory</div>
                         <div className="text-[10px] font-black text-[#2563EB] bg-[#2563EB]/10 px-3 py-1 rounded-full">{organizations?.length || 0} Entities</div>
                     </div>
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" size={14} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={14} />
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Tìm kiếm mã hoặc tên..."
-                            className="pl-10 pr-4 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#2563EB]/20 w-64 outline-none text-slate-900 placeholder:text-slate-900"
+                            className="pl-10 pr-4 py-2 bg-[#FFFFFF] border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#2563EB]/20 w-64 outline-none text-slate-900 placeholder:text-slate-400"
                         />
                     </div>
                 </div>
@@ -114,7 +114,7 @@ export default function OrganizationsPage() {
                         </thead>
                         <tbody>
                             {filteredOrganizations?.map((org: Organization) => (
-                                <tr key={org.id} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-[rgba(148,163,184,0.1)]">
+                                <tr key={org.id} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-slate-200">
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
                                             <div className="h-12 w-12 rounded-2xl bg-[#FFFFFF] flex items-center justify-center font-black text-[#2563EB] shadow-sm transition-transform hover:rotate-12">
@@ -144,13 +144,13 @@ export default function OrganizationsPage() {
                                         <div className="flex justify-center gap-3">
                                             <button
                                                 onClick={() => handleOpenModal(org)}
-                                                className="h-9 w-9 flex items-center justify-center bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
+                                                className="h-9 w-9 flex items-center justify-center bg-[#F1F5F9] border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Edit2 size={14} />
                                             </button>
                                             <button
                                                 onClick={() => removeOrganization(org.id)}
-                                                className="h-9 w-9 flex items-center justify-center bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-red-500 hover:border-red-500/30 rounded-xl transition-all shadow-sm"
+                                                className="h-9 w-9 flex items-center justify-center bg-[#F1F5F9] border border-slate-200 text-slate-900 hover:text-red-500 hover:border-red-500/30 rounded-xl transition-all shadow-sm"
                                             >
                                                 <Trash2 size={14} />
                                             </button>
@@ -166,7 +166,7 @@ export default function OrganizationsPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-slate-200">
                         <div className="p-6">
                             <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 {editingOrg ? "Cập nhật Tổ chức" : "Thêm Tổ chức mới"}

@@ -12,19 +12,19 @@ export default function BudgetAlertsPage() {
 
     const getSeverityStyles = (severity: string) => {
         switch(severity) {
-            case "CAUTION": return "bg-amber-500/10 border-amber-500/20 text-black";
-            case "CRITICAL": return "bg-rose-500/10 border-rose-500/20 text-black";
-            case "EXCEEDED": return "bg-rose-500 border-rose-600 text-slate-900 shadow-lg shadow-rose-500/20 animate-pulse";
-            default: return "bg-[#F1F5F9] border-[rgba(148,163,184,0.1)] text-slate-900";
+            case "CAUTION": return "bg-amber-500/10 border-amber-500/20 text-amber-800";
+            case "CRITICAL": return "bg-rose-500/10 border-rose-500/20 text-rose-800";
+            case "EXCEEDED": return "bg-rose-500 border-rose-600 text-white shadow-lg shadow-rose-500/20 animate-pulse";
+            default: return "bg-[#F1F5F9] border-slate-200 text-slate-900";
         }
     };
 
     const getSeverityBadgeStyles = (severity: string) => {
         switch(severity) {
-            case "CAUTION": return "bg-amber-500/20 text-black border border-amber-500/20";
-            case "CRITICAL": return "bg-rose-500/20 text-black border border-rose-500/20";
+            case "CAUTION": return "bg-amber-500/20 text-amber-800 border border-amber-500/20";
+            case "CRITICAL": return "bg-rose-500/20 text-rose-800 border border-rose-500/20";
             case "EXCEEDED": return "bg-white text-rose-500 border border-rose-500/20";
-            default: return "bg-[#FFFFFF] text-slate-900 border border-[rgba(148,163,184,0.1)]";
+            default: return "bg-[#FFFFFF] text-slate-900 border border-slate-200";
         }
     };
 
@@ -50,7 +50,7 @@ export default function BudgetAlertsPage() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <header className="mb-10">
                 <h1 className="text-2xl font-black tracking-tight text-slate-900 mb-2 uppercase">CẢNH BÁO VƯỢT NGÂN SÁCH</h1>
-                <p className="text-slate-900 font-medium italic">Danh sách các yêu cầu có nguy cơ hoặc đã vượt ngưỡng ngân sách được duyệt</p>
+                <p className="text-[0.8125rem] font-medium text-[#64748B] italic">Danh sách các yêu cầu có nguy cơ hoặc đã vượt ngưỡng ngân sách được duyệt</p>
             </header>
 
             {pendingOverrides.length > 0 ? (
@@ -64,7 +64,7 @@ export default function BudgetAlertsPage() {
                             <div key={alert.id} className={`p-8 rounded-[2.5rem] border list-item-card transition-all flex flex-col md:flex-row items-center justify-between gap-8 ${getSeverityStyles(severity)}`}>
                                 <div className="flex items-center gap-6">
                                     <div className={`h-16 w-16 rounded-2xl flex items-center justify-center border ${
-                                        severity === 'EXCEEDED' ? 'bg-white/20 border-white/30' : 'bg-[#FFFFFF] border-[rgba(148,163,184,0.1)]'
+                                        severity === 'EXCEEDED' ? 'bg-white/20 border-white/30' : 'bg-[#FFFFFF] border-slate-200'
                                     }`}>
                                         {severity === 'EXCEEDED' ? <ShieldAlert size={32} /> : <AlertTriangle size={32} />}
                                     </div>
@@ -116,7 +116,7 @@ export default function BudgetAlertsPage() {
                                         onClick={() => handleReject(alert.id)}
                                         disabled={loadingId === alert.id}
                                         className={`px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transform hover:scale-[1.02] active:scale-[0.98] transition-all border-2 flex items-center justify-center gap-2 ${
-                                            severity === 'EXCEEDED' ? 'border-white/40 text-slate-900' : 'border-[rgba(148,163,184,0.1)] text-slate-900'
+                                            severity === 'EXCEEDED' ? 'border-white/40 text-slate-900' : 'border-slate-200 text-slate-900'
                                         }`}
                                     >
                                         TỪ CHỐI
@@ -127,8 +127,8 @@ export default function BudgetAlertsPage() {
                     })}
                 </div>
             ) : (
-                <div className="bg-[#F1F5F9] rounded-[3rem] p-32 border border-dashed border-[rgba(148,163,184,0.1)] flex flex-col items-center justify-center opacity-60">
-                    <div className="h-24 w-24 bg-emerald-500/10 rounded-[2rem] flex items-center justify-center mb-10 text-black">
+                <div className="bg-[#F1F5F9] rounded-[3rem] p-32 border border-dashed border-slate-200 flex flex-col items-center justify-center opacity-60">
+                    <div className="h-24 w-24 bg-emerald-500/10 rounded-[2rem] flex items-center justify-center mb-10 text-emerald-600">
                         <CheckCircle size={64} />
                     </div>
                     <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tight uppercase">Hệ thống an toàn</h3>

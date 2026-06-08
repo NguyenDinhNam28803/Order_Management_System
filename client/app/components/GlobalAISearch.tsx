@@ -67,7 +67,7 @@ export default function GlobalAISearch() {
                     />
 
                     {/* Modal */}
-                    <div className="relative bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.12)] shadow-2xl shadow-black/80 p-6 w-full max-w-sm animate-slide-up">
+                    <div className="relative bg-[#FFFFFF] rounded-xl border border-slate-200 shadow-2xl shadow-black/80 p-6 w-full max-w-sm animate-slide-up">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-5">
                             <div className="flex items-center gap-2.5">
@@ -76,12 +76,12 @@ export default function GlobalAISearch() {
                                 </div>
                                 <div>
                                     <h2 className="text-[13px] font-black text-slate-900 leading-none">AI Assistant</h2>
-                                    <p className="text-[9px] text-slate-900 font-semibold uppercase tracking-widest mt-0.5">ProcureSmart Intelligence</p>
+                                    <p className="text-[0.6875rem] text-slate-900 font-semibold uppercase tracking-widest mt-0.5">ProcureSmart Intelligence</p>
                                 </div>
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="h-7 w-7 flex items-center justify-center rounded-lg bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-slate-900 hover:border-[rgba(148,163,184,0.25)] transition-all"
+                                className="h-7 w-7 flex items-center justify-center rounded-lg bg-[#F1F5F9] border border-slate-200 text-slate-900 hover:text-slate-900 hover:border-slate-200 transition-all"
                             >
                                 <X size={14} />
                             </button>
@@ -93,7 +93,7 @@ export default function GlobalAISearch() {
                             <button
                                 onClick={() => setAiMode("chat")}
                                 className="flex flex-col items-center gap-3 p-5 rounded-xl
-                                           bg-[#F1F5F9] border border-[rgba(148,163,184,0.08)]
+                                           bg-[#F1F5F9] border border-slate-200
                                            hover:border-[#6366F1]/50 hover:bg-[rgba(99,102,241,0.08)]
                                            transition-all group text-left"
                             >
@@ -110,7 +110,7 @@ export default function GlobalAISearch() {
                             <button
                                 onClick={() => setAiMode("pr-generator")}
                                 className="flex flex-col items-center gap-3 p-5 rounded-xl
-                                           bg-[#F1F5F9] border border-[rgba(148,163,184,0.08)]
+                                           bg-[#F1F5F9] border border-slate-200
                                            hover:border-[#10B981]/50 hover:bg-[rgba(16,185,129,0.08)]
                                            transition-all group text-left"
                             >
@@ -127,7 +127,7 @@ export default function GlobalAISearch() {
                         {/* Footer hint */}
                         <div className="flex items-center justify-center gap-1.5">
                             <span className="kbd">Ctrl</span>
-                            <span className="text-[9px] text-slate-900">+</span>
+                            <span className="text-[0.6875rem] text-slate-900">+</span>
                             <span className="kbd">K</span>
                             <span className="text-[10px] text-slate-900 ml-1">để mở / đóng nhanh</span>
                         </div>

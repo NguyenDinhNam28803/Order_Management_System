@@ -300,7 +300,7 @@ export default function CreatePRPage() {
     return (
         <div className="animate-in fade-in duration-700 space-y-12">
             {/* PAGE HEADER SECTION */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-[rgba(148,163,184,0.1)] pb-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-slate-200 pb-10">
                 <div>
                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">Tạo Phiếu Yêu Cầu (PR)</h1>
                    <p className="text-sm font-bold text-slate-900 tracking-tight uppercase">
@@ -308,7 +308,7 @@ export default function CreatePRPage() {
                    </p>
                 </div>
                 <div className="flex gap-4">
-                    <button className="px-5 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
+                    <button className="px-5 py-2 bg-[#F1F5F9] border border-slate-200 text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
                     <button 
                         className="px-6 py-2.5 bg-[#2563EB] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2" 
                         onClick={handleSubmit} 
@@ -349,7 +349,7 @@ export default function CreatePRPage() {
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
                         activeTab === 'ai'
                             ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
-                            : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)] hover:text-white'
+                            : 'bg-[#F1F5F9] text-white border border-slate-200 hover:text-white'
                     }`}
                 >
                     <Bot size={16} />
@@ -363,13 +363,13 @@ export default function CreatePRPage() {
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
                         activeTab === 'manual'
                             ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
-                            : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)] hover:text-white'
+                            : 'bg-[#F1F5F9] text-white border border-slate-200 hover:text-white'
                     }`}
                 >
                     <PenTool size={16} />
                     <span>Tạo thủ công</span>
                     {form.items.length > 0 && (
-                        <span className="ml-2 px-2 py-0.5 bg-[#2563EB]/20 text-[#2563EB] rounded-full text-[9px]">
+                        <span className="ml-2 px-2 py-0.5 bg-[#2563EB]/20 text-[#2563EB] rounded-full text-[0.6875rem]">
                             {form.items.length}
                         </span>
                     )}
@@ -380,8 +380,8 @@ export default function CreatePRPage() {
             {activeTab === 'ai' && (
                 <div className="animate-in fade-in duration-500 space-y-8">
                     {/* AI Chat Interface */}
-                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
-                        <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]/50">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="p-8 border-b border-slate-200 bg-[#FFFFFF]/50">
                             <div className="flex items-center gap-3">
                                 <div className="bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] p-2.5 rounded-xl text-slate-900 shadow-lg shadow-[#2563EB]/20">
                                     <Sparkles size={18} />
@@ -407,7 +407,7 @@ export default function CreatePRPage() {
                                             <div className={`max-w-[80%] p-4 rounded-2xl text-sm ${
                                                 msg.role === 'user' 
                                                     ? 'bg-[#2563EB] text-white' 
-                                                    : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)]'
+                                                    : 'bg-[#F1F5F9] text-white border border-slate-200'
                                             }`}>
                                                 {msg.content}
                                             </div>
@@ -418,7 +418,7 @@ export default function CreatePRPage() {
                                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
                                                 <Bot size={14} />
                                             </div>
-                                            <div className="p-4 rounded-2xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
+                                            <div className="p-4 rounded-2xl bg-[#F1F5F9] border border-slate-200">
                                                 <Loader2 className="animate-spin text-[#2563EB]" size={20} />
                                             </div>
                                         </div>
@@ -440,7 +440,7 @@ export default function CreatePRPage() {
                                         }
                                     }}
                                     placeholder="VD: Tôi cần mua 10 laptop Dell cho phòng IT, ngân sách khoảng 500 triệu, giao hàng trong tuần sau..."
-                                    className="w-full h-32 bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl p-5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 resize-none placeholder:text-slate-900/50"
+                                    className="w-full h-32 bg-[#FFFFFF] border border-slate-200 rounded-2xl p-5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 resize-none placeholder:text-slate-400/50"
                                 />
                                 <div className="flex gap-3">
                                     <button
@@ -457,7 +457,7 @@ export default function CreatePRPage() {
                                     {aiMessages.length > 0 && (
                                         <button
                                             onClick={handleClearAI}
-                                            className="px-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:text-slate-900 transition-all"
+                                            className="px-4 py-3 bg-[#F1F5F9] border border-slate-200 text-slate-900 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:text-slate-900 transition-all"
                                         >
                                             <XCircle size={16} />
                                         </button>
@@ -467,30 +467,30 @@ export default function CreatePRPage() {
                             
                             {/* AI Draft Preview */}
                             {aiDraft && (
-                                <div className="border border-[rgba(59,130,246,0.3)] rounded-2xl p-6 bg-[#2563EB]/5 space-y-4">
+                                <div className="border border-blue-500/30 rounded-2xl p-6 bg-[#2563EB]/5 space-y-4">
                                     <div className="flex items-center gap-2">
-                                        <CheckCircle2 className="text-black" size={20} />
+                                        <CheckCircle2 className="text-emerald-600" size={20} />
                                         <span className="text-sm font-black text-slate-900">Bản nháp đã sẵn sàng</span>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4 text-sm">
                                         <div className="space-y-1">
-                                            <span className="text-[9px] font-black text-slate-900 uppercase">Tiêu đề</span>
+                                            <span className="text-[0.6875rem] font-black text-slate-900 uppercase">Tiêu đề</span>
                                             <p className="text-slate-900 font-bold truncate">{aiDraft.title}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <span className="text-[9px] font-black text-slate-900 uppercase">Số sản phẩm</span>
+                                            <span className="text-[0.6875rem] font-black text-slate-900 uppercase">Số sản phẩm</span>
                                             <p className="text-slate-900 font-bold">{aiDraft.items.length} items</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <span className="text-[9px] font-black text-slate-900 uppercase">Tổng giá trị</span>
-                                            <p className="text-black font-black">{formatVND(aiDraft.totalEstimate)}</p>
+                                            <span className="text-[0.6875rem] font-black text-slate-900 uppercase">Tổng giá trị</span>
+                                            <p className="text-slate-900 font-black">{formatVND(aiDraft.totalEstimate)}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <span className="text-[9px] font-black text-slate-900 uppercase">Độ tin cậy</span>
-                                            <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase ${
-                                                aiDraft.confidence === 'high' ? 'bg-emerald-500/20 text-black' :
-                                                aiDraft.confidence === 'medium' ? 'bg-amber-500/20 text-black' :
-                                                'bg-rose-500/20 text-black'
+                                            <span className="text-[0.6875rem] font-black text-slate-900 uppercase">Độ tin cậy</span>
+                                            <span className={`px-2 py-1 rounded-full text-[0.6875rem] font-black uppercase ${
+                                                aiDraft.confidence === 'high' ? 'bg-emerald-500/20 text-emerald-700' :
+                                                aiDraft.confidence === 'medium' ? 'bg-amber-500/20 text-amber-700' :
+                                                'bg-rose-500/20 text-rose-700'
                                             }`}>
                                                 {aiDraft.confidence || 'medium'}
                                             </span>
@@ -503,7 +503,7 @@ export default function CreatePRPage() {
                                     )}
                                     <button
                                         onClick={handleFillToManual}
-                                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500/20 text-black border border-emerald-500/30 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500/30 transition-all"
+                                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500/30 transition-all"
                                     >
                                         <ArrowRight size={16} />
                                         Chuyển sang Tạo thủ công để chỉnh sửa & Gửi PR
@@ -520,7 +520,7 @@ export default function CreatePRPage() {
                             { icon: <Wallet size={16} />, title: "Ngân sách rõ ràng", desc: "Đề cập khoảng giá mong muốn" },
                             { icon: <Zap size={16} />, title: "Tiêu chí đặc biệt", desc: "Thương hiệu, specs kỹ thuật" }
                         ].map((tip, idx) => (
-                            <div key={idx} className="bg-[#FFFFFF] rounded-2xl p-5 border border-[rgba(148,163,184,0.1)]">
+                            <div key={idx} className="bg-[#FFFFFF] rounded-2xl p-5 border border-slate-200">
                                 <div className="text-[#2563EB] mb-2">{tip.icon}</div>
                                 <h4 className="text-xs font-black text-slate-900 mb-1">{tip.title}</h4>
                                 <p className="text-[10px] text-slate-900">{tip.desc}</p>
@@ -537,8 +537,8 @@ export default function CreatePRPage() {
                 <div className="xl:col-span-6 space-y-10">
                     
                     {/* FORM SECTION 1 — THÔNG TIN CHUNG */}
-                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
-                        <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]/50">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="p-8 border-b border-slate-200 bg-[#FFFFFF]/50">
                              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-3">
                                  <Activity size={16} className="text-[#2563EB]" /> Thông tin chung
                              </h3>
@@ -547,19 +547,19 @@ export default function CreatePRPage() {
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Tiêu đề yêu cầu</label>
                                 <input 
-                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all placeholder:text-slate-900/50" 
+                                    className="w-full bg-[#FFFFFF] border border-slate-200 rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all placeholder:text-slate-400/50" 
                                     placeholder="Nhập tên dịch vụ/sản phẩm cần mua sắm..."
                                     value={form.title} 
                                     onChange={e => setForm({ ...form, title: e.target.value })} 
                                 />
-                                {fieldErrors.title && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">{fieldErrors.title}</span>}
+                                {fieldErrors.title && <span className="text-[0.6875rem] font-black text-rose-500 uppercase tracking-widest ml-1">{fieldErrors.title}</span>}
                             </div>
-                            <button onClick={() => setShowAiSection(!showAiSection)} className="flex w-full items-center justify-end mt-2 p-2 rounded-lg hover:bg-[rgba(148,163,184,0.05)] transition-all">
+                            <button onClick={() => setShowAiSection(!showAiSection)} className="flex w-full items-center justify-end mt-2 p-2 rounded-lg hover:bg-slate-50 transition-all">
                                 <ChevronDown size={15} className={`text-slate-400 transition-transform duration-200 shrink-0 ${showAiSection ? "rotate-180" : ""}`} />
                             </button>
 
                         {showAiSection && (
-                            <div className="mt-5 pt-5 border-t border-[rgba(148,163,184,0.1)] space-y-4">
+                            <div className="mt-5 pt-5 border-t border-slate-200 space-y-4">
                                 {aiMessages.length > 0 && (
                                     <div className="bg-[#F8FAFC] rounded-xl p-4 space-y-3 max-h-60 overflow-y-auto">
                                         {aiMessages.map((msg, idx) => (
@@ -575,7 +575,7 @@ export default function CreatePRPage() {
                                                 <div className={`max-w-[80%] px-3.5 py-2.5 rounded-xl text-xs leading-relaxed ${
                                                     msg.role === "user"
                                                         ? "bg-[#2563EB] text-white"
-                                                        : "bg-white text-slate-700 border border-[rgba(148,163,184,0.1)]"
+                                                        : "bg-white text-slate-700 border border-slate-200"
                                                 }`}>
                                                     {msg.content}
                                                 </div>
@@ -586,7 +586,7 @@ export default function CreatePRPage() {
                                                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
                                                     <Bot size={12} className="text-white" />
                                                 </div>
-                                                <div className="px-3.5 py-2.5 rounded-xl bg-white border border-[rgba(148,163,184,0.1)]">
+                                                <div className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200">
                                                     <Loader2 size={13} className="animate-spin text-[#2563EB]" />
                                                 </div>
                                             </div>
@@ -601,7 +601,7 @@ export default function CreatePRPage() {
                                                 <CheckCircle2 size={14} className="text-emerald-600" />
                                                 <span className="text-xs font-bold text-slate-900">Bản nháp đã sẵn sàng</span>
                                             </div>
-                                            <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                                            <span className={`text-[0.6875rem] font-bold uppercase px-2 py-0.5 rounded-full ${
                                                 aiDraft.confidence === "high"   ? "bg-emerald-100 text-emerald-700" :
                                                 aiDraft.confidence === "medium" ? "bg-amber-100 text-amber-700" :
                                                 "bg-rose-100 text-rose-700"
@@ -782,7 +782,7 @@ export default function CreatePRPage() {
                             />
                         </div>
 
-                        <div className="rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+                        <div className="rounded-xl border border-slate-200 overflow-hidden">
                             <table className="erp-table text-xs m-0">
                                 <thead>
                                     <tr>
@@ -816,7 +816,7 @@ export default function CreatePRPage() {
                                                 <td className="px-4 py-3 text-center">
                                                     <input
                                                         type="number" min={1}
-                                                        className="w-20 text-center bg-[#F8FAFC] border border-[rgba(148,163,184,0.15)] rounded-lg py-1.5 px-2 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#2563EB]/40"
+                                                        className="w-20 text-center bg-[#F8FAFC] border border-slate-200 rounded-lg py-1.5 px-2 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#2563EB]/40"
                                                         value={item.qty}
                                                         onChange={e => {
                                                             const items = [...form.items];
@@ -857,7 +857,7 @@ export default function CreatePRPage() {
                                     <div
                                         key={a.id}
                                         onClick={() => setSelectedAllocationId(a.id)}
-                                        className={`p-3 rounded-lg border cursor-pointer transition-all ${selectedAllocationId === a.id ? 'border-[#2563EB] bg-blue-50' : 'border-[rgba(148,163,184,0.2)] hover:border-[#2563EB]/40'}`}
+                                        className={`p-3 rounded-lg border cursor-pointer transition-all ${selectedAllocationId === a.id ? 'border-[#2563EB] bg-blue-50' : 'border-slate-200 hover:border-[#2563EB]/40'}`}
                                     >
                                         <span className="text-xs font-semibold text-slate-700">{formatVND(convertPrismaDecimal(a.allocatedAmount))} ₫ (Đã chi: {formatVND(convertPrismaDecimal(a.spentAmount))} ₫)</span>
                                     </div>
@@ -867,8 +867,8 @@ export default function CreatePRPage() {
                     )}
 
                     {/* FORM SECTION 3 — DANH MỤC HÀNG HÓA */}
-                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
-                        <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]/50 flex justify-between items-center">
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="p-8 border-b border-slate-200 bg-[#FFFFFF]/50 flex justify-between items-center">
                              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-3">
                                  <ShoppingCart size={16} className="text-[#2563EB]" /> Danh mục hàng hóa đề xuất
                              </h3>
@@ -926,10 +926,10 @@ export default function CreatePRPage() {
                                 />
                             </div>
                             
-                            <div className="overflow-hidden rounded-3xl border border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
+                            <div className="overflow-hidden rounded-xl border border-slate-200 bg-[#FFFFFF]">
                                 <table className="erp-table text-xs m-0">
                                     <thead>
-                                        <tr className="border-b border-[rgba(148,163,184,0.1)] tracking-[0.1em]">
+                                        <tr className="border-b border-slate-200 tracking-[0.1em]">
                                             <th className="px-8 py-5">Sản phẩm / Mô tả</th>
                                             <th className="px-8 py-5 text-center">Số lượng</th>
                                             <th className="px-8 py-5 text-right">Đơn giá tham chiếu</th>
@@ -937,7 +937,7 @@ export default function CreatePRPage() {
                                             <th className="px-8 py-5 w-20 text-center"></th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                                    <tbody className="divide-y divide-slate-100">
                                         {form.items.length === 0 ? (
                                             <tr>
                                                 <td colSpan={5} className="py-20 text-center text-[10px] font-black uppercase tracking-widest italic">
@@ -953,7 +953,7 @@ export default function CreatePRPage() {
                                                     <td className="px-8 py-6 text-center">
                                                         <input 
                                                             type="number" 
-                                                            className="w-20 text-center bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl py-2 px-3 text-xs font-black text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#2563EB]/50" 
+                                                            className="w-20 text-center bg-[#F1F5F9] border border-slate-200 rounded-xl py-2 px-3 text-xs font-black text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#2563EB]/50" 
                                                             value={item.qty} 
                                                             onChange={e => {
                                                                 const items = [...form.items];
@@ -1000,20 +1000,20 @@ export default function CreatePRPage() {
                                         </div>
                                     </div>
                                     
-                                    <div className="h-px bg-[rgba(148,163,184,0.1)]" />
+                                    <div className="h-px bg-slate-100" />
                                     
-                                    <div className={`p-8 rounded-[40px] border-2 transition-all duration-500 ${remainingBudget - totalEstimate < 0 ? "bg-rose-500/10 border-rose-500/20 shadow-rose-500/5" : "bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5"}`}>
+                                    <div className={`p-8 rounded-xl border-2 transition-all duration-500 ${remainingBudget - totalEstimate < 0 ? "bg-rose-500/10 border-rose-500/20 shadow-rose-500/5" : "bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5"}`}>
                                         <div className="flex items-center gap-3 mb-2 opacity-70">
                                             <div className={`h-2 w-2 rounded-full ${remainingBudget - totalEstimate < 0 ? "bg-rose-500" : "bg-emerald-500"}`}></div>
-                                            <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${remainingBudget - totalEstimate < 0 ? "text-black" : "text-black"}`}>CÒN LẠI SAU PR</span>
+                                            <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${remainingBudget - totalEstimate < 0 ? "text-rose-700" : "text-emerald-700"}`}>CÒN LẠI SAU PR</span>
                                         </div>
-                                        <div className={`text-4xl font-black tracking-tighter ${remainingBudget - totalEstimate < 0 ? "text-black" : "text-black"}`}>
+                                        <div className={`text-4xl font-black tracking-tighter ${remainingBudget - totalEstimate < 0 ? "text-rose-700" : "text-emerald-700"}`}>
                                             {formatVND(Math.abs(remainingBudget - totalEstimate))} <span className="text-lg opacity-50">₫</span>
                                         </div>
                                     </div>
                                     
                                     {remainingBudget - totalEstimate < 0 && (
-                                        <div className="flex gap-4 p-6 bg-amber-500/10 rounded-3xl border border-amber-500/20 text-black animate-pulse">
+                                        <div className="flex gap-4 p-6 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-700 animate-pulse">
                                             <AlertTriangle size={24} className="shrink-0" />
                                             <p className="text-[10px] font-black uppercase leading-tight tracking-tight">Cảnh báo: PR vượt quá ngân sách khả dụng. Việc phê duyệt có thể bị CEO/CFO kiểm soát chặt chẽ hơn.</p>
                                         </div>
@@ -1038,7 +1038,7 @@ export default function CreatePRPage() {
                                     <span className="text-xs text-slate-500">Tổng giá trị PR</span>
                                     <span className="text-sm font-semibold text-slate-600">−{formatVND(totalEstimate)} ₫</span>
                                 </div>
-                                <div className="border-t border-[rgba(148,163,184,0.1)] pt-2.5">
+                                <div className="border-t border-slate-200 pt-2.5">
                                     <div className="flex justify-between items-center">
                                         <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Còn lại sau PR</span>
                                         <span className={`text-base font-black ${(remainingBudget - totalEstimate) < 0 ? "text-rose-600" : "text-emerald-600"}`}>
@@ -1072,7 +1072,7 @@ export default function CreatePRPage() {
                             <button onClick={() => router.push("/pr")} className="btn-secondary w-full justify-center">
                                 <ArrowLeft size={14} /> Hủy bỏ
                             </button>
-                            <p className="text-[10px] text-slate-400 text-center leading-relaxed pt-1 border-t border-[rgba(148,163,184,0.08)]">
+                            <p className="text-[10px] text-slate-400 text-center leading-relaxed pt-1 border-t border-slate-200">
                                 PR sẽ đi qua quy trình phê duyệt đa cấp theo phân quyền.
                             </p>
                         </div>
@@ -1138,7 +1138,7 @@ export default function CreatePRPage() {
                         {submissionStatus !== 'loading' && (
                             <button 
                                 onClick={() => setSubmissionStatus('idle')} 
-                                className="w-full mt-6 py-4 bg-[#FFFFFF] text-slate-900 font-black text-[10px] uppercase tracking-widest rounded-2xl border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 transition-all"
+                                className="w-full mt-6 py-4 bg-[#FFFFFF] text-slate-900 font-black text-[10px] uppercase tracking-widest rounded-2xl border border-slate-200 hover:bg-slate-100 transition-all"
                             >
                                 Quay lại chỉnh sửa
                             </button>

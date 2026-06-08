@@ -172,7 +172,7 @@ export default function ProductAdminPage() {
             key: "name",
             render: (row: Product) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-slate-900 border border-[rgba(148,163,184,0.1)] uppercase font-black text-[10px]">
+                    <div className="h-10 w-10 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-slate-900 border border-slate-200 uppercase font-black text-[10px]">
                         {row.name.substring(0,2)}
                     </div>
                     <div>
@@ -187,10 +187,10 @@ export default function ProductAdminPage() {
             key: "category",
             render: (row: Product) => (
                 <div className="flex flex-col gap-1">
-                    <span className="px-3 py-1 rounded-full bg-[#FFFFFF] text-slate-900 text-[10px] font-black uppercase tracking-widest border border-[rgba(148,163,184,0.1)] w-fit">
+                    <span className="px-3 py-1 rounded-full bg-[#FFFFFF] text-slate-900 text-[10px] font-black uppercase tracking-widest border border-slate-200 w-fit">
                         {row.category?.name || "N/A"}
                     </span>
-                    <span className={`text-[9px] font-bold uppercase tracking-tight ${row.type === ProductType.CATALOG ? 'text-emerald-500' : 'text-amber-500'}`}>
+                    <span className={`text-[0.6875rem] font-bold uppercase tracking-tight ${row.type === ProductType.CATALOG ? 'text-emerald-500' : 'text-amber-500'}`}>
                         {row.type === ProductType.CATALOG ? '● Catalog (Tiêu chuẩn)' : '○ Non-catalog (Phi tiêu chuẩn)'}
                     </span>
                 </div>
@@ -216,7 +216,7 @@ export default function ProductAdminPage() {
             render: (row: Product) => (
                 <div className="min-w-[90px]">
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider ${
-                        row.isActive ? "bg-emerald-500/10 text-black border border-emerald-500/20" : "bg-rose-500/10 text-black border border-rose-500/20"
+                        row.isActive ? "bg-emerald-500/10 text-emerald-700 border border-emerald-500/20" : "bg-rose-500/10 text-rose-600 border border-rose-500/20"
                     }`}>
                         <div className={`h-1.5 w-1.5 rounded-full ${row.isActive ? "bg-emerald-500" : "bg-rose-500"}`} />
                         {row.isActive ? "Đang bán" : "Ngừng bán"}
@@ -229,7 +229,7 @@ export default function ProductAdminPage() {
             render: (row: Product) => (
                 <div className="flex gap-1">
                     <button 
-                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
+                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
                         onClick={() => {
                             setEditingProduct(row);
                             setIsProductModalOpen(true);
@@ -238,7 +238,7 @@ export default function ProductAdminPage() {
                         <Edit2 size={14} />
                     </button>
                     <button 
-                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-black hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
+                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-black hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
                         onClick={() => handleDeleteProduct(row.id)}
                     >
                         <Trash2 size={14} />
@@ -267,14 +267,14 @@ export default function ProductAdminPage() {
         {
             label: "Mô tả",
             key: "description",
-            render: (row: ProductCategory) => <span className="text-xs text-black italic">{row.description || "-"}</span>
+            render: (row: ProductCategory) => <span className="text-xs text-[#64748B] italic">{row.description || "-"}</span>
         },
         {
             label: "Thao tác",
             render: (row: ProductCategory) => (
                 <div className="flex gap-2">
                     <button 
-                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
+                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
                         onClick={() => {
                             setEditingCategory(row);
                             setIsCategoryModalOpen(true);
@@ -283,7 +283,7 @@ export default function ProductAdminPage() {
                         <Edit2 size={14}/>
                     </button>
                     <button 
-                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-black hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
+                        className="h-9 w-9 flex items-center justify-center bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-black hover:border-rose-400/30 rounded-xl transition-all shadow-sm"
                         onClick={() => handleDeleteCategory(row.id)}
                     >
                         <Trash2 size={14}/>
@@ -315,11 +315,11 @@ export default function ProductAdminPage() {
             <div className="mt-8 flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Quản lý kho hàng & Danh mục</h1>
-                    <p className="text-sm text-slate-900 mt-1 font-bold">DỮ LIỆU SẢN PHẨM SOURCE TỪ HỆ THỐNG TRUNG TÂM</p>
+                    <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium">DỮ LIỆU SẢN PHẨM SOURCE TỪ HỆ THỐNG TRUNG TÂM</p>
                 </div>
                 <div className="flex gap-4">
                     <button 
-                        className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
+                        className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
                         onClick={() => {
                             if (activeTab === "Sản phẩm") {
                                 setEditingProduct(null);
@@ -337,10 +337,10 @@ export default function ProductAdminPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-8">
-                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                     {/* Toolbar */}
-                    <div className="p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="flex gap-1 p-1 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl w-fit">
+                    <div className="p-6 border-b border-slate-200 bg-[#FFFFFF] flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="flex gap-1 p-1 bg-[#F1F5F9] border border-slate-200 rounded-xl w-fit">
                             {["Sản phẩm", "Danh mục"].map(tab => (
                                 <button
                                     key={tab}
@@ -348,7 +348,7 @@ export default function ProductAdminPage() {
                                     className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                                         activeTab === tab 
                                         ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
-                                        : "text-white hover:text-[#2563EB] hover:bg-[#2563EB]/10"
+                                        : "text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10"
                                     }`}
                                 >
                                     {tab}
@@ -358,7 +358,7 @@ export default function ProductAdminPage() {
 
                         <div className="flex items-center gap-4 flex-1 max-w-md">
                             <div className="relative flex-1 group">
-                                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 group-focus-within:text-[#2563EB] transition-colors" />
+                                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8] group-focus-within:text-[#2563EB] transition-colors" />
                                 <input 
                                     className="erp-input w-full pl-12 font-bold focus:border-[#2563EB] bg-[#FFFFFF] text-slate-900" 
                                     placeholder={`Tìm kiếm ${activeTab.toLowerCase()}...`}
@@ -380,13 +380,13 @@ export default function ProductAdminPage() {
 
                 {/* Stats Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-slate-200 flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
                         <div className="flex-1">
                             <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-1">Mục sản phẩm</div>
                             <div className="text-3xl font-black text-slate-900">{products.length}</div>
                         </div>
                     </div>
-                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl border border-slate-200 flex items-center gap-6 group hover:border-[#2563EB]/30 transition-all text-center">
                         <div className="flex-1">
                             <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-1">Danh mục cấp 1</div>
                             <div className="text-3xl font-black text-slate-900">{categories.length}</div>
@@ -398,12 +398,12 @@ export default function ProductAdminPage() {
             {/* Product Modal */}
             {isProductModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4">
-                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl border border-slate-200">
                         <div className="p-6">
                             <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 {editingProduct ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới"}
                             </h2>
-                            <p className="text-xs text-slate-900 font-bold uppercase tracking-widest mb-10">QUẢN LÝ KHO HÀNG</p>
+                            <p className="text-[0.8125rem] text-[#64748B] font-medium uppercase tracking-widest mb-10">QUẢN LÝ KHO HÀNG</p>
 
                             <form onSubmit={(e) => { e.preventDefault(); handleSaveProduct(); }} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
@@ -487,10 +487,10 @@ export default function ProductAdminPage() {
                                         </select>
                                     </div>
 
-                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#FFFFFF] rounded-xl border border-slate-200">
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-widest">Kích hoạt sản phẩm</span>
-                                            <span className="text-[9px] text-slate-900 font-bold">Cho phép sử dụng sản phẩm này trong các yêu cầu mua hàng</span>
+                                            <span className="text-[0.6875rem] text-slate-900 font-bold">Cho phép sử dụng sản phẩm này trong các yêu cầu mua hàng</span>
                                         </div>
                                         <button 
                                             type="button"
@@ -527,12 +527,12 @@ export default function ProductAdminPage() {
             {/* Product/Category Creation Form Modal */}
             {isCategoryModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4">
-                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-slate-200">
                         <div className="p-6">
                             <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 {editingCategory ? "Cập nhật Danh mục" : "Thêm Danh mục mới"}
                             </h2>
-                            <p className="text-xs text-slate-900 font-bold uppercase tracking-widest mb-10">QUẢN LÝ DANH MỤC</p>
+                            <p className="text-[0.8125rem] text-[#64748B] font-medium uppercase tracking-widest mb-10">QUẢN LÝ DANH MỤC</p>
 
                             <form onSubmit={(e) => { e.preventDefault(); handleSaveCategory(); }} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
@@ -579,10 +579,10 @@ export default function ProductAdminPage() {
                                         />
                                     </div>
 
-                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                    <div className="col-span-2 flex items-center justify-between p-4 bg-[#FFFFFF] rounded-xl border border-slate-200">
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-widest">Kích hoạt</span>
-                                            <span className="text-[9px] text-slate-900 font-bold">Trạng thái hoạt động của dữ liệu</span>
+                                            <span className="text-[0.6875rem] text-slate-900 font-bold">Trạng thái hoạt động của dữ liệu</span>
                                         </div>
                                         <button 
                                             type="button"
@@ -618,4 +618,7 @@ export default function ProductAdminPage() {
         </div>
     );
 }
+
+
+
 

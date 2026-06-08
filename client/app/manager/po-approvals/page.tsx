@@ -52,10 +52,10 @@ export default function POApprovalsPage() {
                 <p className="text-slate-900 font-medium">Danh sách PO đang chờ bạn phê duyệt trước khi phát hành</p>
             </header>
 
-            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden shadow-xl shadow-[#2563EB]/5">
+            <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 overflow-hidden shadow-xl shadow-[#2563EB]/5">
                 <table className="erp-table text-xs">
                     <thead>
-                        <tr className="border-b border-[rgba(148,163,184,0.1)]">
+                        <tr className="border-b border-slate-200">
                             <th className="px-6 py-4">Mã PO</th>
                             <th className="px-6 py-4">Nhà cung cấp</th>
                             <th className="px-6 py-4">Liên kết PR</th>
@@ -65,7 +65,7 @@ export default function POApprovalsPage() {
                             <th className="px-6 py-4 text-center">Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                    <tbody className="divide-y divide-slate-100">
                         {pos.length > 0 ? (
                             pos.map((po) => (
                                 <tr key={po.id} className="hover:bg-[#FFFFFF]/30 transition-colors">
@@ -96,7 +96,7 @@ export default function POApprovalsPage() {
                                             <button onClick={() => setRejectModal({ isOpen: true, poId: po.id })} className="h-8 w-8 rounded-lg bg-rose-500 text-white flex items-center justify-center hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/20">
                                                 <X size={16} />
                                             </button>
-                                            <button className="h-8 w-8 rounded-lg bg-[#FFFFFF] text-slate-900 flex items-center justify-center hover:bg-[#F1F5F9] transition-colors border border-[rgba(148,163,184,0.1)]">
+                                            <button className="h-8 w-8 rounded-lg bg-[#FFFFFF] text-slate-900 flex items-center justify-center hover:bg-[#F1F5F9] transition-colors border border-slate-200">
                                                 <Eye size={16} />
                                             </button>
                                         </div>
@@ -120,7 +120,7 @@ export default function POApprovalsPage() {
             {/* Reject Modal */}
             {rejectModal.isOpen && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#FFFFFF]/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-md p-8 shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-md p-8 shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-200">
                         <h2 className="text-xl font-black text-slate-900 mb-2 tracking-tight uppercase">TỪ CHỐI ĐƠN HÀNG</h2>
                         <p className="text-slate-900 text-sm mb-6 font-medium">Lý do từ chối sẽ được gửi đến bộ phận mua sắm</p>
                         
@@ -128,7 +128,7 @@ export default function POApprovalsPage() {
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
                             placeholder="Nhập lý do chi tiết..."
-                            className="w-full h-32 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl p-4 text-sm font-medium text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all mb-6"
+                            className="w-full h-32 bg-[#FFFFFF] border border-slate-200 rounded-xl p-4 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all mb-6"
                         />
 
                         <div className="flex gap-3">

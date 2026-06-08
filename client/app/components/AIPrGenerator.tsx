@@ -175,7 +175,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
           <button
             onClick={handleClose}
             disabled={isGenerating || isSubmitting}
-            className="w-8 h-8 rounded-lg hover:bg-[rgba(148,163,184,0.1)] flex items-center justify-center text-slate-900 transition-colors disabled:opacity-50"
+            className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-900 transition-colors disabled:opacity-50"
           >
             <X size={20} />
           </button>
@@ -203,7 +203,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Ví dụ: Tôi cần mua 5 laptop Dell XPS 15 cho team dev mới, ngân sách khoảng 75 triệu, cần gấp trong tuần sau..."
-                    className="w-full h-32 p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-slate-900 placeholder-[#000000] focus:outline-none focus:border-[#2563EB] resize-none"
+                    className="w-full h-32 p-4 bg-[#F1F5F9] border border-slate-200 rounded-xl text-slate-900 placeholder-[#000000] focus:outline-none focus:border-[#2563EB] resize-none"
                     disabled={isGenerating}
                   />
                   <div className="flex items-center justify-between">
@@ -243,7 +243,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
               {draft && (
                 <div className="space-y-6 mt-4">
                   {/* PR Summary */}
-                  <div className="p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl">
+                  <div className="p-4 bg-[#F1F5F9] border border-slate-200 rounded-xl">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h3 className="font-semibold text-slate-900">{draft.title}</h3>
@@ -277,7 +277,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                   {/* Items Table */}
                   <div>
                     <h4 className="text-sm font-medium text-slate-900 mb-3">Danh sách items ({draft.items?.length})</h4>
-                    <div className="overflow-x-auto rounded-xl border border-[rgba(148,163,184,0.1)]">
+                    <div className="overflow-x-auto rounded-xl border border-slate-200">
                       <table className="erp-table text-xs m-0">
                         <thead>
                           <tr>
@@ -288,7 +288,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
                             <th className="px-4 py-3 text-left font-medium">Thành tiền</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                        <tbody className="divide-y divide-slate-100">
                           {draft.items?.map((item) => (
                             <tr key={item.lineNumber} className="hover:bg-[rgba(59,130,246,0.05)]">
                               <td className="px-4 py-3 text-slate-900">{item.lineNumber}</td>
@@ -356,7 +356,7 @@ export default function AIPrGenerator({ isOpen, onClose, onPrCreated }: AIPrGene
 
         {/* Footer */}
         {draft && !showSuccess && (
-          <div className="flex items-center justify-between p-6 border-t border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]/50">
+          <div className="flex items-center justify-between p-6 border-t border-slate-200 bg-[#F1F5F9]/50">
             <button
               onClick={() => setDraft(null)}
               disabled={isSubmitting}

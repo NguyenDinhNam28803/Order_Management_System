@@ -17,10 +17,10 @@ import { useProcurement } from "../../context/ProcurementContext";
 // ─── Status badge ───────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: DiscoveredSupplier['status'] }) => {
   if (status === 'WORKED_BEFORE')
-    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-black border border-emerald-500/30"><BadgeCheck size={10} />Đã hợp tác</span>;
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-700 border border-emerald-500/30"><BadgeCheck size={10} />Đã hợp tác</span>;
   if (status === 'IN_SYSTEM')
     return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600/15 text-blue-600 border border-blue-600/30"><CheckCircle2 size={10} />Trong hệ thống</span>;
-  return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/15 text-black border border-slate-500/30"><Sparkles size={10} />Mới</span>;
+  return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/15 text-slate-600 border border-slate-500/30"><Sparkles size={10} />Mới</span>;
 };
 
 // ─── AI Score bar ────────────────────────────────────────────────────────────
@@ -236,7 +236,7 @@ const SupplierDetailModal = ({
                   <p className="text-[10px] font-semibold text-slate-900 uppercase mb-1.5">Chứng chỉ</p>
                   <div className="flex flex-wrap gap-1.5">
                     {s.certifications.map((c, i) => (
-                      <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-emerald-500/10 text-black border border-emerald-500/20 flex items-center gap-1">
+                      <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 flex items-center gap-1">
                         <Shield size={9} />{c}
                       </span>
                     ))}
@@ -321,7 +321,7 @@ const SupplierCard = ({
           </div>
           {/* AI Score */}
           <div className="shrink-0 w-28">
-            <p className="text-[9px] font-semibold text-slate-900 uppercase tracking-wider mb-1">AI Score</p>
+            <p className="text-[0.6875rem] font-semibold text-slate-900 uppercase tracking-wider mb-1">AI Score</p>
             <ScoreBar score={supplier.aiScore} />
           </div>
         </div>
@@ -627,7 +627,7 @@ export default function SupplierDiscoveryPage() {
                 <Sparkles size={15} className="text-white" />
               </div>
               <h1 className="page-title">Khám phá Nhà Cung Cấp <span className="text-violet-400">(AI)</span></h1>
-              <span className="ml-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/30 uppercase tracking-wider">Beta</span>
+              <span className="ml-2 px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/30 uppercase tracking-wider">Beta</span>
             </div>
             <p className="text-[12px] text-slate-900">Tìm kiếm nhà cung cấp từ nguồn bên ngoài bằng AI · Gemini + Tavily Search</p>
           </div>
@@ -638,7 +638,7 @@ export default function SupplierDiscoveryPage() {
           {/* Main query */}
           <div className="flex gap-2 mb-3">
             <div className="relative flex-1">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
               <input
                 type="text"
                 value={query}
@@ -784,7 +784,7 @@ export default function SupplierDiscoveryPage() {
                 {selected.size >= 2 && (
                   <button
                     onClick={() => setComparing(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-amber-500/15 text-black border border-amber-500/30 hover:bg-amber-500/25 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-amber-500/15 text-amber-700 border border-amber-500/30 hover:bg-amber-500/25 transition-colors"
                   >
                     <RefreshCw size={11} />So sánh ({selected.size})
                   </button>

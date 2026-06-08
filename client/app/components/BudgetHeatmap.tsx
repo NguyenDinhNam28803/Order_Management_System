@@ -38,8 +38,8 @@ export default function BudgetHeatmap() {
     };
 
     return (
-        <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden group">
-            <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between bg-[#1A1D26]">
+        <div className="bg-[#F1F5F9] border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden group">
+            <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-[#1A1D26]">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-[#2563EB] text-[#F8FAFC] rounded-2xl shadow-lg shadow-[#2563EB]/20 group-hover:scale-110 transition-transform duration-500">
                         <LayoutGrid size={22} />
@@ -97,7 +97,7 @@ export default function BudgetHeatmap() {
                         <div className="absolute inset-0 z-20 bg-slate-900/95 backdrop-blur-md opacity-0 group-hover/item:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
                             <div className="text-[10px] font-black text-[#F8FAFC]/50 uppercase tracking-widest mb-2">Detailed Analysis</div>
                             <div className="text-xs font-bold text-[#F8FAFC] mb-3">{formatVND(item.used)} / {formatVND(item.allocated)}</div>
-                            <div className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase ${getTagColor(item.ratio)}`}>
+                            <div className={`px-2 py-1 rounded-lg text-[0.6875rem] font-black uppercase ${getTagColor(item.ratio)}`}>
                                 {item.ratio >= 90 ? "Critical / Over" : item.ratio >= 70 ? "Warning / High" : "Optimal"}
                             </div>
                         </div>
@@ -105,7 +105,7 @@ export default function BudgetHeatmap() {
                 ))}
             </div>
 
-            <div className="p-4 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] flex items-center gap-4 justify-center">
+            <div className="p-4 bg-[#FFFFFF] border-t border-slate-200 flex items-center gap-4 justify-center">
                 <div className="flex items-center gap-2">
                     <Info size={14} className="text-[#2563EB]" />
                     <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none mt-0.5 whitespace-nowrap">Hover on a cell to see exact consumption and threshold warnings</span>

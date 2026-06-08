@@ -24,11 +24,11 @@ export default function DisputesPage() {
     const getStatusBadge = (status: DisputeStatus) => {
         switch (status) {
             case DisputeStatus.OPEN:
-                return <span className="px-2 py-1 bg-rose-500/10 text-black border border-rose-500/20 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><AlertTriangle size={12}/> Đang mở</span>;
+                return <span className="px-2 py-1 bg-rose-500/10 text-rose-700 border border-rose-500/20 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><AlertTriangle size={12}/> Đang mở</span>;
             case DisputeStatus.UNDER_INVESTIGATION:
-                return <span className="px-2 py-1 bg-amber-500/10 text-black border border-amber-500/20 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><Clock size={12}/> Đang xác minh</span>;
+                return <span className="px-2 py-1 bg-amber-500/10 text-amber-700 border border-amber-500/20 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><Clock size={12}/> Đang xác minh</span>;
             case DisputeStatus.RESOLVED:
-                return <span className="px-2 py-1 bg-emerald-500/10 text-black border border-emerald-500/20 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><CheckCircle size={12}/> Đã giải quyết</span>;
+                return <span className="px-2 py-1 bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><CheckCircle size={12}/> Đã giải quyết</span>;
             case DisputeStatus.CLOSED:
                 return <span className="px-2 py-1 bg-slate-100 text-slate-900 border border-slate-200 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><XCircle size={12}/> Đã đóng</span>;
             default:
@@ -41,23 +41,23 @@ export default function DisputesPage() {
             <div className="page-header">
                 <div>
                     <h1 className="page-title">Khiếu nại & Tranh chấp</h1>
-                    <p className="text-slate-900 text-sm">Xử lý các vấn đề phát sinh về chất lượng hàng hóa, thanh toán hoặc dịch vụ</p>
+                    <p className="text-[0.8125rem] text-[#64748B] font-medium">Xử lý các vấn đề phát sinh về chất lượng hàng hóa, thanh toán hoặc dịch vụ</p>
                 </div>
                 <button className="flex items-center gap-2 bg-rose-500 text-white px-4 py-2 rounded-xl hover:bg-rose-600 transition-all shadow-lg shadow-rose-500/20 font-bold uppercase tracking-wider text-[11px]">
                     <AlertTriangle size={18} /> Tạo khiếu nại mới
                 </button>
             </div>
 
-            <div className="bg-slate-100 p-4 rounded-[32px] border border-slate-200 shadow-xl shadow-blue-600/5 flex flex-wrap gap-4 items-center">
+            <div className="bg-slate-100 p-4 rounded-xl border border-slate-200 shadow-xl shadow-blue-600/5 flex flex-wrap gap-4 items-center">
                 <div className="flex-1 min-w-[300px] flex gap-3">
-                    <div className="h-14 w-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                    <div className="h-14 w-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                         <Search size={20} className="text-blue-600" />
                     </div>
                     <div className="relative flex-1">
                         <input
                             type="text"
                             placeholder="Tìm theo mã khiếu nại, nội dung..."
-                            className="w-full h-14 pl-6 pr-4 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all text-sm font-bold"
+                            className="w-full h-14 pl-6 pr-4 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all text-sm font-bold"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -67,7 +67,7 @@ export default function DisputesPage() {
                     <div className="relative">
                         <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-600" />
                         <select
-                            className="h-14 pl-12 pr-10 bg-white border border-slate-200 rounded-2xl text-slate-900 text-sm font-bold focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                            className="h-14 pl-12 pr-10 bg-white border border-slate-200 rounded-xl text-[0.8125rem] text-[#64748B] font-medium font-bold focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none cursor-pointer min-w-[200px]"
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                         >
@@ -83,13 +83,13 @@ export default function DisputesPage() {
 
             <div className="grid grid-cols-1 gap-4">
                 {filteredDisputes.length > 0 ? filteredDisputes.map((d) => (
-                    <div key={d.id} className="bg-slate-100 p-5 rounded-2xl shadow-xl shadow-blue-600/5 border border-slate-200 hover:border-rose-500/20 transition-all group relative">
+                    <div key={d.id} className="bg-slate-100 p-5 rounded-xl shadow-xl shadow-blue-600/5 border border-slate-200 hover:border-rose-500/20 transition-all group relative">
                         <div className="flex justify-between items-start mb-3">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-3">
                                     <span className="font-bold text-black">#{d.disputeNumber}</span>
                                     {getStatusBadge(d.status)}
-                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${d.priority === 'HIGH' ? 'bg-rose-500 text-white' : 'bg-white text-slate-500 border border-slate-200'}`}>
+                                    <span className={`text-[0.6875rem] px-1.5 py-0.5 rounded font-bold uppercase ${d.priority === 'HIGH' ? 'bg-rose-500 text-white' : 'bg-white text-slate-500 border border-slate-200'}`}>
                                         {d.priority}
                                     </span>
                                 </div>
@@ -108,14 +108,14 @@ export default function DisputesPage() {
                         <div className="flex justify-between items-center pt-4 border-t border-slate-200">
                             <div className="flex items-center gap-4 text-xs">
                                 <div className="flex items-center gap-1.5 text-slate-900">
-                                    <div className="w-6 h-6 rounded-full bg-blue-600/10 flex items-center justify-center text-[10px] font-bold text-blue-600 border border-blue-600/20">
+                                    <div className="w-6 h-6 rounded-full bg-blue-600/10 flex items-center justify-center text-[0.6875rem] font-bold text-blue-600 border border-blue-600/20">
                                         {d.reportedBy?.fullName?.charAt(0) || "U"}
                                     </div>
                                     <span>Bởi: <b className="text-slate-900">{d.reportedBy?.fullName || "N/A"}</b></span>
                                 </div>
                                 {d.assignedTo && (
                                     <div className="flex items-center gap-1.5 text-slate-900">
-                                        <div className="w-6 h-6 rounded-full bg-purple-500/10 flex items-center justify-center text-[10px] font-bold text-black border border-purple-500/20">
+                                        <div className="w-6 h-6 rounded-full bg-purple-500/10 flex items-center justify-center text-[0.6875rem] font-bold text-purple-700 border border-purple-500/20">
                                             {d.assignedTo?.fullName?.charAt(0) || "A"}
                                         </div>
                                         <span>Xử lý: <b className="text-slate-900">{d.assignedTo?.fullName}</b></span>
@@ -136,7 +136,7 @@ export default function DisputesPage() {
                         </div>
                     </div>
                 )) : (
-                    <div className="bg-slate-100 p-12 rounded-2xl border border-dashed border-slate-200 text-center space-y-3">
+                    <div className="bg-slate-100 p-12 rounded-xl border border-dashed border-slate-200 text-center space-y-3">
                         <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto text-slate-900 border border-slate-200">
                             <MessageSquare size={32} />
                         </div>
@@ -149,4 +149,5 @@ export default function DisputesPage() {
         </main>
     );
 }
+
 

@@ -41,7 +41,7 @@ export default function WarehouseQCAnalysis() {
               <TrendingUp size={36} className="text-[#2563EB]" />
               Phân Tích Tỷ Lệ Lỗi
             </h1>
-            <p className="text-slate-900 font-medium">
+            <p className="text-[0.8125rem] text-[#64748B] font-medium">
               Phát hiện các xu hướng bất thường trong tỷ lệ lỗi sản phẩm nhập kho qua 365 ngày.
             </p>
           </div>
@@ -80,7 +80,7 @@ export default function WarehouseQCAnalysis() {
 
       {/* Additional Info Cards */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 p-6">
           <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Ngưỡng Cảnh Báo
           </h3>
@@ -100,7 +100,7 @@ export default function WarehouseQCAnalysis() {
           </div>
         </div>
 
-        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 p-6">
           <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Pattern Nguy Hiểm
           </h3>
@@ -120,7 +120,7 @@ export default function WarehouseQCAnalysis() {
           </ul>
         </div>
 
-        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 p-6">
           <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Hành Động Đề Xuất
           </h3>

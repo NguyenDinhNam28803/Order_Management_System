@@ -237,7 +237,7 @@ function NotificationInbox() {
       >
         <Bell size={14} className={unreadCount > 0 ? "animate-pulse" : ""} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-black text-white ring-2 ring-white">
+          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[0.6875rem] font-black text-white ring-2 ring-white">
             {unreadCount}
           </span>
         )}
@@ -264,7 +264,7 @@ function NotificationInbox() {
                     <button
                       key={f}
                       onClick={() => setFilter(f)}
-                      className={`px-3 py-1.5 rounded-lg text-[9px] font-bold transition-all duration-200 ${
+                      className={`px-3 py-1.5 rounded-lg text-[0.6875rem] font-bold transition-all duration-200 ${
                         filter === f
                           ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
                           : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -364,10 +364,10 @@ const NotificationItem = ({ item }: { item: MergedNotificationItem }) => {
 
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start gap-2 mb-1">
-            <span className={`text-[9px] font-bold uppercase tracking-wider ${typeLabelColorClass}`}>
+            <span className={`text-[0.6875rem] font-bold uppercase tracking-wider ${typeLabelColorClass}`}>
               {getTypeLabel()}
             </span>
-            <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
+            <span className="text-[0.6875rem] text-gray-500 font-medium whitespace-nowrap bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
               {item.deadline ? new Date(item.deadline).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
             </span>
           </div>
@@ -385,7 +385,7 @@ const NotificationItem = ({ item }: { item: MergedNotificationItem }) => {
               {item.amount && (
                 <span className="text-[12px] font-bold text-[#2563EB] tracking-tight">{item.amount}</span>
               )}
-              <span className="text-[9px] text-gray-500 font-semibold uppercase truncate max-w-[120px]">
+              <span className="text-[0.6875rem] text-gray-500 font-semibold uppercase truncate max-w-[120px]">
                 {item.requester}
               </span>
             </div>

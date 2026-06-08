@@ -173,10 +173,10 @@ export default function ContractSignModal({
                 onClick={step !== "signing" ? onClose : undefined}
             />
 
-            <div className="relative w-full max-w-lg bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex flex-col max-h-[92vh] overflow-hidden pointer-events-auto animate-in zoom-in-95 duration-200">
+            <div className="relative w-full max-w-lg bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex flex-col max-h-[92vh] overflow-hidden pointer-events-auto animate-in zoom-in-95 duration-200">
 
                 {/* ── Header ── */}
-                <div className="px-8 py-6 border-b border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-t-[2rem] flex items-center justify-between shrink-0">
+                <div className="px-8 py-6 border-b border-slate-200 bg-[#FFFFFF] rounded-t-[2rem] flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                             <PenTool size={16} className="text-black" />
@@ -191,7 +191,7 @@ export default function ContractSignModal({
                         {step !== "signing" && (
                             <button
                                 onClick={onClose}
-                                className="p-1.5 text-slate-900 hover:text-slate-900 hover:bg-[rgba(148,163,184,0.08)] rounded-lg transition-all"
+                                className="p-1.5 text-slate-900 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-all"
                             >
                                 <X size={16} />
                             </button>
@@ -206,7 +206,7 @@ export default function ContractSignModal({
                     {step === "review" && (
                         <div className="p-6 space-y-5">
                             {/* Contract info grid */}
-                            <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.08)] p-4 space-y-3">
+                            <div className="bg-[#FFFFFF] rounded-xl border border-slate-200 p-4 space-y-3">
                                 <InfoRow icon={<FileText size={13} className="text-slate-900" />} label="Tiêu đề">
                                     <span className="font-bold text-slate-900">{contract.title}</span>
                                 </InfoRow>
@@ -228,8 +228,8 @@ export default function ContractSignModal({
                             {/* Description / terms */}
                             {contract.description && (
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-2">Mô tả</p>
-                                    <div className="bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.08)] p-3 max-h-28 overflow-y-auto">
+                                    <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] mb-2">Mô tả</p>
+                                    <div className="bg-[#FFFFFF] rounded-xl border border-slate-200 p-3 max-h-28 overflow-y-auto">
                                         <p className="text-xs text-slate-900 leading-relaxed">{contract.description}</p>
                                     </div>
                                 </div>
@@ -249,7 +249,7 @@ export default function ContractSignModal({
                                     type="checkbox"
                                     checked={agreed}
                                     onChange={e => setAgreed(e.target.checked)}
-                                    className="mt-0.5 w-4 h-4 rounded border-[rgba(148,163,184,0.3)] accent-emerald-500 cursor-pointer"
+                                    className="mt-0.5 w-4 h-4 rounded border-slate-200 accent-emerald-500 cursor-pointer"
                                 />
                                 <span className="text-sm text-slate-900 group-hover:text-white transition-colors leading-relaxed">
                                     Tôi đã đọc, hiểu và đồng ý với tất cả các điều khoản hợp đồng
@@ -269,7 +269,7 @@ export default function ContractSignModal({
 
                             {/* Code display */}
                             <div className="bg-[#FFFFFF] border border-emerald-500/30 rounded-xl p-5 text-center">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-900 mb-2">
+                                <p className="text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 mb-2">
                                     Mã xác nhận của bạn
                                 </p>
                                 <p className="font-mono font-black text-4xl tracking-[0.35em] text-black select-all">
@@ -282,7 +282,7 @@ export default function ContractSignModal({
 
                             {/* OTP input boxes */}
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 text-center mb-3">
+                                <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] text-center mb-3">
                                     Nhập mã xác nhận
                                 </p>
                                 <div className="flex justify-center gap-2">
@@ -298,7 +298,7 @@ export default function ContractSignModal({
                                             onChange={e => handleOtpChange(idx, e.target.value)}
                                             onKeyDown={e => handleOtpKeyDown(idx, e)}
                                             className={`w-11 h-14 text-center text-xl font-black rounded-xl border bg-[#FFFFFF] text-slate-900 outline-none transition-all
-                                                ${val ? "border-emerald-500/60 text-black" : "border-[rgba(148,163,184,0.15)]"}
+                                                ${val ? "border-emerald-500/60 text-black" : "border-slate-200"}
                                                 focus:border-emerald-500/80 focus:ring-1 focus:ring-emerald-500/30`}
                                         />
                                     ))}
@@ -346,7 +346,7 @@ export default function ContractSignModal({
 
                             {/* Signature receipt */}
                             <div className="bg-[#FFFFFF] rounded-xl border border-emerald-500/20 p-4 space-y-3">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-1.5">
+                                <p className="text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 flex items-center gap-1.5">
                                     <ShieldCheck size={11} className="text-black" /> Phiếu xác nhận chữ ký số
                                 </p>
                                 <div className="space-y-2">
@@ -374,12 +374,12 @@ export default function ContractSignModal({
                 </div>
 
                 {/* ── Footer ── */}
-                <div className="px-8 py-6 border-t border-[rgba(148,163,184,0.08)] bg-[#FFFFFF] rounded-b-[2rem] shrink-0">
+                <div className="px-8 py-6 border-t border-slate-200 bg-[#FFFFFF] rounded-b-[2rem] shrink-0">
                     {step === "review" && (
                         <div className="flex gap-3 justify-end">
                             <button
                                 onClick={onClose}
-                                className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-slate-100 transition-all"
+                                className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-slate-200 text-slate-900 font-bold text-sm hover:bg-slate-100 transition-all"
                             >
                                 Hủy
                             </button>
@@ -397,7 +397,7 @@ export default function ContractSignModal({
                         <div className="flex gap-3 justify-end">
                             <button
                                 onClick={onClose}
-                                className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 font-bold text-sm hover:bg-slate-100 transition-all"
+                                className="px-5 py-2 rounded-xl bg-[#F1F5F9] border border-slate-200 text-slate-900 font-bold text-sm hover:bg-slate-100 transition-all"
                             >
                                 Hủy
                             </button>
@@ -439,7 +439,7 @@ function StepIndicator({ step }: { step: ModalStep }) {
     const total = 3; // success doesn't count as a "step" to complete
     if (step === "signing" || step === "success") return null;
     return (
-        <span className="text-[10px] font-bold text-slate-900 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] px-2 py-0.5 rounded-full">
+        <span className="text-[10px] font-bold text-slate-900 bg-[#F1F5F9] border border-slate-200 px-2 py-0.5 rounded-full">
             Bước {current} / {total}
         </span>
     );
@@ -459,7 +459,7 @@ function InfoRow({ icon, label, children }: { icon: React.ReactNode; label: stri
 
 function ReceiptRow({ label, children }: { label: string; children: React.ReactNode }) {
     return (
-        <div className="flex items-center justify-between gap-3 py-1 border-b border-[rgba(148,163,184,0.06)] last:border-0">
+        <div className="flex items-center justify-between gap-3 py-1 border-b border-slate-200 last:border-0">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-900 shrink-0">{label}</span>
             {children}
         </div>

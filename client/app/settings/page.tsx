@@ -8,12 +8,12 @@ export default function SettingsPage() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <div className="mt-8 mb-12">
                 <h1 className="text-2xl font-black text-slate-900 tracking-tight">Cài đặt hệ thống</h1>
-                <p className="text-sm text-text-secondary mt-1">Cấu hình tham số nghiệp vụ và bảo mật toàn hệ thống.</p>
+                <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium">Cấu hình tham số nghiệp vụ và bảo mật toàn hệ thống.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="space-y-2">
-                    <button className="w-full flex items-center gap-3 px-4 py-3 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 shadow-sm">
+                    <button className="w-full flex items-center gap-3 px-4 py-3 bg-[#F1F5F9] border border-slate-200 rounded-xl text-sm font-bold text-slate-900 shadow-sm">
                         <Shield size={18} /> Phân quyền & Bảo mật
                     </button>
                     <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F1F5F9] text-slate-900 rounded-xl text-sm font-bold transition-all">
@@ -25,18 +25,18 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="md:col-span-3 space-y-8">
-                    <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] p-8 shadow-xl shadow-[#2563EB]/5">
-                        <h3 className="text-sm font-black uppercase text-slate-900 mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4">Tham số nghiệp vụ Thu mua</h3>
+                    <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 p-8 shadow-xl shadow-[#2563EB]/5">
+                        <h3 className="text-sm font-black uppercase text-slate-900 mb-8 border-b border-slate-200 pb-4">Tham số nghiệp vụ Thu mua</h3>
                         <div className="max-w-xl space-y-6">
                             <div className="grid grid-cols-2 gap-8">
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-900 mb-2">Ngưỡng dung sai (%)</label>
-                                    <input type="number" className="w-full px-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" defaultValue={2} />
+                                    <label className="block text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] mb-2">Ngưỡng dung sai (%)</label>
+                                    <input type="number" className="w-full px-4 py-3 bg-[#FFFFFF] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" defaultValue={2} />
                                     <p className="text-[10px] text-slate-900 mt-1">Chênh lệch tối đa cho phép giữa PO và Invoice.</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-900 mb-2">Loại tiền tệ mặc định</label>
-                                    <select className="w-full px-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all">
+                                    <label className="block text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] mb-2">Loại tiền tệ mặc định</label>
+                                    <select className="w-full px-4 py-3 bg-[#FFFFFF] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all">
                                         <option>VND (₫)</option>
                                         <option>USD ($)</option>
                                         <option>EUR (€)</option>
@@ -45,9 +45,9 @@ export default function SettingsPage() {
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-900 mb-2">Quy tắc Budget Lock</label>
+                                <label className="block text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] mb-2">Quy tắc Budget Lock</label>
                                 <div className="flex items-center gap-2 mt-2">
-                                    <input type="checkbox" checked className="h-4 w-4 rounded border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]" />
+                                    <input type="checkbox" checked className="h-4 w-4 rounded border-slate-200 bg-[#FFFFFF]" />
                                     <span className="text-xs font-medium text-slate-900">Tự động khóa ngân sách khi duyệt PO chính thức.</span>
                                 </div>
                             </div>

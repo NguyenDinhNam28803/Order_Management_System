@@ -129,7 +129,7 @@ export default function PoConfirmPage() {
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-cyan-100 flex items-center justify-center text-gray-900">
         <div className="text-center">
           <Loader2 className="w-10 h-10 text-teal-600 animate-spin mx-auto mb-3" />
-          <p className="text-black font-medium">Đang tải thông tin đơn hàng...</p>
+          <p className="text-gray-600 font-medium">Đang tải thông tin đơn hàng...</p>
         </div>
       </div>
     );
@@ -142,7 +142,7 @@ export default function PoConfirmPage() {
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-800 mb-2">Link không hợp lệ</h2>
-          <p className="text-black text-sm leading-relaxed">{errorMsg}</p>
+          <p className="text-gray-600 text-sm leading-relaxed">{errorMsg}</p>
           <div className="mt-6 p-3 bg-red-50 rounded-lg text-xs text-red-700">
             Link có thể đã hết hạn, đã được sử dụng, hoặc không đúng.
             Vui lòng liên hệ người mua để nhận link mới.
@@ -159,25 +159,25 @@ export default function PoConfirmPage() {
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-teal-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-800 mb-2">Xác nhận thành công!</h2>
-          <p className="text-black text-sm leading-relaxed mb-4">
+          <p className="text-gray-600 text-sm leading-relaxed mb-4">
             Bạn đã xác nhận nhận đơn hàng <strong>{po?.poNumber}</strong>.
             Bộ phận mua sắm sẽ được thông báo ngay lập tức.
           </p>
           <div className="bg-teal-50 rounded-xl p-4 text-left text-sm space-y-2">
             <div className="flex justify-between">
-              <span className="text-black">Mã PO</span>
+              <span className="text-gray-600">Mã PO</span>
               <span className="font-bold text-gray-800">{po?.poNumber}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-black">Tổng giá trị</span>
+              <span className="text-gray-600">Tổng giá trị</span>
               <span className="font-bold text-teal-700">{fmt(po?.totalAmount ?? 0)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-black">Giao hàng trước</span>
+              <span className="text-gray-600">Giao hàng trước</span>
               <span className="font-medium text-gray-700">{po?.deliveryDate ? fmtDate(po.deliveryDate) : "—"}</span>
             </div>
           </div>
-          <p className="text-xs text-black mt-6">
+          <p className="text-xs text-gray-600 mt-6">
             Link này đã vô hiệu. Vui lòng liên hệ người mua nếu cần hỗ trợ.
           </p>
         </div>
@@ -204,39 +204,39 @@ export default function PoConfirmPage() {
 
           <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm border-b border-gray-100">
             <div>
-              <p className="text-black text-xs mb-0.5">Mã PO</p>
+              <p className="text-gray-600 text-xs mb-0.5">Mã PO</p>
               <p className="font-semibold text-gray-800">{po.poNumber}</p>
             </div>
             <div>
-              <p className="text-black text-xs mb-0.5">Giao hàng trước</p>
+              <p className="text-gray-600 text-xs mb-0.5">Giao hàng trước</p>
               <div className="flex items-center gap-1">
-                <CalendarDays className="w-3.5 h-3.5 text-black" />
+                <CalendarDays className="w-3.5 h-3.5 text-gray-600" />
                 <p className="font-semibold text-gray-800">{fmtDate(po.deliveryDate)}</p>
               </div>
             </div>
             <div>
-              <p className="text-black text-xs mb-0.5">Điều kiện TT</p>
+              <p className="text-gray-600 text-xs mb-0.5">Điều kiện TT</p>
               <p className="font-medium text-gray-700">{po.paymentTerms ?? "—"}</p>
             </div>
             <div>
-              <p className="text-black text-xs mb-0.5">Gửi đến</p>
+              <p className="text-gray-600 text-xs mb-0.5">Gửi đến</p>
               <div className="flex items-center gap-1">
-                <Mail className="w-3.5 h-3.5 text-black" />
+                <Mail className="w-3.5 h-3.5 text-gray-600" />
                 <p className="text-gray-700 text-xs truncate">{tokenInfo?.targetEmail}</p>
               </div>
             </div>
           </div>
 
           {po.deliveryAddress && (
-            <div className="px-6 py-3 flex items-start gap-2 text-sm text-black border-b border-gray-100">
-              <MapPin className="w-4 h-4 text-black mt-0.5 shrink-0" />
+            <div className="px-6 py-3 flex items-start gap-2 text-sm text-gray-600 border-b border-gray-100">
+              <MapPin className="w-4 h-4 text-gray-600 mt-0.5 shrink-0" />
               <span>{po.deliveryAddress}</span>
             </div>
           )}
 
           {(po.contactPerson || po.contactEmail) && (
-            <div className="px-6 py-3 flex items-center gap-4 text-xs text-black">
-              <span className="font-medium text-black">Liên hệ:</span>
+            <div className="px-6 py-3 flex items-center gap-4 text-xs text-gray-600">
+              <span className="font-medium text-gray-600">Liên hệ:</span>
               {po.contactPerson && (
                 <span className="flex items-center gap-1">
                   <Building2 className="w-3.5 h-3.5" />{po.contactPerson}
@@ -275,7 +275,7 @@ export default function PoConfirmPage() {
                       <span className="font-medium text-gray-800">{item.description}</span>
                     </td>
                     <td className="px-4 py-4 text-center text-gray-700">
-                      {item.qty} <span className="text-black text-xs">{item.unit}</span>
+                      {item.qty} <span className="text-gray-600 text-xs">{item.unit}</span>
                     </td>
                     <td className="px-4 py-4 text-right text-gray-700">{fmt(item.unitPrice)}</td>
                     <td className="px-6 py-4 text-right font-semibold text-teal-700">{fmt(item.total)}</td>
@@ -297,11 +297,11 @@ export default function PoConfirmPage() {
             <h2 className="font-semibold text-gray-800">Xác nhận đơn hàng</h2>
           </div>
           <div className="px-6 py-5 space-y-4">
-            <p className="text-sm text-black">
+            <p className="text-sm text-gray-600">
               Bằng cách xác nhận, bạn đồng ý thực hiện đơn hàng <strong>{po.poNumber}</strong> theo các điều khoản đã nêu và giao hàng trước ngày <strong>{fmtDate(po.deliveryDate)}</strong>.
             </p>
             <div>
-              <label className="block text-xs font-medium text-black mb-1">Ghi chú (không bắt buộc)</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Ghi chú (không bắt buộc)</label>
               <textarea
                 rows={3}
                 placeholder="Ghi chú về tiến độ, điều kiện giao hàng hoặc câu hỏi..."
@@ -324,7 +324,7 @@ export default function PoConfirmPage() {
               )}
             </button>
           </div>
-          <div className="flex items-center gap-2 px-6 pb-5 text-xs text-black">
+          <div className="flex items-center gap-2 px-6 pb-5 text-xs text-gray-600">
             <Clock className="w-3.5 h-3.5 shrink-0" />
             <span>Link hết hạn lúc {tokenInfo ? fmtDate(tokenInfo.expiresAt) : "—"}. Chỉ dùng được một lần.</span>
           </div>

@@ -520,9 +520,9 @@ const StatusBadge = ({ status, type = "default" }: { status: string, type?: "def
     const translatedStatus = getStatusLabel(status);
     const colors = {
         default: "bg-[#000000]/10 text-slate-900 border-[#000000]/20",
-        success: "bg-emerald-500/10 text-black border-emerald-500/20",
-        warning: "bg-amber-500/10 text-black border-amber-500/20",
-        danger: "bg-rose-500/10 text-black border-rose-500/20",
+        success: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
+        warning: "bg-amber-500/10 text-amber-700 border-amber-500/20",
+        danger: "bg-rose-500/10 text-rose-700 border-rose-500/20",
         info: "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20"
     };
     
@@ -534,7 +534,7 @@ const StatusBadge = ({ status, type = "default" }: { status: string, type?: "def
 };
 
 const RoleBadge = ({ role, icon }: { role: string, icon: React.ReactNode }) => (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFFFFF] rounded-lg border border-[rgba(148,163,184,0.1)]">
+    <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFFFFF] rounded-lg border border-slate-200">
         <span className="text-[#2563EB]">{icon}</span>
         <span className="text-[10px] font-black text-slate-900 uppercase tracking-wider">{role}</span>
     </div>
@@ -680,15 +680,15 @@ export default function SimulationPage() {
             <header className="max-w-[1600px] mx-auto flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-gradient-to-br from-[#2563EB] to-purple-600 rounded-2xl shadow-lg shadow-[#2563EB]/20">
-                        <Zap className="text-slate-900 fill-white/20" size={24} />
+                        <Zap className="text-white fill-white/20" size={24} />
                     </div>
                     <div>
                         <h1 className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">OMS Simulation</h1>
-                        <p className="text-xs text-slate-900 font-bold tracking-widest uppercase">Chi tiết quy trình mua hàng</p>
+                        <p className="text-[0.8125rem] text-[#64748B] font-medium tracking-widest uppercase">Chi tiết quy trình mua hàng</p>
                     </div>
                 </div>
 
-                <div className="flex bg-[#F1F5F9] p-1 rounded-xl border border-[rgba(148,163,184,0.1)]">
+                <div className="flex bg-[#F1F5F9] p-1 rounded-xl border border-slate-200">
                     <button 
                         onClick={() => { setActiveWorkflow("CATALOG"); handleReset(); }}
                         className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeWorkflow === "CATALOG" ? "bg-[#2563EB] text-white shadow-lg" : "text-white hover:text-white"}`}
@@ -703,7 +703,7 @@ export default function SimulationPage() {
                     </button>
                 </div>
 
-                <button onClick={handleReset} className="p-3 text-slate-900 hover:text-slate-900 transition-colors bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                <button onClick={handleReset} className="p-3 text-slate-900 hover:text-slate-900 transition-colors bg-[#F1F5F9] rounded-xl border border-slate-200">
                     <RefreshCw size={18} />
                 </button>
             </header>
@@ -727,16 +727,16 @@ export default function SimulationPage() {
                                     onClick={() => goToStep(step.id)}
                                     className={`cursor-pointer rounded-2xl border transition-all duration-300 ${
                                         isActive ? "bg-[#F1F5F9] border-[#2563EB]/30" : 
-                                        isCompleted ? "bg-[#F1F5F9]/50 border-[rgba(148,163,184,0.1)]" : 
-                                        "bg-[#FFFFFF] border-[rgba(148,163,184,0.05)] opacity-60"
+                                        isCompleted ? "bg-[#F1F5F9]/50 border-slate-200" : 
+                                        "bg-[#FFFFFF] border-slate-200 opacity-60"
                                     }`}
                                 >
                                     {/* Step Header */}
                                     <div className="p-4 flex items-start gap-3">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                                             isActive ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20" : 
-                                            isCompleted ? "bg-emerald-500/20 text-black border border-emerald-500/30" : 
-                                            "bg-[#FFFFFF] text-white border border-[rgba(148,163,184,0.1)]"
+                                            isCompleted ? "bg-emerald-500/10 text-emerald-700 border border-emerald-500/30" : 
+                                            "bg-[#FFFFFF] text-white border border-slate-200"
                                         }`}>
                                             {isCompleted ? <CheckCircle size={18} /> : step.icon}
                                         </div>
@@ -762,14 +762,14 @@ export default function SimulationPage() {
                                     
                                     {/* Expanded Details */}
                                     {isExpanded && (
-                                        <div className="px-4 pb-4 pt-2 border-t border-[rgba(148,163,184,0.1)] animate-in slide-in-from-top-2 duration-200">
+                                        <div className="px-4 pb-4 pt-2 border-t border-slate-200 animate-in slide-in-from-top-2 duration-200">
                                             {/* Function */}
                                             <div className="mb-4">
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <Eye size={12} className="text-[#2563EB]" />
                                                     <span className="text-[10px] font-black uppercase tracking-wider text-slate-900">Chức năng chi tiết</span>
                                                 </div>
-                                                <p className="text-xs text-slate-900 leading-relaxed bg-[#FFFFFF] p-3 rounded-lg border border-[rgba(148,163,184,0.1)]">
+                                                <p className="text-xs text-slate-900 leading-relaxed bg-[#FFFFFF] p-3 rounded-lg border border-slate-200">
                                                     {step.function}
                                                 </p>
                                             </div>
@@ -782,11 +782,11 @@ export default function SimulationPage() {
                                                 </div>
                                                 <div className="space-y-2">
                                                     {step.dataState.changes.map((change, cidx) => (
-                                                        <div key={cidx} className="flex items-center gap-2 text-[11px] bg-[#FFFFFF] p-2 rounded-lg border border-[rgba(148,163,184,0.1)]">
+                                                        <div key={cidx} className="flex items-center gap-2 text-[11px] bg-[#FFFFFF] p-2 rounded-lg border border-slate-200">
                                                             <span className="text-slate-900 font-medium">{change.field}:</span>
                                                             <span className="text-slate-900 line-through">{change.from}</span>
                                                             <ArrowRight size={10} className="text-[#2563EB]" />
-                                                            <span className="text-black font-bold">{change.to}</span>
+                                                            <span className="text-emerald-700 font-bold">{change.to}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -800,17 +800,17 @@ export default function SimulationPage() {
                                                 </div>
                                                 <div className="space-y-2">
                                                     <div className="flex items-start gap-2 p-2 bg-emerald-500/5 border border-emerald-500/20 rounded-lg">
-                                                        <CheckCircle size={14} className="text-black shrink-0 mt-0.5" />
+                                                        <CheckCircle size={14} className="text-emerald-600 shrink-0 mt-0.5" />
                                                         <div>
-                                                            <span className="text-[10px] font-black uppercase text-black">Phê duyệt:</span>
+                                                            <span className="text-[10px] font-black uppercase text-emerald-700">Phê duyệt:</span>
                                                             <p className="text-[11px] text-slate-900 mt-0.5">{step.nextSteps.approved.action}</p>
                                                         </div>
                                                     </div>
                                                     {step.nextSteps.rejected && (
                                                         <div className="flex items-start gap-2 p-2 bg-rose-500/5 border border-rose-500/20 rounded-lg">
-                                                            <XCircle size={14} className="text-black shrink-0 mt-0.5" />
+                                                            <XCircle size={14} className="text-rose-500 shrink-0 mt-0.5" />
                                                             <div>
-                                                                <span className="text-[10px] font-black uppercase text-black">Từ chối:</span>
+                                                                <span className="text-[10px] font-black uppercase text-rose-600">Từ chối:</span>
                                                                 <p className="text-[11px] text-slate-900 mt-0.5">{step.nextSteps.rejected.action}</p>
                                                             </div>
                                                         </div>
@@ -826,17 +826,17 @@ export default function SimulationPage() {
                 </div>
 
                 <div className="lg:col-span-5">
-                    <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden sticky top-6">
+                    <div className="bg-[#F1F5F9] border border-slate-200 rounded-xl p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden sticky top-6">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#2563EB]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
                         <div className="relative z-10 w-full animate-in fade-in duration-500">
-                            <div className="p-6 bg-[#FFFFFF] backdrop-blur-3xl rounded-[24px] border border-[rgba(148,163,184,0.1)] shadow-2xl mb-6 inline-block">
+                            <div className="p-6 bg-[#FFFFFF] backdrop-blur-3xl rounded-xl border border-slate-200 shadow-2xl mb-6 inline-block">
                                 {currentStepData.icon}
                             </div>
                             
                             <div className="mb-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">Bước {currentStepData.id}</span>
+                                <span className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]">Bước {currentStepData.id}</span>
                             </div>
                             
                             <h1 className="text-3xl font-black text-slate-900 tracking-tighter mb-4 uppercase italic">
@@ -858,7 +858,7 @@ export default function SimulationPage() {
                                 disabled={currentStep === steps.length}
                                 className={`group relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all duration-300 active:scale-95 ${
                                     currentStep === steps.length 
-                                    ? "bg-[#F1F5F9] text-white cursor-not-allowed border border-[rgba(148,163,184,0.1)]" 
+                                    ? "bg-[#F1F5F9] text-white cursor-not-allowed border border-slate-200" 
                                     : activeWorkflow === "CATALOG" 
                                     ? "bg-[#2563EB] text-white shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 hover:scale-105" 
                                     : "bg-purple-600 text-white shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105"
@@ -872,14 +872,14 @@ export default function SimulationPage() {
                             {activeWorkflow === "NON_CATALOG" && currentStep === 4 && (
                                 <div className="mt-10 grid grid-cols-3 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     {quotations.map(q => (
-                                        <div key={q.id} className="p-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-left hover:border-[#2563EB]/30 transition-all">
+                                        <div key={q.id} className="p-4 bg-[#FFFFFF] border border-slate-200 rounded-xl text-left hover:border-[#2563EB]/30 transition-all">
                                             <div className="flex justify-between items-start mb-2">
                                                 <span className="text-[10px] font-black text-slate-900">{q.supplier}</span>
-                                                <span className="text-black text-[10px] font-black">{q.aiScore}%</span>
+                                                <span className="text-slate-700 text-[10px] font-bold">{q.aiScore}%</span>
                                             </div>
                                             <div className="text-xs text-[#2563EB] font-black">{(q.price/1000000).toFixed(0)}M ₫</div>
-                                            <div className="text-[9px] mt-2 text-slate-900 uppercase tracking-widest font-black flex items-center gap-1">
-                                                <Bot size={10} className="text-black" /> {q.aiRec}
+                                            <div className="text-[0.6875rem] mt-2 text-slate-900 uppercase tracking-widest font-black flex items-center gap-1">
+                                                <Bot size={10} className="text-purple-500" /> {q.aiRec}
                                             </div>
                                         </div>
                                     ))}
@@ -891,14 +891,14 @@ export default function SimulationPage() {
 
                 <div className="lg:col-span-3 space-y-4">
                     {/* Entities */}
-                    <div className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-5">
+                    <div className="bg-[#F1F5F9] border border-slate-200 rounded-xl p-5">
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 mb-4 flex items-center gap-2">
                             <BarChart3 size={14} /> Đối tượng dữ liệu
                         </h3>
                         
                         <div className="space-y-3">
                             {pr && (
-                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-slate-200">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
                                             <div className="p-1.5 bg-[#2563EB]/10 rounded-lg"><FileText size={12} className="text-[#2563EB]" /></div>
@@ -911,10 +911,10 @@ export default function SimulationPage() {
                             )}
 
                             {rfq && (
-                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-slate-200">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-amber-500/10 rounded-lg"><Search size={12} className="text-black" /></div>
+                                            <div className="p-1.5 bg-amber-500/10 rounded-lg"><Search size={12} className="text-amber-600" /></div>
                                             <span className="text-[11px] font-black text-slate-900">{rfq.id}</span>
                                         </div>
                                         <StatusBadge status={rfq.status} type={getStatusColor(rfq.status)} />
@@ -927,20 +927,20 @@ export default function SimulationPage() {
                                 <div className="p-3 bg-[#FFFFFF] rounded-xl border border-emerald-500/20">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-emerald-500/10 rounded-lg"><ShoppingBag size={12} className="text-black" /></div>
+                                            <div className="p-1.5 bg-emerald-500/10 rounded-lg"><ShoppingBag size={12} className="text-emerald-600" /></div>
                                             <span className="text-[11px] font-black text-slate-900">{po.id}</span>
                                         </div>
                                         <StatusBadge status={po.status} type={getStatusColor(po.status)} />
                                     </div>
-                                    <div className="text-[10px] text-black font-black">{(po.total/1000000).toFixed(0)}M ₫</div>
+                                    <div className="text-[10px] text-emerald-700 font-black">{(po.total/1000000).toFixed(0)}M ₫</div>
                                 </div>
                             )}
 
                             {grn && (
-                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-slate-200">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-purple-500/10 rounded-lg"><Package size={12} className="text-black" /></div>
+                                            <div className="p-1.5 bg-purple-500/10 rounded-lg"><Package size={12} className="text-purple-600" /></div>
                                             <span className="text-[11px] font-black text-slate-900">{grn.id}</span>
                                         </div>
                                         <StatusBadge status={grn.status} type="success" />
@@ -949,10 +949,10 @@ export default function SimulationPage() {
                             )}
 
                             {invoice && (
-                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                <div className="p-3 bg-[#FFFFFF] rounded-xl border border-slate-200">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-rose-500/10 rounded-lg"><CreditCard size={12} className="text-black" /></div>
+                                            <div className="p-1.5 bg-rose-500/10 rounded-lg"><CreditCard size={12} className="text-rose-500" /></div>
                                             <span className="text-[11px] font-black text-slate-900">{invoice.id}</span>
                                         </div>
                                         <StatusBadge status={invoice.status} type="success" />
@@ -962,26 +962,26 @@ export default function SimulationPage() {
                             )}
 
                             {!pr && !rfq && !po && !grn && !invoice && (
-                                <div className="py-8 text-center border border-dashed border-[rgba(148,163,184,0.1)] rounded-xl">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">Chưa có dữ liệu</span>
-                                    <p className="text-[9px] text-slate-900 mt-1">Thực hiện các bước để tạo dữ liệu</p>
+                                <div className="py-8 text-center border border-dashed border-slate-200 rounded-xl">
+                                    <span className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]">Chưa có dữ liệu</span>
+                                    <p className="text-[0.6875rem] text-slate-900 mt-1">Thực hiện các bước để tạo dữ liệu</p>
                                 </div>
                             )}
                         </div>
                     </div>
 
                     {/* Budget */}
-                    <div className="bg-gradient-to-br from-[#F1F5F9] to-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl p-5">
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
+                    <div className="bg-gradient-to-br from-[#F1F5F9] to-[#FFFFFF] border border-slate-200 rounded-2xl p-5">
+                        <h3 className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
                             <Wallet size={14} /> Kiểm soát ngân sách
                         </h3>
                         <div className="space-y-4">
                             <div>
                                 <div className="flex justify-between text-[10px] font-black uppercase mb-1.5">
-                                    <span className="text-black">Committed</span>
+                                    <span className="text-amber-600">Committed</span>
                                     <span className="text-slate-900">{(budget.committed/1000000).toFixed(1)}M / {(budget.allocated/1000000).toFixed(0)}M</span>
                                 </div>
-                                <div className="h-1.5 w-full bg-[#FFFFFF] rounded-full overflow-hidden border border-[rgba(148,163,184,0.1)]">
+                                <div className="h-1.5 w-full bg-[#FFFFFF] rounded-full overflow-hidden border border-slate-200">
                                     <div 
                                         className="h-full bg-amber-400 transition-all duration-500" 
                                         style={{ width: `${Math.min((budget.committed / budget.allocated) * 100, 100)}%` }}
@@ -993,17 +993,17 @@ export default function SimulationPage() {
                                     <span className="text-[#2563EB]">Spent</span>
                                     <span className="text-slate-900">{(budget.spent/1000000).toFixed(1)}M</span>
                                 </div>
-                                <div className="h-1.5 w-full bg-[#FFFFFF] rounded-full overflow-hidden border border-[rgba(148,163,184,0.1)]">
+                                <div className="h-1.5 w-full bg-[#FFFFFF] rounded-full overflow-hidden border border-slate-200">
                                     <div 
                                         className="h-full bg-[#2563EB] transition-all duration-500" 
                                         style={{ width: `${Math.min((budget.spent / budget.allocated) * 100, 100)}%` }}
                                     ></div>
                                 </div>
                             </div>
-                            <div className="pt-3 border-t border-[rgba(148,163,184,0.1)]">
+                            <div className="pt-3 border-t border-slate-200">
                                 <div className="flex justify-between text-[10px]">
                                     <span className="text-slate-900 uppercase font-bold">Còn lại:</span>
-                                    <span className="text-black font-black">{((budget.allocated - budget.committed - budget.spent)/1000000).toFixed(1)}M ₫</span>
+                                    <span className="text-slate-900 font-black">{((budget.allocated - budget.committed - budget.spent)/1000000).toFixed(1)}M ₫</span>
                                 </div>
                             </div>
                         </div>
@@ -1012,13 +1012,13 @@ export default function SimulationPage() {
             </main>
 
             {activeWorkflow === "NON_CATALOG" && currentStep >= 4 && (
-                <div className="fixed bottom-12 right-12 w-80 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="fixed bottom-12 right-12 w-80 bg-[#F1F5F9] border border-slate-200 rounded-xl shadow-2xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2 bg-purple-600 rounded-xl"><Bot size={18} className="text-slate-900" /></div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">AI Analyst</span>
+                        <div className="p-2 bg-purple-600 rounded-xl"><Bot size={18} className="text-white" /></div>
+                        <span className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]">AI Analyst</span>
                     </div>
                     <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
-                        <p className="text-[11px] text-black/80 leading-relaxed font-medium">
+                        <p className="text-[11px] text-slate-700 leading-relaxed font-medium">
                             <span className="font-black">ĐỀ XUẤT:</span> HPT Vietnam (Q2) là lựa chọn tối ưu với giá thấp hơn 21% ngân sách.
                         </p>
                     </div>

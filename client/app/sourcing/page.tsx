@@ -108,13 +108,13 @@ export default function SourcingPage() {
             <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
                 <div>
                     <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">QUẢN LÝ NGUỒN HÀNG (SOURCING)</h1>
-                    <p className="text-slate-900 font-bold text-sm tracking-tight flex items-center gap-2">
+                    <p className="text-[0.8125rem] text-[#64748B] font-medium tracking-tight flex items-center gap-2">
                         <Zap size={14} className="text-amber-500 fill-amber-500" /> 
                         Tối ưu hóa quy trình chọn nhà cung cấp và quản lý RFQ/PO
                     </p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all">
+                    <button className="flex items-center gap-2 bg-[#F1F5F9] border border-slate-200 text-slate-900 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all">
                         <Filter size={16} /> Bộ lọc nâng cao
                     </button>
                     <Link href="/sourcing/rfq-create">
@@ -127,20 +127,20 @@ export default function SourcingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 {stats.map((stat) => (
-                    <div key={stat.label} className="bg-[#F1F5F9] p-8 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 flex items-center gap-6 group hover:border-[#2563EB]/20 transition-all duration-500">
+                    <div key={stat.label} className="bg-[#F1F5F9] p-8 rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 flex items-center gap-6 group hover:border-[#2563EB]/20 transition-all duration-500">
                         <div className={`w-16 h-16 rounded-2xl ${stat.bg.replace('-50', '-500/10')} ${stat.color} flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500`}>
                             <stat.icon size={28} />
                         </div>
                         <div>
-                            <div className="text-[10px] uppercase font-black tracking-[0.2em] text-slate-900 mb-1.5">{stat.label}</div>
+                            <div className="text-[0.6875rem] uppercase font-black tracking-[0.2em] text-[#64748B] mb-1.5">{stat.label}</div>
                             <div className="text-3xl font-black text-slate-900 tracking-tight">{stat.value}</div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
-                <div className="flex bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] p-2 gap-2 overflow-x-auto">
+            <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                <div className="flex bg-[#FFFFFF] border-b border-slate-200 p-2 gap-2 overflow-x-auto">
                     <TabButton active={activeTab === "quote-requests"} onClick={() => setActiveTab("quote-requests")} label="Yêu cầu Báo giá" count={quoteRequests.filter(q => ['SUBMITTED', 'PROCESSING', 'QUOTED'].includes(q.status)).length} />
                     <TabButton active={activeTab === "catalog-prs"} onClick={() => setActiveTab("catalog-prs")} label="Xác nhận Catalog" count={approvedPRs.filter(p => p.type === 'CATALOG').length} />
                     <TabButton active={activeTab === "sourcing-prs"} onClick={() => setActiveTab("sourcing-prs")} label="Báo giá RFQ" count={approvedPRs.filter(p => p.type !== 'CATALOG').length} />
@@ -182,7 +182,7 @@ export default function SourcingPage() {
                     )}
                     {activeTab === "active-rfqs" && (
                         <div className="p-24 text-center text-slate-900 font-black uppercase tracking-[0.2em] text-xs flex flex-col items-center gap-6">
-                            <div className="w-20 h-20 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center justify-center text-[#2563EB]/50 shadow-inner">
+                            <div className="w-20 h-20 bg-[#FFFFFF] rounded-xl border border-slate-200 flex items-center justify-center text-[#2563EB]/50 shadow-inner">
                                 <Send size={32} />
                             </div>
                             <span>Danh sách RFQ đang chờ nhà cung cấp phản hồi.</span>
@@ -192,15 +192,15 @@ export default function SourcingPage() {
                     {activeTab === "suppliers" && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
                             {suppliersList.map(supplier => (
-                                <div key={supplier.id} className="border border-[rgba(148,163,184,0.1)] p-6 rounded-xl hover:border-[#2563EB]/30 transition-all cursor-pointer group bg-[#F1F5F9]/50 shadow-lg shadow-black/5 hover:bg-[#F1F5F9]/80">
+                                <div key={supplier.id} className="border border-slate-200 p-6 rounded-xl hover:border-[#2563EB]/30 transition-all cursor-pointer group bg-[#F1F5F9]/50 shadow-lg shadow-black/5 hover:bg-[#F1F5F9]/80">
                                     <div className="flex justify-between items-start mb-6">
-                                        <div className="w-12 h-12 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] flex items-center justify-center font-black text-slate-900 uppercase text-sm shadow-inner group-hover:bg-[#2563EB]/10 transition-colors">
+                                        <div className="w-12 h-12 rounded-xl bg-[#FFFFFF] border border-slate-200 flex items-center justify-center font-black text-slate-900 uppercase text-sm shadow-inner group-hover:bg-[#2563EB]/10 transition-colors">
                                             {supplier.name.substring(0, 1)}
                                         </div>
                                     </div>
                                     <h4 className="font-black text-slate-900 mb-1 uppercase tracking-tight text-sm">{supplier.name}</h4>
-                                    <p className="text-[10px] text-slate-900 font-bold mb-4 uppercase tracking-[0.05em]">Email: {supplier.email || "supplier@abc.com.vn"}</p>
-                                    <div className="flex gap-2 mt-4 pt-4 border-t border-[rgba(148,163,184,0.05)]">
+                                    <p className="text-[0.6875rem] text-[#64748B] font-bold mb-4 uppercase tracking-[0.05em]">Email: {supplier.email || "supplier@abc.com.vn"}</p>
+                                    <div className="flex gap-2 mt-4 pt-4 border-t border-slate-200">
                                         <button 
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -230,7 +230,7 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
         <div className="overflow-x-auto">
             <table className="erp-table text-xs">
                 <thead>
-                    <tr className="border-b border-[rgba(148,163,184,0.1)]">
+                    <tr className="border-b border-slate-200">
                         <th className="px-6 py-4">Thông tin PR</th>
                         <th className="px-6 py-4 text-center">Bộ phận</th>
                         <th className="px-6 py-4 text-right">Giá trị (Est.)</th>
@@ -239,7 +239,7 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
                 </thead>
                 <tbody>
                     {data.length > 0 ? data.map((pr) => (
-                        <tr key={pr.id} className="border-b border-[rgba(148,163,184,0.05)] hover:bg-[#FFFFFF]/50 transition-colors">
+                        <tr key={pr.id} className="border-b border-slate-200 hover:bg-[#FFFFFF]/50 transition-colors">
                             <td className="px-6 py-5">
                                 <div className="flex flex-col">
                                     <span className="font-black text-slate-900 mb-0.5 uppercase">Yêu cầu mua</span>
@@ -247,7 +247,7 @@ function PRListTable({ data, type, onAction, isProcessing }: { data: PR[], type:
                                 </div>
                             </td>
                             <td className="px-6 py-5 text-center">
-                                <span className="text-[10px] bg-[#FFFFFF] text-slate-900 border border-[rgba(148,163,184,0.1)] px-2 py-0.5 rounded-full font-black uppercase">{pr.deptId || pr.requester?.fullName?.substring(0,2)}</span>
+                                <span className="text-[10px] bg-[#FFFFFF] text-slate-900 border border-slate-200 px-2 py-0.5 rounded-full font-black uppercase">{pr.deptId || pr.requester?.fullName?.substring(0,2)}</span>
                             </td>
                             <td className="px-6 py-5 text-right font-black text-[#2563EB]">
                                 {(pr.totalEstimate || 0).toLocaleString()} ₫
@@ -286,7 +286,7 @@ function TabButton({ active, onClick, label, count }: { active: boolean, onClick
                 active ? "bg-[#F1F5F9] text-[#2563EB] shadow-lg shadow-[#2563EB]/5" : "text-slate-900 hover:text-slate-900"
             }`}
         >
-            {label} {count !== undefined && <span className={`px-2 py-0.5 rounded-full text-[9px] ${active ? "bg-[#2563EB] text-white" : "bg-[#FFFFFF] text-white border border-[rgba(148,163,184,0.1)]"}`}>{count}</span>}
+            {label} {count !== undefined && <span className={`px-2 py-0.5 rounded-full text-[0.6875rem] ${active ? "bg-[#2563EB] text-white" : "bg-[#FFFFFF] text-slate-900 border border-slate-200"}`}>{count}</span>}
         </button>
     );
 }
@@ -315,12 +315,12 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
             {!processingId ? (
                 <div className="space-y-4">
                     {quoteRequests.map((qr) => (
-                        <div key={qr.id} className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-6 flex justify-between items-center shadow-lg shadow-[#2563EB]/5">
+                        <div key={qr.id} className="bg-[#F1F5F9] border border-slate-200 rounded-xl p-6 flex justify-between items-center shadow-lg shadow-[#2563EB]/5">
                             <div className="flex gap-4 items-center">
-                                <div className="w-10 h-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center font-black text-slate-900 text-xs">{qr.qrNumber.split('-').pop()}</div>
+                                <div className="w-10 h-10 bg-[#FFFFFF] border border-slate-200 rounded-xl flex items-center justify-center font-black text-slate-900 text-xs">{qr.qrNumber.split('-').pop()}</div>
                                 <div>
                                     <h4 className="font-black text-slate-900 text-sm uppercase">{qr.title}</h4>
-                                    <span className={`text-[10px] font-bold uppercase tracking-widest ${qr.status === 'QUOTED' ? 'text-black' : 'text-black'}`}>{qr.status}</span>
+                                    <span className={`text-[0.6875rem] font-bold uppercase tracking-widest ${qr.status === 'QUOTED' ? 'text-[#64748B]' : 'text-[#64748B]'}`}>{qr.status}</span>
                                 </div>
                             </div>
                             <div className="flex gap-2">
@@ -331,16 +331,16 @@ function QuoteRequestProcessing({ quoteRequests, suppliers, onUpdate, notify }: 
                     ))}
                 </div>
             ) : (
-                <div className="p-8 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                <div className="p-8 bg-[#FFFFFF] rounded-xl border border-slate-200">
                     <h3 className="font-black text-slate-900 uppercase mb-8 flex items-center gap-3">
                         <Zap size={20} className="text-amber-500" /> Nhập giá: <span className="text-[#2563EB]">{editData?.qrNumber}</span>
                     </h3>
                     <div className="space-y-4">
                         {editData?.items.map((item, idx: number) => (
-                            <div key={idx} className="bg-[#F1F5F9] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] grid grid-cols-1 md:grid-cols-2 gap-6 hover:border-[#2563EB]/20 transition-all">
+                            <div key={idx} className="bg-[#F1F5F9] p-6 rounded-xl border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-6 hover:border-[#2563EB]/20 transition-all">
                                 <div>
                                     <label className="text-[10px] font-black uppercase text-slate-900 block mb-2 tracking-widest">Mặt hàng yêu cầu</label>
-                                    <div className="text-sm font-black text-slate-900 p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.05)] uppercase">{item.productName}</div>
+                                    <div className="text-sm font-black text-slate-900 p-4 bg-[#FFFFFF] rounded-xl border border-slate-200 uppercase">{item.productName}</div>
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase text-slate-900 block tracking-widest">Thanh toán & Nhà cung cấp</label>
@@ -364,15 +364,15 @@ function POManagement({ pos }: { pos: PO[] | null }) {
     return (
         <div className="p-8 space-y-4">
             {(pos || []).map((po) => (
-                <div key={po.id} className="bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-6 flex justify-between items-center group hover:border-[#2563EB]/20 transition-all shadow-lg shadow-[#2563EB]/5">
+                <div key={po.id} className="bg-[#F1F5F9] border border-slate-200 rounded-xl p-6 flex justify-between items-center group hover:border-[#2563EB]/20 transition-all shadow-lg shadow-[#2563EB]/5">
                     <div className="flex gap-6 items-center">
-                        <div className="w-16 h-16 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-2xl flex items-center justify-center font-black text-white text-lg group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-inner">***</div>
+                        <div className="w-16 h-16 bg-[#FFFFFF] border border-slate-200 rounded-2xl flex items-center justify-center font-black text-white text-lg group-hover:bg-[#2563EB] group-hover:text-white transition-all shadow-inner">***</div>
                         <div>
                             <h4 className="font-black text-slate-900 text-base uppercase tracking-tight">{po.vendor}</h4>
                             <span className="text-[11px] font-black text-[#2563EB] uppercase tracking-[0.1em]">{(po.total || 0).toLocaleString()} ₫ | {getStatusLabel(po.status)}</span>
                         </div>
                     </div>
-                    <button className="p-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm">
+                    <button className="p-3 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm">
                         <ChevronRight size={18} />
                     </button>
                 </div>

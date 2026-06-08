@@ -174,7 +174,7 @@ export default function POPage() {
                         <h1 className="text-3xl font-black text-brand-primary tracking-tight flex items-center gap-3">
                             Khởi tạo Purchase Order (PO)
                         </h1>
-                        <p className="text-sm text-black mt-1">Hệ thống auto-fill dữ liệu từ Báo giá đã chọn.</p>
+                        <p className="text-[0.8125rem] text-[#64748B] mt-1">Hệ thống auto-fill dữ liệu từ Báo giá đã chọn.</p>
                     </div>
                 </div>
 
@@ -202,7 +202,7 @@ export default function POPage() {
                             </div>
                             
                             <div className="flex-1 text-right">
-                                <span className="inline-flex items-center gap-1 bg-white border border-emerald-200 text-emerald-600 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-sm">
+                                <span className="inline-flex items-center gap-1 bg-white border border-emerald-200 text-emerald-600 text-[0.6875rem] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-sm">
                                     <CheckCircle size={12}/> Auto-filled từ Quotation
                                 </span>
                             </div>
@@ -216,11 +216,11 @@ export default function POPage() {
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-black tracking-widest mb-2">Số PO (Tự động)</label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-700 tracking-widest mb-2">Số PO (Tự động)</label>
                                     <input type="text" className="erp-input w-full bg-slate-100  font-bold text-black cursor-not-allowed" value="PO-2026-DRAFT" disabled />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-black tracking-widest mb-2">Ngày phát hành</label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-700 tracking-widest mb-2">Ngày phát hành</label>
                                     <div className="relative group/date">
                                         <input 
                                             type="text" 
@@ -238,7 +238,7 @@ export default function POPage() {
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-black tracking-widest mb-2">Điều kiện Incoterms</label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-700 tracking-widest mb-2">Điều kiện Incoterms</label>
                                     <select 
                                         className="erp-input w-full focus:border-erp-blue"
                                         value={poForm.incoterms}
@@ -250,7 +250,7 @@ export default function POPage() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-black tracking-widest mb-2">Điều kiện thanh toán</label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-700 tracking-widest mb-2">Điều kiện thanh toán</label>
                                     <select 
                                         className="erp-input w-full focus:border-erp-blue"
                                         value={poForm.paymentTerms}
@@ -264,7 +264,7 @@ export default function POPage() {
                             </div>
                             
                             <div className="mb-6">
-                                <label className="block text-[10px] font-black uppercase text-black tracking-widest mb-2">Địa chỉ giao hàng (Delivery to)</label>
+                                <label className="block text-[10px] font-black uppercase text-slate-700 tracking-widest mb-2">Địa chỉ giao hàng (Delivery to)</label>
                                 <input 
                                     type="text" 
                                     className="erp-input w-full focus:border-erp-blue" 
@@ -282,14 +282,14 @@ export default function POPage() {
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div className="relative">
-                                    <label className="block text-[10px] font-black uppercase text-black tracking-widest mb-2">% Phạt / Ngày trễ giao</label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-700 tracking-widest mb-2">% Phạt / Ngày trễ giao</label>
                                     <div className="relative">
                                         <input type="number" className="erp-input w-full pr-10 border-orange-200 focus:border-orange-500" value={poForm.penalty} onChange={e => setPoForm({...poForm, penalty: e.target.value})} />
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-black">%</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-black tracking-widest mb-2">Số ngày ân hạn (Grace Period)</label>
+                                    <label className="block text-[10px] font-black uppercase text-slate-700 tracking-widest mb-2">Số ngày ân hạn (Grace Period)</label>
                                     <div className="relative">
                                         <input type="number" className="erp-input w-full pr-16 border-orange-200 focus:border-orange-500" value={poForm.gracePeriod} onChange={e => setPoForm({...poForm, gracePeriod: e.target.value})} />
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-black text-[10px] uppercase">Ngày</span>
@@ -297,7 +297,7 @@ export default function POPage() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-black tracking-widest mb-2">Điều khoản đặc biệt (Special SLA/NDA)</label>
+                                <label className="block text-[10px] font-black uppercase text-slate-700 tracking-widest mb-2">Điều khoản đặc biệt (Special SLA/NDA)</label>
                                 <textarea 
                                     className="erp-input w-full h-24 bg-white focus:border-orange-500 text-sm" 
                                     placeholder="Ví dụ: Đền bù 200% nếu dính hàng giả, bắt buộc ký NDA trước khi xem bản vẽ..."
@@ -310,7 +310,7 @@ export default function POPage() {
                         {/* Line Items (Locked) */}
                         <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden p-0! border border-slate-200">
                             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-black flex items-center gap-2">
+                                <h3 className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] flex items-center gap-2">
                                     <Lock size={14} /> Chi tiết Items (Khóa giá từ Báo giá)
                                 </h3>
                             </div>
@@ -352,7 +352,7 @@ export default function POPage() {
                                      <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg"><CheckCircle size={14}/></div>
                                      <div className="flex-1">
                                          <div className="text-[10px] font-black uppercase text-emerald-800 tracking-wider">Bản HĐ Điện Tử.pdf</div>
-                                         <div className="text-[9px] text-emerald-600 font-bold">Quotation_Signed</div>
+                                         <div className="text-[0.6875rem] text-emerald-600 font-bold">Quotation_Signed</div>
                                      </div>
                                  </div>
                                  
@@ -360,7 +360,7 @@ export default function POPage() {
                                      <div className="p-2 bg-slate-100 text-black rounded-lg"><UploadCloud size={14}/></div>
                                      <div className="flex-1">
                                          <div className="text-[10px] font-black uppercase text-slate-600 tracking-wider">Tech Spec / NDA</div>
-                                         <div className="text-[9px] text-black font-bold">Chưa có file</div>
+                                         <div className="text-[0.6875rem] text-black font-bold">Chưa có file</div>
                                      </div>
                                  </div>
                              </div>
@@ -370,7 +370,7 @@ export default function POPage() {
                             <div className="absolute top-0 right-0 p-4 opacity-10"><Send size={80} className="text-erp-blue" fill="currentColor"/></div>
                             <div className="relative z-10 space-y-4">
                                 <div>
-                                    <div className="text-[10px] font-black uppercase tracking-widest text-black mb-1">Xác nhận PO</div>
+                                    <div className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] mb-1">Xác nhận PO</div>
                                     <p className="text-xs font-bold text-brand-primary leading-relaxed mb-4">Mọi thông tin sẽ được đóng dấu và gửi tự động qua cổng Portal B2B.</p>
                                 </div>
                                 
@@ -402,20 +402,20 @@ export default function POPage() {
             <div className="mt-8 flex justify-between items-end mb-8">
                 <div>
                     <h1 className="text-3xl font-black text-brand-primary tracking-tight">Quản lý Đơn mua hàng (PO)</h1>
-                    <p className="text-sm text-black mt-1">Theo dõi các đơn hàng đã phát hành và tình trạng ngân sách.</p>
+                    <p className="text-[0.8125rem] text-[#64748B] mt-1">Theo dõi các đơn hàng đã phát hành và tình trạng ngân sách.</p>
                 </div>
             </div>
             
-            <div className="bg-bg-secondary p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8 flex justify-between items-center">
+            <div className="bg-bg-secondary p-4 rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 mb-8 flex justify-between items-center">
                 <div className="flex-1 flex gap-3 max-w-xl">
-                    <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                    <div className="h-14 w-14 bg-[#FFFFFF] border border-slate-200 rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                         <Search size={20} className="text-[#2563EB]" />
                     </div>
                     <div className="relative flex-1">
                         <input 
                             type="text" 
                             placeholder="Tìm kiếm PO #, Nhà cung cấp..." 
-                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all" 
+                            className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-slate-200 rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-400/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all" 
                         />
                     </div>
                     <button className="p-2 bg-white border border-slate-200 rounded-xl text-black hover:text-erp-navy transition-all"><Filter size={20} /></button>
