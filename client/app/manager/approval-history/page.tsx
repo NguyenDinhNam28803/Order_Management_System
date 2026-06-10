@@ -3,26 +3,28 @@
 import React, { useState } from "react";
 import { useProcurement } from "@/app/context/ProcurementContext";
 import { Search, Filter, History, ShoppingCart, FolderTree, CheckCircle, XCircle, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { formatVND, formatDateTime } from "../../utils/formatUtils";
 
 export default function ApprovalHistoryPage() {
     const [filter, setFilter] = useState({ type: "ALL", status: "ALL", date: "" });
     const { approvals } = useProcurement();
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <header className="mb-10 lg:flex items-end justify-between">
-                <div>
-                    <h1 className="text-2xl font-black tracking-tight text-slate-900 mb-2 uppercase">LỊCH SỬ PHÊ DUYỆT</h1>
-                    <p className="text-[0.8125rem] font-medium text-[#64748B]">Toàn bộ hồ sơ các quyết định phê duyệt của bạn</p>
-                </div>
-                
-                <div className="flex gap-4 mt-6 lg:mt-0">
-                    <div className="flex bg-[#F1F5F9] rounded-2xl border border-slate-200 p-1 shadow-sm">
-                        <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white bg-[#2563EB] rounded-xl transition-all shadow-sm">Hôm nay</button>
-                        <button className="px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] hover:text-slate-900 transition-all">Tuần này</button>
-                        <button className="px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] hover:text-slate-900 transition-all">Tháng này</button>
-                    </div>
-                </div>
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <header>
+                <PageHeader
+                    icon={History}
+                    iconColor="purple"
+                    title="Lịch sử phê duyệt"
+                    subtitle="Toàn bộ hồ sơ các quyết định phê duyệt của bạn."
+                    actions={
+                        <div className="flex bg-[#F1F5F9] rounded-2xl border border-slate-200 p-1 shadow-sm">
+                            <button className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white bg-[#2563EB] rounded-xl transition-all shadow-sm">Hôm nay</button>
+                            <button className="px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] hover:text-slate-900 transition-all">Tuần này</button>
+                            <button className="px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] hover:text-slate-900 transition-all">Tháng này</button>
+                        </div>
+                    }
+                />
             </header>
 
             {/* Filter Bar */}

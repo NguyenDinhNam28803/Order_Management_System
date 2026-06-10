@@ -21,8 +21,10 @@ import {
     X,
     CheckCircle,
     Signature,
-    RefreshCw
+    RefreshCw,
+    Scroll
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { ContractStatus } from "../../types/api-types";
 import ContractSignModal from "../../components/ContractSignModal";
 
@@ -158,13 +160,15 @@ export default function SupplierContractsPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC]">
             {/* Header */}
             <div className="mt-4 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">Quản lý Hợp đồng</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] font-medium mt-1">Xem và ký các hợp đồng thu mua từ khách hàng</p>
-                </div>
+                <PageHeader
+                    title="Hợp đồng & Điều khoản"
+                    subtitle="Xem và ký các hợp đồng thu mua từ khách hàng"
+                    icon={Scroll}
+                    iconColor="purple"
+                />
                 <div className="flex items-center gap-3">
                     {/* WebSocket Status */}
                     <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold border ${

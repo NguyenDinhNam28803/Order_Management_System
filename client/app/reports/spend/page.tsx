@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import {
     BarChart3, CreditCard, Filter, Download, DollarSign, Users, Layers
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, SpendOverview, SpendBySupplier, SpendByCategory } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
 import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
@@ -98,20 +99,24 @@ export default function SpendReportPage() {
     }));
 
     return (
-        <main className="animate-in fade-in duration-500 bg-[#FFFFFF] min-h-screen text-slate-900">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 mt-4 px-6 md:px-8 pt-6">
-                <div>
-                    <h1 className="text-3xl font-black tracking-tight uppercase">Báo cáo Phân tích Chi phí (Spend Analytics)</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] font-medium mt-1">DỮ LIỆU ĐƯỢC TỔNG HỢP THEO GIỜ TỪ HỆ THỐNG GIAO DỊCH LÕI</p>
-                </div>
-                <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-6 py-3 bg-[#F1F5F9] border border-slate-200 rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
-                        <Filter size={14} /> Bộ lọc
-                    </button>
-                    <button className="flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20">
-                        <Download size={14} /> Xuất PDF
-                    </button>
-                </div>
+        <main className="animate-in fade-in duration-500 bg-[#F8FAFC] min-h-screen text-slate-900">
+            <div className="px-6 md:px-8 pt-6">
+                <PageHeader
+                    icon={BarChart3}
+                    iconColor="blue"
+                    title="Báo cáo chi tiêu"
+                    subtitle="Dữ liệu được tổng hợp theo giờ từ hệ thống giao dịch lõi"
+                    actions={
+                        <div className="flex gap-3">
+                            <button className="btn-secondary text-[11px]">
+                                <Filter size={14} /> Bộ lọc
+                            </button>
+                            <button className="btn-primary text-[11px]">
+                                <Download size={14} /> Xuất PDF
+                            </button>
+                        </div>
+                    }
+                />
             </div>
 
             {/* Top KPI row */}

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Check, X, Eye, FileText, ShoppingCart, User, Landmark, History } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
 
@@ -46,10 +47,14 @@ export default function POApprovalsPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <header className="mb-8">
-                <h1 className="text-2xl font-black tracking-tight text-slate-900 mb-2 uppercase">PHÊ DUYỆT ĐƠN HÀNG (PO)</h1>
-                <p className="text-slate-900 font-medium">Danh sách PO đang chờ bạn phê duyệt trước khi phát hành</p>
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <header>
+                <PageHeader
+                    icon={ShoppingCart}
+                    iconColor="blue"
+                    title="Phê duyệt đơn hàng (PO)"
+                    subtitle="Danh sách PO đang chờ bạn phê duyệt trước khi phát hành."
+                />
             </header>
 
             <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 overflow-hidden shadow-xl shadow-[#2563EB]/5">

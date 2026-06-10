@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import { useProcurement } from "../../context/ProcurementContext";
-import { 
-    AlertTriangle, MessageSquare, Clock, CheckCircle, 
-    XCircle, Search, Filter, ArrowUpRight 
+import {
+    AlertTriangle, MessageSquare, Clock, CheckCircle,
+    XCircle, Search, Filter, ArrowUpRight
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { DisputeStatus, DocumentType } from "../../types/api-types";
 
 export default function DisputesPage() {
@@ -38,15 +39,17 @@ export default function DisputesPage() {
 
     return (
         <main className="p-6 space-y-6">
-            <div className="page-header">
-                <div>
-                    <h1 className="page-title">Khiếu nại & Tranh chấp</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] font-medium">Xử lý các vấn đề phát sinh về chất lượng hàng hóa, thanh toán hoặc dịch vụ</p>
-                </div>
-                <button className="flex items-center gap-2 bg-rose-500 text-white px-4 py-2 rounded-xl hover:bg-rose-600 transition-all shadow-lg shadow-rose-500/20 font-bold uppercase tracking-wider text-[11px]">
-                    <AlertTriangle size={18} /> Tạo khiếu nại mới
-                </button>
-            </div>
+            <PageHeader
+                icon={AlertTriangle}
+                iconColor="rose"
+                title="Tranh chấp & Khiếu nại"
+                subtitle="Xử lý các vấn đề phát sinh về chất lượng hàng hóa, thanh toán hoặc dịch vụ"
+                actions={
+                    <button className="flex items-center gap-2 bg-rose-500 text-white px-4 py-2 rounded-xl hover:bg-rose-600 transition-all shadow-lg shadow-rose-500/20 font-bold uppercase tracking-wider text-[11px]">
+                        <AlertTriangle size={18} /> Tạo khiếu nại mới
+                    </button>
+                }
+            />
 
             <div className="bg-slate-100 p-4 rounded-xl border border-slate-200 shadow-xl shadow-blue-600/5 flex flex-wrap gap-4 items-center">
                 <div className="flex-1 min-w-[300px] flex gap-3">

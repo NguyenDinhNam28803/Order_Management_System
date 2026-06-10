@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { Package, DownloadCloud, FileText, CheckCircle, AlertTriangle, Truck, Clock, RefreshCcw, Send, XCircle, Search, Eye, X } from "lucide-react";
+import { Package, DownloadCloud, FileText, CheckCircle, AlertTriangle, Truck, Clock, RefreshCcw, Send, XCircle, Search, Eye, X, ShoppingBag } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 
 import { useProcurement, PO, POItem } from "../../context/ProcurementContext";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
@@ -280,7 +281,7 @@ export default function SupplierPO() {
     }
 
     return (
-        <main className="pt-16 px-8 pb-12 bg-[#FFFFFF] min-h-screen text-slate-900">
+        <main className="pt-16 px-8 pb-12 bg-[#F8FAFC] min-h-screen text-slate-900">
             <ConfirmDialog
                 open={confirmState.open}
                 title={confirmState.title}
@@ -288,8 +289,13 @@ export default function SupplierPO() {
                 onConfirm={confirmState.onConfirm}
                 onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
             />
-            <div className="mt-8 mb-4 flex justify-between items-center">
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Hợp đồng mua bán từ Buyer</h1>
+            <PageHeader
+                title="Đơn hàng nhận được (PO)"
+                icon={ShoppingBag}
+                iconColor="blue"
+            />
+            <div className="mb-4 flex justify-between items-center">
+                <div></div>
                 <div className="flex gap-2 items-center">
                     <span className="text-xs text-slate-900">Tổng PO: {pos.length} | PO của bạn: {supplierPOs.length}</span>
                     <button 

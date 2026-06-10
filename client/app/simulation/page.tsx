@@ -839,7 +839,7 @@ export default function SimulationPage() {
                                 <span className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]">Bước {currentStepData.id}</span>
                             </div>
                             
-                            <h1 className="text-3xl font-black text-slate-900 tracking-tighter mb-4 uppercase italic">
+                            <h1 className="text-xl font-bold text-slate-900 tracking-tighter mb-4 uppercase italic">
                                 {currentStepData.title}
                             </h1>
                             

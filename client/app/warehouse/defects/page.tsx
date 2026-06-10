@@ -1,11 +1,12 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { TrendingUp, ArrowLeft, Info } from "lucide-react";
+import { TrendingUp, ArrowLeft, Info, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DefectRateChart from "../../components/DefectRateChart";
 import SupplierSelector from "../../components/SupplierSelector";
 import { QualityRiskPanel } from "../../components/QualityRiskPanel";
+import PageHeader from "../../components/shared/PageHeader";
 
 /**
  * Warehouse QC Analysis Page
@@ -23,7 +24,7 @@ export default function WarehouseQCAnalysis() {
   };
 
   return (
-    <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+    <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center gap-4 mb-4">
@@ -35,17 +36,12 @@ export default function WarehouseQCAnalysis() {
             <span className="text-sm font-medium">Quay lại Dashboard</span>
           </button>
         </div>
-        <div className="lg:flex items-end justify-between">
-          <div>
-            <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-2 uppercase flex items-center gap-3">
-              <TrendingUp size={36} className="text-[#2563EB]" />
-              Phân Tích Tỷ Lệ Lỗi
-            </h1>
-            <p className="text-[0.8125rem] text-[#64748B] font-medium">
-              Phát hiện các xu hướng bất thường trong tỷ lệ lỗi sản phẩm nhập kho qua 365 ngày.
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          title="Theo dõi lỗi hàng"
+          subtitle="Phát hiện các xu hướng bất thường trong tỷ lệ lỗi sản phẩm nhập kho qua 365 ngày."
+          icon={ShieldAlert}
+          iconColor="rose"
+        />
       </header>
 
       {/* Supplier Selector Section */}

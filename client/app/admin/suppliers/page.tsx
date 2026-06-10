@@ -4,11 +4,12 @@ import React, { useState } from "react";
 import { useProcurement, Organization } from "../../context/ProcurementContext";
 import { CreateOrganizationPayload } from "@/app/types/api-types";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
-import { 
-    Truck, Plus, Search, 
-    Trash2, CheckCircle2, XCircle, Star, 
+import {
+    Truck, Plus, Search,
+    Trash2, CheckCircle2, XCircle, Star,
     Mail, Phone, Globe
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 
 export interface Supplier {
     id: string;
@@ -83,21 +84,20 @@ export default function SupplierManagementPage() {
                 onConfirm={confirmState.onConfirm}
                 onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
             />
-            <div className="mt-8 flex justify-between items-end mb-10 border-b border-slate-200 pb-8">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">Quản lý Nhà cung cấp</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] font-medium tracking-tight flex items-center gap-2">
-                        <Truck size={14} className="text-[#2563EB]" /> 
-                        Danh mục đối tác và nhà cung ứng chiến lược của hệ thống
-                    </p>
-                </div>
-                <button 
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
-                >
-                    <Plus size={18} /> Thêm nhà cung cấp
-                </button>
-            </div>
+            <PageHeader
+                icon={Truck}
+                iconColor="blue"
+                title="Quản lý Nhà cung cấp"
+                subtitle="Danh mục đối tác và nhà cung ứng chiến lược của hệ thống."
+                actions={
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="btn-primary flex items-center gap-2"
+                    >
+                        <Plus size={16} /> Thêm nhà cung cấp
+                    </button>
+                }
+            />
 
             <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-slate-200">
                 <div className="p-8 border-b border-slate-200 flex items-center justify-between gap-6 bg-[#FFFFFF]">

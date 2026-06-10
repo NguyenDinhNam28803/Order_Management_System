@@ -4,6 +4,7 @@ import React from "react";
 import { Package, Truck, AlertTriangle, CheckCircle2, RotateCcw, Info, Box } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { StatsCard } from "../../components/charts";
+import PageHeader from "../../components/shared/PageHeader";
 
 interface PO {
     id: string;
@@ -38,13 +39,13 @@ export default function WarehouseDashboard() {
     ];
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <header className="mb-8 lg:flex items-end justify-between">
-                <div>
-                    <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-2 uppercase">DASHBOARD WAREHOUSE</h1>
-                    <p className="text-slate-900 font-medium">Quản lý lịch giao nhận hàng hóa & Kiểm định chất lượng ngõ vào (Inbound).</p>
-                </div>
-            </header>
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <PageHeader
+                title="Dashboard Kho hàng"
+                subtitle="Quản lý lịch giao nhận hàng hóa và kiểm định chất lượng ngõ vào."
+                icon={Package}
+                iconColor="green"
+            />
 
             {/* KPI Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

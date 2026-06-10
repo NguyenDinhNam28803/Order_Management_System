@@ -6,6 +6,7 @@ import {
     Search, X, Edit3, CheckCircle, Clock,
     Box, Activity, Filter, ChevronRight, ShoppingCart, User, Eye
 } from "lucide-react";
+import PageHeader from "@/app/components/shared/PageHeader";
 import { useProcurement } from "@/app/context/ProcurementContext";
 import { formatVND, getStatusLabel } from "@/app/utils/formatUtils";
 
@@ -120,32 +121,33 @@ export default function DeliveryTrackingPage() {
 
     return (
         <main className="p-6 space-y-6">
-            {/* Header */}
-            <div className="page-header">
-                <div>
-                    <h1 className="page-title">Theo dõi Giao hàng</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] font-medium mt-1">GIÁM SÁT TIẾN ĐỘ VẬN CHUYỂN THỜI GIAN THỰC</p>
-                </div>
-                <div className="flex gap-3">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={16} />
-                        <input
-                            type="text"
-                            placeholder="Tìm PO, nhà cung cấp..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 w-72"
-                        />
+            <PageHeader
+                icon={Truck}
+                iconColor="green"
+                title="Theo dõi giao hàng"
+                subtitle="Giám sát tiến độ vận chuyển thời gian thực"
+                actions={
+                    <div className="flex gap-3">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={16} />
+                            <input
+                                type="text"
+                                placeholder="Tìm PO, nhà cung cấp..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-10 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 w-72"
+                            />
+                        </div>
+                        <button className="btn-secondary flex items-center gap-2">
+                            <Filter size={14} /> Bộ lọc
+                        </button>
+                        <div className="flex items-center gap-2 px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-[11px] font-bold uppercase tracking-widest text-black">
+                            <div className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></div>
+                            {filteredDeliveries.filter(d => d.status !== "DELIVERED").length} PO đang giao
+                        </div>
                     </div>
-                    <button className="btn-secondary flex items-center gap-2">
-                        <Filter size={14} /> Bộ lọc
-                    </button>
-                    <div className="flex items-center gap-2 px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-[11px] font-bold uppercase tracking-widest text-black">
-                        <div className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></div>
-                        {filteredDeliveries.filter(d => d.status !== "DELIVERED").length} PO đang giao
-                    </div>
-                </div>
-            </div>
+                }
+            />
 
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
                 {/* Left List */}

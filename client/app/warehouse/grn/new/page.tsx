@@ -1,10 +1,11 @@
 ﻿"use client";
 
 import React, { useState, useMemo } from "react";
-import { Search, Package, AlertTriangle, FileCheck, CheckCircle2, RotateCcw, UploadCloud, FileText, ArrowLeft } from "lucide-react";
+import { Search, Package, AlertTriangle, FileCheck, CheckCircle2, RotateCcw, UploadCloud, FileText, ArrowLeft, PackagePlus } from "lucide-react";
 
 import { useProcurement } from "../../../context/ProcurementContext";
 import { useRouter } from "next/navigation";
+import PageHeader from "../../../components/shared/PageHeader";
 
 interface POItem {
     id: string;
@@ -102,15 +103,13 @@ export default function CreateGRN() {
     }
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <div className="mt-8 mb-8 border-b border-slate-200 pb-4 flex justify-between items-end">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                        Goods Receipt Note (GRN) <span className="text-[10px] font-bold text-black bg-[#2563EB]/10 border border-[#2563EB]/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu Nhập & QC</span>
-                    </h1>
-                    <p className="text-sm text-slate-900 mt-1">Chọn PO đang chờ nhập kho bên dưới để bắt đầu đếm số lượng & kiểm định chất lượng.</p>
-                </div>
-            </div>
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <PageHeader
+                title="Tạo Phiếu nhập kho (GRN)"
+                subtitle="Chọn PO đang chờ nhập kho bên dưới để bắt đầu đếm số lượng & kiểm định chất lượng."
+                icon={PackagePlus}
+                iconColor="green"
+            />
 
             {!activePO ? (
                 <div className="space-y-4">

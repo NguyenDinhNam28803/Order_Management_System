@@ -1,10 +1,11 @@
 ﻿"use client";
 
 import React, { useState, useMemo } from "react";
-import { 
-    Plus, Search, Filter, ArrowRight, ClipboardList, 
-    Clock, BadgeCheck, FileText, ChevronRight, MoreVertical, Calendar 
+import {
+    Plus, Search, Filter, ArrowRight, ClipboardList,
+    Clock, BadgeCheck, FileText, ChevronRight, MoreVertical, Calendar, MessageSquare
 } from "lucide-react";
+import PageHeader from "../components/shared/PageHeader";
 import { useProcurement, QuoteRequestStatus, QuoteRequest } from "../context/ProcurementContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -56,21 +57,23 @@ export default function QuoteRequestPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 min-h-screen bg-[#F8FAFC] text-slate-900">
             <div className="px-6 py-6 space-y-6">
-            <header className="flex justify-between items-center bg-[#F1F5F9] p-6 rounded-xl shadow-sm border border-slate-200">
-                <div>
-                    <h1 className="text-2xl font-black text-[#2563EB] tracking-tight">Yêu cầu báo giá</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] font-medium">Quản lý và theo dõi các báo giá từ bộ phận Thu mua</p>
-                </div>
-                <Link 
-                    href="/quote-requests/create"
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-5 py-2.5 rounded-xl font-bold hover:bg-[#1D4ED8] transition-all shadow-lg active:scale-95"
-                >
-                    <Plus size={20} />
-                    Tạo yêu cầu báo giá mới
-                </Link>
-            </header>
+            <PageHeader
+                icon={MessageSquare}
+                iconColor="amber"
+                title="Yêu cầu báo giá"
+                subtitle="Quản lý và theo dõi các báo giá từ bộ phận Thu mua"
+                actions={
+                    <Link
+                        href="/quote-requests/create"
+                        className="btn-primary"
+                    >
+                        <Plus size={20} />
+                        Tạo yêu cầu báo giá mới
+                    </Link>
+                }
+            />
 
             {/* Filter Bar */}
             <div className="flex flex-wrap items-center gap-4 bg-[#F1F5F9] p-4 rounded-xl shadow-sm border border-slate-200 justify-between">

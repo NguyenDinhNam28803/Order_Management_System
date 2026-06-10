@@ -12,6 +12,7 @@ import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND, formatDate } from "../../utils/formatUtils";
 import BudgetHeatmap from "../../components/BudgetHeatmap";
 import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
+import PageHeader from "../../components/shared/PageHeader";
 
 export default function FinanceDashboard() {
     const router = useRouter();
@@ -35,23 +36,24 @@ export default function FinanceDashboard() {
 
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
 
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">AP COMMAND CENTER</h1>
-                    <p className="text-[0.8125rem] font-medium text-[#64748B]">Hệ thống quản trị khoản phải trả & Đối soát 3 bên tự động tích hợp AI.</p>
-                </div>
-                <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
-                        <Download size={14} /> Export Report
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-xl text-xs font-bold hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20">
-                        <Activity size={14} /> System Health
-                    </button>
-                </div>
-            </div>
+            <PageHeader
+                icon={FileCheck}
+                iconColor="blue"
+                title="Trung tâm Tài chính & Đối soát"
+                subtitle="Quản trị khoản phải trả & đối soát 3 bên tự động tích hợp AI."
+                actions={
+                    <>
+                        <button className="btn-secondary">
+                            <Download size={14} /> Xuất báo cáo
+                        </button>
+                        <button className="btn-primary">
+                            <Activity size={14} /> Kiểm tra hệ thống
+                        </button>
+                    </>
+                }
+            />
 
             {/* KPI Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

@@ -71,7 +71,7 @@ export default function PRDetailPage() {
             <ArrowLeft size={14} /> Quay lại danh sách
           </button>
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Chi tiết Yêu cầu (PR)</h1>
+            <h1 className="page-title">Chi tiết Yêu cầu (PR)</h1>
             <span className={`status-pill ${getStatusDisplay(pr.status).class}`}>
               {getStatusDisplay(pr.status).label}
             </span>
@@ -134,8 +134,8 @@ export default function PRDetailPage() {
            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#10B981]/5 rounded-full blur-2xl"></div>
            <div>
               <h3 className="section-title">Tổng Giá Trị (Dự kiến)</h3>
-              <div className="text-4xl font-black text-slate-900 mt-2 tracking-tight">
-                  {pr.totalEstimate?.toLocaleString('vi-VN')} <span className="text-xl">VND</span>
+              <div className="text-2xl font-bold text-[#0F172A] mt-2 tracking-tight">
+                  {pr.totalEstimate?.toLocaleString('vi-VN')} <span className="text-base text-[#64748B]">VND</span>
               </div>
            </div>
            

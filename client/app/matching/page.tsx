@@ -21,10 +21,10 @@ export default function MatchingPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Đối soát 3 bên (3-Way Match)</h1>
+                    <h1 className="page-title">Đối soát 3 bên (3-Way Match)</h1>
                     <p className="text-sm text-slate-900 mt-1">Hệ thống tự động đối chiếu dữ liệu giữa PO, Nhập kho và Hóa đơn.</p>
                 </div>
             </div>

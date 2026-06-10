@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { PR, useProcurement, QuoteRequestStatus, QuoteRequest, QuoteRequestItem, Organization, PO } from "../context/ProcurementContext";
-import { 
-    Filter, ArrowRight, 
-    FileText, ShoppingBag, 
-    Zap, TrendingUp, 
-    Package, Send, CheckCircle, X, ChevronRight, Bot} from "lucide-react";
+import {
+    Filter, ArrowRight,
+    FileText, ShoppingBag,
+    Zap, TrendingUp,
+    Package, Send, CheckCircle, X, ChevronRight, Bot, Search
+} from "lucide-react";
+import PageHeader from "../components/shared/PageHeader";
 import Link from "next/link";
 import { RFQ } from "../context/ProcurementContext";
 import { getStatusLabel } from "../utils/formatUtils";
@@ -104,26 +106,25 @@ export default function SourcingPage() {
     }
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">QUẢN LÝ NGUỒN HÀNG (SOURCING)</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] font-medium tracking-tight flex items-center gap-2">
-                        <Zap size={14} className="text-amber-500 fill-amber-500" /> 
-                        Tối ưu hóa quy trình chọn nhà cung cấp và quản lý RFQ/PO
-                    </p>
-                </div>
-                <div className="flex gap-3">
-                    <button className="flex items-center gap-2 bg-[#F1F5F9] border border-slate-200 text-slate-900 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all">
-                        <Filter size={16} /> Bộ lọc nâng cao
-                    </button>
-                    <Link href="/sourcing/rfq-create">
-                        <button className="flex items-center gap-2 bg-[#2563EB] text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all">
-                            <PlusIcon size={16} /> Tạo RFQ thủ công
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <PageHeader
+                icon={Search}
+                iconColor="blue"
+                title="Tìm kiếm nguồn hàng"
+                subtitle="Tối ưu hóa quy trình chọn nhà cung cấp và quản lý RFQ/PO"
+                actions={
+                    <div className="flex gap-3">
+                        <button className="flex items-center gap-2 bg-[#F1F5F9] border border-slate-200 text-slate-900 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all">
+                            <Filter size={16} /> Bộ lọc nâng cao
                         </button>
-                    </Link>
-                </div>
-            </div>
+                        <Link href="/sourcing/rfq-create">
+                            <button className="btn-primary text-xs uppercase tracking-widest">
+                                <PlusIcon size={16} /> Tạo RFQ thủ công
+                            </button>
+                        </Link>
+                    </div>
+                }
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 {stats.map((stat) => (

@@ -36,7 +36,7 @@ export default function AIReportPage() {
         <main className="pt-16 px-8 pb-12">
             <div className="mt-8 flex justify-between items-end mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-brand-primary tracking-tight flex items-center gap-3">
+                    <h1 className="page-title flex items-center gap-3">
                         <Zap className="text-amber-500" size={28} />
                         Báo cáo Khuyến nghị từ AI
                     </h1>

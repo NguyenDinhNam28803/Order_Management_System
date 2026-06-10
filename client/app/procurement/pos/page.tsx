@@ -9,6 +9,7 @@ import {
     PlusCircle, MinusCircle, Building2, Banknote,
     Send, Download, MoreVertical, CircleDot
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, PoStatus, Organization, PR, RFQ, PO, POItem } from "../../context/ProcurementContext";
 
 interface POMockData extends PO {
@@ -111,26 +112,17 @@ export default function POManagementPage() {
         <main className="p-6 space-y-6">
             <div className="max-w-[1600px] mx-auto space-y-6">
 
-                {/* ── Header ── */}
-                <div className="page-header">
-                    <div>
-                        <div className="flex items-center gap-3 mb-1">
-                            <div className="w-8 h-8 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center">
-                                <ShoppingBag size={16} className="text-blue-600" />
-                            </div>
-                            <h1 className="page-title">Quản lý Đơn đặt hàng (PO)</h1>
-                        </div>
-                        <p className="text-[0.8125rem] text-[#64748B] font-medium ml-11">
-                            Theo dõi vòng đời đơn hàng từ phát hành đến hoàn tất thanh toán
-                        </p>
-                    </div>
-                    <button
-                        onClick={() => setView("create")}
-                        className="btn-primary flex items-center gap-2"
-                    >
-                        <Plus size={16} /> Tạo PO mới
-                    </button>
-                </div>
+                <PageHeader
+                    icon={ShoppingBag}
+                    iconColor="blue"
+                    title="Quản lý Đơn đặt hàng (PO)"
+                    subtitle="Theo dõi vòng đời đơn hàng từ phát hành đến hoàn tất thanh toán."
+                    actions={
+                        <button onClick={() => setView("create")} className="btn-primary">
+                            <Plus size={16} /> Tạo PO mới
+                        </button>
+                    }
+                />
 
                 {/* ── Stats ── */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

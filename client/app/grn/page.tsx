@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Truck, Package, Camera, CheckCircle2, AlertTriangle, ArrowRight, TrendingUp, Clock, Star, Inbox } from "lucide-react";
+import { Truck, Package, Camera, CheckCircle2, AlertTriangle, ArrowRight, TrendingUp, Clock, Star, Inbox, PackageCheck } from "lucide-react";
+import PageHeader from "../components/shared/PageHeader";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
 
@@ -56,13 +57,13 @@ export default function GRNPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <div className="mt-8 mb-8 flex justify-between items-end">
-                <div>
-                    <h1 className="text-3xl font-black text-brand-primary tracking-tight">Nhập kho & Kiểm định (GRN)</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] font-medium mt-1">Xác nhận hàng hóa thực nhận và kiểm soát chất lượng đầu vào.</p>
-                </div>
-            </div>
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <PageHeader
+                icon={PackageCheck}
+                iconColor="green"
+                title="Phiếu nhập kho (GRN)"
+                subtitle="Xác nhận hàng hóa thực nhận và kiểm soát chất lượng đầu vào."
+            />
 
             {!activePO ? (
                 <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 bg-slate-50 border-dashed py-32 text-center text-slate-900">

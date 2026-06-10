@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Search, Layers, Building2, ChevronRight, Hash, Globe, CheckCircle2, AlertCircle } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, ProductCategory } from "../../context/ProcurementContext";
 import { Organization, CreateCategoryDto, UpdateCategoryDto } from "../../types/api-types";
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
@@ -193,18 +194,20 @@ export default function CategoriesPage() {
                 onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
             />
 
-            <div className="flex justify-between items-end mb-10 mt-6">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Quản lý Danh mục</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium italic">PHÂN LOẠI NHÓM HÀNG HÓA VÀ DỊCH VỤ TRONG HỆ THỐNG</p>
-                </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
-                >
-                    <Plus size={18} /> Thêm Danh mục
-                </button>
-            </div>
+            <PageHeader
+                icon={Layers}
+                iconColor="blue"
+                title="Quản lý Danh mục"
+                subtitle="Phân loại nhóm hàng hóa và dịch vụ trong hệ thống."
+                actions={
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="btn-primary flex items-center gap-2"
+                    >
+                        <Plus size={16} /> Thêm Danh mục
+                    </button>
+                }
+            />
 
             <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-6">

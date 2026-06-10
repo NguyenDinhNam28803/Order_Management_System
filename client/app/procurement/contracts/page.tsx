@@ -7,6 +7,7 @@ import {
     Calendar, Building2, PenTool, Trash2, Pencil, Send, X,
     ShieldCheck, TrendingUp, RotateCcw, ChevronRight, Ban,
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import Link from "next/link";
 import { ContractStatus, CurrencyCode, Contract } from "../../types/api-types";
 import { Organization } from "../../context/ProcurementContext";
@@ -140,25 +141,20 @@ export default function ContractsPage() {
         <main className="p-6 space-y-6">
 
             {/* ── Header ── */}
-            <div className="page-header">
-                <div>
-                    <div className="flex items-center gap-3 mb-1">
-                        <div className="w-8 h-8 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center">
-                            <FileText size={16} className="text-blue-600" />
-                        </div>
-                        <h1 className="page-title">Quản lý Hợp đồng</h1>
-                    </div>
-                    <p className="text-sm text-[#64748B] font-medium ml-11">
-                        Quản lý và theo dõi các thỏa thuận thu mua với nhà cung cấp
-                    </p>
-                </div>
-                <button
-                    onClick={openCreate}
-                    className="btn-primary text-xs uppercase tracking-wider"
-                >
-                    <Plus size={16} /> Tạo hợp đồng mới
-                </button>
-            </div>
+            <PageHeader
+                icon={FileText}
+                iconColor="purple"
+                title="Quản lý Hợp đồng"
+                subtitle="Quản lý và theo dõi các thỏa thuận thu mua với nhà cung cấp"
+                actions={
+                    <button
+                        onClick={openCreate}
+                        className="btn-primary text-xs uppercase tracking-wider"
+                    >
+                        <Plus size={16} /> Tạo hợp đồng mới
+                    </button>
+                }
+            />
 
             {/* ── Stats ── */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">

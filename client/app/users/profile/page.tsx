@@ -85,7 +85,7 @@ export default function UserProfilePage() {
 
     if (loading) {
         return (
-            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] flex items-center justify-center">
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] flex items-center justify-center">
                 <div className="flex items-center gap-3">
                     <Loader2 className="h-6 w-6 animate-spin text-[#2563EB]" />
                     <span className="text-slate-900 text-sm font-medium">Đang tải...</span>
@@ -96,7 +96,7 @@ export default function UserProfilePage() {
 
     if (error || !user) {
         return (
-            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF]">
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC]">
                 <div className="max-w-2xl mx-auto mt-20">
                     <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 p-12 text-center shadow-xl">
                         <UserCircle className="mx-auto h-16 w-16 text-slate-900 mb-4" />
@@ -109,7 +109,7 @@ export default function UserProfilePage() {
     }
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF]">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC]">
             {/* Header */}
             <div className="mt-4 mb-8 flex items-center justify-between">
                 <div>

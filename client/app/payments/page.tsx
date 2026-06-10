@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight, ShieldCheck, History } from "lucide-react";
+import { ArrowRight, ShieldCheck, History, CreditCard } from "lucide-react";
+import PageHeader from "../components/shared/PageHeader";
 import { useProcurement } from "../context/ProcurementContext";
 import { Payment } from "../types/api-types";
 import { formatVND, formatDate } from "../utils/formatUtils";
@@ -53,19 +54,22 @@ export default function PaymentsPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
             {error && (
                 <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
                     {error}
                 </div>
             )}
 
-            <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <PageHeader
+                icon={CreditCard}
+                iconColor="green"
+                title="Quản lý Thanh toán"
+                subtitle="Thanh toán các đơn hàng đã được đối soát hoàn tất."
+            />
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
                 <div className="lg:col-span-2 space-y-8">
-                    <div>
-                        <h1 className="text-2xl font-black text-slate-900 tracking-tight mb-2">Hóa đơn & Thanh toán</h1>
-                        <p className="text-sm text-slate-900">Thanh toán các đơn hàng đã được đối soát hoàn tất.</p>
-                    </div>
 
                     <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                         <div className="p-4 border-b border-slate-100 font-black text-[10px] uppercase tracking-widest text-black">Danh sách chờ thanh toán</div>

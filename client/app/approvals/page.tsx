@@ -106,7 +106,7 @@ export default function ApprovalsPage() {
 
     if (loadingMyPrs) {
         return (
-            <main className="p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+            <main className="p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
                 <div className="max-w-6xl mx-auto">
                     <div className="h-8 bg-gray-700 rounded w-48 mb-6 animate-pulse" />
                     <TableSkeleton rows={6} cols={5} />
@@ -117,15 +117,15 @@ export default function ApprovalsPage() {
 
     return (
         <ErrorBoundary>
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
 
             <div className="flex flex-1 overflow-hidden">
                 {/* Left Sidebar: Inbox List */}
                 <div className="w-100 border-r border-border bg-bg-secondary flex flex-col shrink-0">
                     <div className="p-4 border-b border-border bg-bg-secondary/50">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                <Inbox size={20} className="text-indigo-600" /> Hộp thư Approval
+                            <h2 className="text-lg font-bold text-[#0F172A] flex items-center gap-2">
+                                <Inbox size={18} className="text-indigo-600" /> Hộp thư Phê duyệt
                             </h2>
                             <span className="bg-[#2563EB]/20 text-[#2563EB] text-[10px] font-bold px-2 py-0.5 rounded-full">
                                 {pendingPRs.length} mới

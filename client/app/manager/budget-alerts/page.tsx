@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { ShieldAlert, CheckCircle, ArrowRight, DollarSign, List, Calculator, AlertTriangle, AlertCircle, Loader2 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
 import { BudgetOverrideStatus } from "../../types/api-types";
@@ -47,10 +48,14 @@ export default function BudgetAlertsPage() {
     const pendingOverrides = budgetOverrides.filter(o => o.status === BudgetOverrideStatus.PENDING);
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <header className="mb-10">
-                <h1 className="text-2xl font-black tracking-tight text-slate-900 mb-2 uppercase">CẢNH BÁO VƯỢT NGÂN SÁCH</h1>
-                <p className="text-[0.8125rem] font-medium text-[#64748B] italic">Danh sách các yêu cầu có nguy cơ hoặc đã vượt ngưỡng ngân sách được duyệt</p>
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <header>
+                <PageHeader
+                    icon={ShieldAlert}
+                    iconColor="rose"
+                    title="Cảnh báo vượt ngân sách"
+                    subtitle="Danh sách các yêu cầu có nguy cơ hoặc đã vượt ngưỡng ngân sách được duyệt."
+                />
             </header>
 
             {pendingOverrides.length > 0 ? (

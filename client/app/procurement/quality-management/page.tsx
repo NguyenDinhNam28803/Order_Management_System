@@ -1,17 +1,18 @@
 ﻿"use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  ShieldCheck, 
-  TrendingUp, 
-  AlertTriangle, 
-  FileText, 
-  CheckCircle2, 
+import {
+  ShieldCheck,
+  TrendingUp,
+  AlertTriangle,
+  FileText,
+  CheckCircle2,
   XCircle,
   Clock,
   History,
   MessageSquare
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useRouter } from "next/navigation";
 import { useProcurement } from "../../context/ProcurementContext";
 import SupplierSelector from "../../components/SupplierSelector";
@@ -63,16 +64,12 @@ export default function ProcurementQualityHub() {
 
   return (
     <main className="p-6 space-y-6">
-      {/* Header */}
-      <div className="page-header">
-        <div>
-          <h1 className="page-title flex items-center gap-3">
-            <ShieldCheck size={32} className="text-indigo-600" />
-            QUẢN TRỊ CHẤT LƯỢNG NCC
-          </h1>
-          <p className="text-slate-500 mt-1">Trung tâm điều phối giải trình (RCA) và quản trị rủi ro nhà cung cấp.</p>
-        </div>
-      </div>
+      <PageHeader
+        icon={ShieldCheck}
+        iconColor="green"
+        title="Quản lý Chất lượng"
+        subtitle="Trung tâm điều phối giải trình (RCA) và quản trị rủi ro nhà cung cấp"
+      />
 
       {/* Supplier Selection */}
       <section>

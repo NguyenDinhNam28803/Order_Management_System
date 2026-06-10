@@ -99,7 +99,7 @@ export default function Dashboard() {
         ];
 
         return (
-            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
                 {/* HEADER - Minimal Clean Design */}
                 <header className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
                     <div className="flex items-center gap-4">
@@ -778,7 +778,7 @@ export default function Dashboard() {
                             <div className="h-2 w-2 rounded-full bg-[#2563EB] animate-pulse"></div>
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Hệ thống Quản trị Chuỗi cung ứng</span>
                         </div>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tight">Trung tâm Quản lý Thu mua</h1>
+                        <h1 className="page-title">Trung tâm Quản lý Thu mua</h1>
                     </div>
                 </div>
 

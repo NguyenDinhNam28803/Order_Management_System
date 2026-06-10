@@ -5,7 +5,7 @@ import { Settings, Shield, Bell, Database, Save } from "lucide-react";
 
 export default function SettingsPage() {
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
             <div className="mt-8 mb-12">
                 <h1 className="text-2xl font-black text-slate-900 tracking-tight">Cài đặt hệ thống</h1>
                 <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium">Cấu hình tham số nghiệp vụ và bảo mật toàn hệ thống.</p>

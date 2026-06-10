@@ -8,6 +8,7 @@ import { usePurchaseOrders } from "../hooks/usePurchaseOrders";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TableSkeleton } from "../components/shared/TableSkeleton";
 import { ErrorBoundary } from "../components/shared/ErrorBoundary";
+import PageHeader from "../components/shared/PageHeader";
 import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
 
 export default function POPage() {
@@ -398,13 +399,13 @@ export default function POPage() {
     // Default LIST view
     return (
         <ErrorBoundary>
-            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <div className="mt-8 flex justify-between items-end mb-8">
-                <div>
-                    <h1 className="text-3xl font-black text-brand-primary tracking-tight">Quản lý Đơn mua hàng (PO)</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] mt-1">Theo dõi các đơn hàng đã phát hành và tình trạng ngân sách.</p>
-                </div>
-            </div>
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <PageHeader
+                icon={FileText}
+                iconColor="blue"
+                title="Quản lý Đơn mua hàng (PO)"
+                subtitle="Theo dõi các đơn hàng đã phát hành và tình trạng ngân sách."
+            />
             
             <div className="bg-bg-secondary p-4 rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 mb-8 flex justify-between items-center">
                 <div className="flex-1 flex gap-3 max-w-xl">

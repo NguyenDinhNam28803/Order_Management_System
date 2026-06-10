@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Plus, Send, Save, X, Calculator, Building, PieChart, Layers, DollarSign, Calendar, Loader2 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, BudgetAllocationStatus, BudgetPeriod } from "../../context/ProcurementContext";
 import { formatVND, parseMoney, formatDate } from "../../utils/formatUtils";
 import { CurrencyCode, CreateBudgetAllocationPayload } from "@/app/types/api-types";
@@ -164,19 +165,22 @@ export default function BudgetPlanningPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <header className="mt-8 flex justify-between items-end mb-10 border-b border-slate-200 pb-8">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">LẬP NGÂN SÁCH PHÒNG BAN</h1>
-                    <p className="text-[0.8125rem] font-medium text-[#64748B] mt-1 italic">CẤU HÌNH PHÂN BỔ NGÂN SÁCH CHI TIẾT</p>
-                </div>
-
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
-                >
-                    <Plus size={18} /> Thêm Phân Bổ
-                </button>
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <header>
+                <PageHeader
+                    icon={Calculator}
+                    iconColor="blue"
+                    title="Lập kế hoạch ngân sách"
+                    subtitle="Cấu hình phân bổ ngân sách chi tiết theo phòng ban."
+                    actions={
+                        <button
+                            onClick={() => setShowModal(true)}
+                            className="btn-primary flex items-center gap-2"
+                        >
+                            <Plus size={16} /> Thêm Phân Bổ
+                        </button>
+                    }
+                />
             </header>
 
             {/* Stats Summary */}

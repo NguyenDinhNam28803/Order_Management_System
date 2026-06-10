@@ -9,6 +9,7 @@ import {
   Inbox,
   FileText,
   ShoppingCart,
+  Store,
   DollarSign,
   TrendingUp,
   AlertCircle,
@@ -32,6 +33,7 @@ import {
 } from "lucide-react";
 import { formatVND } from "../utils/formatUtils";
 import { ErrorBoundary } from "../components/shared/ErrorBoundary";
+import PageHeader from "../components/shared/PageHeader";
 
 // Tooltip Component
 const Tooltip = ({ children, content, position = 'top' }: { children: React.ReactNode; content: React.ReactNode; position?: 'top' | 'bottom' | 'left' | 'right' }) => {
@@ -343,7 +345,7 @@ export default function SupplierPortalPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#FFFFFF] p-6">
+      <main className="min-h-screen bg-[#F8FAFC] p-6">
         <div className="flex flex-col items-center justify-center min-h-[400px]">
           <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4"></div>
           <div className="text-slate-900 font-bold uppercase tracking-widest">Đang tải cổng thông tin...</div>
@@ -354,23 +356,13 @@ export default function SupplierPortalPage() {
 
   return (
     <ErrorBoundary>
-    <main className="min-h-screen bg-[#FFFFFF] p-6 animate-in fade-in duration-500">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
-            <LayoutDashboard size={24} className="text-slate-900" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-              Cổng thông tin Nhà cung cấp
-            </h1>
-            <p className="text-sm text-slate-900">
-              Xin chào, <span className="text-[#2563EB] font-bold">{supplierName}</span>
-            </p>
-          </div>
-        </div>
-      </div>
+    <main className="min-h-screen bg-[#F8FAFC] p-6 animate-in fade-in duration-500">
+      <PageHeader
+        title="Portal Nhà cung cấp"
+        subtitle={`Xin chào, ${supplierName}`}
+        icon={Store}
+        iconColor="blue"
+      />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">

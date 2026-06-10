@@ -11,7 +11,8 @@ import {
   PaymentConfirmedData
 } from "../../types/notification-types";
 import NotificationTemplatePreview from "../../components/NotificationTemplatePreview";
-import { Mail, Plus, RefreshCw } from "lucide-react";
+import { Mail, Plus, RefreshCw, Bell } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement } from "../../context/ProcurementContext";
 
 // Sample data for each template type
@@ -149,34 +150,28 @@ export default function NotificationAdminPage() {
   return (
     <div className="animate-in fade-in duration-500 space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">
-            EMAIL TEMPLATES
-          </h1>
-          <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium italic">
-            Quản lý và xem trước các mẫu email thông báo
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="group relative px-6 py-3 bg-[#F1F5F9] text-slate-900 font-bold rounded-xl 
-              border border-slate-200 hover:text-slate-900 hover:border-[#2563EB]/50 
-              transition-all duration-300 flex items-center gap-2 disabled:opacity-50"
-          >
-            <RefreshCw size={18} className={isRefreshing ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-500"} />
-            <span>LÀM MỚI</span>
-          </button>
-          <button className="group relative px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white font-bold rounded-xl
-            shadow-lg shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 hover:scale-105 transition-all duration-300 
-            flex items-center gap-2">
-            <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
-            <span>THÊM TEMPLATE</span>
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        icon={Bell}
+        iconColor="blue"
+        title="Template Thông báo Email"
+        subtitle="Quản lý mẫu email tự động gửi theo sự kiện hệ thống."
+        actions={
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="btn-secondary flex items-center gap-2 disabled:opacity-50"
+            >
+              <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
+              Làm mới
+            </button>
+            <button className="btn-primary flex items-center gap-2">
+              <Plus size={16} />
+              Thêm Template
+            </button>
+          </div>
+        }
+      />
 
       {/* Template Categories */}
       <div className="space-y-6">

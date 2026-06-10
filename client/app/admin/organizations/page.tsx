@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Plus, Edit2, Trash2, Search, MapPin, Hash, Building2 } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
 import { Organization, CreateOrganizationPayload, UpdateOrganizationPayload } from "@/app/types/api-types";
+import PageHeader from "../../components/shared/PageHeader";
 
 export default function OrganizationsPage() {
     const { organizations, addOrganization, updateOrganization, removeOrganization, refreshData } = useProcurement();
@@ -71,18 +72,20 @@ export default function OrganizationsPage() {
 
     return (
         <div className="animate-in fade-in duration-500">
-            <div className="flex justify-between items-end mb-10">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Quản lý Tổ chức</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium italic">THIẾT LẬP THỰC THỂ PHÁP NHÂN VÀ THÔNG TIN CÔNG TY</p>
-                </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
-                >
-                    <Plus size={18} /> Thêm Tổ chức
-                </button>
-            </div>
+            <PageHeader
+                icon={Building2}
+                iconColor="blue"
+                title="Quản lý Tổ chức"
+                subtitle="Thiết lập thực thể pháp nhân và thông tin công ty."
+                actions={
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="btn-primary flex items-center gap-2"
+                    >
+                        <Plus size={16} /> Thêm Tổ chức
+                    </button>
+                }
+            />
 
             <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-slate-200 flex justify-between items-center">
@@ -168,7 +171,7 @@ export default function OrganizationsPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in zoom-in duration-300">
                     <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-slate-200">
                         <div className="p-6">
-                            <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
+                            <h2 className="text-lg font-bold text-slate-900 mb-2">
                                 {editingOrg ? "Cập nhật Tổ chức" : "Thêm Tổ chức mới"}
                             </h2>
                             <p className="text-xs text-slate-900 font-bold uppercase tracking-widest mb-10">ENTITY MANAGEMENT SYSTEM</p>

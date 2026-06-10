@@ -1,8 +1,8 @@
 ﻿"use client";
 
 import React, { useState, useMemo } from "react";
-import { 
-  CheckCircle2, 
+import {
+  CheckCircle2,
   XCircle,
   FileText,
   AlertCircle,
@@ -13,8 +13,10 @@ import {
   ShieldCheck,
   Search,
   Check,
-  X
+  X,
+  CheckSquare
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, BudgetAllocation } from "../../context/ProcurementContext";
 import { CostCenter, Department } from "@/app/types/api-types";
 import { formatVND } from "../../utils/formatUtils";
@@ -97,7 +99,7 @@ export default function FinanceBudgetApprovalPage() {
 
     if (!canApprove) {
         return (
-            <div className="flex flex-col items-center justify-center p-12 text-slate-900 bg-[#FFFFFF] min-h-screen">
+            <div className="flex flex-col items-center justify-center p-12 text-slate-900 bg-[#F8FAFC] min-h-screen">
                 <AlertCircle size={48} className="mb-4 text-rose-500" />
                 <h2 className="text-xl font-bold mb-2 text-slate-900">Không đủ quyền hạn</h2>
                 <p>Chỉ phòng Tài chính và Ban giám đốc mới có thể duyệt ngân sách phân bổ.</p>
@@ -106,19 +108,13 @@ export default function FinanceBudgetApprovalPage() {
     }
 
     return (
-        <main className="p-6 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-screen bg-[#FFFFFF] text-slate-900">
-            {/* Header */}
-            <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-[#2563EB]">
-                    <ShieldCheck size={28} className="text-[#2563EB]" />
-                    <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">
-                        Duyệt Ngân Sách
-                    </h1>
-                </div>
-                <p className="text-[0.8125rem] font-medium text-[#64748B] max-w-2xl">
-                    Xét duyệt yêu cầu phân bổ ngân sách từ các phòng ban. Quyết định duyệt sẽ lập tức mở khóa ngân sách cho việc mua sắm.
-                </p>
-            </div>
+        <main className="p-6 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <PageHeader
+                icon={CheckSquare}
+                iconColor="green"
+                title="Phê duyệt ngân sách"
+                subtitle="Xét duyệt yêu cầu phân bổ ngân sách từ các phòng ban. Quyết định duyệt sẽ lập tức mở khóa ngân sách cho việc mua sắm."
+            />
 
             {/* Dashboard Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

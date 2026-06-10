@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { z } from "zod";
-import { 
-  Building, 
-  DollarSign, 
-  Plus, 
-  Filter, 
+import {
+  Building,
+  DollarSign,
+  Plus,
+  Filter,
   Search,
-  TrendingUp, 
-  History, 
-  CheckCircle2, 
+  TrendingUp,
+  History,
+  CheckCircle2,
   AlertCircle,
   Clock,
   LayoutGrid,
@@ -19,8 +19,10 @@ import {
   Calendar,
   X,
   Zap,
-  Loader2
+  Loader2,
+  BarChart3
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
 
@@ -95,45 +97,40 @@ export default function BudgetAllocationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] p-8 text-slate-900">
-      {/* Header section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-            <Building className="text-[#2563EB]" size={32} />
-            Phân bổ ngân sách theo Quý
-          </h1>
-          <p className="text-[0.8125rem] font-medium text-[#64748B] mt-1">
-            Quản lý và cấp phát ngân sách định kỳ cho các trung tâm chi phí
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <div className="flex bg-[#F1F5F9] p-1 rounded-xl shadow-sm border border-slate-200">
-            {[1, 2, 3, 4].map((q) => (
-              <button
-                key={q}
-                onClick={() => setSelectedQuarter(q)}
-                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
-                  selectedQuarter === q 
-                    ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20" 
-                    : "text-white hover:bg-slate-100"
-                }`}
-              >
-                Quý {q}
-              </button>
-            ))}
+    <div className="min-h-screen bg-[#F8FAFC] p-8 text-slate-900">
+      <PageHeader
+        icon={BarChart3}
+        iconColor="blue"
+        title="Phân bổ ngân sách"
+        subtitle="Quản lý và cấp phát ngân sách định kỳ cho các trung tâm chi phí"
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="flex bg-[#F1F5F9] p-1 rounded-xl shadow-sm border border-slate-200">
+              {[1, 2, 3, 4].map((q) => (
+                <button
+                  key={q}
+                  onClick={() => setSelectedQuarter(q)}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                    selectedQuarter === q
+                      ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20"
+                      : "text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  Quý {q}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowDistributeModal(true)}
+              className="btn-primary"
+            >
+              <Zap size={18} />
+              Phân bổ 20/80
+            </button>
           </div>
-          
-          <button 
-            onClick={() => setShowDistributeModal(true)}
-            className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-[#2563EB]/20 transition-all active:scale-95"
-          >
-            <Zap size={18} />
-            Phân bổ 20/80
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

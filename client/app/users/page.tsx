@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { UserPlus, Mail, Edit2, Trash2, Search, Building, ShieldCheck, ChevronDown } from "lucide-react";
+import { UserPlus, Mail, Edit2, Trash2, Search, Building, ShieldCheck, ChevronDown, Users } from "lucide-react";
+import PageHeader from "../components/shared/PageHeader";
 import { useProcurement, User, Department, Organization, UserRole } from "../context/ProcurementContext";
 import { CreateUserPayload } from "../types/api-types";
 import ConfirmDialog from "../components/shared/ConfirmDialog";
@@ -123,7 +124,7 @@ export default function UsersPage() {
     });
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
             <ConfirmDialog
                 open={confirmState.open}
                 title={confirmState.title}
@@ -131,18 +132,20 @@ export default function UsersPage() {
                 onConfirm={confirmState.onConfirm}
                 onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
             />
-            <div className="flex justify-between items-end mb-10">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Quản trị Nhân sự</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium italic">TOÀN QUYỀN TRUY CẬP VÀ PHÂN QUYỀN HỆ THỐNG ERP</p>
-                </div>
-                <button 
-                    onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
-                >
-                    <UserPlus size={18} /> Thêm nhân sự mới
-                </button>
-            </div>
+            <PageHeader
+                icon={Users}
+                iconColor="blue"
+                title="Quản lý người dùng"
+                subtitle="Toàn quyền truy cập và phân quyền hệ thống ERP"
+                actions={
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="btn-primary text-[11px]"
+                    >
+                        <UserPlus size={18} /> Thêm nhân sự mới
+                    </button>
+                }
+            />
 
             <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-slate-200 flex justify-between items-center">

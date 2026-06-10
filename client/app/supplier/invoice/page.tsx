@@ -5,6 +5,7 @@ import { FileText, Calculator, FileCheck, Search, Info, Send, UploadCloud } from
 
 import { useProcurement, PO, GRN } from "../../context/ProcurementContext";
 import { useRouter } from "next/navigation";
+import PageHeader from "../../components/shared/PageHeader";
 
 interface DeliverablePO {
     id: string;
@@ -109,13 +110,13 @@ export default function SupplierInvoice() {
     }
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <div className="mt-8 mb-8 border-b border-border pb-4">
-                <h1 className="text-3xl font-black text-text-primary tracking-tight flex items-center gap-3">
-                    Khởi tạo Hóa đơn VAT Điện tử <span className="text-[0.6875rem] font-bold text-black bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded uppercase tracking-widest ml-2">Phiếu thu & Đối soát</span>
-                </h1>
-                <p className="text-sm text-slate-900 mt-1">Hệ thống áp dụng 3-way Matching. NCC chỉ xuất hóa đơn cho các mặt hàng đã được kho (Buyer) xác nhận thực nhận (GRN).</p>
-            </div>
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <PageHeader
+                title="Nộp hóa đơn"
+                subtitle="Hệ thống áp dụng 3-way Matching. NCC chỉ xuất hóa đơn cho các mặt hàng đã được kho (Buyer) xác nhận thực nhận (GRN)."
+                icon={FileCheck}
+                iconColor="green"
+            />
 
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
                 {/* Main Form Form */}

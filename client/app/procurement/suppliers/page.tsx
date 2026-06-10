@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useProcurement, Organization, PO } from "../../context/ProcurementContext";
-import { 
-    Star, 
-    TrendingUp, 
-    Award, 
-    Search, 
+import {
+    Star,
+    TrendingUp,
+    Award,
+    Search,
     Filter,
     ChevronRight,
     Building2,
@@ -20,8 +20,10 @@ import {
     HelpCircle,
     FileCheck,
     Scale,
-    TrendingDown
+    TrendingDown,
+    Users
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 
 // Tooltip Component
 const Tooltip = ({ children, content, position = 'top' }: { children: React.ReactNode; content: React.ReactNode; position?: 'top' | 'bottom' | 'left' | 'right' }) => {
@@ -229,28 +231,18 @@ export default function ProcurementSuppliersPage() {
     return (
         <main className="p-6 space-y-6">
             <div className="max-w-[1400px] mx-auto space-y-6">
-                {/* Header */}
-                <div className="page-header">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="h-10 w-10 bg-blue-600/10 rounded-xl flex items-center justify-center border border-blue-600/20">
-                                <Truck size={20} className="text-blue-600" />
-                            </div>
-                            <h1 className="page-title">
-                                Đánh giá Nhà cung cấp
-                            </h1>
-                        </div>
-                        <p className="text-slate-900 text-sm">
-                            Quản lý và đánh giá hiệu suất nhà cung cấp dựa trên KPI
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-4">
+                <PageHeader
+                    icon={Users}
+                    iconColor="blue"
+                    title="Đánh giá Nhà cung cấp"
+                    subtitle="Quản lý và đánh giá hiệu suất nhà cung cấp dựa trên KPI"
+                    actions={
                         <div className="bg-slate-100 px-4 py-2 rounded-xl border border-slate-200">
-                            <span className="text-slate-900 text-xs font-bold uppercase">Tổng NCC:</span>
+                            <span className="text-[#64748B] text-xs font-bold uppercase">Tổng NCC:</span>
                             <span className="text-slate-900 font-bold ml-2">{suppliers.length}</span>
                         </div>
-                    </div>
-                </div>
+                    }
+                />
 
                 {/* Filters */}
                 <div className="bg-slate-100 p-4 rounded-xl border border-slate-200 shadow-xl shadow-blue-600/5">

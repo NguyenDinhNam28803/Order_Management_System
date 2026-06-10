@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Building2, Plus, Edit2, Trash2, Users, Search } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, Department, User } from "../../context/ProcurementContext";
 import { Organization, CreateDepartmentPayload, UpdateDepartmentPayload } from "@/app/types/api-types";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
@@ -80,18 +81,20 @@ export default function DepartmentsPage() {
                 onConfirm={confirmState.onConfirm}
                 onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
             />
-            <div className="flex justify-between items-end mb-10">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Quản lý Phòng ban</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium italic">THIẾT LẬP CƠ CẤU TỔ CHỨC VÀ NGÂN SÁCH PHÒNG BAN</p>
-                </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
-                >
-                    <Plus size={18} /> Thêm phòng ban
-                </button>
-            </div>
+            <PageHeader
+                icon={Building2}
+                iconColor="blue"
+                title="Quản lý Phòng ban"
+                subtitle="Thiết lập cơ cấu tổ chức và ngân sách phòng ban."
+                actions={
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="btn-primary flex items-center gap-2"
+                    >
+                        <Plus size={16} /> Thêm phòng ban
+                    </button>
+                }
+            />
 
             <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden">
                 <div className="p-8 bg-[#FFFFFF] border-b border-slate-200 flex justify-between items-center">

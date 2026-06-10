@@ -68,7 +68,7 @@ export default function FinanceMatching() {
     };
 
     return (
-        <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="pt-16 px-8 pb-12 animate-in fade-in duration-300 min-h-screen bg-[#F8FAFC] text-slate-900">
             
             <div className="mt-8 mb-6 flex flex-col md:flex-row justify-between items-start md:items-end border-b border-slate-200 pb-4">
                 <div className="flex items-center gap-4">

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Plus, Edit2, Trash2, Search, DollarSign, Building, Eye, X } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, Department, CurrencyCode } from "../../context/ProcurementContext";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
@@ -122,18 +123,20 @@ export default function CostCentersPage() {
                 onConfirm={confirmState.onConfirm}
                 onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
             />
-            <div className="mt-8 flex justify-between items-end mb-10 border-b border-slate-200 pb-8">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Quản lý Cost Center</h1>
-                    <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium italic">CẤU HÌNH BỘ PHẬN VÀ PHÂN BỔ NGÂN SÁCH ĐỊNH MỨC</p>
-                </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
-                >
-                    <Plus size={18} /> Thêm Cost Center
-                </button>
-            </div>
+            <PageHeader
+                icon={DollarSign}
+                iconColor="blue"
+                title="Quản lý Cost Center"
+                subtitle="Cấu hình bộ phận và phân bổ ngân sách định mức."
+                actions={
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="btn-primary flex items-center gap-2"
+                    >
+                        <Plus size={16} /> Thêm Cost Center
+                    </button>
+                }
+            />
 
             <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-slate-200">
                 <div className="p-5 bg-[#FFFFFF] border-b border-slate-200 flex justify-between items-center">

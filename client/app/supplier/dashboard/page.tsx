@@ -3,22 +3,24 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useProcurement, RFQ as ContextRFQ, Organization as ContextOrg, QuoteRequestStatus } from "@/app/context/ProcurementContext";
 import { formatVND, getStatusLabel } from "@/app/utils/formatUtils";
-import { 
-  Inbox, 
-  FileText, 
-  Send, 
-  CheckCircle, 
-  XCircle, 
-  ChevronRight, 
-  LayoutDashboard, 
-  History, 
+import {
+  Inbox,
+  FileText,
+  Send,
+  CheckCircle,
+  XCircle,
+  ChevronRight,
+  LayoutDashboard,
+  History,
   AlertCircle,
   Building2,
   DollarSign,
   Package,
   Calendar,
-  ArrowLeft
+  ArrowLeft,
+  BarChart3
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 
 // --- Types ---
 interface RFQItem {
@@ -298,7 +300,6 @@ export default function SupplierDashboard() {
     <div className="animate-in fade-in duration-500">
       <header className="mb-8 lg:flex items-end justify-between">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-2 uppercase">YÊU CẦU BÁO GIÁ (RFQs)</h1>
           <p className="text-slate-900 font-medium">Quản lý và phản hồi các yêu cầu báo giá từ đối tác.</p>
         </div>
         <div className="flex gap-3 mt-4 lg:mt-0">
@@ -551,7 +552,7 @@ export default function SupplierDashboard() {
   };
 
   return (
-    <div className="flex bg-[#FFFFFF] min-h-screen font-sans">
+    <div className="flex bg-[#F8FAFC] min-h-screen font-sans">
       {renderSidebar()}
       
       <div className="flex-1 min-w-0">
@@ -577,7 +578,14 @@ export default function SupplierDashboard() {
           </div>
         </header>
 
-        <main className="p-8 max-w-7xl mx-auto">
+        <main className="p-8 max-w-7xl mx-auto bg-[#F8FAFC]">
+          {!selectedRfq && (
+            <PageHeader
+              title="Dashboard Nhà cung cấp"
+              icon={BarChart3}
+              iconColor="blue"
+            />
+          )}
           {selectedRfq ? renderQuotationForm() : renderRFQList()}
         </main>
       </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { TrendingUp, PieChart, Wallet, ArrowRight, Calendar, Building, Filter, Download, ChevronDown } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
 import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
@@ -49,35 +50,36 @@ export default function SpendTrackingPage() {
     const paginatedAllocations = filteredAllocations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <header className="mb-10 lg:flex items-end justify-between">
-                <div>
-                    <h1 className="text-2xl font-black tracking-tight text-slate-900 mb-2 uppercase">THEO DÕI CHI TIÊU</h1>
-                    <p className="text-slate-900 font-medium">Theo dõi ngân sách theo thời gian thực của phòng ban</p>
-                </div>
-                
-                <div className="flex gap-4 mt-6 lg:mt-0">
-                    <div className="relative group">
-                        <select 
-                            value={selectedCC}
-                            onChange={(e) => {
-                                setSelectedCC(e.target.value);
-                                setCurrentPage(1); // Reset pagination when filter changes
-                            }}
-                            className="bg-[#F1F5F9] border border-slate-200 hover:border-[#2563EB]/50 rounded-xl text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] px-4 py-3 pr-10 outline-none appearance-none cursor-pointer transition-all min-w-[200px] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20"
-                        >
-                            <option value="ALL" className="bg-[#F1F5F9] text-slate-900">Tất cả Trung tâm chi phí</option>
-                            {myCostCenters.map(cc => (
-                                <option key={cc.id} value={cc.id} className="bg-[#F1F5F9] text-slate-900">
-                                    {cc.name} ({cc.code})
-                                </option>
-                            ))}
-                        </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-900 group-hover:text-[#2563EB] transition-colors">
-                            <ChevronDown size={14} />
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
+            <header>
+                <PageHeader
+                    icon={TrendingUp}
+                    iconColor="green"
+                    title="Theo dõi chi tiêu"
+                    subtitle="Theo dõi ngân sách theo thời gian thực của phòng ban."
+                    actions={
+                        <div className="relative group">
+                            <select
+                                value={selectedCC}
+                                onChange={(e) => {
+                                    setSelectedCC(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                                className="bg-[#F1F5F9] border border-slate-200 hover:border-[#2563EB]/50 rounded-lg text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] px-4 py-3 pr-10 outline-none appearance-none cursor-pointer transition-all min-w-[200px] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20"
+                            >
+                                <option value="ALL" className="bg-[#F1F5F9] text-slate-900">Tất cả Trung tâm chi phí</option>
+                                {myCostCenters.map(cc => (
+                                    <option key={cc.id} value={cc.id} className="bg-[#F1F5F9] text-slate-900">
+                                        {cc.name} ({cc.code})
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-900 group-hover:text-[#2563EB] transition-colors">
+                                <ChevronDown size={14} />
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    }
+                />
             </header>
 
             {/* Stats Cards with Charts */}

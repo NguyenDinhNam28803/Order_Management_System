@@ -19,6 +19,7 @@ import {
   FileText, Eye, Pencil, Trash2, Search, Filter,
   TrendingUp, Clock, CheckCircle2, AlertTriangle, Plus, Sparkles, Loader2, X
 } from "lucide-react";
+import PageHeader from "@/app/components/shared/PageHeader";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 function getToken() {
@@ -196,29 +197,22 @@ export default function InvoicesPage() {
           onCreated={async () => { await fetchInvoices(); setShowAiModal(false); }}
         />
       )}
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-black text-slate-900 tracking-tight">Quản lý Hóa đơn</h1>
-          <p className="text-xs text-slate-900 mt-0.5">Theo dõi và xử lý tất cả hóa đơn nhà cung cấp</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowAiModal(true)}
-            className="btn-ai text-xs gap-2"
-          >
-            <Sparkles size={14} />
-            Nhập từ AI
-          </button>
-          <Link
-            href="/supplier/invoice"
-            className="btn-primary text-xs gap-2"
-          >
-            <Plus size={14} />
-            Tạo hóa đơn
-          </Link>
-        </div>
-      </div>
+      <PageHeader
+        icon={FileText}
+        iconColor="blue"
+        title="Quản lý Hóa đơn"
+        subtitle="Theo dõi và xử lý tất cả hóa đơn nhà cung cấp."
+        actions={
+          <>
+            <button onClick={() => setShowAiModal(true)} className="btn-ai gap-2">
+              <Sparkles size={14} /> Nhập từ AI
+            </button>
+            <Link href="/supplier/invoice" className="btn-primary gap-2">
+              <Plus size={14} /> Tạo hóa đơn
+            </Link>
+          </>
+        }
+      />
 
       {/* Error Banner */}
       {error && (
@@ -231,10 +225,10 @@ export default function InvoicesPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Tổng hóa đơn",    value: stats.total,     icon: FileText,      color: "text-[#3B82F6]", bg: "bg-[#2563EB]/10" },
-          { label: "Chờ xử lý",       value: stats.pending,   icon: Clock,         color: "text-black",  bg: "bg-amber-500/10" },
-          { label: "Đã thanh toán",   value: stats.paid,      icon: CheckCircle2,  color: "text-black",bg: "bg-emerald-500/10" },
-          { label: "Cần xem xét",     value: stats.exception, icon: AlertTriangle, color: "text-black",   bg: "bg-rose-500/10" },
+          { label: "Tổng hóa đơn",    value: stats.total,     icon: FileText,      color: "text-[#2563EB]", bg: "bg-[#2563EB]/10" },
+          { label: "Chờ xử lý",       value: stats.pending,   icon: Clock,         color: "text-[#0F172A]",  bg: "bg-amber-500/10" },
+          { label: "Đã thanh toán",   value: stats.paid,      icon: CheckCircle2,  color: "text-[#0F172A]", bg: "bg-emerald-500/10" },
+          { label: "Cần xem xét",     value: stats.exception, icon: AlertTriangle, color: "text-[#0F172A]",   bg: "bg-rose-500/10" },
         ].map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 flex items-center gap-4">
             <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>

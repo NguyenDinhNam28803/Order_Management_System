@@ -6,6 +6,7 @@ import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
 import { FileText, Search, CheckCircle2, Clock, AlertCircle, ArrowRight, FileCheck, XCircle, CreditCard, Filter } from "lucide-react";
 import { formatVND, getStatusLabel, formatDate } from "@/app/utils/formatUtils";
 import { Organization } from "@/app/types/api-types";
+import PageHeader from "@/app/components/shared/PageHeader";
 
 // Extended Invoice with UI-specific fields from API
 type InvoiceWithDetails = Invoice & {
@@ -94,17 +95,12 @@ export default function FinanceInvoicesPage() {
     return (
         <div className="animate-in fade-in duration-500">
 
-            <div className="mt-8 flex justify-between items-end mb-10 border-b border-slate-200 pb-8">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">
-                        Quản lý Hóa đơn
-                    </h1>
-                    <p className="text-[0.8125rem] font-medium text-[#64748B] tracking-tight flex items-center gap-2">
-                        <FileText size={14} className="text-[#2563EB]" />
-                        Danh sách hóa đơn chờ đối soát và thanh toán
-                    </p>
-                </div>
-            </div>
+            <PageHeader
+                icon={FileText}
+                iconColor="blue"
+                title="Quản lý Hóa đơn"
+                subtitle="Danh sách hóa đơn chờ đối soát và thanh toán."
+            />
 
             {/* Filter Bar */}
             <div className="bg-[#F1F5F9] p-4 rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 mb-8">

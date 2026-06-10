@@ -7,6 +7,7 @@ import type { AuditLog } from "../../types/api-types";
 import {
     History, Search, Filter, Calendar, Shield, ExternalLink, RefreshCw
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 
 export default function AuditLogsPage() {
     const [page, setPage] = useState(1);
@@ -45,26 +46,23 @@ export default function AuditLogsPage() {
     const entityTypes = Array.from(new Set(auditLogs.map((l: AuditLog) => l.entityType)));
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
             {selectedLog && <AuditLogDetailModal data={selectedLog.newValue ?? {}} onClose={() => setSelectedLog(null)} />}
             
-            <div className="flex justify-between items-center mb-10">
-                <div className="flex items-center gap-3">
-                    <div className="p-3 bg-[#2563EB] text-white rounded-xl shadow-lg shadow-[#2563EB]/20">
-                        <Shield size={24} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Nhật ký Hệ thống (Audit Logs)</h1>
-                        <p className="text-[0.8125rem] text-[#64748B] font-medium">Truy vết mọi hoạt động và thay đổi dữ liệu trên hệ thống</p>
-                    </div>
-                </div>
-                <button 
-                    onClick={() => refetch()}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-slate-200 rounded-xl hover:bg-slate-100 text-slate-900 transition-all shadow-sm"
-                >
-                    <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} /> Làm mới dữ liệu
-                </button>
-            </div>
+            <PageHeader
+                icon={Shield}
+                iconColor="blue"
+                title="Nhật ký Hệ thống (Audit Logs)"
+                subtitle="Truy vết mọi hoạt động và thay đổi dữ liệu trên hệ thống."
+                actions={
+                    <button
+                        onClick={() => refetch()}
+                        className="btn-secondary flex items-center gap-2"
+                    >
+                        <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} /> Làm mới dữ liệu
+                    </button>
+                }
+            />
 
             <div className="bg-[#F1F5F9] p-4 rounded-xl shadow-xl shadow-[#2563EB]/5 border border-slate-200 flex flex-wrap gap-4 items-center mb-6">
                 <div className="flex-1 min-w-[300px] relative">

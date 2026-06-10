@@ -1,8 +1,8 @@
 ﻿"use client";
 
 import { useState, useMemo } from "react";
-import { 
-    AlertCircle, 
+import {
+    AlertCircle,
     CheckCircle2,
     RefreshCcw,
     ShieldCheck,
@@ -11,8 +11,10 @@ import {
     Search,
     Filter,
     ArrowUpRight,
-    Target
+    Target,
+    DollarSign
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, BudgetAllocation } from "../../context/ProcurementContext";
 import { CostCenter } from "@/app/types/api-types";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
@@ -156,7 +158,7 @@ export default function FinanceBudgetsPage() {
     const getBucketPercentage = (val: number) => totalAnnualBudget === 0 ? 0 : (val / totalAnnualBudget) * 100;
 
     return (
-        <div className="budget-page-container p-8 bg-[#F5F7FA] min-h-screen animate-in fade-in duration-700 relative">
+        <div className="budget-page-container p-8 bg-[#F8FAFC] min-h-screen animate-in fade-in duration-700 relative">
             {/* Success Toast */}
             {saveSuccess && (
                 <div className="fixed top-10 left-1/2 -translate-x-1/2 z-100 animate-in slide-in-from-top-10 duration-500">
@@ -171,6 +173,15 @@ export default function FinanceBudgetsPage() {
                     </div>
                 </div>
             )}
+
+            <div className="max-w-6xl mx-auto mb-6">
+                <PageHeader
+                    icon={DollarSign}
+                    iconColor="blue"
+                    title="Ngân sách"
+                    subtitle="Quản lý và phân bổ ngân sách theo năm tài chính"
+                />
+            </div>
 
             {/* Nav Tabs */}
             <div className="max-w-6xl mx-auto flex justify-between items-center mb-10">

@@ -5,6 +5,7 @@ import { Inbox, FileText, UploadCloud, Send, ChevronDown, CheckCircle, AlertCirc
 
 import { useProcurement, RFQ, PR, PRItem } from "../../context/ProcurementContext";
 import type { CreateQuoteDto } from "../../types/api-types";
+import PageHeader from "../../components/shared/PageHeader";
 
 export default function SupplierRFQ() {
     const { currentUser, prs, createQuote, notify, fetchMySupplierRFQs, submitQuotation } = useProcurement();
@@ -71,7 +72,7 @@ export default function SupplierRFQ() {
 
     if (loading) {
         return (
-            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
                 <div className="mt-8 flex flex-col items-center justify-center min-h-[400px]">
                     <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4"></div>
                     <div className="text-black font-bold uppercase tracking-widest">Đang tải danh sách RFQ...</div>
@@ -82,7 +83,7 @@ export default function SupplierRFQ() {
 
     if (viewState === "DETAIL" && activeRFQ) {
         return (
-        <main className="animate-in fade-in duration-700 p-8 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-700 p-8 min-h-screen bg-[#F8FAFC] text-slate-900">
                 <div className="mt-12 mb-10 flex justify-between items-end">
                     <div>
                         <div className="flex items-center gap-3 mb-4 text-[0.6875rem] font-black uppercase tracking-[0.2em]">
@@ -304,10 +305,14 @@ export default function SupplierRFQ() {
     }
 
     return (
-        <main className="animate-in fade-in duration-700 pt-16 px-12 pb-20 bg-[#FFFFFF] min-h-screen text-[#0F172A]">
-            <div className="mt-16 mb-12 flex justify-between items-end">
+        <main className="animate-in fade-in duration-700 pt-16 px-12 pb-20 bg-[#F8FAFC] min-h-screen text-[#0F172A]">
+            <PageHeader
+                title="Yêu cầu báo giá (RFQ)"
+                icon={Inbox}
+                iconColor="amber"
+            />
+            <div className="mt-4 mb-12 flex justify-between items-end">
                 <div>
-                    <h1 className="text-5xl font-black text-[#0F172A] tracking-tighter uppercase mb-4 leading-none">THƯ MỜI THẦU (RFQ)</h1>
                     <p className="text-sm font-bold text-[#4A4A45] tracking-tight uppercase flex items-center gap-3">
                          <span className="h-0.5 w-10 bg-[#2563EB] rounded-full"></span>
                          Danh sách các yêu cầu báo giá từ <span className="text-[#2563EB]">ProcurePro Network</span>

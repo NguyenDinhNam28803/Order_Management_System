@@ -90,7 +90,7 @@ export default function PODetailPage() {
             <ArrowLeft size={14} /> Quay lại danh sách
           </button>
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Chi tiết Đơn hàng (PO)</h1>
+            <h1 className="page-title">Chi tiết Đơn hàng (PO)</h1>
             <span className={`status-pill ${getStatusDisplay(po.status).class}`}>
               {getStatusDisplay(po.status).label}
             </span>
@@ -157,8 +157,8 @@ export default function PODetailPage() {
            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#2563EB]/5 rounded-full blur-2xl"></div>
            <div>
               <h3 className="section-title">Tổng Mua Tiêu Chuẩn</h3>
-              <div className="text-4xl font-black text-slate-900 mt-2 tracking-tight">
-                  {po.totalAmount?.toLocaleString('vi-VN')} <span className="text-xl text-[#2563EB]">VND</span>
+              <div className="text-2xl font-bold text-[#0F172A] mt-2 tracking-tight">
+                  {po.totalAmount?.toLocaleString('vi-VN')} <span className="text-base text-[#2563EB]">VND</span>
               </div>
            </div>
         </div>

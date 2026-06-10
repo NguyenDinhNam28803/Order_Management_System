@@ -5,6 +5,7 @@ import { useProcurement, PR } from "../context/ProcurementContext";
 import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
 import { Plus, FileText, Send, Check, X } from "lucide-react";
 import Link from "next/link";
+import PageHeader from "../components/shared/PageHeader";
 import { ApprovalWorkflow } from "../context/ProcurementContext";
 import { getStatusLabel, convertPrismaDecimal, formatVND, formatDate } from "../utils/formatUtils";
 
@@ -201,53 +202,41 @@ export default function PRPage() {
     ];
 
     return (
-        <main className="animate-in fade-in duration-500 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <header className="mt-8 flex items-center justify-between border-b border-slate-200 pb-8 mb-8 px-6">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-                        {currentUser?.role === "PROCUREMENT" ? "Toàn bộ Yêu cầu PR" : "Yêu cầu mua sắm của tôi"}
-                    </h1>
-                    <p className="text-[0.8125rem] text-[#64748B] font-medium mt-1">Quản lý và theo dõi tiến độ phê duyệt định mức mua sắm tập trung.</p>
-                </div>
-                {currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN" && (
-                    <Link href="/pr/create" className="py-3 px-6 bg-[#2563EB] text-white rounded-xl font-black uppercase tracking-wider text-xs shadow-lg shadow-[#2563EB]/20 hover:bg-[#1D4ED8] transition-all flex flex-col items-center">
-                        <div className="flex items-center gap-2">
-                            <Plus size={18} />
-                            <span className="text-sm font-semibold">Tạo yêu cầu mới</span>
-                        </div>
-                    </Link>
-                )}
-            </header>
+        <main className="animate-in fade-in duration-500 min-h-screen bg-[#F8FAFC] text-slate-900 p-6">
+            <PageHeader
+                icon={FileText}
+                iconColor="blue"
+                title={currentUser?.role === "PROCUREMENT" ? "Toàn bộ Yêu cầu PR" : "Yêu cầu mua sắm của tôi"}
+                subtitle="Quản lý và theo dõi tiến độ phê duyệt định mức mua sắm tập trung."
+                actions={
+                    currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN" ? (
+                        <Link href="/pr/create" className="btn-primary">
+                            <Plus size={15} /> Tạo yêu cầu mới
+                        </Link>
+                    ) : undefined
+                }
+            />
 
-            <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden mx-6">
-                <div className="p-5 bg-[#FFFFFF] border-b border-slate-200 flex items-center justify-between">
-                    <div className="flex items-center gap-6">
-                        <div className="text-xs font-black text-slate-900 uppercase tracking-widest px-2">Bộ lọc nhanh</div>
-                        <div className="flex gap-2">
-                            {tabs.map(filter => (
-                                <button
-                                    key={filter}
-                                    onClick={() => setActiveTab(filter)}
-                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === filter
-                                            ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
-                                            : "text-white hover:text-white hover:bg-[#FFFFFF]"
-                                        }`}
-                                >
-                                    {filter}
-                                </button>
-                            ))}
-                        </div>
+            <div className="erp-card table-card overflow-hidden">
+                <div className="p-4 border-b border-slate-200 flex items-center gap-4">
+                    <span className="text-xs font-semibold text-[#64748B] uppercase tracking-widest">Bộ lọc nhanh</span>
+                    <div className="filter-tabs">
+                        {tabs.map(filter => (
+                            <button
+                                key={filter}
+                                onClick={() => setActiveTab(filter)}
+                                className={`filter-tab ${activeTab === filter ? "active" : ""}`}
+                            >
+                                {filter}
+                            </button>
+                        ))}
                     </div>
                 </div>
                 {displayData.length === 0 ? (
-                    <div className="p-20 text-center flex flex-col items-center justify-center space-y-4">
-                        <div className="h-16 w-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-slate-900 border border-slate-200">
-                            <FileText size={28} />
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-slate-900">Thông tin trống</h3>
-                            <p className="text-slate-900 text-sm">Chưa có yêu cầu nào được thiết lập cho mục này.</p>
-                        </div>
+                    <div className="empty-state py-20">
+                        <div className="empty-state-icon"><FileText size={28} /></div>
+                        <div className="empty-state-title">Thông tin trống</div>
+                        <div className="empty-state-desc">Chưa có yêu cầu nào được thiết lập cho mục này.</div>
                     </div>
                 ) : (
                     <ERPTable columns={columns} data={displayData} />
