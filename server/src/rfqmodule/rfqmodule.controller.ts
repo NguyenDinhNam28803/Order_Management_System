@@ -59,8 +59,10 @@ export class RfqmoduleController {
     @Query('page') page = 1,
     @Query('limit') limit = 20,
   ) {
-    const take = Math.min(Number(limit), 100);
-    const skip = (Number(page) - 1) * take;
+    const p = Math.max(1, Number.isFinite(+page) ? +page : 1);
+    const l = Math.min(Number.isFinite(+limit) ? +limit : 20, 100);
+    const skip = (p - 1) * l;
+    const take = l;
     return this.rfqService.findPaginated(req.user, skip, take);
   }
 
@@ -74,15 +76,8 @@ export class RfqmoduleController {
     summary: 'Lấy tất cả yêu cầu báo giá cho tổ chức',
     description: 'Trả về danh sách tất cả yêu cầu báo giá cho tổ chức hiện tại',
   })
-  async findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 20,
-    @Request() req: { user: JwtPayload },
-  ) {
-    return this.rfqService.findAll(req.user, {
-      page: +page,
-      limit: Math.min(+limit, 100),
-    });
+  async findAll(@Request() req: { user: JwtPayload }) {
+    return this.rfqService.findAll(req.user);
   }
 
   /**

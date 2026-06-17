@@ -157,7 +157,7 @@ export default function SpendReportPage() {
                                         <div className="font-bold text-slate-900">{s.supplierName}</div>
                                         {idx < 3 && <div className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-1">Core Partner</div>}
                                     </td>
-                                    <td className="text-center font-bold text-slate-900 group-hover:text-white transition-colors">
+                                    <td className="text-center font-bold text-slate-900 transition-colors">
                                         {s.poCount}
                                     </td>
                                     <td className="text-right pr-12 text-[#2563EB] font-black text-sm">

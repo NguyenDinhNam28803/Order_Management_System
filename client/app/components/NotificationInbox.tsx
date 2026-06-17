@@ -232,7 +232,7 @@ function NotificationInbox() {
         className={`relative flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${
           isOpen
             ? "bg-[#2563EB] border-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
-            : "bg-[#FFFFFF] border-[#E2E8F0] text-white hover:text-white hover:border-[rgba(240,246,252,0.18)]"
+            : "bg-[#FFFFFF] border-[#E2E8F0] text-slate-600 hover:text-slate-800 hover:border-[rgba(240,246,252,0.18)]"
         }`}
       >
         <Bell size={14} className={unreadCount > 0 ? "animate-pulse" : ""} />

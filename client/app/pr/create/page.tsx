@@ -243,8 +243,14 @@ const prFormSchema = z.object({
         estimatedPrice: z.number().min(0, "Đơn giá không được âm"),
     })).min(1, "Phải có ít nhất 1 sản phẩm"),
     requiredDate: z.string().optional().refine(
-        (d) => !d || new Date(d) > new Date(),
-        "Ngày cần hàng phải ở tương lai"
+        (d) => {
+            if (!d) return true;
+            const [y, m, day] = d.split('-').map(Number);
+            const picked = new Date(y, m - 1, day);
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            return picked >= today;
+        },
+        "Ngày cần hàng không được ở quá khứ"
     ),
     priority: z.number().min(1).max(5),
 });
@@ -522,7 +528,7 @@ export default function CreatePRPage() {
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
                         activeTab === 'ai'
                             ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
-                            : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)] hover:text-white'
+                            : 'bg-[#F1F5F9] text-slate-600 border border-[rgba(148,163,184,0.1)] hover:text-slate-800'
                     }`}
                 >
                     <Bot size={16} />
@@ -536,7 +542,7 @@ export default function CreatePRPage() {
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
                         activeTab === 'manual'
                             ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
-                            : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)] hover:text-white'
+                            : 'bg-[#F1F5F9] text-slate-600 border border-[rgba(148,163,184,0.1)] hover:text-slate-800'
                     }`}
                 >
                     <PenTool size={16} />

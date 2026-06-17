@@ -311,12 +311,9 @@ export class RfqmoduleService {
     }
   }
 
-  async findAll(
-    user: any,
-    pagination: { page: number; limit: number } = { page: 1, limit: 20 },
-  ) {
+  async findAll(user: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return this.repository.findAll(user.orgId, pagination);
+    return this.repository.findAll(user.orgId);
   }
 
   async findPaginated(user: any, skip: number, take: number) {

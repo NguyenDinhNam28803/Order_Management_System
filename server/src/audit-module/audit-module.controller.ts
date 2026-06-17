@@ -49,11 +49,13 @@ export class AuditModuleController {
     @Query('limit') limit = 20,
     @Request() req: { user: JwtPayload },
   ) {
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const p = Math.max(1, Number.isFinite(+page) ? +page : 1);
+    const l = Math.min(Number.isFinite(+limit) ? +limit : 20, 100);
+    const skip = (p - 1) * l;
+    const take = l;
     const data = await this.auditService.findPaginated(req.user, skip, take);
     const total = await this.auditService.count(req.user);
-    return { data, total, page: Number(page), limit: Number(limit) };
+    return { data, total, page: p, limit: l };
   }
 
   /**

@@ -236,11 +236,8 @@ export class PomoduleService {
     });
   }
 
-  async findAll(
-    orgId: string,
-    pagination: { page: number; limit: number } = { page: 1, limit: 20 },
-  ) {
-    return this.repository.findAll(orgId, pagination);
+  async findAll(orgId: string) {
+    return this.repository.findAll(orgId);
   }
 
   async findBySupplier(supplierId: string) {

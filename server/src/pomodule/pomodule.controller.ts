@@ -179,11 +179,13 @@ export class PomoduleController {
     @Query('limit') limit = 20,
     @Request() req: { user: JwtPayload },
   ) {
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const p = Math.max(1, Number.isFinite(+page) ? +page : 1);
+    const l = Math.min(Number.isFinite(+limit) ? +limit : 20, 100);
+    const skip = (p - 1) * l;
+    const take = l;
     const data = await this.poService.findPaginated(req.user.orgId, skip, take);
     const total = await this.poService.count(req.user.orgId);
-    return { data, total, page: Number(page), limit: Number(limit) };
+    return { data, total, page: p, limit: l };
   }
 
   /**
@@ -202,15 +204,8 @@ export class PomoduleController {
     summary: 'Lấy tất cả đơn hàng cho tổ chức',
     description: 'Trả về danh sách tất cả đơn hàng cho tổ chức hiện tại',
   })
-  findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 20,
-    @Request() req: { user: JwtPayload },
-  ) {
-    return this.poService.findAll(req.user.orgId, {
-      page: +page,
-      limit: Math.min(+limit, 100),
-    });
+  findAll(@Request() req: { user: JwtPayload }) {
+    return this.poService.findAll(req.user.orgId);
   }
 
   @Get('all')
