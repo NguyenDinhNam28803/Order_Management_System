@@ -176,17 +176,8 @@ export class PrmoduleService {
     return aiSuggestion;
   }
 
-  async findAll(
-    user: JwtPayload,
-    pagination: { page: number; limit: number } = { page: 1, limit: 20 },
-  ): Promise<{
-    data: PurchaseRequisition[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  }> {
-    return this.repository.findAll(user.orgId, pagination);
+  async findAll(user: JwtPayload): Promise<PurchaseRequisition[]> {
+    return this.repository.findAll(user.orgId);
   }
 
   async findOne(id: string): Promise<any> {

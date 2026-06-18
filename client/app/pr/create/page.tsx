@@ -73,8 +73,14 @@ const prFormSchema = z.object({
         estimatedPrice: z.number().min(0, "Đơn giá không được âm"),
     })).min(1, "Phải có ít nhất 1 sản phẩm"),
     requiredDate: z.string().optional().refine(
-        (d) => !d || new Date(d) > new Date(),
-        "Ngày cần hàng phải ở tương lai"
+        (d) => {
+            if (!d) return true;
+            const [y, m, day] = d.split('-').map(Number);
+            const picked = new Date(y, m - 1, day);
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            return picked >= today;
+        },
+        "Ngày cần hàng không được ở quá khứ"
     ),
     priority: z.number().min(1).max(5),
 });
@@ -115,6 +121,7 @@ export default function CreatePRPage() {
     const [submissionStatus, setSubmissionStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [errorMessage, setErrorMessage]         = useState("");
     const [fieldErrors, setFieldErrors]           = useState<PRFormErrors>({});
+    const [activeTab, setActiveTab]               = useState<'ai' | 'manual'>('manual');
 
     const today          = new Date();
     const currentYear    = today.getFullYear();
@@ -299,35 +306,23 @@ export default function CreatePRPage() {
     };
 
     return (
-        <div className="animate-in fade-in duration-700 space-y-6">
-            {/* PAGE HEADER */}
-            <div className="page-header mb-6">
-                <div className="flex items-center gap-3">
-                    <div className="page-icon icon-blue">
-                        <FileText size={18} />
-                    </div>
-                    <div>
-                        <h1 className="page-title">Tạo Phiếu Yêu Cầu Mua Sắm</h1>
-                        <p className="page-subtitle">
-                            Xin chào,{" "}
-                            <span className="text-[#2563EB] font-semibold">{currentUser?.name || currentUser?.fullName}</span>
-                            {" "}· Điền đầy đủ thông tin và gửi phê duyệt
-                        </p>
-                    </div>
+        <div className="animate-in fade-in duration-700 space-y-12">
+            {/* PAGE HEADER SECTION */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-[rgba(148,163,184,0.1)] pb-10">
+                <div>
+                   <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">Tạo Phiếu Yêu Cầu (PR)</h1>
+                   <p className="text-sm font-bold text-slate-900 tracking-tight uppercase">
+                      Xin chào, <span className="text-[#2563EB]">{currentUser?.name || currentUser?.fullName}</span> – Hệ thống AI Procurement đang hỗ trợ bạn lập kế hoạch.
+                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={() => router.push("/pr")} className="btn-secondary">
-                        <ArrowLeft size={14} /> Hủy bỏ
-                    </button>
+                <div className="flex gap-4">
+                    <button className="px-5 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
                     <button
+                        className="px-6 py-2.5 bg-[#2563EB] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isSubmitting
-                            ? <><Loader2 size={14} className="animate-spin" /> Đang gửi...</>
-                            : <><Send size={14} /> Gửi Phê Duyệt</>
-                        }
+                        <Send size={18} />
                     </button>
                 </div>
             </div>
@@ -336,7 +331,11 @@ export default function CreatePRPage() {
             <div className="filter-tabs">
                 <button
                     onClick={() => setActiveTab('ai')}
-                    className={`filter-tab ${activeTab === 'ai' ? 'active' : ''}`}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
+                        activeTab === 'ai'
+                            ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
+                            : 'bg-[#F1F5F9] text-slate-600 border border-[rgba(148,163,184,0.1)] hover:text-slate-800'
+                    }`}
                 >
                     <Bot size={14} />
                     Tạo bằng AI Chat
@@ -346,7 +345,11 @@ export default function CreatePRPage() {
                 </button>
                 <button
                     onClick={() => setActiveTab('manual')}
-                    className={`filter-tab ${activeTab === 'manual' ? 'active' : ''}`}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
+                        activeTab === 'manual'
+                            ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
+                            : 'bg-[#F1F5F9] text-slate-600 border border-[rgba(148,163,184,0.1)] hover:text-slate-800'
+                    }`}
                 >
                     <PenTool size={14} />
                     Tạo thủ công
@@ -535,103 +538,93 @@ export default function CreatePRPage() {
                                     onChange={e => setForm({ ...form, title: e.target.value })}
                                     className="erp-input"
                                 />
-                                {fieldErrors.title && (
-                                    <p className="text-[10px] text-rose-600 font-semibold">{fieldErrors.title}</p>
-                                )}
+                                {fieldErrors.title && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">{fieldErrors.title}</span>}
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="space-y-1.5">
-                                    <label className="erp-label">Trung tâm chi phí *</label>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Trung tâm chi phí</label>
                                     <div className="relative">
                                         <select
                                             value={form.costCenterId}
                                             onChange={e => setForm({ ...form, costCenterId: e.target.value })}
-                                            className="erp-input appearance-none pr-8"
+                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 appearance-none transition-all"
                                         >
-                                            <option value="">-- Chọn --</option>
+                                            <option value="" className="bg-[#F1F5F9]">-- Chọn trung tâm chi phí --</option>
                                             {filteredCostCenters.map((cc: CostCenter) => (
-                                                <option key={cc.id} value={cc.id}>{String(cc.code)} - {String(cc.name)}</option>
+                                                <option key={cc.id} value={cc.id} className="bg-[#F1F5F9]">{String(cc.code)} - {String(cc.name)}</option>
                                             ))}
                                         </select>
-                                        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-900 pointer-events-none" size={16} />
                                     </div>
-                                    {fieldErrors.costCenterId && (
-                                        <p className="text-[10px] text-rose-600 font-semibold">{fieldErrors.costCenterId}</p>
-                                    )}
+                                    {fieldErrors.costCenterId && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">{fieldErrors.costCenterId}</span>}
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <label className="erp-label">Độ ưu tiên</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Độ ưu tiên</label>
                                     <div className="relative">
                                         <select
                                             value={form.priority}
                                             onChange={e => setForm({ ...form, priority: Number(e.target.value) })}
-                                            className="erp-input appearance-none pr-8"
+                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 appearance-none transition-all"
                                         >
                                             <option value={1}>Thấp</option>
                                             <option value={2}>Bình thường</option>
                                             <option value={3}>Gấp</option>
                                             <option value={4}>Khẩn cấp (SLA 4H)</option>
                                         </select>
-                                        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-900 pointer-events-none" size={16} />
                                     </div>
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <label className="erp-label flex items-center gap-1">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1 flex items-center gap-1">
                                         <Calendar size={10} /> Ngày cần hàng
                                     </label>
                                     <input
                                         type="date"
                                         value={form.requiredDate}
                                         onChange={e => setForm({ ...form, requiredDate: e.target.value })}
-                                        className="erp-input"
+                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all"
                                     />
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                    <label className="erp-label">Mô tả</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Mô tả</label>
                                     <textarea
                                         placeholder="Mô tả chi tiết yêu cầu..."
                                         value={form.description}
                                         onChange={e => setForm({ ...form, description: e.target.value })}
                                         rows={3}
-                                        className="erp-input resize-none"
+                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all resize-none placeholder:text-slate-900/50"
                                     />
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="erp-label">Lý do / Justification</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Lý do / Justification</label>
                                     <textarea
                                         placeholder="Mục đích, lý do cần thiết..."
                                         value={form.justification}
                                         onChange={e => setForm({ ...form, justification: e.target.value })}
                                         rows={3}
-                                        className="erp-input resize-none"
+                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all resize-none placeholder:text-slate-900/50"
                                     />
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Step 2 — Items */}
-                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 space-y-4">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                    <span className="step-badge">2</span>
-                                    Danh mục hàng hóa
-                                </h3>
-                                {form.items.length > 0 && (
-                                    <span className="text-xs text-slate-500">
-                                        {form.items.length} mục ·{" "}
-                                        <span className="text-[#2563EB] font-semibold">{formatVND(totalEstimate)} ₫</span>
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <label className="erp-label">Tìm kiếm & Thêm sản phẩm</label>
+                    {/* FORM SECTION 3 — DANH MỤC HÀNG HÓA */}
+                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]/50 flex justify-between items-center">
+                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-3">
+                                 <ShoppingCart size={16} className="text-[#2563EB]" /> Danh mục hàng hóa đề xuất
+                             </h3>
+                        </div>
+                        <div className="p-10">
+                            <div className="mb-8 space-y-3">
+                                <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Tìm kiếm & Thêm sản phẩm</label>
                                 <Select
                                     placeholder="Gõ tên sản phẩm, mã SKU..."
                                     options={products.map((p: Product) => ({ label: p.name, value: p.id }))}

@@ -58,14 +58,16 @@ export class PrmoduleController {
     @Query('limit') limit = 20,
     @Request() req: { user: JwtPayload },
   ) {
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const p = Math.max(1, Number.isFinite(+page) ? +page : 1);
+    const l = Math.min(Number.isFinite(+limit) ? +limit : 20, 100);
+    const skip = (p - 1) * l;
+    const take = l;
 
     const data = await this.prService.findPaginated(req.user.orgId, skip, take);
 
     const total = await this.prService.count(req.user.orgId);
 
-    return { data, total, page: Number(page), limit: Number(limit) };
+    return { data, total, page: p, limit: l };
   }
 
   /**
@@ -79,15 +81,8 @@ export class PrmoduleController {
     description:
       'Trả về danh sách tất cả yêu cầu mua hàng của tổ chức hiện tại',
   })
-  async findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 20,
-    @Request() req: { user: JwtPayload },
-  ) {
-    return this.prService.findAll(req.user, {
-      page: +page,
-      limit: Math.min(+limit, 100),
-    });
+  async findAll(@Request() req: { user: JwtPayload }) {
+    return this.prService.findAll(req.user);
   }
 
   /**

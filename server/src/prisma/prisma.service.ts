@@ -41,8 +41,8 @@ export class PrismaService
       PrismaService.logger.log('Initializing shared database connection pool.');
       PrismaService.pool = new Pool({
         connectionString: configService.get<string>('DATABASE_URL'),
-        max: 5,
-        idleTimeoutMillis: 60000,
+        max: 20,
+        idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 10000,
         allowExitOnIdle: false,
       });

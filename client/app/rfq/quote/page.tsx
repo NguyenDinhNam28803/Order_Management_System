@@ -137,8 +137,8 @@ function RfqQuotePageContent() {
       if (rfqData.deliveryTerms) setDeliveryTerms(rfqData.deliveryTerms);
       setPageState("form");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      setErrorMsg(e.message ?? "Có lỗi xảy ra");
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : "Có lỗi xảy ra");
       setPageState("error");
     }
   }, []);
@@ -196,8 +196,8 @@ function RfqQuotePageContent() {
       notify("Báo giá của bạn đã được gửi thành công!", "success");
       setPageState("submitted");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      alert(`Lỗi: ${e.message}`);
+    } catch (e) {
+      alert(`Lỗi: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setSubmitting(false);
     }

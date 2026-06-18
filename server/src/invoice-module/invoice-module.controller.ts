@@ -57,8 +57,10 @@ export class InvoiceModuleController {
     @Query('limit') limit = 20,
     @Request() req: any,
   ) {
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const p = Math.max(1, Number.isFinite(+page) ? +page : 1);
+    const l = Math.min(Number.isFinite(+limit) ? +limit : 20, 100);
+    const skip = (p - 1) * l;
+    const take = l;
 
     const data = await this.invoiceModuleService.findPaginated(
       req.user.orgId,
@@ -68,7 +70,7 @@ export class InvoiceModuleController {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const total = await this.invoiceModuleService.count(req.user.orgId);
 
-    return { data, total, page: Number(page), limit: Number(limit) };
+    return { data, total, page: p, limit: l };
   }
 
   /**
@@ -78,15 +80,9 @@ export class InvoiceModuleController {
    */
   @Get()
   @ApiOperation({ summary: 'Lấy tất cả hóa đơn' })
-  findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 20,
-    @Request() req: any,
-  ) {
-    return this.invoiceModuleService.findAll(req.user.orgId, {
-      page: +page,
-      limit: Math.min(+limit, 100),
-    });
+  findAll(@Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.invoiceModuleService.findAll(req.user.orgId);
   }
 
   /**

@@ -487,8 +487,8 @@ export default function SupplierDiscoveryPage() {
       setQueryUsed(res.query);
       setIsDemoData(res.isDemoData ?? false);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      setError(e.message || 'Tìm kiếm thất bại');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Tìm kiếm thất bại');
     } finally {
       setLoading(false);
     }

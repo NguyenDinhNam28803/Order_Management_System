@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
 import { CreateUserModuleDto } from './dto/create-user-module.dto';
 import { UpdateUserModuleDto } from './dto/update-user-module.dto';
@@ -18,8 +19,8 @@ export class UserModuleService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly prisma: PrismaService,
-    // @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly notificationService: NotificationModuleService,
+    private readonly configService: ConfigService,
   ) {}
 
   // User Management
@@ -43,7 +44,7 @@ export class UserModuleService {
       data: {
         username: user.email,
         fullName: user.fullName,
-        setupLink: `https://procurement-app.com/setup-password?token=${setupToken}`,
+        setupLink: `${this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000')}/setup-password?token=${setupToken}`,
         note: 'Vì lý do bảo mật, mật khẩu không được gửi qua email. Vui lòng nhấn vào link để thiết lập mật khẩu lần đầu.',
       },
     });

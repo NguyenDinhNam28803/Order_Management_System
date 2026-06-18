@@ -86,8 +86,8 @@ export default function PoConfirmPage() {
       setTokenInfo(tokenData);
       setPageState("form");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      setErrorMsg(e.message ?? "Có lỗi xảy ra");
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : "Có lỗi xảy ra");
       setPageState("error");
     }
   }, []);
@@ -116,8 +116,8 @@ export default function PoConfirmPage() {
 
       setPageState("confirmed");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      alert(`Lỗi: ${e.message}`);
+    } catch (e) {
+      alert(`Lỗi: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setSubmitting(false);
     }

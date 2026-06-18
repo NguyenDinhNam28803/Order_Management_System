@@ -32,8 +32,7 @@ export default function ProcurementQualityHub() {
   const [rcas, setRcas] = useState<Rca[]>([]);
   const [loadingRca, setLoadingRca] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSupplierSelect = (supplier: any) => {
+  const handleSupplierSelect = (supplier: { id: string }) => {
     setSelectedSupplierId(supplier.id);
     loadRcaHistory(supplier.id);
   };
