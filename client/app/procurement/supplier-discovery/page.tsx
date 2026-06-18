@@ -262,7 +262,7 @@ const SupplierDetailModal = ({
           </button>
           {s.status === 'NEW' && (
             <button
-              onClick={() => onVetting(s.name)}
+              onClick={() => onVetting(s)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold bg-blue-700 text-white hover:bg-blue-600 disabled:opacity-50 transition-all"
             >
               <ClipboardCheck size={13} /> Xét duyệt nhà cung cấp
@@ -362,7 +362,7 @@ const SupplierCard = ({
 
           {supplier.status === 'NEW' && (
             <button
-              onClick={() => onVetting(supplier.name)}
+              onClick={() => onVetting(supplier)}
               className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-blue-600/15 text-blue-600 border border-blue-600/30 hover:bg-blue-600/25 transition-colors disabled:opacity-50"
             >
               <ClipboardCheck size={11} /> Xét duyệt nhà cung cấp

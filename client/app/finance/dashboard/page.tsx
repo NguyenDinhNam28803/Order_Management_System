@@ -188,7 +188,7 @@ export default function FinanceDashboard() {
                                         <div className="text-[10px] text-slate-900 font-medium uppercase tracking-tighter">Verified Partner</div>
                                     </td>
                                     <td className=" text-[#2563EB] text-[11px] font-bold">PO-***</td>
-                                    <td className="text-right font-bold text-slate-900 text-sm">{formatVND(inv.amount ?? inv.totalAmount ?? 0)} ₫</td>
+                                    <td className="text-right font-bold text-slate-900 text-sm">{formatVND(inv.amount ?? 0)} ₫</td>
                                     <td className="text-slate-900 text-[11px] font-semibold">{inv.createdAt ? new Date(inv.createdAt).toLocaleDateString('vi-VN') : '—'}</td>
                                     <td className="text-center">
                                         {inv.status === "PENDING" ? (

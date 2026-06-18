@@ -10,7 +10,8 @@ import { CostCenter, CreatePrDto, CreatePrItemDto, CurrencyCode, BudgetAllocatio
 import {
     Trash2, Wallet, TrendingUp, CheckCircle2, Loader2, XCircle,
     ArrowLeft, ChevronDown, ShoppingCart, AlertTriangle, Bot, Sparkles,
-    MessageSquare, ArrowRight, Send, Wand2, Calendar, BarChart3
+    MessageSquare, ArrowRight, Send, Wand2, Calendar, BarChart3,
+    PenTool, Zap, Activity
 } from "lucide-react";
 
 const AllocationStatusBadge = ({ status }: { status: BudgetAllocationStatus }) => {
@@ -290,6 +291,7 @@ export default function CreatePRPage() {
     const [submissionStatus, setSubmissionStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [errorMessage, setErrorMessage]         = useState("");
     const [fieldErrors, setFieldErrors]           = useState<PRFormErrors>({});
+    const [activeTab, setActiveTab]               = useState<'ai' | 'manual'>('manual');
 
     const today          = new Date();
     const currentYear    = today.getFullYear();
@@ -413,10 +415,6 @@ export default function CreatePRPage() {
         setAiPrompt(""); setAiDraft(null); setAiError(null); setAiMessages([]);
     };
 
-    const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-    const [errorMessage, setErrorMessage] = useState("");
-    const [fieldErrors, setFieldErrors] = useState<PRFormErrors>({});
-
     const handleSubmit = async () => {
         setFieldErrors({});
         const parsed = prFormSchema.safeParse({
@@ -488,35 +486,12 @@ export default function CreatePRPage() {
                 </div>
                 <div className="flex gap-4">
                     <button className="px-5 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
-                    <button 
-                        className="px-6 py-2.5 bg-[#2563EB] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2" 
-                        onClick={handleSubmit} 
-                        disabled={isSubmitting}
-                    >
-                        <ArrowLeft size={18} />
-                    </button>
-                    <div>
-                        <h1 className="page-title">Tạo Phiếu Yêu Cầu Mua Sắm</h1>
-                        <p className="page-subtitle">
-                            Xin chào,{" "}
-                            <span className="text-[#2563EB] font-semibold">{currentUser?.name || currentUser?.fullName}</span>
-                            {" "}· Điền đầy đủ thông tin và gửi phê duyệt
-                        </p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                    <button onClick={() => router.push("/pr")} className="btn-secondary">
-                        Hủy bỏ
-                    </button>
                     <button
+                        className="px-6 py-2.5 bg-[#2563EB] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isSubmitting
-                            ? <><Loader2 size={14} className="animate-spin" /> Đang gửi...</>
-                            : <><Send size={14} /> Gửi Phê Duyệt</>
-                        }
+                        <Send size={18} />
                     </button>
                 </div>
             </div>
@@ -733,306 +708,80 @@ export default function CreatePRPage() {
                                 />
                                 {fieldErrors.title && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">{fieldErrors.title}</span>}
                             </div>
-                            <ChevronDown size={15} className={`text-slate-400 transition-transform duration-200 shrink-0 ${showAiSection ? "rotate-180" : ""}`} />
-                        </button>
 
-                        {showAiSection && (
-                            <div className="mt-5 pt-5 border-t border-[rgba(148,163,184,0.1)] space-y-4">
-                                {aiMessages.length > 0 && (
-                                    <div className="bg-[#F8FAFC] rounded-xl p-4 space-y-3 max-h-60 overflow-y-auto">
-                                        {aiMessages.map((msg, idx) => (
-                                            <div key={idx} className={`flex gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                                                <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
-                                                    msg.role === "user" ? "bg-[#2563EB]" : "bg-gradient-to-br from-[#2563EB] to-[#8B5CF6]"
-                                                }`}>
-                                                    {msg.role === "user"
-                                                        ? <MessageSquare size={12} className="text-white" />
-                                                        : <Bot size={12} className="text-white" />
-                                                    }
-                                                </div>
-                                                <div className={`max-w-[80%] px-3.5 py-2.5 rounded-xl text-xs leading-relaxed ${
-                                                    msg.role === "user"
-                                                        ? "bg-[#2563EB] text-white"
-                                                        : "bg-white text-slate-700 border border-[rgba(148,163,184,0.1)]"
-                                                }`}>
-                                                    {msg.content}
-                                                </div>
-                                            </div>
-                                        ))}
-                                        {isGenerating && (
-                                            <div className="flex gap-2.5">
-                                                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
-                                                    <Bot size={12} className="text-white" />
-                                                </div>
-                                                <div className="px-3.5 py-2.5 rounded-xl bg-white border border-[rgba(148,163,184,0.1)]">
-                                                    <Loader2 size={13} className="animate-spin text-[#2563EB]" />
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {aiDraft && !isGenerating && (
-                                    <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200">
-                                        <div className="flex items-center justify-between mb-2.5">
-                                            <div className="flex items-center gap-2">
-                                                <CheckCircle2 size={14} className="text-emerald-600" />
-                                                <span className="text-xs font-bold text-slate-900">Bản nháp đã sẵn sàng</span>
-                                            </div>
-                                            <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                                                aiDraft.confidence === "high"   ? "bg-emerald-100 text-emerald-700" :
-                                                aiDraft.confidence === "medium" ? "bg-amber-100 text-amber-700" :
-                                                "bg-rose-100 text-rose-700"
-                                            }`}>
-                                                {aiDraft.confidence === "high" ? "Độ tin cậy cao" : aiDraft.confidence === "medium" ? "Trung bình" : "Thấp"}
-                                            </span>
-                                        </div>
-                                        <p className="text-xs text-slate-700 mb-0.5"><span className="font-semibold">Tiêu đề:</span> {aiDraft.title}</p>
-                                        <p className="text-xs text-slate-700 mb-3">
-                                            <span className="font-semibold">Tổng giá trị:</span>{" "}
-                                            <span className="text-[#2563EB] font-bold">{formatVND(aiDraft.totalEstimate)} ₫</span>
-                                            {" "}· {aiDraft.items.length} sản phẩm
-                                        </p>
-                                        {aiDraft.reasoning && (
-                                            <p className="text-[10px] text-slate-500 italic border-l-2 border-[#2563EB] pl-2 mb-3">{aiDraft.reasoning}</p>
-                                        )}
-                                        <button
-                                            onClick={handleFillToManual}
-                                            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-[#2563EB] text-white text-xs font-bold hover:bg-[#1D4ED8] transition-colors"
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Trung tâm chi phí</label>
+                                    <div className="relative">
+                                        <select
+                                            value={form.costCenterId}
+                                            onChange={e => setForm({ ...form, costCenterId: e.target.value })}
+                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 appearance-none transition-all"
                                         >
                                             <option value="" className="bg-[#F1F5F9]">-- Chọn trung tâm chi phí --</option>
-                                            {filteredCostCenters.map(cc => (
+                                            {filteredCostCenters.map((cc: CostCenter) => (
                                                 <option key={cc.id} value={cc.id} className="bg-[#F1F5F9]">{String(cc.code)} - {String(cc.name)}</option>
                                             ))}
                                         </select>
                                         <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-900 pointer-events-none" size={16} />
+                                    </div>
                                     {fieldErrors.costCenterId && <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest ml-1">{fieldErrors.costCenterId}</span>}
+                                </div>
+
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Độ ưu tiên</label>
+                                    <div className="relative">
+                                        <select
+                                            value={form.priority}
+                                            onChange={e => setForm({ ...form, priority: Number(e.target.value) })}
+                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 appearance-none transition-all"
+                                        >
+                                            <option value={1}>Thấp</option>
+                                            <option value={2}>Bình thường</option>
+                                            <option value={3}>Gấp</option>
+                                            <option value={4}>Khẩn cấp (SLA 4H)</option>
+                                        </select>
+                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-900 pointer-events-none" size={16} />
                                     </div>
                                 </div>
 
-                                {aiError && (
-                                    <div className="flex items-center gap-2 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs">
-                                        <XCircle size={13} className="shrink-0" />
-                                        <span>{aiError}</span>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Step 1 — General Info */}
-                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 space-y-5">
-                        <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                            <span className="step-badge">1</span>
-                            Thông tin chung
-                        </h3>
-
-                        <div className="space-y-1.5">
-                            <label className="erp-label">Tiêu đề yêu cầu *</label>
-                            <input
-                                type="text"
-                                placeholder="Nhập tên dịch vụ/sản phẩm cần mua sắm..."
-                                value={form.title}
-                                onChange={e => setForm({ ...form, title: e.target.value })}
-                                className="erp-input"
-                            />
-                            {fieldErrors.title && (
-                                <p className="text-[10px] text-rose-600 font-semibold">{fieldErrors.title}</p>
-                            )}
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-1.5">
-                                <label className="erp-label">Trung tâm chi phí *</label>
-                                <div className="relative">
-                                    <select
-                                        value={form.costCenterId}
-                                        onChange={e => setForm({ ...form, costCenterId: e.target.value })}
-                                        className="erp-input appearance-none pr-8"
-                                    >
-                                        <option value="">-- Chọn --</option>
-                                        {filteredCostCenters.map((cc: CostCenter) => (
-                                            <option key={cc.id} value={cc.id}>{String(cc.code)} - {String(cc.name)}</option>
-                                        ))}
-                                    </select>
-                                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                                </div>
-                                {fieldErrors.costCenterId && (
-                                    <p className="text-[10px] text-rose-600 font-semibold">{fieldErrors.costCenterId}</p>
-                                )}
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <label className="erp-label">Độ ưu tiên</label>
-                                <div className="relative">
-                                    <select
-                                        value={form.priority}
-                                        onChange={e => setForm({ ...form, priority: Number(e.target.value) })}
-                                        className="erp-input appearance-none pr-8"
-                                    >
-                                        <option value={1}>Thấp</option>
-                                        <option value={2}>Bình thường</option>
-                                        <option value={3}>Gấp</option>
-                                        <option value={4}>Khẩn cấp (SLA 4H)</option>
-                                    </select>
-                                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1 flex items-center gap-1">
+                                        <Calendar size={10} /> Ngày cần hàng
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={form.requiredDate}
+                                        onChange={e => setForm({ ...form, requiredDate: e.target.value })}
+                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all"
+                                    />
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="erp-label flex items-center gap-1">
-                                    <Calendar size={10} /> Ngày cần hàng
-                                </label>
-                                <input
-                                    type="date"
-                                    value={form.requiredDate}
-                                    onChange={e => setForm({ ...form, requiredDate: e.target.value })}
-                                    className="erp-input"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                                <label className="erp-label">Mô tả</label>
-                                <textarea
-                                    placeholder="Mô tả chi tiết yêu cầu..."
-                                    value={form.description}
-                                    onChange={e => setForm({ ...form, description: e.target.value })}
-                                    rows={3}
-                                    className="erp-input resize-none"
-                                />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="erp-label">Lý do / Justification</label>
-                                <textarea
-                                    placeholder="Mục đích, lý do cần thiết..."
-                                    value={form.justification}
-                                    onChange={e => setForm({ ...form, justification: e.target.value })}
-                                    rows={3}
-                                    className="erp-input resize-none"
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Mô tả</label>
+                                    <textarea
+                                        placeholder="Mô tả chi tiết yêu cầu..."
+                                        value={form.description}
+                                        onChange={e => setForm({ ...form, description: e.target.value })}
+                                        rows={3}
+                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all resize-none placeholder:text-slate-900/50"
+                                    />
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Lý do / Justification</label>
+                                    <textarea
+                                        placeholder="Mục đích, lý do cần thiết..."
+                                        value={form.justification}
+                                        onChange={e => setForm({ ...form, justification: e.target.value })}
+                                        rows={3}
+                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all resize-none placeholder:text-slate-900/50"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    {/* Step 2 — Items */}
-                    <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 space-y-4">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                <span className="step-badge">2</span>
-                                Danh mục hàng hóa
-                            </h3>
-                            {form.items.length > 0 && (
-                                <span className="text-xs text-slate-500">
-                                    {form.items.length} mục ·{" "}
-                                    <span className="text-[#2563EB] font-semibold">{formatVND(totalEstimate)} ₫</span>
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <label className="erp-label">Tìm kiếm & Thêm sản phẩm</label>
-                            <Select
-                                placeholder="Gõ tên sản phẩm, mã SKU..."
-                                options={products.map((p: Product) => ({ label: p.name, value: p.id }))}
-                                onChange={opt => opt && addItem(opt)}
-                                menuPortalTarget={typeof document !== "undefined" ? document.body : null}
-                                styles={{
-                                    control: base => ({
-                                        ...base, borderRadius: "8px",
-                                        borderColor: "rgba(148,163,184,0.2)", background: "#FFFFFF",
-                                        padding: "2px 4px", boxShadow: "none",
-                                        "&:hover": { borderColor: "#2563EB" },
-                                    }),
-                                    menu: base => ({
-                                        ...base, background: "#FFFFFF",
-                                        border: "1px solid rgba(148,163,184,0.15)",
-                                        borderRadius: "12px", zIndex: 9999,
-                                    }),
-                                    menuPortal: base => ({ ...base, zIndex: 9999 }),
-                                    option: (base, state) => ({
-                                        ...base,
-                                        background: state.isFocused ? "rgba(37,99,235,0.08)" : "transparent",
-                                        color: "#0F172A", fontSize: "13px", fontWeight: "600", padding: "10px 16px",
-                                    }),
-                                    singleValue: base => ({ ...base, color: "#0F172A" }),
-                                    input:       base => ({ ...base, color: "#0F172A" }),
-                                    placeholder: base => ({ ...base, color: "#94A3B8" }),
-                                }}
-                            />
-                        </div>
-
-                        <div className="rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
-                            <table className="erp-table text-xs m-0">
-                                <thead>
-                                    <tr>
-                                        <th className="text-left px-4 py-3">Sản phẩm / Mô tả</th>
-                                        <th className="text-center px-4 py-3 w-28">Số lượng</th>
-                                        <th className="text-right px-4 py-3">Đơn giá</th>
-                                        <th className="text-right px-4 py-3">Thành tiền</th>
-                                        <th className="w-12 px-2 py-3" />
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {form.items.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={5}>
-                                                <div className="empty-state py-10">
-                                                    <ShoppingCart size={28} className={fieldErrors.items ? "text-rose-400" : "empty-state-icon"} />
-                                                    <p className={`empty-state-title ${fieldErrors.items ? 'text-rose-500' : ''}`}>
-                                                        {fieldErrors.items ?? 'Chưa có sản phẩm nào'}
-                                                    </p>
-                                                    <p className="empty-state-desc">Tìm và thêm sản phẩm từ ô tìm kiếm bên trên</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        form.items.map((item, i) => (
-                                            <tr key={i} className="hover:bg-[#F8FAFC] transition-colors">
-                                                <td className="px-4 py-3">
-                                                    <p className="font-semibold text-slate-900">{item.productDesc}</p>
-                                                    {item.sku && <p className="text-[10px] text-slate-400 font-mono mt-0.5">SKU: {item.sku}</p>}
-                                                </td>
-                                                <td className="px-4 py-3 text-center">
-                                                    <input
-                                                        type="number" min={1}
-                                                        className="w-20 text-center bg-[#F8FAFC] border border-[rgba(148,163,184,0.15)] rounded-lg py-1.5 px-2 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#2563EB]/40"
-                                                        value={item.qty}
-                                                        onChange={e => {
-                                                            const items = [...form.items];
-                                                            items[i].qty = parseInt(e.target.value) || 0;
-                                                            setForm({ ...form, items });
-                                                        }}
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-3 text-right text-slate-600">{formatVND(item.estimatedPrice)} ₫</td>
-                                                <td className="px-4 py-3 text-right font-bold text-[#2563EB]">
-                                                    {formatVND(item.qty * convertPrismaDecimal(item.estimatedPrice))} ₫
-                                                </td>
-                                                <td className="px-2 py-3 text-center">
-                                                    <button
-                                                        onClick={() => setForm({ ...form, items: form.items.filter((_, idx) => idx !== i) })}
-                                                        className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    {/* Step 3 — Budget Allocations */}
-                    <BudgetAllocationsPanel
-                        allocations={budgetAllocations as BudgetAllocation[]}
-                        selectedCostCenterId={form.costCenterId}
-                        selectedAllocationId={selectedAllocationId}
-                        onSelect={setSelectedAllocationId}
-                    />
 
                     {/* FORM SECTION 3 — DANH MỤC HÀNG HÓA */}
                     <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
@@ -1196,75 +945,10 @@ export default function CreatePRPage() {
                                     {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} className="group-hover:fill-white transition-all" />}
                                     {isSubmitting ? "Đang xử lý..." : "Xác nhận & Gửi"}
                                 </button>
-                            </div>
-
-                            <div className="space-y-2.5">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs text-slate-500">Khả dụng (Q{currentQuarter}/{currentYear})</span>
-                                    <span className="text-sm font-bold text-slate-900">{formatVND(remainingBudget)} ₫</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs text-slate-500">Tổng giá trị PR</span>
-                                    <span className="text-sm font-semibold text-slate-600">−{formatVND(totalEstimate)} ₫</span>
-                                </div>
-                                <div className="border-t border-[rgba(148,163,184,0.1)] pt-2.5">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Còn lại sau PR</span>
-                                        <span className={`text-base font-black ${(remainingBudget - totalEstimate) < 0 ? "text-rose-600" : "text-emerald-600"}`}>
-                                            {(remainingBudget - totalEstimate) < 0 ? "−" : ""}
-                                            {formatVND(Math.abs(remainingBudget - totalEstimate))} ₫
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {(remainingBudget - totalEstimate) < 0 && (
-                                <div className="flex items-start gap-2.5 p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs">
-                                    <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-                                    <p className="leading-relaxed">PR vượt ngân sách khả dụng. Có thể cần phê duyệt thêm từ CFO/CEO.</p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Actions */}
-                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 space-y-3">
-                            <button
-                                onClick={handleSubmit}
-                                disabled={isSubmitting}
-                                className="btn-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isSubmitting
-                                    ? <><Loader2 size={14} className="animate-spin" /> Đang xử lý...</>
-                                    : <><Send size={14} /> Gửi Phê Duyệt</>
-                                }
-                            </button>
-                            <button onClick={() => router.push("/pr")} className="btn-secondary w-full justify-center">
-                                <ArrowLeft size={14} /> Hủy bỏ
-                            </button>
-                            <p className="text-[10px] text-slate-400 text-center leading-relaxed pt-1 border-t border-[rgba(148,163,184,0.08)]">
-                                PR sẽ đi qua quy trình phê duyệt đa cấp theo phân quyền.
-                            </p>
-                        </div>
-
-                        {/* Tips */}
-                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
-                            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Lưu ý</h4>
-                            <ul className="space-y-2.5">
-                                {[
-                                    "Đính kèm tài liệu kỹ thuật nếu có spec đặc biệt",
-                                    "Giá tham chiếu được cập nhật từ thị trường mới nhất",
-                                    "AI có thể gợi ý nhà cung cấp tối ưu theo lịch sử",
-                                ].map((tip, i) => (
-                                    <li key={i} className="flex gap-2 text-[11px] text-slate-500 leading-relaxed">
-                                        <span className="w-1 h-1 rounded-full bg-[#2563EB] mt-1.5 shrink-0" />
-                                        {tip}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
                     </div>
                 </div>
             </div>
+            )}
 
             {/* Status overlay */}
             {submissionStatus !== "idle" && (
