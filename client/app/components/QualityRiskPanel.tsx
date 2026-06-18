@@ -5,8 +5,7 @@ import { AlertCircle, Loader2, FileText, TrendingUp, CheckCircle2 } from "lucide
 import Cookies from "js-cookie";
 
 export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [trend, setTrend] = useState<any>(null);
+  const [trend, setTrend] = useState<{ detected: boolean; startRate: number; endRate: number; length: number; isCritical?: boolean } | null>(null);
   const [loading, setLoading] = useState(false);
   const [warningLetter, setWarningLetter] = useState<string | null>(null);
 
@@ -46,9 +45,9 @@ export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {
           'Authorization': `Bearer ${Cookies.get('token') ?? ''}`
         },
         body: JSON.stringify({
-          startRate: trend.startRate,
-          endRate: trend.endRate,
-          days: trend.length
+          startRate: trend?.startRate,
+          endRate: trend?.endRate,
+          days: trend?.length
         })
       });
       const data = await res.json();

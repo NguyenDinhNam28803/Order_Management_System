@@ -298,8 +298,7 @@ export interface ProcurementContextType extends ProcurementState {
     fetchSpendOverview: () => Promise<SpendOverview | null>;
     fetchSpendBySupplier: () => Promise<SpendBySupplier[]>;
     fetchSpendByCategory: () => Promise<SpendByCategory[]>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fetchBuyerDashboard: () => Promise<any>;
+    fetchBuyerDashboard: () => Promise<Record<string, unknown>>;
 }
 
 const ProcurementContext = createContext<ProcurementContextType | undefined>(undefined);
@@ -460,32 +459,35 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 spentAmount: convertPrismaDecimal(b.spentAmount),
             });
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const normalizeInvoice = (i: any): Invoice => {
+            const normalizeInvoice = (i: Record<string, unknown>): Invoice => {
                 const canonical = convertPrismaDecimal(i.totalAmount ?? i.amount ?? i.total);
+                const supplier = i.supplier as { name?: string } | undefined;
                 return {
                     ...i,
                     totalAmount: canonical,
                     amount: canonical,
-                    vendor: i.vendor || i.supplierName || i.supplier?.name || 'N/A',
-                };
+                    vendor: (i.vendor as string) || (i.supplierName as string) || supplier?.name || 'N/A',
+                } as unknown as Invoice;
             };
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const normalizePO = (p: any): PO => ({
-                ...p,
-                total: convertPrismaDecimal(p.total ?? p.totalAmount),
-                totalAmount: convertPrismaDecimal(p.totalAmount ?? p.total),
-                vendor: p.vendor || p.supplierName || p.supplier?.name || p.supplierId || 'N/A',
-                items: p.items?.map((item: Record<string, unknown>) => ({
-                    ...item,
-                    qty: convertPrismaDecimal(item.qty ?? item.quantity),
-                    quantity: convertPrismaDecimal(item.quantity ?? item.qty),
-                    unitPrice: convertPrismaDecimal(item.unitPrice ?? item.estimatedPrice),
-                    estimatedPrice: convertPrismaDecimal(item.estimatedPrice ?? item.unitPrice),
-                    totalPrice: convertPrismaDecimal(item.totalPrice ?? item.total),
-                })) || [],
-            });
+            const normalizePO = (p: Record<string, unknown>): PO => {
+                const supplier = p.supplier as { name?: string } | undefined;
+                const items = p.items as Record<string, unknown>[] | undefined;
+                return {
+                    ...p,
+                    total: convertPrismaDecimal(p.total ?? p.totalAmount),
+                    totalAmount: convertPrismaDecimal(p.totalAmount ?? p.total),
+                    vendor: (p.vendor as string) || (p.supplierName as string) || supplier?.name || (p.supplierId as string) || 'N/A',
+                    items: items?.map((item) => ({
+                        ...item,
+                        qty: convertPrismaDecimal(item.qty ?? item.quantity),
+                        quantity: convertPrismaDecimal(item.quantity ?? item.qty),
+                        unitPrice: convertPrismaDecimal(item.unitPrice ?? item.estimatedPrice),
+                        estimatedPrice: convertPrismaDecimal(item.estimatedPrice ?? item.unitPrice),
+                        totalPrice: convertPrismaDecimal(item.totalPrice ?? item.total),
+                    })) || [],
+                } as unknown as PO;
+            };
 
             const prsData   = rawPrsData   ? rawPrsData.map(normalizePR)   : null;
             const myPrsData = rawMyPrsData ? rawMyPrsData.map(normalizePR) : null;
@@ -524,19 +526,25 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         }
     }, [apiFetch]);
 
-    const refreshData = useCallback(async (attempt = 0): Promise<void> => {
+    const refreshData = useCallback(async (attempt = 0, force = false): Promise<void> => {
+        const now = Date.now();
+        if (!force && now - lastFetchAtRef.current < MIN_REFRESH_INTERVAL_MS) return;
         try {
+            lastFetchAtRef.current = now;
             await refreshDataCore();
         } catch {
             if (attempt < 2) {
                 await new Promise(res => setTimeout(res, (attempt + 1) * 1000));
-                return refreshData(attempt + 1);
+                return refreshData(attempt + 1, force);
             }
         }
     }, [refreshDataCore]);
 
     // Restore user from cookies on mount
     const refreshDataRef = useRef(refreshData);
+    const lastFetchAtRef = useRef<number>(0);
+    const MIN_REFRESH_INTERVAL_MS = 5000;
+
     useEffect(() => {
         refreshDataRef.current = refreshData;
     }, [refreshData]);
@@ -580,8 +588,11 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                 await refreshData();
                 return true;
             }
-        } catch {}
-        return false;
+            return false;
+        } catch (err) {
+            console.error('[login] failed:', err);
+            return false;
+        }
     }, [apiFetch, refreshData]);
 
     const logout = useCallback(async () => {
@@ -1271,7 +1282,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             const res = await resp.json();
             const arr = res.data || res;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return Array.isArray(arr) ? arr.map((q: any) => ({
+            return Array.isArray(arr) ? arr.map((q: Record<string, unknown>) => ({
                 ...q,
                 totalPrice: convertPrismaDecimal(q.totalPrice ?? q.total ?? q.amount),
                 leadTimeDays: q.leadTimeDays ?? q.leadTime ?? null,
@@ -1281,7 +1292,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
                     totalPrice: convertPrismaDecimal(i.totalPrice ?? i.total),
                     qty: convertPrismaDecimal(i.qty ?? i.quantity),
                 })) : [],
-            })) : [];
+            } as unknown as Quotation)) : [];
         }
         return [];
     }, [apiFetch]);
@@ -1561,10 +1572,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
             const res = await resp.json();
             const arr = res.data || res;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return Array.isArray(arr) ? arr.map((p: any) => ({
+            return Array.isArray(arr) ? arr.map((p: Record<string, unknown>) => ({
                 ...p,
                 amount: convertPrismaDecimal(p.amount ?? p.totalAmount),
-            })) : [];
+            } as unknown as Payment)) : [];
         }
         return [];
     }, [apiFetch]);

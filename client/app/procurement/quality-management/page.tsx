@@ -22,12 +22,10 @@ export default function ProcurementQualityHub() {
   const router = useRouter();
   const { apiFetch } = useProcurement();
   const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [rcas, setRcas] = useState<any[]>([]);
+  const [rcas, setRcas] = useState<{ id: string; description: string; rootCause: string; status: string; createdAt: string }[]>([]);
   const [loadingRca, setLoadingRca] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSupplierSelect = (supplier: any) => {
+  const handleSupplierSelect = (supplier: { id: string }) => {
     setSelectedSupplierId(supplier.id);
     loadRcaHistory(supplier.id);
   };

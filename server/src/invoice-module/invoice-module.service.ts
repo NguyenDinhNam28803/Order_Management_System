@@ -555,6 +555,7 @@ export class InvoiceModuleService {
       where: { orgId },
       include: { po: true, supplier: true, items: true },
       orderBy: { createdAt: 'desc' },
+      take: 200,
     });
     // Serialize Decimal to number
     return invoices.map((inv) => ({

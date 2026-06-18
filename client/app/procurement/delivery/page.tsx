@@ -79,8 +79,7 @@ export default function DeliveryTrackingPage() {
                 estimatedArrival: po.createdAt ? new Date(new Date(po.createdAt).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined,
                 itemsDelivered: status === "DELIVERED" ? po.items.length : Math.floor(po.items?.length * progress / 100),
                 itemsTotal: po.items?.length,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                totalValue: po.total || po.items?.reduce((sum: number, item: any) => sum + (item.total || item.qty * (item.unitPrice || item.estimatedPrice || 0)), 0)
+                totalValue: po.total || po.items?.reduce((sum: number, item: { total?: number; qty?: number; unitPrice?: number; estimatedPrice?: number }) => sum + (item.total || (item.qty ?? 0) * (item.unitPrice || item.estimatedPrice || 0)), 0)
             };
         });
     }, [pos, organizations]);

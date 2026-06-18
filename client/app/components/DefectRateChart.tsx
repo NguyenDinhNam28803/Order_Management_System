@@ -112,13 +112,10 @@ const DefectRateChart: React.FC<{ supplierId: string | null }> = ({ supplierId }
       })
       .then(res => res.json())
       .then(data => {
-        // Map dữ liệu từ API đảm bảo có đầy đủ fields cho component
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const rawData = Array.isArray(data) ? data : (data.data || []);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const formattedData = rawData.map((item: any, index: number) => ({
+        const rawData: Record<string, unknown>[] = Array.isArray(data) ? data : (data.data || []);
+        const formattedData = rawData.map((item, index: number) => ({
           day: index + 1,
-          dayLabel: item.dayLabel || `Ngày ${index + 1}`,
+          dayLabel: String(item.dayLabel || `Ngày ${index + 1}`),
           defectRate: Number(item.defectRate) || 0,
           isHiddenIssue: false
         }));

@@ -54,6 +54,7 @@ export class PrRepository {
       where: { orgId },
       include: { requester: true, department: true, items: true },
       orderBy: { createdAt: 'desc' },
+      take: 200,
     });
   }
 

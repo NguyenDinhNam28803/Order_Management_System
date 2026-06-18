@@ -121,6 +121,7 @@ export class PoRepository {
       where: { orgId },
       include: { supplier: true, buyer: true },
       orderBy: { createdAt: 'desc' },
+      take: 200,
     });
   }
 

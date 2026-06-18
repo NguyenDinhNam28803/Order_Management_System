@@ -469,23 +469,55 @@ Lưu ý:
     }
   }
 
+  private static readonly ALLOWED_AI_MODELS = new Set([
+    'purchaseRequisition', 'prItem', 'rfqRequest', 'rfqQuotation',
+    'purchaseOrder', 'poItem', 'goodsReceipt', 'grnItem',
+    'supplierInvoice', 'payment', 'contract', 'dispute',
+    'supplierKpiScore', 'budgetAllocation', 'budgetPeriod',
+    'spendAnalyticsSnapshot', 'organization', 'product', 'productCategory',
+  ]);
+
+  private static readonly ALLOWED_AI_ACTIONS = new Set([
+    'findMany', 'findFirst', 'findUnique', 'count', 'aggregate',
+  ]);
+
+  private static readonly MAX_INCLUDE_DEPTH = 1;
+
+  private sanitizeInclude(include: unknown, depth = 0): unknown {
+    if (depth >= AiServiceService.MAX_INCLUDE_DEPTH || typeof include !== 'object' || !include) return undefined;
+    const result: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(include as Record<string, unknown>)) {
+      result[k] = v === true ? true : this.sanitizeInclude(v, depth + 1);
+    }
+    return result;
+  }
+
   private async executePrismaQuery(
     modelName: string,
     action: string,
     queryArgs: any,
   ) {
     try {
+      if (!AiServiceService.ALLOWED_AI_MODELS.has(modelName)) {
+        return { error: `Model '${modelName}' không được phép truy vấn.` };
+      }
+      if (!AiServiceService.ALLOWED_AI_ACTIONS.has(action)) {
+        return { error: `Action '${action}' không được phép.` };
+      }
       const model = (this.prisma as any)[modelName];
       if (!model || typeof model[action] !== 'function') {
         return { error: `Model hoặc Action không hợp lệ.` };
       }
-      const args = queryArgs || {};
-      if (
-        (action === 'findMany' || action === 'findFirst') &&
-        (!args.take || args.take > 10)
-      ) {
-        args.take = 10;
+      const args: Record<string, unknown> = { ...(queryArgs || {}) };
+      if (action === 'findMany' || action === 'findFirst') {
+        if (!args.take || (args.take as number) > 10) args.take = 10;
       }
+      if (args.include) args.include = this.sanitizeInclude(args.include);
+      // Block write-style fields that should never appear in read queries
+      delete args.data;
+      delete args.create;
+      delete args.update;
+      delete args.upsert;
       const result = await model[action](args);
       return JSON.parse(
         JSON.stringify(result, (_, v) =>
