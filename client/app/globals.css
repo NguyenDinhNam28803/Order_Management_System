@@ -65,6 +65,7 @@
 }
 
 :root {
+  color-scheme: light; /* app is light-only — do not follow OS dark mode (was causing dark-on-dark tables) */
   --background:           #F8FAFC;
   --background-secondary: #F1F5F9;
   --background-elevated:  #FFFFFF;
@@ -1004,58 +1005,11 @@ select.erp-input {
 }
 
 /* ── Dark Mode ───────────────────────────────────────────────── */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background:           #0F172A;
-    --background-secondary: #1E293B;
-    --background-elevated:  #1E293B;
-    --foreground:           #F1F5F9;
-    --foreground-secondary: #94A3B8;
-    --card:                 #1E293B;
-    --card-foreground:      #F1F5F9;
-    --border:               #334155;
-    --input:                #1E293B;
-    --muted:                #64748B;
-  }
-
-  body {
-    background: var(--background);
-    color: var(--foreground);
-  }
-
-  .erp-card, .glass-card {
-    background: #1E293B;
-    border-color: #334155;
-    color: #F1F5F9;
-  }
-
-  .erp-table thead { background: #1E293B; }
-  .erp-table th { background: #1E293B; color: #94A3B8; border-bottom-color: #334155; }
-  .erp-table tbody tr:nth-child(even) td { background: #1E293B; }
-  .erp-table tbody tr:nth-child(odd) td  { background: #0F172A; }
-  .erp-table td { color: #E2E8F0; border-bottom-color: #1E293B; }
-  .erp-table tbody tr:hover td { background: #1D3461 !important; }
-
-  .erp-input, .glass-input, .form-input, .form-select {
-    background: #1E293B;
-    border-color: #334155;
-    color: #F1F5F9;
-  }
-  .erp-input:focus, .glass-input:focus { border-color: #3B82F6; }
-
-  .btn-secondary {
-    background: #1E293B;
-    border-color: #475569;
-    color: #CBD5E1;
-  }
-  .btn-secondary:hover { background: #334155; }
-
-  .ref-tag, .source-pill {
-    background: #1E293B;
-    border-color: #334155;
-    color: #93C5FD;
-  }
-}
+/* Intentionally removed. This ERP is a light-only enterprise theme — every page
+   hardcodes light-theme text colors (text-slate-900 / text-black) with no `dark:`
+   variants, so a `prefers-color-scheme: dark` override only flipped table/card
+   backgrounds dark while the text stayed dark → unreadable dark-on-dark tables.
+   `color-scheme: light` on :root (above) also pins native controls to light. */
 
 /* ── Async Button Loading State ──────────────────────────────── */
 .btn-loading {

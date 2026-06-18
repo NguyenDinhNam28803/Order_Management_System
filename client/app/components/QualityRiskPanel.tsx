@@ -63,13 +63,13 @@ export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {
   if (!trend) return null;
 
   return (
-    <div className={`${trend.isCritical ? 'bg-red-50 border-red-200' : 'bg-amber-50/50 border-amber-200'} border rounded-xl p-5 mb-6`}>
+    <div className={`${trend.isCritical ? 'bg-rose-50 border-rose-200' : 'bg-amber-50/50 border-amber-200'} border rounded-xl p-5 mb-6`}>
       <div className="flex items-center gap-3 mb-4">
-        <div className={`p-2 ${trend.isCritical ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'} rounded-lg`}>
+        <div className={`p-2 ${trend.isCritical ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'} rounded-lg`}>
           <TrendingUp size={20} />
         </div>
         <div>
-          <h3 className={`font-bold ${trend.isCritical ? 'text-red-900' : 'text-amber-900'}`}>
+          <h3 className={`font-bold ${trend.isCritical ? 'text-rose-900' : 'text-amber-900'}`}>
             {trend.isCritical ? 'Cảnh báo: Xu hướng suy giảm nghiêm trọng' : 'Phát hiện xu hướng suy giảm chất lượng'}
           </h3>
           <p className="text-sm opacity-80">
@@ -82,13 +82,13 @@ export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {
         <button 
           onClick={generateWarning}
           disabled={loading}
-          className={`flex items-center gap-2 px-4 py-2 ${trend.isCritical ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-600 hover:bg-amber-700'} text-white rounded-lg transition-colors`}
+          className={`flex items-center gap-2 px-4 py-2 ${trend.isCritical ? 'bg-rose-600 hover:bg-rose-700' : 'bg-amber-600 hover:bg-amber-700'} text-white rounded-lg transition-colors`}
         >
           {loading ? <Loader2 className="animate-spin" /> : <FileText size={16} />}
           {trend.isCritical ? 'Tạo thư cảnh báo khẩn cấp' : 'Tạo thư cảnh báo chính thức'}
         </button>
       ) : (
-        <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 whitespace-pre-line">
+        <div className="mt-4 p-4 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 whitespace-pre-line">
           {warningLetter}
         </div>
       )}

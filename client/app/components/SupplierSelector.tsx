@@ -61,9 +61,9 @@ const getStatusConfig = (status: SupplierStatus) => {
       };
     case "Inactive":
       return {
-        color: "bg-gray-100 text-gray-600 border-gray-200",
+        color: "bg-slate-100 text-slate-600 border-slate-200",
         icon: XCircle,
-        dotColor: "bg-gray-400",
+        dotColor: "bg-slate-400",
       };
   }
 };
@@ -71,7 +71,7 @@ const getStatusConfig = (status: SupplierStatus) => {
 const getDefectRateColor = (rate: number) => {
   // Handle NaN or invalid values
   if (isNaN(rate) || rate === undefined || rate === null) {
-    return "text-gray-500 font-medium";
+    return "text-slate-500 font-medium";
   }
   if (rate > 7) return "text-red-600 font-bold";
   if (rate > 5) return "text-amber-600 font-medium";
@@ -105,8 +105,8 @@ const CustomOption = (props: OptionProps<SelectOption>) => {
         <div className="flex items-center gap-3">
           <div className={`w-2 h-2 rounded-full ${statusConfig.dotColor}`} />
           <div>
-            <div className="font-medium text-gray-900">{supplier.name}</div>
-            <div className="text-xs text-gray-500">
+            <div className="font-medium text-slate-900">{supplier.name}</div>
+            <div className="text-xs text-slate-500">
               {supplier.code} • {supplier.category} • {supplier.location}
             </div>
           </div>
@@ -115,7 +115,7 @@ const CustomOption = (props: OptionProps<SelectOption>) => {
           <div className={`text-sm ${getDefectRateColor(supplier.defectRate)}`}>
             {formatDefectRate(supplier.defectRate)}%
           </div>
-          <div className="text-xs text-gray-400">Defect Rate</div>
+          <div className="text-xs text-slate-400">Defect Rate</div>
         </div>
       </div>
     </components.Option>
@@ -129,9 +129,9 @@ const CustomSingleValue = (props: SingleValueProps<SelectOption>) => {
   return (
     <components.SingleValue {...props}>
       <div className="flex items-center gap-2">
-        <Building2 size={18} className="text-gray-500" />
+        <Building2 size={18} className="text-slate-500" />
         <span className="font-medium">{supplier.name}</span>
-        <span className="text-gray-400 text-sm">({supplier.id})</span>
+        <span className="text-slate-400 text-sm">({supplier.id})</span>
       </div>
     </components.SingleValue>
   );
@@ -294,20 +294,20 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
       ...base,
       minHeight: "48px",
       borderRadius: "12px",
-      borderColor: "#e5e7eb",
+      borderColor: "#E2E8F0",
       boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
       "&:hover": {
-        borderColor: "#d1d5db",
+        borderColor: "#CBD5E1",
       },
     }),
     option: (base, state) => ({
       ...base,
       backgroundColor: state.isSelected
-        ? "#eff6ff"
+        ? "#EFF6FF"
         : state.isFocused
-        ? "#f3f4f6"
+        ? "#F1F5F9"
         : "white",
-      color: state.isSelected ? "#1e40af" : "#1f2937",
+      color: state.isSelected ? "#1D4ED8" : "#0F172A",
       cursor: "pointer",
     }),
     menu: (base) => ({
@@ -324,15 +324,15 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
   return (
     <div className="w-full space-y-6">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-gradient-to-r from-slate-50 to-white rounded-xl border border-slate-200 p-6">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           {/* Label */}
           <div className="flex-shrink-0">
-            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
               <Building2 size={18} className="text-[#2563EB]" />
               Chọn Nhà Cung Cấp
             </label>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               Chọn để xem chi tiết tỷ lệ lỗi và lịch sử
             </p>
           </div>
@@ -340,9 +340,9 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
           {/* Select Dropdown */}
           <div className="flex-1 max-w-xl">
             {loadingSuppliers ? (
-              <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl">
-                <Loader2 size={20} className="animate-spin text-gray-400" />
-                <span className="text-sm text-gray-500">Đang tải danh sách nhà cung cấp...</span>
+              <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <Loader2 size={20} className="animate-spin text-slate-400" />
+                <span className="text-sm text-slate-500">Đang tải danh sách nhà cung cấp...</span>
               </div>
             ) : (
               <Select<SelectOption>
@@ -352,7 +352,7 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
                   SingleValue: CustomSingleValue,
                   DropdownIndicator: (props) => (
                     <components.DropdownIndicator {...props}>
-                      <ChevronDown size={20} className="text-gray-400" />
+                      <ChevronDown size={20} className="text-slate-400" />
                     </components.DropdownIndicator>
                   ),
                 }}
@@ -376,7 +376,7 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
           {selectedSupplier && (
             <button
               onClick={handleReset}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors"
             >
               <RotateCcw size={16} />
               <span>Đặt lại</span>
@@ -388,8 +388,8 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-8">
-          <div className="flex items-center gap-3 text-gray-500">
-            <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+          <div className="flex items-center gap-3 text-slate-500">
+            <div className="w-5 h-5 border-2 border-slate-300 border-t-blue-500 rounded-full animate-spin" />
             <span className="text-sm">Đang tải thông tin...</span>
           </div>
         </div>
@@ -397,19 +397,19 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
 
       {/* Supplier Detail Card */}
       {selectedSupplier && !isLoading && (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
           {/* Card Header */}
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+          <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#3B82F6] flex items-center justify-center text-white font-bold text-lg">
                   {selectedSupplier.name.charAt(0)}
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">
+                  <h3 className="text-lg font-bold text-slate-900">
                     {selectedSupplier.name}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-slate-500">
                     {selectedSupplier.code} • {selectedSupplier.location}
                   </p>
                 </div>
@@ -431,8 +431,8 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
           <div className="p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Defect Rate */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+              <div className="bg-slate-50 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-slate-500 text-sm mb-1">
                   <TrendingUp size={16} />
                   <span>Tỷ Lệ Lỗi</span>
                 </div>
@@ -452,15 +452,15 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
               </div>
 
               {/* Recent Shipments */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+              <div className="bg-slate-50 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-slate-500 text-sm mb-1">
                   <Package size={16} />
                   <span>Lô Hàng 30 Ngày</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-slate-900">
                   {selectedSupplier.recentShipments}
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-xs text-slate-500 mt-1">
                   {selectedSupplier.recentShipments > 0
                     ? "Hoạt động tích cực"
                     : "Không có lô hàng"}
@@ -468,34 +468,34 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
               </div>
 
               {/* Category */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+              <div className="bg-slate-50 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-slate-500 text-sm mb-1">
                   <Building2 size={16} />
                   <span>Danh Mục</span>
                 </div>
-                <div className="text-lg font-semibold text-gray-900">
+                <div className="text-lg font-semibold text-slate-900">
                   {selectedSupplier.category}
                 </div>
               </div>
 
               {/* Location */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+              <div className="bg-slate-50 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-slate-500 text-sm mb-1">
                   <Search size={16} />
                   <span>Địa Điểm</span>
                 </div>
-                <div className="text-lg font-semibold text-gray-900">
+                <div className="text-lg font-semibold text-slate-900">
                   {selectedSupplier.location}
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3 mt-6 pt-4 border-t border-gray-100">
+            <div className="flex flex-wrap items-center gap-3 mt-6 pt-4 border-t border-slate-100">
               {onViewHistory && (
                 <button
                   onClick={() => onViewHistory(selectedSupplier)}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-[#9a4630] transition-colors shadow-md hover:shadow-lg"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-[#1D4ED8] transition-colors shadow-md hover:shadow-lg"
                 >
                   <TrendingUp size={18} />
                   <span>Xem Lịch Sử Tỷ Lệ Lỗi</span>
@@ -504,7 +504,7 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
 
               <button
                 onClick={() => {}}
-                className="flex items-center gap-2 px-4 py-2.5 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
               >
                 <Package size={18} />
                 <span>Xem Lô Hàng Gần Đây</span>
@@ -516,12 +516,12 @@ const SupplierSelector: React.FC<SupplierSelectorProps> = ({ onViewHistory }) =>
 
       {/* Empty State */}
       {!selectedSupplier && !isLoading && (
-        <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-          <Building2 size={48} className="mx-auto text-gray-300 mb-3" />
-          <p className="text-gray-500 font-medium">
+        <div className="text-center py-8 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+          <Building2 size={48} className="mx-auto text-slate-300 mb-3" />
+          <p className="text-slate-500 font-medium">
             Chưa chọn nhà cung cấp
           </p>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-sm text-slate-400 mt-1">
             Vui lòng chọn một nhà cung cấp từ dropdown để xem chi tiết
           </p>
         </div>
